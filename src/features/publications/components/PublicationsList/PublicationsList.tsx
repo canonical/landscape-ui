@@ -2,13 +2,14 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions/const
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
 import usePageParams from "@/hooks/usePageParams";
-import { Button, Icon, ICONS } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import PublicationsListActions from "../PublicationsListActions";
 import {
   getPublicationTargetName,
+  isMissingSource,
   getSourceName,
   getSourceType,
 } from "../../helpers";
@@ -19,6 +20,7 @@ import { ROUTES } from "@/libs/routes";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { OperationStatusCell, OperationProvider } from "@/features/operations";
 import classes from "./PublicationsList.module.scss";
+import MissingSourceLabel from "../MissingSourceLabel";
 
 interface PublicationsListProps {
   readonly publications: Publication[];
@@ -26,20 +28,6 @@ interface PublicationsListProps {
   readonly unreachableSourceNames?: string[];
   readonly publicationTargetDisplayNames: Record<string, string>;
 }
-
-const isMissingSource = ({
-  source,
-  sourceType,
-  unreachableSourceNames,
-}: {
-  source: string;
-  sourceType: string;
-  unreachableSourceNames: string[];
-}) => {
-  const isSupportedSourceType =
-    sourceType === "Mirror" || sourceType === "Local repository";
-  return isSupportedSourceType && unreachableSourceNames.includes(source);
-};
 
 const PublicationsList: FC<PublicationsListProps> = ({
   publications,
@@ -120,12 +108,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
             getSourceName(original.source);
 
           if (isNotFoundSource) {
-            return (
-              <span className={classes.missingSource}>
-                <Icon name={`${ICONS.warning} ${classes.marginRight}`} />
-                <span>Source not found</span>
-              </span>
-            );
+            return <MissingSourceLabel className={classes.missingSource} />;
           }
 
           return (

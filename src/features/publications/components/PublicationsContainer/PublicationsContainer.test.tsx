@@ -1,5 +1,8 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { publications } from "@/tests/mocks/publications";
+import { batchGetLocalNamesWithMissing } from "@/tests/mocks/localRepositories";
+import { batchGetMirrorNamesWithMissing } from "@/tests/mocks/mirrors";
+import { batchGetPublicationTargetNamesWithMissing } from "@/tests/mocks/publicationTargets";
 import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
@@ -8,7 +11,6 @@ import PublicationsContainer from "./PublicationsContainer";
 import { expectLoadingState } from "@/tests/helpers";
 import { http, HttpResponse } from "msw";
 import { API_URL_DEB_ARCHIVE } from "@/constants";
-import { waitFor } from "@testing-library/react";
 
 const debugMock = vi.fn();
 
@@ -143,7 +145,19 @@ describe("PublicationsContainer", () => {
     ).toBeInTheDocument();
   });
 
-  it("calls debug for unreachable mirrors, locals, and publication targets", async () => {
+  it("renders status for unreachable mirrors, locals, and publication targets", async () => {
+    const [, missingMirrorSource] = batchGetMirrorNamesWithMissing;
+    const [, missingLocalSource] = batchGetLocalNamesWithMissing;
+    const [, missingPublicationTarget] =
+      batchGetPublicationTargetNamesWithMissing;
+    if (
+      !missingMirrorSource ||
+      !missingLocalSource ||
+      !missingPublicationTarget
+    ) {
+      throw new Error("Missing batchGet missing-source fixtures");
+    }
+
     server.use(
       http.post(`${API_URL_DEB_ARCHIVE}mirrors:batchGet`, () =>
         HttpResponse.json({
@@ -153,7 +167,7 @@ describe("PublicationsContainer", () => {
               displayName: "Ubuntu archive mirror",
             },
           ],
-          unreachable: ["mirrors/non-existent-mirror"],
+          unreachable: [missingMirrorSource],
         }),
       ),
       http.post(`${API_URL_DEB_ARCHIVE}locals:batchGet`, () =>
@@ -164,7 +178,7 @@ describe("PublicationsContainer", () => {
               displayName: "Local with no description",
             },
           ],
-          unreachable: ["locals/non-existent-local"],
+          unreachable: [missingLocalSource],
         }),
       ),
       http.post(`${API_URL_DEB_ARCHIVE}publicationTargets:batchGet`, () =>
@@ -175,7 +189,7 @@ describe("PublicationsContainer", () => {
               displayName: "prod-s3-us-east",
             },
           ],
-          unreachable: ["publicationTargets/non-existent-publication-target"],
+          unreachable: [missingPublicationTarget],
         }),
       ),
     );
@@ -187,19 +201,5 @@ describe("PublicationsContainer", () => {
         name: publications[0].displayName,
       }),
     ).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(debugMock.mock.calls.length).toBeGreaterThanOrEqual(3);
-    });
-
-    const messages = debugMock.mock.calls.map(([error]) =>
-      error instanceof Error ? error.message : "",
-    );
-
-    expect(messages.some((message) => message.includes("mirror"))).toBe(true);
-    expect(messages.some((message) => message.includes("local"))).toBe(true);
-    expect(
-      messages.some((message) => message.includes("publication target(s)")),
-    ).toBe(true);
   });
 });

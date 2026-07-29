@@ -1,7 +1,5 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import useDebug from "@/hooks/useDebug";
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
-import { pluralize } from "@/utils/_helpers";
 import type { Operation } from "../types";
 
 type BatchGetOperationsReturnType = Record<string, Operation>;
@@ -18,7 +16,6 @@ export const useBatchGetOperations = (
   > = {},
 ) => {
   const authFetchDebArchive = useFetchDebArchive();
-  const debug = useDebug();
 
   const { data, isLoading } = useQuery<BatchGetOperationsReturnType>({
     queryKey: ["operations", "batch", names],
@@ -34,15 +31,6 @@ export const useBatchGetOperations = (
         if (operation.name) {
           lookup[operation.name] = operation;
         }
-      }
-
-      const unreachable = response.data.unreachable ?? [];
-      if (unreachable.length > 0) {
-        debug(
-          new Error(
-            `Failed to fetch ${pluralize(unreachable.length, ["operation"])}: ${unreachable.join(", ")}`,
-          ),
-        );
       }
 
       return lookup;

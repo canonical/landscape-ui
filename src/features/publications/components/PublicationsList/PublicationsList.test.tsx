@@ -4,7 +4,8 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PublicationsList from "./PublicationsList";
-import { mirrors } from "@/tests/mocks/mirrors";
+import { batchGetMirrorNamesWithMissing, mirrors } from "@/tests/mocks/mirrors";
+import { batchGetLocalNamesWithMissing } from "@/tests/mocks/localRepositories";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { resetLroProgress } from "@/tests/server/handlers/operations";
 import type { Publication } from "@canonical/landscape-openapi";
@@ -129,8 +130,13 @@ describe("PublicationsList", () => {
   });
 
   it("does not link unresolved mirror sources", () => {
+    const [, missingMirrorSource] = batchGetMirrorNamesWithMissing;
+    if (!missingMirrorSource) {
+      throw new Error("Missing mirror source fixture");
+    }
+
     const missingMirrorPublication = publications.find(
-      (pub) => pub.source === "mirrors/non-existent-mirror",
+      (pub) => pub.source === missingMirrorSource,
     );
     if (!missingMirrorPublication) {
       throw new Error("Missing mock publication for non-existent mirror");
@@ -140,7 +146,7 @@ describe("PublicationsList", () => {
       <PublicationsList
         publications={[missingMirrorPublication]}
         sourceDisplayNames={sourceDisplayNames}
-        unreachableSourceNames={["mirrors/non-existent-mirror"]}
+        unreachableSourceNames={[missingMirrorSource]}
         publicationTargetDisplayNames={publicationTargetDisplayNames}
       />,
     );
@@ -152,6 +158,11 @@ describe("PublicationsList", () => {
   });
 
   it("does not link unresolved local sources", () => {
+    const [, missingLocalSource] = batchGetLocalNamesWithMissing;
+    if (!missingLocalSource) {
+      throw new Error("Missing local source fixture");
+    }
+
     const missingLocalPublication: Publication = {
       name: "publications/missing-local-source-in-list",
       publicationId: "missing-local-source-in-list",
@@ -159,7 +170,7 @@ describe("PublicationsList", () => {
       label: "missing-local",
       publicationTarget:
         "publicationTargets/aaaaaaaa-0000-0000-0000-000000000001",
-      source: "locals/non-existent-local",
+      source: missingLocalSource,
       distribution: "jammy",
       origin: "Canonical",
       architectures: ["amd64"],
@@ -176,7 +187,7 @@ describe("PublicationsList", () => {
       <PublicationsList
         publications={[missingLocalPublication]}
         sourceDisplayNames={{ "locals/aaaa-bbbb-cccc": "Known local" }}
-        unreachableSourceNames={["locals/non-existent-local"]}
+        unreachableSourceNames={[missingLocalSource]}
         publicationTargetDisplayNames={publicationTargetDisplayNames}
       />,
     );

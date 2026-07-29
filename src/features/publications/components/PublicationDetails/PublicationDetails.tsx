@@ -19,6 +19,7 @@ import {
   OperationErrorNotification,
 } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
+import MissingSourceLabel from "../MissingSourceLabel";
 
 interface PublicationDetailsProps {
   readonly publication: Publication;
@@ -123,13 +124,7 @@ const PublicationDetails = ({
             <InfoGrid.Item
               label="Source"
               value={
-                isSourceNotFound ? (
-                  <>
-                    <Icon name={ICONS.warning} /> <span>Source not found</span>
-                  </>
-                ) : (
-                  sourceDisplayName
-                )
+                isSourceNotFound ? <MissingSourceLabel /> : sourceDisplayName
               }
             />
 

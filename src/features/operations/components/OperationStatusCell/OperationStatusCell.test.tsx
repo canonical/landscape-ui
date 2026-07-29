@@ -1,22 +1,14 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import OperationStatusCell from "./OperationStatusCell";
-import { succeededOperation } from "@/tests/mocks/operations";
+import {
+  batchGetOperationNamesWithMissing,
+  succeededOperation,
+} from "@/tests/mocks/operations";
 import { OperationProvider } from "../../context/operationStatus";
-import { waitFor } from "@testing-library/react";
-
-const debugMock = vi.fn();
-
-vi.mock("@/hooks/useDebug", () => ({
-  default: () => debugMock,
-}));
 
 describe("OperationStatusCell", () => {
-  beforeEach(() => {
-    debugMock.mockClear();
-  });
-
   it("renders operation status when operationName is undefined", () => {
     renderWithProviders(
       <OperationStatusCell operationName={undefined} type={"mirror"} />,
@@ -40,10 +32,15 @@ describe("OperationStatusCell", () => {
     expect(await screen.findByText("Published")).toBeInTheDocument();
   });
 
-  it("calls debug when some operations are unreachable", async () => {
+  it("renders status when some operations are unreachable", async () => {
+    const [, missingOperationName] = batchGetOperationNamesWithMissing;
+    if (!missingOperationName) {
+      throw new Error("Missing operation name fixture");
+    }
+
     renderWithProviders(
       <OperationProvider
-        operationNames={[succeededOperation.name, "operations/non-existent"]}
+        operationNames={[succeededOperation.name, missingOperationName]}
       >
         <OperationStatusCell
           operationName={succeededOperation.name}
@@ -53,13 +50,5 @@ describe("OperationStatusCell", () => {
     );
 
     expect(await screen.findByText("Published")).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(debugMock).toHaveBeenCalledTimes(1);
-    });
-
-    const [error] = debugMock.mock.calls[0] ?? [];
-    expect(error).toBeInstanceOf(Error);
-    expect((error as Error).message).toContain("operation(s)");
   });
 });

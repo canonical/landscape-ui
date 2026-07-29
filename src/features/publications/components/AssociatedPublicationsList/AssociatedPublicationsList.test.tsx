@@ -6,6 +6,8 @@ import { describe, expect, it } from "vitest";
 import AssociatedPublicationsList from "./AssociatedPublicationsList";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import type { Publication } from "@canonical/landscape-openapi";
+import { batchGetMirrorNamesWithMissing } from "@/tests/mocks/mirrors";
+import { batchGetLocalNamesWithMissing } from "@/tests/mocks/localRepositories";
 
 const pubWithoutPublishTime: Publication = {
   name: "publications/no-date-id",
@@ -404,8 +406,13 @@ describe("AssociatedPublicationsList", () => {
     });
 
     it("renders Source not found and no link for missing mirror sources", () => {
+      const [, missingMirrorSource] = batchGetMirrorNamesWithMissing;
+      if (!missingMirrorSource) {
+        throw new Error("Missing mirror source fixture");
+      }
+
       const missingMirrorPublication = publications.find(
-        (publication) => publication.source === "mirrors/non-existent-mirror",
+        (publication) => publication.source === missingMirrorSource,
       );
       if (!missingMirrorPublication) {
         throw new Error("Missing mock publication for non-existent mirror");
@@ -417,7 +424,7 @@ describe("AssociatedPublicationsList", () => {
           sourceDisplayNames={{
             "mirrors/ubuntu-archive-mirror": "Ubuntu archive mirror",
           }}
-          unreachableSourceNames={["mirrors/non-existent-mirror"]}
+          unreachableSourceNames={[missingMirrorSource]}
         />,
       );
 
@@ -428,13 +435,18 @@ describe("AssociatedPublicationsList", () => {
     });
 
     it("renders Source not found and no link for missing local sources", () => {
+      const [, missingLocalSource] = batchGetLocalNamesWithMissing;
+      if (!missingLocalSource) {
+        throw new Error("Missing local source fixture");
+      }
+
       const missingLocalPublication: Publication = {
         name: "publications/missing-local-source-id",
         publicationId: "missing-local-source-id",
         displayName: "Missing local source publication",
         label: "missing-local",
         publicationTarget: "publicationTargets/test",
-        source: "locals/non-existent-local",
+        source: missingLocalSource,
         distribution: "jammy",
         origin: "",
         architectures: [],
@@ -453,7 +465,7 @@ describe("AssociatedPublicationsList", () => {
           sourceDisplayNames={{
             "locals/some-local-uuid": "My Custom Local Repo",
           }}
-          unreachableSourceNames={["locals/non-existent-local"]}
+          unreachableSourceNames={[missingLocalSource]}
         />,
       );
 

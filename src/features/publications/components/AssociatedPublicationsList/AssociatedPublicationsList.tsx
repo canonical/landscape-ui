@@ -1,7 +1,7 @@
 import ModalTablePagination from "@/components/layout/TablePagination/components/ModalTablePagination/ModalTablePagination";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { Icon, ICONS, ModularTable } from "@canonical/react-components";
+import { ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
@@ -11,7 +11,8 @@ import TooltipCell from "@/components/layout/TooltipCell";
 import PublicationLink from "./PublicationLink/PublicationLink";
 import MirrorLink from "./MirrorLink/MirrorLink";
 import LocalLink from "./LocalLink/LocalLink";
-import { getSourceType } from "@/features/publications";
+import { getSourceType, isMissingSource } from "@/features/publications";
+import MissingSourceLabel from "../MissingSourceLabel";
 
 const EMPTY_SOURCE_DISPLAY_NAMES: Record<string, string> = {};
 
@@ -23,20 +24,6 @@ interface AssociatedPublicationsListProps {
   readonly sourceDisplayNames?: Record<string, string>;
   readonly unreachableSourceNames?: string[];
 }
-
-const isMissingSource = ({
-  source,
-  sourceType,
-  unreachableSourceNames,
-}: {
-  source: string;
-  sourceType: string;
-  unreachableSourceNames: string[];
-}) => {
-  const isSupportedSourceType =
-    sourceType === "Mirror" || sourceType === "Local repository";
-  return isSupportedSourceType && unreachableSourceNames.includes(source);
-};
 
 const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
   publications,
@@ -88,12 +75,7 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
                 });
                 let content: ReactNode;
                 if (isNotFoundSource) {
-                  content = (
-                    <>
-                      <Icon name={ICONS.warning} />{" "}
-                      <span>Source not found</span>
-                    </>
-                  );
+                  content = <MissingSourceLabel />;
                 } else if (sourceType === "Mirror") {
                   content = (
                     <MirrorLink

@@ -31,7 +31,7 @@ describe("PublicationTargetList", () => {
 
     expect(screen.getAllByText("S3")).toHaveLength(2);
     expect(screen.getByText("Swift")).toBeInTheDocument();
-    expect(screen.getByText("Filesystem")).toBeInTheDocument();
+    expect(screen.getAllByText("Filesystem")).toHaveLength(2);
   });
 
   it("renders the publication counts from shared fixtures", async () => {

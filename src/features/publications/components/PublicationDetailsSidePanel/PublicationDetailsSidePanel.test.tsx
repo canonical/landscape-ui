@@ -5,6 +5,7 @@ import { screen } from "@testing-library/react";
 import { assert, describe, expect, it } from "vitest";
 import PublicationDetailsSidePanel from "./PublicationDetailsSidePanel";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { batchGetMirrorNamesWithMissing } from "@/tests/mocks/mirrors";
 
 const [publication] = publications;
 assert(publication);
@@ -50,8 +51,11 @@ describe("PublicationDetailsSidePanel", () => {
   });
 
   it("renders Source not found when publication source is unreachable", async () => {
+    const [, missingMirrorSource] = batchGetMirrorNamesWithMissing;
+    assert(missingMirrorSource);
+
     const missingSourcePublication = publications.find(
-      (publication) => publication.source === "mirrors/non-existent-mirror",
+      (pub) => pub.source === missingMirrorSource,
     );
     assert(missingSourcePublication);
 

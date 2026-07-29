@@ -1,5 +1,4 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import useDebug from "@/hooks/useDebug";
 import type {
   PublicationTargetServiceBatchGetPublicationTargetsError,
   BatchGetPublicationTargetsResponse,
@@ -9,7 +8,6 @@ import type { AxiosError } from "axios";
 
 export const useBatchGetPublicationTargets = (names: string[]) => {
   const authFetchDebArchive = useFetchDebArchive();
-  const debug = useDebug();
 
   const { data, isLoading } = useQuery<
     Record<string, string>,
@@ -28,15 +26,6 @@ export const useBatchGetPublicationTargets = (names: string[]) => {
         if (target.name) {
           lookup[target.name] = target.displayName;
         }
-      }
-
-      const unreachable = response.data.unreachable ?? [];
-      if (unreachable.length > 0) {
-        debug(
-          new Error(
-            `Failed to fetch ${unreachable.length} publication target(s): ${unreachable.join(", ")}`,
-          ),
-        );
       }
 
       return lookup;
