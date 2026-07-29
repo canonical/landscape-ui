@@ -7,6 +7,7 @@ import { pendingInstances } from "@/tests/mocks/instance";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { authUser } from "@/tests/mocks/auth";
 import useAuth from "@/hooks/useAuth";
+import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "./constants";
 
 vi.mock("@/hooks/useAuth");
 
@@ -50,6 +51,19 @@ describe("PendingInstancesForm", () => {
         ),
       ).toBeInTheDocument();
     });
+  });
+
+  it("renders docs link with expected href", async () => {
+    renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
+
+    const learnMoreLink = await screen.findByRole("link", {
+      name: /learn more/i,
+    });
+
+    expect(learnMoreLink).toHaveAttribute(
+      "href",
+      MANAGING_COMPUTERS_DOCUMENTATION_URL,
+    );
   });
 
   it("renders Cancel button", async () => {
