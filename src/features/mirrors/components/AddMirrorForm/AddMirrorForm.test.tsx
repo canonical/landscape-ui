@@ -76,6 +76,23 @@ describe("AddMirrorForm", () => {
     expect(location).toHaveTextContent("updateModal=true");
   });
 
+  it("shows preserve signatures success notification without Update mirror action", async () => {
+    await user.click(screen.getByLabelText(/Preserve upstream signing key/));
+    await user.click(screen.getByRole("button", { name: "Add mirror" }));
+
+    expect(
+      screen.getByText(`You have successfully added Name`),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "The mirror has been created. Signature-preserving mirrors are updated only during publication.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Update mirror" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("submits an ubuntu archive mirror with the default https URL", async () => {
     expect(screen.getByLabelText("Source URL")).toHaveValue(
       `https://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,

@@ -29,6 +29,22 @@ describe("MirrorActions", () => {
     );
   };
 
+  const PreserveSignaturesComponent = () => {
+    const { lastSidePathSegment, name } = usePageParams();
+
+    return (
+      <Suspense fallback={<LoadingState />}>
+        <MirrorActions
+          mirrorDisplayName="Mirror display name"
+          mirrorName="mirrors/name"
+          preserveSignatures
+        />
+        <div data-testid="sidePath">{lastSidePathSegment}</div>
+        <div data-testid="name">{name}</div>
+      </Suspense>
+    );
+  };
+
   const openActionsMenu = async (user: ReturnType<typeof userEvent.setup>) => {
     await user.click(
       await screen.findByRole("button", {
@@ -118,5 +134,19 @@ describe("MirrorActions", () => {
 
     expect(screen.getByTestId("sidePath")).toHaveTextContent("edit");
     expect(screen.getByTestId("name")).toHaveTextContent("mirrors/name");
+  });
+
+  it("does not render update action for preserve signatures mirror", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(<PreserveSignaturesComponent />);
+
+    await openActionsMenu(user);
+
+    expect(
+      screen.queryByRole("menuitem", {
+        name: "Update",
+      }),
+    ).not.toBeInTheDocument();
   });
 });
