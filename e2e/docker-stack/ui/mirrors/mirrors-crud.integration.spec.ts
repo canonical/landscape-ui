@@ -226,6 +226,11 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
       .getByRole("button", { name: "Save changes" })
       .click();
 
+    // Fail fast with a clear error if the backend rejects the edit payload.
+    await expect(page.getByText(/request failed validation/i)).not.toBeVisible({
+      timeout: 5_000,
+    });
+
     // Wait for the side panel to close.
     await expect(
       page.getByRole("complementary", { name: "Side panel" }),
