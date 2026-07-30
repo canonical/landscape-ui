@@ -39,11 +39,11 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
     try {
       const result = await onDownload(job);
       if (result) {
-        popSidePathUntilClear();
         notify.success({
           title: "TSV download started",
           message: `${job.name} has been downloaded and removed from the export list.`,
         });
+        popSidePathUntilClear();
       }
     } catch (error) {
       debug(error);
@@ -53,7 +53,6 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
   const handleConfirmCancel = async () => {
     try {
       await onCancel(job.id);
-      popSidePathUntilClear();
       notify.success({
         title: "TSV generation cancelled",
         message: `${job.name} has been cancelled.`,
@@ -85,7 +84,7 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
     }
   };
 
-  const countLabel = getTypeLabel(job);
+  const countLabel = getTypeLabel(job, "details");
 
   return (
     <>
@@ -217,7 +216,15 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
                 </span>
               }
             />
-            <InfoGrid.Item label="Filter" value={getFilterValue(job)} large />
+            {job.type === "report" ? (
+              <InfoGrid.Item
+                label="Scope"
+                value={job.description ?? null}
+                large
+              />
+            ) : (
+              <InfoGrid.Item label="Filter" value={getFilterValue(job)} large />
+            )}
           </InfoGrid>
         </Blocks.Item>
       </Blocks>
