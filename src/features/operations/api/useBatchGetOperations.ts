@@ -6,6 +6,7 @@ type BatchGetOperationsReturnType = Record<string, Operation>;
 
 interface BatchGetOperationsResponse {
   operations?: Operation[] | undefined;
+  unreachable?: string[];
 }
 export const useBatchGetOperations = (
   names: string[],
@@ -22,7 +23,7 @@ export const useBatchGetOperations = (
       const response =
         await authFetchDebArchive.post<BatchGetOperationsResponse>(
           "operations:batchGet",
-          { names },
+          { names, return_partial_success: true },
         );
 
       const lookup: Record<string, Operation> = {};
@@ -31,6 +32,7 @@ export const useBatchGetOperations = (
           lookup[operation.name] = operation;
         }
       }
+
       return lookup;
     },
     enabled: names.length > 0,
