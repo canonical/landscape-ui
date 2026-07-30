@@ -274,6 +274,23 @@ describe("AddMirrorForm", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows a validation error when ubuntu-archive mirror is submitted after deselecting all components", async () => {
+    const componentsCombobox = screen.getByRole("combobox", {
+      name: "Components",
+    });
+    await user.click(componentsCombobox);
+
+    const mainCheckbox = await screen.findByRole("checkbox", { name: "main" });
+    await user.click(mainCheckbox);
+
+    await user.click(screen.getByRole("button", { name: "Add mirror" }));
+
+    expect(mockCreateMirror).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText(/at least one component must be specified/i),
+    ).toBeInTheDocument();
+  });
+
   it("shows a validation error when submitting a third-party mirror without a distribution", async () => {
     await user.selectOptions(
       screen.getByLabelText("Source type"),

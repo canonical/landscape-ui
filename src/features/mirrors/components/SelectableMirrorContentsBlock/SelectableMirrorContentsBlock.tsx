@@ -107,6 +107,7 @@ const SelectableMirrorContentsBlock: FC<SelectableMirrorContentsBlockProps> = ({
             )
           }
           disabled={isLoading}
+          error={getFormikError(formik, "components")}
           required
         />
       )}
