@@ -53,6 +53,8 @@ const EditMirrorForm: FC = () => {
           displayName: values.name,
           archiveRoot: mirror.archiveRoot,
           components: mirror.components,
+          architectures: mirror.architectures,
+          distribution: mirror.distribution,
           preserveSignatures: values.preserveSignatures,
           downloadUdebs: values.downloadUdebPackages,
           downloadSources: values.downloadSources,
