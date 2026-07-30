@@ -5,17 +5,9 @@ import { test, expect } from "@playwright/test";
 // performs the same login once to produce storageState for other tests.
 test.use({ storageState: { cookies: [], origins: [] } });
 
-const email = (): string => {
-  const v = process.env.CI_ADMIN_EMAIL;
-  if (!v) throw new Error("CI_ADMIN_EMAIL not set");
-  return v;
-};
+const email = (): string => process.env.CI_ADMIN_EMAIL ?? "john@example.com";
 
-const password = (): string => {
-  const v = process.env.CI_ADMIN_PASSWORD;
-  if (!v) throw new Error("CI_ADMIN_PASSWORD not set");
-  return v;
-};
+const password = (): string => process.env.CI_ADMIN_PASSWORD ?? "pwd";
 
 test.describe("login (real backend)", () => {
   test("signs in with seeded admin credentials and lands on overview", async ({

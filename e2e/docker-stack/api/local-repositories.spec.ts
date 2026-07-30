@@ -10,7 +10,8 @@ function validateLocalShape(repo: unknown): asserts repo is Local {
 }
 
 test.describe("Local Repositories API Contract", () => {
-  const testRepoName = `test-local-repo-${Date.now()}`;
+  const makeTestRepoName = () =>
+    `test-local-repo-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   let token = "";
 
   test.beforeAll(async ({ request }) => {
@@ -21,7 +22,7 @@ test.describe("Local Repositories API Contract", () => {
     request,
   }) => {
     const payload: LocalWritable = {
-      displayName: testRepoName,
+      displayName: makeTestRepoName(),
       comment: "A test repository created by Playwright API test",
       defaultDistribution: "focal",
       defaultComponent: "main",

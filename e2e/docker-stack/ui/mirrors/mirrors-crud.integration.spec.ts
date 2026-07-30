@@ -147,7 +147,10 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     // Do not change them.
 
     // Submit the form.
-    await page.getByRole("button", { name: "Add mirror" }).last().click();
+    await page
+      .getByRole("complementary", { name: "Side panel" })
+      .getByRole("button", { name: "Add mirror" })
+      .click();
 
     // Wait for the side panel to close.
     await expect(
@@ -196,7 +199,9 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     await expect(mirrorRow).toBeVisible({ timeout: 15_000 });
 
     // Open the actions menu for this row (contextual-menu toggle button).
-    await mirrorRow.getByRole("button").last().click();
+    await mirrorRow
+      .getByRole("button", { name: `${mirrorDisplayName} mirror actions` })
+      .click();
 
     // Click "Edit" in the dropdown.
     // ContextualMenu items render with role="menuitem" (not "button") — use that role.
