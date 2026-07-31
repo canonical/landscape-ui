@@ -40,7 +40,9 @@ describe("createOpenAiCompatibleClient.complete", () => {
 
     expect(result).toEqual({ text: "hello world", model: "test-model" });
     expect(requests).toHaveLength(1);
-    expect(requests[0].url).toBe("https://example.test/inference/chat/completions");
+    expect(requests[0].url).toBe(
+      "https://example.test/inference/chat/completions",
+    );
     const headers = requests[0].init?.headers as Record<string, string>;
     expect(headers.Authorization).toBe("Bearer test-key");
     expect(headers["Content-Type"]).toBe("application/json");
@@ -66,7 +68,11 @@ describe("createOpenAiCompatibleClient.complete", () => {
       return okResponse(chatBody("ok"));
     }) as typeof fetch;
 
-    await client(fetchImpl).complete({ system: "s", user: "u", maxTokens: 128 });
+    await client(fetchImpl).complete({
+      system: "s",
+      user: "u",
+      maxTokens: 128,
+    });
     expect(JSON.parse(bodies[0])).toMatchObject({ max_tokens: 128 });
   });
 
@@ -181,8 +187,9 @@ describe("createLlmClientFromEnv", () => {
 describe("createMockClient", () => {
   it("returns the canned response", async () => {
     const mock = createMockClient("canned");
-    await expect(
-      mock.complete({ system: "s", user: "u" }),
-    ).resolves.toEqual({ text: "canned", model: "mock" });
+    await expect(mock.complete({ system: "s", user: "u" })).resolves.toEqual({
+      text: "canned",
+      model: "mock",
+    });
   });
 });

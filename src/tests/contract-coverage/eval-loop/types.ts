@@ -152,7 +152,10 @@ export function assertCoverageReport(
   const report = expectRecord(value, "report");
   expectString(report.generatedAt, "report.generatedAt");
   const summary = expectRecord(report.summary, "report.summary");
-  expectNumber(summary.totalInteractionsLogged, "report.summary.totalInteractionsLogged");
+  expectNumber(
+    summary.totalInteractionsLogged,
+    "report.summary.totalInteractionsLogged",
+  );
   expectNumber(summary.routesExercised, "report.summary.routesExercised");
   expectNumber(summary.routesDeclared, "report.summary.routesDeclared");
   expectRecord(summary.byBackend, "report.summary.byBackend");
@@ -173,7 +176,10 @@ export function assertGapsFile(value: unknown): asserts value is GapsFile {
   expectNumber(stats.routesExercised, "gapsFile.stats.routesExercised");
   expectNumber(stats.specCallsExtracted, "gapsFile.stats.specCallsExtracted");
   expectNumber(stats.gapsFound, "gapsFile.stats.gapsFound");
-  for (const [index, gap] of expectArray(file.gaps, "gapsFile.gaps").entries()) {
+  for (const [index, gap] of expectArray(
+    file.gaps,
+    "gapsFile.gaps",
+  ).entries()) {
     const entry = expectRecord(gap, `gapsFile.gaps[${index}]`);
     expectString(entry.routeId, `gapsFile.gaps[${index}].routeId`);
     expectString(entry.method, `gapsFile.gaps[${index}].method`);
@@ -196,7 +202,9 @@ export function assertSuggestionsResponse(
     "suggestionsResponse.suggestions",
   );
   if (suggestions.length > 5) {
-    throw new Error("suggestionsResponse.suggestions: expected at most 5 items");
+    throw new Error(
+      "suggestionsResponse.suggestions: expected at most 5 items",
+    );
   }
   for (const [index, suggestion] of suggestions.entries()) {
     const entry = expectRecord(

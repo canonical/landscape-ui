@@ -66,9 +66,7 @@ describe("assertCoverageReport", () => {
 describe("extractSpecCoverage", () => {
   it("extracts literal and template-literal calls, warns on dynamic", () => {
     const { calls, warnings } = extractSpecCoverage(SPEC_DIR);
-    const simplified = calls
-      .map((c) => `${c.method} ${c.urlPattern}`)
-      .sort();
+    const simplified = calls.map((c) => `${c.method} ${c.urlPattern}`).sort();
 
     expect(simplified).toEqual([
       "GET /api/v2/computers",
@@ -89,9 +87,7 @@ describe("extractSpecCoverage", () => {
 
 describe("matchesPattern", () => {
   it("matches identical patterns", () => {
-    expect(matchesPattern("/api/v2/computers", "/api/v2/computers")).toBe(
-      true,
-    );
+    expect(matchesPattern("/api/v2/computers", "/api/v2/computers")).toBe(true);
   });
 
   it("matches a {param} segment against a concrete segment", () => {
@@ -101,9 +97,9 @@ describe("matchesPattern", () => {
   });
 
   it("does not let {param} cross segments", () => {
-    expect(matchesPattern("/api/v2/computers/42/disks", "/api/v2/computers/{id}")).toBe(
-      false,
-    );
+    expect(
+      matchesPattern("/api/v2/computers/42/disks", "/api/v2/computers/{id}"),
+    ).toBe(false);
   });
 
   it("matches proxy-relative go URLs against the /debarchive mount", () => {

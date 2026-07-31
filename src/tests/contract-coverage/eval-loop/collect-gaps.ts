@@ -120,8 +120,13 @@ export function extractSpecCoverage(specDir: string): ExtractionResult {
       ) {
         const method = node.expression.name.text.toUpperCase();
         const [firstArg] = node.arguments;
+        const line =
+          sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile))
+            .line + 1;
         if (firstArg === undefined) {
-          warnings.push(`${locationOf(node)}: ${method} call with no URL argument`);
+          warnings.push(
+            `${locationOf(node)}: ${method} call with no URL argument`,
+          );
         } else if (
           ts.isStringLiteral(firstArg) ||
           ts.isNoSubstitutionTemplateLiteral(firstArg)
@@ -130,20 +135,14 @@ export function extractSpecCoverage(specDir: string): ExtractionResult {
             method,
             urlPattern: firstArg.text,
             file: path.basename(file),
-            line:
-              sourceFile.getLineAndCharacterOfPosition(
-                node.getStart(sourceFile),
-              ).line + 1,
+            line,
           });
         } else if (ts.isTemplateExpression(firstArg)) {
           calls.push({
             method,
             urlPattern: templateToPattern(firstArg),
             file: path.basename(file),
-            line:
-              sourceFile.getLineAndCharacterOfPosition(
-                node.getStart(sourceFile),
-              ).line + 1,
+            line,
           });
         } else {
           warnings.push(
@@ -230,7 +229,10 @@ interface CliOptions {
 function parseArgs(argv: string[]): CliOptions {
   const options: CliOptions = {
     report: REPORT_PATH,
-    specDir: path.resolve(import.meta.dirname, "../../../../e2e/docker-stack/api"),
+    specDir: path.resolve(
+      import.meta.dirname,
+      "../../../../e2e/docker-stack/api",
+    ),
     out: path.join(import.meta.dirname, "out", "gaps.json"),
   };
   for (let index = 0; index < argv.length; index += 2) {
