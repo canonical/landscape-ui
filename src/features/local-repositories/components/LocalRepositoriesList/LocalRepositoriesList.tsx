@@ -5,6 +5,7 @@ import { Button } from "@canonical/react-components";
 import { useMemo, type FC } from "react";
 import type { Column, CellProps } from "react-table";
 import type { Local } from "@canonical/landscape-openapi";
+import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import LocalRepositoriesListActions from "./components/LocalRepositoriesListActions";
 import LocalRepositoryPackagesCount from "./components/LocalRepositoryPackagesCount";
@@ -22,8 +23,10 @@ interface LocalRepositoriesListProps {
 const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
   repositories,
 }) => {
+  const { isFeatureEnabled } = useAuth();
   const { search, currentPage, pageSize, createPageParamsSetter } =
     usePageParams();
+  const LAST_IMPORT_FIELD = "last_import";
 
   const pagedRepositories = useMemo(
     () =>
@@ -39,8 +42,8 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
     [pagedRepositories],
   );
 
-  const columns = useMemo<Column<Local>[]>(
-    () => [
+  const columns = useMemo<Column<Local>[]>(() => {
+    const result: Column<Local>[] = [
       {
         accessor: "name",
         Header: "Name",
@@ -70,6 +73,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
       },
       {
         Header: "Last import",
+        id: LAST_IMPORT_FIELD,
         className: classes.datetime,
         Cell: ({ row: { original } }: CellProps<Local>) =>
           original.lastImportTime
@@ -96,9 +100,12 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
           <LocalRepositoriesListActions repository={repository} />
         ),
       },
-    ],
-    [createPageParamsSetter],
-  );
+    ];
+
+    return isFeatureEnabled("local-repository-last-import")
+      ? result
+      : result.filter((column) => column.id !== LAST_IMPORT_FIELD);
+  }, [createPageParamsSetter, isFeatureEnabled]);
 
   return (
     <OperationProvider operationNames={operationNames}>
