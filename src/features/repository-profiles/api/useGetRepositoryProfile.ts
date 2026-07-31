@@ -5,10 +5,12 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import type { RepositoryProfile } from "../types";
 
+type getRepositoryProfileError = AxiosError<ApiError> | Error;
+
 export function useGetRepositoryProfile(name: string) {
   const authFetch = useFetch();
 
-  return useSuspenseQuery<RepositoryProfile, AxiosError<ApiError> | Error>({
+  return useSuspenseQuery<RepositoryProfile, getRepositoryProfileError>({
     queryKey: ["repositoryProfile", name],
     queryFn: async () => {
       const response =

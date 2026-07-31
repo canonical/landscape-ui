@@ -4,10 +4,9 @@ import type {
   MirrorServiceGetMirrorResponse,
 } from "@canonical/landscape-openapi";
 import { useQuery } from "@tanstack/react-query";
-import { isAxiosError } from "axios";
 import type { AxiosError, AxiosResponse } from "axios";
+import { rethrowWithNotFoundMessage } from "@/utils/queryErrors";
 
-const NOT_FOUND_STATUS = 404;
 type GetMirrorError = AxiosError<MirrorServiceGetMirrorError> | Error;
 
 export function useGetMirror(mirrorName: string) {
@@ -27,14 +26,10 @@ export function useGetMirror(mirrorName: string) {
 
         return response;
       } catch (caughtError) {
-        if (
-          isAxiosError(caughtError) &&
-          caughtError.response?.status === NOT_FOUND_STATUS
-        ) {
-          throw new Error(`Mirror ${mirrorName} was not found`);
-        }
-
-        throw caughtError;
+        return rethrowWithNotFoundMessage(
+          caughtError,
+          `Mirror ${mirrorName} was not found`,
+        );
       }
     },
     enabled: !!mirrorName,

@@ -89,7 +89,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
     return <SidePanel.LoadingState />;
   }
   if (!repository) {
-    return <SidePanel.LoadingState />;
+    throw new Error(`Local repository ${name} was not found`);
   }
 
   const handleValidate = async () => {
