@@ -12,8 +12,15 @@ import { API_URL_DEB_ARCHIVE } from "@/constants";
 import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { useLocation } from "react-router";
+import { inProgressOperation } from "@/tests/mocks/operations";
 
 const typedMirrors = mirrors as Mirror[];
+
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location">{search}</div>;
+};
 
 describe("MirrorDetails", () => {
   beforeEach(() => {
@@ -119,12 +126,19 @@ describe("MirrorDetails", () => {
   });
 
   it("renders GPG key fingerprint", async () => {
+    const mirrorWithGpgKey = typedMirrors.find(
+      ({ gpgKey }) => !!gpgKey?.fingerprint,
+    );
+    assert(mirrorWithGpgKey, "Missing mock mirror with GPG key");
+    const fingerprint = mirrorWithGpgKey.gpgKey?.fingerprint;
+    assert(fingerprint, "Missing fingerprint in selected GPG key mirror");
+
     renderWithProviders(
       <Suspense fallback={<LoadingState />}>
         <MirrorDetails />
       </Suspense>,
       undefined,
-      `?name=${mirrors[2].name}`,
+      `?name=${mirrorWithGpgKey.name}`,
     );
 
     await expectLoadingState();
@@ -133,9 +147,7 @@ describe("MirrorDetails", () => {
       await screen.findByRole("heading", { name: "Authentication" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Verification GPG Key")).toBeInTheDocument();
-    expect(
-      screen.getByText(mirrors[2].gpgKey?.fingerprint),
-    ).toBeInTheDocument();
+    expect(screen.getByText(fingerprint)).toBeInTheDocument();
   });
 
   it("displays preserve signatures status", async () => {
@@ -158,6 +170,15 @@ describe("MirrorDetails", () => {
     const label = await screen.findByText("Preserve upstream signing key");
     expect(label).toBeInTheDocument();
     expect(label.closest("div")?.nextSibling?.textContent).toBe("Yes");
+    expect(
+      screen.queryByRole("button", { name: "Update" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/Signature-preserving mirrors/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Close notification" }),
+    ).not.toBeInTheDocument();
   });
 
   it("shows include dependencies in filter field only if mirror has filter", async () => {
@@ -231,9 +252,10 @@ describe("MirrorDetails", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows disabled updating action while last operation is in progress", async () => {
+  it("hides update actions when preserve signatures mirror has in-progress operation", async () => {
     const mirrorWithInProgressOperation = typedMirrors.find(
-      ({ lastOperation }) => lastOperation?.includes("pppp-gggg-ssss"),
+      ({ lastOperation, preserveSignatures }) =>
+        preserveSignatures && lastOperation?.includes("pppp-gggg-ssss"),
     );
     assert(
       mirrorWithInProgressOperation,
@@ -250,14 +272,70 @@ describe("MirrorDetails", () => {
 
     await expectLoadingState();
 
+    expect(
+      screen.queryByRole("button", { name: "Updating" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Update" }),
+    ).not.toBeInTheDocument();
+    expect(await screen.findByText("Updating")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar")).toBeInTheDocument();
+  });
+
+  it("shows disabled updating action while last operation is in progress for non-preserve mirrors", async () => {
+    const mirrorWithInProgressOperation = typedMirrors.find(
+      ({ lastOperation, preserveSignatures }) =>
+        !preserveSignatures && lastOperation?.includes("pppp-gggg-ssss"),
+    );
+    assert(
+      mirrorWithInProgressOperation,
+      "Missing non-preserve mock mirror with an in-progress operation",
+    );
+
+    const user = userEvent.setup();
+
+    server.use(
+      http.get(`${API_URL_DEB_ARCHIVE}operations/pppp-gggg-ssss`, () =>
+        HttpResponse.json(inProgressOperation),
+      ),
+    );
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${mirrorWithInProgressOperation.name}`,
+    );
+
+    await expectLoadingState();
+
     const updatingButton = await screen.findByRole("button", {
       name: "Updating",
     });
     expect(updatingButton).toHaveAttribute("aria-disabled", "true");
+    expect(
+      screen.queryByRole("button", { name: "Update" }),
+    ).not.toBeInTheDocument();
+
+    await user.hover(updatingButton);
+
+    expect(
+      await screen.findByText(
+        "You must wait for this action to be completed to trigger a new update.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("shows authentication for legacy mirrors that have a GPG key but no mirrorType", async () => {
-    const legacyMirror = { ...mirrors[2], mirrorType: undefined };
+    const mirrorWithGpgKey = typedMirrors.find(
+      ({ gpgKey }) => !!gpgKey?.fingerprint,
+    );
+    assert(mirrorWithGpgKey, "Missing mock mirror with GPG key");
+    const fingerprint = mirrorWithGpgKey.gpgKey?.fingerprint;
+    assert(fingerprint, "Missing fingerprint in selected GPG key mirror");
+
+    const legacyMirror = { ...mirrorWithGpgKey, mirrorType: undefined };
 
     server.use(
       http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, () =>
@@ -270,7 +348,7 @@ describe("MirrorDetails", () => {
         <MirrorDetails />
       </Suspense>,
       undefined,
-      `?name=${mirrors[2].name}`,
+      `?name=${mirrorWithGpgKey.name}`,
     );
 
     await expectLoadingState();
@@ -278,9 +356,7 @@ describe("MirrorDetails", () => {
     expect(
       screen.getByRole("heading", { name: "Authentication" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(mirrors[2].gpgKey?.fingerprint),
-    ).toBeInTheDocument();
+    expect(screen.getByText(fingerprint)).toBeInTheDocument();
   });
 
   it("opens UpdateMirrorModal if updateModal param is true", async () => {
@@ -299,6 +375,38 @@ describe("MirrorDetails", () => {
         name: `Update ${mirrors[0].displayName}`,
       }),
     ).toBeInTheDocument();
+  });
+
+  it("does not open UpdateMirrorModal from query param for preserve signatures mirror", async () => {
+    const preserveSignaturesMirror = mirrors.find(
+      ({ preserveSignatures }) => preserveSignatures,
+    );
+
+    assert(preserveSignaturesMirror);
+
+    renderWithProviders(
+      <>
+        <Suspense fallback={<LoadingState />}>
+          <MirrorDetails />
+        </Suspense>
+        <LocationDisplay />
+      </>,
+      undefined,
+      `?name=${preserveSignaturesMirror.name}&updateModal=true`,
+    );
+
+    await expectLoadingState();
+
+    expect(
+      screen.queryByRole("heading", {
+        name: `Update ${preserveSignaturesMirror.displayName}`,
+      }),
+    ).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId("location")).not.toHaveTextContent(
+        "updateModal=true",
+      );
+    });
   });
 
   it("renders mirror details for a mirror with preserve signatures disabled", async () => {
@@ -321,5 +429,9 @@ describe("MirrorDetails", () => {
     const label = screen.getByText("Preserve upstream signing key");
     expect(label).toBeInTheDocument();
     expect(label.closest("div")?.nextSibling?.textContent).toBe("No");
+    expect(screen.getByRole("button", { name: "Update" })).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Signature-preserving mirrors/i),
+    ).not.toBeInTheDocument();
   });
 });

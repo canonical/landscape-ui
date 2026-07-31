@@ -112,6 +112,7 @@ const EditMirrorFormContent: FC<EditMirrorFormContentProps> = ({ mirror }) => {
               />
               <CheckboxInputWithHelp
                 label="Preserve upstream signing key"
+                help="Signature-preserving mirrors do not support independent updates. They update only during publication."
                 tooltipMessage={SETTINGS_HELP_TEXT.preserveSignatures}
                 {...formik.getFieldProps("preserveSignatures")}
                 checked={formik.values.preserveSignatures}
