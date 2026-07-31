@@ -1,7 +1,7 @@
 import type { AuthContextProps } from "@/context/auth";
 import useAuth from "@/hooks/useAuth";
 import { renderWithProviders } from "@/tests/render";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import LocalRepositoriesList from "./LocalRepositoriesList";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { getAllByRole, screen } from "@testing-library/react";
