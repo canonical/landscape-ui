@@ -8,6 +8,7 @@ export interface ItemProps {
   readonly title?: string;
   readonly description?: ReactNode;
   readonly action?: ReactNode;
+  readonly notification?: ReactNode;
 }
 
 const Item: FC<ItemProps> = ({
@@ -15,10 +16,12 @@ const Item: FC<ItemProps> = ({
   title,
   description,
   action,
+  notification,
 }: ItemProps) => {
   const spaced = useBlocksSpaced();
   return (
     <section className={classes.item}>
+      {notification}
       {(title || description || action) && (
         <div
           className={classNames(classes.heading, {
