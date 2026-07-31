@@ -79,6 +79,9 @@ const TargetDetails: FC = () => {
   if (isGettingPublicationTarget) {
     return <SidePanel.LoadingState />;
   }
+  if (!name) {
+    return null;
+  }
   if (!publicationTarget) {
     throw new Error(`Publication target ${name} was not found`);
   }
