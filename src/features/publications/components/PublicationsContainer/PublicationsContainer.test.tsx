@@ -1,15 +1,28 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { publications } from "@/tests/mocks/publications";
+import { batchGetLocalNamesWithMissing } from "@/tests/mocks/localRepositories";
+import { batchGetMirrorNamesWithMissing } from "@/tests/mocks/mirrors";
+import { batchGetPublicationTargetNamesWithMissing } from "@/tests/mocks/publicationTargets";
 import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import PublicationsContainer from "./PublicationsContainer";
 import { expectLoadingState } from "@/tests/helpers";
 import { http, HttpResponse } from "msw";
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 
+const debugMock = vi.fn();
+
+vi.mock("@/hooks/useDebug", () => ({
+  default: () => debugMock,
+}));
+
 describe("PublicationsContainer", () => {
+  beforeEach(() => {
+    debugMock.mockClear();
+  });
+
   it("renders publications list data", async () => {
     renderWithProviders(<PublicationsContainer />);
 
@@ -124,6 +137,64 @@ describe("PublicationsContainer", () => {
     renderWithProviders(<PublicationsContainer />);
 
     await expectLoadingState();
+
+    expect(
+      await screen.findByRole("button", {
+        name: publications[0].displayName,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders status for unreachable mirrors, locals, and publication targets", async () => {
+    const [, missingMirrorSource] = batchGetMirrorNamesWithMissing;
+    const [, missingLocalSource] = batchGetLocalNamesWithMissing;
+    const [, missingPublicationTarget] =
+      batchGetPublicationTargetNamesWithMissing;
+    if (
+      !missingMirrorSource ||
+      !missingLocalSource ||
+      !missingPublicationTarget
+    ) {
+      throw new Error("Missing batchGet missing-source fixtures");
+    }
+
+    server.use(
+      http.post(`${API_URL_DEB_ARCHIVE}mirrors:batchGet`, () =>
+        HttpResponse.json({
+          mirrors: [
+            {
+              name: "mirrors/ubuntu-archive-mirror",
+              displayName: "Ubuntu archive mirror",
+            },
+          ],
+          unreachable: [missingMirrorSource],
+        }),
+      ),
+      http.post(`${API_URL_DEB_ARCHIVE}locals:batchGet`, () =>
+        HttpResponse.json({
+          locals: [
+            {
+              name: "locals/aaaa-bbbb-cccc",
+              displayName: "Local with no description",
+            },
+          ],
+          unreachable: [missingLocalSource],
+        }),
+      ),
+      http.post(`${API_URL_DEB_ARCHIVE}publicationTargets:batchGet`, () =>
+        HttpResponse.json({
+          publicationTargets: [
+            {
+              name: "publicationTargets/aaaaaaaa-0000-0000-0000-000000000001",
+              displayName: "prod-s3-us-east",
+            },
+          ],
+          unreachable: [missingPublicationTarget],
+        }),
+      ),
+    );
+
+    renderWithProviders(<PublicationsContainer />);
 
     expect(
       await screen.findByRole("button", {

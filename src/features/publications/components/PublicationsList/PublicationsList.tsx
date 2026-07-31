@@ -9,6 +9,7 @@ import type { CellProps, Column } from "react-table";
 import PublicationsListActions from "../PublicationsListActions";
 import {
   getPublicationTargetName,
+  isMissingSource,
   getSourceName,
   getSourceType,
 } from "../../helpers";
@@ -19,16 +20,19 @@ import { ROUTES } from "@/libs/routes";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { OperationStatusCell, OperationProvider } from "@/features/operations";
 import classes from "./PublicationsList.module.scss";
+import MissingSourceLabel from "../MissingSourceLabel";
 
 interface PublicationsListProps {
   readonly publications: Publication[];
   readonly sourceDisplayNames: Record<string, string>;
+  readonly unreachableSourceNames?: string[];
   readonly publicationTargetDisplayNames: Record<string, string>;
 }
 
 const PublicationsList: FC<PublicationsListProps> = ({
   publications,
   sourceDisplayNames,
+  unreachableSourceNames = [],
   publicationTargetDisplayNames,
 }) => {
   const { query, createPageParamsSetter } = usePageParams();
@@ -92,24 +96,39 @@ const PublicationsList: FC<PublicationsListProps> = ({
         accessor: "source",
         Header: "source",
         className: classes.source,
-        Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <StaticLink
-            to={
-              getSourceType(original.source) === "Mirror"
-                ? ROUTES.repositories.mirrors({
-                    sidePath: ["view"],
-                    name: original.source,
-                  })
-                : ROUTES.repositories.localRepositories({
-                    sidePath: ["view"],
-                    name: original.source.replace(/^locals\//, ""),
-                  })
-            }
-          >
-            {sourceDisplayNames[original.source] ??
-              getSourceName(original.source)}
-          </StaticLink>
-        ),
+        Cell: ({ row: { original } }: CellProps<Publication>) => {
+          const sourceType = getSourceType(original.source);
+          const isNotFoundSource = isMissingSource({
+            source: original.source,
+            sourceType,
+            unreachableSourceNames,
+          });
+          const displayName =
+            sourceDisplayNames[original.source] ??
+            getSourceName(original.source);
+
+          if (isNotFoundSource) {
+            return <MissingSourceLabel className={classes.missingSource} />;
+          }
+
+          return (
+            <StaticLink
+              to={
+                sourceType === "Mirror"
+                  ? ROUTES.repositories.mirrors({
+                      sidePath: ["view"],
+                      name: original.source,
+                    })
+                  : ROUTES.repositories.localRepositories({
+                      sidePath: ["view"],
+                      name: original.source.replace(/^locals\//, ""),
+                    })
+              }
+            >
+              {displayName}
+            </StaticLink>
+          );
+        },
       },
       {
         accessor: "publicationTarget",
@@ -137,7 +156,12 @@ const PublicationsList: FC<PublicationsListProps> = ({
         ),
       },
     ],
-    [createPageParamsSetter, sourceDisplayNames, publicationTargetDisplayNames],
+    [
+      createPageParamsSetter,
+      sourceDisplayNames,
+      unreachableSourceNames,
+      publicationTargetDisplayNames,
+    ],
   );
 
   return (
