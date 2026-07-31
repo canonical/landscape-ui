@@ -88,6 +88,9 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   if (isGettingRepository) {
     return <SidePanel.LoadingState />;
   }
+  if (!name) {
+    return null;
+  }
   if (!repository) {
     throw new Error(`Local repository ${name} was not found`);
   }
