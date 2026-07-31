@@ -248,7 +248,7 @@ const MirrorDetails: FC = () => {
                 />
                 <InfoGrid.Item
                   label="Architectures"
-                  value={mirror.architectures?.join(", ")}
+                  value={mirror.architectures.join(", ")}
                   large
                 />
                 <InfoGrid.Item label="Filter" value={mirror.filter} large />
