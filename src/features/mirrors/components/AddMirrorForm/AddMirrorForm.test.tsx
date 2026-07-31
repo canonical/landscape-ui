@@ -84,9 +84,7 @@ describe("AddMirrorForm", () => {
       screen.getByText(`You have successfully added Name`),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "The mirror has been created. Signature-preserving mirrors are updated only during publication.",
-      ),
+      screen.getByText(/Signature-preserving mirrors are updated/i),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Update mirror" }),

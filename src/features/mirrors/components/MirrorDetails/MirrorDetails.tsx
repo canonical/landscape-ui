@@ -103,14 +103,12 @@ const MirrorDetails: FC = () => {
   }));
 
   useEffect(() => {
-    if (updateModal && !mirror.preserveSignatures) {
-      openUpdateModal();
-    }
-
-    if (updateModal && mirror.preserveSignatures) {
-      setPageParams({
-        updateModal: false,
-      });
+    if (updateModal) {
+      if (mirror.preserveSignatures) {
+        setPageParams({ updateModal: false });
+      } else {
+        openUpdateModal();
+      }
     }
   }, [mirror.preserveSignatures, openUpdateModal, setPageParams, updateModal]);
 
@@ -190,13 +188,17 @@ const MirrorDetails: FC = () => {
         <Tabs links={links} />
         {tabId === "details" && (
           <Blocks>
-            <Blocks.Item>
-              {mirror.preserveSignatures && (
-                <Notification severity="information">
-                  Signature-preserving mirrors can&apos;t be updated.
-                </Notification>
-              )}
-              <h4 className="p-heading--5 p-text--small-caps">Details</h4>
+            <Blocks.Item
+              title="Details"
+              notification={
+                mirror.preserveSignatures && (
+                  <Notification severity="information">
+                    Signature-preserving mirrors do not support independent
+                    syncs - they sync during publication
+                  </Notification>
+                )
+              }
+            >
               <InfoGrid dense>
                 <InfoGrid.Item label="Name" value={mirror.displayName} />
                 <InfoGrid.Item
