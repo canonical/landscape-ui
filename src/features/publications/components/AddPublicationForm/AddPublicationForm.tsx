@@ -86,7 +86,7 @@ const AddPublicationForm: FC = () => {
         sourceType: SOURCE_TYPE_MIRROR,
         distribution: mirror.distribution,
         components: mirror.components,
-        architectures: mirror.architectures ?? [],
+        architectures: mirror.architectures,
         preserveSignatures: mirror.preserveSignatures,
       })),
     [mirrors],
