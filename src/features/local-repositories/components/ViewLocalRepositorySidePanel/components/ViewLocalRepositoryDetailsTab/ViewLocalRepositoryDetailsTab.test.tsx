@@ -1,23 +1,38 @@
-import { API_URL } from "@/constants";
+import type { AuthContextProps } from "@/context/auth";
+import useAuth from "@/hooks/useAuth";
 import { renderWithProviders } from "@/tests/render";
 import { describe, it, expect } from "vitest";
 import ViewLocalRepositoryDetailsTab from "./ViewLocalRepositoryDetailsTab";
 import { repositories } from "@/tests/mocks/localRepositories";
-import { features } from "@/tests/mocks/features";
-import server from "@/tests/server";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import { screen } from "@testing-library/react";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 import { succeededOperation } from "@/tests/mocks/operations";
 import type { Local } from "@canonical/landscape-openapi";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
-import { http, HttpResponse } from "msw";
 
 const [repository] = repositories;
 
+vi.mock("@/hooks/useAuth");
+
+const authContextValues: AuthContextProps = {
+  logout: vi.fn(),
+  authorized: true,
+  authLoading: false,
+  setUser: vi.fn(),
+  user: null,
+  redirectToExternalUrl: vi.fn(),
+  safeRedirect: vi.fn(),
+  isFeatureEnabled: () => true,
+  hasAccounts: true,
+};
+
 describe("ViewLocalRepositoryDetailsTab", () => {
-  it("renders details block with repository information", async () => {
+  beforeEach(() => {
+    vi.mocked(useAuth).mockReturnValue(authContextValues);
+  });
+
+  it("renders details block with repository information", () => {
     const { container } = renderWithProviders(
       <ViewLocalRepositoryDetailsTab
         repository={repository}
@@ -29,7 +44,6 @@ describe("ViewLocalRepositoryDetailsTab", () => {
 
     expect(container).toHaveInfoItem("Name", repository.displayName);
     expect(container).toHaveInfoItem("Status", "Packages imported");
-    expect(await screen.findByText("Last import")).toBeInTheDocument();
     expect(container).toHaveInfoItem(
       "Last import",
       moment(repository.lastImportTime).format(DISPLAY_DATE_TIME_FORMAT),
@@ -45,32 +59,21 @@ describe("ViewLocalRepositoryDetailsTab", () => {
     );
   });
 
-  it("hides the Last import item when the feature flag is disabled", async () => {
-    server.use(
-      http.get(`${API_URL}features`, () =>
-        HttpResponse.json(
-          generatePaginatedResponse({
-            data: features.map((feature) =>
-              feature.key === "local-repository-last-import"
-                ? { ...feature, enabled: false }
-                : feature,
-            ),
-            offset: 0,
-            limit: 20,
-          }),
-        ),
-      ),
-    );
+  it("hides the Last import item when the feature flag is disabled", () => {
+    vi.mocked(useAuth).mockReturnValue({
+      ...authContextValues,
+      isFeatureEnabled: () => false,
+    });
 
     renderWithProviders(
       <ViewLocalRepositoryDetailsTab repository={repository} />,
     );
 
-    expect(await screen.findByText("Description")).toBeInTheDocument();
+    expect(screen.getByText("Description")).toBeInTheDocument();
     expect(screen.queryByText("Last import")).not.toBeInTheDocument();
   });
 
-  it("renders description when present and fallback for last import", async () => {
+  it("renders description when present and fallback for last import", () => {
     const noImportRepository = (repositories as Local[]).find(
       (repo) => !repo.lastImportTime,
     );
@@ -87,7 +90,6 @@ describe("ViewLocalRepositoryDetailsTab", () => {
       <ViewLocalRepositoryDetailsTab repository={noImportRepository} />,
     );
 
-    expect(await screen.findByText("Last import")).toBeInTheDocument();
     expect(container).toHaveInfoItem("Last import", NO_DATA_TEXT);
     expect(container).toHaveInfoItem("Description", noImportRepository.comment);
   });

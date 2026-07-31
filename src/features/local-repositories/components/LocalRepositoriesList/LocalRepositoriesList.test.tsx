@@ -1,20 +1,35 @@
-import { API_URL } from "@/constants";
+import type { AuthContextProps } from "@/context/auth";
+import useAuth from "@/hooks/useAuth";
 import { renderWithProviders } from "@/tests/render";
 import { describe, it, expect } from "vitest";
 import LocalRepositoriesList from "./LocalRepositoriesList";
 import { repositories } from "@/tests/mocks/localRepositories";
-import { features } from "@/tests/mocks/features";
-import server from "@/tests/server";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import { getAllByRole, screen } from "@testing-library/react";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
+
+vi.mock("@/hooks/useAuth");
+
+const authContextValues: AuthContextProps = {
+  logout: vi.fn(),
+  authorized: true,
+  authLoading: false,
+  setUser: vi.fn(),
+  user: null,
+  redirectToExternalUrl: vi.fn(),
+  safeRedirect: vi.fn(),
+  isFeatureEnabled: () => true,
+  hasAccounts: true,
+};
 
 describe("LocalRepositoriesList", () => {
   const user = userEvent.setup();
 
-  it("renders table with column headers and pagination", async () => {
+  beforeEach(() => {
+    vi.mocked(useAuth).mockReturnValue(authContextValues);
+  });
+
+  it("renders table with column headers and pagination", () => {
     renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
 
     expect(
@@ -24,7 +39,7 @@ describe("LocalRepositoriesList", () => {
       screen.getByRole("columnheader", { name: "Status" }),
     ).toBeInTheDocument();
     expect(
-      await screen.findByRole("columnheader", { name: "Last import" }),
+      screen.getByRole("columnheader", { name: "Last import" }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "Packages" }),
@@ -39,27 +54,16 @@ describe("LocalRepositoriesList", () => {
     expect(screen.getByText(/showing.*of/i)).toBeInTheDocument();
   });
 
-  it("hides the Last import column when the feature flag is disabled", async () => {
-    server.use(
-      http.get(`${API_URL}features`, () =>
-        HttpResponse.json(
-          generatePaginatedResponse({
-            data: features.map((feature) =>
-              feature.key === "local-repository-last-import"
-                ? { ...feature, enabled: false }
-                : feature,
-            ),
-            offset: 0,
-            limit: 20,
-          }),
-        ),
-      ),
-    );
+  it("hides the Last import column when the feature flag is disabled", () => {
+    vi.mocked(useAuth).mockReturnValue({
+      ...authContextValues,
+      isFeatureEnabled: () => false,
+    });
 
     renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
 
     expect(
-      await screen.findByRole("columnheader", { name: "Packages" }),
+      screen.getByRole("columnheader", { name: "Packages" }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("columnheader", { name: "Last import" }),
@@ -76,10 +80,10 @@ describe("LocalRepositoriesList", () => {
     }
   });
 
-  it("renders last import dates", async () => {
+  it("renders last import dates", () => {
     renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
 
-    expect(await screen.findAllByText(/Jun \d{2}, 2024/)).toHaveLength(4);
+    expect(screen.getAllByText(/Jun \d{2}, 2024/)).toHaveLength(4);
     expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 
