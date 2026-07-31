@@ -15,24 +15,18 @@ import {
   TARGET_TYPE_LABELS,
 } from "../EditTargetForm/EditTargetForm";
 import { AssociatedPublicationsList } from "@/features/publications";
-import type { PublicationTarget } from "@canonical/landscape-openapi";
 import { useBatchGetMirrors } from "@/features/mirrors";
 import { useBatchGetLocals } from "@/features/local-repositories";
 import { LINK_METHOD_OPTIONS } from "../../constants";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
-interface TargetDetailsProps {
-  readonly target?: PublicationTarget;
-}
-
-const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
+const TargetDetails: FC = () => {
   const { createSidePathPusher, name } = usePageParams();
-  const { publicationTarget: fetchedTarget, isGettingPublicationTarget } =
-    useGetPublicationTarget(name, !target);
-  const resolvedTarget = target ?? fetchedTarget;
+  const { publicationTarget, isGettingPublicationTarget } =
+    useGetPublicationTarget(name);
 
   const { publications, isGettingPublications } = useGetPublicationsByTarget(
-    resolvedTarget?.publicationTargetId,
+    publicationTarget?.publicationTargetId,
   );
 
   const mirrorNames = useMemo(
@@ -85,11 +79,11 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
   if (isGettingPublicationTarget) {
     return <SidePanel.LoadingState />;
   }
-  if (!resolvedTarget) {
+  if (!publicationTarget) {
     throw new Error(`Publication target ${name} was not found`);
   }
 
-  const { s3, swift, filesystem } = resolvedTarget;
+  const { s3, swift, filesystem } = publicationTarget;
 
   const s3Fields = s3
     ? {
@@ -128,7 +122,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
 
   return (
     <>
-      <SidePanel.Header>{resolvedTarget.displayName}</SidePanel.Header>
+      <SidePanel.Header>{publicationTarget.displayName}</SidePanel.Header>
       <SidePanel.Content>
         <div className="p-segmented-control u-sv2">
           <Button
@@ -153,10 +147,13 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
         <Blocks>
           <Blocks.Item title="General">
             <InfoGrid dense>
-              <InfoGrid.Item label="Name" value={resolvedTarget.displayName} />
+              <InfoGrid.Item
+                label="Name"
+                value={publicationTarget.displayName}
+              />
               <InfoGrid.Item
                 label="Type"
-                value={TARGET_TYPE_LABELS[getTargetType(resolvedTarget)]}
+                value={TARGET_TYPE_LABELS[getTargetType(publicationTarget)]}
               />
             </InfoGrid>
           </Blocks.Item>
@@ -257,7 +254,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
         <RemoveTargetModal
           isOpen={isRemoveModalOpen}
           close={closeRemoveModal}
-          target={resolvedTarget}
+          target={publicationTarget}
         />
       </SidePanel.Content>
     </>

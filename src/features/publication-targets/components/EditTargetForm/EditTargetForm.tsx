@@ -24,10 +24,6 @@ import type { EditTargetFormValues } from "../../constants";
 
 export { TARGET_TYPE_LABELS } from "../../constants";
 
-interface EditTargetFormProps {
-  readonly target?: PublicationTarget;
-}
-
 interface EditTargetFormContentProps {
   readonly target: PublicationTarget;
 }
@@ -373,20 +369,19 @@ const EditTargetFormContent: FC<EditTargetFormContentProps> = ({ target }) => {
   );
 };
 
-const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
+const EditTargetForm: FC = () => {
   const { name } = usePageParams();
-  const { publicationTarget: fetchedTarget, isGettingPublicationTarget } =
-    useGetPublicationTarget(name, !target);
-  const resolvedTarget = target ?? fetchedTarget;
+  const { publicationTarget, isGettingPublicationTarget } =
+    useGetPublicationTarget(name);
 
   if (isGettingPublicationTarget) {
     return <SidePanel.LoadingState />;
   }
-  if (!resolvedTarget) {
+  if (!publicationTarget) {
     throw new Error(`Publication target ${name} was not found`);
   }
 
-  return <EditTargetFormContent target={resolvedTarget} />;
+  return <EditTargetFormContent target={publicationTarget} />;
 };
 
 export default EditTargetForm;

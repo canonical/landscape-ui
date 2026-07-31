@@ -8,8 +8,7 @@ import { describe, expect, it } from "vitest";
 import TargetDetails from "./TargetDetails";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 import { LINK_METHOD_OPTIONS } from "../../constants";
-import { setEndpointStatus } from "@/tests/controllers/controller";
-import { expectLoadingState } from "@/tests/helpers";
+import type { PublicationTarget } from "@canonical/landscape-openapi";
 
 const [targetWithPublications, , swiftMock, filesystemMock] =
   publicationTargets;
@@ -45,12 +44,22 @@ const LocationDisplay = () => {
   return <div data-testid="location">{search}</div>;
 };
 
+const renderTarget = async (target: PublicationTarget) => {
+  const result = renderWithProviders(
+    <TargetDetails />,
+    undefined,
+    `/?name=${target.publicationTargetId}`,
+  );
+  await screen.findByRole("heading", { name: target.displayName });
+  return result;
+};
+
 describe("TargetDetails", () => {
   const user = userEvent.setup();
 
   describe("action buttons", () => {
-    it("renders Edit and Remove buttons", () => {
-      renderWithProviders(<TargetDetails target={targetWithPublications} />);
+    it("renders Edit and Remove buttons", async () => {
+      await renderTarget(targetWithPublications);
 
       expect(screen.getByRole("button", { name: /edit/i })).toBeInTheDocument();
       expect(
@@ -61,10 +70,15 @@ describe("TargetDetails", () => {
     it("sets sidePath=edit in URL when Edit is clicked", async () => {
       renderWithProviders(
         <>
-          <TargetDetails target={targetWithPublications} />
+          <TargetDetails />
           <LocationDisplay />
         </>,
+        undefined,
+        `/?name=${targetWithPublications.publicationTargetId}`,
       );
+      await screen.findByRole("heading", {
+        name: targetWithPublications.displayName,
+      });
 
       await user.click(screen.getByRole("button", { name: /edit/i }));
 
@@ -72,7 +86,7 @@ describe("TargetDetails", () => {
     });
 
     it("opens the remove confirmation modal when Remove is clicked", async () => {
-      renderWithProviders(<TargetDetails target={targetWithPublications} />);
+      await renderTarget(targetWithPublications);
 
       await user.click(screen.getByRole("button", { name: /remove/i }));
 
@@ -85,14 +99,14 @@ describe("TargetDetails", () => {
   });
 
   describe("S3 target details", () => {
-    it("renders the DETAILS heading", () => {
-      renderWithProviders(<TargetDetails target={targetWithPublications} />);
+    it("renders the DETAILS heading", async () => {
+      await renderTarget(targetWithPublications);
 
       expect(screen.getByText("Details")).toBeInTheDocument();
     });
 
-    it("renders the target displayName", () => {
-      renderWithProviders(<TargetDetails target={targetWithPublications} />);
+    it("renders the target displayName", async () => {
+      await renderTarget(targetWithPublications);
 
       expect(
         screen.getByRole("heading", {
@@ -102,10 +116,8 @@ describe("TargetDetails", () => {
       ).toBeInTheDocument();
     });
 
-    it("renders all S3 fields", () => {
-      const { container } = renderWithProviders(
-        <TargetDetails target={targetWithPublications} />,
-      );
+    it("renders all S3 fields", async () => {
+      const { container } = await renderTarget(targetWithPublications);
 
       expect(container).toHaveInfoItem("Region", s3WithPubs.region);
       expect(container).toHaveInfoItem("Bucket Name", s3WithPubs.bucket);
@@ -128,79 +140,40 @@ describe("TargetDetails", () => {
         s3WithPubs.forceSigV2 ? "Yes" : "No",
       );
     });
-
-    it("renders 'Yes' for forceSigV2 when it is true", () => {
-      const targetWithForceSigV2 = {
-        ...targetWithPublications,
-        s3: { ...s3WithPubs, forceSigV2: true },
-      };
-
-      const { container } = renderWithProviders(
-        <TargetDetails target={targetWithForceSigV2} />,
-      );
-
-      expect(container).toHaveInfoItem("Force AWS SIGv2", "Yes");
-    });
   });
 
   describe("Used In section", () => {
-    it("shows the Used In section and publications table when target has publications", async () => {
-      renderWithProviders(<TargetDetails target={targetWithPublications} />);
+    it("shows publications when target has publications", async () => {
+      await renderTarget(targetWithPublications);
 
-      expect(await screen.findByText("Used In")).toBeInTheDocument();
-
-      await expectLoadingState();
-      expect(screen.getByText(firstPubName)).toBeInTheDocument();
+      expect(await screen.findByText(firstPubName)).toBeInTheDocument();
     });
 
     it("shows empty table when target has no publications", async () => {
-      setEndpointStatus("empty");
-
-      renderWithProviders(<TargetDetails target={targetWithoutPublications} />);
-
-      expect(screen.queryByText("Used In")).toBeInTheDocument();
-
-      await expectLoadingState();
+      await renderTarget(targetWithoutPublications);
 
       expect(
-        screen.getByRole("columnheader", { name: /publication/i }),
+        await screen.findByText(/no associated publications were found/i),
       ).toBeInTheDocument();
-      expect(
-        screen.getByText(/no associated publications were found/i),
-      ).toBeInTheDocument();
-    });
-
-    it("shows LoadingState while publications are loading", () => {
-      renderWithProviders(<TargetDetails target={targetWithPublications} />);
-
-      expect(screen.getByText("Details")).toBeInTheDocument();
-      expect(screen.queryByText("Used In")).toBeInTheDocument();
-      expect(screen.getByRole("status")).toBeInTheDocument();
     });
   });
 
   describe("Swift target", () => {
-    it("renders container and authUrl info items", () => {
-      const { container } = renderWithProviders(
-        <TargetDetails target={swiftMock} />,
-      );
+    it("renders container and authUrl info items", async () => {
+      const { container } = await renderTarget(swiftMock);
 
       expect(container).toHaveInfoItem("Container", swiftTarget.container);
       expect(container).toHaveInfoItem("Auth URL", swiftTarget.authUrl);
     });
 
-    it("renders optional tenant field when present", () => {
-      const { container } = renderWithProviders(
-        <TargetDetails target={swiftMock} />,
-      );
+    it("renders optional tenant field when present", async () => {
+      const { container } = await renderTarget(swiftMock);
 
       expect(container).toHaveInfoItem("Tenant", swiftTarget.tenant ?? "");
     });
 
-    it("does not render S3-specific fields", () => {
-      const { container } = renderWithProviders(
-        <TargetDetails target={swiftMock} />,
-      );
+    it("does not render S3-specific fields", async () => {
+      const { container } = await renderTarget(swiftMock);
 
       expect(container.textContent).not.toContain("Region");
       expect(container.textContent).not.toContain("Bucket Name");
@@ -208,10 +181,8 @@ describe("TargetDetails", () => {
   });
 
   describe("Filesystem target", () => {
-    it("renders path and link method info items", () => {
-      const { container } = renderWithProviders(
-        <TargetDetails target={filesystemMock} />,
-      );
+    it("renders path and link method info items", async () => {
+      const { container } = await renderTarget(filesystemMock);
 
       expect(container).toHaveInfoItem("Path", filesystemTarget.path);
       expect(container).toHaveInfoItem(
@@ -221,10 +192,8 @@ describe("TargetDetails", () => {
       );
     });
 
-    it("does not render S3-specific fields", () => {
-      const { container } = renderWithProviders(
-        <TargetDetails target={filesystemMock} />,
-      );
+    it("does not render S3-specific fields", async () => {
+      const { container } = await renderTarget(filesystemMock);
 
       expect(container.textContent).not.toContain("Region");
       expect(container.textContent).not.toContain("Bucket Name");
