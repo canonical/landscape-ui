@@ -104,13 +104,13 @@ const MirrorDetails: FC = () => {
 
   useEffect(() => {
     if (updateModal) {
-      if (mirror.preserveSignatures) {
+      if (mirror?.preserveSignatures) {
         setPageParams({ updateModal: false });
       } else {
         openUpdateModal();
       }
     }
-  }, [mirror.preserveSignatures, openUpdateModal, setPageParams, updateModal]);
+  }, [mirror?.preserveSignatures, openUpdateModal, setPageParams, updateModal]);
 
   const closeAndClearUpdateModal = () => {
     closeUpdateModal();

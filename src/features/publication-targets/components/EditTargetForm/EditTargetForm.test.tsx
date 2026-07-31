@@ -4,7 +4,7 @@ import { renderWithProviders } from "@/tests/render";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, assert } from "vitest";
 import EditTargetForm from "./EditTargetForm";
 import type { PublicationTarget } from "@canonical/landscape-openapi";
 
