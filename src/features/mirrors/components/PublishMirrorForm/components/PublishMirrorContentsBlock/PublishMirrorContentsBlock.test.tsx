@@ -1,6 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, assert } from "vitest";
 import PublishMirrorContentsBlock from "./PublishMirrorContentsBlock";
 import { publications } from "@/tests/mocks/publications";
 import { mirrors } from "@/tests/mocks/mirrors";
@@ -19,6 +19,7 @@ describe("PublishMirrorContentsBlock", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(publication.distribution)).toBeInTheDocument();
     expect(screen.getByText(mirror.components.join(", "))).toBeInTheDocument();
+    assert(publication.architectures);
     expect(
       screen.getByText((publication.architectures ?? []).join(", ")),
     ).toBeInTheDocument();
@@ -36,8 +37,9 @@ describe("PublishMirrorContentsBlock", () => {
     );
 
     expect(screen.getByText(mirror.distribution)).toBeInTheDocument();
+    assert(publication.architectures);
     expect(
-      screen.getByText((publication.architectures ?? []).join(", ")),
+      screen.getByText(publication.architectures.join(", ")),
     ).toBeInTheDocument();
   });
 

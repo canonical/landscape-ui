@@ -4,6 +4,7 @@ import {
   Button,
   Icon,
   ICONS,
+  Notification,
   Tabs,
   Tooltip,
 } from "@canonical/react-components";
@@ -41,6 +42,7 @@ import {
 const MirrorDetails: FC = () => {
   const { name, updateModal, createSidePathPusher, sidePath, setPageParams } =
     usePageParams();
+  const { mirror, isGettingMirror } = useGetMirror(name);
 
   const {
     value: isUpdateModalOpen,
@@ -60,9 +62,8 @@ const MirrorDetails: FC = () => {
 
   const [tabId, setTabId] = useState<"details" | "packages">("details");
 
-  const mirror = useGetMirror(name).data.data;
-  const { operation } = useGetOperation(mirror.lastOperation ?? "", {
-    enabled: !!mirror.lastOperation,
+  const { operation } = useGetOperation(mirror?.lastOperation ?? "", {
+    enabled: !!mirror?.lastOperation,
     refetchInterval: ({ state }) =>
       state.error || state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
   });
@@ -102,10 +103,15 @@ const MirrorDetails: FC = () => {
   }));
 
   useEffect(() => {
-    if (updateModal) {
+    if (!updateModal || !mirror) {
+      return;
+    }
+    if (mirror.preserveSignatures) {
+      setPageParams({ updateModal: false });
+    } else {
       openUpdateModal();
     }
-  }, [openUpdateModal, updateModal]);
+  }, [mirror, openUpdateModal, setPageParams, updateModal]);
 
   const closeAndClearUpdateModal = () => {
     closeUpdateModal();
@@ -113,6 +119,13 @@ const MirrorDetails: FC = () => {
       updateModal: false,
     });
   };
+
+  if (isGettingMirror) {
+    return <SidePanel.LoadingState />;
+  }
+  if (!mirror) {
+    throw new Error(`Mirror ${name} was not found`);
+  }
 
   return (
     <>
@@ -133,32 +146,33 @@ const MirrorDetails: FC = () => {
             <Icon name="edit" />
             <span>Edit</span>
           </Button>
-          {operation && !operation.done ? (
-            <Tooltip
-              message="You must wait for this action to be completed to trigger a new update."
-              position="btm-center"
-            >
+          {!mirror.preserveSignatures &&
+            (operation && !operation.done ? (
+              <Tooltip
+                message="You must wait for this action to be completed to trigger a new update."
+                position="btm-center"
+              >
+                <Button
+                  type="button"
+                  hasIcon
+                  className="p-segmented-control__button"
+                  disabled
+                >
+                  <Icon name="spinner" className="u-animation--spin" />
+                  <span>Updating</span>
+                </Button>
+              </Tooltip>
+            ) : (
               <Button
                 type="button"
                 hasIcon
                 className="p-segmented-control__button"
-                disabled
+                onClick={openUpdateModal}
               >
-                <Icon name="spinner" className="u-animation--spin" />
-                <span>Updating</span>
+                <Icon name="restart" />
+                <span>Update</span>
               </Button>
-            </Tooltip>
-          ) : (
-            <Button
-              type="button"
-              hasIcon
-              className="p-segmented-control__button"
-              onClick={openUpdateModal}
-            >
-              <Icon name="restart" />
-              <span>Update</span>
-            </Button>
-          )}
+            ))}
           <Button
             type="button"
             hasIcon
@@ -182,7 +196,17 @@ const MirrorDetails: FC = () => {
         <Tabs links={links} />
         {tabId === "details" && (
           <Blocks>
-            <Blocks.Item title="Details">
+            <Blocks.Item
+              title="Details"
+              notification={
+                mirror.preserveSignatures && (
+                  <Notification severity="information">
+                    Signature-preserving mirrors do not support independent
+                    syncs - they sync during publication
+                  </Notification>
+                )
+              }
+            >
               <InfoGrid dense>
                 <InfoGrid.Item label="Name" value={mirror.displayName} />
                 <InfoGrid.Item

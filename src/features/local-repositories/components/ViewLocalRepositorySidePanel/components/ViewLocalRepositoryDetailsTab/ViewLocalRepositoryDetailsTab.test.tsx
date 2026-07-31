@@ -1,5 +1,7 @@
+import type { AuthContextProps } from "@/context/auth";
+import useAuth from "@/hooks/useAuth";
 import { renderWithProviders } from "@/tests/render";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import ViewLocalRepositoryDetailsTab from "./ViewLocalRepositoryDetailsTab";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { screen } from "@testing-library/react";
@@ -11,7 +13,25 @@ import moment from "moment";
 
 const [repository] = repositories;
 
+vi.mock("@/hooks/useAuth");
+
+const authContextValues: AuthContextProps = {
+  logout: vi.fn(),
+  authorized: true,
+  authLoading: false,
+  setUser: vi.fn(),
+  user: null,
+  redirectToExternalUrl: vi.fn(),
+  safeRedirect: vi.fn(),
+  isFeatureEnabled: () => true,
+  hasAccounts: true,
+};
+
 describe("ViewLocalRepositoryDetailsTab", () => {
+  beforeEach(() => {
+    vi.mocked(useAuth).mockReturnValue(authContextValues);
+  });
+
   it("renders details block with repository information", () => {
     const { container } = renderWithProviders(
       <ViewLocalRepositoryDetailsTab
@@ -37,6 +57,20 @@ describe("ViewLocalRepositoryDetailsTab", () => {
       "Default component",
       repository.defaultComponent,
     );
+  });
+
+  it("hides the Last import item when the feature flag is disabled", () => {
+    vi.mocked(useAuth).mockReturnValue({
+      ...authContextValues,
+      isFeatureEnabled: () => false,
+    });
+
+    renderWithProviders(
+      <ViewLocalRepositoryDetailsTab repository={repository} />,
+    );
+
+    expect(screen.getByText("Description")).toBeInTheDocument();
+    expect(screen.queryByText("Last import")).not.toBeInTheDocument();
   });
 
   it("renders description when present and fallback for last import", () => {

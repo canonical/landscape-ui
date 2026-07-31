@@ -46,8 +46,11 @@ const PublicationDetailsSidePanel: FC = () => {
 
   const sourceDisplayNames = { ...mirrorDisplayNames, ...localDisplayNames };
 
-  if (isGettingPublication || !publication) {
+  if (isGettingPublication) {
     return <SidePanel.LoadingState />;
+  }
+  if (!publication) {
+    throw new Error(`Publication ${publicationId} was not found`);
   }
 
   return (

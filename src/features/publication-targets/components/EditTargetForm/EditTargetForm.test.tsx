@@ -4,8 +4,9 @@ import { renderWithProviders } from "@/tests/render";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, assert } from "vitest";
 import EditTargetForm from "./EditTargetForm";
+import type { PublicationTarget } from "@canonical/landscape-openapi";
 
 const [s3TargetFull, s3TargetMinimal, swiftTarget, filesystemTarget] =
   publicationTargets;
@@ -19,6 +20,15 @@ const s3Full = s3TargetFull.s3;
 const { swift } = swiftTarget;
 const { filesystem } = filesystemTarget;
 
+const renderForm = async (target: PublicationTarget) => {
+  renderWithProviders(
+    <EditTargetForm />,
+    undefined,
+    `/?name=${target.publicationTargetId}`,
+  );
+  await screen.findByLabelText("Name");
+};
+
 describe("EditTargetForm", () => {
   const user = userEvent.setup();
 
@@ -27,44 +37,44 @@ describe("EditTargetForm", () => {
   });
 
   describe("S3 target", () => {
-    it("pre-populates the display_name field", () => {
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+    it("pre-populates the display_name field", async () => {
+      await renderForm(s3TargetFull);
 
       expect(screen.getByLabelText("Name")).toHaveValue(
         s3TargetFull.displayName,
       );
     });
 
-    it("shows Type as read-only S3", () => {
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+    it("shows Type as read-only S3", async () => {
+      await renderForm(s3TargetFull);
 
       expect(screen.getByText("S3")).toBeInTheDocument();
     });
 
-    it("pre-populates S3 structural fields", () => {
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+    it("pre-populates S3 structural fields", async () => {
+      await renderForm(s3TargetFull);
 
       expect(screen.getByText(s3Full.bucket)).toBeInTheDocument();
       expect(screen.getByText(s3Full.region)).toBeInTheDocument();
     });
 
-    it("leaves INPUT_ONLY credential fields blank", () => {
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+    it("leaves INPUT_ONLY credential fields blank", async () => {
+      await renderForm(s3TargetFull);
 
       expect(screen.getByLabelText(/aws access key id/i)).toHaveValue("");
       expect(screen.getByLabelText(/aws secret access key/i)).toHaveValue("");
     });
 
-    it("shows help text for INPUT_ONLY fields", () => {
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+    it("shows help text for INPUT_ONLY fields", async () => {
+      await renderForm(s3TargetFull);
 
       expect(
         screen.getAllByText(/leave blank to keep current value/i),
       ).toHaveLength(2);
     });
 
-    it("pre-populates optional S3 fields when present", () => {
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+    it("pre-populates optional S3 fields when present", async () => {
+      await renderForm(s3TargetFull);
 
       expect(screen.getByLabelText(/^acl$/i)).toHaveValue(s3Full.acl);
       expect(screen.getByLabelText(/storage class/i)).toHaveValue(
@@ -75,22 +85,22 @@ describe("EditTargetForm", () => {
       );
     });
 
-    it("pre-populates with empty strings when optional S3 fields are missing", () => {
-      renderWithProviders(<EditTargetForm target={s3TargetMinimal} />);
+    it("pre-populates with empty strings when optional S3 fields are missing", async () => {
+      await renderForm(s3TargetMinimal);
 
       expect(screen.getByLabelText(/^acl$/i)).toHaveValue("");
       expect(screen.getByLabelText(/storage class/i)).toHaveValue("");
       expect(screen.getByLabelText(/encryption method/i)).toHaveValue("");
     });
 
-    it("renders the save button", () => {
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+    it("renders the save button", async () => {
+      await renderForm(s3TargetFull);
 
       expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
     });
 
     it("submits and shows success notification", async () => {
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+      await renderForm(s3TargetFull);
 
       await user.click(screen.getByRole("button", { name: /save/i }));
 
@@ -103,26 +113,26 @@ describe("EditTargetForm", () => {
   });
 
   describe("Swift target", () => {
-    it("shows Type as read-only Swift", () => {
-      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+    it("shows Type as read-only Swift", async () => {
+      await renderForm(swiftTarget);
 
       expect(screen.getByText("Swift")).toBeInTheDocument();
     });
 
-    it("pre-populates container as read-only", () => {
-      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+    it("pre-populates container as read-only", async () => {
+      await renderForm(swiftTarget);
 
       expect(screen.getByText(swift.container)).toBeInTheDocument();
     });
 
-    it("pre-populates authUrl as read-only", () => {
-      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+    it("pre-populates authUrl as read-only", async () => {
+      await renderForm(swiftTarget);
 
       expect(screen.getByText(swift.authUrl)).toBeInTheDocument();
     });
 
-    it("leaves INPUT_ONLY credential fields blank with help text", () => {
-      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+    it("leaves INPUT_ONLY credential fields blank with help text", async () => {
+      await renderForm(swiftTarget);
 
       expect(screen.getByLabelText(/^username$/i)).toHaveValue("");
       expect(screen.getByLabelText(/^password$/i)).toHaveValue("");
@@ -131,8 +141,8 @@ describe("EditTargetForm", () => {
       ).toHaveLength(2);
     });
 
-    it("pre-populates optional Swift fields when present", () => {
-      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+    it("pre-populates optional Swift fields when present", async () => {
+      await renderForm(swiftTarget);
 
       expect(screen.getByLabelText(/^tenant$/i)).toHaveValue(
         swift.tenant ?? "",
@@ -140,7 +150,7 @@ describe("EditTargetForm", () => {
     });
 
     it("submits and shows success notification", async () => {
-      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+      await renderForm(swiftTarget);
 
       await user.click(screen.getByRole("button", { name: /save/i }));
 
@@ -152,7 +162,7 @@ describe("EditTargetForm", () => {
     });
 
     it("user can edit optional Swift fields and submit successfully", async () => {
-      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+      await renderForm(swiftTarget);
 
       await user.clear(screen.getByLabelText(/^tenant$/i));
       await user.type(screen.getByLabelText(/^tenant$/i), "updated-tenant");
@@ -165,7 +175,7 @@ describe("EditTargetForm", () => {
     });
 
     it("shows 'This field is required' when display name is cleared", async () => {
-      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+      await renderForm(swiftTarget);
 
       await user.clear(screen.getByLabelText("Name"));
       await user.click(screen.getByRole("button", { name: /save/i }));
@@ -177,26 +187,26 @@ describe("EditTargetForm", () => {
   });
 
   describe("Filesystem target", () => {
-    it("shows Type as read-only Filesystem", () => {
-      renderWithProviders(<EditTargetForm target={filesystemTarget} />);
+    it("shows Type as read-only Filesystem", async () => {
+      await renderForm(filesystemTarget);
 
       expect(screen.getByText("Filesystem")).toBeInTheDocument();
     });
 
-    it("pre-populates path as read-only", () => {
-      renderWithProviders(<EditTargetForm target={filesystemTarget} />);
+    it("pre-populates path as read-only", async () => {
+      await renderForm(filesystemTarget);
 
       expect(screen.getByText(filesystem.path)).toBeInTheDocument();
     });
 
-    it("pre-populates linkMethod as read-only", () => {
-      renderWithProviders(<EditTargetForm target={filesystemTarget} />);
+    it("pre-populates linkMethod as read-only", async () => {
+      await renderForm(filesystemTarget);
 
       expect(screen.getByText("Hardlink")).toBeInTheDocument();
     });
 
     it("submits and shows success notification", async () => {
-      renderWithProviders(<EditTargetForm target={filesystemTarget} />);
+      await renderForm(filesystemTarget);
 
       await user.click(screen.getByRole("button", { name: /save/i }));
 
@@ -206,7 +216,7 @@ describe("EditTargetForm", () => {
     });
 
     it("shows 'This field is required' when display name is cleared", async () => {
-      renderWithProviders(<EditTargetForm target={filesystemTarget} />);
+      await renderForm(filesystemTarget);
 
       await user.clear(screen.getByLabelText("Name"));
       await user.click(screen.getByRole("button", { name: /save/i }));
@@ -219,7 +229,7 @@ describe("EditTargetForm", () => {
 
   describe("display name validation", () => {
     it("shows 'This field is required' when display name is cleared on S3 target", async () => {
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+      await renderForm(s3TargetFull);
 
       await user.clear(screen.getByLabelText("Name"));
       await user.click(screen.getByRole("button", { name: /save/i }));
@@ -232,7 +242,7 @@ describe("EditTargetForm", () => {
 
   describe("S3 checkbox fields", () => {
     it("toggles the disableMultiDel checkbox", async () => {
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+      await renderForm(s3TargetFull);
 
       const checkbox = screen.getByRole("checkbox", {
         name: /disable multidel/i,
@@ -244,7 +254,7 @@ describe("EditTargetForm", () => {
     });
 
     it("toggles the forceSigV2 checkbox", async () => {
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+      await renderForm(s3TargetFull);
 
       const checkbox = screen.getByRole("checkbox", {
         name: /force aws sigv2/i,
@@ -256,7 +266,7 @@ describe("EditTargetForm", () => {
     });
 
     it("submits S3 form with optional fields populated and shows success", async () => {
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+      await renderForm(s3TargetFull);
 
       await user.type(screen.getByLabelText(/aws access key id/i), "NEWKEY");
       await user.type(
@@ -280,7 +290,7 @@ describe("EditTargetForm", () => {
 
   describe("Swift optional fields editing", () => {
     it("submits Swift form with all optional fields populated and shows success", async () => {
-      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+      await renderForm(swiftTarget);
 
       await user.type(screen.getByLabelText(/^prefix$/i), "packages/");
       await user.clear(screen.getByLabelText(/^tenant$/i));
@@ -306,7 +316,7 @@ describe("EditTargetForm", () => {
         path: "publicationTargets/update",
       });
 
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+      await renderForm(s3TargetFull);
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
@@ -320,7 +330,7 @@ describe("EditTargetForm", () => {
         path: "publicationTargets/update",
       });
 
-      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+      await renderForm(swiftTarget);
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(

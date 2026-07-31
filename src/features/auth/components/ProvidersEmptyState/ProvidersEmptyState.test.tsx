@@ -3,6 +3,7 @@ import { renderWithProviders } from "@/tests/render";
 import ProvidersEmptyState from "./ProvidersEmptyState";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { EXTERNAL_AUTHENTICATION_DOCUMENTATION_URL } from "./constants";
 
 describe("ProvidersEmptyState", () => {
   it("should render correctly", async () => {
@@ -14,7 +15,7 @@ describe("ProvidersEmptyState", () => {
 
     expect(
       screen.getByRole("link", {
-        name: "How to manage computers in Landscape",
+        name: "How to manage identity providers in Landscape",
       }),
     ).toBeInTheDocument();
 
@@ -29,5 +30,18 @@ describe("ProvidersEmptyState", () => {
     expect(
       screen.getByRole("heading", { name: "Choose an identity provider" }),
     ).toBeInTheDocument();
+  });
+
+  it("should render docs link with expected href", () => {
+    renderWithProviders(<ProvidersEmptyState />);
+
+    const docsLink = screen.getByRole("link", {
+      name: "How to manage identity providers in Landscape",
+    });
+
+    expect(docsLink).toHaveAttribute(
+      "href",
+      EXTERNAL_AUTHENTICATION_DOCUMENTATION_URL,
+    );
   });
 });
