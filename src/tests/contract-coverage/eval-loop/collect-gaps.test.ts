@@ -55,8 +55,11 @@ describe("assertCoverageReport", () => {
 
   it("rejects a route entry missing totalHits with the route id", () => {
     const broken = fixtureReport();
-    const routes = broken.routes as Record<string, Record<string, unknown>>;
-    delete routes["POST /api/v2/mirrors"].totalHits;
+    const routes = broken.routes as unknown as Record<
+      string,
+      Record<string, unknown>
+    >;
+    delete routes["POST /api/v2/mirrors"]?.totalHits;
     expect(() => {
       assertCoverageReport(broken);
     }).toThrow(/POST \/api\/v2\/mirrors.*totalHits/s);
@@ -115,11 +118,11 @@ describe("computeGaps", () => {
     const gaps = computeGaps(fixtureReport(), calls);
 
     expect(gaps).toHaveLength(2);
-    expect(gaps[0].routeId).toBe("POST /api/v2/mirrors");
-    expect(gaps[0].rank).toBe(1);
-    expect(gaps[0].contracts).toHaveLength(1);
-    expect(gaps[1].routeId).toBe("GET /debarchive/v1beta1/mirrors/{mirrorId}");
-    expect(gaps[1].rank).toBe(2);
+    expect(gaps[0]?.routeId).toBe("POST /api/v2/mirrors");
+    expect(gaps[0]?.rank).toBe(1);
+    expect(gaps[0]?.contracts).toHaveLength(1);
+    expect(gaps[1]?.routeId).toBe("GET /debarchive/v1beta1/mirrors/{mirrorId}");
+    expect(gaps[1]?.rank).toBe(2);
   });
 
   it("marks fully covered suites as gap-free", () => {

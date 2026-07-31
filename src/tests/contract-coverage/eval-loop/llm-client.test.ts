@@ -40,13 +40,13 @@ describe("createOpenAiCompatibleClient.complete", () => {
 
     expect(result).toEqual({ text: "hello world", model: "test-model" });
     expect(requests).toHaveLength(1);
-    expect(requests[0].url).toBe(
+    expect(requests[0]?.url).toBe(
       "https://example.test/inference/chat/completions",
     );
-    const headers = requests[0].init?.headers as Record<string, string>;
+    const headers = requests[0]?.init?.headers as Record<string, string>;
     expect(headers.Authorization).toBe("Bearer test-key");
     expect(headers["Content-Type"]).toBe("application/json");
-    const body = JSON.parse(requests[0].init?.body as string) as {
+    const body = JSON.parse(requests[0]?.init?.body as string) as {
       model: string;
       temperature: number;
       max_tokens: number;
@@ -73,7 +73,7 @@ describe("createOpenAiCompatibleClient.complete", () => {
       user: "u",
       maxTokens: 128,
     });
-    expect(JSON.parse(bodies[0])).toMatchObject({ max_tokens: 128 });
+    expect(JSON.parse(bodies[0] as string)).toMatchObject({ max_tokens: 128 });
   });
 
   it("throws status + truncated body on non-2xx", async () => {
