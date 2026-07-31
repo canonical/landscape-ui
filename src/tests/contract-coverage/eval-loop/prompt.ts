@@ -38,16 +38,14 @@ export function buildSuggestionPrompt(
   if (gaps.length < 1) {
     throw new Error("no gaps to prompt on");
   }
-  const topGaps = [...gaps]
-    .sort((a, b) => a.rank - b.rank)
-    .slice(0, MAX_GAPS);
+  const topGaps = [...gaps].sort((a, b) => a.rank - b.rank).slice(0, MAX_GAPS);
 
   const user =
     `API usage gaps (endpoints the frontend exercises but no API-contract test covers), as JSON data:\n` +
     `${JSON.stringify(topGaps, null, 2)}\n\n` +
     `Existing API-contract test pattern (exemplar — match its style):\n` +
     `${exemplarSpec}\n\n` +
-    `Given the following API usage map and the current API-contract test pattern, ` +
+    `Given the API usage map above and the current API-contract test pattern, ` +
     `propose one integration test per endpoint following our standard Playwright API-contract pattern.`;
 
   if (user.length > MAX_USER_CHARS) {
