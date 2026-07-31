@@ -11,7 +11,7 @@ import { assertCoverageReport, assertGapsFile } from "./types";
 import type { CoverageReport } from "./types";
 
 const FIXTURES = path.join(import.meta.dirname, "fixtures");
-const SPEC_DIR = path.join(FIXTURES, "spec-dir");
+const SPEC_DIR = path.join(FIXTURES, "repo", "e2e", "docker-stack", "api");
 
 const fixtureReport = (): CoverageReport =>
   JSON.parse(
