@@ -31,7 +31,7 @@
     "@monaco-editor/react": "4.7.0",
     "@sentry/react": "10.56.0",
     "@tanstack/react-query": "5.101.0",
-    "axios": "1.17.0",
+    "axios": "1.18.0",
     "classnames": "2.5.1",
     "downshift": "9.3.4",
     "formik": "2.4.9",
