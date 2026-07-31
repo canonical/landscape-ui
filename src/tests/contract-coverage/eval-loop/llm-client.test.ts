@@ -164,13 +164,23 @@ describe("createLlmClientFromEnv", () => {
   it("requires LLM_API_KEY with an actionable message", () => {
     expect(() => {
       createLlmClientFromEnv({});
-    }).toThrow(/LLM_API_KEY.*models:read/);
+    }).toThrow(/LLM_API_KEY.*OpenRouter/);
   });
 
-  it("defaults to the GitHub Models endpoint and gpt-4o-mini", () => {
+  it("defaults to the OpenRouter endpoint and gpt-4o-mini", () => {
     const envClient = createLlmClientFromEnv({ LLM_API_KEY: "k" });
-    expect(envClient.baseUrl).toBe("https://models.github.ai/inference");
-    expect(envClient.model).toBe("gpt-4o-mini");
+    expect(envClient.baseUrl).toBe("https://openrouter.ai/api/v1");
+    expect(envClient.model).toBe("openai/gpt-4o-mini");
+  });
+
+  it("treats empty-string env vars as unset (GitHub Actions behavior)", () => {
+    const envClient = createLlmClientFromEnv({
+      LLM_API_KEY: "k",
+      LLM_BASE_URL: "",
+      LLM_MODEL: "",
+    });
+    expect(envClient.baseUrl).toBe("https://openrouter.ai/api/v1");
+    expect(envClient.model).toBe("openai/gpt-4o-mini");
   });
 
   it("honors LLM_BASE_URL and LLM_MODEL overrides", () => {
