@@ -1,15 +1,20 @@
+import { API_URL } from "@/constants";
 import { renderWithProviders } from "@/tests/render";
 import { describe, it, expect } from "vitest";
 import LocalRepositoriesList from "./LocalRepositoriesList";
 import { repositories } from "@/tests/mocks/localRepositories";
+import { features } from "@/tests/mocks/features";
+import server from "@/tests/server";
+import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import { getAllByRole, screen } from "@testing-library/react";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 
 describe("LocalRepositoriesList", () => {
   const user = userEvent.setup();
 
-  it("renders table with column headers and pagination", () => {
+  it("renders table with column headers and pagination", async () => {
     renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
 
     expect(
@@ -19,7 +24,7 @@ describe("LocalRepositoriesList", () => {
       screen.getByRole("columnheader", { name: "Status" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "Last import" }),
+      await screen.findByRole("columnheader", { name: "Last import" }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "Packages" }),
@@ -34,6 +39,33 @@ describe("LocalRepositoriesList", () => {
     expect(screen.getByText(/showing.*of/i)).toBeInTheDocument();
   });
 
+  it("hides the Last import column when the feature flag is disabled", async () => {
+    server.use(
+      http.get(`${API_URL}features`, () =>
+        HttpResponse.json(
+          generatePaginatedResponse({
+            data: features.map((feature) =>
+              feature.key === "local-repository-last-import"
+                ? { ...feature, enabled: false }
+                : feature,
+            ),
+            offset: 0,
+            limit: 20,
+          }),
+        ),
+      ),
+    );
+
+    renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
+
+    expect(
+      await screen.findByRole("columnheader", { name: "Packages" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "Last import" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("renders repositories as buttons", () => {
     renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
 
@@ -44,10 +76,10 @@ describe("LocalRepositoriesList", () => {
     }
   });
 
-  it("renders last import dates", () => {
+  it("renders last import dates", async () => {
     renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
 
-    expect(screen.getAllByText(/Jun \d{2}, 2024/)).toHaveLength(4);
+    expect(await screen.findAllByText(/Jun \d{2}, 2024/)).toHaveLength(4);
     expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 

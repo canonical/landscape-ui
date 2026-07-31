@@ -113,4 +113,14 @@ export const features: Feature[] = [
       configuration: true,
     },
   },
+  {
+    name: "Local Repository Last Import",
+    description: "Show the last import date and time for local repositories.",
+    key: "local-repository-last-import",
+    database_key: 16,
+    enabled: true,
+    details: {
+      configuration: true,
+    },
+  },
 ];
