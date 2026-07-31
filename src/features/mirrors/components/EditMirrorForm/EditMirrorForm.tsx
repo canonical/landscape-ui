@@ -53,6 +53,8 @@ const EditMirrorForm: FC = () => {
           displayName: values.name,
           archiveRoot: mirror.archiveRoot,
           components: mirror.components,
+          architectures: mirror.architectures,
+          distribution: mirror.distribution,
           preserveSignatures: values.preserveSignatures,
           downloadUdebs: values.downloadUdebPackages,
           downloadSources: values.downloadSources,
@@ -125,7 +127,7 @@ const EditMirrorForm: FC = () => {
               />
               <ReadOnlyField
                 label="Architectures"
-                value={mirror.architectures?.join(", ")}
+                value={mirror.architectures.join(", ")}
                 tooltipMessage="You can’t change the architectures after the mirror is created."
               />
               <div className={classes.wrapper}>
