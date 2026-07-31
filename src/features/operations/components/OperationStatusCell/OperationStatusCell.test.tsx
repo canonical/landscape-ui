@@ -64,10 +64,7 @@ describe("OperationStatusCell", () => {
     renderWithProviders(
       <OperationProvider operationNames={[knownName, unknownName]}>
         <OperationStatusCell operationName={knownName} type={"publication"} />
-        <OperationStatusCell
-          operationName={unknownName}
-          type={"publication"}
-        />
+        <OperationStatusCell operationName={unknownName} type={"publication"} />
       </OperationProvider>,
     );
 
