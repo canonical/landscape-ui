@@ -13,7 +13,7 @@ import { useGetPublicationTargets } from "@/features/publication-targets";
 const PublishMirrorForm: FC = () => {
   const { name } = usePageParams();
 
-  const mirror = useGetMirror(name).data.data;
+  const { mirror, isGettingMirror } = useGetMirror(name);
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
   const { publications, isGettingPublications } =
@@ -21,8 +21,11 @@ const PublishMirrorForm: FC = () => {
 
   const { value: useNewPublication, toggle } = useBoolean(true);
 
-  if (isGettingPublicationTargets || isGettingPublications) {
+  if (isGettingMirror || isGettingPublicationTargets || isGettingPublications) {
     return <SidePanel.LoadingState />;
+  }
+  if (!mirror) {
+    throw new Error(`Mirror ${name} was not found`);
   }
 
   return (

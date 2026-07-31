@@ -137,18 +137,21 @@ const AddMirrorForm: FC = () => {
 
         notify.success({
           title: `You have successfully added ${values.name}`,
-          message:
-            "The mirror has been created and is now available to update.",
-          actions: [
-            {
-              label: "Update mirror",
-              onClick: createPageParamsSetter({
-                sidePath: ["view"],
-                name: newMirror.name,
-                updateModal: true,
-              }),
-            },
-          ],
+          message: values.preserveSignatures
+            ? "The mirror has been created. Signature-preserving mirrors are updated only during publication."
+            : "The mirror has been created and is now available to update.",
+          actions: values.preserveSignatures
+            ? undefined
+            : [
+                {
+                  label: "Update mirror",
+                  onClick: createPageParamsSetter({
+                    sidePath: ["view"],
+                    name: newMirror.name,
+                    updateModal: true,
+                  }),
+                },
+              ],
         });
       } catch (error) {
         debug(error);
@@ -318,6 +321,7 @@ const AddMirrorForm: FC = () => {
               )}
               <CheckboxInputWithHelp
                 label="Preserve upstream signing key"
+                help="Signature-preserving mirrors do not support independent updates. They update only during publication."
                 tooltipMessage={SETTINGS_HELP_TEXT.preserveSignatures}
                 {...formik.getFieldProps("preserveSignatures")}
                 checked={formik.values.preserveSignatures}

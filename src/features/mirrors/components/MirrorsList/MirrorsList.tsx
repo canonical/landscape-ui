@@ -78,8 +78,9 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       {
         Header: "Distribution",
         className: classes.distribution,
-        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
-          mirror.distribution ?? <NoData />,
+        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => (
+          <>{mirror.distribution}</>
+        ),
       },
       {
         Header: "Packages",
@@ -110,6 +111,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
               <MirrorActions
                 mirrorDisplayName={mirror.displayName}
                 mirrorName={mirror.name}
+                preserveSignatures={mirror.preserveSignatures}
                 operationName={mirror.lastOperation}
               />
             </Suspense>

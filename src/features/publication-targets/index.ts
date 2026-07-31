@@ -4,6 +4,7 @@ export { default as PublicationTargetAddButton } from "./components/PublicationT
 export { default as PublicationTargetList } from "./components/PublicationTargetList";
 export { default as TargetDetails } from "./components/TargetDetails/TargetDetails";
 export {
+  useGetPublicationTarget,
   useGetPublicationTargets,
   useGetPublicationsByTarget,
   useCreatePublicationTarget,
