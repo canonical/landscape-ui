@@ -1,11 +1,16 @@
 import { expectLoadingState, setScreenSize } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import LocalRepositoriesPage from "./LocalRepositoriesPage";
 import userEvent from "@testing-library/user-event";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 
 describe("LocalRepositoriesPage", () => {
+  afterEach(() => {
+    setEndpointStatus({ path: "locals", status: "default" });
+  });
+
   it("renders the title and add button", async () => {
     renderWithProviders(<LocalRepositoriesPage />);
 
@@ -112,5 +117,39 @@ describe("LocalRepositoriesPage", () => {
         name: /copy/i,
       }),
     ).toBeInTheDocument();
+  });
+
+  it("shows an error state when fetching local repository details fails", async () => {
+    setEndpointStatus({ path: "locals", status: "error" });
+
+    renderWithProviders(
+      <LocalRepositoriesPage />,
+      undefined,
+      "/?sidePath=view&name=aaaa-bbbb-cccc",
+    );
+
+    expect(
+      await within(screen.getByLabelText("Side panel")).findByText(
+        "Something went wrong",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(screen.getByLabelText("Side panel")).queryByRole("status"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows an error state when the local repository response is empty", async () => {
+    renderWithProviders(
+      <LocalRepositoriesPage />,
+      undefined,
+      "/?sidePath=view&name=badId",
+    );
+
+    const sidePanel = await screen.findByLabelText("Side panel");
+
+    expect(
+      await within(sidePanel).findByText("Something went wrong"),
+    ).toBeInTheDocument();
+    expect(within(sidePanel).queryByRole("status")).not.toBeInTheDocument();
   });
 });

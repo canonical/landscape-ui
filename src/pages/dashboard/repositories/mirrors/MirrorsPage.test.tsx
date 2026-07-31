@@ -131,6 +131,25 @@ describe("MirrorsPage", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows an error state when the mirror is not found", async () => {
+    setScreenSize("xxl");
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorsPage />
+      </Suspense>,
+      undefined,
+      "/?sidePath=view&name=mirrors/bad-id",
+    );
+
+    const sidePanel = await screen.findByLabelText("Side panel");
+
+    expect(
+      await within(sidePanel).findByText("Something went wrong"),
+    ).toBeInTheDocument();
+    expect(within(sidePanel).queryByRole("status")).not.toBeInTheDocument();
+  });
+
   it("renders the publish form side panel when sidePath=publish is in the URL", async () => {
     renderWithProviders(
       <Suspense fallback={<LoadingState />}>
