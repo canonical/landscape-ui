@@ -134,8 +134,8 @@ export function createOpenAiCompatibleClient(
   };
 }
 
-const DEFAULT_BASE_URL = "https://models.github.ai/inference";
-const DEFAULT_MODEL = "gpt-4o-mini";
+const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
+const DEFAULT_MODEL = "openai/gpt-4o-mini";
 
 /** Build a client from environment variables (LLM_API_KEY required). */
 export function createLlmClientFromEnv(
@@ -144,13 +144,14 @@ export function createLlmClientFromEnv(
   const apiKey = env.LLM_API_KEY;
   if (!apiKey) {
     throw new Error(
-      "Set LLM_API_KEY (a PAT with models:read) to run the eval loop",
+      "Set LLM_API_KEY (an OpenRouter API key, or any OpenAI-compatible provider key) to run the eval loop",
     );
   }
   return createOpenAiCompatibleClient({
     apiKey,
-    baseUrl: env.LLM_BASE_URL ?? DEFAULT_BASE_URL,
-    model: env.LLM_MODEL ?? DEFAULT_MODEL,
+    // `||` not `??`: GitHub Actions passes empty strings for unset vars.
+    baseUrl: env.LLM_BASE_URL || DEFAULT_BASE_URL,
+    model: env.LLM_MODEL || DEFAULT_MODEL,
   });
 }
 
