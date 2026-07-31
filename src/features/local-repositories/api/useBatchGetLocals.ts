@@ -17,7 +17,7 @@ export const useBatchGetLocals = (names: string[]) => {
     queryFn: async () => {
       const response = await authFetchDebArchive.post<BatchGetLocalsResponse>(
         "locals:batchGet",
-        { names, return_partial_success: true },
+        { names, returnPartialSuccess: true },
       );
 
       const lookup: Record<string, string> = {};

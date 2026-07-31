@@ -10,7 +10,7 @@ export const useBatchGetPublicationTargets = (names: string[]) => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isLoading } = useQuery<
-    Record<string, string>,
+    { lookup: Record<string, string>; unreachable: string[] },
     AxiosError<PublicationTargetServiceBatchGetPublicationTargetsError>
   >({
     queryKey: ["publicationTargets", "batch", names],
@@ -18,23 +18,29 @@ export const useBatchGetPublicationTargets = (names: string[]) => {
       const response =
         await authFetchDebArchive.post<BatchGetPublicationTargetsResponse>(
           "publicationTargets:batchGet",
-          { names, return_partial_success: true },
+          { names, returnPartialSuccess: true },
         );
 
       const lookup: Record<string, string> = {};
+      const unreachable = response.data.unreachable ?? [];
+
       for (const target of response.data.publicationTargets ?? []) {
         if (target.name) {
           lookup[target.name] = target.displayName;
         }
       }
 
-      return lookup;
+      return {
+        lookup,
+        unreachable,
+      };
     },
     enabled: names.length > 0,
   });
 
   return {
-    publicationTargetDisplayNames: data ?? {},
+    publicationTargetDisplayNames: data?.lookup ?? {},
+    unreachablePublicationTargets: data?.unreachable ?? [],
     isLoadingPublicationTargetDisplayNames: isLoading,
   };
 };

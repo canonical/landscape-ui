@@ -40,21 +40,38 @@ const getPublicationTargetsResponse = (requestUrl: string) => {
 
 const getBatchPublicationTargetsResponse = async (
   request: Request,
-): Promise<StrictResponse<BatchGetPublicationTargetsResponse>> => {
+): Promise<
+  StrictResponse<
+    BatchGetPublicationTargetsResponse | { code: number; message: string }
+  >
+> => {
   const body = (await request.json()) as {
     names?: string[];
-    return_partial_success?: boolean;
+    returnPartialSuccess?: boolean;
   };
   const requestedNames = body.names ?? [];
   const matched = publicationTargets.filter(({ name }) =>
     name ? requestedNames.includes(name) : false,
   );
   const matchedNames = new Set(matched.map(({ name }) => name));
-  const unreachable = body.return_partial_success
-    ? requestedNames.filter((name) => !matchedNames.has(name))
-    : [];
+  const unreachable = requestedNames.filter((name) => !matchedNames.has(name));
 
-  return HttpResponse.json({ publicationTargets: matched, unreachable });
+  // Mirrors the real API: an unreachable name fails the whole batch unless
+  // the caller opts into partial success.
+  if (unreachable.length > 0 && !body.returnPartialSuccess) {
+    return HttpResponse.json(
+      {
+        code: 5,
+        message: `The following publication targets could not be found: ${unreachable.join(", ")}`,
+      },
+      { status: 404 },
+    );
+  }
+
+  return HttpResponse.json({
+    publicationTargets: matched,
+    ...(unreachable.length > 0 ? { unreachable } : {}),
+  });
 };
 
 export default [
