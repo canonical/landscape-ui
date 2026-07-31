@@ -49,7 +49,7 @@ Separate from code coverage, the repo tracks **API contract coverage**: which ba
 
 Design rules for this area: gap detection must stay deterministic (scripts, not LLM); the LLM only elaborates already-computed gaps; no new npm dependencies; providers must be swappable via environment variables alone.
 
-Status: collection + LLM client + prompt builder are implemented and unit-tested. The orchestrator, markdown renderer, pnpm scripts, and the scheduled GitHub Actions workflow are planned next (see the eval-loop work plan).
+Status: collection, LLM client, prompt builder, renderer, and the orchestrator are implemented and unit-tested (`eval:collect` / `eval:suggest` / `eval:full` pnpm scripts are wired). The scheduled GitHub Actions workflow is the remaining piece (see the eval-loop work plan).
 
 ## Scope Of Coverage Numbers
 
