@@ -54,7 +54,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     await user.type(input, "https://example.com/packages");
 
     const button = screen.getByRole("button", { name: /fetch packages/i });
-    expect(button).not.toHaveAttribute("aria-disabled", "true");
+    expect(button).not.toHaveAttribute("aria-disabled");
   });
 
   it("shows validation result with packages after successful fetch", async () => {
@@ -73,7 +73,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const importButton = screen.getByRole("button", {
       name: /import 2 packages/i,
     });
-    expect(importButton).not.toHaveAttribute("aria-disabled", "true");
+    expect(importButton).not.toHaveAttribute("aria-disabled");
   });
 
   it("shows caution notification when validation times out", async () => {
@@ -94,7 +94,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const importButton = screen.getByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).not.toHaveAttribute("aria-disabled", "true");
+    expect(importButton).not.toHaveAttribute("aria-disabled");
   });
 
   it("allows import after validation times out", async () => {
