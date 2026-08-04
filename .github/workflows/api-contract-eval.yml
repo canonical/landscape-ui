@@ -74,6 +74,15 @@ jobs:
       - name: Run coverage (produces msw-contract-coverage.json)
         env:
           NODE_OPTIONS: --max_old_space_size=4096
+          VITE_API_URL: ${{ vars.API_URL }}
+          VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
+          VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE }}
+          VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
+          VITE_APP_TITLE: Landscape
+          VITE_ROOT_PATH: /new_dashboard/
+          VITE_APP_VERSION: "26.04.0.12"
+          VITE_APP_COMMIT: ${{ github.sha }}
+          VITE_SELF_HOSTED_ENV: true
         run: pnpm coverage:full
 
       # Fail-fast validation gate: malformed/missing report exits here.
