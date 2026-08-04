@@ -76,9 +76,15 @@ function renderSuggestionMarkdown(
     "",
     "## Proposed spec",
     "",
-    "```ts",
-    suggestion.spec,
-    "```",
+    ...(() => {
+      const fence = "`".repeat(
+        Math.max(
+          3,
+          ...(suggestion.spec.match(/`+/g) ?? []).map((m) => m.length + 1),
+        ),
+      );
+      return [`${fence}ts`, suggestion.spec, fence];
+    })(),
     "",
     "## How to apply",
     "",
@@ -123,6 +129,13 @@ export function renderStepSummary(
   response: SuggestionsResponse,
   gaps: GapEntry[],
 ): string {
+  const escapeCell = (value: string): string =>
+    value
+      .replace(/\\/g, "\\\\")
+      .replace(/\|/g, "\\|")
+      .replace(/`/g, "\\`")
+      .replace(/\r?\n/g, " ");
+
   const lines = [
     "## API contract eval — top suggestions",
     "",
@@ -130,7 +143,9 @@ export function renderStepSummary(
     "| --- | --- | --- | --- |",
     ...response.suggestions.map((suggestion, index) => {
       const gap = gaps.find((entry) => entry.routeId === suggestion.route);
-      return `| ${index + 1} | \`${suggestion.route}\` | ${suggestion.title} | ${gap?.totalHits ?? "n/a"} |`;
+      const route = escapeCell(suggestion.route);
+      const title = escapeCell(suggestion.title);
+      return `| ${index + 1} | \`${route}\` | ${title} | ${gap?.totalHits ?? "n/a"} |`;
     }),
     "",
     "Full details in the `api-contract-eval-report` workflow artifact.",
