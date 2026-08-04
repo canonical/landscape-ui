@@ -4,7 +4,6 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
-import { createPortal } from "react-dom";
 import useDetachToken from "../../api/useDetachToken";
 
 interface DetachTokenModalProps {
@@ -84,7 +83,7 @@ const DetachTokenModal: FC<DetachTokenModalProps> = ({
     </p>
   );
 
-  return createPortal(
+  return (
     <TextConfirmationModal
       isOpen={isOpen}
       title="Detach Ubuntu Pro token"
@@ -95,10 +94,10 @@ const DetachTokenModal: FC<DetachTokenModalProps> = ({
       confirmButtonLoading={isDetachingToken}
       confirmButtonDisabled={isDetachingToken}
       confirmationText="detach ubuntu pro token"
+      renderInPortal
     >
       {modalMessage}
-    </TextConfirmationModal>,
-    document.body,
+    </TextConfirmationModal>
   );
 };
 

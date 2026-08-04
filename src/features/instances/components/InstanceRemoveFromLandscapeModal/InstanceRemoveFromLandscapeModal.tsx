@@ -65,6 +65,7 @@ const InstanceRemoveFromLandscapeModal: FC<
       confirmButtonLoading={isRemovingInstancesFromLandscape}
       confirmationText={`remove ${label}`}
       onConfirm={removeFromLandscape}
+      renderInPortal
     >
       <p>
         {pluralize(instances.length, [

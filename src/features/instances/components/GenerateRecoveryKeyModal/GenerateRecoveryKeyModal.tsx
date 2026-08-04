@@ -57,6 +57,7 @@ const GenerateRecoveryKeyModal: FC<GenerateRecoveryKeyModalProps> = ({
       confirmButtonDisabled={isGeneratingRecoveryKey}
       confirmButtonLoading={isGeneratingRecoveryKey}
       onConfirm={handleGenerateRecoveryKey}
+      renderInPortal
     >
       <p>
         This key allows you to unlock and access encrypted data on instance if

@@ -43,6 +43,7 @@ const ActivateEmployeeModal: FC<ActivateEmployeeModalProps> = ({
       close={handleClose}
       confirmButtonDisabled={isPending}
       confirmButtonLoading={isPending}
+      renderInPortal
     >
       <p>
         This will allow {employee.name} to log in to Landscape and register new

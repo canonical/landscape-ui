@@ -208,6 +208,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
         confirmButtonLoading={isArchivingScript}
         onConfirm={onConfirmArchive}
         close={closeModal}
+        renderInPortal
       >
         <>{archiveModalBody}</>
       </TextConfirmationModal>
@@ -222,6 +223,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
         confirmButtonLoading={isRemoving}
         onConfirm={onConfirmDelete}
         close={closeDeleteModal}
+        renderInPortal
       >
         {deleteModalBody}
       </TextConfirmationModal>
