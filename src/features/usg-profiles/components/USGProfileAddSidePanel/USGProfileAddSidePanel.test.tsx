@@ -1,4 +1,6 @@
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
@@ -11,6 +13,28 @@ describe("USGProfileAddSidePanel", () => {
     await user.type(screen.getByRole("textbox", { name: "Title" }), "Name");
     await user.click(await screen.findByRole("button", { name: "Next" }));
     expect(screen.getByText("Step 2 of 5")).toBeInTheDocument();
+  };
+
+  const goToStep3 = async (mode = "Audit only") => {
+    await goToStep2();
+
+    await user.click(screen.getByLabelText("Base profile"));
+    await user.click(await screen.findByText("CIS Level 1 Workstation"));
+    await user.click(screen.getByLabelText("Mode"));
+    await user.click(await screen.findByText(mode));
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+  };
+
+  const goToConfirmationStep = async () => {
+    await goToStep3();
+
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    expect(screen.getByText("Step 4 of 5")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    expect(screen.getByText("Step 5 of 5")).toBeInTheDocument();
   };
 
   it("should validate current step and block next when title is empty", async () => {
@@ -82,17 +106,7 @@ describe("USGProfileAddSidePanel", () => {
       <USGProfileAddSidePanel showRetentionNotification={() => undefined} />,
     );
 
-    await goToStep2();
-
-    await user.click(screen.getByLabelText("Base profile"));
-    await user.click(await screen.findByText("CIS Level 1 Workstation"));
-
-    await user.click(screen.getByLabelText("Mode"));
-    await user.click(await screen.findByText("Fix, restart, audit"));
-
-    await user.click(screen.getByRole("button", { name: "Next" }));
-
-    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+    await goToStep3("Fix, restart, audit");
 
     await user.click(screen.getByRole("radio", { name: "Delayed" }));
 
@@ -114,17 +128,7 @@ describe("USGProfileAddSidePanel", () => {
       <USGProfileAddSidePanel showRetentionNotification={() => undefined} />,
     );
 
-    await goToStep2();
-
-    await user.click(screen.getByLabelText("Base profile"));
-    await user.click(await screen.findByText("CIS Level 1 Workstation"));
-
-    await user.click(screen.getByLabelText("Mode"));
-    await user.click(await screen.findByText("Audit only"));
-
-    await user.click(screen.getByRole("button", { name: "Next" }));
-
-    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+    await goToStep3();
 
     await user.selectOptions(screen.getByLabelText("Schedule"), "recurring");
 
@@ -148,17 +152,7 @@ describe("USGProfileAddSidePanel", () => {
       <USGProfileAddSidePanel showRetentionNotification={() => undefined} />,
     );
 
-    await goToStep2();
-
-    await user.click(screen.getByLabelText("Base profile"));
-    await user.click(await screen.findByText("CIS Level 1 Workstation"));
-
-    await user.click(screen.getByLabelText("Mode"));
-    await user.click(await screen.findByText("Audit only"));
-
-    await user.click(screen.getByRole("button", { name: "Next" }));
-
-    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+    await goToStep3();
 
     await user.selectOptions(screen.getByLabelText("Schedule"), "recurring");
 
@@ -182,17 +176,7 @@ describe("USGProfileAddSidePanel", () => {
       <USGProfileAddSidePanel showRetentionNotification={() => undefined} />,
     );
 
-    await goToStep2();
-
-    await user.click(screen.getByLabelText("Base profile"));
-    await user.click(await screen.findByText("CIS Level 1 Workstation"));
-
-    await user.click(screen.getByLabelText("Mode"));
-    await user.click(await screen.findByText("Audit only"));
-
-    await user.click(screen.getByRole("button", { name: "Next" }));
-
-    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+    await goToStep3();
 
     await user.selectOptions(screen.getByLabelText("Schedule"), "recurring");
 
@@ -209,5 +193,39 @@ describe("USGProfileAddSidePanel", () => {
     expect(
       screen.queryByText(/choose where this profile will apply/i),
     ).not.toBeInTheDocument();
+  });
+
+  it("should show an error notification when submit fails", async () => {
+    setEndpointStatus({ path: "usg-profiles", status: "error" });
+
+    renderWithProviders(
+      <USGProfileAddSidePanel showRetentionNotification={() => undefined} />,
+    );
+
+    await goToConfirmationStep();
+
+    await user.click(screen.getByRole("button", { name: "Add" }));
+
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
+  });
+
+  it("should show a success notification when submit succeeds", async () => {
+    const showNotification = vi.fn();
+    renderWithProviders(
+      <USGProfileAddSidePanel showRetentionNotification={showNotification} />,
+    );
+
+    await goToConfirmationStep();
+
+    await user.click(screen.getByRole("button", { name: "Add" }));
+
+    expect(
+      await screen.findByText(
+        "You have successfully created Name USG profile.",
+      ),
+    ).toBeInTheDocument();
+    expect(showNotification).toHaveBeenCalled();
   });
 });
