@@ -95,9 +95,15 @@ export async function run(options: RunOptions): Promise<RunResult> {
     const suggestionsDir = path.join(options.outDir, "suggestions");
     fs.mkdirSync(suggestionsDir, { recursive: true });
     const rawFallbackPath = path.join(suggestionsDir, RAW_FALLBACK_NAME);
+    const fence = "`".repeat(
+      Math.max(
+        3,
+        ...(completion.text.match(/`+/g) ?? []).map((m) => m.length + 1),
+      ),
+    );
     fs.writeFileSync(
       rawFallbackPath,
-      `# Unparseable LLM response\n\nModel: ${completion.model}\n\n\`\`\`\n${completion.text}\n\`\`\`\n`,
+      `# Unparseable LLM response\n\nModel: ${completion.model}\n\n${fence}\n${completion.text}\n${fence}\n`,
       "utf-8",
     );
     return {
