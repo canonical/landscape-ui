@@ -248,6 +248,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
           onConfirm={handleConfirmOverride}
           close={hideOverrideWarningModal}
           confirmButtonProps={{ type: "button" }}
+          renderInPortal
         >
           <p>
             The autoinstall file you submitted overrides the following fields:

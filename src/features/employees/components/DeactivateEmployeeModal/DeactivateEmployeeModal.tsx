@@ -105,6 +105,7 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
         isDisabledConfirmationButton(formik.values) || isDeactivating
       }
       confirmButtonLoading={isDeactivating}
+      renderInPortal
     >
       <Form
         noValidate

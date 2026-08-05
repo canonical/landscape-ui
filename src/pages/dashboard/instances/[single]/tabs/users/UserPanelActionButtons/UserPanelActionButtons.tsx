@@ -212,6 +212,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           confirmButtonLoading={isLocking}
           confirmButtonDisabled={isLocking}
           onConfirm={lockUser}
+          renderInPortal
         >
           {renderModalBody({
             user: user,
@@ -233,6 +234,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           confirmButtonLoading={isUnlocking}
           confirmButtonDisabled={isUnlocking}
           onConfirm={unlockUser}
+          renderInPortal
         >
           {renderModalBody({
             user: user,
@@ -252,6 +254,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           confirmButtonLoading={isRemoving}
           confirmButtonDisabled={isRemoving}
           onConfirm={removeUser}
+          renderInPortal
         >
           <div>
             <p className="u-no-margin--bottom">
