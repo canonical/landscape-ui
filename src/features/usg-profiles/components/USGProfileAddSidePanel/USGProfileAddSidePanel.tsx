@@ -69,7 +69,7 @@ const USGProfileAddSidePanel: FC<USGProfileAddSidePanelProps> = ({
       unit_of_time: "DAILY",
     },
     mutate: async (values) => {
-      addUsgProfile({
+      await addUsgProfile({
         access_group: values.access_group,
         all_computers: values.all_computers,
         benchmark: values.benchmark,

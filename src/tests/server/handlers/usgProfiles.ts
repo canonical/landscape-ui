@@ -4,7 +4,11 @@ import type { AddUSGProfileParams, USGProfile } from "@/features/usg-profiles";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { usgProfiles } from "@/tests/mocks/usgProfiles";
 import { http, HttpResponse } from "msw";
-import { generatePaginatedResponse } from "./_helpers";
+import {
+  generatePaginatedResponse,
+  shouldApplyEndpointStatus,
+} from "./_helpers";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get(`${API_URL}usg-profiles`, ({ request }) => {
@@ -45,7 +49,7 @@ export default [
     );
   }),
 
-  http.post<never, AddUSGProfileParams, USGProfile>(
+  http.post<never, AddUSGProfileParams>(
     `${API_URL}usg-profiles`,
     async ({ request }) => {
       const {
@@ -57,6 +61,14 @@ export default [
         all_computers = false,
         tags = [],
       } = await request.json();
+
+      if (shouldApplyEndpointStatus("usg-profiles")) {
+        const endpointStatus = getEndpointStatus();
+
+        if (endpointStatus.status === "error") {
+          return createEndpointStatusError();
+        }
+      }
 
       return HttpResponse.json<USGProfile>({
         access_group,
