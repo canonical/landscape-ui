@@ -157,7 +157,7 @@ export default [
     const limit = Number(url.searchParams.get("limit")) || 1;
 
     if (shouldApplyEndpointStatus("computers")) {
-      const { status } = getEndpointStatus("computers");
+      const { status, response } = getEndpointStatus("computers");
       if (status === "error") {
         throw createEndpointStatusError();
       }
@@ -170,6 +170,10 @@ export default [
             offset,
           }),
         );
+      }
+
+      if (status === "variant") {
+        return HttpResponse.json(response);
       }
     }
 

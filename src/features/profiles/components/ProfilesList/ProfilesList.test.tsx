@@ -8,6 +8,7 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { usgProfiles as usgProfiles } from "@/tests/mocks/usgProfiles";
 import { capitalize } from "@/utils/_helpers";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
+import { USG_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "@/features/usg-profiles";
 
 describe("ProfilesList", () => {
   it.each([
@@ -172,6 +173,24 @@ describe("ProfilesList", () => {
         }),
       ).toBeInTheDocument();
     }
+  });
+
+  it("renders 'Over limit' status for usg profile with too many associated instances", async () => {
+    const overLimitProfile = usgProfiles.find(
+      (profile) =>
+        profile.associated_instances > USG_PROFILE_ASSOCIATED_INSTANCES_LIMIT,
+    );
+
+    assert(overLimitProfile, "Expected an over-limit usg profile in mock data");
+
+    renderWithProviders(
+      <ProfilesList profiles={[overLimitProfile]} type={ProfileTypes.usg} />,
+    );
+
+    const row = await screen.findByRole("row", {
+      name: (name) => name.includes(overLimitProfile.title),
+    });
+    expect(within(row).getByText("Over limit")).toBeInTheDocument();
   });
 
   it("renders rows with wsl profile data", async () => {
