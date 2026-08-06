@@ -1,14 +1,19 @@
 import { Icon, ICONS } from "@canonical/react-components";
-import type { FC } from "react";
-import classes from "./LoadingState.module.scss";
 import classNames from "classnames";
+import type { FC, Ref } from "react";
+import classes from "./LoadingState.module.scss";
 
 interface LoadingStateProps {
   readonly centerOnScreen?: boolean;
   readonly inline?: boolean;
+  readonly ref?: Ref<HTMLDivElement>;
 }
 
-const LoadingState: FC<LoadingStateProps> = ({ centerOnScreen, inline }) => {
+const LoadingState: FC<LoadingStateProps> = ({
+  centerOnScreen,
+  inline,
+  ref,
+}) => {
   const spinningElement = (
     <>
       <span className="u-off-screen">Loading...</span>
@@ -21,7 +26,12 @@ const LoadingState: FC<LoadingStateProps> = ({ centerOnScreen, inline }) => {
   }
 
   return (
-    <div className={classNames({ [classes.root as string]: centerOnScreen })}>
+    <div
+      className={classNames({
+        [classes.root as string]: centerOnScreen,
+      })}
+      ref={ref}
+    >
       <div className="p-strip" role="status">
         <div className="u-align-text--center">{spinningElement}</div>
       </div>

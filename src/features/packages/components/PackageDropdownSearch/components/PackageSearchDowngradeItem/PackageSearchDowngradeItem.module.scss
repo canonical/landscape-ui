@@ -1,0 +1,38 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.topRow {
+  align-items: end;
+  border-bottom: 1px solid $colors--theme--border-default;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: $spv--large;
+  padding-bottom: $sph--small;
+}
+
+.row {
+  border-bottom: 1px solid $colors--theme--border-low-contrast;
+  gap: $spv--large;
+  margin-bottom: $spv--large;
+}
+
+.selectedContainer {
+  margin-top: $spv--medium;
+  padding: $spv--large $sph--large;
+}
+
+.downgrade {
+  align-items: center;
+  display: flex;
+  gap: $sph--small;
+  padding: $sph--large 0;
+
+  & > :last-child {
+    flex-grow: 1;
+  }
+}
+
+.availableVersion {
+  display: flex;
+  justify-content: space-between;
+}
