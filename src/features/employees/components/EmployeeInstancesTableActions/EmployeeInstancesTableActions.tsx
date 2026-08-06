@@ -131,6 +131,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
         onConfirm={handleSanitizeInstance}
         close={handleCloseModal}
         confirmationText={`sanitize ${instance.title}`}
+        renderInPortal
       >
         <p>
           Sanitization will permanently delete the encryption keys for{" "}

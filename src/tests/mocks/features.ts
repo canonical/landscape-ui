@@ -102,4 +102,25 @@ export const features: Feature[] = [
       account: true,
     },
   },
+  {
+    name: "Instance Reports",
+    description:
+      "View a compliance and security report for a selection of instances from the instances list.",
+    key: "instance-reports",
+    database_key: 15,
+    enabled: true,
+    details: {
+      configuration: true,
+    },
+  },
+  {
+    name: "Local Repository Last Import",
+    description: "Show the last import date and time for local repositories.",
+    key: "local-repository-last-import",
+    database_key: 16,
+    enabled: true,
+    details: {
+      configuration: true,
+    },
+  },
 ];

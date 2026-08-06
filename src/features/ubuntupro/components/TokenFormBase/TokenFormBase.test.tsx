@@ -78,7 +78,7 @@ describe("TokenFormBase", () => {
     expect(screen.getByText(/custom warning message/i)).toBeInTheDocument();
   });
 
-  it("disables submit button when form is pristine", () => {
+  it("keeps submit enabled but shows validation error when token is missing", async () => {
     renderWithProviders(
       <TokenFormBase
         selectedInstances={selectedInstances}
@@ -93,7 +93,13 @@ describe("TokenFormBase", () => {
     );
 
     const submitButton = screen.getByRole("button", { name: /attach token/i });
-    expect(submitButton).toHaveAttribute("aria-disabled", "true");
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
+    await user.click(submitButton);
+
+    expect(await screen.findByText(/token is required/i)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/attach ubuntu pro token/i),
+    ).not.toBeInTheDocument();
   });
 
   it("enables submit button when token is entered", async () => {
@@ -114,8 +120,7 @@ describe("TokenFormBase", () => {
     const submitButton = screen.getByRole("button", { name: /attach token/i });
 
     await user.type(tokenInput, "test-token");
-    expect(submitButton).not.toHaveAttribute("aria-disabled");
-    expect(submitButton).toBeEnabled();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("shows confirmation modal when some selected instances are invalid", async () => {

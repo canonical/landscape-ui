@@ -6,6 +6,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { publications } from "@/tests/mocks/publications";
 import { mirrors } from "@/tests/mocks/mirrors";
+import * as useFetchDebArchiveHook from "@/hooks/useFetchDebArchive";
 
 describe("RemoveMirrorModal", () => {
   const close = vi.fn();
@@ -22,12 +23,21 @@ describe("RemoveMirrorModal", () => {
     close.mockReset();
   });
 
-  it("doesn't render while closed", () => {
+  it("doesn't render or fetch while closed", () => {
+    const getPublications = vi.fn();
+    const useFetchDebArchiveSpy = vi
+      .spyOn(useFetchDebArchiveHook, "default")
+      .mockReturnValue({ get: getPublications } as never);
+
     renderWithProviders(<RemoveMirrorModal {...props} isOpen={false} />);
 
     expect(
       screen.queryByText(`Remove ${props.mirrorDisplayName}`),
     ).not.toBeInTheDocument();
+
+    expect(getPublications).not.toHaveBeenCalled();
+
+    useFetchDebArchiveSpy.mockRestore();
   });
 
   it("renders a list of publications", async () => {

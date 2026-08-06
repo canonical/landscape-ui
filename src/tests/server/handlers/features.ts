@@ -9,6 +9,16 @@ import { createEndpointStatusNetworkError } from "./_constants";
 const matchesFeaturesPath = (endpointPath?: string) =>
   !endpointPath || endpointPath.includes("features");
 
+// Keep `instance-reports` present even when the features endpoint is mocked as
+// empty, so tests/dev scenarios that rely on `useAuth().isFeatureEnabled(...)`
+// can still opt into report-related UI when using MSW.
+//
+// To test a disabled state under MSW, override the features endpoint with
+// `server.use(...)` and return the feature as disabled.
+const alwaysEnabledFeatures = features.filter(
+  (feature) => feature.key === "instance-reports",
+);
+
 export default [
   http.get(`${API_URL}features`, () => {
     const endpointStatus = getEndpointStatus();
@@ -19,7 +29,7 @@ export default [
     ) {
       return HttpResponse.json(
         generatePaginatedResponse<Feature>({
-          data: [],
+          data: alwaysEnabledFeatures,
           offset: 0,
           limit: 20,
         }),

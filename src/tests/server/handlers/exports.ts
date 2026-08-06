@@ -40,9 +40,9 @@ const generateExportJobsResponse = (
 export default [
   http.get(`${API_URL}${EXPORTS_PATH}`, ({ request }) => {
     if (shouldApplyEndpointStatus(EXPORTS_PATH)) {
-      const { status, response } = getEndpointStatus();
-      if (status === "error") return createEndpointStatusNetworkError();
-      if (status === "loading") return new Promise(() => undefined);
+      const { status, response } = getEndpointStatus(EXPORTS_PATH);
+      if (status === "error") throw createEndpointStatusNetworkError();
+      if (status === "loading") return new Promise<never>(() => undefined);
       if (status === "empty") {
         return HttpResponse.json({ count: 0, results: [] });
       }
@@ -58,8 +58,9 @@ export default [
   }),
 
   http.get(`${API_URL}${EXPORTS_PATH}/:jobId`, ({ params }) => {
-    if (shouldApplyEndpointStatus(`${EXPORTS_PATH}/:jobId`)) {
-      const { status, response } = getEndpointStatus();
+    const endpointPath = `${EXPORTS_PATH}/:jobId`;
+    if (shouldApplyEndpointStatus(endpointPath)) {
+      const { status, response } = getEndpointStatus(endpointPath);
       if (status === "error") return createEndpointStatusError();
       if (
         status === "variant" &&
@@ -78,8 +79,9 @@ export default [
   }),
 
   http.post(`${API_URL}${EXPORTS_PATH}/:jobId/retry`, ({ params }) => {
-    if (shouldApplyEndpointStatus(`${EXPORTS_PATH}/:jobId/retry`)) {
-      const { status } = getEndpointStatus();
+    const endpointPath = `${EXPORTS_PATH}/:jobId/retry`;
+    if (shouldApplyEndpointStatus(endpointPath)) {
+      const { status } = getEndpointStatus(endpointPath);
       if (status === "error") return createEndpointStatusError();
     }
     const job = DEFAULT_EXPORT_JOBS.find((j) => String(j.id) === params.jobId);
@@ -96,25 +98,28 @@ export default [
   }),
 
   http.post(`${API_URL}${EXPORTS_PATH}/:jobId/cancel`, () => {
-    if (shouldApplyEndpointStatus(`${EXPORTS_PATH}/:jobId/cancel`)) {
-      const { status } = getEndpointStatus();
+    const endpointPath = `${EXPORTS_PATH}/:jobId/cancel`;
+    if (shouldApplyEndpointStatus(endpointPath)) {
+      const { status } = getEndpointStatus(endpointPath);
       if (status === "error") return createEndpointStatusError();
     }
     return new HttpResponse(null, { status: 204 });
   }),
 
   http.delete(`${API_URL}${EXPORTS_PATH}/:jobId`, () => {
-    if (shouldApplyEndpointStatus(`${EXPORTS_PATH}/:jobId`)) {
-      const { status } = getEndpointStatus();
+    const endpointPath = `${EXPORTS_PATH}/:jobId`;
+    if (shouldApplyEndpointStatus(endpointPath)) {
+      const { status } = getEndpointStatus(endpointPath);
       if (status === "error") return createEndpointStatusError();
     }
     return new HttpResponse(null, { status: 204 });
   }),
 
   http.get(`${API_URL}${EXPORTS_PATH}/:jobId/download`, () => {
-    if (shouldApplyEndpointStatus(`${EXPORTS_PATH}/:jobId/download`)) {
-      const { status } = getEndpointStatus();
-      if (status === "error") return createEndpointStatusNetworkError();
+    const endpointPath = `${EXPORTS_PATH}/:jobId/download`;
+    if (shouldApplyEndpointStatus(endpointPath)) {
+      const { status } = getEndpointStatus(endpointPath);
+      if (status === "error") throw createEndpointStatusNetworkError();
     }
     return new HttpResponse("tsv-data", {
       headers: {

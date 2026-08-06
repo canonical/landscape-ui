@@ -27,8 +27,10 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
   const { notify } = useNotify();
   const { closeSidePanel } = usePageParams();
 
-  const { publications, isGettingPublications } =
-    useGetPublicationsBySource(mirrorName);
+  const { publications, isGettingPublications } = useGetPublicationsBySource(
+    mirrorName,
+    { enabled: isOpen },
+  );
 
   const { mutateAsync: deleteMirror, isPending: isDeletingMirror } =
     useDeleteMirror(mirrorName);

@@ -1,9 +1,11 @@
+import FormSection from "@/components/form/FormSection";
 import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import {
   EditUserForm,
+  ThemeSwitcher,
   UserInfo,
   useUserGeneralSettings,
 } from "@/features/general-settings";
@@ -47,13 +49,21 @@ const GeneralSettings: FC = () => {
           )
         }
       />
-      <PageContent container="medium">
+      <PageContent container="medium" align="left">
         {isLoading && <LoadingState />}
-        {user?.has_password && userDetails && (
-          <EditUserForm userDetails={userDetails} />
-        )}
-        {!user?.has_password && userDetails && (
-          <UserInfo userDetails={userDetails} />
+        {userDetails && (
+          <>
+            <FormSection title="Account details">
+              {user?.has_password ? (
+                <EditUserForm userDetails={userDetails} />
+              ) : (
+                <UserInfo userDetails={userDetails} />
+              )}
+            </FormSection>
+            <FormSection title="Appearance">
+              <ThemeSwitcher />
+            </FormSection>
+          </>
         )}
       </PageContent>
     </PageMain>

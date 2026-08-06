@@ -7,5 +7,3 @@ export { default as AddLocalRepositorySidePanel } from "./components/AddLocalRep
 export { default as PublishLocalRepositorySidePanel } from "./components/PublishLocalRepositorySidePanel";
 export { default as EditLocalRepositorySidePanel } from "./components/EditLocalRepositorySidePanel";
 export { default as ImportRepositoryPackagesSidePanel } from "./components/ImportRepositoryPackagesSidePanel";
-
-export type { Local } from "./types";

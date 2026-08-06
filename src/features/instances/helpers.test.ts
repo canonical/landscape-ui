@@ -11,7 +11,6 @@ const offlineStatusOption = FILTERS.status.options.find(
 const contractOption = FILTERS.contractExpiryDays.options.find(
   (option) => option.value === "30",
 );
-
 assert(windowsOption);
 assert(offlineStatusOption);
 assert(contractOption);

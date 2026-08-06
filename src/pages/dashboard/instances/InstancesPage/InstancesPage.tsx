@@ -1,19 +1,53 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
+import SidePanel from "@/components/layout/SidePanel";
+import {
+  DETAILED_UPGRADES_VIEW_ENABLED,
+  REPORT_VIEW_ENABLED,
+} from "@/constants";
 import {
   getInstanceListParams,
   InstancesPageActions,
   useGetInstances,
 } from "@/features/instances";
+import { getExportTitle } from "@/features/exports";
+import { setSelectedInstanceIds } from "@/features/instances";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { useCallback, useMemo, useState, type FC } from "react";
+import {
+  lazy,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type FC,
+} from "react";
 import InstancesContainer from "../InstancesContainer";
 
+const InstancesExportForm = lazy(
+  async () => import("@/features/instances/components/InstancesExportForm"),
+);
+
+const ReportView = lazy(async () => {
+  const module = await import("@/features/reports");
+  return { default: module.ReportView };
+});
+
 const InstancesPage: FC = () => {
-  const { currentPage, pageSize, wsl, ...filters } = usePageParams();
+  useSetDynamicFilterValidation(
+    "sidePath",
+    REPORT_VIEW_ENABLED ? ["export", "report"] : ["export"],
+  );
+  const {
+    currentPage,
+    pageSize,
+    wsl,
+    sidePath,
+    popSidePathUntilClear,
+    ...filters
+  } = usePageParams();
   const instanceListParams = useMemo(
     () => getInstanceListParams({ filters, wsl }),
     [filters, wsl],
@@ -41,6 +75,12 @@ const InstancesPage: FC = () => {
     setSelectedInstances([]);
   }, []);
 
+  useEffect(() => {
+    if (!isAllSelected) {
+      setSelectedInstanceIds(selectedInstances.map(({ id }) => id));
+    }
+  }, [selectedInstances, isAllSelected]);
+
   return (
     <PageMain>
       <PageHeader
@@ -48,8 +88,6 @@ const InstancesPage: FC = () => {
         actions={[
           <InstancesPageActions
             key="actions"
-            exportParams={instanceListParams}
-            instanceCount={instancesCount}
             isGettingInstances={isGettingInstances}
             selectedInstances={selectedInstances}
             isAllSelected={isAllSelected}
@@ -69,6 +107,57 @@ const InstancesPage: FC = () => {
           onClearSelection={clearSelection}
         />
       </PageContent>
+      <SidePanel
+        isOpen={sidePath.join(",") === "export"}
+        onClose={popSidePathUntilClear}
+        size="medium"
+      >
+        {sidePath.join(",") === "export" && (
+          <SidePanel.Suspense key="export">
+            <SidePanel.Header>
+              {getExportTitle({
+                isAllSelected,
+                selectedCount: selectedInstances.length,
+                totalCount: instancesCount,
+                selectionForms: ["instance"],
+              })}
+            </SidePanel.Header>
+            <SidePanel.Content>
+              <InstancesExportForm
+                exportParams={instanceListParams}
+                selectedInstanceIds={
+                  isAllSelected
+                    ? undefined
+                    : selectedInstances.map(({ id }) => id)
+                }
+              />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
+      {REPORT_VIEW_ENABLED && (
+        <SidePanel
+          isOpen={sidePath[0] === "report"}
+          onClose={popSidePathUntilClear}
+          size="medium"
+        >
+          {sidePath[0] === "report" && (
+            <SidePanel.Suspense key="report">
+              <ReportView
+                selectedInstanceIds={
+                  isAllSelected
+                    ? undefined
+                    : selectedInstances.map(({ id }) => id)
+                }
+                isAllSelected={isAllSelected}
+                allSelectedQuery={
+                  isAllSelected ? (instanceListParams.query ?? "") : undefined
+                }
+              />
+            </SidePanel.Suspense>
+          )}
+        </SidePanel>
+      )}
     </PageMain>
   );
 };

@@ -1,10 +1,13 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { publications } from "@/tests/mocks/publications";
+import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PublicationsContainer from "./PublicationsContainer";
 import { expectLoadingState } from "@/tests/helpers";
+import { http, HttpResponse } from "msw";
+import { API_URL_DEB_ARCHIVE } from "@/constants";
 
 describe("PublicationsContainer", () => {
   it("renders publications list data", async () => {
@@ -50,13 +53,82 @@ describe("PublicationsContainer", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders button to add publication when there are no publications", async () => {
-    setEndpointStatus({ status: "empty", path: "publications" });
+  it("filters publications by publicationTargetId: prefix", async () => {
+    const targetId = "aaaaaaaa-0000-0000-0000-000000000001";
+
+    renderWithProviders(
+      <PublicationsContainer />,
+      undefined,
+      `/?query=publicationTargetId:${targetId}`,
+    );
+
+    expect(
+      await screen.findByRole("button", { name: publications[0].displayName }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: publications[1].displayName }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("filters publications by source: prefix", async () => {
+    renderWithProviders(
+      <PublicationsContainer />,
+      undefined,
+      "/?query=source:mirrors/ubuntu-archive-mirror",
+    );
+
+    expect(
+      await screen.findByRole("button", { name: publications[0].displayName }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: publications[1].displayName }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("filters publications by plain display name", async () => {
+    renderWithProviders(<PublicationsContainer />, undefined, "/?query=jammy");
+
+    expect(
+      await screen.findByRole("button", { name: publications[0].displayName }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: publications[1].displayName }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("handles batchGet response with nameless mirror entries", async () => {
+    server.use(
+      http.post(`${API_URL_DEB_ARCHIVE}mirrors:batchGet`, () =>
+        HttpResponse.json({ mirrors: [{ displayName: "no-name-mirror" }] }),
+      ),
+    );
 
     renderWithProviders(<PublicationsContainer />);
-    await screen.findByText(/you don.t have any publications yet/i);
+
+    await expectLoadingState();
+
     expect(
-      screen.getByRole("button", { name: /Add publication/ }),
+      await screen.findByRole("button", {
+        name: publications[0].displayName,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("handles batchGet response with no mirrors field", async () => {
+    server.use(
+      http.post(`${API_URL_DEB_ARCHIVE}mirrors:batchGet`, () =>
+        HttpResponse.json({}),
+      ),
+    );
+
+    renderWithProviders(<PublicationsContainer />);
+
+    await expectLoadingState();
+
+    expect(
+      await screen.findByRole("button", {
+        name: publications[0].displayName,
+      }),
     ).toBeInTheDocument();
   });
 });

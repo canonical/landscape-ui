@@ -196,6 +196,17 @@ const getDeepSuggestions = (
       }
       return [];
 
+    case "has":
+      if (depth === 1) {
+        return getSimpleEnumSuggestions(
+          ["upgrade-profile"],
+          "Feature",
+          range,
+          monaco,
+        );
+      }
+      return [];
+
     case "has-pro-management":
       if (depth === 1) {
         return getSimpleEnumSuggestions(BOOLEANS, "Boolean", range, monaco);

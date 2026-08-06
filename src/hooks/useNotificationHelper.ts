@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Notification, NotificationHelper } from "@/types/Notification";
 
 const DEFAULT_NOTIFICATION_TIMEOUT = 5000;
@@ -6,17 +6,25 @@ const DEFAULT_NOTIFICATION_TIMEOUT = 5000;
 const useNotificationHelper = (): NotificationHelper => {
   const [notification, setNotification] = useState<Notification | null>(null);
 
-  const setDeduplicated = (newValue: Notification | null) => {
-    if (newValue?.message !== notification?.message) {
-      setNotification(newValue);
+  useEffect(() => {
+    if (!notification?.duration) {
+      return;
     }
-  };
+
+    const timeoutId = setTimeout(() => {
+      setNotification(null);
+    }, notification.duration);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [notification]);
 
   return {
     notification,
 
     error: ({ message, error, actions, title }) => {
-      setDeduplicated({
+      setNotification({
         actions,
         error,
         message,
@@ -26,7 +34,7 @@ const useNotificationHelper = (): NotificationHelper => {
     },
 
     info: ({ message, actions, title }) => {
-      setDeduplicated({
+      setNotification({
         actions,
         message,
         title,
@@ -35,16 +43,13 @@ const useNotificationHelper = (): NotificationHelper => {
     },
 
     success: ({ message, actions, title }) => {
-      setDeduplicated({
+      setNotification({
         actions,
         message,
         title,
         type: "positive",
+        duration: DEFAULT_NOTIFICATION_TIMEOUT,
       });
-
-      setTimeout(() => {
-        setNotification(null);
-      }, DEFAULT_NOTIFICATION_TIMEOUT);
     },
 
     clear: () => {

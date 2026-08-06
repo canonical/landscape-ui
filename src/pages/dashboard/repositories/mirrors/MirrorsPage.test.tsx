@@ -32,7 +32,9 @@ describe("MirrorsPage", () => {
       await screen.findByRole("heading", { name: "Mirrors" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Ubuntu archive mirror")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Add mirror" })).toBeEnabled();
+    expect(
+      screen.getByRole("button", { name: "Add mirror" }),
+    ).not.toHaveAttribute("aria-disabled");
   });
 
   it("shows empty state when there are no mirrors", async () => {
@@ -129,6 +131,25 @@ describe("MirrorsPage", () => {
         name: /remove/i,
       }),
     ).toBeInTheDocument();
+  });
+
+  it("shows an error state when the mirror is not found", async () => {
+    setScreenSize("xxl");
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorsPage />
+      </Suspense>,
+      undefined,
+      "/?sidePath=view&name=mirrors/bad-id",
+    );
+
+    const sidePanel = await screen.findByLabelText("Side panel");
+
+    expect(
+      await within(sidePanel).findByText("Something went wrong"),
+    ).toBeInTheDocument();
+    expect(within(sidePanel).queryByRole("status")).not.toBeInTheDocument();
   });
 
   it("renders the publish form side panel when sidePath=publish is in the URL", async () => {

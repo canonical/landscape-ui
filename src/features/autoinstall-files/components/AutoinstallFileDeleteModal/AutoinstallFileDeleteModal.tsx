@@ -40,6 +40,7 @@ const AutoinstallFileDeleteModal: FC<AutoinstallFileDeleteModalProps> = ({
       onConfirm={handleConfirm}
       confirmButtonLoading={isAutoinstallFileDeleting}
       title={`Remove ${autoinstallFile.filename}, autoinstall file`}
+      renderInPortal
     >
       <p>
         You are about to remove {autoinstallFile.filename}, an autoinstall file.

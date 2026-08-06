@@ -2,38 +2,71 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it } from "vitest";
 import PackageProfileConstraintsAddForm from "./PackageProfileConstraintsAddForm";
 
 describe("PackageProfileConstraintsAddForm", () => {
   const user = userEvent.setup();
 
-  it("submits", async () => {
+  const renderForm = () =>
     renderWithProviders(
       <PackageProfileConstraintsAddForm profile={packageProfiles[0]} />,
     );
 
+  const fillValidConstraint = async () => {
+    const constraintSelect = screen.getByRole("combobox", {
+      name: "Constraint",
+    });
+
+    fireEvent.change(constraintSelect, {
+      target: {
+        value: "conflicts",
+      },
+    });
+
+    expect((constraintSelect as HTMLSelectElement).value).toBe("conflicts");
+
+    const packageNameInput = screen.getByRole("textbox", {
+      name: "Package name",
+    });
+
+    fireEvent.change(packageNameInput, {
+      target: {
+        value: "package",
+      },
+    });
+
+    expect((packageNameInput as HTMLInputElement).value).toBe("package");
+  };
+
+  it("keeps submit enabled and shows validation feedback on invalid submit", async () => {
+    renderForm();
+
     const submitButton = screen.getByRole("button", {
       name: `Add constraint to "${packageProfiles[0].title}" profile`,
     });
-    expect(submitButton).toHaveAttribute("aria-disabled", "true");
-    await user.tab();
-    await user.selectOptions(
-      screen.getByRole("combobox", {
-        name: "Constraint",
-      }),
-      "conflicts",
-    );
-    await user.type(
-      screen.getByRole("textbox", {
-        name: "Package name",
-      }),
-      "package",
-    );
-    await user.tab();
-    expect(submitButton).not.toHaveAttribute("aria-disabled");
-    expect(submitButton).toBeEnabled();
+
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
+    await user.click(submitButton);
+
+    expect(await screen.findAllByText(/required\./i)).not.toHaveLength(0);
+    // No API error notification should appear
+    expect(
+      screen.queryByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).not.toBeInTheDocument();
+  });
+
+  it("submits", async () => {
+    renderForm();
+
+    const submitButton = screen.getByRole("button", {
+      name: `Add constraint to "${packageProfiles[0].title}" profile`,
+    });
+
+    await fillValidConstraint();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
     await user.click(submitButton);
   });
 
@@ -47,7 +80,6 @@ describe("PackageProfileConstraintsAddForm", () => {
     const submitButton = screen.getByRole("button", {
       name: `Add constraint to "${packageProfiles[0].title}" profile`,
     });
-    expect(submitButton).toHaveAttribute("aria-disabled", "true");
     await user.tab();
     await user.selectOptions(
       screen.getByRole("combobox", {
@@ -62,8 +94,7 @@ describe("PackageProfileConstraintsAddForm", () => {
       "package",
     );
     await user.tab();
-    expect(submitButton).not.toHaveAttribute("aria-disabled");
-    expect(submitButton).toBeEnabled();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
     await user.click(submitButton);
     expect(
       await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),

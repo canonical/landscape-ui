@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ComponentProps } from "react";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -17,7 +17,11 @@ describe("UpdateMirrorModal", () => {
 
   const user = userEvent.setup();
 
-  it("doesn't render while closed", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("doesn't render while closed", async () => {
     renderWithProviders(<UpdateMirrorModal {...props} isOpen={false} />);
 
     expect(

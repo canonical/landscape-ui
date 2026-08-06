@@ -108,7 +108,7 @@ const UnholdSnapForm: FC<UnholdSnapFormProps> = ({ installedSnaps }) => {
       <SidePanelFormButtons
         submitButtonText="Unhold"
         submitButtonAppearance="positive"
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
       />
     </Form>
   );

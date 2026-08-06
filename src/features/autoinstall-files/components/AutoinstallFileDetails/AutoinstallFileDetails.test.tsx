@@ -74,8 +74,10 @@ describe("AutoinstallFileDetails", () => {
     );
     expect(
       screen.getByRole("button", { name: /set as default/i }),
-    ).toBeEnabled();
-    expect(screen.getByRole("button", { name: /remove/i })).toBeEnabled();
+    ).not.toHaveAttribute("aria-disabled");
+    expect(screen.getByRole("button", { name: /remove/i })).not.toHaveAttribute(
+      "aria-disabled",
+    );
   });
 
   it("opens edit form side panel when clicking the edit button", async () => {

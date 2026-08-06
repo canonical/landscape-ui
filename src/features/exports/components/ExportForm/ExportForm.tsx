@@ -1,18 +1,21 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { INPUT_DATE_FORMAT } from "@/constants";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Accordion,
   CheckboxInput,
   Form,
   Input,
+  Notification,
+  SearchBox,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import { useCallback, useMemo, useState, type FC } from "react";
+import { type ReactNode, useCallback, useMemo, useState, type FC } from "react";
 import SortableFieldList from "../SortableFieldList";
+import { getFilteredFieldGroups, getGroupSearchRank } from "./helpers";
 import { VALIDATION_SCHEMA } from "./constants";
 import classes from "./ExportForm.module.scss";
 import type {
@@ -21,6 +24,7 @@ import type {
   ExportFormValues,
   StepIndex,
 } from "../../types/ExportForm";
+import Blocks from "@/components/layout/Blocks";
 
 interface ExportFormProps {
   readonly fieldGroups: readonly ExportFieldGroup[];
@@ -30,6 +34,8 @@ interface ExportFormProps {
     values: ExportFormValues;
     fieldsToExport: ExportField[];
   }) => Promise<void>;
+  readonly onStepChange?: (step: StepIndex) => void;
+  readonly sortableNote?: ReactNode;
 }
 
 const ExportForm: FC<ExportFormProps> = ({
@@ -37,14 +43,17 @@ const ExportForm: FC<ExportFormProps> = ({
   initialValues,
   isSubmitting,
   onGenerate,
+  onStepChange,
+  sortableNote,
 }) => {
-  const { closeSidePanel } = useSidePanel();
+  const { popSidePath } = usePageParams();
   const [step, setStep] = useState<StepIndex>(0);
   const [attributeSearch, setAttributeSearch] = useState("");
   const [orderedFields, setOrderedFields] = useState<ExportField[]>([]);
 
   const handleBack = () => {
     setStep(0);
+    onStepChange?.(0);
   };
 
   const formik = useFormik<ExportFormValues>({
@@ -52,17 +61,27 @@ const ExportForm: FC<ExportFormProps> = ({
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       const selectedFields = fieldGroups
-        .flatMap((group) => group.fields)
+        .flatMap((group) =>
+          group.fields.map((field) => ({ ...field, groupTitle: group.title })),
+        )
         .filter((field) => values.selectedFieldIds.includes(field.id));
 
       if (step === 0) {
         setOrderedFields(selectedFields);
         setStep(1);
+        onStepChange?.(1);
         return;
       }
 
-      const fieldsToExport = orderedFields.length
-        ? orderedFields
+      const selectedFieldIdSet = new Set(
+        selectedFields.map((field) => field.id),
+      );
+      const orderedSelectedFields = orderedFields.filter((field) =>
+        selectedFieldIdSet.has(field.id),
+      );
+
+      const fieldsToExport = orderedSelectedFields.length
+        ? orderedSelectedFields
         : selectedFields;
 
       await onGenerate({ values, fieldsToExport });
@@ -100,29 +119,10 @@ const ExportForm: FC<ExportFormProps> = ({
     [formik],
   );
 
-  const filteredFieldGroups = useMemo(() => {
-    const normalizedSearch = attributeSearch.trim().toLowerCase();
-
-    if (!normalizedSearch) {
-      return fieldGroups;
-    }
-
-    return fieldGroups.flatMap((group) => {
-      if (group.title.toLowerCase().includes(normalizedSearch)) {
-        return [group];
-      }
-
-      const matchingFields = group.fields.filter((field) =>
-        field.label.toLowerCase().includes(normalizedSearch),
-      );
-
-      if (!matchingFields.length) {
-        return [];
-      }
-
-      return [{ ...group, fields: matchingFields }];
-    });
-  }, [attributeSearch, fieldGroups]);
+  const filteredFieldGroups = useMemo(
+    () => getFilteredFieldGroups(fieldGroups, attributeSearch),
+    [attributeSearch, fieldGroups],
+  );
 
   const accordionSections = filteredFieldGroups.map((group) => {
     const groupIds = group.fields.map((field) => field.id);
@@ -133,16 +133,20 @@ const ExportForm: FC<ExportFormProps> = ({
       !allSelected &&
       groupIds.some((id) => formik.values.selectedFieldIds.includes(id));
 
+    const isSearching = !!attributeSearch.trim();
+
     return {
       key: group.key,
       title: (
         <CheckboxInput
           label={group.title}
+          labelClassName={classes.exportFormGroupTitleCheckbox}
           checked={allSelected}
           indeterminate={someSelected}
           aria-label={`${group.title} select all`}
+          disabled={isSearching}
           onChange={() => {
-            toggleGroupSelect(group.fields);
+            if (!isSearching) toggleGroupSelect(group.fields);
           }}
         />
       ),
@@ -165,6 +169,54 @@ const ExportForm: FC<ExportFormProps> = ({
 
   const selectedFieldIdsError = getFormikError(formik, "selectedFieldIds");
 
+  const renderFieldGroups = () => {
+    if (!filteredFieldGroups.length) {
+      return (
+        <p className={classes.emptyState}>No attributes match your search.</p>
+      );
+    }
+
+    if (attributeSearch.trim()) {
+      const sortedSections = [...accordionSections].sort((a, b) => {
+        const aRank = getGroupSearchRank(
+          a.key,
+          filteredFieldGroups,
+          attributeSearch,
+        );
+        const bRank = getGroupSearchRank(
+          b.key,
+          filteredFieldGroups,
+          attributeSearch,
+        );
+        return aRank - bRank;
+      });
+
+      return (
+        <div>
+          {sortedSections.map((section) => (
+            <Accordion
+              key={`filtered-${section.key}`}
+              className="export-form-field-groups-accordion"
+              sections={[section]}
+              expanded={section.key}
+              titleElement="h5"
+            />
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <Accordion
+          className="export-form-field-groups-accordion"
+          sections={accordionSections}
+          titleElement="h5"
+        />
+      </div>
+    );
+  };
+
   const stepContent =
     step === 0 ? (
       <>
@@ -185,20 +237,22 @@ const ExportForm: FC<ExportFormProps> = ({
             error={getFormikError(formik, "retainUntil")}
             {...formik.getFieldProps("retainUntil")}
           />
-          <Input
-            type="search"
-            label="Search attributes"
-            placeholder="Search attributes"
-            value={attributeSearch}
-            onChange={(event) => {
-              setAttributeSearch(event.target.value);
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                event.preventDefault();
-              }
-            }}
-          />
+          <Blocks>
+            <Blocks.Item title="Attributes">
+              <SearchBox
+                id="export-attributes-searchbox"
+                label="Search attributes"
+                placeholder="Search attributes"
+                externallyControlled
+                value={attributeSearch}
+                aria-label="Search attributes"
+                searchButtonType="button"
+                onChange={(value) => {
+                  setAttributeSearch(value);
+                }}
+              />
+            </Blocks.Item>
+          </Blocks>
         </div>
         <div className={classNames({ "is-error": !!selectedFieldIdsError })}>
           {!!selectedFieldIdsError && (
@@ -206,20 +260,21 @@ const ExportForm: FC<ExportFormProps> = ({
               {selectedFieldIdsError}
             </p>
           )}
-          {filteredFieldGroups.length ? (
-            <Accordion sections={accordionSections} titleElement="h5" />
-          ) : (
-            <p className={classes.emptyState}>
-              No attributes match your search.
-            </p>
-          )}
+          {renderFieldGroups()}
         </div>
       </>
     ) : (
-      <SortableFieldList
-        fields={orderedFields}
-        onOrderChange={setOrderedFields}
-      />
+      <>
+        {sortableNote && (
+          <Notification severity="information" title="Note">
+            <span>{sortableNote}</span>
+          </Notification>
+        )}
+        <SortableFieldList
+          fields={orderedFields}
+          onOrderChange={setOrderedFields}
+        />
+      </>
     );
 
   return (
@@ -236,15 +291,9 @@ const ExportForm: FC<ExportFormProps> = ({
       <SidePanelFormButtons
         hasBackButton={step === 1}
         onBackButtonPress={step === 1 ? handleBack : undefined}
-        submitButtonDisabled={
-          (step === 0 &&
-            (!formik.values.name.trim() ||
-              formik.values.selectedFieldIds.length === 0)) ||
-          isSubmitting ||
-          formik.isSubmitting
-        }
+        submitButtonLoading={isSubmitting || formik.isSubmitting}
         submitButtonText={step === 0 ? "Next" : "Generate TSV"}
-        onCancel={closeSidePanel}
+        onCancel={popSidePath}
       />
     </Form>
   );

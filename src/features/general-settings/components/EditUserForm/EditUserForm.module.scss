@@ -12,6 +12,11 @@
 }
 
 .buttons {
+  /* This form is a page (not a side panel), so drop the sticky-footer divider
+     and the padding that separated the buttons from it. */
+  border-top: none;
+  padding-top: 0;
+
   :global(.is-dark) & {
     background-color: $colors--theme--background-default;
   }

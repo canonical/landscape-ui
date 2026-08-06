@@ -190,7 +190,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
       </AppErrorBoundary>
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText={CTA_INFO[props.action].label}
         submitButtonAriaLabel={CTA_INFO[props.action].ariaLabel}
         onCancel={popSidePathUntilClear}

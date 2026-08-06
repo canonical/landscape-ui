@@ -1,8 +1,10 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
+import SidePanel from "@/components/layout/SidePanel";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
+import useGetPublicationTarget from "../../api/useGetPublicationTarget";
 import useEditPublicationTarget from "../../api/useEditPublicationTarget";
 import { CheckboxInput, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -22,7 +24,7 @@ import type { EditTargetFormValues } from "../../constants";
 
 export { TARGET_TYPE_LABELS } from "../../constants";
 
-interface EditTargetFormProps {
+interface EditTargetFormContentProps {
   readonly target: PublicationTarget;
 }
 
@@ -122,7 +124,7 @@ const buildFilesystemPayload = (values: EditTargetFormValues) => ({
   }),
 });
 
-const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
+const EditTargetFormContent: FC<EditTargetFormContentProps> = ({ target }) => {
   const debug = useDebug();
   const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const { notify } = useNotify();
@@ -169,194 +171,220 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
   });
 
   return (
-    <Form onSubmit={formik.handleSubmit} noValidate>
-      <Input
-        type="text"
-        label="Name"
-        required
-        error={getFormikError(formik, "displayName")}
-        {...formik.getFieldProps("displayName")}
-      />
-      <ReadOnlyField
-        label="Type"
-        value={TARGET_TYPE_LABELS[targetType]}
-        tooltipMessage="The type cannot be changed after the target has been created. To use a different type, create a new publication target."
-      />
+    <>
+      <SidePanel.Header>Edit {target.displayName}</SidePanel.Header>
+      <SidePanel.Content>
+        <Form onSubmit={formik.handleSubmit} noValidate>
+          <Input
+            type="text"
+            label="Name"
+            required
+            error={getFormikError(formik, "displayName")}
+            {...formik.getFieldProps("displayName")}
+          />
+          <ReadOnlyField
+            label="Type"
+            value={TARGET_TYPE_LABELS[targetType]}
+            tooltipMessage="The type cannot be changed after the target has been created. To use a different type, create a new publication target."
+          />
 
-      {targetType === "s3" && (
-        <>
-          <ReadOnlyField
-            label="Region"
-            tooltipMessage="The region cannot be changed after the target has been created. To use a different region, create a new publication target."
-            {...formik.getFieldProps("region")}
-          />
-          <ReadOnlyField
-            label="Bucket name"
-            tooltipMessage="The bucket name cannot be changed after the target has been created. To use a different bucket, create a new publication target."
-            {...formik.getFieldProps("bucket")}
-          />
-          <ReadOnlyField
-            label="Endpoint"
-            tooltipMessage="The endpoint cannot be changed after the target has been created. To use a different endpoint, create a new publication target."
-            {...formik.getFieldProps("endpoint")}
-          />
-          <Input
-            type="text"
-            label="AWS access key ID"
-            help="Leave blank to keep current value"
-            error={getFormikError(formik, "awsAccessKeyId")}
-            {...formik.getFieldProps("awsAccessKeyId")}
-          />
-          <Input
-            type="text"
-            label="AWS secret access key"
-            help="Leave blank to keep current value"
-            error={getFormikError(formik, "awsSecretAccessKey")}
-            {...formik.getFieldProps("awsSecretAccessKey")}
-          />
-          <ReadOnlyField
-            label="Prefix"
-            tooltipMessage="The prefix cannot be changed after the target has been created. To use a different prefix, create a new publication target."
-            {...formik.getFieldProps("s3Prefix")}
-          />
-          <Input
-            type="text"
-            label="ACL"
-            error={getFormikError(formik, "acl")}
-            {...formik.getFieldProps("acl")}
-          />
-          <Input
-            type="text"
-            label="Storage class"
-            error={getFormikError(formik, "storageClass")}
-            {...formik.getFieldProps("storageClass")}
-          />
-          <Input
-            type="text"
-            label="Encryption method"
-            error={getFormikError(formik, "encryptionMethod")}
-            {...formik.getFieldProps("encryptionMethod")}
-          />
-          <CheckboxInput
-            label="Disable MultiDel"
-            checked={formik.values.disableMultiDel}
-            onChange={(e) =>
-              formik.setFieldValue(
-                "disableMultiDel",
-                (e.target as HTMLInputElement).checked,
-              )
-            }
-          />
-          <CheckboxInput
-            label="Force AWS SIGv2 (disables SIGv4)"
-            checked={formik.values.forceSigV2}
-            onChange={(e) =>
-              formik.setFieldValue(
-                "forceSigV2",
-                (e.target as HTMLInputElement).checked,
-              )
-            }
-          />
-        </>
-      )}
+          {targetType === "s3" && (
+            <>
+              <ReadOnlyField
+                label="Region"
+                tooltipMessage="The region cannot be changed after the target has been created. To use a different region, create a new publication target."
+                {...formik.getFieldProps("region")}
+              />
+              <ReadOnlyField
+                label="Bucket name"
+                tooltipMessage="The bucket name cannot be changed after the target has been created. To use a different bucket, create a new publication target."
+                {...formik.getFieldProps("bucket")}
+              />
+              <ReadOnlyField
+                label="Endpoint"
+                tooltipMessage="The endpoint cannot be changed after the target has been created. To use a different endpoint, create a new publication target."
+                {...formik.getFieldProps("endpoint")}
+              />
+              <Input
+                type="text"
+                label="AWS access key ID"
+                autoComplete="off"
+                help="Leave blank to keep current value"
+                error={getFormikError(formik, "awsAccessKeyId")}
+                {...formik.getFieldProps("awsAccessKeyId")}
+              />
+              <Input
+                type="password"
+                autoComplete="new-password"
+                label="AWS secret access key"
+                help="Leave blank to keep current value"
+                error={getFormikError(formik, "awsSecretAccessKey")}
+                {...formik.getFieldProps("awsSecretAccessKey")}
+              />
+              <ReadOnlyField
+                label="Prefix"
+                tooltipMessage="The prefix cannot be changed after the target has been created. To use a different prefix, create a new publication target."
+                {...formik.getFieldProps("s3Prefix")}
+              />
+              <Input
+                type="text"
+                label="ACL"
+                error={getFormikError(formik, "acl")}
+                {...formik.getFieldProps("acl")}
+              />
+              <Input
+                type="text"
+                label="Storage class"
+                error={getFormikError(formik, "storageClass")}
+                {...formik.getFieldProps("storageClass")}
+              />
+              <Input
+                type="text"
+                label="Encryption method"
+                error={getFormikError(formik, "encryptionMethod")}
+                {...formik.getFieldProps("encryptionMethod")}
+              />
+              <CheckboxInput
+                label="Disable MultiDel"
+                checked={formik.values.disableMultiDel}
+                onChange={(e) =>
+                  formik.setFieldValue(
+                    "disableMultiDel",
+                    (e.target as HTMLInputElement).checked,
+                  )
+                }
+              />
+              <CheckboxInput
+                label="Force AWS SIGv2 (disables SIGv4)"
+                checked={formik.values.forceSigV2}
+                onChange={(e) =>
+                  formik.setFieldValue(
+                    "forceSigV2",
+                    (e.target as HTMLInputElement).checked,
+                  )
+                }
+              />
+            </>
+          )}
 
-      {targetType === "swift" && (
-        <>
-          <ReadOnlyField
-            label="Container"
-            tooltipMessage="The container cannot be changed after the target has been created. To use a different container, create a new publication target."
-            {...formik.getFieldProps("container")}
-          />
-          <Input
-            type="text"
-            label="Username"
-            help="Leave blank to keep current value"
-            error={getFormikError(formik, "swiftUsername")}
-            {...formik.getFieldProps("swiftUsername")}
-          />
-          <Input
-            type="password"
-            label="Password"
-            help="Leave blank to keep current value"
-            error={getFormikError(formik, "swiftPassword")}
-            {...formik.getFieldProps("swiftPassword")}
-          />
-          <ReadOnlyField
-            label="Auth URL"
-            tooltipMessage="The auth URL cannot be changed after the target has been created. To use a different auth URL, create a new publication target."
-            {...formik.getFieldProps("authUrl")}
-          />
-          <Input
-            type="text"
-            label="Prefix"
-            error={getFormikError(formik, "swiftPrefix")}
-            {...formik.getFieldProps("swiftPrefix")}
-          />
-          <Input
-            type="text"
-            label="Tenant"
-            error={getFormikError(formik, "tenant")}
-            {...formik.getFieldProps("tenant")}
-          />
-          <Input
-            type="text"
-            label="Tenant ID"
-            error={getFormikError(formik, "tenantId")}
-            {...formik.getFieldProps("tenantId")}
-          />
-          <Input
-            type="text"
-            label="Domain"
-            error={getFormikError(formik, "domain")}
-            {...formik.getFieldProps("domain")}
-          />
-          <Input
-            type="text"
-            label="Domain ID"
-            error={getFormikError(formik, "domainId")}
-            {...formik.getFieldProps("domainId")}
-          />
-          <Input
-            type="text"
-            label="Tenant domain"
-            error={getFormikError(formik, "tenantDomain")}
-            {...formik.getFieldProps("tenantDomain")}
-          />
-          <Input
-            type="text"
-            label="Tenant domain ID"
-            error={getFormikError(formik, "tenantDomainId")}
-            {...formik.getFieldProps("tenantDomainId")}
-          />
-        </>
-      )}
+          {targetType === "swift" && (
+            <>
+              <ReadOnlyField
+                label="Container"
+                tooltipMessage="The container cannot be changed after the target has been created. To use a different container, create a new publication target."
+                {...formik.getFieldProps("container")}
+              />
+              <Input
+                type="text"
+                label="Username"
+                help="Leave blank to keep current value"
+                error={getFormikError(formik, "swiftUsername")}
+                {...formik.getFieldProps("swiftUsername")}
+              />
+              <Input
+                type="password"
+                autoComplete="new-password"
+                label="Password"
+                help="Leave blank to keep current value"
+                error={getFormikError(formik, "swiftPassword")}
+                {...formik.getFieldProps("swiftPassword")}
+              />
+              <ReadOnlyField
+                label="Auth URL"
+                tooltipMessage="The auth URL cannot be changed after the target has been created. To use a different auth URL, create a new publication target."
+                {...formik.getFieldProps("authUrl")}
+              />
+              <Input
+                type="text"
+                label="Prefix"
+                error={getFormikError(formik, "swiftPrefix")}
+                {...formik.getFieldProps("swiftPrefix")}
+              />
+              <Input
+                type="text"
+                label="Tenant"
+                error={getFormikError(formik, "tenant")}
+                {...formik.getFieldProps("tenant")}
+              />
+              <Input
+                type="text"
+                label="Tenant ID"
+                error={getFormikError(formik, "tenantId")}
+                {...formik.getFieldProps("tenantId")}
+              />
+              <Input
+                type="text"
+                label="Domain"
+                error={getFormikError(formik, "domain")}
+                {...formik.getFieldProps("domain")}
+              />
+              <Input
+                type="text"
+                label="Domain ID"
+                error={getFormikError(formik, "domainId")}
+                {...formik.getFieldProps("domainId")}
+              />
+              <Input
+                type="text"
+                label="Tenant domain"
+                error={getFormikError(formik, "tenantDomain")}
+                {...formik.getFieldProps("tenantDomain")}
+              />
+              <Input
+                type="text"
+                label="Tenant domain ID"
+                error={getFormikError(formik, "tenantDomainId")}
+                {...formik.getFieldProps("tenantDomainId")}
+              />
+            </>
+          )}
 
-      {targetType === "filesystem" && (
-        <>
-          <ReadOnlyField
-            label="Path"
-            tooltipMessage="The path cannot be changed after the target has been created. To use a different path, create a new publication target."
-            {...formik.getFieldProps("path")}
-          />
-          <ReadOnlyField
-            label="Link method"
-            value={
-              LINK_METHOD_OPTIONS.find(
-                (o) => o.value === formik.getFieldProps("linkMethod").value,
-              )?.label
-            }
-            tooltipMessage="The link method cannot be changed after the target has been created. To use a different link method, create a new publication target."
-          />
-        </>
-      )}
+          {targetType === "filesystem" && (
+            <>
+              <ReadOnlyField
+                label="Path"
+                tooltipMessage="The path cannot be changed after the target has been created. To use a different path, create a new publication target."
+                {...formik.getFieldProps("path")}
+              />
+              <ReadOnlyField
+                label="Link method"
+                value={
+                  LINK_METHOD_OPTIONS.find(
+                    (o) => o.value === formik.getFieldProps("linkMethod").value,
+                  )?.label
+                }
+                tooltipMessage="The link method cannot be changed after the target has been created. To use a different link method, create a new publication target."
+              />
+            </>
+          )}
 
-      <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
-        submitButtonText="Save changes"
-        onCancel={popSidePathUntilClear}
-      />
-    </Form>
+          <SidePanelFormButtons
+            submitButtonLoading={formik.isSubmitting}
+            submitButtonText="Save changes"
+            onCancel={popSidePathUntilClear}
+          />
+        </Form>
+      </SidePanel.Content>
+    </>
   );
+};
+
+const EditTargetForm: FC = () => {
+  const { name } = usePageParams();
+  const { publicationTarget, isGettingPublicationTarget } =
+    useGetPublicationTarget(name);
+
+  if (isGettingPublicationTarget) {
+    return <SidePanel.LoadingState />;
+  }
+  if (!name) {
+    return null;
+  }
+  if (!publicationTarget) {
+    throw new Error(`Publication target ${name} was not found`);
+  }
+
+  return <EditTargetFormContent target={publicationTarget} />;
 };
 
 export default EditTargetForm;

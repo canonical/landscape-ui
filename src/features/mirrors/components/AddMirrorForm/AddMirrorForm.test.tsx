@@ -1,5 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import AddMirrorForm from "./AddMirrorForm";
+import { mirrors } from "@/tests/mocks/mirrors";
 import userEvent from "@testing-library/user-event";
 import {
   fireEvent,
@@ -9,10 +10,13 @@ import {
   within,
 } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST } from "../../constants";
+import {
+  UBUNTU_ARCHIVE_HOST,
+  UBUNTU_PRO_HOST,
+  UBUNTU_SNAPSHOTS_HOST,
+} from "../../constants";
 import type { MirrorWritable } from "@canonical/landscape-openapi";
 import { useLocation } from "react-router";
-import { mirrors } from "@/tests/mocks/mirrors";
 
 const PULLING_NOTE = /pulling and parsing repository data/i;
 
@@ -47,6 +51,9 @@ describe("AddMirrorForm", () => {
       </>,
     );
 
+    // The form renders immediately; wait for the "pulling…" note in the
+    // Mirror contents block to disappear so the data-dependent dropdowns are
+    // populated before the test interacts with them.
     await waitForElementToBeRemoved(() => screen.queryByText(PULLING_NOTE), {
       timeout: 2000,
     });
@@ -67,6 +74,21 @@ describe("AddMirrorForm", () => {
       `name=${mirrors[0].name.replace("/", "%2F")}`,
     );
     expect(location).toHaveTextContent("updateModal=true");
+  });
+
+  it("shows preserve signatures success notification without Update mirror action", async () => {
+    await user.click(screen.getByLabelText(/Preserve upstream signing key/));
+    await user.click(screen.getByRole("button", { name: "Add mirror" }));
+
+    expect(
+      screen.getByText(`You have successfully added Name`),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Signature-preserving mirrors are updated/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Update mirror" }),
+    ).not.toBeInTheDocument();
   });
 
   it("submits an ubuntu archive mirror with the default https URL", async () => {
@@ -151,7 +173,7 @@ describe("AddMirrorForm", () => {
 
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
-        archiveRoot: `https://bearer:${token}@esm.ubuntu.com/infra/ubuntu/`,
+        archiveRoot: expect.stringContaining(UBUNTU_PRO_HOST),
         mirrorType: "UBUNTU_PRO",
       }),
     );
@@ -189,9 +211,7 @@ describe("AddMirrorForm", () => {
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({
-        preserveSignatures: true,
-      }),
+      expect.objectContaining({ preserveSignatures: true }),
     );
   });
 
@@ -248,6 +268,109 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining(params),
     );
+  });
+
+  it("shows a validation error when ubuntu-archive mirror is submitted after deselecting all architectures", async () => {
+    const archCombobox = screen.getByRole("combobox", {
+      name: "Architectures",
+    });
+    await user.click(archCombobox);
+
+    const amd64Checkbox = await screen.findByRole("checkbox", {
+      name: "amd64",
+    });
+    await user.click(amd64Checkbox);
+
+    await user.click(screen.getByRole("button", { name: "Add mirror" }));
+
+    expect(mockCreateMirror).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText(/at least one architecture must be specified/i),
+    ).toBeInTheDocument();
+  });
+
+  it("shows a validation error when ubuntu-archive mirror is submitted after deselecting all components", async () => {
+    const componentsCombobox = screen.getByRole("combobox", {
+      name: "Components",
+    });
+    await user.click(componentsCombobox);
+
+    const mainCheckbox = await screen.findByRole("checkbox", { name: "main" });
+    await user.click(mainCheckbox);
+
+    await user.click(screen.getByRole("button", { name: "Add mirror" }));
+
+    expect(mockCreateMirror).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText(/at least one component must be specified/i),
+    ).toBeInTheDocument();
+  });
+
+  it("shows a validation error when submitting a third-party mirror without a distribution", async () => {
+    await user.selectOptions(
+      screen.getByLabelText("Source type"),
+      "Third party",
+    );
+
+    await user.type(
+      screen.getByLabelText("Source URL"),
+      "https://example.com/",
+    );
+    await user.type(screen.getByLabelText("Components"), "main");
+    await user.type(screen.getByLabelText("Architectures"), "amd64");
+
+    await user.click(screen.getByRole("button", { name: "Add mirror" }));
+
+    expect(mockCreateMirror).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText(/this field is required/i),
+    ).toBeInTheDocument();
+  });
+
+  it("shows a validation error when submitting a third-party mirror without architectures", async () => {
+    await user.selectOptions(
+      screen.getByLabelText("Source type"),
+      "Third party",
+    );
+
+    await user.type(
+      screen.getByLabelText("Source URL"),
+      "https://example.com/",
+    );
+    await user.type(screen.getByLabelText("Distribution"), "focal");
+    await user.type(screen.getByLabelText("Components"), "main");
+
+    await user.click(screen.getByRole("button", { name: "Add mirror" }));
+
+    expect(mockCreateMirror).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText(/at least one architecture must be specified/i),
+    ).toBeInTheDocument();
+  });
+
+  it("shows a validation error when architectures field is cleared before submitting", async () => {
+    await user.selectOptions(
+      screen.getByLabelText("Source type"),
+      "Third party",
+    );
+
+    await user.type(
+      screen.getByLabelText("Source URL"),
+      "https://example.com/",
+    );
+    await user.type(screen.getByLabelText("Distribution"), "focal");
+    await user.type(screen.getByLabelText("Components"), "main");
+
+    const architecturesField = screen.getByLabelText("Architectures");
+    await user.type(architecturesField, "amd64");
+    await user.clear(architecturesField);
+
+    await user.click(screen.getByRole("button", { name: "Add mirror" }));
+
+    expect(mockCreateMirror).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText(/at least one architecture must be specified/i),
+    ).toBeInTheDocument();
   });
 });
 

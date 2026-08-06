@@ -1,5 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe } from "vitest";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { assert, describe, expect, it } from "vitest";
 import SelectableMirrorContentsBlock from "./SelectableMirrorContentsBlock";
 import { useFormik } from "formik";
 import {
@@ -10,7 +12,19 @@ import type { FormProps } from "../AddMirrorForm/types";
 import type { ComponentProps } from "react";
 import { hasOneItem } from "@/utils/_helpers";
 import type { Distribution } from "../../types";
-import { screen } from "@testing-library/react";
+
+const archiveBaseValues: FormProps = {
+  architectures: [],
+  components: [],
+  distribution: ubuntuArchiveInfo.distributions[0].slug,
+  downloadInstallerFiles: false,
+  downloadSources: false,
+  downloadUdebPackages: false,
+  preserveSignatures: false,
+  name: "",
+  sourceType: "ubuntu-archive",
+  sourceUrl: "",
+};
 
 const TestComponent = ({
   initialValues,
@@ -82,6 +96,62 @@ describe("SelectableMirrorContentsBlock", () => {
       />,
     );
 
-    expect(screen.queryAllByRole("combobox")).toHaveLength(0);
+    expect(
+      screen.queryByRole("combobox", { name: /distribution/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(proService.distributions[0].label),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(proService.distributions[0].components[0].slug),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(proService.distributions[0].architectures[0].slug),
+    ).toBeInTheDocument();
+  });
+
+  it("renders empty select fields when ubuntu-pro proService is not found", () => {
+    renderWithProviders(
+      <TestComponent
+        initialValues={{
+          ...archiveBaseValues,
+          sourceType: "ubuntu-pro",
+          proService: "nonexistent-service",
+          token: "",
+        }}
+      />,
+    );
+
+    const select = screen.getByRole("combobox", { name: /distribution/i });
+    expect(select).toBeInTheDocument();
+    expect(select.querySelectorAll("option")).toHaveLength(0);
+  });
+
+  it("updates components when a component option is selected", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<TestComponent initialValues={archiveBaseValues} />);
+
+    const componentsToggle = screen.getByRole("combobox", {
+      name: "Components",
+    });
+    await user.click(componentsToggle);
+
+    const mainOption = screen.getByText("main");
+    await user.click(mainOption);
+
+    expect(componentsToggle).toHaveTextContent("main");
+  });
+
+  it("updates architectures when an architecture option is selected", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<TestComponent initialValues={archiveBaseValues} />);
+
+    const archToggle = screen.getByRole("combobox", { name: "Architectures" });
+    await user.click(archToggle);
+
+    const amd64Option = screen.getByText("amd64");
+    await user.click(amd64Option);
+
+    expect(archToggle).toHaveTextContent("amd64");
   });
 });

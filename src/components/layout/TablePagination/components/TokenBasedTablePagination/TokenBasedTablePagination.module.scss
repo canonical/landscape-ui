@@ -1,0 +1,40 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.wrapper {
+  align-items: center;
+  border-top: 1px solid $colors--theme--border-default;
+  display: flex;
+  gap: $sph--small;
+  padding-bottom: $spv--small;
+  padding-left: $sph--large;
+  padding-top: $spv--x-small;
+}
+
+.pageSizeControls {
+  align-items: center;
+  border-right: 1px solid $colors--theme--border-default;
+  column-gap: $sph--x-small;
+  display: flex;
+  flex-wrap: wrap;
+  padding-right: $sph--small;
+}
+
+.pageSizeSelect {
+  background-color: transparent;
+  border: 0;
+  field-sizing: content;
+  margin-bottom: 0;
+  min-width: 0;
+  padding-left: $sph--small;
+}
+
+.paginationWrapper {
+  display: flex;
+  margin-left: auto;
+
+  > button {
+    margin: 0;
+    padding: 0.375rem 0.625rem;
+  }
+}

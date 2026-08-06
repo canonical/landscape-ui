@@ -1,0 +1,80 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+
+  th {
+    color: $colors--theme--text-default;
+    font-size: 0.75rem;
+    font-weight: 550;
+    letter-spacing: 0.07em;
+    line-height: 1rem;
+    padding: 0 0.5rem 0.75rem;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 0.5rem;
+    vertical-align: middle;
+  }
+
+  th:first-child,
+  td:first-child {
+    padding-left: 0;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 0;
+  }
+}
+
+.markerCell {
+  white-space: nowrap;
+  width: 1.5rem;
+}
+
+.labelCell {
+  width: auto;
+}
+
+.labelWithHelp {
+  align-items: center;
+  display: inline-flex;
+  gap: $sp-x-small;
+}
+
+.countCell {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+  width: 6rem;
+}
+
+.bar .markerCell {
+  width: 40%;
+}
+
+.countZero {
+  color: $colors--theme--text-muted;
+}
+
+.countCell a {
+  font-variant-numeric: tabular-nums;
+}
+
+.rowActive td {
+  transition: opacity 100ms ease;
+}
+
+.rowActive .labelCell {
+  font-weight: 500;
+}
+
+.rowDimmed {
+  opacity: 0.45;
+  transition: opacity 100ms ease;
+}

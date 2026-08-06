@@ -168,7 +168,7 @@ const CreateScript: FC = () => {
 
       <SidePanelFormButtons
         submitButtonText="Add script"
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
       />
     </Form>
   );

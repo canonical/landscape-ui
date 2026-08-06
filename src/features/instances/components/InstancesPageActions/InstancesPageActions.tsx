@@ -6,30 +6,18 @@ import type { PackageAction } from "@/features/packages";
 import { PackagesActionForm } from "@/features/packages";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
+import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import {
-  hasOneItem,
-  getSelectionLabel,
-  pluralize,
-  capitalize,
-} from "@/utils/_helpers";
+import { hasOneItem, pluralize, capitalize } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-import {
-  getFeatures,
-  hasUpgrades,
-  hasSecurityUpgrades,
-  type InstanceListParams,
-} from "../../helpers";
-import { getExportTitle } from "@/features/exports";
+import { getFeatures, hasUpgrades, hasSecurityUpgrades } from "../../helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
-const InstancesExportForm = lazy(async () => import("../InstancesExportForm"));
-
 const RunInstanceScriptForm = lazy(
   async () => import("@/features/scripts/components/RunInstanceScriptForm"),
 );
@@ -40,9 +28,6 @@ const UpgradesSummary = lazy(async () =>
   import("@/features/upgrades").then((module) => ({
     default: module.UpgradesSummary,
   })),
-);
-const ReportView = lazy(
-  async () => import("@/pages/dashboard/instances/ReportView"),
 );
 const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
 const DistributionUpgrades = lazy(
@@ -57,22 +42,19 @@ const ReplaceTokenForm = lazy(
 );
 
 interface InstancesPageActionsProps {
-  readonly exportParams: InstanceListParams;
-  readonly instanceCount: number | undefined;
   readonly isGettingInstances: boolean;
   readonly selectedInstances: Instance[];
   readonly isAllSelected: boolean;
 }
 
 const InstancesPageActions = memo(function InstancesPageActions({
-  exportParams,
-  instanceCount,
   isGettingInstances,
   selectedInstances,
   isAllSelected,
 }: InstancesPageActionsProps) {
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher, lastSidePathSegment } = usePageParams();
 
   const {
     value: rebootModalOpen,
@@ -201,15 +183,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const handleReportView = () => {
-    setSidePanelContent(
-      `Report for ${getSelectionLabel(selectedInstances, (instance) => instance.title, "instances")}`,
-      <Suspense fallback={<LoadingState />}>
-        <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
-      </Suspense>,
-      "medium",
-    );
-  };
+  const handleReportView = createSidePathPusher("report");
 
   const handleAccessGroupChange = () => {
     setSidePanelContent(
@@ -248,23 +222,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
   };
 
   const handleExport = () => {
-    setSidePanelContent(
-      getExportTitle({
-        isAllSelected,
-        selectedCount: selectedInstances.length,
-        totalCount: instanceCount,
-        selectionForms: ["instance"],
-      }),
-      <Suspense fallback={<LoadingState />}>
-        <InstancesExportForm
-          exportParams={exportParams}
-          selectedInstanceIds={
-            isAllSelected ? undefined : selectedInstances.map(({ id }) => id)
-          }
-        />
-      </Suspense>,
-      "medium",
-    );
+    if (lastSidePathSegment !== "export") createSidePathPusher("export")();
   };
 
   const allInstancesHaveToken = selectedInstances.every(
@@ -416,19 +374,21 @@ const InstancesPageActions = memo(function InstancesPageActions({
       hasIcon: true,
       disabled: !hasInstancesToExport,
     },
-    REPORT_VIEW_ENABLED
-      ? {
-          children: (
-            <>
-              <Icon name="status" />
-              <span>View report</span>
-            </>
-          ),
-          onClick: handleReportView,
-          hasIcon: true,
-          disabled: !hasSelectedInstances,
-        }
-      : {},
+    ...(REPORT_VIEW_ENABLED
+      ? [
+          {
+            children: (
+              <>
+                <Icon name="status" />
+                <span>View report</span>
+              </>
+            ),
+            onClick: handleReportView,
+            hasIcon: true,
+            disabled: !hasSelectedInstances,
+          },
+        ]
+      : []),
   ].filter((link) => link.children);
 
   const debManagementLinks = [

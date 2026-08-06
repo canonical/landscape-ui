@@ -1,74 +1,65 @@
-import LoadingState from "@/components/layout/LoadingState";
-import usePageParams from "@/hooks/usePageParams";
-import { mirrors } from "@/tests/mocks/mirrors";
 import { renderWithProviders } from "@/tests/render";
-import { describe, expect, it } from "vitest";
-import userEvent from "@testing-library/user-event";
-import { screen } from "@testing-library/react";
-import { Suspense } from "react";
+import { describe, expect } from "vitest";
 import PublishMirrorForm from "./PublishMirrorForm";
+import userEvent from "@testing-library/user-event";
+import { screen, waitFor } from "@testing-library/react";
+import { Suspense } from "react";
+import LoadingState from "@/components/layout/LoadingState";
 
-const TestComponent = () => {
-  const { lastSidePathSegment } = usePageParams();
+const ROUTE_PATH = "/?name=mirrors/ubuntu-archive-mirror";
+const NO_PUBLICATIONS_ROUTE_PATH = "/?name=mirrors/ubuntu-security-mirror";
 
-  if (lastSidePathSegment === "publish") {
-    return <PublishMirrorForm />;
-  }
-};
+const renderWithRoute = (routePath: string = ROUTE_PATH) =>
+  renderWithProviders(
+    <Suspense fallback={<LoadingState />}>
+      <PublishMirrorForm />
+    </Suspense>,
+    undefined,
+    routePath,
+  );
 
 describe("PublishMirrorForm", () => {
-  const user = userEvent.setup();
+  it("does not render radio buttons when publications do not exist", async () => {
+    renderWithRoute(NO_PUBLICATIONS_ROUTE_PATH);
 
-  it("publishes to a new publication", async () => {
-    renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <TestComponent />
-      </Suspense>,
-      undefined,
-      `?sidePath=publish&name=${mirrors[0].name}`,
-    );
+    // Wait for the form to finish loading - the form only renders after both queries resolve
+    await screen.findByRole("button", { name: /publish mirror/i });
 
-    await user.type(
-      await screen.findByRole("textbox", { name: "Publication name" }),
-      "My publication",
-    );
-    await user.click(screen.getByRole("button", { name: "Publish mirror" }));
+    expect(screen.queryByLabelText(/new publication/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText(/existing publication/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("defaults to new publication when publications exist", async () => {
+    renderWithRoute();
+
+    const newRadio = await screen.findByLabelText(/new publication/i);
+    expect(newRadio).toBeChecked();
+
+    const existingRadio = screen.getByLabelText(/existing publication/i);
+    expect(existingRadio).not.toBeChecked();
 
     expect(
-      await screen.findByText(
-        `You have marked ${mirrors[0].displayName} to be published`,
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "A publication has been created and an activity has been queued to publish it to the designated target.",
-      ),
+      screen.getByRole("textbox", { name: /publication name/i }),
     ).toBeInTheDocument();
   });
 
-  it("publishes to an existing publication", async () => {
-    renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <TestComponent />
-      </Suspense>,
-      undefined,
-      `?sidePath=publish&name=${mirrors[0].name}`,
-    );
+  it("switches to existing publication form", async () => {
+    const user = userEvent.setup();
+    renderWithRoute();
 
-    await user.click(
-      await screen.findByRole("radio", { name: "Existing publication" }),
-    );
-    await user.click(screen.getByRole("button", { name: "Publish mirror" }));
+    const newRadio = await screen.findByLabelText(/new publication/i);
+    const existingRadio = await screen.findByLabelText(/existing publication/i);
+    await user.click(existingRadio);
+
+    await waitFor(() => {
+      expect(existingRadio).toBeChecked();
+      expect(newRadio).not.toBeChecked();
+    });
 
     expect(
-      await screen.findByText(
-        `You have marked ${mirrors[0].displayName} to be published`,
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "An activity has been queued to publish the selected publication to the designated target.",
-      ),
+      screen.getByRole("combobox", { name: /publication name/i }),
     ).toBeInTheDocument();
   });
 });

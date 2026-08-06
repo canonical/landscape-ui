@@ -13,12 +13,14 @@ import { useOperation } from "@/features/operations";
 interface MirrorActionsProps {
   readonly mirrorDisplayName: string;
   readonly mirrorName: string;
+  readonly preserveSignatures?: boolean;
   readonly operationName?: string;
 }
 
 const MirrorActions: FC<MirrorActionsProps> = ({
   mirrorDisplayName,
   mirrorName,
+  preserveSignatures,
   operationName,
 }) => {
   const { setPageParams, createPageParamsSetter } = usePageParams();
@@ -57,6 +59,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({
   return (
     <>
       <ListActions
+        toggleAriaLabel={`${mirrorDisplayName} mirror actions`}
         actions={[
           {
             icon: "show",
@@ -74,17 +77,21 @@ const MirrorActions: FC<MirrorActionsProps> = ({
               name: mirrorName,
             }),
           },
-          isUpdating
-            ? {
-                icon: "spinner u-animation--spin",
-                label: "Updating",
-                disabled: true,
-              }
-            : {
-                icon: "restart",
-                label: "Update",
-                onClick: openUpdateModal,
-              },
+          ...(!preserveSignatures
+            ? [
+                isUpdating
+                  ? {
+                      icon: "spinner u-animation--spin",
+                      label: "Updating",
+                      disabled: true,
+                    }
+                  : {
+                      icon: "restart",
+                      label: "Update",
+                      onClick: openUpdateModal,
+                    },
+              ]
+            : []),
           {
             icon: "upload",
             label: "Publish",

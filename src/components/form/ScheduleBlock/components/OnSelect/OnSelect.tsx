@@ -1,4 +1,5 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
+import { getFormikError } from "@/utils/formikErrors";
 import { Select } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import type { ReactNode } from "react";
@@ -20,6 +21,7 @@ const OnSelect = <T extends ScheduleBlockFormProps>({
           variant="condensed"
           label="On"
           items={[...DAY_OPTIONS]}
+          error={getFormikError(formik, "days")}
           selectedItems={DAY_OPTIONS.filter(({ value }) =>
             values.days.includes(value),
           )}
@@ -55,6 +57,7 @@ const OnSelect = <T extends ScheduleBlockFormProps>({
           variant="condensed"
           label="On"
           items={[...MONTH_OPTIONS]}
+          error={getFormikError(formik, "months")}
           selectedItems={MONTH_OPTIONS.filter(({ value }) =>
             values.months.includes(value),
           )}

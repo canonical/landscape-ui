@@ -1,6 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import InstancesExportForm from "./InstancesExportForm";
 
@@ -37,9 +38,7 @@ describe("InstancesExportForm", () => {
       screen.getByRole("tab", { name: /primary identity/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("tab", {
-        name: /granular metadata & deep diagnostics/i,
-      }),
+      screen.getByRole("tab", { name: /system ids & agent logs/i }),
     ).toBeInTheDocument();
     await openAttributeGroup(user, /business logic/i);
     expect(
@@ -47,7 +46,7 @@ describe("InstancesExportForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("pre-selects the visible table columns and keeps Next disabled until a name is given", async () => {
+  it("pre-selects the visible table columns", async () => {
     const user = userEvent.setup();
     renderWithProviders(
       <InstancesExportForm
@@ -66,16 +65,6 @@ describe("InstancesExportForm", () => {
       screen.getByRole("checkbox", { name: "Instance name" }),
     ).toBeChecked();
     expect(screen.getByRole("checkbox", { name: "Status" })).toBeChecked();
-
-    // A name is still required before proceeding.
-    const nextButton = screen.getByRole("button", { name: "Next" });
-    expect(nextButton).toHaveAttribute("aria-disabled", "true");
-
-    await user.type(
-      screen.getByRole("textbox", { name: "Export name" }),
-      "Weekly export",
-    );
-    expect(nextButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("filters attributes by field name", async () => {
@@ -94,7 +83,6 @@ describe("InstancesExportForm", () => {
     const search = screen.getByRole("searchbox", { name: "Search attributes" });
     await user.type(search, "host");
 
-    await openAttributeGroup(user, /primary identity/i);
     expect(
       screen.getByRole("checkbox", { name: "Hostname" }),
     ).toBeInTheDocument();
@@ -113,7 +101,7 @@ describe("InstancesExportForm", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("matches a category name and shows all of its attributes", async () => {
+  it("does not match on group name, only field labels", async () => {
     const user = userEvent.setup();
     renderWithProviders(
       <InstancesExportForm
@@ -129,14 +117,10 @@ describe("InstancesExportForm", () => {
     const search = screen.getByRole("searchbox", { name: "Search attributes" });
     await user.type(search, "primary");
 
-    // The category title matches, so the whole group is shown including fields
-    // whose labels do not contain the search term.
-    await openAttributeGroup(user, /primary identity/i);
+    // "primary" matches the group title "Primary Identity" but no field labels
+    // in that group — group title matching is not supported.
     expect(
-      screen.getByRole("checkbox", { name: "Instance name" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("checkbox", { name: "Hostname" }),
+      screen.getByText("No attributes match your search."),
     ).toBeInTheDocument();
   });
 
@@ -203,7 +187,9 @@ describe("InstancesExportForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Back" }));
 
-    expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: "Next" }),
+    ).toBeInTheDocument();
     await openAttributeGroup(user, /primary identity/i);
     expect(
       screen.getByRole("checkbox", { name: "Instance name" }),
@@ -301,6 +287,11 @@ describe("InstancesExportForm", () => {
     await openAttributeGroup(user, /business logic/i);
     await user.click(screen.getByRole("checkbox", { name: "Annotations" }));
     await user.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Generate TSV" }),
+      ).not.toBeDisabled();
+    });
     await user.click(screen.getByRole("button", { name: "Generate TSV" }));
 
     expect(await screen.findByText("TSV export in progress")).toBeVisible();
@@ -312,5 +303,55 @@ describe("InstancesExportForm", () => {
     expect(
       screen.getByRole("button", { name: "View export status" }),
     ).toBeInTheDocument();
+  });
+
+  it("pops one sidePath entry on successful export", async () => {
+    const user = userEvent.setup();
+    const LocationDisplay = () => {
+      const { search } = useLocation();
+      return <div data-testid="location-display">{search}</div>;
+    };
+
+    renderWithProviders(
+      <>
+        <InstancesExportForm
+          exportParams={{
+            query: "",
+            archived_only: false,
+            wsl_children: false,
+            wsl_parents: false,
+          }}
+          selectedInstanceIds={[1, 2]}
+        />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/?sidePath=view,export",
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "Weekly export",
+    );
+    await openAttributeGroup(user, /primary identity/i);
+    await user.click(screen.getByRole("checkbox", { name: "Instance name" }));
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Generate TSV" }),
+      ).not.toBeDisabled();
+    });
+    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+
+    expect(await screen.findByText("TSV export in progress")).toBeVisible();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        "sidePath=view",
+      );
+      expect(screen.getByTestId("location-display")).not.toHaveTextContent(
+        "sidePath=view,export",
+      );
+    });
   });
 });

@@ -1,0 +1,29 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+/* Match the spacing of Vanilla's global form label styles */
+.label {
+  display: block;
+  margin-bottom: $spv--large - $spv-nudge;
+  padding-top: $spv-nudge;
+}
+
+/* Vanilla only highlights buttons with aria-selected/pressed/expanded, not the
+   aria-checked attribute used by the radio pattern, so the selected state
+   needs the same styling applied manually. */
+.option[aria-checked="true"] {
+  &,
+  &:hover {
+    background-color: $colors--theme--background-active;
+    border-color: $colors--theme--border-high-contrast;
+    transition-duration: 0s;
+  }
+
+  &:hover {
+    cursor: default;
+  }
+}
+
+.help {
+  margin-top: $spv--small;
+}
