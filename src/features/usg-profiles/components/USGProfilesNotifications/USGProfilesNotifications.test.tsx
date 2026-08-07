@@ -1,20 +1,15 @@
 import type { Activity } from "@/features/activities";
 import type { USGProfile } from "@/features/usg-profiles";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { usgProfiles } from "@/tests/mocks/usgProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import USGProfilesNotifications from "./USGProfilesNotifications";
 
 const PENDING_REPORTS_KEY = "_landscape_pendingSecurityProfileReports";
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location-display">{search}</div>;
-};
 
 const baseActivity: Activity = {
   activity_status: "succeeded",
@@ -138,11 +133,9 @@ describe("USGProfilesNotifications", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "Edit profile" }));
     await waitFor(() => {
-      expect(screen.getByTestId("location-display")).toHaveTextContent(
-        "sidePath=edit",
-      );
+      expect(getLocationDisplay()).toHaveTextContent("sidePath=edit");
     });
-    expect(screen.getByTestId("location-display")).toHaveTextContent("name=1");
+    expect(getLocationDisplay()).toHaveTextContent("name=1");
 
     await userEvent.click(
       screen.getByRole("button", { name: "Close notification" }),
@@ -212,9 +205,7 @@ describe("USGProfilesNotifications", () => {
       screen.getByRole("button", { name: "View profiles" }),
     );
     await waitFor(() => {
-      expect(screen.getByTestId("location-display")).toHaveTextContent(
-        "status=over-limit",
-      );
+      expect(getLocationDisplay()).toHaveTextContent("status=over-limit");
     });
 
     await userEvent.click(

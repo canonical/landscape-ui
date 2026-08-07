@@ -8,7 +8,7 @@ import { expectLoadingState } from "@/tests/helpers";
 import useEnv from "@/hooks/useEnv";
 import type { EnvContextState } from "@/context/env";
 import { standaloneAccountState } from "@/tests/server/handlers/standaloneAccount";
-import { useLocation } from "react-router";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 
 vi.mock("@/hooks/useEnv");
 
@@ -102,15 +102,10 @@ describe("LoginPage", () => {
       displayDisaStigBanner: false,
     });
 
-    const LocationTracker = () => {
-      const loc = useLocation();
-      return <span data-testid="location">{loc.pathname}</span>;
-    };
-
     renderWithProviders(
       <>
         <LoginPage />
-        <LocationTracker />
+        <LocationDisplay />
       </>,
     );
 
@@ -119,9 +114,7 @@ describe("LoginPage", () => {
 
     // After queries complete, navigate to /create-account is triggered
     await waitFor(() => {
-      expect(screen.getByTestId("location")).toHaveTextContent(
-        "create-account",
-      );
+      expect(getLocationDisplay()).toHaveTextContent("create-account");
     });
   });
 
