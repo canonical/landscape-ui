@@ -60,14 +60,18 @@ export default [
     `${API_URL}script-profiles/:profileId`,
     ({ params }) => {
       if (shouldApplyEndpointStatus("script-profiles/:profileId")) {
-        const { status } = getEndpointStatus();
+        const endpointStatus = getEndpointStatus();
 
-        if (status === "error") {
+        if (endpointStatus.status === "error") {
           throw createEndpointStatusError();
         }
 
-        if (status === "empty") {
+        if (endpointStatus.status === "empty") {
           return HttpResponse.json(undefined);
+        }
+
+        if (endpointStatus.status === "variant") {
+          return HttpResponse.json(endpointStatus.response);
         }
       }
 
@@ -132,7 +136,27 @@ export default [
     );
   }),
 
+  http.post(`${API_URL}script-profiles`, () =>
+    HttpResponse.json(scriptProfiles[0]),
+  ),
+
+  http.patch(`${API_URL}script-profiles/:profileId`, () =>
+    HttpResponse.json(scriptProfiles[0]),
+  ),
+
   http.get(`${API_URL}script-profile-limits`, () => {
+    if (shouldApplyEndpointStatus("script-profile-limits")) {
+      const { status } = getEndpointStatus("script-profile-limits");
+
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
+      }
+
+      if (status === "empty") {
+        return HttpResponse.json(null);
+      }
+    }
+
     return HttpResponse.json({
       max_num_computers: 5000,
       max_num_profiles: 10,
