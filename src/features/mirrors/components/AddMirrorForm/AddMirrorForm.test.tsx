@@ -16,7 +16,7 @@ import {
   UBUNTU_SNAPSHOTS_HOST,
 } from "../../constants";
 import type { MirrorWritable } from "@canonical/landscape-openapi";
-import { useLocation } from "react-router";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 
 const PULLING_NOTE = /pulling and parsing repository data/i;
 
@@ -32,11 +32,6 @@ vi.mock("../../api", async () => {
     }),
   };
 });
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 describe("AddMirrorForm", () => {
   const user = userEvent.setup();
@@ -68,7 +63,7 @@ describe("AddMirrorForm", () => {
     ).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Update mirror" }));
 
-    const location = screen.getByTestId("location");
+    const location = getLocationDisplay();
     expect(location).toHaveTextContent("sidePath=view");
     expect(location).toHaveTextContent(
       `name=${mirrors[0].name.replace("/", "%2F")}`,

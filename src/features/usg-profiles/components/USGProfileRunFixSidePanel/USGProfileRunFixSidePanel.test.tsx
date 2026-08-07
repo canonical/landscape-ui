@@ -2,22 +2,16 @@ import { API_URL } from "@/constants";
 import { ROUTES } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectErrorNotification } from "@/tests/helpers";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { usgProfiles } from "@/tests/mocks/usgProfiles";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import USGProfileRunFixSidePanel from "./USGProfileRunFixSidePanel";
 import { ErrorBoundary } from "@sentry/react";
-
-const LocationDisplay = () => {
-  const { pathname, search } = useLocation();
-
-  return <div data-testid="location-display">{`${pathname}${search}`}</div>;
-};
 
 const [restartDelayedProfile, usgProfile, restartImmediateProfile] =
   usgProfiles;
@@ -101,7 +95,7 @@ describe("USGProfileRunFixSidePanel", () => {
       await screen.findByRole("button", { name: "View details" }),
     );
 
-    expect(screen.getByTestId("location-display")).toHaveTextContent(
+    expect(getLocationDisplay()).toHaveTextContent(
       ROUTES.activities.root({ query: "parent-id:123" }),
     );
   });
