@@ -1,4 +1,4 @@
-import { waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ROUTES } from "@/libs/routes";
 import { renderWithProviders } from "@/tests/render";
@@ -29,9 +29,8 @@ describe("ProfilesPage", () => {
 
     renderWithProviders(<ProfilesPage />);
 
-    await waitFor(() => {
-      expect(navigate).not.toHaveBeenCalled();
-    });
+    expect(screen.getByRole("status")).toBeInTheDocument();
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it("redirects to package profiles page in self-hosted", async () => {
