@@ -37,12 +37,12 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
     isLoading: isChangingPreferredAccount,
   } = setPreferredAccount;
 
-  const emails = user.allowable_emails.map((email) => ({
+  const emails = (user.allowable_emails ?? []).map((email) => ({
     label: email,
     value: email,
   }));
 
-  const ORGANISATIONS_OPTIONS = user.accounts.map((acc) => ({
+  const ORGANISATIONS_OPTIONS = (user.accounts ?? []).map((acc) => ({
     label: acc.title,
     value: acc.name,
   }));
@@ -52,7 +52,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
     initialValues: {
       name: user.name,
       timezone: user.timezone,
-      email: currentEmail?.label ?? "Select",
+      email: currentEmail?.label ?? user.email,
       defaultOrganisation:
         authUser?.accounts.find((acc) => acc.name === user.preferred_account)
           ?.name ?? "Select",
@@ -117,7 +117,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
           }
         />
       ) : (
-        <InfoItem label="Email address" value={emails[0].value} />
+        <InfoItem label="Email address" value={user.email} />
       )}
       {TIMEZONES_FILTER.type === "select" && (
         <Select
