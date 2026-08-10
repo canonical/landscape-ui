@@ -45,4 +45,22 @@ describe("USGProfileAuditPassRate", () => {
     ).toBeInTheDocument();
     expect(within(tooltip).getAllByText(`0 instances (0%)`)).toHaveLength(2);
   });
+
+  it("renders passed count without a link when there are no passing instances", () => {
+    const profileWithoutPassing = {
+      ...profileWithRun,
+      last_run_results: {
+        ...profileWithRun.last_run_results,
+        passing: 0,
+        failing: 5,
+      },
+    };
+
+    renderWithProviders(
+      <USGProfileAuditPassRate profile={profileWithoutPassing} />,
+    );
+
+    expect(screen.getByText("0 passed")).not.toHaveRole("link");
+    expect(screen.getByRole("link", { name: "5 failed" })).toBeInTheDocument();
+  });
 });
