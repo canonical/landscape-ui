@@ -91,6 +91,11 @@ const PackageList: FC<PackageListProps> = ({
     [setSidePanelContent],
   );
 
+  const selectablePackages = useMemo(
+    () => packages.filter((pkg) => !isUbuntuProRequired(pkg)),
+    [packages],
+  );
+
   const columns = useMemo<Column<InstancePackage>[]>(
     () => [
       {
@@ -108,7 +113,7 @@ const PackageList: FC<PackageListProps> = ({
                 selectedPackages.length < packages.length &&
                 selectedPackages.length > 0
               }
-              disabled={packages.length === 0}
+              disabled={selectablePackages.length === 0}
               onChange={handleToggleAllPackages}
             />
             Name
@@ -211,6 +216,7 @@ const PackageList: FC<PackageListProps> = ({
       handleToggleAllPackages,
       instanceId,
       packages,
+      selectablePackages,
       selectedPackages,
     ],
   );
@@ -228,7 +234,7 @@ const PackageList: FC<PackageListProps> = ({
         columns={columns}
         data={packages}
         getCellProps={(cell) => {
-          return handleCellProps(cell, columns.length);
+          return handleCellProps(cell);
         }}
         emptyMsg={emptyMsg}
         minWidth={1150}
