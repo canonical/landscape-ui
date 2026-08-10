@@ -8,7 +8,7 @@ const RepositoryPage: FC = () => {
 
   useEffect(() => {
     navigate(ROUTES.repositories.mirrors(), { replace: true });
-  }, []);
+  }, [navigate]);
 
   return null;
 };
