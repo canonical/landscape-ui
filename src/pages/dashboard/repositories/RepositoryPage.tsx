@@ -1,3 +1,4 @@
+import LoadingState from "@/components/layout/LoadingState";
 import { ROUTES } from "@/libs/routes";
 import type { FC } from "react";
 import { useEffect } from "react";
@@ -10,7 +11,7 @@ const RepositoryPage: FC = () => {
     navigate(ROUTES.repositories.mirrors(), { replace: true });
   }, [navigate]);
 
-  return null;
+  return <LoadingState />;
 };
 
 export default RepositoryPage;
