@@ -123,4 +123,15 @@ export const features: Feature[] = [
       configuration: true,
     },
   },
+  {
+    name: "TSV Exports",
+    description:
+      "Export instances and activities as TSV files, and manage the resulting exports from the exports page.",
+    key: "tsv-exports",
+    database_key: 17,
+    enabled: true,
+    details: {
+      configuration: true,
+    },
+  },
 ];
