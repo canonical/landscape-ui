@@ -1,9 +1,9 @@
 import { aptSources } from "@/tests/mocks/apt-sources";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
 import { Suspense } from "react";
 import { describe, expect, it } from "vitest";
 import RepositoryProfileEditForm from "./RepositoryProfileEditForm";
@@ -12,11 +12,6 @@ import LoadingState from "@/components/layout/LoadingState";
 const [profile] = repositoryProfiles;
 
 assert(profile, "Expected repository profile test fixture");
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 const renderEditForm = (sidePath = "view,edit") =>
   renderWithProviders(
@@ -74,7 +69,7 @@ describe("RepositoryProfileEditForm", () => {
       await screen.findByRole("link", { name: `Edit ${profile.title}` }),
     );
 
-    expect(screen.getByTestId("location")).not.toHaveTextContent("add-source");
+    expect(getLocationDisplay()).not.toHaveTextContent("add-source");
   });
 
   it("clicking Add source navigates to add-source step", async () => {
@@ -83,7 +78,7 @@ describe("RepositoryProfileEditForm", () => {
     await screen.findByRole("button", { name: /save changes/i });
     await user.click(screen.getByRole("button", { name: /add source/i }));
 
-    expect(screen.getByTestId("location")).toHaveTextContent("add-source");
+    expect(getLocationDisplay()).toHaveTextContent("add-source");
   });
 
   it("submitting source form in add-source step appends source to the list", async () => {
@@ -118,9 +113,7 @@ describe("RepositoryProfileEditForm", () => {
     await user.click(screen.getByRole("button", { name: /cancel/i }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("location")).not.toHaveTextContent(
-        "add-source",
-      );
+      expect(getLocationDisplay()).not.toHaveTextContent("add-source");
     });
   });
 
