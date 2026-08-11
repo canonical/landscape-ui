@@ -7,6 +7,7 @@ import {
   useGetActivities,
 } from "@/features/activities";
 import { getExportTitle } from "@/features/exports";
+import useAuth from "@/hooks/useAuth";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import useSelection from "@/hooks/useSelection";
@@ -22,6 +23,9 @@ interface ActivityPanelProps {
 }
 
 const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
+  const { isFeatureEnabled } = useAuth();
+  const isTsvExportsEnabled = isFeatureEnabled("tsv-exports");
+
   const { activities, activitiesCount, isGettingActivities } = useGetActivities(
     { query: `computer:id:${instanceId}` },
   );
@@ -45,7 +49,10 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
 
   const [isAllSelected, setIsAllSelected] = useState(false);
 
-  useSetDynamicFilterValidation("sidePath", ["export"]);
+  useSetDynamicFilterValidation(
+    "sidePath",
+    isTsvExportsEnabled ? ["export"] : [],
+  );
 
   const {
     query,
@@ -100,34 +107,36 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
         onSelectAll={selectAll}
         onClearSelection={clearSelection}
       />
-      <SidePanel
-        isOpen={lastSidePathSegment === "export"}
-        onClose={popSidePath}
-        size="medium"
-      >
-        {lastSidePathSegment === "export" && (
-          <SidePanel.Suspense key="export">
-            <SidePanel.Header>
-              {getExportTitle({
-                isAllSelected,
-                selectedCount: selectedActivities.length,
-                totalCount: activitiesCount,
-                selectionForms: ["activity", "activities"],
-              })}
-            </SidePanel.Header>
-            <SidePanel.Content>
-              <ActivitiesExportForm
-                exportParams={{ query: exportQuery }}
-                selectedActivityIds={
-                  !isAllSelected && selectedActivities.length > 0
-                    ? selectedActivities.map((a) => a.id)
-                    : undefined
-                }
-              />
-            </SidePanel.Content>
-          </SidePanel.Suspense>
-        )}
-      </SidePanel>
+      {isTsvExportsEnabled && (
+        <SidePanel
+          isOpen={lastSidePathSegment === "export"}
+          onClose={popSidePath}
+          size="medium"
+        >
+          {lastSidePathSegment === "export" && (
+            <SidePanel.Suspense key="export">
+              <SidePanel.Header>
+                {getExportTitle({
+                  isAllSelected,
+                  selectedCount: selectedActivities.length,
+                  totalCount: activitiesCount,
+                  selectionForms: ["activity", "activities"],
+                })}
+              </SidePanel.Header>
+              <SidePanel.Content>
+                <ActivitiesExportForm
+                  exportParams={{ query: exportQuery }}
+                  selectedActivityIds={
+                    !isAllSelected && selectedActivities.length > 0
+                      ? selectedActivities.map((a) => a.id)
+                      : undefined
+                  }
+                />
+              </SidePanel.Content>
+            </SidePanel.Suspense>
+          )}
+        </SidePanel>
+      )}
     </>
   );
 };

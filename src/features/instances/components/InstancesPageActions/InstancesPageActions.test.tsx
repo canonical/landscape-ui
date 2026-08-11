@@ -1,6 +1,10 @@
 import * as Constants from "@/constants";
-import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
+import {
+  resetScreenSize,
+  setFeatureEnabled,
+  setScreenSize,
+} from "@/tests/helpers";
 import {
   instances,
   ubuntuInstance,
@@ -133,6 +137,22 @@ describe("InstancesPageActions", () => {
 
       expect(
         screen.queryByRole("menuitem", { name: /view report/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("'Export selection as TSV' menu item should not be visible when feature disabled", async () => {
+      setFeatureEnabled("tsv-exports", false);
+
+      renderPageActions();
+
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[0] }),
+      );
+
+      expect(
+        screen.queryByRole("menuitem", {
+          name: /export selection as tsv/i,
+        }),
       ).not.toBeInTheDocument();
     });
 

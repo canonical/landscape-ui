@@ -7,6 +7,7 @@ export type FeatureKey =
   | "script-profiles"
   | "spa-dashboard"
   | "support-provider-login"
+  | "tsv-exports"
   | "ubuntu-pro-licensing"
   | "usg-profiles"
   | "wsl-child-instance-profiles";
