@@ -57,7 +57,7 @@ export const packages = [
         id: 20,
         status: "security",
         current_version: "2.38-4ubuntu2.3",
-        available_version: "2.38-4ubuntu2.4",
+        available_version: "2.38-4ubuntu-pro2.4",
       },
       {
         id: 1,
