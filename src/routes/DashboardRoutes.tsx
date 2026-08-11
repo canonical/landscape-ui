@@ -40,6 +40,7 @@ export const DashboardRoutes = (
 
       {/* --- Profiles --- */}
       <Route path={PATHS.profiles.root} element={<ProfilesOutlet />}>
+        <Route index element={<Pages.ProfilesPage />} />
         <Route
           path={PATHS.profiles.repositoryProfiles}
           element={<Pages.RepositoryProfilesPage />}
@@ -97,6 +98,14 @@ export const DashboardRoutes = (
           </SelfHostedGuard>
         }
       >
+        <Route
+          index
+          element={
+            <SelfHostedGuard>
+              <Pages.RepositoriesPage />
+            </SelfHostedGuard>
+          }
+        />
         <Route
           path={PATHS.repositories.mirrors}
           element={
