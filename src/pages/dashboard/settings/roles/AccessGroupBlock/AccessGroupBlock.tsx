@@ -75,6 +75,7 @@ const AccessGroupBlock: FC<AccessGroupBlockProps> = ({
           style={{
             marginLeft: `${INDENTATION * option.depth}rem`,
           }}
+          data-testid="container"
         >
           <CheckboxInput
             key={option.value}
