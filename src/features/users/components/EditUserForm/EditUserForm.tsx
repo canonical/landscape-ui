@@ -34,10 +34,9 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const { editUser, isEditingUser } = useEditUser();
-  const { addUserToGroup, isAddingUserToGroup } = useAddUserToGroup();
-  const { removeUserFromGroup, isRemovingUserFromGroup } =
-    useRemoveUserFromGroup();
+  const { editUser } = useEditUser();
+  const { addUserToGroup } = useAddUserToGroup();
+  const { removeUserFromGroup } = useRemoveUserFromGroup();
 
   const instanceId = Number(urlInstanceId);
 
