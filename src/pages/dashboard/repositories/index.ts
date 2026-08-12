@@ -1,1 +1,1 @@
-// export { default } from "./RepositoryPage"; // TODO: discard
+export { default } from "./RepositoryPage";

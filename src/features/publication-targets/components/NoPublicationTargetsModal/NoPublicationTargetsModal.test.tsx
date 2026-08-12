@@ -1,19 +1,10 @@
 import { ROUTES } from "@/libs/routes";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { type FC } from "react";
-import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import NoPublicationTargetsModal from "./NoPublicationTargetsModal";
-
-const LocationProbe: FC = () => {
-  const location = useLocation();
-
-  return (
-    <div data-testid="location-probe">{`${location.pathname}${location.search}`}</div>
-  );
-};
 
 describe("NoPublicationTargetsModal", () => {
   const user = userEvent.setup();
@@ -42,7 +33,7 @@ describe("NoPublicationTargetsModal", () => {
     renderWithProviders(
       <>
         <NoPublicationTargetsModal close={close} />
-        <LocationProbe />
+        <LocationDisplay />
       </>,
     );
 
@@ -50,7 +41,7 @@ describe("NoPublicationTargetsModal", () => {
       screen.getByRole("button", { name: /add publication target/i }),
     );
 
-    expect(screen.getByTestId("location-probe")).toHaveTextContent(
+    expect(getLocationDisplay()).toHaveTextContent(
       ROUTES.repositories.publicationTargets({ sidePath: ["add"] }),
     );
   });

@@ -1,9 +1,9 @@
 import { INPUT_DATE_FORMAT } from "@/constants";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import moment from "moment";
-import { useLocation } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import ExportForm from "./ExportForm";
 import type {
@@ -383,11 +383,6 @@ describe("ExportForm", () => {
     });
   });
 
-  const LocationDisplay = () => {
-    const { search } = useLocation();
-    return <div data-testid="location-display">{search}</div>;
-  };
-
   it("pops one sidePath entry on cancel", async () => {
     const user = userEvent.setup();
 
@@ -408,10 +403,8 @@ describe("ExportForm", () => {
     await user.click(screen.getByRole("button", { name: "Cancel" }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("location-display")).toHaveTextContent(
-        "sidePath=view",
-      );
-      expect(screen.getByTestId("location-display")).not.toHaveTextContent(
+      expect(getLocationDisplay()).toHaveTextContent("sidePath=view");
+      expect(getLocationDisplay()).not.toHaveTextContent(
         "sidePath=view,export",
       );
     });
@@ -448,9 +441,7 @@ describe("ExportForm", () => {
       ).toBeInTheDocument();
     });
 
-    expect(screen.getByTestId("location-display")).toHaveTextContent(
-      "sidePath=export",
-    );
+    expect(getLocationDisplay()).toHaveTextContent("sidePath=export");
   });
 
   it("reset order restores group-declaration sequence after manual reorder", async () => {

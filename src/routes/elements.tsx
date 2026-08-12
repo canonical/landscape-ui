@@ -65,6 +65,9 @@ export const InstancesPage = Loadable(
 export const SingleInstance = Loadable(
   lazy(() => import("@/pages/dashboard/instances/[single]")),
 );
+export const ProfilesPage = Loadable(
+  lazy(() => import("@/pages/dashboard/profiles")),
+);
 export const PackageProfilesPage = Loadable(
   lazy(() => import("@/pages/dashboard/profiles/package-profiles")),
 );
@@ -82,6 +85,9 @@ export const USGProfilesPage = Loadable(
 );
 export const RebootProfilesPage = Loadable(
   lazy(() => import("@/pages/dashboard/profiles/reboot-profiles")),
+);
+export const RepositoriesPage = Loadable(
+  lazy(() => import("@/pages/dashboard/repositories")),
 );
 export const MirrorsPage = Loadable(
   lazy(() => import("@/pages/dashboard/repositories/mirrors")),

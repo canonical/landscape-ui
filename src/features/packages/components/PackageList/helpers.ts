@@ -1,7 +1,6 @@
 import type { HTMLProps } from "react";
 import type { Cell, TableCellProps } from "react-table";
 import type { InstancePackage } from "../../types";
-import classes from "./PackageList.module.scss";
 
 export const isUbuntuProRequired = (pkg: InstancePackage) => {
   return (
@@ -42,23 +41,11 @@ export const getPackageStatusInfo = (pkg: InstancePackage) => {
   return pkgStatusInfo;
 };
 
-export const handleCellProps = (
-  { column, row }: Cell<InstancePackage>,
-  totalColumns: number,
-) => {
+export const handleCellProps = ({ column }: Cell<InstancePackage>) => {
   const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
     {};
 
-  if (row.original.name === "loading") {
-    if (column.id === "name") {
-      cellProps.colSpan = totalColumns;
-    } else {
-      cellProps.className = classes.hidden;
-      cellProps["aria-hidden"] = true;
-    }
-  } else if (column.id === "checkbox") {
-    cellProps["aria-label"] = `Toggle ${row.original.name} package`;
-  } else if (column.id === "name") {
+  if (column.id === "name") {
     cellProps.role = "rowheader";
   } else if (column.id === "status") {
     cellProps["aria-label"] = "Status";
