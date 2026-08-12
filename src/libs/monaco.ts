@@ -1,32 +1,43 @@
 import { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 
-import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
-import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
-import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
-import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
-
 loader.config({ monaco });
 
 self.MonacoEnvironment = {
-  getWorker(_, label) {
+  getWorker: function (_workerId, label) {
+    const getWorkerModule = (moduleUrl: string) => {
+      return new Worker(new URL(moduleUrl, import.meta.url), {
+        name: label,
+        type: "module",
+      });
+    };
+
     switch (label) {
       case "json":
-        return new jsonWorker();
+        return getWorkerModule(
+          "/monaco-editor/esm/vs/language/json/json.worker?worker",
+        );
       case "css":
       case "scss":
       case "less":
-        return new cssWorker();
+        return getWorkerModule(
+          "/monaco-editor/esm/vs/language/css/css.worker?worker",
+        );
       case "html":
       case "handlebars":
       case "razor":
-        return new htmlWorker();
+        return getWorkerModule(
+          "/monaco-editor/esm/vs/language/html/html.worker?worker",
+        );
       case "typescript":
       case "javascript":
-        return new tsWorker();
+        return getWorkerModule(
+          "/monaco-editor/esm/vs/language/typescript/ts.worker?worker",
+        );
       default:
-        return new editorWorker();
+        return getWorkerModule(
+          "/monaco-editor/esm/vs/editor/editor.worker?worker",
+        );
     }
   },
 };
