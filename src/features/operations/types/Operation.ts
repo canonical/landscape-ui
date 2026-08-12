@@ -52,6 +52,4 @@ export interface FailedOperation extends BaseOperation {
 }
 
 export type Operation =
-  | UnfinishedOperation
-  | SuccessfulOperation
-  | FailedOperation;
+  UnfinishedOperation | SuccessfulOperation | FailedOperation;
