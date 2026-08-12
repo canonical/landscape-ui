@@ -20,7 +20,7 @@ const NewUserForm: FC = () => {
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-  const { createUser, isCreatingUser } = useCreateUser();
+  const { createUser } = useCreateUser();
 
   const instanceId = Number(urlInstanceId);
 
