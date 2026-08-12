@@ -8,13 +8,31 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { authUser } from "@/tests/mocks/auth";
 import useAuth from "@/hooks/useAuth";
 import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "./constants";
+import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
+
+const { acceptPendingInstances } = vi.hoisted(() => ({
+  acceptPendingInstances: vi.fn(),
+}));
 
 vi.mock("@/hooks/useAuth");
+vi.mock("@/features/instances", async () => {
+  const actual = await vi.importActual("@/features/instances");
+
+  return {
+    ...actual,
+    useAcceptPendingInstances: () => ({
+      acceptPendingInstances,
+      isAcceptingPendingInstances: false,
+    }),
+  };
+});
 
 describe("PendingInstancesForm", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
+    vi.clearAllMocks();
+
     vi.mocked(useAuth).mockReturnValue({
       user: authUser,
       authLoading: false,
@@ -284,6 +302,38 @@ describe("PendingInstancesForm", () => {
     );
 
     expect(await screen.findByText(/you have approved/i)).toBeInTheDocument();
+  });
+
+  it("submits approve with the default access group when unchanged", async () => {
+    renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("table")).toBeInTheDocument();
+    });
+
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+
+    assert(firstCheckbox);
+
+    await user.click(firstCheckbox);
+    await user.click(screen.getByRole("button", { name: /^approve$/i }));
+
+    const approveConfirmBtn = screen
+      .getAllByRole("button", { name: /approve/i })
+      .find((btn) => btn.getAttribute("type") === "button");
+
+    assert(approveConfirmBtn);
+    await user.click(approveConfirmBtn);
+
+    const dialog = await screen.findByRole("dialog");
+    await user.click(
+      within(dialog).getByRole("button", { name: /^approve$/i }),
+    );
+
+    expect(acceptPendingInstances).toHaveBeenCalledWith({
+      access_group: DEFAULT_ACCESS_GROUP_NAME,
+      computer_ids: pendingInstances.map((instance) => instance.id),
+    });
   });
 
   it("changes the access group select in approving step", async () => {
