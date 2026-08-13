@@ -20,7 +20,7 @@ const TruncatedInfoItem: FC<TruncatedInfoItemProps> = ({ value, ...props }) => {
   useOnClickOutside(ref, collapse);
 
   useEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
+    if (isExpanded && event.key === "Escape") {
       collapse();
     }
   });
