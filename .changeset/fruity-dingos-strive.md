@@ -2,4 +2,4 @@
 "landscape-ui": patch
 ---
 
-Fix review pending instances without input
+Assign global access group as default value to "Review pending instances" form
