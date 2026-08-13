@@ -8,16 +8,23 @@ import {
 import { instances } from "@/tests/mocks/instance";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import WslProfileNonCompliantInstancesList from "./WslProfileNonCompliantInstancesList";
 
 const [wslProfile] = wslProfiles;
 const [, applicationServer] = instances;
 
 describe("WslProfileNonCompliantInstancesList", () => {
-  afterEach(() => {
+  beforeEach(() => {
+    mockRangeBoundingClientRect();
+  });
+
+  afterEach(async () => {
+    await act(async () => {
+      /* flush pending callbacks */
+    });
     restoreRangeBoundingClientRect();
     setEndpointStatus("default");
   });
@@ -101,8 +108,6 @@ describe("WslProfileNonCompliantInstancesList", () => {
   });
 
   it("expands the WSL profiles cell when Show more is clicked", async () => {
-    mockRangeBoundingClientRect();
-
     const instanceWithProfiles = {
       ...applicationServer,
       wsl_profiles: [...wslProfiles],
@@ -124,6 +129,33 @@ describe("WslProfileNonCompliantInstancesList", () => {
 
     expect(container.querySelector(".expandedRow")).toBeInTheDocument();
     expect(container.querySelector(".expandedCell")).toBeInTheDocument();
+  });
+
+  it("collapses the expanded WSL profiles cell when pressing Escape", async () => {
+    const instanceWithProfiles = {
+      ...applicationServer,
+      wsl_profiles: [...wslProfiles],
+    };
+
+    setEndpointStatus({
+      status: "variant",
+      path: "computers",
+      response: { count: 1, results: [instanceWithProfiles] },
+    });
+
+    const { container } = renderWithProviders(
+      <WslProfileNonCompliantInstancesList wslProfile={wslProfile} />,
+    );
+
+    await userEvent.click(
+      await screen.findByRole("button", { name: /show more/i }),
+    );
+
+    expect(container.querySelector(".expandedCell")).toBeInTheDocument();
+
+    await userEvent.keyboard("{Escape}");
+
+    expect(container.querySelector(".expandedCell")).not.toBeInTheDocument();
   });
 
   it("renders no data for an instance without a valid last ping time", async () => {
