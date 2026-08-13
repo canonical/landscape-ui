@@ -54,4 +54,18 @@ describe("WslProfilesPage", () => {
       }),
     ).toBeInTheDocument();
   });
+
+  it("renders a side panel with non-compliant instances", async () => {
+    renderWithProviders(
+      <WslProfilesPage />,
+      undefined,
+      `/?sidePath=noncompliant&name=${wslProfiles[0].name}`,
+    );
+
+    expect(
+      await within(screen.getByLabelText("Side panel")).findByRole("heading", {
+        name: `Instances not compliant with ${wslProfiles[0].title}`,
+      }),
+    ).toBeInTheDocument();
+  });
 });
