@@ -1,3 +1,4 @@
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
@@ -7,6 +8,8 @@ import PackageProfileEditSidePanel from "./PackageProfileEditSidePanel";
 
 describe("PackageProfileEditSidePanel", () => {
   beforeEach(async () => {
+    setEndpointStatus("default");
+
     renderWithProviders(
       <PackageProfileEditSidePanel />,
       undefined,
@@ -62,7 +65,10 @@ describe("PackageProfileEditSidePanel", () => {
   });
 
   it("should show error notification if editPackageProfile throws an error", async () => {
-    expect(screen.queryByText("Network Error")).not.toBeInTheDocument();
+    setEndpointStatus({
+      status: "error",
+      path: "packageprofiles/:profileName",
+    });
 
     const nameInput = screen.getByRole("textbox", { name: /title/i });
 
@@ -72,6 +78,8 @@ describe("PackageProfileEditSidePanel", () => {
       screen.getByRole("button", { name: /save changes/i }),
     );
 
-    expect(screen.getByText("Network Error")).toBeInTheDocument();
+    expect(
+      await screen.findByText(/the endpoint status is set to "error"/i),
+    ).toBeInTheDocument();
   });
 });

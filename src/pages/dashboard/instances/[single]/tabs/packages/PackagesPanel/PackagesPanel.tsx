@@ -26,16 +26,6 @@ const PackagesPanel: FC = () => {
   const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const {
-    data: unfilteredPackagesResponse,
-    isPending: isGettingUnfilteredPackages,
-    error: unfilteredPackagesError,
-  } = getInstancePackagesQuery({
-    limit: 1,
-    instance_id: instanceId,
-    installed: true,
-  });
-
-  const {
     data: packagesResponse,
     isPending: isGettingPackages,
     error: packagesError,
@@ -60,15 +50,15 @@ const PackagesPanel: FC = () => {
     setSelected([]);
   };
 
-  if (isGettingUnfilteredPackages) {
+  if (isGettingPackages) {
     return <LoadingState />;
   }
 
-  if (unfilteredPackagesError) {
-    throw unfilteredPackagesError;
+  if (packagesError) {
+    throw packagesError;
   }
 
-  if (!unfilteredPackagesResponse.data.count) {
+  if (!(packagesResponse.data.count || search || status)) {
     return (
       <EmptyState
         title="No packages have been found yet."
@@ -77,38 +67,26 @@ const PackagesPanel: FC = () => {
     );
   }
 
-  if (packagesError) {
-    throw packagesError;
-  }
-
   return (
     <>
       <PackagesPanelHeader
         selectedPackages={selected}
         handleClearSelection={handleClearSelection}
       />
-
-      {isGettingPackages ? (
-        <LoadingState />
-      ) : (
-        <>
-          <PackageList
-            packages={packagesResponse.data.results}
-            packagesLoading={isGettingPackages}
-            selectedPackages={selected}
-            onPackagesSelect={(packageNames) => {
-              setSelected(packageNames);
-            }}
-            emptyMsg={getEmptyMessage(status, search)}
-            selectAll={!!state?.selectAll}
-          />
-          <TablePagination
-            handleClearSelection={handleClearSelection}
-            totalItems={packagesResponse.data.count}
-            currentItemCount={packagesResponse.data.results.length}
-          />
-        </>
-      )}
+      <PackageList
+        packages={packagesResponse.data.results}
+        selectedPackages={selected}
+        onPackagesSelect={(packageNames) => {
+          setSelected(packageNames);
+        }}
+        emptyMsg={getEmptyMessage(status, search)}
+        selectAll={!!state?.selectAll}
+      />
+      <TablePagination
+        handleClearSelection={handleClearSelection}
+        totalItems={packagesResponse.data.count}
+        currentItemCount={packagesResponse.data.results.length}
+      />
     </>
   );
 };

@@ -6,12 +6,7 @@ import ReportLegendTable from "../ReportLegendTable";
 import classes from "./ReportDonutChart.module.scss";
 
 export type DonutColor =
-  | "red"
-  | "orange"
-  | "orangeLight"
-  | "greenLight"
-  | "green"
-  | "grey";
+  "red" | "orange" | "orangeLight" | "greenLight" | "green" | "grey";
 
 export interface DonutSegment {
   readonly key: string;

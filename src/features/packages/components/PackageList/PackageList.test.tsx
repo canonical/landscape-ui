@@ -19,7 +19,6 @@ const props: ComponentProps<typeof PackageList> = {
   emptyMsg: "No packages found",
   onPackagesSelect: vi.fn(),
   packages: packagesWithUpgrade,
-  packagesLoading: false,
   selectedPackages: [],
 };
 
@@ -81,12 +80,6 @@ describe("PackageList", () => {
     renderWithProviders(<PackageList {...props} selectAll />);
 
     expect(props.onPackagesSelect).toHaveBeenCalledWith(packagesWithUpgrade);
-  });
-
-  it("shows loading state when packagesLoading is true", () => {
-    renderWithProviders(<PackageList {...props} packagesLoading />);
-
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
   it("selects a package when its checkbox is clicked", async () => {

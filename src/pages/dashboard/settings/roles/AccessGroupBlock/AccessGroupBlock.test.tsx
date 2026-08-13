@@ -70,10 +70,12 @@ describe("AccessGroupBlock", () => {
       name: selectedAccessGroup.label,
     });
 
-    const parentCheckboxContainer = parentCheckboxInput.closest("div");
-    expect(parentCheckboxContainer).toHaveStyle({
-      marginLeft: `${INDENTATION * selectedAccessGroup.depth}rem`,
-    });
+    const parentCheckboxContainer = parentCheckboxInput.closest<HTMLElement>(
+      'div[data-testid="container"]',
+    );
+    expect(parentCheckboxContainer?.style.marginLeft).toBe(
+      `${INDENTATION * selectedAccessGroup.depth}rem`,
+    );
 
     const groupMap = new Map(
       accessGroupOptions.map((group) => [group.value, group]),
@@ -87,11 +89,13 @@ describe("AccessGroupBlock", () => {
       const childCheckboxInput = screen.getByRole("checkbox", {
         name: childGroup.label,
       });
-      const childCheckboxContainer = childCheckboxInput.closest("div");
+      const childCheckboxContainer = childCheckboxInput.closest<HTMLElement>(
+        'div[data-testid="container"]',
+      );
 
-      expect(childCheckboxContainer).toHaveStyle({
-        marginLeft: `${INDENTATION * childGroup.depth}rem`,
-      });
+      expect(childCheckboxContainer?.style.marginLeft).toBe(
+        `${INDENTATION * childGroup.depth}rem`,
+      );
     }
   });
 });

@@ -1,5 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import NoScriptsEmptyState from "./NoScriptsEmptyState";
 
@@ -16,5 +17,18 @@ describe("NoScriptsEmptyState", () => {
 
     expect(emptyStateTitle).toBeInTheDocument();
     expect(emptyStateBody).toBeInTheDocument();
+  });
+
+  it("opens the add script side panel when the add script button is clicked", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(<NoScriptsEmptyState />);
+
+    await user.click(screen.getByRole("button", { name: /add script/i }));
+
+    expect(
+      await screen.findByRole("heading", { name: "Add script" }),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("Access group")).toBeInTheDocument();
   });
 });

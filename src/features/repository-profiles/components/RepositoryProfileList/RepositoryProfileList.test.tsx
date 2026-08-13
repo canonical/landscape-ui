@@ -1,16 +1,11 @@
 import { accessGroups } from "@/tests/mocks/accessGroup";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import RepositoryProfileList from "./RepositoryProfileList";
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 describe("RepositoryProfileList", () => {
   const user = userEvent.setup();
@@ -66,12 +61,8 @@ describe("RepositoryProfileList", () => {
     });
     await user.click(profileButton);
 
-    expect(await screen.findByTestId("location")).toHaveTextContent(
-      "sidePath=view",
-    );
-    expect(screen.getByTestId("location")).toHaveTextContent(
-      `name=${firstProfile.name}`,
-    );
+    expect(getLocationDisplay()).toHaveTextContent("sidePath=view");
+    expect(getLocationDisplay()).toHaveTextContent(`name=${firstProfile.name}`);
   });
 
   it("renders only the profiles passed in (server-side filtering)", () => {

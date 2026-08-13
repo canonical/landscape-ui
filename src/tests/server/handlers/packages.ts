@@ -1,3 +1,4 @@
+import { delay } from "msw";
 import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type {
@@ -98,11 +99,15 @@ export default [
     },
   ),
 
-  http.get(`${API_URL}computers/:id/packages`, ({ params, request }) => {
+  http.get(`${API_URL}computers/:id/packages`, async ({ params, request }) => {
     if (shouldApplyEndpointStatus("computers-packages")) {
       const { status } = getEndpointStatus();
       if (status === "error") {
         throw createEndpointStatusNetworkError();
+      }
+
+      if (status === "loading") {
+        await delay("infinite");
       }
     }
 

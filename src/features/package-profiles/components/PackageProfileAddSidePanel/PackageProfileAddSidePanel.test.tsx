@@ -144,6 +144,33 @@ describe("PackageProfileAddSidePanel", () => {
 
       await submitValidForm();
     });
+
+    it("submits with a CSV file", async () => {
+      await renderForm();
+
+      await user.type(
+        screen.getByRole("textbox", { name: "Title" }),
+        "Package profile",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "Description" }),
+        NO_DATA_TEXT,
+      );
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: "Package constraints" }),
+        "material",
+      );
+
+      const fileInput = await screen.findByLabelText("Upload constraints");
+      const csvFile = new File(["apache2\tinstall"], "constraints.csv", {
+        type: "text/csv",
+      });
+      await user.upload(fileInput, csvFile);
+
+      expect(await screen.findByText("constraints.csv")).toBeInTheDocument();
+
+      await submitValidForm();
+    });
   });
 
   it("shows errors", async () => {

@@ -1206,7 +1206,7 @@ export const instances = [
     distribution_info: {
       code_name: "jammy",
       description: "Ubuntu 22.04 LTS",
-      distributor: "Canonical",
+      distributor: "Ubuntu",
       release: "22.04",
     },
     employee_id: null,

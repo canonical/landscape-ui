@@ -1,5 +1,6 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import {
   instances,
   ubuntuCoreInstance,
@@ -9,16 +10,9 @@ import { renderWithProviders } from "@/tests/render";
 import type { Instance } from "@/types/Instance";
 import { fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { ComponentProps, FC } from "react";
-import { useLocation } from "react-router";
+import type { ComponentProps } from "react";
 import { describe, expect, vi } from "vitest";
 import InstanceList from "./InstanceList";
-
-const LocationProbe: FC = () => {
-  const location = useLocation();
-
-  return <div data-testid="location-probe">{location.search}</div>;
-};
 
 const props: ComponentProps<typeof InstanceList> = {
   selectedInstances: [],
@@ -173,11 +167,11 @@ describe("InstanceList", () => {
     renderWithProviders(
       <>
         <InstanceList {...props} instances={[taggedInstance]} />
-        <LocationProbe />
+        <LocationDisplay />
       </>,
     );
 
-    const probe = screen.getByTestId("location-probe");
+    const probe = getLocationDisplay();
     const tagPill = screen.getByRole("button", { name: "bionic" });
 
     await userEvent.click(tagPill);
@@ -203,11 +197,11 @@ describe("InstanceList", () => {
     renderWithProviders(
       <>
         <InstanceList {...props} instances={[offlineInstance]} />
-        <LocationProbe />
+        <LocationDisplay />
       </>,
     );
 
-    const probe = screen.getByTestId("location-probe");
+    const probe = getLocationDisplay();
     const statusPill = screen.getByRole("button", { name: "Offline" });
 
     await userEvent.click(statusPill);
@@ -234,11 +228,11 @@ describe("InstanceList", () => {
     renderWithProviders(
       <>
         <InstanceList {...props} instances={[upgradableInstance]} />
-        <LocationProbe />
+        <LocationDisplay />
       </>,
     );
 
-    const probe = screen.getByTestId("location-probe");
+    const probe = getLocationDisplay();
     const upgradePill = screen.getByRole("button", {
       name: /security upgrade/i,
     });
@@ -293,7 +287,7 @@ describe("InstanceList", () => {
     renderWithProviders(
       <>
         <InstanceList {...props} instances={[taggedInstance]} />
-        <LocationProbe />
+        <LocationDisplay />
       </>,
     );
 
@@ -311,9 +305,7 @@ describe("InstanceList", () => {
     // the now-stale expansion can't carry over to whatever the filter returns.
     await userEvent.click(screen.getByRole("button", { name: "jammy" }));
 
-    expect(screen.getByTestId("location-probe")).toHaveTextContent(
-      "tags=jammy",
-    );
+    expect(getLocationDisplay()).toHaveTextContent("tags=jammy");
     expect(screen.queryByText("jammy")).not.toBeInTheDocument();
   });
 
