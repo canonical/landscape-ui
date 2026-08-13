@@ -11,7 +11,6 @@ import {
   useGetPageWslProfile,
   useGetWslProfiles,
   useRemoveWslProfile,
-  WslProfileNonCompliantInstancesSidePanel,
 } from "@/features/wsl-profiles";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import { lazy, useEffect, type FC } from "react";
@@ -27,6 +26,11 @@ const WslProfileAddSidePanel = lazy(
 
 const WslProfileEditSidePanel = lazy(
   () => import("@/features/wsl-profiles/components/WslProfileEditSidePanel"),
+);
+
+const WslProfileNonCompliantInstancesSidePanel = lazy(
+  () =>
+    import("@/features/wsl-profiles/components/WslProfileNonCompliantInstancesSidePanel"),
 );
 
 const WslProfilesPage: FC = () => {
