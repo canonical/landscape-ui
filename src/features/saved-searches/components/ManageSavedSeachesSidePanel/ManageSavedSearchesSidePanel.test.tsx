@@ -31,12 +31,13 @@ describe("ManageSavedSearchesSidePanel", () => {
   });
 
   it("should open the create form side panel when Add saved search is clicked", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<ManageSavedSearchesSidePanel />);
 
     const createButton = await screen.findByRole("button", {
       name: "Add saved search",
     });
-    await userEvent.click(createButton);
+    await user.click(createButton);
 
     expect(
       await screen.findByRole("heading", { name: "Add saved search" }),
@@ -44,16 +45,17 @@ describe("ManageSavedSearchesSidePanel", () => {
   });
 
   it("should navigate back to manage panel when back button is clicked in create form", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<ManageSavedSearchesSidePanel />);
 
     const createButton = await screen.findByRole("button", {
       name: "Add saved search",
     });
-    await userEvent.click(createButton);
+    await user.click(createButton);
 
     await screen.findByRole("heading", { name: "Add saved search" });
     const backButton = await screen.findByRole("button", { name: /back/i });
-    await userEvent.click(backButton);
+    await user.click(backButton);
 
     expect(
       await screen.findByRole("heading", { name: "Manage saved searches" }),
@@ -61,6 +63,7 @@ describe("ManageSavedSearchesSidePanel", () => {
   });
 
   it("should show pagination controls and support page navigation when many saved searches exist", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<ManageSavedSearchesSidePanel />);
 
     await screen.findByRole("table");
@@ -68,13 +71,14 @@ describe("ManageSavedSearchesSidePanel", () => {
     const nextButton = await screen.findByRole("button", { name: /next/i });
     expect(nextButton).toBeInTheDocument();
 
-    await userEvent.click(nextButton);
+    await user.click(nextButton);
 
     const prevButton = screen.getByRole("button", { name: /previous/i });
     expect(prevButton).toBeInTheDocument();
   });
 
   it("should update page size when page size selector is changed", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<ManageSavedSearchesSidePanel />);
 
     await screen.findByRole("table");
@@ -82,7 +86,7 @@ describe("ManageSavedSearchesSidePanel", () => {
     const pageSizeSelect = await screen.findByRole("combobox", {
       name: /instances per page/i,
     });
-    await userEvent.selectOptions(pageSizeSelect, "50");
+    await user.selectOptions(pageSizeSelect, "50");
 
     expect(pageSizeSelect).toHaveValue("50");
   });
