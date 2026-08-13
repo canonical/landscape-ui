@@ -147,10 +147,10 @@ describe("ScriptProfileForm edge cases", () => {
     initialValues: {
       all_computers: false,
       interval: "0 0 * * *",
-      start_after: moment().format(INPUT_DATE_TIME_FORMAT),
+      start_after: date().format(INPUT_DATE_TIME_FORMAT),
       tags: [],
       time_limit: 300,
-      timestamp: moment().format(INPUT_DATE_TIME_FORMAT),
+      timestamp: date().format(INPUT_DATE_TIME_FORMAT),
       title: "New profile",
       trigger_type: "event",
       username: "root",
@@ -199,7 +199,7 @@ describe("ScriptProfileForm edge cases", () => {
           ...props.initialValues,
           trigger_type: "recurring",
           interval: "invalid",
-          start_after: moment().format(INPUT_DATE_TIME_FORMAT),
+          start_after: date().format(INPUT_DATE_TIME_FORMAT),
         }}
       />,
     );

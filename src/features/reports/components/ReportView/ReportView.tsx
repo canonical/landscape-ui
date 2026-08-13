@@ -7,13 +7,13 @@ import {
   getSelectedInstanceIds,
   subscribeToSelectedInstanceIds,
 } from "@/features/instances";
+import date from "@/libs/date";
 import { ROUTES } from "@/libs/routes";
 import usePageParams from "@/hooks/usePageParams";
 import { pluralize } from "@/utils/_helpers";
 import { Button, Notification } from "@canonical/react-components";
 import SidePanel from "@/components/layout/SidePanel";
 import classNames from "classnames";
-import moment from "moment";
 import type { FC } from "react";
 import { useState, useSyncExternalStore } from "react";
 import { useGetComplianceReport } from "../../api";
@@ -339,7 +339,7 @@ const ReportView: FC<ReportViewProps> = ({
           />
         </section>
         <p className="u-text--muted p-text--small">
-          {`Report generated ${moment(reportData.generated_at).format(DISPLAY_DATE_TIME_FORMAT)}`}
+          {`Report generated ${date(reportData.generated_at).format(DISPLAY_DATE_TIME_FORMAT)}`}
         </p>
       </SidePanel.Content>
     </>
