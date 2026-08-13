@@ -79,7 +79,13 @@ export default [
     );
 
     if (!response) {
-      return HttpResponse.json(undefined, { status: 404 });
+      return HttpResponse.json(
+        {
+          error: "UnknownChildInstanceProfile",
+          message: `No child instance profile with name ${params.name}`,
+        },
+        { status: 404 },
+      );
     }
     return HttpResponse.json(response);
   }),
