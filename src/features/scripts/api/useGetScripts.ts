@@ -65,7 +65,7 @@ export const useGetScripts = (
         }),
   };
 
-  const { data, isLoading } = useQuery<
+  const { data, isLoading, isPending } = useQuery<
     AxiosResponse<ApiPaginatedResponse<Script>>,
     AxiosError<ApiError>
   >({
@@ -79,5 +79,6 @@ export const useGetScripts = (
     scripts: data?.data.results ?? [],
     scriptsCount: data?.data.count ?? 0,
     isScriptsLoading: isLoading,
+    isGettingScripts: isPending,
   };
 };
