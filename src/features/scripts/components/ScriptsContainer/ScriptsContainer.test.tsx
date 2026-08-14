@@ -84,6 +84,24 @@ describe("Scripts Empty State", () => {
     );
     expect(emptyStateTitle).toBeInTheDocument();
   });
+
+  it("should show empty message when searching for scripts with archived filter enabled yields no results", async () => {
+    setEndpointStatus("empty");
+
+    renderWithProviders(
+      <ScriptsContainer />,
+      undefined,
+      "/scripts?status=archived",
+    );
+
+    await expectLoadingState();
+
+    expect(
+      screen.getByText(
+        "No scripts found according to your search parameters.",
+      ),
+    ).toBeInTheDocument();
+  });
 });
 
 describe("Scripts request params", () => {
