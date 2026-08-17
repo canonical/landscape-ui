@@ -12,8 +12,7 @@ import ScriptsHeader from "../ScriptsHeader";
 const ScriptsContainer: FC = () => {
   const { search, status } = usePageParams();
 
-  const { scripts, scriptsCount, isGettingScripts } =
-    useGetScripts();
+  const { scripts, scriptsCount, isGettingScripts } = useGetScripts();
 
   const isFilteringScripts = !!status || !!search;
 
@@ -27,11 +26,7 @@ const ScriptsContainer: FC = () => {
   return (
     <>
       <ScriptsHeader />
-      {isGettingScripts ? (
-        <LoadingState />
-      ) : (
-        <ScriptList scripts={scripts} />
-      )}
+      {isGettingScripts ? <LoadingState /> : <ScriptList scripts={scripts} />}
       <TablePagination
         totalItems={scriptsCount}
         currentItemCount={scripts.length}

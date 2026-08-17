@@ -97,9 +97,7 @@ describe("Scripts Empty State", () => {
     await expectLoadingState();
 
     expect(
-      screen.getByText(
-        "No scripts found according to your search parameters.",
-      ),
+      screen.getByText("No scripts found according to your search parameters."),
     ).toBeInTheDocument();
   });
 });
