@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import pageParamsManager from "./pageParamsManager";
 import {
   DEFAULT_CURRENT_PAGE,
@@ -9,6 +9,10 @@ import {
 } from "./constants";
 
 describe("PageParamsManager (Refactored)", () => {
+  afterEach(() => {
+    pageParamsManager.clearAllDynamicAllowedValues();
+  });
+
   describe("shouldResetPage", () => {
     it("returns true if at least one 'shouldResetPage' param is in newParams", () => {
       expect(pageParamsManager.shouldResetPage({ days: DEFAULT_DAYS })).toBe(
@@ -162,6 +166,73 @@ describe("PageParamsManager (Refactored)", () => {
 
       expect(pageParamsManager.sanitizeSearchParams(params).get("type")).toBe(
         "type2",
+      );
+    });
+  });
+
+  describe("dynamic allowed values registrations", () => {
+    it("uses the newest registration as the effective rule", () => {
+      pageParamsManager.registerDynamicAllowedValues("type", ["type1"]);
+      pageParamsManager.registerDynamicAllowedValues("type", ["type2"]);
+
+      const params = new URLSearchParams({ type: "type1" });
+
+      expect(pageParamsManager.sanitizeSearchParams(params).has("type")).toBe(
+        false,
+      );
+    });
+
+    it("restores the previous registration when the newest one unregisters", () => {
+      pageParamsManager.registerDynamicAllowedValues("type", ["type1"]);
+      const secondId = pageParamsManager.registerDynamicAllowedValues("type", [
+        "type2",
+      ]);
+
+      pageParamsManager.unregisterDynamicAllowedValues("type", secondId);
+
+      const params = new URLSearchParams({ type: "type1" });
+
+      expect(pageParamsManager.sanitizeSearchParams(params).get("type")).toBe(
+        "type1",
+      );
+    });
+
+    it("handles unregistration out of order", () => {
+      const firstId = pageParamsManager.registerDynamicAllowedValues("type", [
+        "type1",
+      ]);
+      const secondId = pageParamsManager.registerDynamicAllowedValues("type", [
+        "type2",
+      ]);
+      pageParamsManager.registerDynamicAllowedValues("type", ["type3"]);
+
+      pageParamsManager.unregisterDynamicAllowedValues("type", secondId);
+
+      let params = new URLSearchParams({ type: "type3" });
+
+      expect(pageParamsManager.sanitizeSearchParams(params).get("type")).toBe(
+        "type3",
+      );
+
+      pageParamsManager.unregisterDynamicAllowedValues("type", firstId);
+
+      params = new URLSearchParams({ type: "type1" });
+
+      expect(pageParamsManager.sanitizeSearchParams(params).has("type")).toBe(
+        false,
+      );
+    });
+
+    it("clearDynamicAllowedValues removes the whole registration stack", () => {
+      pageParamsManager.registerDynamicAllowedValues("type", ["type1"]);
+      pageParamsManager.registerDynamicAllowedValues("type", ["type2"]);
+
+      pageParamsManager.clearDynamicAllowedValues("type");
+
+      const params = new URLSearchParams({ type: "anything" });
+
+      expect(pageParamsManager.sanitizeSearchParams(params).get("type")).toBe(
+        "anything",
       );
     });
   });

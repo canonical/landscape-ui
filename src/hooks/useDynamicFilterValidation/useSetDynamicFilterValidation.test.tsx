@@ -38,6 +38,12 @@ describe("useSetDynamicFilterValidation", () => {
         .sanitizeSearchParams(new URLSearchParams("sidePath=view"))
         .has("sidePath"),
     ).toBe(true);
+    // then page A is still mounted, so its rule must be back in force: junk rejected
+    expect(
+      pageParamsManager
+        .sanitizeSearchParams(new URLSearchParams("sidePath=garbage"))
+        .has("sidePath"),
+    ).toBe(false);
 
     pageA.unmount();
   });
@@ -65,6 +71,38 @@ describe("useSetDynamicFilterValidation", () => {
 
     remountedPageA.unmount();
     pageParamsManager.clearDynamicAllowedValues("sidePath");
+  });
+
+  it("restores the still-mounted page's rule when an overlapping registrar unmounts", () => {
+    // given a main table and a co-mounted modal table registering the same param
+    const mainTable = renderHook(() => {
+      useSetDynamicFilterValidation("currentPage", ["1", "2", "3"]);
+    });
+    const modalTable = renderHook(() => {
+      useSetDynamicFilterValidation("currentPage", ["1"]);
+    });
+
+    // when the modal closes, the main table's rule is back in force
+    modalTable.unmount();
+
+    expect(
+      pageParamsManager
+        .sanitizeSearchParams(new URLSearchParams("currentPage=3"))
+        .get("currentPage"),
+    ).toBe("3");
+    expect(
+      pageParamsManager
+        .sanitizeSearchParams(new URLSearchParams("currentPage=9"))
+        .has("currentPage"),
+    ).toBe(false);
+
+    // when the main table also unmounts, the restriction is gone entirely
+    mainTable.unmount();
+    expect(
+      pageParamsManager
+        .sanitizeSearchParams(new URLSearchParams("currentPage=9"))
+        .get("currentPage"),
+    ).toBe("9");
   });
 });
 

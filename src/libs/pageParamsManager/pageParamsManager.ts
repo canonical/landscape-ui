@@ -1,12 +1,25 @@
 import type { PageParams, ParamDefinition, ParamsConfig } from "./types";
 import { PARAMS_CONFIG } from "./constants";
 
+interface DynamicAllowedValuesRegistration {
+  id: number;
+  values: Set<string | number>;
+}
+
 class PageParamsManager {
-  /** A map to store dynamic allowed values for certain params. */
+  /** Effective dynamic allowed values per param: the newest live registration. */
   private dynamicAllowedValues = new Map<
     keyof PageParams,
     Set<string | number>
   >();
+
+  /** Per-param registrations, oldest first. Last entry is the effective one. */
+  private dynamicAllowedValuesStacks = new Map<
+    keyof PageParams,
+    DynamicAllowedValuesRegistration[]
+  >();
+
+  private nextDynamicAllowedValuesId = 1;
 
   /** You can optionally pass a custom config; defaults to PARAMS_CONFIG. */
   constructor(private readonly config: ParamsConfig = PARAMS_CONFIG) {}
@@ -19,11 +32,76 @@ class PageParamsManager {
     paramKey: keyof PageParams,
     values: (string | number)[],
   ): void {
-    this.dynamicAllowedValues.set(paramKey, new Set(values));
+    this.dynamicAllowedValuesStacks.set(paramKey, [
+      { id: this.nextDynamicAllowedValuesId++, values: new Set(values) },
+    ]);
+    this.syncDynamicAllowedValues(paramKey);
   }
 
+  /**
+   * Registers dynamic allowed values on top of any existing registration for
+   * the same paramKey. Returns an id for unregisterDynamicAllowedValues.
+   */
+  public registerDynamicAllowedValues(
+    paramKey: keyof PageParams,
+    values: (string | number)[],
+  ): number {
+    const stack = this.dynamicAllowedValuesStacks.get(paramKey) ?? [];
+    const id = this.nextDynamicAllowedValuesId++;
+    this.dynamicAllowedValuesStacks.set(paramKey, [
+      ...stack,
+      { id, values: new Set(values) },
+    ]);
+    this.syncDynamicAllowedValues(paramKey);
+    return id;
+  }
+
+  /**
+   * Removes a single registration. If older registrations remain for the
+   * paramKey, the newest of those becomes effective again.
+   */
+  public unregisterDynamicAllowedValues(
+    paramKey: keyof PageParams,
+    registrationId: number,
+  ): void {
+    const stack = this.dynamicAllowedValuesStacks.get(paramKey);
+
+    if (!stack) {
+      return;
+    }
+
+    const remaining = stack.filter(({ id }) => id !== registrationId);
+
+    if (remaining.length) {
+      this.dynamicAllowedValuesStacks.set(paramKey, remaining);
+    } else {
+      this.dynamicAllowedValuesStacks.delete(paramKey);
+    }
+
+    this.syncDynamicAllowedValues(paramKey);
+  }
+
+  /** Removes every registration for the given paramKey. */
   public clearDynamicAllowedValues(paramKey: keyof PageParams): void {
-    this.dynamicAllowedValues.delete(paramKey);
+    this.dynamicAllowedValuesStacks.delete(paramKey);
+    this.syncDynamicAllowedValues(paramKey);
+  }
+
+  /** Removes every registration for every paramKey. */
+  public clearAllDynamicAllowedValues(): void {
+    this.dynamicAllowedValuesStacks.clear();
+    this.dynamicAllowedValues.clear();
+  }
+
+  private syncDynamicAllowedValues(paramKey: keyof PageParams): void {
+    const stack = this.dynamicAllowedValuesStacks.get(paramKey);
+    const effective = stack?.[stack.length - 1];
+
+    if (effective) {
+      this.dynamicAllowedValues.set(paramKey, effective.values);
+    } else {
+      this.dynamicAllowedValues.delete(paramKey);
+    }
   }
 
   /**

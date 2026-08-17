@@ -13,10 +13,16 @@ const useSetDynamicFilterValidation = (
       return;
     }
 
-    pageParamsManager.setDynamicAllowedValues(urlParam, allowedValues);
+    const registrationId = pageParamsManager.registerDynamicAllowedValues(
+      urlParam,
+      allowedValues,
+    );
 
     return () => {
-      pageParamsManager.clearDynamicAllowedValues(urlParam);
+      pageParamsManager.unregisterDynamicAllowedValues(
+        urlParam,
+        registrationId,
+      );
     };
   }, [urlParam, allowedValuesString]);
 };
