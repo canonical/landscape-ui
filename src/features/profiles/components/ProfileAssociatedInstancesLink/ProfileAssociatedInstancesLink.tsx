@@ -1,10 +1,9 @@
 import LoadingState from "@/components/layout/LoadingState";
 import StaticLink from "@/components/layout/StaticLink";
-import { WslProfileNonCompliantInstancesList } from "@/features/wsl-profiles";
 import { ROUTES } from "@/libs/routes";
 import { pluralize } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
-import { Suspense, type FC } from "react";
+import { type FC } from "react";
 import type { Profile } from "../../types";
 import {
   hasAssociations,
@@ -12,7 +11,7 @@ import {
   isPostEnrollmentScriptProfile,
   isWslProfile,
 } from "../../helpers";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import NoData from "@/components/layout/NoData";
 
 interface ProfileAssociatedInstancesLinkProps {
@@ -32,7 +31,7 @@ const ProfileAssociatedInstancesLink: FC<
   isPending = false,
   isGeneralAssociation = false,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { sidePath, setPageParams } = usePageParams();
 
   if (isPending) {
     return <LoadingState inline />;
@@ -78,13 +77,10 @@ const ProfileAssociatedInstancesLink: FC<
         type="button"
         appearance="link"
         onClick={() => {
-          setSidePanelContent(
-            `Instances not compliant with ${profile.title}`,
-            <Suspense fallback={<LoadingState />}>
-              <WslProfileNonCompliantInstancesList wslProfile={profile} />
-            </Suspense>,
-            "large",
-          );
+          setPageParams({
+            sidePath: [...sidePath, "noncompliant"],
+            name: profile.name,
+          });
         }}
       >
         {text}
