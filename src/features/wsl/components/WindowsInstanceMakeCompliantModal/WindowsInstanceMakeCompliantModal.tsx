@@ -62,6 +62,7 @@ const WindowsInstanceMakeCompliantModal: FC<
       confirmButtonLoading={false}
       confirmationText={`make ${title} compliant`}
       onConfirm={makeCompliant}
+      renderInPortal
     >
       <p>This will:</p>
       <ol>

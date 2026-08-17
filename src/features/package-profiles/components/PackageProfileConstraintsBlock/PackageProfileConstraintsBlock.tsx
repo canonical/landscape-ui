@@ -26,8 +26,7 @@ import classes from "./PackageProfileConstraintsBlock.module.scss";
 
 interface PackageProfileConstraintsBlockProps {
   readonly formik:
-    | FormikContextType<AddFormProps>
-    | FormikContextType<ConstraintsFormProps>;
+    FormikContextType<AddFormProps> | FormikContextType<ConstraintsFormProps>;
 }
 
 const PackageProfileConstraintsBlock: FC<

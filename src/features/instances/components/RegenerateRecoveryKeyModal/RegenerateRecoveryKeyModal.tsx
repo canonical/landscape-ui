@@ -86,6 +86,7 @@ const RegenerateRecoveryKeyModal: FC<RegenerateRecoveryKeyModalProps> = ({
       confirmButtonDisabled={isGeneratingRecoveryKey || isGettingRecoveryKey}
       confirmButtonLoading={isGeneratingRecoveryKey}
       onConfirm={handleRegenerateRecoveryKey}
+      renderInPortal
     >
       {getRecoveryKeyContent()}
     </TextConfirmationModal>

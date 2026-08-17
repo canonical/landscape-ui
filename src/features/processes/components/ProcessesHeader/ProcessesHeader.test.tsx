@@ -80,8 +80,12 @@ describe("ProcessesHeader", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "End process" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Kill process" })).toBeEnabled();
+    expect(
+      screen.getByRole("button", { name: "End process" }),
+    ).not.toHaveAttribute("aria-disabled");
+    expect(
+      screen.getByRole("button", { name: "Kill process" }),
+    ).not.toHaveAttribute("aria-disabled");
   });
 
   it("ends selected processes and clears selection", async () => {

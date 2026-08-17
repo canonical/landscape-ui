@@ -121,6 +121,7 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
           cancelButtonProps={{
             type: "button",
           }}
+          renderInPortal
         >
           <p>
             All future script runs will be done using the latest version of the

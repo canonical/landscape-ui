@@ -8,8 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
 type GetPublicationTargetError =
-  | AxiosError<PublicationTargetServiceGetPublicationTargetError>
-  | Error;
+  AxiosError<PublicationTargetServiceGetPublicationTargetError> | Error;
 
 export default function useGetPublicationTarget(
   publicationTargetId: string,

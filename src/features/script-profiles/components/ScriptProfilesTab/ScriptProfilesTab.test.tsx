@@ -1,16 +1,44 @@
 import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { expectLoadingState } from "@/tests/helpers";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
+import { ProfilesProvider } from "@/context/profiles";
 import { screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
+import type { FC, ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ScriptProfilesTab from "./ScriptProfilesTab";
-import { expectLoadingState } from "@/tests/helpers";
-import userEvent from "@testing-library/user-event";
+
+const [scriptProfile] = scriptProfiles;
+
+const withProfilesProvider: FC<{ readonly children: ReactNode }> = ({
+  children,
+}) => <ProfilesProvider path="/">{children}</ProfilesProvider>;
 
 describe("ScriptProfilesTab", () => {
+  beforeEach(() => {
+    setEndpointStatus("default");
+  });
+
+  it("shows the no-scripts empty state when there are no active scripts", async () => {
+    setEndpointStatus({ status: "empty", path: "scripts" });
+
+    renderWithProviders(<ScriptProfilesTab />);
+
+    expect(
+      await screen.findByText("You need at least one script to add a profile."),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the profiles list when active scripts exist", async () => {
+    renderWithProviders(<ScriptProfilesTab />);
+
+    expect(await screen.findByText(scriptProfile.title)).toBeInTheDocument();
+  });
+
   it("has a button to add a profile", async () => {
     renderWithProviders(<ScriptProfilesTab />);
 
@@ -58,6 +86,45 @@ describe("ScriptProfilesTab", () => {
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: scriptProfiles[0].title,
       }),
+    ).toBeInTheDocument();
+  });
+
+  it("archives a profile through the row actions", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <ScriptProfilesTab />,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesProvider,
+    );
+
+    // Wait for the access-groups query to settle so the table columns stop
+    // rebuilding (which would otherwise remount and close the actions menu).
+    await screen.findAllByText("Global access");
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: `"${scriptProfile.title}" profile actions`,
+      }),
+    );
+
+    await user.click(await screen.findByRole("menuitem", { name: /archive/i }));
+
+    expect(
+      await screen.findByText("Archive script profile"),
+    ).toBeInTheDocument();
+
+    await user.type(
+      screen.getByRole("textbox"),
+      `archive ${scriptProfile.title}`,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Archive" }));
+
+    expect(
+      await screen.findByText("Script profile archived"),
     ).toBeInTheDocument();
   });
 });

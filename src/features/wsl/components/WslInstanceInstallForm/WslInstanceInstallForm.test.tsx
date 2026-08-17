@@ -251,7 +251,7 @@ describe("WslInstanceInstallForm", () => {
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: /create new wsl instance/i }),
-      ).toBeEnabled();
+      ).not.toHaveAttribute("aria-disabled");
     });
   });
 });

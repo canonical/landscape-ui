@@ -30,12 +30,10 @@ const PackageProfileDetailsConstraintsInfo: FC<
       return [];
     }
 
-    return profileConstraints.map(
-      (constraint): Constraint => ({
-        ...constraint,
-        notAnyVersion: !!constraint.version,
-      }),
-    );
+    return profileConstraints.map((constraint): Constraint => ({
+      ...constraint,
+      notAnyVersion: !!constraint.version,
+    }));
   }, [isConstraintsLoading, profileConstraints]);
 
   const columns = useMemo<Column<Constraint>[]>(

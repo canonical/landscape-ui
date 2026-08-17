@@ -54,7 +54,7 @@ describe("SwitchChannelButton", () => {
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Switch channel" }),
-      ).toBeEnabled();
+      ).not.toHaveAttribute("aria-disabled");
     });
   });
 

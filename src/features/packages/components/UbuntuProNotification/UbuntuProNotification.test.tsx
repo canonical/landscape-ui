@@ -51,5 +51,6 @@ describe("UbuntuProNotification", () => {
 
     // Clicking triggers navigate(); verifying the button was interactive is sufficient
     expect(learnMoreButton).toBeEnabled();
+    expect(learnMoreButton).not.toHaveAttribute("aria-disabled");
   });
 });

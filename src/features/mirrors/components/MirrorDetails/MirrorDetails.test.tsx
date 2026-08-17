@@ -12,15 +12,10 @@ import { API_URL_DEB_ARCHIVE } from "@/constants";
 import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { useLocation } from "react-router";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { inProgressOperation } from "@/tests/mocks/operations";
 
 const typedMirrors = mirrors as Mirror[];
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 describe("MirrorDetails", () => {
   beforeEach(() => {
@@ -403,9 +398,7 @@ describe("MirrorDetails", () => {
       }),
     ).not.toBeInTheDocument();
     await waitFor(() => {
-      expect(screen.getByTestId("location")).not.toHaveTextContent(
-        "updateModal=true",
-      );
+      expect(getLocationDisplay()).not.toHaveTextContent("updateModal=true");
     });
   });
 
