@@ -8,34 +8,25 @@ import {
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import ScriptsHeader from "../ScriptsHeader";
-import { isScriptsEmptyState, isScriptsLoadingState } from "./helpers";
 
 const ScriptsContainer: FC = () => {
-  const { currentPage, pageSize, search, status } = usePageParams();
+  const { search, status } = usePageParams();
 
-  const { scripts, scriptsCount, isScriptsLoading } = useGetScripts();
+  const { scripts, scriptsCount, isGettingScripts } = useGetScripts();
 
-  if (
-    isScriptsEmptyState(
-      currentPage,
-      pageSize,
-      isScriptsLoading,
-      scriptsCount,
-      search,
-      status,
-    )
-  ) {
+  const isFilteringScripts = !!status || !!search;
+
+  const hasNoScripts =
+    !isFilteringScripts && scriptsCount === 0 && !isGettingScripts;
+
+  if (hasNoScripts) {
     return <ScriptsEmptyState />;
   }
 
   return (
     <>
       <ScriptsHeader />
-      {isScriptsLoadingState(currentPage, pageSize, isScriptsLoading) ? (
-        <LoadingState />
-      ) : (
-        <ScriptList scripts={scripts} />
-      )}
+      {isGettingScripts ? <LoadingState /> : <ScriptList scripts={scripts} />}
       <TablePagination
         totalItems={scriptsCount}
         currentItemCount={scripts.length}
