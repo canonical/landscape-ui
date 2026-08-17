@@ -52,19 +52,19 @@ describe("useDeleteScriptModal", () => {
     renderWithProviders(<DeleteModalConsumer script={scriptWithNoProfiles} />);
 
     expect(screen.getByTestId("title")).toHaveTextContent(
-      `Delete ${scriptWithNoProfiles.title}`,
+      `Redact ${scriptWithNoProfiles.title}`,
     );
-    expect(screen.getByTestId("label")).toHaveTextContent("Delete");
+    expect(screen.getByTestId("label")).toHaveTextContent("Redact");
   });
 
   it("returns alternative button label when script has profiles", () => {
     renderWithProviders(<DeleteModalConsumer script={scriptWithProfiles} />);
 
     expect(screen.getByTestId("title")).toHaveTextContent(
-      `Delete ${scriptWithProfiles.title}`,
+      `Redact ${scriptWithProfiles.title}`,
     );
     expect(screen.getByTestId("label")).toHaveTextContent(
-      "Delete both script and profiles",
+      "Redact script and archive profiles",
     );
   });
 
@@ -97,13 +97,13 @@ describe("useDeleteScriptModal", () => {
     expect(afterSuccess).toHaveBeenCalled();
   });
 
-  it("shows success notification after delete", async () => {
+  it("shows success notification after redaction", async () => {
     renderWithProviders(<DeleteModalConsumer script={scriptWithNoProfiles} />);
 
     await user.click(screen.getByRole("button", { name: /confirm delete/i }));
 
     expect(
-      await screen.findByText(/script removed successfully/i),
+      await screen.findByText(/script.*redacted successfully/i),
     ).toBeInTheDocument();
   });
 

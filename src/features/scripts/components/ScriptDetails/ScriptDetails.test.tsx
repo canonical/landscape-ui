@@ -47,7 +47,7 @@ describe("ScriptDetails", () => {
 
     await expectLoadingState();
 
-    const buttons = ["Edit", "Run", "Archive", "Delete"];
+    const buttons = ["Edit", "Run", "Archive", "Redact"];
     expect(container).toHaveTexts(buttons);
   });
 
@@ -60,29 +60,29 @@ describe("ScriptDetails", () => {
     expect(runButton).toHaveAttribute("aria-disabled", "true");
   });
 
-  it("should disable the Delete button when the script is not redactable", async () => {
+  it("should disable the Redact button when the script is not redactable", async () => {
     renderWithProviders(<ScriptDetails scriptId={notRedactableScriptId} />);
 
     await expectLoadingState();
 
     const deleteButton = screen.getByRole("button", {
-      name: /delete new v2 script/i,
+      name: /redact new v2 script/i,
     });
     expect(deleteButton).toHaveAttribute("aria-disabled", "true");
   });
 
-  it("opens delete confirmation modal when clicking Delete button", async () => {
+  it("opens redact confirmation modal when clicking Redact button", async () => {
     renderWithProviders(<ScriptDetails scriptId={activeScriptId} />);
 
     await expectLoadingState();
 
     const deleteButton = screen.getByRole("button", {
-      name: /delete new v2 script/i,
+      name: /redact new v2 script/i,
     });
     await user.click(deleteButton);
 
     const modalBody = screen.getByText(
-      /deleting the script will remove the contents from Landscape/i,
+      /redacting this script will permanently remove its contents from Landscape/i,
     );
     expect(modalBody).toBeInTheDocument();
   });
@@ -113,7 +113,9 @@ describe("ScriptDetails", () => {
 
     expect(editButton).not.toBeInTheDocument();
 
-    const redactedNotification = screen.getByText(/the script was deleted by/i);
+    const redactedNotification = screen.getByText(
+      /the script was redacted by/i,
+    );
     expect(redactedNotification).toBeInTheDocument();
 
     const tabs = screen.queryAllByRole("tab");

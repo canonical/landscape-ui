@@ -118,7 +118,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
   if (script?.status === "REDACTED") {
     return (
       <Notification severity="caution" className="u-no-margin">
-        <b>Script deleted:</b> The script was deleted by{" "}
+        <b>Script redacted:</b> The script was redacted by{" "}
         {script.last_edited_by.name} on{" "}
         {moment(script.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
       </Notification>
@@ -177,11 +177,11 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
               type="button"
               onClick={openDeleteModal}
               hasIcon
-              aria-label={`Delete ${script?.title}`}
+              aria-label={`Redact ${script?.title}`}
               disabled={!script?.is_redactable}
             >
               <Icon name={`${ICONS.delete}--negative`} />
-              <span className="u-text--negative">Delete</span>
+              <span className="u-text--negative">Redact</span>
             </Button>
           </div>
         </div>
@@ -215,7 +215,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
 
       <TextConfirmationModal
         isOpen={deleteModalOpen}
-        confirmationText={`delete ${script?.title}`}
+        confirmationText={`Redact ${script?.title}`}
         title={deleteModalTitle}
         confirmButtonLabel={deleteModalButtonLabel}
         confirmButtonAppearance="negative"
