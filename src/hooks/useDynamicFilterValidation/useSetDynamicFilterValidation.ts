@@ -14,6 +14,10 @@ const useSetDynamicFilterValidation = (
     }
 
     pageParamsManager.setDynamicAllowedValues(urlParam, allowedValues);
+
+    return () => {
+      pageParamsManager.clearDynamicAllowedValues(urlParam);
+    };
   }, [urlParam, allowedValuesString]);
 };
 

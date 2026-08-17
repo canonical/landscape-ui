@@ -22,6 +22,10 @@ class PageParamsManager {
     this.dynamicAllowedValues.set(paramKey, new Set(values));
   }
 
+  public clearDynamicAllowedValues(paramKey: keyof PageParams): void {
+    this.dynamicAllowedValues.delete(paramKey);
+  }
+
   /**
    * Convert the raw URLSearchParams into typed "PageParams".
    *  - Arrays are split by comma

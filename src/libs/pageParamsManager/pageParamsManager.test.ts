@@ -153,6 +153,19 @@ describe("PageParamsManager (Refactored)", () => {
     });
   });
 
+  describe("clearDynamicAllowedValues", () => {
+    it("removes dynamic values so the param is no longer restricted", () => {
+      pageParamsManager.setDynamicAllowedValues("type", ["type1"]);
+      pageParamsManager.clearDynamicAllowedValues("type");
+
+      const params = new URLSearchParams({ type: "type2" });
+
+      expect(pageParamsManager.sanitizeSearchParams(params).get("type")).toBe(
+        "type2",
+      );
+    });
+  });
+
   describe("getCurrentPageParam", () => {
     it("returns the urlParam for current page", () => {
       expect(pageParamsManager.getCurrentPageParam()).toBe("currentPage");
