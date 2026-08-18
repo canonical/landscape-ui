@@ -34,9 +34,7 @@ describe("OperationStatusCell", () => {
 
   it("renders status when some operations are unreachable", async () => {
     const [, missingOperationName] = batchGetOperationNamesWithMissing;
-    if (!missingOperationName) {
-      throw new Error("Missing operation name fixture");
-    }
+    assert(missingOperationName);
 
     renderWithProviders(
       <OperationProvider
@@ -57,9 +55,8 @@ describe("OperationStatusCell", () => {
     // stops sending the flag, the batch request fails outright and neither
     // status below would render.
     const [knownName, unknownName] = batchGetOperationNamesWithMissing;
-    if (!knownName || !unknownName) {
-      throw new Error("Missing operation name fixture");
-    }
+    assert(knownName);
+    assert(unknownName);
 
     renderWithProviders(
       <OperationProvider operationNames={[knownName, unknownName]}>
