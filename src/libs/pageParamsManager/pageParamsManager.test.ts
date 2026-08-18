@@ -64,14 +64,20 @@ describe("PageParamsManager (Refactored)", () => {
     });
 
     it("removes param if it's not in dynamic allowed values", () => {
-      pageParamsManager.registerDynamicAllowedValues("os", ["linux", "windows"]);
+      pageParamsManager.registerDynamicAllowedValues("os", [
+        "linux",
+        "windows",
+      ]);
       const params = new URLSearchParams({ os: "mac" });
       const sanitized = pageParamsManager.sanitizeSearchParams(params);
       expect(sanitized.has("os")).toBe(false);
     });
 
     it("keeps param if it is in dynamic allowed values", () => {
-      pageParamsManager.registerDynamicAllowedValues("os", ["linux", "windows"]);
+      pageParamsManager.registerDynamicAllowedValues("os", [
+        "linux",
+        "windows",
+      ]);
       const params = new URLSearchParams({ os: "linux" });
       const sanitized = pageParamsManager.sanitizeSearchParams(params);
       expect(sanitized.get("os")).toBe("linux");
@@ -143,7 +149,10 @@ describe("PageParamsManager (Refactored)", () => {
 
   describe("registerDynamicAllowedValues", () => {
     it("properly sets dynamic values and affects sanitization", () => {
-      pageParamsManager.registerDynamicAllowedValues("type", ["type1", "type2"]);
+      pageParamsManager.registerDynamicAllowedValues("type", [
+        "type1",
+        "type2",
+      ]);
       const validParams = new URLSearchParams({ type: "type1" });
       const invalidParams = new URLSearchParams({ type: "invalid" });
 
