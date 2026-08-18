@@ -22,6 +22,10 @@ const InstancesPage = () => {
   return <div>Instances</div>;
 };
 
+afterEach(() => {
+  pageParamsManager.clearAllDynamicAllowedValues();
+});
+
 describe("useSetDynamicFilterValidation", () => {
   it("clears a page's allowed values when it unmounts", () => {
     const pageA = renderHook(() => {
