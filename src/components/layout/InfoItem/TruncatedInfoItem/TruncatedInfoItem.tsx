@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { useRef, type FC } from "react";
-import { useBoolean, useOnClickOutside } from "usehooks-ts";
+import { useBoolean, useEventListener, useOnClickOutside } from "usehooks-ts";
 import Truncated from "../../Truncated";
 import type { RegularInfoItemProps } from "../RegularInfoItem";
 import RegularInfoItem from "../RegularInfoItem";
@@ -18,6 +18,12 @@ const TruncatedInfoItem: FC<TruncatedInfoItemProps> = ({ value, ...props }) => {
   const ref = useRef(null);
 
   useOnClickOutside(ref, collapse);
+
+  useEventListener("keydown", (event) => {
+    if (isExpanded && event.key === "Escape") {
+      collapse();
+    }
+  });
 
   return (
     <RegularInfoItem

@@ -15,7 +15,7 @@ import moment from "moment/moment";
 import type { FC } from "react";
 import { useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
-import { useOnClickOutside } from "usehooks-ts";
+import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import UsnPackagesContainer from "../UsnPackagesContainer";
 import {
   getTableRows,
@@ -70,6 +70,12 @@ const UsnList: FC<UsnListProps> = ({
       setExpandedCell(null);
     },
   );
+
+  useEventListener("keydown", (event) => {
+    if (event.key === "Escape" && expandedCell?.column === "cves") {
+      setExpandedCell(null);
+    }
+  });
 
   const showSelectAllButton =
     otherProps.tableType === "expandable" && otherProps.showSelectAllButton;
@@ -180,7 +186,7 @@ const UsnList: FC<UsnListProps> = ({
                       ? "packages"
                       : "instances"
                   }
-                  usn={securityIssues[expandedCell.row]!.usn}
+                  usn={securityIssues[expandedCell.row]?.usn ?? ""}
                 />
               );
             }
