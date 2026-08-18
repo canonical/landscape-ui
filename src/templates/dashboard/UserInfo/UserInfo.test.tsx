@@ -138,7 +138,7 @@ describe("UserInfo", () => {
     const alertsLink = screen.getByRole("link", { name: /alerts/i });
 
     await waitFor(() => {
-      expect(within(alertsLink).queryByText("0")).not.toBeInTheDocument();
+      expect(within(alertsLink).queryByText(/^\d+$/)).not.toBeInTheDocument();
     });
   });
 
