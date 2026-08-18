@@ -64,28 +64,28 @@ describe("PageParamsManager (Refactored)", () => {
     });
 
     it("removes param if it's not in dynamic allowed values", () => {
-      pageParamsManager.setDynamicAllowedValues("os", ["linux", "windows"]);
+      pageParamsManager.registerDynamicAllowedValues("os", ["linux", "windows"]);
       const params = new URLSearchParams({ os: "mac" });
       const sanitized = pageParamsManager.sanitizeSearchParams(params);
       expect(sanitized.has("os")).toBe(false);
     });
 
     it("keeps param if it is in dynamic allowed values", () => {
-      pageParamsManager.setDynamicAllowedValues("os", ["linux", "windows"]);
+      pageParamsManager.registerDynamicAllowedValues("os", ["linux", "windows"]);
       const params = new URLSearchParams({ os: "linux" });
       const sanitized = pageParamsManager.sanitizeSearchParams(params);
       expect(sanitized.get("os")).toBe("linux");
     });
 
     it("removes array param if any item is disallowed", () => {
-      pageParamsManager.setDynamicAllowedValues("tags", ["tagA", "tagB"]);
+      pageParamsManager.registerDynamicAllowedValues("tags", ["tagA", "tagB"]);
       const params = new URLSearchParams({ tags: "tagA,invalidTag" });
       const sanitized = pageParamsManager.sanitizeSearchParams(params);
       expect(sanitized.has("tags")).toBe(false);
     });
 
     it("keeps array param if all items are allowed", () => {
-      pageParamsManager.setDynamicAllowedValues("tags", ["tagA", "tagB"]);
+      pageParamsManager.registerDynamicAllowedValues("tags", ["tagA", "tagB"]);
       const params = new URLSearchParams({ tags: "tagA,tagB" });
       const sanitized = pageParamsManager.sanitizeSearchParams(params);
       expect(sanitized.get("tags")).toBe("tagA,tagB");
@@ -141,9 +141,9 @@ describe("PageParamsManager (Refactored)", () => {
     });
   });
 
-  describe("setDynamicAllowedValues", () => {
+  describe("registerDynamicAllowedValues", () => {
     it("properly sets dynamic values and affects sanitization", () => {
-      pageParamsManager.setDynamicAllowedValues("type", ["type1", "type2"]);
+      pageParamsManager.registerDynamicAllowedValues("type", ["type1", "type2"]);
       const validParams = new URLSearchParams({ type: "type1" });
       const invalidParams = new URLSearchParams({ type: "invalid" });
 
@@ -159,7 +159,7 @@ describe("PageParamsManager (Refactored)", () => {
 
   describe("clearDynamicAllowedValues", () => {
     it("removes dynamic values so the param is no longer restricted", () => {
-      pageParamsManager.setDynamicAllowedValues("type", ["type1"]);
+      pageParamsManager.registerDynamicAllowedValues("type", ["type1"]);
       pageParamsManager.clearDynamicAllowedValues("type");
 
       const params = new URLSearchParams({ type: "type2" });

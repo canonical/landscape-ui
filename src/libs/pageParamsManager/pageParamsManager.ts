@@ -25,20 +25,6 @@ class PageParamsManager {
   constructor(private readonly config: ParamsConfig = PARAMS_CONFIG) {}
 
   /**
-   * Adds or replaces the dynamic allowed values for a given paramKey.
-   * Only these values (or numbers matching them) will be considered valid.
-   */
-  public setDynamicAllowedValues(
-    paramKey: keyof PageParams,
-    values: (string | number)[],
-  ): void {
-    this.dynamicAllowedValuesStacks.set(paramKey, [
-      { id: this.nextDynamicAllowedValuesId++, values: new Set(values) },
-    ]);
-    this.syncDynamicAllowedValues(paramKey);
-  }
-
-  /**
    * Registers dynamic allowed values on top of any existing registration for
    * the same paramKey. Returns an id for unregisterDynamicAllowedValues.
    */
