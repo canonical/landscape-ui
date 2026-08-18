@@ -42,20 +42,19 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
     value: email,
   }));
 
-  const ORGANISATIONS_OPTIONS = (user.accounts ?? []).map((acc) => ({
+  const ORGANISATIONS_OPTIONS = user.accounts.map((acc) => ({
     label: acc.title,
     value: acc.name,
   }));
 
-  const currentEmail = emails.find((e) => e.label === user.email);
   const formik = useFormik<FormProps>({
     initialValues: {
       name: user.name,
       timezone: user.timezone,
-      email: currentEmail?.label ?? user.email,
+      email: user.email,
       defaultOrganisation:
         authUser?.accounts.find((acc) => acc.name === user.preferred_account)
-          ?.name ?? "Select",
+          ?.name ?? "",
     },
     validationSchema: Yup.object().shape({
       name: Yup.string().required("This field is required"),
@@ -72,9 +71,13 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
             email: values.email,
             timezone: values.timezone,
           }),
-          mutateSetPreferredAccount({
-            preferred_account: values.defaultOrganisation,
-          }),
+          ...(values.defaultOrganisation
+            ? [
+                mutateSetPreferredAccount({
+                  preferred_account: values.defaultOrganisation,
+                }),
+              ]
+            : []),
         ]);
         updateUser({
           ...authUser!,
