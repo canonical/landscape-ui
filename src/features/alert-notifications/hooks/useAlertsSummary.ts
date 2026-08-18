@@ -15,8 +15,11 @@ export default function useAlertsSummary() {
     queryFn: async () => authFetch.get("alerts/summary"),
   });
 
+  const alerts = data?.data.alerts_summary ?? [];
+
   return {
-    alertsSummary: data?.data.alerts_summary ?? [],
+    alertsSummary: alerts,
+    alertsSummaryCount: alerts.length,
     isGettingAlertsSummary: isPending,
   };
 }

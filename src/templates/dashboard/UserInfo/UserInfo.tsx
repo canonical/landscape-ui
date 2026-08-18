@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { useState } from "react";
-import useAuth from "../../../hooks/useAuth";
+import useAuth from "@/hooks/useAuth";
 import { ActionButton, Badge, Button, Icon } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
@@ -8,7 +8,7 @@ import { Link, useLocation } from "react-router";
 import { useMediaQuery } from "usehooks-ts";
 import { ACCOUNT_SETTINGS } from "../SecondaryNavigation/constants";
 import { useAuthHandle } from "@/features/auth";
-import { useDisplayedAlerts } from "@/features/alert-notifications";
+import { useAlertsSummary } from "@/features/alert-notifications";
 import useDebug from "@/hooks/useDebug";
 import { ROUTES } from "@/libs/routes";
 import { APP_COMMIT, APP_VERSION } from "@/constants";
@@ -18,7 +18,7 @@ const UserInfo: FC = () => {
   const { pathname } = useLocation();
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
   const { handleLogoutQuery } = useAuthHandle();
-  const { alertsCount } = useDisplayedAlerts();
+  const { alertsSummaryCount } = useAlertsSummary();
   const debug = useDebug();
 
   const [expandedAccountSettings, setExpandedAccountSettings] = useState(false);
@@ -180,8 +180,12 @@ const UserInfo: FC = () => {
             >
               Alerts
             </span>
-            {alertsCount > 0 && (
-              <Badge className={classes.badge} value={alertsCount} isNegative />
+            {alertsSummaryCount > 0 && (
+              <Badge
+                className={classes.badge}
+                value={alertsSummaryCount}
+                isNegative
+              />
             )}
           </Link>
         </li>
