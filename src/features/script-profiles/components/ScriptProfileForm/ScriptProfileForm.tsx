@@ -19,6 +19,8 @@ import {
   Row,
 } from "@canonical/react-components";
 import classNames from "classnames";
+import type { ApiError } from "@/types/api/ApiError";
+import { isAxiosError } from "axios";
 import { useFormik } from "formik";
 import moment from "moment";
 import { useLayoutEffect, useRef, type ComponentProps, type FC } from "react";
@@ -179,6 +181,17 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
           }
         }
       } catch (error) {
+        // This overrides the error message to be a bit more detailed.
+        if (
+          isAxiosError<ApiError>(error) &&
+          error.response &&
+          error.response.data.message ===
+            "Script profile with this title already exists."
+        ) {
+          error.response.data.message =
+            "This script profile title is unavailable. It is either already in use or was previously archived. Script profile titles cannot be reused.";
+        }
+
         debug(error);
         return;
       }
