@@ -174,6 +174,8 @@ const UpgradesList: FC<UpgradesListProps> = ({
       },
       {
         Header: "Upgrade type",
+        Cell: ({ row: { original: upgradePackage } }: CellProps<Package>) =>
+          upgradePackage.usn ? "Security" : "Regular",
       },
       {
         accessor: "computers",
