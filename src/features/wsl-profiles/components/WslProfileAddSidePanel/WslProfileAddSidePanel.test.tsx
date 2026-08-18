@@ -78,7 +78,7 @@ describe("WslProfileAddSidePanel", () => {
     await clickSubmit(user);
 
     expect(
-      await screen.findByText(/Instance name cannot match/i),
+      await screen.findByText(/Image name cannot match/i),
     ).toBeInTheDocument();
   });
 

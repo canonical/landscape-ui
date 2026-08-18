@@ -33,7 +33,8 @@ export const wslProfiles = [
     instance_type: "WSL",
     description: "some stuff",
     image_name: "stuff",
-    image_source: "https://example.com",
+    image_source:
+      "https://example.com/made-up-long-url-to-trigger-show-more-button",
     cloud_init_contents: null,
     cloud_init_secret_name: null,
     tags: ["appservers"],

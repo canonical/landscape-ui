@@ -74,9 +74,20 @@ export default [
       }
     }
 
-    return HttpResponse.json(
-      wslProfiles.find((wslProfile) => wslProfile.name === params.name),
+    const response = wslProfiles.find(
+      (wslProfile) => wslProfile.name === params.name,
     );
+
+    if (!response) {
+      return HttpResponse.json(
+        {
+          error: "UnknownChildInstanceProfile",
+          message: `No child instance profile with name ${params.name}`,
+        },
+        { status: 404 },
+      );
+    }
+    return HttpResponse.json(response);
   }),
 
   http.patch(`${API_URL}child-instance-profiles/:name`, ({ params }) => {
