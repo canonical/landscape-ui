@@ -1,21 +1,20 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import {
-  InstallSnaps,
-  SnapsHeader,
-  SnapsList,
-  useGetInstalledSnaps,
-} from "@/features/snaps";
+import { SnapsHeader, SnapsList, useGetInstalledSnaps } from "@/features/snaps";
 import usePageParams from "@/hooks/usePageParams";
 import useSelection from "@/hooks/useSelection";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { InstalledSnap } from "@/features/snaps";
 import type { UrlParams } from "@/types/UrlParams";
 import { Button } from "@canonical/react-components";
-import type { FC } from "react";
+import { lazy, type FC } from "react";
 import { useParams } from "react-router";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
+
+const InstallSnaps = lazy(
+  () => import("@/features/snaps/components/InstallSnaps"),
+);
 
 const SnapsPanel: FC = () => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
