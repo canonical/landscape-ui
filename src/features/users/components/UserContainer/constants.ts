@@ -1,13 +1,6 @@
 import type { User } from "@/types/User";
 
-export const SORT_KEYS = {
-  username: "username",
-  status: "status",
-  name: "name",
-  uid: "uid",
-} as const;
-
-type SortKey = keyof typeof SORT_KEYS;
+type SortKey = "username" | "status" | "name" | "uid";
 
 export const SORT_FUNCTIONS: Record<SortKey, (a: User, b: User) => number> = {
   username: (a, b) => a.username.localeCompare(b.username),

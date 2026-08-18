@@ -4,7 +4,11 @@ import { generatePaginatedResponse } from "./_helpers";
 import type { User } from "@/types/User";
 import { userDetails, users } from "@/tests/mocks/user";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { MAX_USERS_LIMIT } from "@/pages/dashboard/instances/[single]/tabs/users/UserPanel/constants";
+// Import the constant leaf directly. A value import from `@/features/users`
+// would evaluate the feature barrel (including UserContainer → react-router)
+// during global MSW setup, before per-test `vi.mock("react-router")` runs.
+// eslint-disable-next-line no-restricted-imports
+import { MAX_USERS_LIMIT } from "@/features/users/constants";
 import type { UserCredentials } from "@/features/api-credentials";
 import { createEndpointStatusError } from "./_constants";
 import { shouldApplyEndpointStatus } from "./_helpers";
