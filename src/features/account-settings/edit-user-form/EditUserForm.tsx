@@ -37,7 +37,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
     isLoading: isChangingPreferredAccount,
   } = setPreferredAccount;
 
-  const emails = user.allowable_emails.map((email) => ({
+  const emails = (user.allowable_emails ?? []).map((email) => ({
     label: email,
     value: email,
   }));
@@ -47,15 +47,14 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
     value: acc.name,
   }));
 
-  const currentEmail = emails.find((e) => e.label === user.email);
   const formik = useFormik<FormProps>({
     initialValues: {
       name: user.name,
       timezone: user.timezone,
-      email: currentEmail?.label ?? "Select",
+      email: user.email,
       defaultOrganisation:
         authUser?.accounts.find((acc) => acc.name === user.preferred_account)
-          ?.name ?? "Select",
+          ?.name ?? "",
     },
     validationSchema: Yup.object().shape({
       name: Yup.string().required("This field is required"),
@@ -72,9 +71,13 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
             email: values.email,
             timezone: values.timezone,
           }),
-          mutateSetPreferredAccount({
-            preferred_account: values.defaultOrganisation,
-          }),
+          ...(values.defaultOrganisation
+            ? [
+                mutateSetPreferredAccount({
+                  preferred_account: values.defaultOrganisation,
+                }),
+              ]
+            : []),
         ]);
         updateUser({
           ...authUser!,
@@ -117,7 +120,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
           }
         />
       ) : (
-        <InfoItem label="Email address" value={emails[0].value} />
+        <InfoItem label="Email address" value={user.email} />
       )}
       {TIMEZONES_FILTER.type === "select" && (
         <Select
