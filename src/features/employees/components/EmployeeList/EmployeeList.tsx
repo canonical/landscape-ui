@@ -3,19 +3,19 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 import useSidePanel from "@/hooks/useSidePanel";
 import { ROUTES } from "@/libs/routes";
 import type { ExpandedCell } from "@/types/ExpandedCell";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
-import { useOnClickOutside } from "usehooks-ts";
 import { getStatusText } from "../../helpers";
 import type { Employee } from "../../types";
 import EmployeeListActions from "../EmployeeListActions";
-import { getTableRows, handleCellProps, handleRowProps } from "./helpers";
+import { handleCellProps, handleRowProps } from "./helpers";
 
 const EmployeeDetails = lazy(async () => import("../EmployeeDetails"));
 
@@ -26,45 +26,8 @@ interface EmployeeListProps {
 const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const [expandedCell, setExpandedCell] = useState<ExpandedCell>(null);
-
-  const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
-
-  useOnClickOutside(
-    expandedCell?.column === "computers"
-      ? { current: tableRowsRef.current[expandedCell.row]! }
-      : [],
-    (event) => {
-      if (
-        event.target instanceof Element &&
-        !event.target.closest(".truncatedItem")
-      ) {
-        setExpandedCell(null);
-      }
-    },
-  );
-
-  const handleExpandCellClick = (columnId: string, rowIndex: number) => {
-    setExpandedCell((prevState) => {
-      if (
-        prevState &&
-        prevState.column === columnId &&
-        prevState.row === rowIndex
-      ) {
-        return null;
-      }
-
-      return {
-        column: columnId,
-        row:
-          prevState &&
-          ["computers"].includes(prevState.column) &&
-          prevState.row < rowIndex
-            ? rowIndex - 1
-            : rowIndex,
-      };
-    });
-  };
+  const { expandedRowIndex, expandedColumnId, getTableRowsRef, handleExpand } =
+    useExpandableRow<HTMLTableRowElement>();
 
   const columns = useMemo<Column<Employee>[]>(() => {
     const handleShowEmployeeDetails = (employee: Employee) => {
@@ -128,11 +91,10 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
                 </Link>
               ))}
               isExpanded={
-                expandedCell?.column === "computers" &&
-                expandedCell.row === index
+                expandedColumnId === "computers" && expandedRowIndex === index
               }
               onExpand={() => {
-                handleExpandCellClick("computers", index);
+                handleExpand(index, "computers");
               }}
             />
           ) : (
@@ -146,12 +108,17 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
         ),
       },
     ];
-  }, [expandedCell, setSidePanelContent]);
+  }, [setSidePanelContent, expandedColumnId, expandedRowIndex, handleExpand]);
+
+  const expandedCell: ExpandedCell =
+    expandedRowIndex !== null && expandedColumnId !== null
+      ? { row: expandedRowIndex, column: expandedColumnId }
+      : null;
 
   return (
     <ResponsiveTable
       columns={columns}
-      ref={getTableRows(tableRowsRef)}
+      ref={getTableRowsRef}
       data={employees}
       getCellProps={handleCellProps(expandedCell)}
       getRowProps={handleRowProps(expandedCell)}
