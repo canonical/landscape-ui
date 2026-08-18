@@ -6,7 +6,6 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   getPermissionListByType,
-  getTableRows,
   handleCellProps,
   handleRowProps,
 } from "./helpers";
@@ -150,6 +149,31 @@ describe("RoleList", () => {
       within(viewCell).queryByRole("button", { name: /show more/i }),
     ).toBeInTheDocument();
   });
+
+  it("collapses expanded view cell when pressing Escape", async () => {
+    renderWithProviders(<RoleList {...props} />);
+
+    const serverAdmin = roles.find((r) => r.name === "ServerAdmin");
+    assert(serverAdmin);
+    const row = screen.getByRole("row", {
+      name: (n) => n.toLowerCase().includes(serverAdmin.name.toLowerCase()),
+    });
+
+    const viewCell = within(row).getByRole("cell", {
+      name: /view permissions/i,
+    });
+
+    const showMoreBtn = await within(viewCell).findByRole("button", {
+      name: /show more/i,
+    });
+
+    await user.click(showMoreBtn);
+    await user.keyboard("{Escape}");
+
+    expect(
+      within(viewCell).queryByRole("button", { name: /show more/i }),
+    ).toBeInTheDocument();
+  });
 });
 
 describe("handleCellProps", () => {
@@ -276,21 +300,5 @@ describe("getPermissionListByType", () => {
       "view",
     );
     expect(typeof result).toBe("string");
-  });
-});
-
-describe("getTableRows (RoleList)", () => {
-  it("does not modify ref.current when instance is null", () => {
-    const ref = { current: [] as HTMLTableRowElement[] };
-    getTableRows(ref)(null);
-    expect(ref.current).toHaveLength(0);
-  });
-
-  it("sets ref.current to tbody tr elements when instance is provided", () => {
-    const ref = { current: [] as HTMLTableRowElement[] };
-    const div = document.createElement("div");
-    div.innerHTML = "<table><tbody><tr></tr><tr></tr></tbody></table>";
-    getTableRows(ref)(div);
-    expect(ref.current).toHaveLength(2);
   });
 });

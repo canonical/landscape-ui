@@ -34,6 +34,7 @@ import type {
 } from "@/types/Instance";
 import type { GroupsResponse, Group } from "@/types/User";
 import moment from "moment";
+import type { JsonBodyType } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import {
   generatePaginatedResponse,
@@ -65,7 +66,7 @@ function matchComputersQuery(
   endpointStatus: ReturnType<typeof getEndpointStatus>,
   limit: number,
   offset: number,
-): HttpResponse | null {
+): HttpResponse<JsonBodyType> | null {
   if (
     endpointStatus.status === "empty" &&
     endpointStatus.path === "computers-pro-empty" &&
@@ -157,7 +158,7 @@ export default [
     const limit = Number(url.searchParams.get("limit")) || 1;
 
     if (shouldApplyEndpointStatus("computers")) {
-      const { status } = getEndpointStatus("computers");
+      const { status, response } = getEndpointStatus("computers");
       if (status === "error") {
         throw createEndpointStatusError();
       }
@@ -170,6 +171,10 @@ export default [
             offset,
           }),
         );
+      }
+
+      if (status === "variant") {
+        return HttpResponse.json(response);
       }
     }
 

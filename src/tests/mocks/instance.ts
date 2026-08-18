@@ -65,6 +65,14 @@ export const ubuntuInstance: Instance = {
     MockAnnotation: "MockValue",
   },
   has_release_upgrades: true,
+  profiles: [
+    {
+      id: 1,
+      name: "disa-stig-for-ubuntu-20.04-compliance-assessment",
+      title: "DISA STIG for Ubuntu 20.04 Compliance Assessment",
+      type: "usg",
+    },
+  ],
 };
 
 export const ubuntuCoreInstance: Instance = {
@@ -540,7 +548,7 @@ export const instances = [
     secrets_name: null,
     last_exchange_time: null,
     last_ping_time: "2023-11-29T18:28:25Z",
-    tags: ["precise", "server", "webfarm"],
+    tags: ["precise", "server", "webfarm", "bionic", "dapper", "edgy", "empty"],
     access_group: "server",
     distribution: "12.04",
     cloud_instance_metadata: {},
@@ -565,6 +573,26 @@ export const instances = [
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
     has_release_upgrades: true,
+    wsl_profiles: [
+      {
+        id: 1,
+        name: "stuff",
+        title: "stuff",
+        type: "wsl",
+      },
+      {
+        id: 2,
+        name: "Stock Ubuntu 24.04",
+        title: "stock-ubuntu-24.04",
+        type: "wsl",
+      },
+      {
+        id: 3,
+        name: "Fake WSL Profile",
+        title: "fake-wsl-profile",
+        type: "wsl",
+      },
+    ],
   } as Instance,
   {
     id: 11,
@@ -1206,7 +1234,7 @@ export const instances = [
     distribution_info: {
       code_name: "jammy",
       description: "Ubuntu 22.04 LTS",
-      distributor: "Canonical",
+      distributor: "Ubuntu",
       release: "22.04",
     },
     employee_id: null,

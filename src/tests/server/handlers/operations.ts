@@ -43,17 +43,31 @@ const getOperationResponse = (operation: Operation) => {
 };
 
 export default [
-  http.post<never, { names: string[] }>(
+  http.post<never, { names: string[]; returnPartialSuccess?: boolean }>(
     `${API_URL_DEB_ARCHIVE}operations\\:batchGet`,
     async ({ request }) => {
-      const { names } = await request.json();
+      const { names, returnPartialSuccess } = await request.json();
+
+      const found = operations.filter(({ name }) => names.includes(name ?? ""));
+      const unreachable = names.filter(
+        (name) => !found.some((operation) => operation.name === name),
+      );
+
+      // Mirrors the real API: an unreachable name fails the whole batch unless
+      // the caller opts into partial success.
+      if (unreachable.length > 0 && !returnPartialSuccess) {
+        return HttpResponse.json(
+          {
+            code: 5,
+            message: `The following operations could not be found: ${unreachable.join(", ")}`,
+          },
+          { status: 404 },
+        );
+      }
 
       return HttpResponse.json({
-        operations: operations
-          .filter(({ name }) => names.includes(name ?? ""))
-          .map((operation) => {
-            return getOperationResponse(operation);
-          }),
+        operations: found.map((operation) => getOperationResponse(operation)),
+        ...(unreachable.length > 0 ? { unreachable } : {}),
       });
     },
   ),

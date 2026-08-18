@@ -149,12 +149,7 @@ const ARCHIVED_STATUS_OPTION: SelectOption = {
 };
 
 type FilterKey =
-  | "os"
-  | "groupBy"
-  | "status"
-  | "upgrades"
-  | "wsl"
-  | "contractExpiryDays";
+  "os" | "groupBy" | "status" | "upgrades" | "wsl" | "contractExpiryDays";
 
 export const FILTERS = {
   os: {

@@ -22,7 +22,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { popSidePathUntilClear, name, closeSidePanel } = usePageParams();
-  const repository = useGetLocalRepository(name);
+  const { repository, isGettingRepository } = useGetLocalRepository(name);
 
   const { importRepositoryPackages, isImportingRepositoryPackages } =
     useImportRepositoryPackages();
@@ -84,6 +84,16 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
         .matches(/^(https?|file):\/\/.+/, "Please enter a valid URL."),
     }),
   });
+
+  if (isGettingRepository) {
+    return <SidePanel.LoadingState />;
+  }
+  if (!name) {
+    return null;
+  }
+  if (!repository) {
+    throw new Error(`Local repository ${name} was not found`);
+  }
 
   const handleValidate = async () => {
     const errors = await formik.validateForm();

@@ -62,6 +62,7 @@ const ViewRecoveryKeyModal: FC<ViewRecoveryKeyModalProps> = ({
       confirmButtonAppearance="positive"
       onConfirm={onClose}
       cancelButtonProps={{ style: { display: "none" } }}
+      renderInPortal
     >
       <p>
         This key allows you to unlock and access encrypted data on instance if

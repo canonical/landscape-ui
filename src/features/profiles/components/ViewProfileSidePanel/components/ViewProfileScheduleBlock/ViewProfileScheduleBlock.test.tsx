@@ -4,6 +4,7 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import ViewProfileScheduleBlock from "./ViewProfileScheduleBlock";
 import { profiles } from "@/tests/mocks/profiles";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const [baseProfile] = profiles;
 
@@ -89,6 +90,49 @@ describe("ViewProfileScheduleBlock", () => {
         /Delayed by 2 hours, randomize delivery over 30 minutes/i,
       ),
     ).toBeInTheDocument();
+  });
+
+  it("renders 'As soon as possible' restart schedule with no delay and no window", () => {
+    const usgProfile = {
+      ...baseProfile,
+      benchmark: "cis_level1_server",
+      mode: "audit-fix-restart",
+      schedule: "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO",
+      restart_deliver_delay: 0,
+      restart_deliver_delay_window: 0,
+      next_run_time: "2024-01-02T12:00:00Z",
+      last_run_results: { timestamp: "2024-01-01T12:00:00Z" },
+      status: "active",
+    };
+
+    renderWithProviders(<ViewProfileScheduleBlock profile={usgProfile} />);
+
+    expect(screen.getByText(/Restart schedule/i)).toBeInTheDocument();
+    expect(screen.getByText("As soon as possible")).toBeInTheDocument();
+    expect(screen.queryByText(/randomize delivery/i)).not.toBeInTheDocument();
+  });
+
+  it("renders NoData for missing last run and next run on a script profile", () => {
+    const scriptProfile = {
+      ...baseProfile,
+      script_id: 30,
+      username: "root",
+      time_limit: 300,
+      trigger: {
+        trigger_type: "one_time",
+        next_run: "",
+        last_run: "",
+        timestamp: "",
+      },
+      activities: { last_activity: null },
+    };
+
+    renderWithProviders(<ViewProfileScheduleBlock profile={scriptProfile} />);
+
+    expect(screen.getByText(/Last run/i)).toBeInTheDocument();
+    expect(screen.getByText(/Next run/i)).toBeInTheDocument();
+    expect(screen.queryByText(/12:00 UTC/i)).not.toBeInTheDocument();
+    expect(screen.getAllByText(NO_DATA_TEXT)).toHaveLength(2);
   });
 
   it("renders next restart for reboot profile", () => {

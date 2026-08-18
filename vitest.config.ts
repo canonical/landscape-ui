@@ -1,6 +1,6 @@
 import { resolve } from "path";
 import { defineConfig } from "vitest/config";
-import packageJson from "./package.json";
+import packageJson from "./package.json" with { type: "json" };
 
 export default defineConfig({
   test: {
@@ -14,24 +14,24 @@ export default defineConfig({
     ],
     environment: "jsdom",
     globals: true,
-    globalSetup: [resolve(__dirname, "src/tests/global-setup.ts")],
-    setupFiles: [resolve(__dirname, "src/tests/setup.ts")],
+    globalSetup: [resolve(import.meta.dirname, "src/tests/global-setup.ts")],
+    setupFiles: [resolve(import.meta.dirname, "src/tests/setup.ts")],
     alias: [
       {
         find: /^.*\.(css|scss|sass)$/,
-        replacement: resolve(__dirname, "src/tests/styleMock.ts"),
+        replacement: resolve(import.meta.dirname, "src/tests/styleMock.ts"),
       },
       {
         find: "@/components/form/CodeEditor",
-        replacement: resolve(__dirname, "src/tests/monacoMock.tsx"),
+        replacement: resolve(import.meta.dirname, "src/tests/monacoMock.tsx"),
       },
       {
         find: "@monaco-editor/react",
-        replacement: resolve(__dirname, "src/tests/monacoMock.tsx"),
+        replacement: resolve(import.meta.dirname, "src/tests/monacoMock.tsx"),
       },
       {
         find: "@",
-        replacement: resolve(__dirname, "src"),
+        replacement: resolve(import.meta.dirname, "src"),
       },
     ],
     pool: "threads",
@@ -40,7 +40,7 @@ export default defineConfig({
       provider: "v8",
       reporter: ["cobertura", "json-summary", "html"],
       reportOnFailure: true,
-      reportsDirectory: resolve(__dirname, "reports"),
+      reportsDirectory: resolve(import.meta.dirname, "reports"),
       thresholds: {
         statements: 80,
         lines: 80,
@@ -66,7 +66,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": resolve(__dirname, "src"),
+      "@": resolve(import.meta.dirname, "src"),
     },
   },
   define: {

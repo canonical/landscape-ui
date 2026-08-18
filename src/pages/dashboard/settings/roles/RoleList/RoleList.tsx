@@ -1,17 +1,16 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 import useRoles from "@/hooks/useRoles";
 import { getPermissionOptions } from "@/pages/dashboard/settings/roles/helpers";
 import type { Role } from "@/types/Role";
 import type { FC } from "react";
-import { useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import { useOnClickOutside } from "usehooks-ts";
 import RoleListActions from "../RoleListActions";
 import {
   getPermissionListByType,
-  getTableRows,
   handleCellProps,
   handleRowProps,
 } from "./helpers";
@@ -23,35 +22,21 @@ interface RoleListProps {
 }
 
 const RoleList: FC<RoleListProps> = ({ roleList }) => {
-  const [expandedCell, setExpandedCell] = useState<CellCoordinates | null>(
-    null,
-  );
-
-  const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
-
-  useOnClickOutside(
-    {
-      current: expandedCell
-        ? tableRowsRef.current[expandedCell.rowIndex]!
-        : null,
-    },
-    () => {
-      setExpandedCell(null);
-    },
-  );
+  const { expandedRowIndex, expandedColumnId, getTableRowsRef, handleExpand } =
+    useExpandableRow<HTMLTableRowElement>();
 
   const { getPermissionsQuery } = useRoles();
 
   const { data: getPermissionsQueryResult } = getPermissionsQuery();
 
-  const permissionOptions = getPermissionsQueryResult
-    ? getPermissionOptions(getPermissionsQueryResult.data)
-    : [];
-
   const roles = useMemo<Role[]>(() => roleList, [roleList]);
 
-  const columns = useMemo<Column<Role>[]>(
-    () => [
+  const columns = useMemo<Column<Role>[]>(() => {
+    const permissionOptions = getPermissionsQueryResult
+      ? getPermissionOptions(getPermissionsQueryResult.data)
+      : [];
+
+    return [
       {
         accessor: "name",
         Header: "Name",
@@ -73,12 +58,10 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
               "view",
             )}
             isExpanded={
-              !!expandedCell &&
-              expandedCell.rowIndex === index &&
-              expandedCell.columnId === "view"
+              expandedRowIndex === index && expandedColumnId === "view"
             }
             onExpand={() => {
-              setExpandedCell({ rowIndex: index, columnId: "view" });
+              handleExpand(index, "view");
             }}
           />
         ),
@@ -94,12 +77,10 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
               "manage",
             )}
             isExpanded={
-              !!expandedCell &&
-              expandedCell.rowIndex === index &&
-              expandedCell.columnId === "manage"
+              expandedRowIndex === index && expandedColumnId === "manage"
             }
             onExpand={() => {
-              setExpandedCell({ rowIndex: index, columnId: "manage" });
+              handleExpand(index, "manage");
             }}
           />
         ),
@@ -114,17 +95,26 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
           return <RoleListActions role={row.original} />;
         },
       },
-    ],
-    [roles, getPermissionsQueryResult, expandedCell],
-  );
+    ];
+  }, [
+    getPermissionsQueryResult,
+    expandedRowIndex,
+    expandedColumnId,
+    handleExpand,
+  ]);
+
+  const expandedCell: CellCoordinates | null =
+    expandedRowIndex !== null && expandedColumnId !== null
+      ? { rowIndex: expandedRowIndex, columnId: expandedColumnId }
+      : null;
 
   return (
     <ResponsiveTable
-      ref={getTableRows(tableRowsRef)}
+      ref={getTableRowsRef}
       columns={columns}
       data={roles}
       getCellProps={handleCellProps(expandedCell)}
-      getRowProps={handleRowProps(expandedCell?.rowIndex)}
+      getRowProps={handleRowProps(expandedRowIndex ?? undefined)}
     />
   );
 };

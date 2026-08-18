@@ -1,41 +1,13 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import ManageSavedSearchesSidePanel from "./ManageSavedSearchesSidePanel";
 
-vi.mock("@/components/filter/SearchQueryEditor", () => {
-  return {
-    default: ({
-      label,
-      value,
-      onChange,
-      onBlur,
-      error,
-      warning,
-    }: {
-      label: string;
-      value: string | undefined;
-      onChange?: (value: string | undefined) => void;
-      onBlur?: () => void;
-      error?: string | false;
-      warning?: string | false;
-    }) => (
-      <div>
-        <label>
-          {label}
-          <textarea
-            aria-label={label}
-            value={value ?? ""}
-            onChange={(e) => onChange?.(e.target.value)}
-            onBlur={onBlur}
-          />
-        </label>
-        {error && <span>{error}</span>}
-        {warning && <span>{warning}</span>}
-      </div>
-    ),
-  };
+// Warm the module cache up front so React.lazy resolves instantly instead of
+// paying the first-hit transform/evaluate cost mid-assertion.
+beforeAll(async () => {
+  await import("@/features/saved-searches/components/SavedSearchForm");
 });
 
 describe("ManageSavedSearchesSidePanel", () => {
@@ -59,12 +31,13 @@ describe("ManageSavedSearchesSidePanel", () => {
   });
 
   it("should open the create form side panel when Add saved search is clicked", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<ManageSavedSearchesSidePanel />);
 
     const createButton = await screen.findByRole("button", {
       name: "Add saved search",
     });
-    await userEvent.click(createButton);
+    await user.click(createButton);
 
     expect(
       await screen.findByRole("heading", { name: "Add saved search" }),
@@ -72,24 +45,17 @@ describe("ManageSavedSearchesSidePanel", () => {
   });
 
   it("should navigate back to manage panel when back button is clicked in create form", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<ManageSavedSearchesSidePanel />);
 
     const createButton = await screen.findByRole("button", {
       name: "Add saved search",
     });
-    await userEvent.click(createButton);
+    await user.click(createButton);
 
-    await screen.findByRole(
-      "heading",
-      { name: "Add saved search" },
-      { timeout: 5000 },
-    );
-    const backButton = await screen.findByRole(
-      "button",
-      { name: /back/i },
-      { timeout: 5000 },
-    );
-    await userEvent.click(backButton);
+    await screen.findByRole("heading", { name: "Add saved search" });
+    const backButton = await screen.findByRole("button", { name: /back/i });
+    await user.click(backButton);
 
     expect(
       await screen.findByRole("heading", { name: "Manage saved searches" }),
@@ -97,6 +63,7 @@ describe("ManageSavedSearchesSidePanel", () => {
   });
 
   it("should show pagination controls and support page navigation when many saved searches exist", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<ManageSavedSearchesSidePanel />);
 
     await screen.findByRole("table");
@@ -104,13 +71,14 @@ describe("ManageSavedSearchesSidePanel", () => {
     const nextButton = await screen.findByRole("button", { name: /next/i });
     expect(nextButton).toBeInTheDocument();
 
-    await userEvent.click(nextButton);
+    await user.click(nextButton);
 
     const prevButton = screen.getByRole("button", { name: /previous/i });
     expect(prevButton).toBeInTheDocument();
   });
 
   it("should update page size when page size selector is changed", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<ManageSavedSearchesSidePanel />);
 
     await screen.findByRole("table");
@@ -118,7 +86,7 @@ describe("ManageSavedSearchesSidePanel", () => {
     const pageSizeSelect = await screen.findByRole("combobox", {
       name: /instances per page/i,
     });
-    await userEvent.selectOptions(pageSizeSelect, "50");
+    await user.selectOptions(pageSizeSelect, "50");
 
     expect(pageSizeSelect).toHaveValue("50");
   });

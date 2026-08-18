@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
-import { type FC } from "react";
+import { type FC, Suspense } from "react";
 import ProfilesHeader from "../ProfilesHeader";
 import ProfilesList from "../ProfilesList";
 import ProfilesEmptyState from "../ProfilesEmptyState";
@@ -39,7 +39,7 @@ const ProfilesContainer: FC<ProfilesContainerProps> = ({
   const removalType = canArchiveProfile(type) ? "archive" : "remove";
 
   return (
-    <>
+    <Suspense fallback={<LoadingState />}>
       <ProfilesHeader type={type} />
       {isNotificationVisible && isProfileLimitReached && (
         <Notification
@@ -60,7 +60,7 @@ const ProfilesContainer: FC<ProfilesContainerProps> = ({
           currentItemCount={profiles.length}
         />
       )}
-    </>
+    </Suspense>
   );
 };
 
