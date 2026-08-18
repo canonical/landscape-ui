@@ -22,6 +22,7 @@ import { Link } from "react-router";
 import classes from "./PendingInstancesForm.module.scss";
 import { ROUTES } from "@/libs/routes";
 import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "./constants";
+import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 
 interface PendingInstanceListProps {
   readonly instances: PendingInstance[];
@@ -29,7 +30,7 @@ interface PendingInstanceListProps {
 
 const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
   const [isApproving, setIsApproving] = useState(false);
-  const [accessGroup, setAccessGroup] = useState("");
+  const [accessGroup, setAccessGroup] = useState(DEFAULT_ACCESS_GROUP_NAME);
   const [instanceIds, setInstanceIds] = useState<number[]>([]);
 
   const debug = useDebug();
