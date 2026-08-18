@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import UserInfo from "./UserInfo";
 import { APP_COMMIT, APP_VERSION } from "@/constants";
@@ -9,6 +9,7 @@ import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
 import { ROUTES } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { alertsSummary } from "@/tests/mocks/alerts";
 
 vi.mock("@/hooks/useAuth");
 
@@ -117,6 +118,27 @@ describe("UserInfo", () => {
     renderWithProviders(<UserInfo />, {}, ROUTES.alerts.root());
     const alertsLink = screen.getByRole("link", { name: /alerts/i });
     expect(alertsLink).toHaveAttribute("aria-current", "page");
+  });
+
+  it("renders the alerts badge with the displayed alert count", async () => {
+    renderWithProviders(<UserInfo />);
+
+    const alertsLink = screen.getByRole("link", { name: /alerts/i });
+    expect(
+      await within(alertsLink).findByText(String(alertsSummary.length)),
+    ).toBeInTheDocument();
+  });
+
+  it("hides the alerts badge when there are no alerts", async () => {
+    setEndpointStatus("empty");
+
+    renderWithProviders(<UserInfo />);
+
+    const alertsLink = screen.getByRole("link", { name: /alerts/i });
+
+    await waitFor(() => {
+      expect(within(alertsLink).queryByText("0")).not.toBeInTheDocument();
+    });
   });
 
   describe("mobile accordion", () => {

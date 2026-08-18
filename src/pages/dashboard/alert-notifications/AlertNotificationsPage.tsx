@@ -5,37 +5,16 @@ import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import {
   AlertNotificationsList,
-  useAlertsSummary,
+  useDisplayedAlerts,
 } from "@/features/alert-notifications";
-import { useGetPendingInstances } from "@/features/instances";
 import { ROUTES } from "@/libs/routes";
 import type { FC } from "react";
 import { Link } from "react-router";
 
 const AlertNotificationsPage: FC = () => {
-  const { getAlertsSummaryQuery } = useAlertsSummary();
+  const { alerts, pendingInstances, isGettingAlerts } = useDisplayedAlerts();
 
-  const {
-    data: getAlertsSummaryQueryResult,
-    isLoading: getAlertsSummaryQueryLoading,
-  } = getAlertsSummaryQuery();
-
-  const hasPendingInstancesAlert =
-    getAlertsSummaryQueryResult?.data.alerts_summary.some(
-      (alert) => alert.alert_type === "PendingComputersAlert",
-    );
-
-  const { pendingInstances, isGettingPendingInstances } =
-    useGetPendingInstances(undefined, {
-      enabled: hasPendingInstancesAlert,
-    });
-
-  const alerts = getAlertsSummaryQueryResult?.data.alerts_summary || [];
-
-  if (
-    (hasPendingInstancesAlert && isGettingPendingInstances) ||
-    getAlertsSummaryQueryLoading
-  ) {
+  if (isGettingAlerts) {
     return <LoadingState />;
   }
 
