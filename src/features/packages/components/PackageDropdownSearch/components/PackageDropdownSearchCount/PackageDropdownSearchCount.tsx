@@ -14,6 +14,8 @@ const PackageDropdownSearchCount: FC<PackageDropdownSearchCountProps> = ({
         {pluralize(count, ["package"], "exact")}
       </span>
     );
+  } else {
+    return;
   }
 };
 

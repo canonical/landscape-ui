@@ -106,6 +106,8 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
   if (search) {
     return <div className={classes.empty}>Package not found.</div>;
   }
+
+  return;
 };
 
 export default PackageDropdownSearchList;

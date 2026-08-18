@@ -66,6 +66,8 @@ export default function useSearchPackages(
 
       if (lastPage.data.count > nextPageParam * limit) {
         return nextPageParam;
+      } else {
+        return;
       }
     },
     ...options,

@@ -17,6 +17,8 @@ const InstancesWithoutVersionCount: FC<InstancesWithoutVersionCountProps> = ({
         {type}
       </div>
     );
+  } else {
+    return;
   }
 };
 
