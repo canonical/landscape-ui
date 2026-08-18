@@ -30,6 +30,7 @@ const labels = ["Unknown user", "Alerts", "Sign out"];
 describe("UserInfo", () => {
   beforeEach(() => {
     vi.mocked(useAuth).mockReturnValue(mockAuth);
+    setEndpointStatus("default");
   });
 
   it("renders correctly", () => {
