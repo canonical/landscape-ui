@@ -1,7 +1,7 @@
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import InstancesExportForm from "./InstancesExportForm";
 
@@ -307,10 +307,6 @@ describe("InstancesExportForm", () => {
 
   it("pops one sidePath entry on successful export", async () => {
     const user = userEvent.setup();
-    const LocationDisplay = () => {
-      const { search } = useLocation();
-      return <div data-testid="location-display">{search}</div>;
-    };
 
     renderWithProviders(
       <>
@@ -346,10 +342,8 @@ describe("InstancesExportForm", () => {
     expect(await screen.findByText("TSV export in progress")).toBeVisible();
 
     await waitFor(() => {
-      expect(screen.getByTestId("location-display")).toHaveTextContent(
-        "sidePath=view",
-      );
-      expect(screen.getByTestId("location-display")).not.toHaveTextContent(
+      expect(getLocationDisplay()).toHaveTextContent("sidePath=view");
+      expect(getLocationDisplay()).not.toHaveTextContent(
         "sidePath=view,export",
       );
     });

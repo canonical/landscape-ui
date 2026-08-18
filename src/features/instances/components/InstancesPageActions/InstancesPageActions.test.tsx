@@ -1,5 +1,6 @@
 import * as Constants from "@/constants";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import {
   instances,
   ubuntuInstance,
@@ -9,7 +10,6 @@ import { renderWithProviders } from "@/tests/render";
 import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { useLocation } from "react-router";
 import { afterEach, beforeEach, vi } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
@@ -43,11 +43,6 @@ const defaultProps: ComponentProps<typeof InstancesPageActions> = {
   isGettingInstances: false,
   selectedInstances: selected,
   isAllSelected: false,
-};
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location-display">{search}</div>;
 };
 
 const renderPageActions = (
@@ -325,9 +320,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /view report/i }),
       );
 
-      expect(screen.getByTestId("location-display")).toHaveTextContent(
-        "sidePath=report",
-      );
+      expect(getLocationDisplay()).toHaveTextContent("sidePath=report");
     });
 
     it("'Upgrade' menu item", async () => {
@@ -457,9 +450,7 @@ describe("InstancesPageActions", () => {
       screen.getByRole("menuitem", { name: /^export selection as tsv$/i }),
     );
 
-    expect(screen.getByTestId("location-display")).toHaveTextContent(
-      "sidePath=export",
-    );
+    expect(getLocationDisplay()).toHaveTextContent("sidePath=export");
   });
 
   it("'Export' menu item does not append duplicate export sidePath", async () => {
@@ -477,10 +468,8 @@ describe("InstancesPageActions", () => {
       screen.getByRole("menuitem", { name: /^export selection as tsv$/i }),
     );
 
-    expect(screen.getByTestId("location-display")).toHaveTextContent(
-      "sidePath=export",
-    );
-    expect(screen.getByTestId("location-display")).not.toHaveTextContent(
+    expect(getLocationDisplay()).toHaveTextContent("sidePath=export");
+    expect(getLocationDisplay()).not.toHaveTextContent(
       "sidePath=export,export",
     );
   });

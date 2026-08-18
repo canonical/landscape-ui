@@ -1,9 +1,9 @@
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import { publications } from "@/tests/mocks/publications";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import TargetDetails from "./TargetDetails";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
@@ -38,11 +38,6 @@ const s3WithPubs = targetWithPublications.s3;
 const swiftTarget = swiftMock.swift;
 const filesystemTarget = filesystemMock.filesystem;
 const firstPubName = firstPublication.displayName;
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 const renderTarget = async (target: PublicationTarget) => {
   const result = renderWithProviders(
@@ -82,7 +77,7 @@ describe("TargetDetails", () => {
 
       await user.click(screen.getByRole("button", { name: /edit/i }));
 
-      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=edit");
+      expect(getLocationDisplay()).toHaveTextContent("sidePath=edit");
     });
 
     it("opens the remove confirmation modal when Remove is clicked", async () => {

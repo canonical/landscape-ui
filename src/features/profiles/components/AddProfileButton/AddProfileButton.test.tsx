@@ -1,16 +1,10 @@
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { withProfilesContext } from "@/tests/mocks/profilesContext";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import AddProfileButton from "./AddProfileButton";
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-
-  return <div data-testid="location-display">{search}</div>;
-};
 
 describe("AddProfileButton", () => {
   it("displays specific appearance for scripts header", () => {
@@ -43,9 +37,7 @@ describe("AddProfileButton", () => {
 
     await user.click(screen.getByRole("button", { name: /add profile/i }));
 
-    expect(screen.getByTestId("location-display")).toHaveTextContent(
-      "sidePath=add",
-    );
+    expect(getLocationDisplay()).toHaveTextContent("sidePath=add");
   });
 
   it("disables button when profile limit is reached", () => {

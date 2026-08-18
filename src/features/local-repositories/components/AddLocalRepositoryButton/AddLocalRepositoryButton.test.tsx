@@ -1,14 +1,9 @@
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { describe, expect, it } from "vitest";
 import AddLocalRepositoryButton from "./AddLocalRepositoryButton";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 describe("AddLocalRepositoryButton", () => {
   it("renders the button with correct label and styling", () => {
@@ -37,6 +32,6 @@ describe("AddLocalRepositoryButton", () => {
       }),
     );
 
-    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=add");
+    expect(getLocationDisplay()).toHaveTextContent("sidePath=add");
   });
 });

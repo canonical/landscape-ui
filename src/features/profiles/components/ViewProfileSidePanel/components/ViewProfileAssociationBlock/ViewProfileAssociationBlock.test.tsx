@@ -83,4 +83,25 @@ describe("ViewProfileAssociationBlock", () => {
       expect.stringContaining("id%3A2"),
     );
   });
+
+  it("falls back to zero non-compliant count when the array is missing", () => {
+    const wslProfile = {
+      ...profile,
+      image_name: "ubuntu-24.04",
+      computers: {
+        constrained: [1, 2],
+      },
+    };
+
+    renderWithProviders(
+      <ViewProfileAssociationBlock
+        profile={wslProfile}
+        type={ProfileTypes.wsl}
+      />,
+    );
+
+    expect(screen.getByText("Compliant")).toBeInTheDocument();
+    expect(screen.getByText("Not compliant")).toBeInTheDocument();
+    expect(screen.getByText("0 instances")).toBeInTheDocument();
+  });
 });

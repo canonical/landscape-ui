@@ -14,6 +14,7 @@ import "./matcher";
 import server from "./server";
 import { resetPublicationTargets } from "./server/handlers/publicationTargets";
 import { resetMirrors } from "./server/handlers/mirrors";
+import { RequestHandler } from "msw";
 
 expect.extend(matchers);
 
@@ -96,14 +97,17 @@ server.events.on("response:mocked", ({ request, response }) => {
 // A failed write must fail hard — a stale manifest would silently skew the
 // coverage report.
 try {
-  const manifest = server.listHandlers().map((handler) => {
-    const info = handler.info as { method?: unknown; path?: unknown };
-    return {
-      method: String(info.method ?? ""),
-      path: String(info.path ?? ""),
-      isRegExpPath: info.path instanceof RegExp,
-    };
-  });
+  const manifest = server
+    .listHandlers()
+    .filter((handler) => handler instanceof RequestHandler)
+    .map((handler) => {
+      const info = handler.info as { method?: unknown; path?: unknown };
+      return {
+        method: String(info.method ?? ""),
+        path: String(info.path ?? ""),
+        isRegExpPath: info.path instanceof RegExp,
+      };
+    });
   try {
     fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2), {
       flag: "wx",

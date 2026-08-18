@@ -31,7 +31,7 @@ const ScriptProfilesTab: FC = () => {
 
   const {
     scriptsCount: activeScriptsCount,
-    isScriptsLoading: isGettingActiveScripts,
+    isGettingScripts: isGettingActiveScripts,
   } = useGetScripts(
     { listenToUrlParams: false },
     {

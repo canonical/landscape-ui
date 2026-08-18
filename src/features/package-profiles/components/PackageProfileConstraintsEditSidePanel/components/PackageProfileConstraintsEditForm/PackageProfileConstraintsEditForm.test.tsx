@@ -119,6 +119,34 @@ describe("PackageProfileConstraintsEditForm", () => {
     ).toBeInTheDocument();
   });
 
+  it("validates the rule and version when editing a versioned constraint", async () => {
+    const versionedConstraint = packageProfiles[0].constraints.find(
+      (constraint) => constraint.version,
+    );
+    assert(versionedConstraint);
+
+    renderWithProviders(
+      <PackageProfileConstraintsEditForm profile={packageProfiles[0]} />,
+    );
+
+    expect(screen.getByRole("status")).toBeInTheDocument();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: `Edit ${versionedConstraint.package} constraint`,
+      }),
+    );
+    await user.click(
+      screen.getByRole("button", {
+        name: `Save changes to ${versionedConstraint.package} constraint`,
+      }),
+    );
+
+    expect(
+      await screen.findByText("Package profile constraint updated"),
+    ).toBeInTheDocument();
+  });
+
   it("catches errors", async () => {
     setEndpointStatus("error");
     await renderAndSubmit();

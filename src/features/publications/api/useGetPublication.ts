@@ -8,8 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
 type GetPublicationError =
-  | AxiosError<PublicationServiceGetPublicationError>
-  | Error;
+  AxiosError<PublicationServiceGetPublicationError> | Error;
 
 export const useGetPublication = (publicationId: string) => {
   const authFetchDebArchive = useFetchDebArchive();

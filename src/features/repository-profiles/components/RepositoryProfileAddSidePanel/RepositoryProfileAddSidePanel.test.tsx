@@ -1,14 +1,9 @@
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import RepositoryProfileAddSidePanel from "./RepositoryProfileAddSidePanel";
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 const renderPanel = (sidePath = "add") =>
   renderWithProviders(
@@ -71,7 +66,7 @@ describe("RepositoryProfileAddSidePanel", () => {
 
     await user.click(screen.getByRole("button", { name: /add source/i }));
 
-    expect(screen.getByTestId("location")).toHaveTextContent("add-source");
+    expect(getLocationDisplay()).toHaveTextContent("add-source");
   });
 
   it("navigates back to main step when clicking breadcrumb link on add-source step", async () => {
@@ -82,7 +77,7 @@ describe("RepositoryProfileAddSidePanel", () => {
     });
     await user.click(breadcrumbLink);
 
-    expect(screen.getByTestId("location")).not.toHaveTextContent("add-source");
+    expect(getLocationDisplay()).not.toHaveTextContent("add-source");
   });
 
   it("navigates back to main step after submitting add-source form", async () => {
@@ -96,9 +91,7 @@ describe("RepositoryProfileAddSidePanel", () => {
     await user.click(screen.getByRole("button", { name: /add source/i }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("location")).not.toHaveTextContent(
-        "add-source",
-      );
+      expect(getLocationDisplay()).not.toHaveTextContent("add-source");
     });
   });
 
@@ -108,9 +101,7 @@ describe("RepositoryProfileAddSidePanel", () => {
     await user.click(screen.getByRole("button", { name: /cancel/i }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("location")).not.toHaveTextContent(
-        "add-source",
-      );
+      expect(getLocationDisplay()).not.toHaveTextContent("add-source");
     });
   });
 
@@ -125,9 +116,7 @@ describe("RepositoryProfileAddSidePanel", () => {
     await user.click(screen.getByRole("button", { name: /add source/i }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("location")).not.toHaveTextContent(
-        "add-source",
-      );
+      expect(getLocationDisplay()).not.toHaveTextContent("add-source");
     });
     expect(screen.getByText("my-source")).toBeInTheDocument();
   });
@@ -143,15 +132,13 @@ describe("RepositoryProfileAddSidePanel", () => {
     await user.click(screen.getByRole("button", { name: /add source/i }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("location")).not.toHaveTextContent(
-        "add-source",
-      );
+      expect(getLocationDisplay()).not.toHaveTextContent("add-source");
     });
 
     await user.click(screen.getByRole("button", { name: /edit my-source/i }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("location")).toHaveTextContent("edit-source");
+      expect(getLocationDisplay()).toHaveTextContent("edit-source");
     });
 
     expect(screen.getByLabelText(/source name/i)).toHaveValue("my-source");
@@ -171,15 +158,13 @@ describe("RepositoryProfileAddSidePanel", () => {
     await user.click(screen.getByRole("button", { name: /add source/i }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("location")).not.toHaveTextContent(
-        "add-source",
-      );
+      expect(getLocationDisplay()).not.toHaveTextContent("add-source");
     });
 
     await user.click(screen.getByRole("button", { name: /edit my-source/i }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("location")).toHaveTextContent("edit-source");
+      expect(getLocationDisplay()).toHaveTextContent("edit-source");
     });
 
     await user.clear(screen.getByLabelText(/source name/i));
@@ -187,9 +172,7 @@ describe("RepositoryProfileAddSidePanel", () => {
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("location")).not.toHaveTextContent(
-        "edit-source",
-      );
+      expect(getLocationDisplay()).not.toHaveTextContent("edit-source");
     });
 
     expect(screen.getByText("updated-source")).toBeInTheDocument();
@@ -208,9 +191,7 @@ describe("RepositoryProfileAddSidePanel", () => {
     await user.click(screen.getByRole("button", { name: /add source/i }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("location")).not.toHaveTextContent(
-        "add-source",
-      );
+      expect(getLocationDisplay()).not.toHaveTextContent("add-source");
     });
 
     await user.click(screen.getByRole("button", { name: /remove to-remove/i }));

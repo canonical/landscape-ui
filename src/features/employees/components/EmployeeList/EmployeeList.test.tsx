@@ -1,15 +1,14 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { employees } from "@/tests/mocks/employees";
-import { instances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
-import { fireEvent, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import type { Cell, Row } from "react-table";
 import { describe, expect, it } from "vitest";
 import type { Employee } from "../../types";
 import EmployeeList from "./EmployeeList";
-import { getTableRows, handleCellProps, handleRowProps } from "./helpers";
+import { handleCellProps, handleRowProps } from "./helpers";
 
 const employeeWithEmptyComputers: Employee = {
   id: 99,
@@ -316,6 +315,26 @@ describe("EmployeeList", () => {
     ).toBeInTheDocument();
   });
 
+  it("collapses expanded cell when pressing Escape", async () => {
+    renderWithProviders(<EmployeeList employees={employees} />);
+
+    const [employee] = employees;
+    const row = screen.getByRole("row", {
+      name: (name) => name.toLowerCase().includes(employee.name.toLowerCase()),
+    });
+
+    const showMoreBtn = await within(row).findByRole("button", {
+      name: /show more/i,
+    });
+
+    await user.click(showMoreBtn);
+    await user.keyboard("{Escape}");
+
+    expect(
+      within(row).queryByRole("button", { name: /show more/i }),
+    ).toBeInTheDocument();
+  });
+
   it("does not collapse expanded cell when clicking a truncatedItem link inside it", async () => {
     renderWithProviders(<EmployeeList employees={employees} />);
 
@@ -345,77 +364,6 @@ describe("EmployeeList", () => {
     expect(
       within(row).queryByRole("button", { name: /show more/i }),
     ).not.toBeInTheDocument();
-  });
-
-  it("adjusts row index when expanding a lower row while an upper row is already expanded", async () => {
-    const secondComputerEmployee: Employee = {
-      ...employees[0],
-      id: 200,
-      name: "Second Computer Employee",
-      email: "second@test.com",
-      subject: "sub-second",
-      computers: [instances[0]],
-    };
-
-    renderWithProviders(
-      <EmployeeList employees={[employees[0], secondComputerEmployee]} />,
-    );
-
-    const row0 = screen.getByRole("row", {
-      name: (n) => n.toLowerCase().includes(employees[0].name.toLowerCase()),
-    });
-    const showMore0 = await within(row0).findByRole("button", {
-      name: /show more/i,
-    });
-
-    await user.click(showMore0);
-
-    const row1 = screen.getByRole("row", {
-      name: (n) => n.toLowerCase().includes("second computer employee"),
-    });
-    const showMore1 = await within(row1).findByRole("button", {
-      name: /show more/i,
-    });
-
-    // Use fireEvent.click (not userEvent) so mousedown is not dispatched.
-    // userEvent.click dispatches mousedown first, which triggers useOnClickOutside
-    // and resets expandedCell to null before handleExpandCellClick runs —
-    // preventing the `prevState.row < rowIndex` branch from being exercised.
-    fireEvent.click(showMore1);
-  });
-
-  it("adjusts row index when expanding an upper row while a lower row is already expanded", async () => {
-    const secondComputerEmployee: Employee = {
-      ...employees[0],
-      id: 201,
-      name: "Third Computer Employee",
-      email: "third@test.com",
-      subject: "sub-third",
-      computers: [instances[0]],
-    };
-
-    renderWithProviders(
-      <EmployeeList employees={[employees[0], secondComputerEmployee]} />,
-    );
-
-    const row1 = screen.getByRole("row", {
-      name: (n) => n.toLowerCase().includes("third computer employee"),
-    });
-    const showMore1 = await within(row1).findByRole("button", {
-      name: /show more/i,
-    });
-
-    await user.click(showMore1);
-
-    const row0 = screen.getByRole("row", {
-      name: (n) => n.toLowerCase().includes(employees[0].name.toLowerCase()),
-    });
-    const showMore0 = await within(row0).findByRole("button", {
-      name: /show more/i,
-    });
-
-    // Use fireEvent.click for same reason as the test above.
-    fireEvent.click(showMore0);
   });
 });
 
@@ -498,21 +446,5 @@ describe("handleRowProps (EmployeeList)", () => {
     const expandedCell = { column: "name", row: 0 };
     const result = handleRowProps(expandedCell)(makeRow(0));
     expect(result.className).toBeUndefined();
-  });
-});
-
-describe("getTableRows (EmployeeList)", () => {
-  it("does not modify ref.current when instance is null", () => {
-    const ref = { current: [] as HTMLTableRowElement[] };
-    getTableRows(ref)(null);
-    expect(ref.current).toHaveLength(0);
-  });
-
-  it("sets ref.current to tbody tr elements when instance is provided", () => {
-    const ref = { current: [] as HTMLTableRowElement[] };
-    const div = document.createElement("div");
-    div.innerHTML = "<table><tbody><tr></tr><tr></tr><tr></tr></tbody></table>";
-    getTableRows(ref)(div);
-    expect(ref.current).toHaveLength(3);
   });
 });

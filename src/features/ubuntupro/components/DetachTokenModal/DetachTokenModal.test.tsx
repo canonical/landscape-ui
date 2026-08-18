@@ -129,6 +129,7 @@ describe("DetachTokenModal", () => {
     );
 
     expect(detachButton).toBeEnabled();
+    expect(detachButton).not.toHaveAttribute("aria-disabled");
   });
 
   it("submits detachment and closes modal after confirmation", async () => {
