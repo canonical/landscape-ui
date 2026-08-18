@@ -4,13 +4,12 @@ import { type FC, useState } from "react";
 import type { Package, PackageAction } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
 import PackagesActionSummary from "../PackagesActionSummary";
-
-import type { CreatePackageChangePlanRequest } from "../../api";
 import {
   useCreatePackageChangePlan,
   useDeletePackageChangePlan,
 } from "../../api";
-import { capitalize } from "@/utils/_helpers";
+import { getActionFormTitle } from "../../helpers";
+import { getActionConfig } from "./helpers";
 
 interface PackagesActionFormProps {
   readonly instanceIds: number[];
@@ -21,7 +20,9 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
   instanceIds,
   action,
 }) => {
-  const [selectedPackages, setSelectedPackages] = useState<Package[]>([]);
+  const [selectedPackages, setSelectedPackages] = useState<
+    [Package, number[]][]
+  >([]);
   const [packageChangePlanId, setPackageChangePlanId] = useState<number | null>(
     null,
   );
@@ -34,56 +35,6 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
     isPending: isCreatingPackageChangePlan,
   } = useCreatePackageChangePlan();
   const { mutateAsync: deletePackageChangePlan } = useDeletePackageChangePlan();
-
-  const getCreatePackageChangePlanRequest =
-    (): CreatePackageChangePlanRequest => {
-      const computer_query = instanceIds.map((id) => `id:${id}`).join(" OR ");
-      const package_ids = selectedPackages.map(({ id }) => id);
-
-      switch (action) {
-        case "install":
-          return {
-            computer_query,
-            install_config: {
-              by_ids: {
-                package_ids,
-              },
-            },
-          };
-
-        case "uninstall":
-          return {
-            computer_query,
-            remove_config: {
-              by_ids: {
-                package_ids,
-              },
-            },
-          };
-
-        case "hold":
-          return {
-            computer_query,
-            hold_config: {
-              package_ids,
-            },
-          };
-
-        case "unhold":
-          return {
-            computer_query,
-            unhold_config: {
-              package_ids,
-            },
-          };
-
-        case "downgrade":
-          return {
-            computer_query,
-            change_version_config: { version_changes: [] },
-          };
-      }
-    };
 
   switch (packageChangePlanId) {
     case null:
@@ -101,8 +52,18 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
             submitButtonAppearance="positive"
             submitButtonLoading={isCreatingPackageChangePlan}
             onSubmit={async () => {
-              const request = getCreatePackageChangePlanRequest();
-              const { data } = await createPackageChangePlan(request);
+              const computer_query = instanceIds
+                .map((id) => `id:${id}`)
+                .join(" OR ");
+
+              const packageIds = selectedPackages.map(([{ id }]) => id);
+              const config = getActionConfig(action, packageIds);
+
+              const { data } = await createPackageChangePlan({
+                computer_query,
+                ...config,
+              });
+
               setPackageChangePlanId(data.id);
               setSidePanelTitle("Summary");
               setOnCloseOverride(() => {
@@ -119,11 +80,11 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
         <PackagesActionSummary
           action={action}
           instanceIds={instanceIds}
-          selectedPackages={selectedPackages}
           packageChangePlanId={packageChangePlanId}
           onBackButtonPress={() => {
+            const title = getActionFormTitle(action);
             setPackageChangePlanId(null);
-            setSidePanelTitle(`${capitalize(action)} packages`);
+            setSidePanelTitle(title);
           }}
         />
       );

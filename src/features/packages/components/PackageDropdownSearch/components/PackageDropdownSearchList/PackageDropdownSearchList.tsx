@@ -22,7 +22,7 @@ interface PackageDropdownSearchListProps {
     InfiniteData<AxiosResponse<SearchPackagesResponse>>
   > & { isError: false };
   readonly search: string;
-  readonly selectedPackages: Package[];
+  readonly selectedPackages: [Package, number[]][];
 }
 
 const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
@@ -59,7 +59,9 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
           )}
         >
           {results.map((item: Package, index: number) => {
-            const disabled = selectedPackages.some(({ id }) => item.id === id);
+            const disabled = selectedPackages.some(
+              ([{ id }]) => item.id === id,
+            );
 
             const props = disabled
               ? {}

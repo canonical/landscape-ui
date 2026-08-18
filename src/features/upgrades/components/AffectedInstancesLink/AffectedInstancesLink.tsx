@@ -2,11 +2,11 @@ import { pluralize } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import type { PackageUpgrade } from "../../types/PackageUpgrade";
 import AffectedInstancesModal from "../AffectedInstancesModal";
+import type { Package } from "@/features/packages";
 
 interface AffectedInstancesLinkProps {
-  readonly upgrade: PackageUpgrade;
+  readonly upgrade: Package;
   readonly query?: string;
 }
 
@@ -27,7 +27,7 @@ const AffectedInstancesLink: FC<AffectedInstancesLinkProps> = ({
         appearance="link"
         onClick={openModal}
       >
-        {pluralize(upgrade.affected_instance_count, ["instance"], "exact")}
+        {pluralize(upgrade.computers.count, ["instance"], "exact")}
       </Button>
       {isModalVisible && (
         <AffectedInstancesModal

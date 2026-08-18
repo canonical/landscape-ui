@@ -1,20 +1,17 @@
-import ListTitle from "@/components/layout/ListTitle";
-import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import { useCallback, useMemo, type FC } from "react";
 import type { CellProps, Column } from "react-table";
-import type { PackageUpgrade } from "../../types/PackageUpgrade";
 import AffectedInstancesLink from "../AffectedInstancesLink";
-import { PRIORITY_OPTIONS, SEVERITY_OPTIONS } from "../Upgrades/constants";
 import classes from "./UpgradesList.module.scss";
+import type { Package } from "@/features/packages";
 
 interface UpgradesListProps {
   readonly upgradeCount: number;
-  readonly currentUpgrades: PackageUpgrade[];
-  readonly toggledUpgrades: PackageUpgrade[];
-  readonly setToggledUpgrades: (packages: PackageUpgrade[]) => void;
+  readonly currentUpgrades: Package[];
+  readonly toggledUpgrades: Package[];
+  readonly setToggledUpgrades: (packages: Package[]) => void;
   readonly enableSelectAllUpgrades: () => void;
   readonly disableSelectAllUpgrades: () => void;
   readonly isSelectAllUpgradesEnabled: boolean;
@@ -31,12 +28,8 @@ const UpgradesList: FC<UpgradesListProps> = ({
   disableSelectAllUpgrades,
   query,
 }) => {
-  const compare = (upgrade1: PackageUpgrade, upgrade2: PackageUpgrade) => {
-    return (
-      upgrade1.name === upgrade2.name &&
-      upgrade1.versions.current === upgrade2.versions.current &&
-      upgrade1.versions.newest === upgrade2.versions.newest
-    );
+  const compare = (upgrade1: Package, upgrade2: Package) => {
+    return upgrade1.id === upgrade2.id;
   };
 
   const clearSelection = useCallback(() => {
@@ -45,8 +38,8 @@ const UpgradesList: FC<UpgradesListProps> = ({
   }, [disableSelectAllUpgrades, setToggledUpgrades]);
 
   const isToggled = useCallback(
-    (upgrade: PackageUpgrade) => {
-      const match = (toggledUpgrade: PackageUpgrade) => {
+    (upgrade: Package) => {
+      const match = (toggledUpgrade: Package) => {
         return compare(upgrade, toggledUpgrade);
       };
 
@@ -56,16 +49,16 @@ const UpgradesList: FC<UpgradesListProps> = ({
   );
 
   const isNotToggled = useCallback(
-    (upgrade: PackageUpgrade) => {
+    (upgrade: Package) => {
       return !isToggled(upgrade);
     },
     [isToggled],
   );
 
   const untoggle = useCallback(
-    (...upgrades: PackageUpgrade[]) => {
-      const doesNotMatchAny = (toggledUpgrade: PackageUpgrade) => {
-        const doesNotMatch = (upgrade: PackageUpgrade) => {
+    (...upgrades: Package[]) => {
+      const doesNotMatchAny = (toggledUpgrade: Package) => {
+        const doesNotMatch = (upgrade: Package) => {
           return !compare(upgrade, toggledUpgrade);
         };
 
@@ -84,7 +77,7 @@ const UpgradesList: FC<UpgradesListProps> = ({
   }, [currentUpgrades, untoggle]);
 
   const toggle = useCallback(
-    (...upgrades: PackageUpgrade[]) => {
+    (...upgrades: Package[]) => {
       const untoggledUpgrades = upgrades.filter(isNotToggled);
 
       if (
@@ -110,7 +103,7 @@ const UpgradesList: FC<UpgradesListProps> = ({
     toggle(...currentUpgrades);
   }, [currentUpgrades, toggle]);
 
-  const columns = useMemo<Column<PackageUpgrade>[]>(
+  const columns = useMemo<Column<Package>[]>(
     () => [
       {
         accessor: "name",
@@ -143,15 +136,10 @@ const UpgradesList: FC<UpgradesListProps> = ({
                 }
               }}
             />
-            <div className={classes.stacked}>
-              Package name
-              <span className="u-text--muted">Details</span>
-            </div>
+            Package
           </div>
         ),
-        Cell: ({
-          row: { original: upgradePackage },
-        }: CellProps<PackageUpgrade>) => (
+        Cell: ({ row: { original: upgradePackage } }: CellProps<Package>) => (
           <div className={classes.rowHeader}>
             <CheckboxInput
               inline
@@ -174,119 +162,29 @@ const UpgradesList: FC<UpgradesListProps> = ({
                 }
               }}
             />
-
-            <ListTitle>
-              <span>{upgradePackage.name}</span>
-              <span className="u-text--muted">{upgradePackage.details}</span>
-            </ListTitle>
+            {upgradePackage.name}
           </div>
         ),
       },
       {
-        accessor: "versions",
-        Header: (
-          <div className={classes.stacked}>
-            Newest version
-            <span className="u-text--muted">Current version</span>
-          </div>
-        ),
-        Cell: ({
-          row: { original: upgradePackage },
-        }: CellProps<PackageUpgrade>) => (
-          <div className={classes.stacked}>
-            {upgradePackage.versions.newest}
-            <span className="u-text--muted">
-              {upgradePackage.versions.current}
-            </span>
-          </div>
+        accessor: "version",
+        Header: "Upgrade version",
+        Cell: ({ row: { original: upgradePackage } }: CellProps<Package>) =>
+          upgradePackage.version,
+      },
+      {
+        Header: "Upgrade type",
+      },
+      {
+        accessor: "computers",
+        Header: "Affected instances",
+        Cell: ({ row: { original: upgradePackage } }: CellProps<Package>) => (
+          <AffectedInstancesLink upgrade={upgradePackage} query={query} />
         ),
       },
       {
-        accessor: "affected_instance_count",
-        Header: (
-          <div className={classes.stacked}>
-            Affected instances
-            <span className="u-text--muted">OS</span>
-          </div>
-        ),
-        Cell: ({
-          row: { original: upgradePackage },
-        }: CellProps<PackageUpgrade>) => (
-          <div className={classes.stacked}>
-            <AffectedInstancesLink upgrade={upgradePackage} query={query} />
-            <span className="u-text--muted">Ubuntu 22.04</span>
-          </div>
-        ),
-      },
-      {
-        accessor: "usn",
-        Header: (
-          <div className={classes.stacked}>
-            USN
-            <span className="u-text--muted">CVE</span>
-          </div>
-        ),
-        Cell: ({
-          row: { original: upgradePackage },
-        }: CellProps<PackageUpgrade>) => (
-          <div className={classes.stacked}>
-            {upgradePackage.usn ? (
-              <a
-                href={`https://ubuntu.com/security/notices/USN-${upgradePackage.usn}`}
-                target="_blank"
-                rel="nofollow noopener noreferrer"
-              >
-                {upgradePackage.usn}
-              </a>
-            ) : (
-              <NoData />
-            )}
-            {upgradePackage.cve ? (
-              <a
-                href={`https://ubuntu.com/security/CVE-${upgradePackage.cve}`}
-                target="_blank"
-                rel="nofollow noopener noreferrer"
-              >
-                CVE-{upgradePackage.cve}
-              </a>
-            ) : (
-              <span className="u-text--muted">
-                <NoData />
-              </span>
-            )}
-          </div>
-        ),
-      },
-      {
-        accessor: "severity",
-        Header: (
-          <div className={classes.stacked}>
-            Severity
-            <span className="u-text--muted">Priority</span>
-          </div>
-        ),
-        Cell: ({
-          row: { original: upgradePackage },
-        }: CellProps<PackageUpgrade>) => (
-          <div className={classes.stacked}>
-            {upgradePackage.severity ? (
-              SEVERITY_OPTIONS.find(
-                (option) => option.value === upgradePackage.severity,
-              )?.label || upgradePackage.severity
-            ) : (
-              <NoData />
-            )}
-            <span className="u-text--muted">
-              {upgradePackage.priority ? (
-                PRIORITY_OPTIONS.find(
-                  (option) => option.value === upgradePackage.priority,
-                )?.label || upgradePackage.priority
-              ) : (
-                <NoData />
-              )}
-            </span>
-          </div>
-        ),
+        accessor: "summary",
+        Header: "Description",
       },
     ],
     [

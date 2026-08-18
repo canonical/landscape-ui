@@ -1,7 +1,6 @@
 declare const styles: {
-  readonly "availableVersion": string;
-  readonly "downgrade": string;
-  readonly "row": string;
+  readonly "multiSelect": string;
+  readonly "notification": string;
   readonly "selectedContainer": string;
   readonly "topRow": string;
 };

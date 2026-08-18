@@ -6,7 +6,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type { Package } from "../types";
 import type { FilterState } from "../types/FilterState";
 
-export interface SearchPackagesVulnerabilitiesRequest {
+export interface SearchUpgradesRequest {
   computer_query: string;
   text?: string;
   names?: string[];
@@ -15,32 +15,27 @@ export interface SearchPackagesVulnerabilitiesRequest {
   offset?: number;
 }
 
-export interface SearchPackagesVulnerabilitiesResponse {
+export interface SearchUpgradesResponse {
   packages: Package[];
   count: number;
-  prev: string;
-  next: string;
+  prev: string | null;
+  next: string | null;
 }
 
-export default function useSearchPackageVulnerabilities(
-  params: SearchPackagesVulnerabilitiesRequest,
+export default function useSearchUpgrades(
+  params: SearchUpgradesRequest,
   options: Omit<
     UseQueryOptions<
-      AxiosResponse<SearchPackagesVulnerabilitiesResponse>,
-      AxiosError<ApiError>,
-      SearchPackagesVulnerabilitiesRequest
+      AxiosResponse<SearchUpgradesResponse>,
+      AxiosError<ApiError>
     >,
     "queryKey" | "queryFn"
   > = {},
 ) {
   const authFetch = useFetch();
 
-  return useQuery<
-    AxiosResponse<SearchPackagesVulnerabilitiesResponse>,
-    AxiosError<ApiError>,
-    SearchPackagesVulnerabilitiesRequest
-  >({
-    queryKey: ["packageVulnerabilities", params],
+  return useQuery<AxiosResponse<SearchUpgradesResponse>, AxiosError<ApiError>>({
+    queryKey: ["packageUpgrades", params],
     queryFn: async () => authFetch.post("packages:search-upgrades", params),
     ...options,
   });

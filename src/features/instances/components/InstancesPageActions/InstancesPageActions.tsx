@@ -9,7 +9,7 @@ import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { hasOneItem, pluralize, capitalize } from "@/utils/_helpers";
+import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -18,6 +18,7 @@ import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModa
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
+import { getActionFormTitle } from "@/features/packages";
 const RunInstanceScriptForm = lazy(
   async () => import("@/features/scripts/components/RunInstanceScriptForm"),
 );
@@ -131,9 +132,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleUpgradesRequest = () => {
     setSidePanelContent(
-      `Upgrade ${getSelectionLabel(selectedInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
+      `Apply upgrades to ${getSelectionLabel(selectedInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
-        <Upgrades toggledInstances={selectedInstances} />
+        <Upgrades selectedInstances={selectedInstances} />
       </Suspense>,
       "large",
     );
@@ -173,7 +174,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const openPackagesActionForm = (action: PackageAction) => {
     setSidePanelContent(
-      `${capitalize(action)} packages`,
+      getActionFormTitle(action),
       <Suspense fallback={<LoadingState />}>
         <PackagesActionForm
           instanceIds={selectedInstances.map(({ id }) => id)}
@@ -396,11 +397,26 @@ const InstancesPageActions = memo(function InstancesPageActions({
       children: (
         <>
           <Icon name="arrow-up" />
-          <span>Apply upgrades (advanced)</span>
+          <span>Upgrade (by package)</span>
         </>
       ),
       onClick: handleUpgradesRequest,
       disabled: noInstanceHasUpgrades,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="arrow-up" />
+          <span>Security upgrades (by USN)</span>
+        </>
+      ),
+      onClick: handleAllSecurityUpgradesRequest,
+      disabled: selectedInstances.every(
+        (instance) =>
+          !hasSecurityUpgrades(instance.alerts) ||
+          !getFeatures(instance).packages,
+      ),
       hasIcon: true,
     },
     {
@@ -412,21 +428,6 @@ const InstancesPageActions = memo(function InstancesPageActions({
       ),
       onClick: handleAllUpgradesRequest,
       disabled: noInstanceHasUpgrades,
-      hasIcon: true,
-    },
-    {
-      children: (
-        <>
-          <Icon name="security" />
-          <span>Apply all security upgrades</span>
-        </>
-      ),
-      onClick: handleAllSecurityUpgradesRequest,
-      disabled: selectedInstances.every(
-        (instance) =>
-          !hasSecurityUpgrades(instance.alerts) ||
-          !getFeatures(instance).packages,
-      ),
       hasIcon: true,
     },
     {
@@ -458,13 +459,13 @@ const InstancesPageActions = memo(function InstancesPageActions({
     {
       children: (
         <>
-          <Icon name="arrow-down" />
-          <span>Downgrade</span>
+          <Icon name="restart" />
+          <span>Change version</span>
         </>
       ),
       disabled: noInstanceHasPackageFeature,
       onClick: () => {
-        openPackagesActionForm("downgrade");
+        openPackagesActionForm("changeVersion");
       },
       hasIcon: true,
     },

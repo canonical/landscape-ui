@@ -5,7 +5,7 @@ export interface PackageComputers {
   count: number;
 }
 
-export class Package {
+export class Package implements Record<string, unknown> {
   static nextId = 1;
 
   id: number;
@@ -15,6 +15,7 @@ export class Package {
   computers: PackageComputers;
   usn: USN | null = null;
   cves: CVE[];
+  [x: string]: unknown;
 
   constructor({
     id,

@@ -9,6 +9,8 @@ import type {
   PackageChangePlan,
   ListPackageChangePlanItemsRequest,
   ListPackageChangePlanItemsResponse,
+  SearchUpgradesRequest,
+  SearchUpgradesResponse,
 } from "@/features/packages";
 import {
   PackageChangePlanAction,
@@ -16,19 +18,13 @@ import {
   type GetPackagesParams,
   type PackageOld,
 } from "@/features/packages";
-import type {
-  GetPackageUpgradeParams,
-  PackageUpgrade,
-} from "@/features/upgrades";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
 import {
   downgradePackageVersions,
   getInstancePackages,
   packagesOld,
-  upgradePackages,
 } from "@/tests/mocks/packagesOld";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import {
   generatePaginatedResponse,
@@ -187,89 +183,58 @@ export default [
     return HttpResponse.json<Activity>(activities[0]);
   }),
 
-  http.get<
-    never,
-    GetPackageUpgradeParams,
-    ApiPaginatedResponse<PackageUpgrade>
-  >(`${API_URL}packages/upgrades`, ({ request }) => {
-    const url = new URL(request.url);
-    const limit = Number(url.searchParams.get("limit"));
-    const offset = Number(url.searchParams.get("offset")) || 0;
-    const search = url.searchParams.get("search") || "";
-    const priorities = url.searchParams.get("priorities")?.split(",");
-    const severities = url.searchParams.get("severities")?.split(",");
-    const upgradeType = url.searchParams.get("upgrade_type") || "all";
-
-    let filteredPackages = upgradePackages.filter((upgradePackage) =>
-      upgradePackage.name.toLowerCase().includes(search.toLowerCase()),
-    );
-
-    if (priorities) {
-      filteredPackages = filteredPackages.filter((upgradePackage) =>
-        upgradePackage.priority
-          ? priorities.includes(upgradePackage.priority)
-          : false,
-      );
-    }
-
-    if (severities) {
-      filteredPackages = filteredPackages.filter((upgradePackage) =>
-        upgradePackage.severity
-          ? severities.includes(upgradePackage.severity)
-          : false,
-      );
-    }
-
-    if (upgradeType === "security") {
-      filteredPackages = filteredPackages.filter(
-        (upgradePackage) => upgradePackage.usn,
-      );
-    }
-
-    return HttpResponse.json(
-      generatePaginatedResponse({
-        data: filteredPackages,
-        limit,
-        offset,
-      }),
-    );
-  }),
-
   http.post(`${API_URL}computers/upgrade-packages`, async () => {
     return HttpResponse.json();
   }),
 
   http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
-    `${API_URL}packages:search`,
+    `${API_URL}packages\\:search`,
     async ({ request }) => {
       const body = await request.json();
 
       const response = generatePaginatedResponse({
-        data: packages
-          .filter((pkg) => {
-            if (body.names === undefined) {
-              return true;
-            }
+        data: packages.filter((pkg) => {
+          if (body.names === undefined) {
+            return true;
+          }
 
-            return body.names.includes(pkg.name);
-          })
-          .filter((pkg) => {
-            if (body.text === undefined) {
-              return true;
-            }
-
-            const text = body.text.toLowerCase();
-
-            return (
-              pkg.name.toLowerCase().includes(text) ||
-              pkg.summary.toLowerCase().includes(text)
-            );
-          }),
+          return body.names.includes(pkg.name);
+        }),
         limit: body.limit,
         offset: body.offset,
+        search: body.text,
+        searchFields: ["name", "summary"],
       });
 
       return HttpResponse.json<SearchPackagesResponse>({
+        packages: response.results,
+        count: response.count,
+        next: response.next,
+        prev: response.previous,
+      });
+    },
+  ),
+
+  http.post<never, SearchUpgradesRequest, SearchUpgradesResponse>(
+    `${API_URL}packages\\:search-upgrades`,
+    async ({ request }) => {
+      const body = await request.json();
+
+      const response = generatePaginatedResponse({
+        data: packages.filter((pkg) => {
+          if (body.names === undefined) {
+            return true;
+          }
+
+          return body.names.includes(pkg.name);
+        }),
+        limit: body.limit,
+        offset: body.offset,
+        search: body.text,
+        searchFields: ["name", "summary"],
+      });
+
+      return HttpResponse.json<SearchUpgradesResponse>({
         packages: response.results,
         count: response.count,
         next: response.next,

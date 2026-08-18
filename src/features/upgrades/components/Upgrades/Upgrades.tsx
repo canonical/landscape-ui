@@ -2,50 +2,37 @@ import { SidePanelTableFilterChips, TableFilter } from "@/components/filter";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
-import useFetch from "@/hooks/useFetch";
 import useSidePanel from "@/hooks/useSidePanel";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
 import type { Instance } from "@/types/Instance";
-import type { ApiError } from "@/types/api/ApiError";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { getSelectionLabel } from "@/utils/_helpers";
 import { SearchBox } from "@canonical/react-components";
-import { useQuery } from "@tanstack/react-query";
-import type { AxiosError, AxiosResponse } from "axios";
 import classNames from "classnames";
 import { useState, type FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import type { GetPackageUpgradeParams } from "../../types/GetPackageUpgradeParams";
-import type { PackageUpgrade } from "../../types/PackageUpgrade";
-import type { PriorityOrSeverity } from "../../types/PriorityOrSeverity";
 import UpgradesList from "../UpgradesList";
 import UpgradesSummary from "../UpgradesSummary";
 import classes from "./Upgrades.module.scss";
-import {
-  PRIORITY_OPTIONS,
-  SEVERITY_OPTIONS,
-  UPGRADE_TYPE_OPTIONS,
-} from "./constants";
+import { UPGRADE_TYPE_OPTIONS } from "./constants";
+import type { Package } from "@/features/packages";
+import { FilterState, useSearchUpgrades } from "@/features/packages";
 
 interface UpgradesProps {
-  readonly toggledInstances: Instance[];
+  readonly selectedInstances: Instance[];
   readonly query?: string;
 }
 
-const Upgrades: FC<UpgradesProps> = ({ query, toggledInstances }) => {
-  const authFetch = useFetch();
+const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
   const { closeSidePanel, setSidePanelTitle, changeSidePanelSize } =
     useSidePanel();
 
-  const [toggledUpgrades, setToggledUpgrades] = useState<PackageUpgrade[]>([]);
+  const [toggledUpgrades, setToggledUpgrades] = useState<Package[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [upgradeType, setUpgradeType] = useState("all");
-  const [priorities, setPriorities] = useState<PriorityOrSeverity[]>([]);
-  const [severities, setSeverities] = useState<PriorityOrSeverity[]>([]);
   const [step, setStep] = useState<"list" | "summary">("list");
 
   const {
@@ -54,29 +41,16 @@ const Upgrades: FC<UpgradesProps> = ({ query, toggledInstances }) => {
     setFalse: disableSelectAllUpgrades,
   } = useBoolean();
 
-  const queryParams: GetPackageUpgradeParams = {
-    offset: (currentPage - 1) * pageSize,
-    limit: pageSize,
-    priorities,
-    severities,
-    security_only: upgradeType === "security",
-    search,
-    query,
-  };
-
   const {
     data: upgradesResponse,
     isPending: isPendingUpgrades,
     error: upgradesError,
-  } = useQuery<
-    AxiosResponse<ApiPaginatedResponse<PackageUpgrade>>,
-    AxiosError<ApiError>
-  >({
-    queryKey: ["packages/upgrades", queryParams],
-    queryFn: async () =>
-      authFetch.get("packages/upgrades", {
-        params: queryParams,
-      }),
+  } = useSearchUpgrades({
+    offset: (currentPage - 1) * pageSize,
+    limit: pageSize,
+    security: upgradeType === "security" ? FilterState.TRUE : undefined,
+    text: search,
+    computer_query: query ?? "",
   });
 
   if (upgradesError) {
@@ -104,28 +78,6 @@ const Upgrades: FC<UpgradesProps> = ({ query, toggledInstances }) => {
     reset();
   };
 
-  const getIsPriorityOrSeverity = (value: string) => {
-    return (
-      value === "critical" ||
-      value === "high" ||
-      value === "medium" ||
-      value === "low" ||
-      value === "negligible"
-    );
-  };
-
-  const handlePrioritiesSelect = (values: string[]) => {
-    const filteredValues = values.filter(getIsPriorityOrSeverity);
-    setPriorities(filteredValues);
-    reset();
-  };
-
-  const handleSeveritiesSelect = (values: string[]) => {
-    const filteredValues = values.filter(getIsPriorityOrSeverity);
-    setSeverities(filteredValues);
-    reset();
-  };
-
   switch (step) {
     case "list":
       return (
@@ -140,33 +92,15 @@ const Upgrades: FC<UpgradesProps> = ({ query, toggledInstances }) => {
               onSearch={handleSearch}
               autoComplete="off"
             />
-            <div className={classes.filters}>
-              <TableFilter
-                type="single"
-                showSelectionOnToggleLabel
-                label="Upgrade type"
-                onItemSelect={handleUpgradeTypeSelect}
-                options={UPGRADE_TYPE_OPTIONS}
-                selectedItem={upgradeType}
-                hasBadge={upgradeType !== "all"}
-              />
-              <TableFilter
-                type="multiple"
-                label="Priority"
-                onItemsSelect={handlePrioritiesSelect}
-                selectedItems={priorities}
-                options={PRIORITY_OPTIONS}
-                hasBadge={!!priorities.length}
-              />
-              <TableFilter
-                type="multiple"
-                label="Severity"
-                onItemsSelect={handleSeveritiesSelect}
-                selectedItems={severities}
-                options={SEVERITY_OPTIONS}
-                hasBadge={!!severities.length}
-              />
-            </div>
+            <TableFilter
+              type="single"
+              showSelectionOnToggleLabel
+              label="Upgrade type"
+              onItemSelect={handleUpgradeTypeSelect}
+              options={UPGRADE_TYPE_OPTIONS}
+              selectedItem={upgradeType}
+              hasBadge={upgradeType !== "all"}
+            />
           </div>
           <SidePanelTableFilterChips
             filters={[
@@ -182,55 +116,13 @@ const Upgrades: FC<UpgradesProps> = ({ query, toggledInstances }) => {
                   handleUpgradeTypeSelect("all");
                 },
               },
-              {
-                label: "Priority",
-                multiple: true,
-                items: priorities.map((priority) => {
-                  return {
-                    label:
-                      PRIORITY_OPTIONS.find(
-                        (option) => option.value === priority,
-                      )?.label || priority,
-                    value: priority,
-                  };
-                }),
-                clear: () => {
-                  handlePrioritiesSelect([]);
-                },
-                remove: (value: string) => {
-                  handlePrioritiesSelect(
-                    priorities.filter((priority) => priority !== value),
-                  );
-                },
-              },
-              {
-                label: "Severity",
-                multiple: true,
-                items: severities.map((severity) => {
-                  return {
-                    label:
-                      SEVERITY_OPTIONS.find(
-                        (option) => option.value === severity,
-                      )?.label || severity,
-                    value: severity,
-                  };
-                }),
-                clear: () => {
-                  handleSeveritiesSelect([]);
-                },
-                remove: (value: string) => {
-                  handleSeveritiesSelect(
-                    severities.filter((severity) => severity !== value),
-                  );
-                },
-              },
             ]}
           />
           {isPendingUpgrades ? (
             <LoadingState />
           ) : (
             <UpgradesList
-              currentUpgrades={upgradesResponse.data.results}
+              currentUpgrades={upgradesResponse.data.packages}
               toggledUpgrades={toggledUpgrades}
               setToggledUpgrades={setToggledUpgrades}
               upgradeCount={upgradesResponse.data.count}
@@ -246,7 +138,7 @@ const Upgrades: FC<UpgradesProps> = ({ query, toggledInstances }) => {
             paginate={setCurrentPage}
             setPageSize={setPageSize}
             totalItems={upgradesResponse?.data.count}
-            currentItemCount={upgradesResponse?.data.results.length}
+            currentItemCount={upgradesResponse?.data.packages.length}
           />
           <SidePanelFormButtons
             onCancel={closeSidePanel}
@@ -271,14 +163,12 @@ const Upgrades: FC<UpgradesProps> = ({ query, toggledInstances }) => {
           onBackButtonPress={() => {
             setStep("list");
             setSidePanelTitle(
-              `Upgrade ${getSelectionLabel(toggledInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
+              `Upgrade ${getSelectionLabel(selectedInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
             );
             changeSidePanelSize("large");
           }}
-          priorities={priorities}
           query={query}
           search={search}
-          severities={severities}
           toggledUpgrades={toggledUpgrades}
           upgradeType={upgradeType}
         />

@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import type { Package, PackageAction } from "../../types";
+import type { PackageAction } from "../../types";
 import {
   useDeletePackageChangePlan,
   useExecutePackageChangePlan,
@@ -9,18 +9,21 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
-import { capitalize, getSelectionLabel, pluralize } from "@/utils/_helpers";
+import { getSelectionLabel, pluralize } from "@/utils/_helpers";
 import LoadingState from "@/components/layout/LoadingState";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import PackagesActionSummaryCount from "./components/PackagesActionSummaryCount";
 import { mapActionToPast } from "../../helpers";
-import { getApplicableCount } from "./helpers";
+import {
+  getActionSubmitButtonAppearance,
+  getActionSubmitButtonText,
+  getApplicableCount,
+} from "./helpers";
 import classes from "./PackagesActionSummary.module.scss";
 import classNames from "classnames";
 
 interface PackagesActionSummaryProps {
   readonly action: PackageAction;
-  readonly selectedPackages: Package[];
   readonly instanceIds: number[];
   readonly packageChangePlanId: number;
   readonly onBackButtonPress: () => void;
@@ -151,12 +154,12 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
       </ul>
       <SidePanelFormButtons
         submitButtonLoading={isExecutingChangePlan}
-        submitButtonText={`${capitalize(action)} ${pluralize(
+        submitButtonText={`${getActionSubmitButtonText(action)} ${pluralize(
           items.length,
           ["package"],
           "exact",
         )}`}
-        submitButtonAppearance={action == "install" ? "positive" : "negative"}
+        submitButtonAppearance={getActionSubmitButtonAppearance(action)}
         onSubmit={submit}
         hasBackButton
         onBackButtonPress={goBack}

@@ -19,12 +19,11 @@ import { mapActionToQueryParams, mapActionToSearch } from "../../helpers";
 import PackageSearchDowngradeItem from "./components/PackageSearchDowngradeItem";
 import type { SearchPackagesRequest } from "../../api/useSearchPackages";
 import useSearchPackages from "../../api/useSearchPackages";
-import { FilterState } from "../../types/FilterState";
 
 interface PackageDropdownSearchProps {
   readonly instanceIds: number[];
-  readonly selectedPackages: Package[];
-  readonly setSelectedPackages: (packages: Package[]) => void;
+  readonly selectedPackages: [Package, number[]][];
+  readonly setSelectedPackages: (packages: [Package, number[]][]) => void;
   readonly action: PackageAction;
 }
 
@@ -40,18 +39,10 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
   const { value: isOpen, setFalse: close, setTrue: open } = useBoolean();
 
-  const { available, installed, upgrade, held } =
-    mapActionToQueryParams(action);
-
-  const computerQuery = instanceIds.map((id) => `id:${id}`).join(" OR ");
-
   const queryParams: SearchPackagesRequest = {
-    computer_query: computerQuery,
-    available: available ? FilterState.TRUE : FilterState.FALSE,
-    installed: installed ? FilterState.TRUE : FilterState.FALSE,
-    upgrade: upgrade ? FilterState.TRUE : FilterState.FALSE,
-    held: held ? FilterState.TRUE : FilterState.FALSE,
+    computer_query: instanceIds.map((id) => `id:${id}`).join(" OR "),
     limit: QUERY_LIMIT,
+    ...mapActionToQueryParams(action),
   };
 
   if (exact) {
@@ -88,12 +79,42 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
       return;
     }
 
-    setSelectedPackages([...selectedPackages, item]);
+    setSelectedPackages([...selectedPackages, [item, []]]);
     clearSearchBox();
     close();
   };
 
   const isOverLimit = selectedPackages.length >= MAX_SELECTED_PACKAGES;
+
+  const getWarningVerb = () => {
+    switch (action) {
+      case "install":
+        return "install";
+      case "uninstall":
+        return "uninstall";
+      case "hold":
+        return "hold";
+      case "unhold":
+        return "unhold";
+      case "changeVersion":
+        return "change version on";
+    }
+  };
+
+  const getHeaderVerb = () => {
+    switch (action) {
+      case "install":
+        return "install";
+      case "uninstall":
+        return "uninstall";
+      case "hold":
+        return "hold";
+      case "unhold":
+        return "unhold";
+      case "changeVersion":
+        return "change version";
+    }
+  };
 
   return (
     <div className={classes.container}>
@@ -120,7 +141,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
             />
             {isOverLimit && (
               <span className="p-form-help-text">
-                You can {action} a maximum of{" "}
+                You can {getWarningVerb()} a maximum of{" "}
                 {pluralize(MAX_SELECTED_PACKAGES, ["package"], "exact")} in one
                 single operation.
               </span>
@@ -169,7 +190,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
           "u-no-padding",
           classes.header,
         )}
-      >{`Packages to ${action}`}</div>
+      >{`Packages to ${getHeaderVerb()}`}</div>
 
       {selectedPackages.length ? (
         <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">
@@ -178,16 +199,24 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
               setSelectedPackages(selectedPackages.toSpliced(index, 1));
             };
 
-            return action == "downgrade" ? (
+            return action == "changeVersion" ? (
               <PackageSearchDowngradeItem
-                key={`${selectedPackage.id}${index}`}
+                key={`${selectedPackage[0].id}${index}`}
                 selectedPackage={selectedPackage}
                 onDelete={handleDelete}
-                query={computerQuery}
+                instanceIds={instanceIds}
+                onItemsUpdate={(items) => {
+                  setSelectedPackages(
+                    selectedPackages.toSpliced(index, 1, [
+                      selectedPackage[0],
+                      items.map((item) => item.value as number),
+                    ]),
+                  );
+                }}
               />
             ) : (
               <PackageDropdownSearchItem
-                key={`${selectedPackage.id}${index}`}
+                key={`${selectedPackage[0].id}${index}`}
                 selectedPackage={selectedPackage}
                 onDelete={handleDelete}
               />

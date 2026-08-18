@@ -119,7 +119,7 @@ describe("PackageDropdownSearch", () => {
       renderWithProviders(
         <PackageDropdownSearch
           {...props}
-          action="downgrade"
+          action="changeVersion"
           selectedPackages={[selectedPackage]}
         />,
       );
