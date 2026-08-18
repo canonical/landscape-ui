@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, vi, assert } from "vitest";
 import UsnList from "./UsnList";
+import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 
 const mockedUsns = usns.slice(0, 5);
 const onNextPageFetch = vi.fn();
@@ -63,13 +64,13 @@ describe("UsnList", () => {
 
     await userEvent.click(screen.getByText(/toggle all security issues/i));
 
-    expect(onSelectedUsnsChange).toBeCalledWith(
+    expect(onSelectedUsnsChange).toHaveBeenCalledWith(
       mockedUsns.map((usn) => usn.usn),
     );
 
     await userEvent.click(screen.getByText(`Toggle ${usns[0].usn}`));
 
-    expect(onSelectedUsnsChange).toBeCalledWith([usns[0].usn]);
+    expect(onSelectedUsnsChange).toHaveBeenCalledWith([usns[0].usn]);
   });
 
   it("should render NoData when a USN has no CVEs", () => {
@@ -80,7 +81,7 @@ describe("UsnList", () => {
       <UsnList {...expandableProps} usns={[usnWithNoCves]} totalUsnCount={1} />,
     );
 
-    expect(screen.getByText("---")).toBeInTheDocument();
+    expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 
   it("should deselect a USN when it is already selected", async () => {
@@ -92,7 +93,7 @@ describe("UsnList", () => {
 
     await userEvent.click(screen.getByText(`Toggle ${usns[0].usn}`));
 
-    expect(onSelectedUsnsChange).toBeCalledWith([]);
+    expect(onSelectedUsnsChange).toHaveBeenCalledWith([]);
   });
 
   it("should deselect all when some are selected and toggle-all is clicked", async () => {
@@ -104,7 +105,7 @@ describe("UsnList", () => {
 
     await userEvent.click(screen.getByText(/toggle all security issues/i));
 
-    expect(onSelectedUsnsChange).toBeCalledWith([]);
+    expect(onSelectedUsnsChange).toHaveBeenCalledWith([]);
   });
 
   it("should expand and collapse packages list", async () => {
@@ -120,17 +121,39 @@ describe("UsnList", () => {
     expect(screen.getAllByText(/show packages/i).length).toBeGreaterThan(0);
   });
 
-  it("should expand affected instances when clicking computers count button", async () => {
+  it("should keep the packages row expansion open when pressing Escape", async () => {
     renderWithProviders(<UsnList {...expandableProps} />);
 
-    const affectedButtons = screen.getAllByRole("button");
-    const countButton = affectedButtons.find((btn) =>
-      /^\d+$/.test(btn.textContent?.trim() ?? ""),
-    );
-    if (countButton) {
-      await userEvent.click(countButton);
-      await userEvent.click(countButton);
-    }
+    const [button] = screen.getAllByText(/show packages/i);
+    assert(button);
+    await userEvent.click(button);
+
+    expect(screen.getByText(/hide packages/i)).toBeInTheDocument();
+
+    await userEvent.keyboard("{Escape}");
+
+    expect(screen.getByText(/hide packages/i)).toBeInTheDocument();
+  });
+
+  it("should expand and collapse affected instances when clicking computers count button", async () => {
+    renderWithProviders(<UsnList {...expandableProps} />);
+
+    const [initialButton] = screen.getAllByRole("button", { name: /^\d+$/ });
+    assert(initialButton);
+    await userEvent.click(initialButton);
+
+    const [expandedButton] = screen.getAllByRole("button", { name: /^\d+$/ });
+    assert(expandedButton);
+    expect(expandedButton).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText(/Instances affected by/i)).toBeInTheDocument();
+
+    await userEvent.click(expandedButton);
+    const [collapsedButton] = screen.getAllByRole("button", { name: /^\d+$/ });
+    assert(collapsedButton);
+    expect(collapsedButton).toHaveAttribute("aria-expanded", "false");
+    expect(
+      screen.queryByText(/Instances affected by/i),
+    ).not.toBeInTheDocument();
   });
 
   it("should render loading state row when isUsnsLoading is true", () => {
@@ -191,28 +214,45 @@ describe("UsnList", () => {
   it("should expand CVEs and collapse on outside click", async () => {
     renderWithProviders(<UsnList {...expandableProps} />);
 
-    const [firstUsnCve] = screen.getAllByText(/CVE-/);
-    if (firstUsnCve) {
-      const expandButton = firstUsnCve.closest("button");
-      if (expandButton) {
-        await userEvent.click(expandButton);
-      }
-    }
+    const showMoreButtons = screen.queryAllByRole("button", {
+      name: /show more/i,
+    });
+
+    const [showMoreButton] = showMoreButtons;
+    assert(showMoreButton);
+    await userEvent.click(showMoreButton);
+
+    const showMoreButtonsExpanded = screen.queryAllByRole("button", {
+      name: /show more/i,
+    });
+    expect(showMoreButtonsExpanded).toHaveLength(showMoreButtons.length - 1);
+
+    const outsideElement = screen.getByText("CVE(s)");
+    await userEvent.click(outsideElement);
+
+    const showMoreButtonsClosed = screen.queryAllByRole("button", {
+      name: /show more/i,
+    });
+    expect(showMoreButtonsClosed).toHaveLength(showMoreButtons.length);
   });
 
-  it("should trigger CVE expand via Show more button and collapse on outside click", async () => {
+  it("should trigger CVE expand and collapse on escape", async () => {
     renderWithProviders(<UsnList {...expandableProps} />);
 
     const showMoreButtons = screen.queryAllByRole("button", {
       name: /show more/i,
     });
-    if (showMoreButtons.length > 0) {
-      const [firstShowMoreButton] = showMoreButtons;
-      assert(firstShowMoreButton);
-      await userEvent.click(firstShowMoreButton);
-      // Now click outside the table row to collapse
-      await userEvent.click(document.body);
-    }
+
+    const [showMoreButton] = showMoreButtons;
+    assert(showMoreButton);
+    await userEvent.click(showMoreButton);
+
+    await userEvent.keyboard("{Escape}");
+
+    const showMoreButtonsClosed = screen.queryAllByRole("button", {
+      name: /show more/i,
+    });
+    expect(showMoreButtonsClosed).toHaveLength(showMoreButtons.length);
   });
 
   it("should clear selection when paginating", async () => {
