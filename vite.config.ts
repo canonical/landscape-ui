@@ -7,6 +7,9 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
+    build: {
+      chunkSizeWarningLimit: 4000,
+    },
     plugins: [
       react(),
       {
