@@ -41,7 +41,7 @@ describe("ViewProfileDetailsBlock", () => {
     ).toBeInTheDocument();
     expect(await screen.findByText("Script")).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /new v2 script/i }),
+      await screen.findByRole("link", { name: /new v2 script/i }),
     ).toBeInTheDocument();
     expect(await screen.findByText("Run as User")).toBeInTheDocument();
     expect(await screen.findByText("Time limit")).toBeInTheDocument();
