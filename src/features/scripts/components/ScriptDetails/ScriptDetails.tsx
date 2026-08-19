@@ -215,7 +215,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
 
       <TextConfirmationModal
         isOpen={deleteModalOpen}
-        confirmationText={`Redact ${script?.title}`}
+        confirmationText={`redact ${script?.title}`}
         title={deleteModalTitle}
         confirmButtonLabel={deleteModalButtonLabel}
         confirmButtonAppearance="negative"
