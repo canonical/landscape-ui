@@ -335,21 +335,12 @@ jobs:
 
       - name: Run API Contract tests
         run: pnpm exec playwright test --config e2e/docker-stack/playwright.api-contract.config.ts
-        env:
-          CI_ADMIN_EMAIL: ${{ env.CI_ADMIN_EMAIL }}
-          CI_ADMIN_PASSWORD: ${{ env.CI_ADMIN_PASSWORD }}
 
       - name: Run e2e selfHosted tests
         run: pnpm exec playwright test --config e2e/docker-stack/playwright.integration.config.ts
-        env:
-          CI_ADMIN_EMAIL: ${{ env.CI_ADMIN_EMAIL }}
-          CI_ADMIN_PASSWORD: ${{ env.CI_ADMIN_PASSWORD }}
 
       - name: Run e2e Saas tests
         run: pnpm exec playwright test --config e2e/docker-stack/playwright.integration.saas.config.ts
-        env:
-          CI_ADMIN_EMAIL: ${{ env.CI_ADMIN_EMAIL }}
-          CI_ADMIN_PASSWORD: ${{ env.CI_ADMIN_PASSWORD }}
 
       - name: Upload API Contract test report
         if: always()
