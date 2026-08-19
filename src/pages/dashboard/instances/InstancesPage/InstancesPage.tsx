@@ -13,6 +13,7 @@ import {
 } from "@/features/instances";
 import { getExportTitle } from "@/features/exports";
 import { setSelectedInstanceIds } from "@/features/instances";
+import useAuth from "@/hooks/useAuth";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
@@ -36,10 +37,13 @@ const ReportView = lazy(async () => {
 });
 
 const InstancesPage: FC = () => {
-  useSetDynamicFilterValidation(
-    "sidePath",
-    REPORT_VIEW_ENABLED ? ["export", "report"] : ["export"],
-  );
+  const { isFeatureEnabled } = useAuth();
+  const isTsvExportsEnabled = isFeatureEnabled("tsv-exports");
+
+  useSetDynamicFilterValidation("sidePath", [
+    ...(isTsvExportsEnabled ? ["export"] : []),
+    ...(REPORT_VIEW_ENABLED ? ["report"] : []),
+  ]);
   const {
     currentPage,
     pageSize,
@@ -107,34 +111,36 @@ const InstancesPage: FC = () => {
           onClearSelection={clearSelection}
         />
       </PageContent>
-      <SidePanel
-        isOpen={sidePath.join(",") === "export"}
-        onClose={popSidePathUntilClear}
-        size="medium"
-      >
-        {sidePath.join(",") === "export" && (
-          <SidePanel.Suspense key="export">
-            <SidePanel.Header>
-              {getExportTitle({
-                isAllSelected,
-                selectedCount: selectedInstances.length,
-                totalCount: instancesCount,
-                selectionForms: ["instance"],
-              })}
-            </SidePanel.Header>
-            <SidePanel.Content>
-              <InstancesExportForm
-                exportParams={instanceListParams}
-                selectedInstanceIds={
-                  isAllSelected
-                    ? undefined
-                    : selectedInstances.map(({ id }) => id)
-                }
-              />
-            </SidePanel.Content>
-          </SidePanel.Suspense>
-        )}
-      </SidePanel>
+      {isTsvExportsEnabled && (
+        <SidePanel
+          isOpen={sidePath.join(",") === "export"}
+          onClose={popSidePathUntilClear}
+          size="medium"
+        >
+          {sidePath.join(",") === "export" && (
+            <SidePanel.Suspense key="export">
+              <SidePanel.Header>
+                {getExportTitle({
+                  isAllSelected,
+                  selectedCount: selectedInstances.length,
+                  totalCount: instancesCount,
+                  selectionForms: ["instance"],
+                })}
+              </SidePanel.Header>
+              <SidePanel.Content>
+                <InstancesExportForm
+                  exportParams={instanceListParams}
+                  selectedInstanceIds={
+                    isAllSelected
+                      ? undefined
+                      : selectedInstances.map(({ id }) => id)
+                  }
+                />
+              </SidePanel.Content>
+            </SidePanel.Suspense>
+          )}
+        </SidePanel>
+      )}
       {REPORT_VIEW_ENABLED && (
         <SidePanel
           isOpen={sidePath[0] === "report"}

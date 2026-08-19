@@ -31,6 +31,10 @@ describe("UserInfo", () => {
     vi.mocked(useAuth).mockReturnValue(mockAuth);
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("renders correctly", () => {
     renderWithProviders(<UserInfo />);
 
@@ -84,6 +88,33 @@ describe("UserInfo", () => {
   it("renders Alerts link", () => {
     renderWithProviders(<UserInfo />);
     expect(screen.getByRole("link", { name: /alerts/i })).toBeInTheDocument();
+  });
+
+  it("hides the Exports link when TSV exports are disabled", () => {
+    vi.mocked(useAuth).mockReturnValue({
+      ...mockAuth,
+      isFeatureEnabled: vi.fn().mockReturnValue(false),
+    });
+
+    renderWithProviders(<UserInfo />);
+
+    expect(
+      screen.queryByRole("link", { name: "Exports" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the Exports link when TSV exports are enabled", () => {
+    vi.mocked(useAuth).mockReturnValue({
+      ...mockAuth,
+      isFeatureEnabled: vi.fn().mockReturnValue(true),
+    });
+
+    renderWithProviders(<UserInfo />);
+
+    expect(screen.getByRole("link", { name: "Exports" })).toHaveAttribute(
+      "href",
+      ROUTES.exports.root(),
+    );
   });
 
   it("renders version info", () => {
