@@ -136,9 +136,21 @@ export default [
     );
   }),
 
-  http.post(`${API_URL}script-profiles`, () =>
-    HttpResponse.json(scriptProfiles[0]),
-  ),
+  http.post(`${API_URL}script-profiles`, () => {
+    if (shouldApplyEndpointStatus("script-profiles")) {
+      const endpointStatus = getEndpointStatus("script-profiles");
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusNetworkError();
+      }
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json(endpointStatus.response, { status: 400 });
+      }
+    }
+
+    return HttpResponse.json(scriptProfiles[0]);
+  }),
 
   http.patch(`${API_URL}script-profiles/:profileId`, () =>
     HttpResponse.json(scriptProfiles[0]),

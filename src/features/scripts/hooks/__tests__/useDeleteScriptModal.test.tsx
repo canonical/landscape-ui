@@ -71,6 +71,12 @@ describe("useDeleteScriptModal", () => {
   it("renders body with irreversible message for script with no profiles", () => {
     renderWithProviders(<DeleteModalConsumer script={scriptWithNoProfiles} />);
 
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /permanently remove its contents from Landscape/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /record of the script/i,
+    );
     expect(screen.getByTestId("body")).toHaveTextContent(/irreversible/i);
   });
 
@@ -80,6 +86,10 @@ describe("useDeleteScriptModal", () => {
     for (const profile of scriptWithProfiles.script_profiles) {
       expect(screen.getByTestId("body")).toHaveTextContent(profile.title);
     }
+
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /Redacting the script will archive its associated profiles, making their names unavailable for reuse\. Neither the script nor its profiles will be able to run again\./i,
+    );
   });
 
   it("calls afterSuccess when onConfirmDelete completes", async () => {

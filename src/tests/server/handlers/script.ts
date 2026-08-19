@@ -169,6 +169,13 @@ export default [
       throw createEndpointStatusError();
     }
 
+    if (
+      endpointStatus.status === "variant" &&
+      endpointStatus.path === "CreateScript"
+    ) {
+      return HttpResponse.json(endpointStatus.response, { status: 400 });
+    }
+
     return HttpResponse.json({ id: 99 });
   }),
 
