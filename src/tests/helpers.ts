@@ -1,12 +1,6 @@
 import { expect, vi } from "vitest";
 import { screen, waitForElementToBeRemoved } from "@testing-library/react";
-import { http, HttpResponse } from "msw";
-import { API_URL, BREAKPOINT_PX } from "@/constants";
-import { features } from "@/tests/mocks/features";
-import server from "@/tests/server";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
-import type { Feature } from "@/types/Feature";
-import type { FeatureKey } from "@/types/FeatureKey";
+import { BREAKPOINT_PX } from "@/constants";
 
 export const expectLoadingState = async (): Promise<void> => {
   const loadingSpinner = await screen.findByRole("status");
@@ -92,19 +86,3 @@ export const setScreenSize = (bp: keyof typeof BREAKPOINT_PX): void => {
 export function resetScreenSize(): void {
   mockMatchMedia([]);
 }
-
-export const setFeatureEnabled = (key: FeatureKey, enabled: boolean): void => {
-  server.use(
-    http.get(`${API_URL}features`, () =>
-      HttpResponse.json(
-        generatePaginatedResponse<Feature>({
-          data: features.map((feature) =>
-            feature.key === key ? { ...feature, enabled } : feature,
-          ),
-          offset: 0,
-          limit: 20,
-        }),
-      ),
-    ),
-  );
-};

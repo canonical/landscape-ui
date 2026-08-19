@@ -27,14 +27,7 @@ export const DashboardRoutes = (
         path={PATHS.alerts.root}
         element={<Pages.AlertNotificationsPage />}
       />
-      <Route
-        path={PATHS.exports.root}
-        element={
-          <FeatureGuard feature="tsv-exports">
-            <Pages.ExportsPage />
-          </FeatureGuard>
-        }
-      />
+      <Route path={PATHS.exports.root} element={<Pages.ExportsPage />} />
       <Route path={PATHS.error.envError} element={<Pages.EnvError />} />
 
       {/* --- Instances --- */}

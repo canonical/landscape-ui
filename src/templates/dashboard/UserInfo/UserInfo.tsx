@@ -13,7 +13,7 @@ import { ROUTES } from "@/libs/routes";
 import { APP_COMMIT, APP_VERSION } from "@/constants";
 
 const UserInfo: FC = () => {
-  const { user, logout, isFeatureEnabled } = useAuth();
+  const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
   const { handleLogoutQuery } = useAuthHandle();
@@ -136,33 +136,28 @@ const UserInfo: FC = () => {
             </Link>
           )}
         </li>
-        {isFeatureEnabled("tsv-exports") && (
-          <li className="p-side-navigation__item">
-            <Link
-              className={classNames("p-side-navigation__link", classes.link)}
-              to={ROUTES.exports.root()}
-              aria-current={
-                pathname.includes(ROUTES.exports.root()) ? "page" : undefined
-              }
+        <li className="p-side-navigation__item">
+          <Link
+            className={classNames("p-side-navigation__link", classes.link)}
+            to={ROUTES.exports.root()}
+            aria-current={
+              pathname.includes(ROUTES.exports.root()) ? "page" : undefined
+            }
+          >
+            <Icon
+              name="export"
+              className={classNames(
+                "is-light p-side-navigation__icon",
+                classes.icon,
+              )}
+            />
+            <span
+              className={classNames("p-side-navigation__label", classes.label)}
             >
-              <Icon
-                name="export"
-                className={classNames(
-                  "is-light p-side-navigation__icon",
-                  classes.icon,
-                )}
-              />
-              <span
-                className={classNames(
-                  "p-side-navigation__label",
-                  classes.label,
-                )}
-              >
-                Exports
-              </span>
-            </Link>
-          </li>
-        )}
+              Exports
+            </span>
+          </Link>
+        </li>
         <li className="p-side-navigation__item">
           <Link
             className={classNames("p-side-navigation__link", classes.link)}

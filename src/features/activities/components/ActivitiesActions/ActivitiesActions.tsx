@@ -1,5 +1,4 @@
 import { ResponsiveButtons } from "@/components/ui";
-import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -24,7 +23,6 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
 }) => {
   const { notify } = useNotify();
   const debug = useDebug();
-  const { isFeatureEnabled } = useAuth();
   const { createSidePathPusher } = usePageParams();
   const { approveActivities, isApprovingActivities } = useApproveActivities();
   const { cancelActivities, isCancelingActivities } = useCancelActivities();
@@ -82,19 +80,15 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
     <ResponsiveButtons
       collapseFrom="xl"
       buttons={[
-        ...(isFeatureEnabled("tsv-exports")
-          ? [
-              <Button
-                key="export"
-                className="p-segmented-control__button"
-                type="button"
-                disabled={!isAllSelected && selected.length === 0}
-                onClick={handleExport}
-              >
-                <span>Export selection as TSV</span>
-              </Button>,
-            ]
-          : []),
+        <Button
+          key="export"
+          className="p-segmented-control__button"
+          type="button"
+          disabled={!isAllSelected && selected.length === 0}
+          onClick={handleExport}
+        >
+          <span>Export selection as TSV</span>
+        </Button>,
         <ConfirmationButton
           key="approve"
           type="button"

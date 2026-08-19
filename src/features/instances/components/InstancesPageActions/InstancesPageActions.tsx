@@ -326,21 +326,17 @@ const InstancesPageActions = memo(function InstancesPageActions({
       hasIcon: true,
       disabled: !hasSelectedInstances,
     },
-    ...(isFeatureEnabled("tsv-exports")
-      ? [
-          {
-            children: (
-              <>
-                <Icon name="export" />
-                <span>Export selection as TSV</span>
-              </>
-            ),
-            onClick: handleExport,
-            hasIcon: true,
-            disabled: !hasInstancesToExport,
-          },
-        ]
-      : []),
+    {
+      children: (
+        <>
+          <Icon name="export" />
+          <span>Export selection as TSV</span>
+        </>
+      ),
+      onClick: handleExport,
+      hasIcon: true,
+      disabled: !hasInstancesToExport,
+    },
     ...(REPORT_VIEW_ENABLED
       ? [
           {
