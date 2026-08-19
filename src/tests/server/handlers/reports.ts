@@ -46,9 +46,9 @@ export const emptyComplianceReport: ComplianceReport = {
 };
 
 export default [
-  http.get(`${API_URL}computers/report`, () => {
-    if (shouldApplyEndpointStatus("computers/report")) {
-      const { status } = getEndpointStatus("computers/report");
+  http.get(`${API_URL}computers/compliance-report`, () => {
+    if (shouldApplyEndpointStatus("computers/compliance-report")) {
+      const { status } = getEndpointStatus("computers/compliance-report");
 
       if (status === "error") {
         throw createEndpointStatusNetworkError();
