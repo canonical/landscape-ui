@@ -1,6 +1,6 @@
 import { getInstancePackages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import PackageDetails from "./PackageDetails";
@@ -126,10 +126,14 @@ describe("PackageDetails", () => {
       await user.click(upgradeButton);
 
       expect(
-        screen.getByRole("button", { name: "Upgrade" }),
+        await screen.findByRole("heading", {
+          name: `Upgrade ${packageWithUpgrade.name}`,
+        }),
       ).toBeInTheDocument();
+
+      const sidePanel = screen.getByRole("complementary");
       expect(
-        screen.getByText(new RegExp(`upgrade ${packageWithUpgrade.name}`, "i")),
+        await within(sidePanel).findByRole("button", { name: "Upgrade" }),
       ).toBeInTheDocument();
     });
 
@@ -139,9 +143,15 @@ describe("PackageDetails", () => {
       const holdButton = screen.getByRole("button", { name: "Hold" });
       await user.click(holdButton);
 
-      expect(screen.getByRole("button", { name: "Hold" })).toBeInTheDocument();
       expect(
-        screen.getByText(new RegExp(`hold ${installedPackage.name}`, "i")),
+        await screen.findByRole("heading", {
+          name: `Hold ${installedPackage.name}`,
+        }),
+      ).toBeInTheDocument();
+
+      const sidePanel = screen.getByRole("complementary");
+      expect(
+        await within(sidePanel).findByRole("button", { name: "Hold" }),
       ).toBeInTheDocument();
     });
 
@@ -152,7 +162,14 @@ describe("PackageDetails", () => {
       await user.click(unholdButton);
 
       expect(
-        screen.getByRole("button", { name: "Unhold" }),
+        await screen.findByRole("heading", {
+          name: `Unhold ${heldPackage.name}`,
+        }),
+      ).toBeInTheDocument();
+
+      const sidePanel = screen.getByRole("complementary");
+      expect(
+        await within(sidePanel).findByRole("button", { name: "Unhold" }),
       ).toBeInTheDocument();
     });
 
@@ -165,10 +182,14 @@ describe("PackageDetails", () => {
       await user.click(uninstallButton);
 
       expect(
-        screen.getByRole("button", { name: "Uninstall" }),
+        await screen.findByRole("heading", {
+          name: `Uninstall ${installedPackage.name}`,
+        }),
       ).toBeInTheDocument();
+
+      const sidePanel = screen.getByRole("complementary");
       expect(
-        screen.getByText(new RegExp(`uninstall ${installedPackage.name}`, "i")),
+        await within(sidePanel).findByRole("button", { name: "Uninstall" }),
       ).toBeInTheDocument();
     });
 
@@ -181,7 +202,14 @@ describe("PackageDetails", () => {
       await user.click(downgradeButton);
 
       expect(
-        screen.getByRole("button", { name: "Downgrade" }),
+        await screen.findByRole("heading", {
+          name: `Downgrade ${packageWithUpgrade.name}`,
+        }),
+      ).toBeInTheDocument();
+
+      const sidePanel = screen.getByRole("complementary");
+      expect(
+        await within(sidePanel).findByRole("button", { name: "Downgrade" }),
       ).toBeInTheDocument();
     });
   });
