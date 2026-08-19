@@ -13,11 +13,14 @@ interface TestData extends Record<string, unknown> {
   description: string;
 }
 
-const data = Array.from({ length: limit }, (_, i): TestData => ({
-  id: i + 1,
-  name: `Item ${i + 1}`,
-  description: `Description for item ${i + 1}`,
-}));
+const data = Array.from(
+  { length: limit },
+  (_, i): TestData => ({
+    id: i + 1,
+    name: `Item ${i + 1}`,
+    description: `Description for item ${i + 1}`,
+  }),
+);
 
 const columns: Column<TestData>[] = [
   {

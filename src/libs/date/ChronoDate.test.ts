@@ -62,7 +62,7 @@ describe("validity", () => {
     expect(date("2024-02-31").isValid()).toBe(false);
     expect(date("2024-00-01").isValid()).toBe(false);
     expect(date("2024-04-31").isValid()).toBe(false);
-    expect(date("2024-03-15T24:00").isValid()).toBe(false);
+    expect(date("2024-03-15T24:00:01").isValid()).toBe(false);
     expect(date("2024-03-15T10:60").isValid()).toBe(false);
     expect(date("2024-03-15T10:30:60").isValid()).toBe(false);
   });
@@ -142,6 +142,14 @@ describe("strict ISO 8601 parsing", () => {
     expect(
       date("2024-03-15T10:30:00+02:99", date.ISO_8601, true).isValid(),
     ).toBe(false);
+  });
+
+  it("accepts 24:00:00 as the start of the next day", () => {
+    expect(
+      date("2024-03-15T24:00:00Z", date.ISO_8601, true)
+        .utc()
+        .format("YYYY-MM-DDTHH:mm:ss"),
+    ).toBe("2024-03-16T00:00:00");
   });
 
   it("parses ISO input without strict mode", () => {
@@ -239,8 +247,8 @@ describe("utc and local modes", () => {
     );
   });
 
-  it("toISOString returns empty string for invalid dates", () => {
-    expect(date("not-a-date").toISOString()).toBe("");
+  it("toISOString returns null for invalid dates", () => {
+    expect(date("not-a-date").toISOString()).toBeNull();
   });
 });
 

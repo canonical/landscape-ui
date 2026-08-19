@@ -167,8 +167,8 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
       </div>
     ) : (
       <>
-        {visibleButtons.map((node, i): ReactNode =>
-          decorateNode(node, i, "u-no-margin--bottom"),
+        {visibleButtons.map(
+          (node, i): ReactNode => decorateNode(node, i, "u-no-margin--bottom"),
         )}
       </>
     );

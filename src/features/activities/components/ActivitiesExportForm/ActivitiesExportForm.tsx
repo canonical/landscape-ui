@@ -45,11 +45,17 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
     });
 
     try {
+      const retainUntil = date(values.retainUntil).toISOString();
+
+      if (retainUntil === null) {
+        throw new Error("Retain until must be a valid date.");
+      }
+
       const response = await exportActivitiesTsv({
         name: values.name.trim(),
         query,
         selected_field_ids: fieldsToExport.map((field) => field.id),
-        retain_until: date(values.retainUntil).toISOString(),
+        retain_until: retainUntil,
       });
       const job = response.data;
       const exportScope = getExportScope({

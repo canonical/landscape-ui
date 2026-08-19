@@ -81,7 +81,7 @@ const HoldSnapForm: FC<HoldSnapFormProps> = ({ installedSnaps }) => {
     if (event.currentTarget.value === "date") {
       void formik.setFieldValue(
         "hold_until",
-        date().toISOString().slice(0, 16),
+        date().toISOString()?.slice(0, 16) ?? "",
       );
     }
   };

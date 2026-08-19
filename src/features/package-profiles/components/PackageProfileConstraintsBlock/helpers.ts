@@ -10,7 +10,8 @@ import classes from "./PackageProfileConstraintsBlock.module.scss";
 
 const handleConstraintPropChange = async (
   formik:
-    FormikContextType<AddFormProps> | FormikContextType<ConstraintsFormProps>,
+    | FormikContextType<AddFormProps>
+    | FormikContextType<ConstraintsFormProps>,
   index: number,
   prop: keyof Constraint,
   value: string,
@@ -35,7 +36,8 @@ const handleConstraintPropChange = async (
 
 const getConstraintsErrorByIndex = (
   formik:
-    FormikContextType<AddFormProps> | FormikContextType<ConstraintsFormProps>,
+    | FormikContextType<AddFormProps>
+    | FormikContextType<ConstraintsFormProps>,
   index: number,
   key: keyof Constraint,
 ) => {
@@ -53,7 +55,8 @@ const getConstraintsErrorByIndex = (
 
 const handleConstraintRowDelete = async (
   formik:
-    FormikContextType<AddFormProps> | FormikContextType<ConstraintsFormProps>,
+    | FormikContextType<AddFormProps>
+    | FormikContextType<ConstraintsFormProps>,
   rowIndex: number,
 ) => {
   await formik.setFieldValue(
@@ -73,7 +76,8 @@ const handleConstraintRowDelete = async (
 
 export const getConstraintPropHandlers = (
   formik:
-    FormikContextType<AddFormProps> | FormikContextType<ConstraintsFormProps>,
+    | FormikContextType<AddFormProps>
+    | FormikContextType<ConstraintsFormProps>,
 ) => {
   return {
     handleConstraintPropChange: async (

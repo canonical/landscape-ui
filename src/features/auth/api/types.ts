@@ -37,7 +37,8 @@ export type AuthStateResponse =
     });
 
 export type LoginRequestParams =
-  { email: string; password: string } | { identity: string; password: string };
+  | { email: string; password: string }
+  | { identity: string; password: string };
 
 export interface GetUbuntuOneUrlParams {
   external?: boolean;

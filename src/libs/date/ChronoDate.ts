@@ -77,11 +77,6 @@ export const ISO_8601 = Symbol("ISO_8601");
 const ISO_8601_REGEX =
   /^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?)?$/;
 
-const DATE_ONLY_REGEX = /^(\d{4})-(\d{2})-(\d{2})$/;
-
-const DATE_TIME_NO_TZ_REGEX =
-  /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?$/;
-
 const ISO_8601_PARTS_REGEX =
   /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?(?:(Z)|([+-])(\d{2}):?(\d{2}))?)?$/;
 
@@ -178,7 +173,8 @@ const hasValidDateTimeParts = (
   day >= 1 &&
   day <= getDaysInMonth(year, month) &&
   hour >= 0 &&
-  hour <= MAX_HOUR &&
+  (hour <= MAX_HOUR ||
+    (hour === MAX_HOUR + 1 && minute === 0 && second === 0)) &&
   minute >= 0 &&
   minute <= MAX_MINUTE_OR_SECOND &&
   second >= 0 &&
@@ -274,26 +270,6 @@ const parseString = (value: string): number => {
 
   if (ISO_8601_PARTS_REGEX.test(input)) {
     return parseStrictIsoTime(input);
-  }
-
-  const dateOnly = DATE_ONLY_REGEX.exec(input);
-  if (dateOnly) {
-    const [, y, m, d] = dateOnly;
-    return createLocalTime(Number(y), Number(m), Number(d));
-  }
-
-  const dateTime = DATE_TIME_NO_TZ_REGEX.exec(input);
-  if (dateTime) {
-    const [, y, m, d, h, min, s, ms] = dateTime;
-    return createLocalTime(
-      Number(y),
-      Number(m),
-      Number(d),
-      Number(h),
-      Number(min),
-      Number(s ?? 0),
-      parseMilliseconds(ms),
-    );
   }
 
   return new Date(input).getTime();
@@ -562,8 +538,8 @@ export class ChronoDate {
     return this._time <= ChronoDate.from(other)._time;
   }
 
-  toISOString(): string {
-    return this.isValid() ? new Date(this._time).toISOString() : "";
+  toISOString(): string | null {
+    return this.isValid() ? new Date(this._time).toISOString() : null;
   }
 
   format(pattern?: string): string {

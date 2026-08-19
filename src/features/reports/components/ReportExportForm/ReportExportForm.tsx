@@ -91,6 +91,12 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
       return;
     }
     try {
+      const retainUntil = date(values.retainUntil).toISOString();
+
+      if (retainUntil === null) {
+        throw new Error("Retain until must be a valid date.");
+      }
+
       const description = buildExportDescription(
         selectedBucket,
         includeOther,
@@ -102,7 +108,7 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
         query,
         by_cve: byCve,
         selected_field_ids: fieldsToExport.map((f) => f.id),
-        retain_until: date(values.retainUntil).toISOString(),
+        retain_until: retainUntil,
       });
       const job = response.data;
       closeSidePanel();

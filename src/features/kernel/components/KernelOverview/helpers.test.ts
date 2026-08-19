@@ -70,9 +70,9 @@ describe("KernelOverview helpers", () => {
   });
 
   it("computes livepatch coverage icons by enablement and expiry window", () => {
-    const soonExpiry = date(NOW).add(TWO_DAYS, "days").toISOString();
-    const laterExpiry = date(NOW).add(TEN_DAYS, "days").toISOString();
-    const expired = date(NOW).subtract(1, "day").toISOString();
+    const soonExpiry = date(NOW).add(TWO_DAYS, "days").toISOString() ?? "";
+    const laterExpiry = date(NOW).add(TEN_DAYS, "days").toISOString() ?? "";
+    const expired = date(NOW).subtract(1, "day").toISOString() ?? "";
 
     expect(getLivepatchCoverageIcon(true, soonExpiry)).toBe(
       "status-waiting-small",
@@ -90,8 +90,8 @@ describe("KernelOverview helpers", () => {
   });
 
   it("computes display value for disabled, expired, and active coverage", () => {
-    const laterExpiry = date(NOW).add(TEN_DAYS, "days").toISOString();
-    const expired = date(NOW).subtract(1, "day").toISOString();
+    const laterExpiry = date(NOW).add(TEN_DAYS, "days").toISOString() ?? "";
+    const expired = date(NOW).subtract(1, "day").toISOString() ?? "";
 
     expect(getLivepatchCoverageDisplayValue(false, laterExpiry)).toBe(
       "Livepatch is disabled",

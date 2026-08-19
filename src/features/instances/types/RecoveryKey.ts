@@ -6,4 +6,5 @@ export interface RecoveryKey {
 }
 
 export type RecoveryKeyActivityStatus =
-  Exclude<ActivityStatus, "succeeded"> | undefined;
+  | Exclude<ActivityStatus, "succeeded">
+  | undefined;

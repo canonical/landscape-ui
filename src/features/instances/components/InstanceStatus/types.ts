@@ -1,5 +1,9 @@
 export type StatusSeverity =
-  "danger" | "warning" | "info" | "positive" | "neutral";
+  | "danger"
+  | "warning"
+  | "info"
+  | "positive"
+  | "neutral";
 
 export interface StatusItem {
   key: string;

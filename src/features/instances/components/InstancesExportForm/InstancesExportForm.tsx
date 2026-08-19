@@ -46,6 +46,12 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
     });
 
     try {
+      const retainUntil = date(values.retainUntil).toISOString();
+
+      if (retainUntil === null) {
+        throw new Error("Retain until must be a valid date.");
+      }
+
       const response = await exportInstancesTsv({
         name: values.name.trim(),
         query,
@@ -53,7 +59,7 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
         wsl_children: exportParams.wsl_children,
         wsl_parents: exportParams.wsl_parents,
         selected_field_ids: fieldsToExport.map((field) => field.id),
-        retain_until: date(values.retainUntil).toISOString(),
+        retain_until: retainUntil,
       });
       const job = response.data;
       const exportScope = getExportScope({

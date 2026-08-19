@@ -40,13 +40,15 @@ export const getAccessGroupOptions = (accessGroups: AccessGroup[]) => {
     maxDepth: 0,
     options: accessGroups
       .filter((accessGroup) => accessGroup.parent === "")
-      .map(({ name, title }): AccessGroupOption => ({
-        children: [],
-        depth: 0,
-        label: title,
-        parents: [],
-        value: name,
-      })),
+      .map(
+        ({ name, title }): AccessGroupOption => ({
+          children: [],
+          depth: 0,
+          label: title,
+          parents: [],
+          value: name,
+        }),
+      ),
   };
 
   while (accessGroupsByDepth.maxDepth >= 0) {

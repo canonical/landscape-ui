@@ -59,7 +59,9 @@ export const getEndpointStatus = (path?: string): EndpointStatus => {
 };
 
 type SetEndpointStatusValue =
-  EndpointStatus | EndpointStatusWithPath[] | EndpointStatusType;
+  | EndpointStatus
+  | EndpointStatusWithPath[]
+  | EndpointStatusType;
 
 export function setEndpointStatus(value: SetEndpointStatusValue): void {
   endpointStatuses = normalizeEndpointStatuses(value);

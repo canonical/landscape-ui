@@ -1,7 +1,12 @@
 import type { SelectOption } from "@/types/SelectOption";
 
 export type ProfileActions =
-  "edit" | "edit-constraints" | "run" | "download" | "duplicate" | "view";
+  | "edit"
+  | "edit-constraints"
+  | "run"
+  | "download"
+  | "duplicate"
+  | "view";
 
 export interface ComplianceInstanceCounts {
   constrained: number[];

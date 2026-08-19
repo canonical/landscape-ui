@@ -87,13 +87,13 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
         ? undefined
         : date(values.deliver_after)
             .toISOString()
-            .replace(/\.\d+(?=Z$)/, ""),
+            ?.replace(/\.\d+(?=Z$)/, ""),
     };
 
     if (!values.deliver_immediately) {
       valuesToSubmit.deliver_after = date(values.deliver_after)
         .toISOString()
-        .replace(/\.\d+(?=Z$)/, "");
+        ?.replace(/\.\d+(?=Z$)/, "");
     }
 
     try {

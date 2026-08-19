@@ -34,7 +34,7 @@ const DeliveryBlock = <T extends DeliveryProps>({
           onSelect: async () => {
             await formik.setFieldValue(
               "deliver_after",
-              date().add(5, "minutes").toISOString().slice(0, 16),
+              date().add(5, "minutes").toISOString()?.slice(0, 16) ?? "",
             );
           },
           expansion: (

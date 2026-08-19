@@ -45,4 +45,6 @@ export interface CustomFilterProps extends Omit<
 }
 
 export type TableFilterProps =
-  SingleFilterProps | MultipleFilterProps | CustomFilterProps;
+  | SingleFilterProps
+  | MultipleFilterProps
+  | CustomFilterProps;
