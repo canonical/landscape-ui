@@ -68,6 +68,7 @@ export const useArchiveScriptModal = ({
           record will be retained, and
           <strong> the script name cannot be reused.</strong>
           <br />
+          <br />
           This action is <strong>irreversible</strong>.
         </p>
       ),
