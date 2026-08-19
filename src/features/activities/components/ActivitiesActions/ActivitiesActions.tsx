@@ -1,5 +1,5 @@
 import { ResponsiveButtons } from "@/components/ui";
-import useAuth from "@/hooks/useAuth";
+import { TSV_EXPORTS_ENABLED } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -24,7 +24,6 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
 }) => {
   const { notify } = useNotify();
   const debug = useDebug();
-  const { isFeatureEnabled } = useAuth();
   const { createSidePathPusher } = usePageParams();
   const { approveActivities, isApprovingActivities } = useApproveActivities();
   const { cancelActivities, isCancelingActivities } = useCancelActivities();
@@ -82,7 +81,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
     <ResponsiveButtons
       collapseFrom="xl"
       buttons={[
-        ...(isFeatureEnabled("tsv-exports")
+        ...(TSV_EXPORTS_ENABLED
           ? [
               <Button
                 key="export"

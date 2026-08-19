@@ -9,6 +9,7 @@ import { REPOSITORY_SUBMENU } from "@/templates/dashboard/Navigation/constants";
 import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
 import classes from "@/templates/dashboard/DashboardTemplate.module.scss";
 import ProfilesOutlet from "@/routes/ProfilesOutlet";
+import { TSV_EXPORTS_ENABLED } from "@/constants";
 
 export const DashboardRoutes = (
   <Route
@@ -27,14 +28,9 @@ export const DashboardRoutes = (
         path={PATHS.alerts.root}
         element={<Pages.AlertNotificationsPage />}
       />
-      <Route
-        path={PATHS.exports.root}
-        element={
-          <FeatureGuard feature="tsv-exports">
-            <Pages.ExportsPage />
-          </FeatureGuard>
-        }
-      />
+      {TSV_EXPORTS_ENABLED && (
+        <Route path={PATHS.exports.root} element={<Pages.ExportsPage />} />
+      )}
       <Route path={PATHS.error.envError} element={<Pages.EnvError />} />
 
       {/* --- Instances --- */}

@@ -5,6 +5,7 @@ import SidePanel from "@/components/layout/SidePanel";
 import {
   DETAILED_UPGRADES_VIEW_ENABLED,
   REPORT_VIEW_ENABLED,
+  TSV_EXPORTS_ENABLED,
 } from "@/constants";
 import {
   getInstanceListParams,
@@ -13,7 +14,6 @@ import {
 } from "@/features/instances";
 import { getExportTitle } from "@/features/exports";
 import { setSelectedInstanceIds } from "@/features/instances";
-import useAuth from "@/hooks/useAuth";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
@@ -37,11 +37,8 @@ const ReportView = lazy(async () => {
 });
 
 const InstancesPage: FC = () => {
-  const { isFeatureEnabled } = useAuth();
-  const isTsvExportsEnabled = isFeatureEnabled("tsv-exports");
-
   useSetDynamicFilterValidation("sidePath", [
-    ...(isTsvExportsEnabled ? ["export"] : []),
+    ...(TSV_EXPORTS_ENABLED ? ["export"] : []),
     ...(REPORT_VIEW_ENABLED ? ["report"] : []),
   ]);
   const {
@@ -111,7 +108,7 @@ const InstancesPage: FC = () => {
           onClearSelection={clearSelection}
         />
       </PageContent>
-      {isTsvExportsEnabled && (
+      {TSV_EXPORTS_ENABLED && (
         <SidePanel
           isOpen={sidePath.join(",") === "export"}
           onClose={popSidePathUntilClear}

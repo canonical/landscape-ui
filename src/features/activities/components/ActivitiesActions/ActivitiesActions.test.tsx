@@ -1,9 +1,6 @@
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
-import {
-  resetScreenSize,
-  setFeatureEnabled,
-  setScreenSize,
-} from "@/tests/helpers";
+import * as Constants from "@/constants";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { activities } from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
@@ -14,6 +11,7 @@ import ActivitiesActions from "./ActivitiesActions";
 
 describe("ActivitiesActions", () => {
   beforeEach(() => {
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
     setScreenSize("xxl");
   });
 
@@ -361,7 +359,7 @@ describe("ActivitiesActions", () => {
   });
 
   it("does not render the export button when TSV exports are disabled", async () => {
-    setFeatureEnabled("tsv-exports", false);
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
 
     renderWithProviders(<ActivitiesActions selected={mockActivities} />);
 

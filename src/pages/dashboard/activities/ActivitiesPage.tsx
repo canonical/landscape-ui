@@ -2,6 +2,7 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
+import { TSV_EXPORTS_ENABLED } from "@/constants";
 import type { ActivityCommon } from "@/features/activities";
 import {
   ActivitiesActions,
@@ -9,7 +10,6 @@ import {
   useGetActivities,
 } from "@/features/activities";
 import { getExportTitle } from "@/features/exports";
-import useAuth from "@/hooks/useAuth";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import useSelection from "@/hooks/useSelection";
@@ -21,9 +21,6 @@ const ActivitiesExportForm = lazy(
 );
 
 const ActivitiesPage: FC = () => {
-  const { isFeatureEnabled } = useAuth();
-  const isTsvExportsEnabled = isFeatureEnabled("tsv-exports");
-
   const { activities, activitiesCount, isGettingActivities } =
     useGetActivities();
 
@@ -47,7 +44,7 @@ const ActivitiesPage: FC = () => {
 
   useSetDynamicFilterValidation(
     "sidePath",
-    isTsvExportsEnabled ? ["export"] : [],
+    TSV_EXPORTS_ENABLED ? ["export"] : [],
   );
 
   const {
@@ -112,7 +109,7 @@ const ActivitiesPage: FC = () => {
         />
       </PageContent>
 
-      {isTsvExportsEnabled && (
+      {TSV_EXPORTS_ENABLED && (
         <SidePanel
           isOpen={lastSidePathSegment === "export"}
           onClose={popSidePath}

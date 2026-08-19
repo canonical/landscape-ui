@@ -1,10 +1,6 @@
 import * as Constants from "@/constants";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
-import {
-  resetScreenSize,
-  setFeatureEnabled,
-  setScreenSize,
-} from "@/tests/helpers";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import {
   instances,
   ubuntuInstance,
@@ -56,6 +52,7 @@ const renderPageActions = (
 describe("InstancesPageActions", () => {
   beforeEach(() => {
     vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(true);
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
     setScreenSize("xxl");
     setEndpointStatus("default");
   });
@@ -141,7 +138,7 @@ describe("InstancesPageActions", () => {
     });
 
     it("'Export selection as TSV' menu item should not be visible when feature disabled", async () => {
-      setFeatureEnabled("tsv-exports", false);
+      vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
 
       renderPageActions();
 

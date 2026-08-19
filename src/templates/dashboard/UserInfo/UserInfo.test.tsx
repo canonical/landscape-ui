@@ -2,6 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import UserInfo from "./UserInfo";
+import * as Constants from "@/constants";
 import { APP_COMMIT, APP_VERSION } from "@/constants";
 import { vi } from "vitest";
 import useAuth from "@/hooks/useAuth";
@@ -29,6 +30,7 @@ const labels = ["Unknown user", "Alerts", "Sign out"];
 
 describe("UserInfo", () => {
   beforeEach(() => {
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
     vi.mocked(useAuth).mockReturnValue(mockAuth);
     setEndpointStatus("default");
   });
@@ -93,11 +95,6 @@ describe("UserInfo", () => {
   });
 
   it("hides the Exports link when TSV exports are disabled", () => {
-    vi.mocked(useAuth).mockReturnValue({
-      ...mockAuth,
-      isFeatureEnabled: vi.fn().mockReturnValue(false),
-    });
-
     renderWithProviders(<UserInfo />);
 
     expect(
@@ -106,10 +103,7 @@ describe("UserInfo", () => {
   });
 
   it("renders the Exports link when TSV exports are enabled", () => {
-    vi.mocked(useAuth).mockReturnValue({
-      ...mockAuth,
-      isFeatureEnabled: vi.fn().mockReturnValue(true),
-    });
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
 
     renderWithProviders(<UserInfo />);
 

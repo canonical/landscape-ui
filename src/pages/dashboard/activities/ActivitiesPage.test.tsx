@@ -1,7 +1,8 @@
+import * as Constants from "@/constants";
 import { screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { expectLoadingState, setFeatureEnabled } from "@/tests/helpers";
+import { expectLoadingState } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import ActivitiesPage from "./ActivitiesPage";
 
@@ -11,7 +12,7 @@ describe("ActivitiesPage", () => {
   });
 
   beforeEach(() => {
-    setFeatureEnabled("tsv-exports", false);
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
     setEndpointStatus("default");
   });
 

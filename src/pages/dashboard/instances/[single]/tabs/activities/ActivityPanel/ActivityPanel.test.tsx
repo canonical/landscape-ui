@@ -1,8 +1,9 @@
+import * as Constants from "@/constants";
 import { screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import ActivityPanel from "./ActivityPanel";
-import { expectLoadingState, setFeatureEnabled } from "@/tests/helpers";
+import { expectLoadingState } from "@/tests/helpers";
 import { activities } from "@/tests/mocks/activity";
 
 const targetActivity = "Start instance Bionic WSL";
@@ -16,7 +17,7 @@ describe("ActivityPanel", () => {
   });
 
   beforeEach(() => {
-    setFeatureEnabled("tsv-exports", false);
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
   });
 
   it("shows activities after loading", async () => {
