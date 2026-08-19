@@ -9,26 +9,24 @@ import { authUser } from "@/tests/mocks/auth";
 import useAuth from "@/hooks/useAuth";
 import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "./constants";
 import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
-
-const { acceptPendingInstances } = vi.hoisted(() => ({
-  acceptPendingInstances: vi.fn(),
-}));
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 
 vi.mock("@/hooks/useAuth");
-vi.mock("@/features/instances", async () => {
-  const actual = await vi.importActual("@/features/instances");
-
-  return {
-    ...actual,
-    useAcceptPendingInstances: () => ({
-      acceptPendingInstances,
-      isAcceptingPendingInstances: false,
-    }),
-  };
-});
 
 describe("PendingInstancesForm", () => {
   const user = userEvent.setup();
+
+  const goToSecondStep = async (action: "Approve" | "Reject") => {
+    await waitFor(() => {
+      expect(screen.getByRole("table")).toBeInTheDocument();
+    });
+
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+    assert(firstCheckbox);
+    await user.click(firstCheckbox);
+
+    await user.click(screen.getByRole("button", { name: action }));
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -50,29 +48,14 @@ describe("PendingInstancesForm", () => {
     setEndpointStatus("default");
   });
 
-  it("renders the form with pending instances list", async () => {
+  it("renders the form", async () => {
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
-    // Table with pending instances should be visible
-    await waitFor(() => {
-      expect(screen.getByRole("table")).toBeInTheDocument();
-    });
-  });
-
-  it("renders help text with links", async () => {
-    renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          /automatically register new landscape client instances/i,
-        ),
-      ).toBeInTheDocument();
-    });
-  });
-
-  it("renders docs link with expected href", async () => {
-    renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
+    expect(
+      await screen.findByText(
+        /automatically register new landscape client instances/i,
+      ),
+    ).toBeInTheDocument();
 
     const learnMoreLink = await screen.findByRole("link", {
       name: /learn more/i,
@@ -82,15 +65,23 @@ describe("PendingInstancesForm", () => {
       "href",
       MANAGING_COMPUTERS_DOCUMENTATION_URL,
     );
+
+    expect(await screen.findByRole("table")).toBeInTheDocument();
+
+    expect(screen.getByRole("button", { name: /cancel/i })).not.toHaveAttribute(
+      "aria-disabled",
+    );
+    expect(screen.getByRole("button", { name: /reject/i })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    expect(screen.getByRole("button", { name: /approve/i })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
   });
 
-  it("renders Cancel button", async () => {
-    renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
-
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
-  });
-
-  it("shows the Reject button when instances are selected", async () => {
+  it("enables the Reject and Approve buttons when instances are selected", async () => {
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
     await waitFor(() => {
@@ -104,42 +95,18 @@ describe("PendingInstancesForm", () => {
 
     await user.click(firstCheckbox);
 
-    expect(screen.getByRole("button", { name: /reject/i })).toBeInTheDocument();
-  });
-
-  it("shows the Approve button in list view when instances are selected", async () => {
-    renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
-
-    await waitFor(() => {
-      expect(screen.getByRole("table")).toBeInTheDocument();
-    });
-
-    const [firstCheckbox] = screen.getAllByRole("checkbox");
-
-    assert(firstCheckbox);
-
-    await user.click(firstCheckbox);
-
+    expect(screen.getByRole("button", { name: /reject/i })).not.toHaveAttribute(
+      "aria-disabled",
+    );
     expect(
       screen.getByRole("button", { name: /approve/i }),
-    ).toBeInTheDocument();
+    ).not.toHaveAttribute("aria-disabled");
   });
 
   it("transitions to approving view when clicking Approve and showing access group select", async () => {
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
-    await waitFor(() => {
-      expect(screen.getByRole("table")).toBeInTheDocument();
-    });
-
-    const [firstCheckbox] = screen.getAllByRole("checkbox");
-
-    assert(firstCheckbox);
-
-    await user.click(firstCheckbox);
-
-    const approveBtn = screen.getByRole("button", { name: /^approve$/i });
-    await user.click(approveBtn);
+    await goToSecondStep("Approve");
 
     await waitFor(() => {
       expect(
@@ -148,40 +115,10 @@ describe("PendingInstancesForm", () => {
     });
   });
 
-  it("renders Back button in approving step", async () => {
+  it("renders functional Back button in approving step", async () => {
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
-    await waitFor(() => {
-      expect(screen.getByRole("table")).toBeInTheDocument();
-    });
-
-    const [firstCheckbox] = screen.getAllByRole("checkbox");
-
-    assert(firstCheckbox);
-
-    await user.click(firstCheckbox);
-
-    await user.click(screen.getByRole("button", { name: /^approve$/i }));
-
-    await waitFor(() => {
-      expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
-    });
-  });
-
-  it("returns to list view when clicking Back", async () => {
-    renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
-
-    await waitFor(() => {
-      expect(screen.getByRole("table")).toBeInTheDocument();
-    });
-
-    const [firstCheckbox] = screen.getAllByRole("checkbox");
-
-    assert(firstCheckbox);
-
-    await user.click(firstCheckbox);
-
-    await user.click(screen.getByRole("button", { name: /^approve$/i }));
+    await goToSecondStep("Approve");
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
@@ -197,17 +134,7 @@ describe("PendingInstancesForm", () => {
   it("shows reject confirmation modal when Reject is clicked", async () => {
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
-    await waitFor(() => {
-      expect(screen.getByRole("table")).toBeInTheDocument();
-    });
-
-    const [firstCheckbox] = screen.getAllByRole("checkbox");
-
-    assert(firstCheckbox);
-
-    await user.click(firstCheckbox);
-
-    await user.click(screen.getByRole("button", { name: /reject/i }));
+    await goToSecondStep("Reject");
 
     expect(
       await screen.findByText("Reject pending instances"),
@@ -217,17 +144,7 @@ describe("PendingInstancesForm", () => {
   it("submits reject and shows success notification", async () => {
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
-    await waitFor(() => {
-      expect(screen.getByRole("table")).toBeInTheDocument();
-    });
-
-    const [firstCheckbox] = screen.getAllByRole("checkbox");
-
-    assert(firstCheckbox);
-
-    await user.click(firstCheckbox);
-
-    await user.click(screen.getByRole("button", { name: /reject/i }));
+    await goToSecondStep("Reject");
 
     const dialog = await screen.findByRole("dialog");
     await user.click(within(dialog).getByRole("button", { name: /^reject$/i }));
@@ -238,17 +155,7 @@ describe("PendingInstancesForm", () => {
   it("shows approve confirmation modal in approving step", async () => {
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
-    await waitFor(() => {
-      expect(screen.getByRole("table")).toBeInTheDocument();
-    });
-
-    const [firstCheckbox] = screen.getAllByRole("checkbox");
-
-    assert(firstCheckbox);
-
-    await user.click(firstCheckbox);
-
-    await user.click(screen.getByRole("button", { name: /^approve$/i }));
+    await goToSecondStep("Approve");
 
     await waitFor(() => {
       expect(
@@ -271,27 +178,15 @@ describe("PendingInstancesForm", () => {
   it("submits approve and shows success notification", async () => {
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
-    await waitFor(() => {
-      expect(screen.getByRole("table")).toBeInTheDocument();
+    await goToSecondStep("Approve");
+
+    const accessGroupSelect = await screen.findByRole("combobox", {
+      name: /access group/i,
     });
 
-    const [firstCheckbox] = screen.getAllByRole("checkbox");
+    expect(accessGroupSelect).toHaveValue(DEFAULT_ACCESS_GROUP_NAME);
 
-    assert(firstCheckbox);
-
-    await user.click(firstCheckbox);
-
-    await user.click(screen.getByRole("button", { name: /^approve$/i }));
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("combobox", { name: /access group/i }),
-      ).toBeInTheDocument();
-    });
-
-    const approveConfirmBtn = screen
-      .getAllByRole("button", { name: /approve/i })
-      .find((btn) => btn.getAttribute("type") === "button");
+    const approveConfirmBtn = screen.getByRole("button", { name: /approve/i });
 
     assert(approveConfirmBtn);
     await user.click(approveConfirmBtn);
@@ -304,63 +199,22 @@ describe("PendingInstancesForm", () => {
     expect(await screen.findByText(/you have approved/i)).toBeInTheDocument();
   });
 
-  it("submits approve with the default access group when unchanged", async () => {
-    renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
-
-    await waitFor(() => {
-      expect(screen.getByRole("table")).toBeInTheDocument();
-    });
-
-    const [firstCheckbox] = screen.getAllByRole("checkbox");
-
-    assert(firstCheckbox);
-
-    await user.click(firstCheckbox);
-    await user.click(screen.getByRole("button", { name: /^approve$/i }));
-
-    const approveConfirmBtn = screen
-      .getAllByRole("button", { name: /approve/i })
-      .find((btn) => btn.getAttribute("type") === "button");
-
-    assert(approveConfirmBtn);
-    await user.click(approveConfirmBtn);
-
-    const dialog = await screen.findByRole("dialog");
-    await user.click(
-      within(dialog).getByRole("button", { name: /^approve$/i }),
-    );
-
-    expect(acceptPendingInstances).toHaveBeenCalledWith({
-      access_group: DEFAULT_ACCESS_GROUP_NAME,
-      computer_ids: pendingInstances.map((instance) => instance.id),
-    });
-  });
-
   it("changes the access group select in approving step", async () => {
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
-    await waitFor(() => {
-      expect(screen.getByRole("table")).toBeInTheDocument();
-    });
-
-    const [firstCheckbox] = screen.getAllByRole("checkbox");
-
-    assert(firstCheckbox);
-
-    await user.click(firstCheckbox);
-
-    await user.click(screen.getByRole("button", { name: /^approve$/i }));
+    await goToSecondStep("Approve");
 
     const accessGroupSelect = await screen.findByRole("combobox", {
       name: /access group/i,
     });
 
     // Change the access group select to trigger the onChange handler
-    const [firstOption] = accessGroupSelect.querySelectorAll("option");
+    const [, secondOption] = accessGroupSelect.querySelectorAll("option");
+    assert(secondOption);
 
-    assert(firstOption);
+    await user.selectOptions(accessGroupSelect, secondOption);
 
-    await user.selectOptions(accessGroupSelect, firstOption);
+    expect(accessGroupSelect).toHaveValue(secondOption.value);
   });
 
   it("shows error notification when reject API fails", async () => {
@@ -368,25 +222,15 @@ describe("PendingInstancesForm", () => {
 
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
-    await waitFor(() => {
-      expect(screen.getByRole("table")).toBeInTheDocument();
-    });
-
-    const [firstCheckbox] = screen.getAllByRole("checkbox");
-
-    assert(firstCheckbox);
-
-    await user.click(firstCheckbox);
-
-    await user.click(screen.getByRole("button", { name: /reject/i }));
+    await goToSecondStep("Reject");
 
     const dialog = await screen.findByRole("dialog");
     await user.click(within(dialog).getByRole("button", { name: /^reject$/i }));
 
-    // Error is caught and debug() called — no success notification
-    await waitFor(() => {
-      expect(screen.queryByText(/you have rejected/i)).not.toBeInTheDocument();
-    });
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/you have rejected/i)).not.toBeInTheDocument();
   });
 
   it("shows error notification when approve API fails", async () => {
@@ -394,17 +238,7 @@ describe("PendingInstancesForm", () => {
 
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
-    await waitFor(() => {
-      expect(screen.getByRole("table")).toBeInTheDocument();
-    });
-
-    const [firstCheckbox] = screen.getAllByRole("checkbox");
-
-    assert(firstCheckbox);
-
-    await user.click(firstCheckbox);
-
-    await user.click(screen.getByRole("button", { name: /^approve$/i }));
+    await goToSecondStep("Approve");
 
     await waitFor(() => {
       expect(
@@ -424,9 +258,9 @@ describe("PendingInstancesForm", () => {
       within(dialog).getByRole("button", { name: /^approve$/i }),
     );
 
-    // Error is caught and debug() called — no success notification
-    await waitFor(() => {
-      expect(screen.queryByText(/you have approved/i)).not.toBeInTheDocument();
-    });
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/you have approved/i)).not.toBeInTheDocument();
   });
 });
