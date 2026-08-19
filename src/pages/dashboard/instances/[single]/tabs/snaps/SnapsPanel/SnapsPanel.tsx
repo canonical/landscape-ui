@@ -8,7 +8,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import type { InstalledSnap } from "@/features/snaps";
 import type { UrlParams } from "@/types/UrlParams";
 import { Button } from "@canonical/react-components";
-import { lazy, type FC } from "react";
+import { lazy, Suspense, type FC } from "react";
 import { useParams } from "react-router";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
@@ -42,7 +42,12 @@ const SnapsPanel: FC = () => {
   };
 
   const handleEmptyStateInstall = () => {
-    setSidePanelContent("Install snaps", <InstallSnaps />);
+    setSidePanelContent(
+      "Install snaps",
+      <Suspense fallback={<LoadingState />}>
+        <InstallSnaps />
+      </Suspense>,
+    );
   };
 
   return (
