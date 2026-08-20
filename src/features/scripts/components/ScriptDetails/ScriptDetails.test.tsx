@@ -98,7 +98,9 @@ describe("ScriptDetails", () => {
 
     expect(editButton).not.toBeInTheDocument();
 
-    const archiveNotification = await screen.findByText(/the script was archived by/i);
+    const archiveNotification = await screen.findByText(
+      /the script was archived by/i,
+    );
     expect(archiveNotification).toBeInTheDocument();
   });
 
