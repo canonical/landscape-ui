@@ -9,6 +9,7 @@ import { ScriptDropdown } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
+import type { ApiError } from "@/types/api/ApiError";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Col,
@@ -19,7 +20,6 @@ import {
   Row,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import type { ApiError } from "@/types/api/ApiError";
 import { isAxiosError } from "axios";
 import { useFormik } from "formik";
 import moment from "moment";
