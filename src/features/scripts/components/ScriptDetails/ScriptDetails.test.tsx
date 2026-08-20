@@ -56,7 +56,7 @@ describe("ScriptDetails", () => {
 
     await expectLoadingState();
 
-    const runButton = screen.getByRole("button", { name: /run/i });
+    const runButton = await screen.findByRole("button", { name: /run/i });
     expect(runButton).toHaveAttribute("aria-disabled", "true");
   });
 
@@ -65,7 +65,7 @@ describe("ScriptDetails", () => {
 
     await expectLoadingState();
 
-    const deleteButton = screen.getByRole("button", {
+    const deleteButton = await screen.findByRole("button", {
       name: /redact new v2 script/i,
     });
     expect(deleteButton).toHaveAttribute("aria-disabled", "true");
@@ -76,12 +76,12 @@ describe("ScriptDetails", () => {
 
     await expectLoadingState();
 
-    const deleteButton = screen.getByRole("button", {
+    const deleteButton = await screen.findByRole("button", {
       name: /redact new v2 script/i,
     });
     await user.click(deleteButton);
 
-    const modalBody = screen.getByText(
+    const modalBody = await screen.findByText(
       /redacting this script will permanently remove its contents from Landscape/i,
     );
     expect(modalBody).toBeInTheDocument();
@@ -98,7 +98,7 @@ describe("ScriptDetails", () => {
 
     expect(editButton).not.toBeInTheDocument();
 
-    const archiveNotification = screen.getByText(/the script was archived by/i);
+    const archiveNotification = await screen.findByText(/the script was archived by/i);
     expect(archiveNotification).toBeInTheDocument();
   });
 
@@ -113,7 +113,7 @@ describe("ScriptDetails", () => {
 
     expect(editButton).not.toBeInTheDocument();
 
-    const redactedNotification = screen.getByText(
+    const redactedNotification = await screen.findByText(
       /the script was redacted by/i,
     );
     expect(redactedNotification).toBeInTheDocument();
@@ -127,13 +127,13 @@ describe("ScriptDetails", () => {
 
     await expectLoadingState();
 
-    const archiveButton = screen.getByRole("button", {
+    const archiveButton = await screen.findByRole("button", {
       name: /archive/i,
     });
 
     await user.click(archiveButton);
 
-    const modalTitle = screen.getByText(
+    const modalTitle = await screen.findByText(
       /archiving the script will prevent it from running in the future./i,
     );
     expect(modalTitle).toBeInTheDocument();
@@ -144,7 +144,7 @@ describe("ScriptDetails", () => {
 
     await expectLoadingState();
 
-    const editButton = screen.getByRole("button", { name: /^edit$/i });
+    const editButton = await screen.findByRole("button", { name: /^edit$/i });
     await user.click(editButton);
 
     expect(await screen.findByLabelText(/^title$/i)).toBeInTheDocument();
@@ -155,7 +155,7 @@ describe("ScriptDetails", () => {
 
     await expectLoadingState();
 
-    const runButton = screen.getByRole("button", { name: /^run$/i });
+    const runButton = await screen.findByRole("button", { name: /^run$/i });
     await user.click(runButton);
 
     expect(
@@ -168,7 +168,7 @@ describe("ScriptDetails", () => {
 
     await expectLoadingState();
 
-    const editButton = screen.getByRole("button", { name: /^edit$/i });
+    const editButton = await screen.findByRole("button", { name: /^edit$/i });
     await user.click(editButton);
 
     expect(await screen.findByLabelText(/^title$/i)).toBeInTheDocument();
