@@ -1,12 +1,16 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { useUpdateAutoinstallFile } from "../api";
-import AutoinstallFileEditForm from "../components/AutoinstallFileEditForm";
 import AutoinstallFileSidePanelTitle from "../components/AutoinstallFileSidePanelTitle";
 import type { AutoinstallFile, AutoinstallFileTabId } from "../types";
 import useOpenAutoinstallFileDetails from "./useOpenAutoinstallFileDetails";
+
+const AutoinstallFileEditForm = lazy(
+  async () =>
+    import("@/features/autoinstall-files/components/AutoinstallFileEditForm"),
+);
 
 const useAutoinstallFileActions = (autoinstallFile: AutoinstallFile) => {
   const { notify } = useNotify();
