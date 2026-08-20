@@ -203,7 +203,7 @@ describe("PackageDetails", () => {
 
       expect(
         await screen.findByRole("heading", {
-          name: `Downgrade ${packageWithUpgrade.name}`,
+          name: `Downgrade ${installedPackage.name}`,
         }),
       ).toBeInTheDocument();
 
