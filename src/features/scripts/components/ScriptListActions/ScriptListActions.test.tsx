@@ -230,12 +230,12 @@ describe("Scripts List Contextual Menu", () => {
 
       await user.click(deleteMenuItem);
 
-      const deleteModal = screen.getByRole("dialog", {
+      const deleteModal = await screen.findByRole("dialog", {
         name: `Redact ${activeScriptWithProfiles.title}`,
       });
       expect(deleteModal).toBeInTheDocument();
       expect(
-        screen.getByRole("button", {
+        await screen.findByRole("button", {
           name: "Redact script and archive profiles",
         }),
       ).toBeInTheDocument();
@@ -259,12 +259,12 @@ describe("Scripts List Contextual Menu", () => {
       expect(deleteMenuItem).toBeInTheDocument();
 
       await user.click(deleteMenuItem);
-      const deleteModal = screen.getByRole("dialog", {
+      const deleteModal = await screen.findByRole("dialog", {
         name: `Redact ${activeScriptWithNoProfiles.title}`,
       });
       expect(deleteModal).toBeInTheDocument();
       expect(
-        screen.getByRole("button", {
+        await screen.findByRole("button", {
           name: "Redact",
         }),
       ).toBeInTheDocument();
@@ -273,7 +273,7 @@ describe("Scripts List Contextual Menu", () => {
       expect(list).not.toBeInTheDocument();
 
       expect(
-        screen.getByText(
+        await screen.findByText(
           /redacting this script will permanently remove its contents from Landscape./i,
         ),
       ).toBeInTheDocument();
@@ -295,12 +295,12 @@ describe("Scripts List Contextual Menu", () => {
 
       await user.click(archiveMenuItem);
 
-      const archiveModal = screen.getByRole("dialog", {
+      const archiveModal = await screen.findByRole("dialog", {
         name: `Archive ${archivedScriptWithProfiles.title}`,
       });
       expect(archiveModal).toBeInTheDocument();
       expect(
-        screen.getByRole("button", {
+        await screen.findByRole("button", {
           name: "Archive both script and profiles",
         }),
       ).toBeInTheDocument();
@@ -324,12 +324,12 @@ describe("Scripts List Contextual Menu", () => {
       expect(archiveMenuItem).toBeInTheDocument();
 
       await user.click(archiveMenuItem);
-      const archiveModal = screen.getByRole("dialog", {
+      const archiveModal = await screen.findByRole("dialog", {
         name: `Archive ${archivedScriptWithNoProfiles.title}`,
       });
       expect(archiveModal).toBeInTheDocument();
       expect(
-        screen.getByRole("button", {
+        await screen.findByRole("button", {
           name: "Archive",
         }),
       ).toBeInTheDocument();
@@ -338,7 +338,7 @@ describe("Scripts List Contextual Menu", () => {
       expect(list).not.toBeInTheDocument();
 
       expect(
-        screen.getByText(
+        await screen.findByText(
           /archiving the script will prevent it from running in the future./i,
         ),
       ).toBeInTheDocument();
