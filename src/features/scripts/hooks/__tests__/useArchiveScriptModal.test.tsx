@@ -87,7 +87,7 @@ describe("useArchiveScriptModal", () => {
       /Archiving the script will prevent it from running in the future\. Its\s*record will be retained, and\s*the script name cannot be reused\.\s*The script is also associated with the following profiles:/i,
     );
     expect(screen.getByTestId("body")).toHaveTextContent(
-      /If you archive the script its associated profiles will also be archived, and they won’t be able to run in the future\. All profile names will also be unavailable for reuse\.\s*This action is irreversible\./i,
+      /If you archive the script, its associated profiles will also be archived, and they won’t be able to run in the future\. All profile names will also be unavailable for reuse\.\s*This action is irreversible\./i,
     );
   });
 
