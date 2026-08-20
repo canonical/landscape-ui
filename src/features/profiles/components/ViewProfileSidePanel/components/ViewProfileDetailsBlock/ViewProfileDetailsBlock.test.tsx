@@ -95,10 +95,10 @@ describe("ViewProfileDetailsBlock", () => {
   it("renders nothing when profile type is unsupported", async () => {
     renderProfileDetails(baseProfile);
 
-    await waitFor(() => {
-      expect(
-        screen.queryByRole("heading", { name: /Details/i }),
-      ).not.toBeInTheDocument();
-    });
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("heading", { name: /Details/i }),
+    ).not.toBeInTheDocument();
   });
 });
