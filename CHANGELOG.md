@@ -3,6 +3,86 @@
 
 ---
 
+## 26.04.2.0-rc
+
+### Minor Changes
+
+- Add publishing status for publications
+- Add missing loading states for buttons
+- Remove the Applied column from repository profiles
+- Add help text and announcement for signature-preserving mirrors to clarify update behavior.
+- Add tooltip for "Include dependencies in filter" checkbox
+- Align error behavior for side panels on debarchive resources
+- Add syncing status for mirrors
+- Add exports functionality for instances and activities
+- Redesign instance status, upgrade and tag indicators as accessible labelled pills (colour, icon and text), move the Upgrades column before Status, collapse overflowing table tags behind a counter like statuses, add a dedicated Upgrades filter (security/regular), show a neutral "N/A" pill when upgrades don't apply, and let status, upgrade and tag pills filter the table when clicked. Expanded status/tag cells now collapse when clicking anywhere outside the pop-over, including elsewhere in the same row.
+- Add "available version" column to instance>packages tab with NO_DATA_TEXT
+- Update mirrors and locals package list pagination to show an approximate page count when there are over 1000 packages
+- Replace chart.js pie with pure SVG donut, improve accessibility
+- Add mirror package filter options
+- Add mirror packages tab
+- Design changes and added test coverage for export form
+- Add tsv export feature using v2 endpoint for instance reports
+- Add a badge to the Alerts navigation menu item showing the number of alerts
+- Limit usage of disabled submit buttons in side panel forms. Most forms now only disable the submit button while loading, though some flows may still disable it after validation failures (for example, importing repository packages).
+- Add package import status for local repositories
+- Move the theme setting from the account settings sidebar to Account settings > General and add a "System default" option that follows the OS color scheme
+
+### Patch Changes
+
+- Sort the local repositories packages list so it stays consistent
+- Move account name from API credentials to organization settings as a read-only field
+- Show GPG Key in mirrors and publications, unlock publications distribution fields if non-signature-preserving, and lock link type field for publication target
+- Redirect /profiles and /repositories pages to the first item in their submenu
+- Fix API param to remove GPG key. Better options for gpg keys on edit mirror form: users can keep their current key, remove it, or add a new one
+- Fix issue where WSL profile non-compliant instances side panel opened underneath WSL profile details
+- Add informational text when there are no channels to switch a snap to
+- Rename the Ubuntu Pro mirror token field to "Bearer token", clarify that it is not the Ubuntu Pro subscription token, and mask the entered token
+- Fix back navigation to open sidePath by scoping allowed filter values per-page
+- Improve test coverage for publications and mirrors
+- Fix pagination for mirrors when number of mirrors is >20
+- Remove search chips from appearing when performing a search
+- Remove ellipsis overflow from the table header checkbox in the instance packages empty list
+- Fix "Include dependencies in filter" checkbox
+- Fix instances page actions grouping so it doesn't overflow horizontally
+- Include empty Associated Publications table in Publication Targets
+- Assign global access group as default value to "Review pending instances" form
+- Fix issue where some modals open behind the navigation menu
+- Disable autocomplete suggestions for AWS access key ID and keep password manager suggestions for secrets and passwords
+- Show error when USG profile creation fails
+- Fix new tab link security issue and dark mode text contrast for password constraints
+- Fix success notification timing out too early and not updating properly
+- Fix external link icon styling
+- Add gpg key fingerprint to sources table on repo profiles, fix PUT param empty string replacement
+- Fix empty state spacing and links that used to be buttons
+- Allow selection of more than one architecture when creating a publication
+- Clear package filter field in add mirror form when preserve signatures is checked
+- Handle partial success returns from batchGet endpoints and display unreachable resources appropriately
+- Send mirrorType when creating mirrors and improve source-type/authentication inference for legacy mirrors
+- Gate the local repository import time field behind the server-driven `local-repository-last-import` feature flag.
+- Fixed a grammar mistake in the Search Help Popup on the Instances page.
+- Disable snap switch channel button when there are no available channels to switch to
+- Fix the issue where the confirmation modals on an instance's users panel do not close on confirm
+- Added empty state for instances and fixed broken link in scripts page
+- Add preserve signatures field to mirror add / edit forms and details view.
+- Fix profiles sidepanels cancel and close behavior to be consistent with new design
+- Make publication automatic installs and upgrades settings less confusing
+- Replace moment.js with a custom `ChronoDate` class to remove the moment.js dependency and reduce bundle size. Behavior is preserved across parsing, formatting, UTC/local modes, calendar, diff math (including DST adjustment), and strict ISO 8601 validation.
+- Fix Ubuntu Pro mirror archive root
+- Automatically publishes a new publication and adds cleanup of older packages on publishing
+- Fix batch get operations endpoint behavior.
+- Fix debarchive mirror/publication types by removing now-dead nullable handling for architecture/distribution fields.
+- Make the behavior of adding a publication and publishing a mirror or local to a new publication consistent
+- Collapse table header action buttons and filters on medium screens so the search bar stays visible in the WSL, Activities and Processes views
+- Make repositories success notifications consistent and add link to update mirror from creation
+- Fix styling for Autoinstall files side panel
+- Fix misleading validation text from Add WSL profile form
+- Enable closing out of expanded cells and info items using Escape key
+- Keyboard a11y and arrow-key navigation for saved-searches dropdown
+- Add a message for when scripts search returns no results.
+- Standardize publications settings behavior and adjust other publication fields
+- Fixes profiles pages issue where the header disappears during loading
+
 ## 26.10.0.1081-beta
 
 ### Minor Changes
