@@ -10,6 +10,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import type { UrlParams } from "@/types/UrlParams";
 import { hasOneItem, pluralize } from "@/utils/_helpers";
 import { getFormikError } from "@/utils/formikErrors";
+import { INPUT_DATE_TIME_MINUTE_FORMAT } from "@/constants";
 import { Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import date from "@/libs/date";
@@ -81,7 +82,7 @@ const HoldSnapForm: FC<HoldSnapFormProps> = ({ installedSnaps }) => {
     if (event.currentTarget.value === "date") {
       void formik.setFieldValue(
         "hold_until",
-        date().toISOString()?.slice(0, 16) ?? "",
+        date().format(INPUT_DATE_TIME_MINUTE_FORMAT),
       );
     }
   };

@@ -1,6 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it } from "vitest";
 import { createFormik } from "@/tests/formik";
 import type { DeliveryProps } from "./DeliveryBlock";
 import DeliveryBlock from "./DeliveryBlock";
@@ -51,5 +52,21 @@ describe("DeliveryBlock", () => {
     expect(immediateDeliveryInput).not.toBeChecked();
 
     expect(screen.queryByText(/deliver after/i)).toBeInTheDocument();
+  });
+
+  it("sets scheduled delivery using a local datetime value", async () => {
+    renderWithProviders(<DeliveryBlock formik={formik} />);
+    const expectedEarliestTime =
+      Math.floor((Date.now() + 5 * 60 * 1000) / (60 * 1000)) * (60 * 1000);
+
+    await userEvent.click(screen.getByRole("radio", { name: /scheduled/i }));
+
+    const [, [, scheduledValue]] = formik.setFieldValue.mock.calls;
+    const expectedLatestTime =
+      Math.floor((Date.now() + 5 * 60 * 1000) / (60 * 1000)) * (60 * 1000);
+    const scheduledTime = new Date(scheduledValue as string).getTime();
+
+    expect(scheduledTime).toBeGreaterThanOrEqual(expectedEarliestTime);
+    expect(scheduledTime).toBeLessThanOrEqual(expectedLatestTime);
   });
 });
