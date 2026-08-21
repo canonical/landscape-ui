@@ -13,9 +13,11 @@ import {
 } from "@/features/instances";
 import { getExportTitle } from "@/features/exports";
 import { setSelectedInstanceIds } from "@/features/instances";
+import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
+import { Icon, ICONS, Tooltip } from "@canonical/react-components";
 import {
   lazy,
   useCallback,
@@ -25,6 +27,7 @@ import {
   type FC,
 } from "react";
 import InstancesContainer from "../InstancesContainer";
+import classes from "./InstancesPage.module.scss";
 
 const InstancesExportForm = lazy(
   async () => import("@/features/instances/components/InstancesExportForm"),
@@ -36,6 +39,8 @@ const ReportView = lazy(async () => {
 });
 
 const InstancesPage: FC = () => {
+  const { currentAccount } = useAuthAccounts();
+
   useSetDynamicFilterValidation(
     "sidePath",
     REPORT_VIEW_ENABLED ? ["export", "report"] : ["export"],
@@ -85,6 +90,17 @@ const InstancesPage: FC = () => {
     <PageMain>
       <PageHeader
         title="Instances"
+        className={classes.instancesPageHeader}
+        helperContent={
+          <span className={classes.instancesPageHelperContent}>
+            <Tooltip
+              
+              message={`Account name: ${currentAccount.name}`}
+            >
+              <Icon name={ICONS.information} />
+            </Tooltip>
+          </span>
+        }
         actions={[
           <InstancesPageActions
             key="actions"
