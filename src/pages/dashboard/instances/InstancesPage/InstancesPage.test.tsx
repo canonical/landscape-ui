@@ -1,8 +1,10 @@
 import * as Constants from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
+import { authResponse } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import InstancesPage from "./InstancesPage";
 
@@ -27,6 +29,33 @@ describe("InstancesPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("table")).toBeInTheDocument();
     expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
+  });
+
+  it("shows the current account and registration guide in the tooltip", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({
+      status: "variant",
+      path: "tooltip",
+      response: authResponse,
+    });
+    renderWithProviders(<InstancesPage />);
+
+    await expectLoadingState();
+
+    const informationIcon = document.querySelector(".p-icon--information");
+    expect(informationIcon).toBeInTheDocument();
+    await user.hover(informationIcon as Element);
+
+    const tooltip = await screen.findByRole("tooltip");
+    expect(tooltip).toHaveTextContent("Account name: test-account");
+
+    const registrationGuideLink = within(tooltip).getByRole("link", {
+      name: "Learn how to register new instances to your Landscape organization",
+    });
+    expect(registrationGuideLink).toHaveAttribute(
+      "href",
+      "https://ubuntu.com/landscape/docs/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/",
+    );
   });
 
   it("shows empty state when instances endpoint is empty", async () => {

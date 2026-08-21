@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { ADMINISTRATORS_DOCUMENTATION_URL } from "./documentationUrls";
+import {
+  ADMINISTRATORS_DOCUMENTATION_URL,
+  MANAGE_INSTANCES_DOCUMENTATION_URL,
+} from "./documentationUrls";
 
 /*
 These tests are to verify that each exported URL is correctly composed from the shared base path
@@ -20,6 +23,16 @@ describe("documentationUrls", () => {
   it("ADMINISTRATORS_DOCUMENTATION_URL points to the correct page", () => {
     expect(ADMINISTRATORS_DOCUMENTATION_URL).toBe(
       `${BASE_PATH}/administrators`,
+    );
+  });
+
+  it("MANAGE_INSTANCES_DOCUMENTATION_URL contains the docs base path", () => {
+    expect(MANAGE_INSTANCES_DOCUMENTATION_URL).toContain(BASE_PATH);
+  });
+
+  it("MANAGE_INSTANCES_DOCUMENTATION_URL points to the correct page", () => {
+    expect(MANAGE_INSTANCES_DOCUMENTATION_URL).toBe(
+      `${BASE_PATH}/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/`,
     );
   });
 });

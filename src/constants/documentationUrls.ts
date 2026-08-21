@@ -12,3 +12,5 @@
 import { EXTERNAL_PATHS } from "@/libs/routes/external";
 
 export const ADMINISTRATORS_DOCUMENTATION_URL = `${EXTERNAL_PATHS.documentation}/administrators`;
+
+export const MANAGE_INSTANCES_DOCUMENTATION_URL = `${EXTERNAL_PATHS.documentation}/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/`;

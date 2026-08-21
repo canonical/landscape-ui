@@ -1,0 +1,17 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.instancesPageHeader {
+  column-gap: $spv--x-small;
+}
+
+.instancesPageHelperContent {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin: $spv--x-small;
+}
+
+.instancesPageTooltipLink {
+  display: inline-block;
+  margin-top: $spv--x-small;
+}

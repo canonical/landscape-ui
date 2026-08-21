@@ -4,6 +4,7 @@ import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
 import {
   DETAILED_UPGRADES_VIEW_ENABLED,
+  MANAGE_INSTANCES_DOCUMENTATION_URL,
   REPORT_VIEW_ENABLED,
   TSV_EXPORTS_ENABLED,
 } from "@/constants";
@@ -14,9 +15,11 @@ import {
 } from "@/features/instances";
 import { getExportTitle } from "@/features/exports";
 import { setSelectedInstanceIds } from "@/features/instances";
+import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
+import { Icon, ICONS, Link, Tooltip } from "@canonical/react-components";
 import {
   lazy,
   useCallback,
@@ -24,8 +27,10 @@ import {
   useMemo,
   useState,
   type FC,
+  type KeyboardEvent,
 } from "react";
 import InstancesContainer from "../InstancesContainer";
+import classes from "./InstancesPage.module.scss";
 
 const InstancesExportForm = lazy(
   async () => import("@/features/instances/components/InstancesExportForm"),
@@ -37,6 +42,8 @@ const ReportView = lazy(async () => {
 });
 
 const InstancesPage: FC = () => {
+  const { currentAccount } = useAuthAccounts();
+
   useSetDynamicFilterValidation("sidePath", [
     ...(TSV_EXPORTS_ENABLED ? ["export"] : []),
     ...(REPORT_VIEW_ENABLED ? ["report"] : []),
@@ -82,10 +89,59 @@ const InstancesPage: FC = () => {
     }
   }, [selectedInstances, isAllSelected]);
 
+  const handleAccountTooltipTriggerKeyDown = (
+    event: KeyboardEvent<HTMLSpanElement>,
+  ) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    window.open(
+      MANAGE_INSTANCES_DOCUMENTATION_URL,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
+
   return (
     <PageMain>
       <PageHeader
         title="Instances"
+        className={classes.instancesPageHeader}
+        helperContent={
+          <span className={classes.instancesPageHelperContent}>
+            <span
+              tabIndex={0}
+              role="button"
+              aria-describedby="instancesPageAccountInfo"
+              onKeyDown={handleAccountTooltipTriggerKeyDown}
+            >
+              <Tooltip
+                message={
+                  <>
+                    <span>Account name: {currentAccount.name}</span>
+                    <br />
+                    <Link
+                      className={classes.instancesPageTooltipLink}
+                      href={MANAGE_INSTANCES_DOCUMENTATION_URL}
+                      target="_blank"
+                      rel="nofollow noopener noreferrer"
+                    >
+                      Learn how to register new instances to your Landscape
+                      organization
+                    </Link>
+                  </>
+                }
+              >
+                <Icon name={ICONS.information} aria-hidden />
+              </Tooltip>
+              <span id="instancesPageAccountInfo" className="u-off-screen">
+                {`Account name: ${currentAccount.name}. Press enter to learn how to register new instances to your Landscape
+                      organization.`}
+              </span>
+            </span>
+          </span>
+        }
         actions={[
           <InstancesPageActions
             key="actions"
