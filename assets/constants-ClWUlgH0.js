@@ -1,0 +1,1 @@
+import{$ as e,X as t,et as n}from"./index-CcUmvlvI.js";import{n as r,t as i}from"./DeliveryScheduling-RMECh6D0.js";var a=t().shape({...i,...r,new_kernel_version_id:e().required(`You have to select a kernel`),reboot_after:n()});export{a as t};

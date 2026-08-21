@@ -1,0 +1,1 @@
+import{c as e,r as t}from"./jsx-runtime-BOrZKZpZ.js";import{o as n}from"./index-CcUmvlvI.js";var r=e(t(),1);function i(){return(0,r.useContext)(n)}export{i as t};

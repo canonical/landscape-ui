@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-BOrZKZpZ.js";import{t}from"./SidePanel-DBhTtgjX.js";import{t as n}from"./SingleRemovalProfileForm-CRVAfbS3.js";var r=e(),i=()=>(0,r.jsxs)(r.Fragment,{children:[(0,r.jsx)(t.Header,{children:`Add removal profile`}),(0,r.jsx)(t.Content,{children:(0,r.jsx)(n,{action:`add`})})]});export{i as default};

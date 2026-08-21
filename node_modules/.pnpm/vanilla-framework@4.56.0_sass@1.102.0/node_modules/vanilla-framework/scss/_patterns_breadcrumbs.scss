@@ -1,0 +1,33 @@
+@import 'settings';
+
+// Default breadcrumbs styling
+@mixin vf-p-breadcrumbs {
+  .p-breadcrumbs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  .p-breadcrumbs__items {
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .p-breadcrumbs__item {
+    @extend %small-caps-text;
+
+    display: inline-block;
+
+    &:not(:first-of-type) {
+      text-indent: $sph--large;
+    }
+
+    &:not(:first-of-type)::before {
+      content: '/';
+      margin-left: -0.75rem;
+      margin-right: 0.5rem;
+    }
+  }
+}

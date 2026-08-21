@@ -1,0 +1,1 @@
+import{c as e,r as t}from"./jsx-runtime-BOrZKZpZ.js";import{c as n}from"./index-CcUmvlvI.js";var r=e(t(),1);function i(){let e=(0,r.useContext)(n);if(!e)throw Error(`useFetchOld must be used within FetchOldProvider`);return e}export{i as t};

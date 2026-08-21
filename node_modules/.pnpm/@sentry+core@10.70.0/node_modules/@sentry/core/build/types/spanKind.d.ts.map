@@ -1,0 +1,1 @@
+{"version":3,"file":"spanKind.d.ts","sourceRoot":"","sources":["../../src/spanKind.ts"],"names":[],"mappings":"AAAA;;;;;;;GAOG;AACH,eAAO,MAAM,SAAS;;;;;;CAMZ,CAAC;AAEX,MAAM,MAAM,aAAa,GAAG,CAAC,OAAO,SAAS,CAAC,CAAC,MAAM,OAAO,SAAS,CAAC,CAAC;AAIvE,QAAA,MAAM,cAAc;;;;;;CAM8B,CAAC;AAEnD;;;;GAIG;AACH,wBAAgB,cAAc,CAAC,IAAI,EAAE,MAAM,GAAG,CAAC,OAAO,cAAc,CAAC,CAAC,aAAa,CAAC,GAAG,SAAS,CAE/F"}

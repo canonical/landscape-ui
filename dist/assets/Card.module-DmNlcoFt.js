@@ -1,0 +1,1 @@
+var e={card:`_card_zocrc_1`,header:`_header_zocrc_8`,title:`_title_zocrc_17`,snapshot:`_snapshot_zocrc_26`,cta:`_cta_zocrc_36`,content:`_content_zocrc_43`};export{e as t};

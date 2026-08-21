@@ -1,0 +1,43 @@
+{
+  "name": "@changesets/config",
+  "version": "4.0.0",
+  "description": "Utilities for reading and parsing Changeset's config",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/changesets/changesets.git",
+    "directory": "packages/config"
+  },
+  "files": [
+    "dist",
+    "schema.json"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json",
+    "./schema.json": "./schema.json"
+  },
+  "dependencies": {
+    "@manypkg/get-packages": "^3.1.0",
+    "picomatch": "^4.0.4",
+    "@changesets/get-dependents-graph": "^3.0.0",
+    "@changesets/should-skip-package": "^1.0.0",
+    "@changesets/types": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/picomatch": "4.0.3",
+    "@valibot/to-json-schema": "^1.7.1",
+    "valibot": "^1.4.2",
+    "@changesets/test-utils": "0.0.9-next.3"
+  },
+  "engines": {
+    "node": "^22.11 || ^24 || >=26"
+  },
+  "inlinedDependencies": {
+    "valibot": "1.4.2"
+  },
+  "scripts": {
+    "generate-json-schema": "node scripts/generate-json-schema.ts"
+  }
+}

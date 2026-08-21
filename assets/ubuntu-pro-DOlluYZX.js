@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-BOrZKZpZ.js";import{d as t,f as n,g as r,p as i}from"./instances-6SCKa8o2.js";var a=e(),o=({instance:e})=>e.ubuntu_pro_info?.attached?(0,a.jsxs)(a.Fragment,{children:[(0,a.jsx)(i,{instance:e}),(0,a.jsx)(n,{instance:e}),(0,a.jsx)(t,{services:e.ubuntu_pro_info.services})]}):(0,a.jsx)(r,{instance:e});export{o as default};

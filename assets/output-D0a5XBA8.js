@@ -1,0 +1,1 @@
+var e=e=>e?`Yes`:`No`;export{e as t};

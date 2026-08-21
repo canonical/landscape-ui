@@ -1,0 +1,46 @@
+{
+  "name": "@pnpm/deps.graph-sequencer",
+  "version": "1100.0.1",
+  "description": "Sort items in a graph using a topological sort",
+  "keywords": [
+    "pnpm",
+    "pnpm11",
+    "graph"
+  ],
+  "license": "MIT",
+  "funding": "https://opencollective.com/pnpm",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pnpm/pnpm/tree/main/pnpm11/deps/graph-sequencer"
+  },
+  "homepage": "https://github.com/pnpm/pnpm/tree/main/pnpm11/deps/graph-sequencer#readme",
+  "bugs": {
+    "url": "https://github.com/pnpm/pnpm/issues"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "files": [
+    "lib",
+    "!*.map"
+  ],
+  "devDependencies": {
+    "@jest/globals": "30.4.1",
+    "@pnpm/deps.graph-sequencer": "1100.0.1"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "jest": {
+    "preset": "@pnpm/jest-config"
+  },
+  "scripts": {
+    "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
+    "test": "pn compile && pn .test",
+    "compile": "tsgo --build && pn lint --fix",
+    ".test": "cross-env NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules --disable-warning=ExperimentalWarning --disable-warning=DEP0169\" jest"
+  }
+}
