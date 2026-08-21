@@ -3,7 +3,7 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import "@/tests/matcher";
 import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
-import moment from "moment";
+import date from "@/libs/date";
 import { describe } from "vitest";
 import type { InstalledSnap } from "../../types";
 import SnapDetails from "./SnapDetails";
@@ -28,8 +28,8 @@ describe("Snap details", () => {
           { label: "Confinement", value: installedSnap.confinement },
           {
             label: "Held until",
-            value: moment(installedSnap.held_until).isValid() ? (
-              moment(installedSnap.held_until).format(DISPLAY_DATE_TIME_FORMAT)
+            value: date(installedSnap.held_until).isValid() ? (
+              date(installedSnap.held_until).format(DISPLAY_DATE_TIME_FORMAT)
             ) : (
               <NoData />
             ),

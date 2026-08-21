@@ -1,7 +1,7 @@
 import type { ScriptFormValues } from "./types";
 import type { CreateScriptAttachmentParams } from "./api";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 
 const uint8ToBase64 = (bytes: Uint8Array): string => {
   let binary = "";
@@ -99,10 +99,10 @@ export const getCode = ({
 
 export const getAuthorInfo = ({
   author,
-  date,
+  date: dateString,
 }: {
   author: string;
   date: string;
 }) => {
-  return `${moment(date).format(DISPLAY_DATE_TIME_FORMAT)}, by ${author}`;
+  return `${date(dateString).format(DISPLAY_DATE_TIME_FORMAT)}, by ${author}`;
 };

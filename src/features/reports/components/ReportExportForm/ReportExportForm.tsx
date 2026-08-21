@@ -1,6 +1,7 @@
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
+import date from "@/libs/date";
 import { ROUTES } from "@/libs/routes";
 import {
   ExportForm,
@@ -13,7 +14,6 @@ import {
   Notification,
   Select,
 } from "@canonical/react-components";
-import moment from "moment";
 import { useMemo, useState, type FC } from "react";
 import { useNavigate } from "react-router";
 import { useExportComplianceTsv } from "../../api/useExportComplianceTsv";
@@ -91,6 +91,12 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
       return;
     }
     try {
+      const retainUntil = date(values.retainUntil).toISOString();
+
+      if (retainUntil === null) {
+        throw new Error("Retain until must be a valid date.");
+      }
+
       const description = buildExportDescription(
         selectedBucket,
         includeOther,
@@ -102,7 +108,7 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
         query,
         by_cve: byCve,
         selected_field_ids: fieldsToExport.map((f) => f.id),
-        retain_until: moment(values.retainUntil).toISOString(),
+        retain_until: retainUntil,
       });
       const job = response.data;
       closeSidePanel();
