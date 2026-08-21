@@ -57,6 +57,7 @@ describe("InstancesPage", () => {
       "https://ubuntu.com/landscape/docs/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/",
     );
   });
+  
 
   it("shows empty state when instances endpoint is empty", async () => {
     setEndpointStatus({ status: "empty", path: "computers" });

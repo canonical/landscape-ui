@@ -26,9 +26,13 @@ import {
   useMemo,
   useState,
   type FC,
+  type KeyboardEvent,
 } from "react";
 import InstancesContainer from "../InstancesContainer";
 import classes from "./InstancesPage.module.scss";
+
+const REGISTRATION_GUIDE_URL =
+  "https://ubuntu.com/landscape/docs/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/";
 
 const InstancesExportForm = lazy(
   async () => import("@/features/instances/components/InstancesExportForm"),
@@ -87,6 +91,16 @@ const InstancesPage: FC = () => {
     }
   }, [selectedInstances, isAllSelected]);
 
+  const handleAccountTooltipTriggerKeyDown = (
+    event: KeyboardEvent<HTMLSpanElement>,
+  ) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    window.open(REGISTRATION_GUIDE_URL, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <PageMain>
       <PageHeader
@@ -94,25 +108,36 @@ const InstancesPage: FC = () => {
         className={classes.instancesPageHeader}
         helperContent={
           <span className={classes.instancesPageHelperContent}>
-            <Tooltip
-              message={
-                <>
-                  <span>Account name: {currentAccount.name}</span>
-                  <br />
-                  <Link
-                    className={classes.instancesPageTooltipLink}
-                    href="https://ubuntu.com/landscape/docs/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/"
-                    target="_blank"
-                    rel="nofollow noopener noreferrer"
-                  >
-                    Learn how to register new instances to your Landscape
-                    organization
-                  </Link>
-                </>
-              }
+            <span
+              tabIndex={0}
+              role="button"
+              aria-describedby="instancesPageAccountInfo"
+              onKeyDown={handleAccountTooltipTriggerKeyDown}
             >
-              <Icon name={ICONS.information} />
-            </Tooltip>
+              <Tooltip
+                message={
+                  <>
+                    <span>Account name: {currentAccount.name}</span>
+                    <br />
+                    <Link
+                      className={classes.instancesPageTooltipLink}
+                      href={REGISTRATION_GUIDE_URL}
+                      target="_blank"
+                      rel="nofollow noopener noreferrer"
+                    >
+                      Learn how to register new instances to your Landscape
+                      organization
+                    </Link>
+                  </>
+                }
+              >
+                <Icon name={ICONS.information} aria-hidden />
+              </Tooltip>
+              <span id="instancesPageAccountInfo" className="u-off-screen">
+                {`Account name: ${currentAccount.name}. Press enter to learn how to register new instances to your Landscape
+                      organization.`}
+              </span>
+            </span>
           </span>
         }
         actions={[
