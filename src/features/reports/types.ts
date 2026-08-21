@@ -1,6 +1,6 @@
 export interface ReportBucket {
   count: number;
-  // The V2 computers/report endpoint always returns the ids per bucket (an
+  // The V2 computers/compliance-report endpoint always returns the ids per bucket (an
   // empty array when the count is zero), so this is required, not optional.
   computer_ids: number[];
 }

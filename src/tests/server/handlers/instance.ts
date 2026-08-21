@@ -34,7 +34,6 @@ import type {
 } from "@/types/Instance";
 import type { GroupsResponse, Group } from "@/types/User";
 import moment from "moment";
-import type { JsonBodyType } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import {
   generatePaginatedResponse,
@@ -66,7 +65,7 @@ function matchComputersQuery(
   endpointStatus: ReturnType<typeof getEndpointStatus>,
   limit: number,
   offset: number,
-): HttpResponse<JsonBodyType> | null {
+): HttpResponse | null {
   if (
     endpointStatus.status === "empty" &&
     endpointStatus.path === "computers-pro-empty" &&
@@ -382,7 +381,7 @@ export default [
 
   http.get(`${API_URL}computers/:computerId`, async ({ params, request }) => {
     // The real route only matches integer ids (`/computers/<int:computer_id>`),
-    // letting static paths like `computers/report` reach their own handlers.
+    // letting static paths like `computers/compliance-report` reach their own handlers.
     if (!/^\d+$/.test(String(params.computerId))) {
       return;
     }

@@ -146,7 +146,7 @@ describe("ReportView", () => {
 
   it("renders no over-60-days arc when nothing is outstanding", async () => {
     server.use(
-      http.get(`${API_URL}computers/report`, () =>
+      http.get(`${API_URL}computers/compliance-report`, () =>
         HttpResponse.json({
           ...complianceReport,
           usn_pending_over_60_days: { count: 0, computer_ids: [] },
@@ -163,7 +163,7 @@ describe("ReportView", () => {
   });
 
   it("shows an error notification when the report cannot be fetched", async () => {
-    setEndpointStatus({ status: "error", path: "computers/report" });
+    setEndpointStatus({ status: "error", path: "computers/compliance-report" });
 
     renderWithProviders(
       <ReportView selectedInstanceIds={instanceIds} isAllSelected={false} />,
@@ -211,7 +211,7 @@ describe("ReportView", () => {
   it("uses allSelectedQuery when all results are selected", async () => {
     let capturedQuery: string | null = null;
     server.use(
-      http.get(`${API_URL}computers/report`, ({ request }) => {
+      http.get(`${API_URL}computers/compliance-report`, ({ request }) => {
         capturedQuery = new URL(request.url).searchParams.get("query");
         return HttpResponse.json(complianceReport);
       }),
@@ -309,7 +309,7 @@ describe("ReportView", () => {
     // 30–60 days has no dedicated server bucket; the disjoint set is derived
     // client-side. Give the bucket a member so it renders a link.
     server.use(
-      http.get(`${API_URL}computers/report`, () =>
+      http.get(`${API_URL}computers/compliance-report`, () =>
         HttpResponse.json({
           ...complianceReport,
           usn_fixed_in: {
