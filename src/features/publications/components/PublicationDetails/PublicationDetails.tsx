@@ -19,17 +19,20 @@ import {
   OperationErrorNotification,
 } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
+import MissingSourceLabel from "../MissingSourceLabel";
 
 interface PublicationDetailsProps {
   readonly publication: Publication;
   readonly sourceDisplayName: string;
   readonly publicationTargetDisplayName: string;
+  readonly isSourceNotFound?: boolean;
 }
 
 const PublicationDetails = ({
   publication,
   sourceDisplayName,
   publicationTargetDisplayName,
+  isSourceNotFound = false,
 }: PublicationDetailsProps) => {
   const {
     value: isRemoveModalOpen,
@@ -118,7 +121,12 @@ const PublicationDetails = ({
               label="Source type"
               value={getSourceType(publication.source)}
             />
-            <InfoGrid.Item label="Source" value={sourceDisplayName} />
+            <InfoGrid.Item
+              label="Source"
+              value={
+                isSourceNotFound ? <MissingSourceLabel /> : sourceDisplayName
+              }
+            />
 
             <InfoGrid.Item
               label="Status"

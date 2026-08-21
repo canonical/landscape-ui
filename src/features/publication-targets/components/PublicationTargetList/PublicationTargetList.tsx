@@ -69,20 +69,29 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
         accessor: "displayName",
         id: "displayName",
         Header: "Name",
-        Cell: ({ row }: CellProps<PublicationTarget>) => (
-          <Button
-            type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-            onClick={createPageParamsSetter({
-              sidePath: ["view"],
-              name: row.original.publicationTargetId ?? "",
-            })}
-            aria-label={`View details for ${row.original.displayName}`}
-          >
-            {row.original.displayName}
-          </Button>
-        ),
+        Cell: ({ row }: CellProps<PublicationTarget>) => {
+          const displayName = row.original.displayName?.trim();
+          const hasDisplayName = Boolean(displayName);
+
+          return (
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+              onClick={createPageParamsSetter({
+                sidePath: ["view"],
+                name: row.original.publicationTargetId ?? "",
+              })}
+              aria-label={
+                hasDisplayName
+                  ? `View details for ${displayName}`
+                  : "View publication target details"
+              }
+            >
+              {hasDisplayName ? displayName : <NoData />}
+            </Button>
+          );
+        },
       },
       {
         accessor: (row) => getTargetType(row),

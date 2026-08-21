@@ -51,6 +51,7 @@ export const useBatchGetOperations = (
           lookup[operation.name] = operation;
         }
       }
+
       return lookup;
     },
     enabled: names.length > 0,
