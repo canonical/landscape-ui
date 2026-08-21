@@ -61,10 +61,9 @@ describe("DeliveryBlock", () => {
 
     await userEvent.click(screen.getByRole("radio", { name: /scheduled/i }));
 
-    const [, [, scheduledValue]] = formik.setFieldValue.mock.calls;
     const expectedLatestTime =
       Math.floor((Date.now() + 5 * 60 * 1000) / (60 * 1000)) * (60 * 1000);
-    const scheduledTime = new Date(scheduledValue as string).getTime();
+    const scheduledTime = new Date(formik.values.deliver_after).getTime();
 
     expect(scheduledTime).toBeGreaterThanOrEqual(expectedEarliestTime);
     expect(scheduledTime).toBeLessThanOrEqual(expectedLatestTime);
