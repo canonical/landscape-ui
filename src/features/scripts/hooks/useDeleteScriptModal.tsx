@@ -85,7 +85,7 @@ export const useDeleteScriptModal = ({
       <>
         <p>
           Redacting this script will permanently remove its contents from
-          Landscape. However a record of the script, including who redacted it
+          Landscape. However, a record of the script, including who redacted it
           and when, will be retained in the database. The script name
           <b> cannot be reused as a result.</b>
           <br />

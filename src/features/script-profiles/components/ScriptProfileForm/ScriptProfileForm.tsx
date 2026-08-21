@@ -184,12 +184,17 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         // This overrides the error message to be a bit more detailed.
         if (
           isAxiosError<ApiError>(error) &&
-          error.response &&
-          error.response.data.message ===
-            "Script profile with this title already exists."
+          error.response
         ) {
-          error.response.data.message =
-            "This script profile title is unavailable. It is either already in use or was previously archived. Script profile titles cannot be reused.";
+          const { error: errorCode, message } = error.response.data;
+          const isDuplicateTitleError =
+            errorCode === "ScriptProfileTitleExists" ||
+            /script profile.+title.+already.+exists/i.test(message);
+
+          if (isDuplicateTitleError) {
+            error.response.data.message =
+              "This script profile title is unavailable. It is either already in use or was previously archived. Script profile titles cannot be reused.";
+          }
         }
 
         debug(error);

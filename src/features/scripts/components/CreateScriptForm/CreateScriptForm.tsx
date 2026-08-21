@@ -63,12 +63,17 @@ const CreateScript: FC = () => {
       // This overrides the error message to be a bit more detailed.
       if (
         isAxiosError<ApiError>(error) &&
-        error.response &&
-        error.response.data.message ===
-          "Script with specified title is already present."
+        error.response
       ) {
-        error.response.data.message =
-          "This script title is unavailable. It is either already in use or was previously archived or redacted. Script titles cannot be reused.";
+        const { error: errorCode, message } = error.response.data;
+        const isDuplicateTitleError =
+          errorCode === "ScriptTitleExists" ||
+          /script.+title.+already.+present/i.test(message);
+
+        if (isDuplicateTitleError) {
+          error.response.data.message =
+            "This script title is unavailable. It is either already in use or was previously archived or redacted. Script titles cannot be reused.";
+        }
       }
 
       debug(error);
