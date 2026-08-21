@@ -4,6 +4,7 @@ import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
 import {
   DETAILED_UPGRADES_VIEW_ENABLED,
+  MANAGE_INSTANCES_DOCUMENTATION_URL,
   REPORT_VIEW_ENABLED,
   TSV_EXPORTS_ENABLED,
 } from "@/constants";
@@ -30,9 +31,6 @@ import {
 } from "react";
 import InstancesContainer from "../InstancesContainer";
 import classes from "./InstancesPage.module.scss";
-
-const REGISTRATION_GUIDE_URL =
-  "https://ubuntu.com/landscape/docs/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/";
 
 const InstancesExportForm = lazy(
   async () => import("@/features/instances/components/InstancesExportForm"),
@@ -98,7 +96,11 @@ const InstancesPage: FC = () => {
       return;
     }
 
-    window.open(REGISTRATION_GUIDE_URL, "_blank", "noopener,noreferrer");
+    window.open(
+      MANAGE_INSTANCES_DOCUMENTATION_URL,
+      "_blank",
+      "noopener,noreferrer",
+    );
   };
 
   return (
@@ -121,7 +123,7 @@ const InstancesPage: FC = () => {
                     <br />
                     <Link
                       className={classes.instancesPageTooltipLink}
-                      href={REGISTRATION_GUIDE_URL}
+                      href={MANAGE_INSTANCES_DOCUMENTATION_URL}
                       target="_blank"
                       rel="nofollow noopener noreferrer"
                     >
