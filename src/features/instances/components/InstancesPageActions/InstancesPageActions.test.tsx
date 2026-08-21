@@ -1,4 +1,5 @@
-import * as Constants from "@/constants";
+import { API_URL } from "@/constants";
+import { features } from "@/tests/mocks/features";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import {
@@ -7,8 +8,11 @@ import {
   windowsInstance,
 } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
+import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
 import { afterEach, beforeEach, vi } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
@@ -51,7 +55,6 @@ const renderPageActions = (
 
 describe("InstancesPageActions", () => {
   beforeEach(() => {
-    vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(true);
     setScreenSize("xxl");
     setEndpointStatus("default");
   });
@@ -123,7 +126,21 @@ describe("InstancesPageActions", () => {
     });
 
     it("'View report' menu item should not be visible when feature disabled", async () => {
-      vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
+      server.use(
+        http.get(`${API_URL}features`, () =>
+          HttpResponse.json(
+            generatePaginatedResponse({
+              data: features.map((feature) =>
+                feature.key === "instance-reports"
+                  ? { ...feature, enabled: false }
+                  : feature,
+              ),
+              offset: 0,
+              limit: 20,
+            }),
+          ),
+        ),
+      );
 
       renderPageActions();
 

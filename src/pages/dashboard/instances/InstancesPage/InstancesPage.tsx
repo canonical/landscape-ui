@@ -2,10 +2,7 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
-import {
-  DETAILED_UPGRADES_VIEW_ENABLED,
-  REPORT_VIEW_ENABLED,
-} from "@/constants";
+import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
 import {
   getInstanceListParams,
   InstancesPageActions,
@@ -13,6 +10,7 @@ import {
 } from "@/features/instances";
 import { getExportTitle } from "@/features/exports";
 import { setSelectedInstanceIds } from "@/features/instances";
+import useAuth from "@/hooks/useAuth";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
@@ -36,9 +34,12 @@ const ReportView = lazy(async () => {
 });
 
 const InstancesPage: FC = () => {
+  const { isFeatureEnabled } = useAuth();
+  const isReportViewEnabled = isFeatureEnabled("instance-reports");
+
   useSetDynamicFilterValidation(
     "sidePath",
-    REPORT_VIEW_ENABLED ? ["export", "report"] : ["export"],
+    isReportViewEnabled ? ["export", "report"] : ["export"],
   );
   const {
     currentPage,
@@ -135,7 +136,7 @@ const InstancesPage: FC = () => {
           </SidePanel.Suspense>
         )}
       </SidePanel>
-      {REPORT_VIEW_ENABLED && (
+      {isReportViewEnabled && (
         <SidePanel
           isOpen={sidePath[0] === "report"}
           onClose={popSidePathUntilClear}

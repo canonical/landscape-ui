@@ -1,7 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
-import { REPORT_VIEW_ENABLED } from "@/constants";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
@@ -337,7 +336,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       hasIcon: true,
       disabled: !hasInstancesToExport,
     },
-    ...(REPORT_VIEW_ENABLED
+    ...(isFeatureEnabled("instance-reports")
       ? [
           {
             children: (
