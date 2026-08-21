@@ -3,9 +3,11 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { ApiError } from "@/types/api/ApiError";
 import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
 import { Button, Form, Icon, Input, Select } from "@canonical/react-components";
+import { isAxiosError } from "axios";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useRef } from "react";
@@ -58,6 +60,19 @@ const CreateScript: FC = () => {
       }
       closeSidePanel();
     } catch (error) {
+      // This overrides the error message to be a bit more detailed.
+      if (isAxiosError<ApiError>(error) && error.response) {
+        const { error: errorCode, message } = error.response.data;
+        const isDuplicateTitleError =
+          errorCode === "ScriptTitleExists" ||
+          /script.+title.+already.+present/i.test(message);
+
+        if (isDuplicateTitleError) {
+          error.response.data.message =
+            "This script title is unavailable. It is either already in use or was previously archived or redacted. Script titles cannot be reused.";
+        }
+      }
+
       debug(error);
     }
   };

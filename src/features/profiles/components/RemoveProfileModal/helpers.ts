@@ -3,7 +3,7 @@ import { ProfileTypes } from "../../helpers";
 export const getModalMessage = (type: ProfileTypes, profileName: string) => {
   switch (type) {
     case ProfileTypes.script:
-      return `Archiving "${profileName}" script profile will prevent it from running in the future.`;
+      return `Archiving "${profileName}" script profile will prevent it from running in the future. Its name also cannot be reused.`;
     case ProfileTypes.usg:
       return `Archiving "${profileName}" USG profile will prevent it from running. However, it will NOT delete past audit data or remove the profile details. You will not be able to reactivate the profile after it has been archived.`;
     case ProfileTypes.wsl:

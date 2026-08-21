@@ -52,25 +52,31 @@ describe("useDeleteScriptModal", () => {
     renderWithProviders(<DeleteModalConsumer script={scriptWithNoProfiles} />);
 
     expect(screen.getByTestId("title")).toHaveTextContent(
-      `Delete ${scriptWithNoProfiles.title}`,
+      `Redact ${scriptWithNoProfiles.title}`,
     );
-    expect(screen.getByTestId("label")).toHaveTextContent("Delete");
+    expect(screen.getByTestId("label")).toHaveTextContent("Redact");
   });
 
   it("returns alternative button label when script has profiles", () => {
     renderWithProviders(<DeleteModalConsumer script={scriptWithProfiles} />);
 
     expect(screen.getByTestId("title")).toHaveTextContent(
-      `Delete ${scriptWithProfiles.title}`,
+      `Redact ${scriptWithProfiles.title}`,
     );
     expect(screen.getByTestId("label")).toHaveTextContent(
-      "Delete both script and profiles",
+      "Redact script and archive profiles",
     );
   });
 
   it("renders body with irreversible message for script with no profiles", () => {
     renderWithProviders(<DeleteModalConsumer script={scriptWithNoProfiles} />);
 
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /permanently remove its contents from Landscape/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /record of the script/i,
+    );
     expect(screen.getByTestId("body")).toHaveTextContent(/irreversible/i);
   });
 
@@ -80,6 +86,10 @@ describe("useDeleteScriptModal", () => {
     for (const profile of scriptWithProfiles.script_profiles) {
       expect(screen.getByTestId("body")).toHaveTextContent(profile.title);
     }
+
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /Redacting the script will archive its associated profiles, making their names unavailable for reuse\. Neither the script nor its profiles will be able to run again\./i,
+    );
   });
 
   it("calls afterSuccess when onConfirmDelete completes", async () => {
@@ -97,13 +107,13 @@ describe("useDeleteScriptModal", () => {
     expect(afterSuccess).toHaveBeenCalled();
   });
 
-  it("shows success notification after delete", async () => {
+  it("shows success notification after redaction", async () => {
     renderWithProviders(<DeleteModalConsumer script={scriptWithNoProfiles} />);
 
     await user.click(screen.getByRole("button", { name: /confirm delete/i }));
 
     expect(
-      await screen.findByText(/script removed successfully/i),
+      await screen.findByText(/script.*redacted successfully/i),
     ).toBeInTheDocument();
   });
 
