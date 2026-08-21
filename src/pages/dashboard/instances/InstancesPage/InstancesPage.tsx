@@ -97,9 +97,7 @@ const InstancesPage: FC = () => {
             <Tooltip
               message={
                 <>
-                  <span className={classes.instancesPageAccountName}>
-                    Account name: {currentAccount.name}
-                  </span>
+                  <span>Account name: {currentAccount.name}</span>
                   <br />
                   <Link
                     className={classes.instancesPageTooltipLink}
