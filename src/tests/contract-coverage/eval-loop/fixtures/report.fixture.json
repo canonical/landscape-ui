@@ -1,0 +1,53 @@
+{
+  "generatedAt": "2026-07-31T00:00:00.000Z",
+  "summary": {
+    "totalInteractionsLogged": 75,
+    "routesExercised": 3,
+    "routesDeclared": 4,
+    "byBackend": {
+      "v1": { "declared": 0, "exercised": 0 },
+      "v2": { "declared": 3, "exercised": 2 },
+      "go": { "declared": 1, "exercised": 1 },
+      "unknown": { "declared": 0, "exercised": 0 }
+    }
+  },
+  "routes": {
+    "GET /api/v2/computers": {
+      "method": "GET",
+      "pattern": "/api/v2/computers",
+      "backend": "v2",
+      "source": "msw",
+      "totalHits": 20,
+      "statuses": { "200": 20 }
+    },
+    "POST /api/v2/mirrors": {
+      "method": "POST",
+      "pattern": "/api/v2/mirrors",
+      "backend": "v2",
+      "source": "msw",
+      "totalHits": 30,
+      "statuses": { "201": 30 },
+      "contracts": [
+        {
+          "status": 201,
+          "requestPayload": { "name": "mirror-a", "series": ["focal"] },
+          "responsePayload": { "id": 7, "name": "mirror-a" }
+        }
+      ]
+    },
+    "GET /debarchive/v1beta1/mirrors/{mirrorId}": {
+      "method": "GET",
+      "pattern": "/debarchive/v1beta1/mirrors/{mirrorId}",
+      "backend": "go",
+      "source": "openapi",
+      "totalHits": 25,
+      "statuses": { "200": 25 }
+    }
+  },
+  "unexercised": [
+    { "id": "GET /api/v2/tags", "backend": "v2", "source": "msw" }
+  ],
+  "drift": [],
+  "migration": [],
+  "warnings": []
+}

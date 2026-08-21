@@ -38,6 +38,19 @@ The repo already defines:
 
 Additional provider, reporter, output, include, and exclude details are configured in [`vitest.config.ts`](../../vitest.config.ts). Agents should inspect the config directly when they need those exact mechanics.
 
+## API Contract Coverage And The Eval Loop
+
+Separate from code coverage, the repo tracks **API contract coverage**: which backend routes the frontend actually talks to during the Vitest run, recorded via MSW traffic.
+
+- `pnpm coverage:full` runs the suite and aggregates `src/tests/msw-contract-coverage.json` (see `src/tests/contract-coverage/`). The report lists exercised routes (with observed statuses and, for mutating methods, captured request/response payloads), `unexercised` declared routes, and `drift` (traffic no contract declares).
+- `src/tests/contract-coverage/eval-loop/` is the **agentic evaluation loop** built on top of that report. It works in two strictly separated phases:
+  - **Collection (deterministic, no LLM):** `collect-gaps.ts` validates the report, statically extracts the routes covered by the Playwright API-contract specs (`e2e/docker-stack/api/**/*.spec.ts`) via the TypeScript AST, and writes a ranked gap list (`out/gaps.json`). Ranking: `totalHits` desc, mutating methods first. Proxy-relative go URLs are matched against the `/debarchive` mount prefix.
+  - **Evaluation (LLM):** `llm-client.ts` (zero-dependency, OpenAI-compatible fetch client; `LLM_API_KEY`/`LLM_BASE_URL`/`LLM_MODEL` env-driven, defaults to OpenRouter — GitHub Models entered retirement brownouts in July 2026) and `prompt.ts` (minimal prompt: top-5 gaps + their observed payloads as inert data + one exemplar spec, strict-JSON output contract, 12k-char guard) draft up to 5 Playwright API-contract test suggestions.
+
+Design rules for this area: gap detection must stay deterministic (scripts, not LLM); the LLM only elaborates already-computed gaps; no new npm dependencies; providers must be swappable via environment variables alone.
+
+Status: collection, LLM client, prompt builder, renderer, and the orchestrator are implemented and unit-tested (`eval:collect` / `eval:suggest` / `eval:full` pnpm scripts are wired). The scheduled GitHub Actions workflow is the remaining piece (see the eval-loop work plan).
+
 ## Scope Of Coverage Numbers
 
 Coverage reporting is focused on application code under `src`, not the whole repository.
