@@ -17,7 +17,7 @@ import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { Icon, ICONS, Tooltip } from "@canonical/react-components";
+import { Icon, ICONS, Link, Tooltip } from "@canonical/react-components";
 import {
   lazy,
   useCallback,
@@ -94,8 +94,19 @@ const InstancesPage: FC = () => {
         helperContent={
           <span className={classes.instancesPageHelperContent}>
             <Tooltip
-              
-              message={`Account name: ${currentAccount.name}`}
+              message={
+                <>
+                  <span>Account name: {currentAccount.name}</span>
+                  <br />
+                  <Link
+                    href="https://ubuntu.com/landscape/docs/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/"
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                  >
+                    Learn how to register new instances to your Landscape organization
+                  </Link>
+                </>
+              }
             >
               <Icon name={ICONS.information} />
             </Tooltip>
