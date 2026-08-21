@@ -1,140 +1,179 @@
+import { SidePanelTableFilterChips, TableFilter } from "@/components/filter";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import LoadingState from "@/components/layout/LoadingState";
-import { hasSecurityUpgrades, hasUpgrades } from "@/features/instances";
-import { usePackages } from "@/features/packages";
-import { useUsns } from "@/features/usns";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import useSidePanel from "@/hooks/useSidePanel";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
+import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
 import type { Instance } from "@/types/Instance";
-import { pluralize } from "@/utils/_helpers";
-import { Form, Tabs } from "@canonical/react-components";
-import { useFormik } from "formik";
-import type { FC } from "react";
-import { Suspense, useState } from "react";
-import UpgradeInfo from "../UpgradeInfo";
-import { TAB_LINKS, TAB_PANELS, VALIDATION_SCHEMA } from "./constants";
-import { getInitialValues, getTabLinks } from "./helpers";
-import type { UpgradesFormProps } from "./types";
+import { getSelectionLabel } from "@/utils/_helpers";
+import { SearchBox } from "@canonical/react-components";
+import classNames from "classnames";
+import { useState, type FC } from "react";
+import { useBoolean } from "usehooks-ts";
+import UpgradesList from "../UpgradesList";
+import UpgradesSummary from "../UpgradesSummary";
+import classes from "./Upgrades.module.scss";
+import { UPGRADE_TYPE_OPTIONS } from "./constants";
+import type { Package } from "@/features/packages";
+import { FilterState, useSearchUpgrades } from "@/features/packages";
 
 interface UpgradesProps {
   readonly selectedInstances: Instance[];
+  readonly query?: string;
 }
 
-const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
-  const [activeTabLinkId, setActiveTabLinkId] = useState<string>(
-    TAB_LINKS[0].id,
-  );
+const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
+  const { closeSidePanel, setSidePanelTitle, changeSidePanelSize } =
+    useSidePanel();
 
-  const affectedInstances = selectedInstances.filter(({ alerts }) =>
-    hasUpgrades(alerts),
-  );
+  const [toggledUpgrades, setToggledUpgrades] = useState<Package[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
+  const [upgradeType, setUpgradeType] = useState("all");
+  const [step, setStep] = useState<"list" | "summary">("list");
 
-  const instancesWithUsn = affectedInstances.filter(({ alerts }) =>
-    hasSecurityUpgrades(alerts),
-  );
+  const {
+    value: isSelectAllUpgradesEnabled,
+    setTrue: enableSelectAllUpgrades,
+    setFalse: disableSelectAllUpgrades,
+  } = useBoolean();
 
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
-  const { upgradeInstancesPackagesQuery } = usePackages();
-  const { upgradeUsnsQuery } = useUsns();
-
-  const { mutateAsync: upgradeInstancesPackages } =
-    upgradeInstancesPackagesQuery;
-  const { mutateAsync: upgradeUsns } = upgradeUsnsQuery;
-
-  const handleSubmit = async (values: UpgradesFormProps) => {
-    try {
-      if (activeTabLinkId === "tab-link-usns") {
-        await upgradeUsns({
-          computers: instancesWithUsn.map(({ id }) => ({
-            id,
-            exclude_usns: values.excludedUsns,
-          })),
-        });
-      } else {
-        await upgradeInstancesPackages({
-          computers: values.excludedPackages,
-        });
-      }
-
-      closeSidePanel();
-
-      notify.success({
-        title: "You queued packages to be upgraded",
-        message: `Packages on ${pluralize(selectedInstances.length, ["instance"], "exact")} will be upgraded and are queued in Activities`,
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const formik = useFormik({
-    initialValues: getInitialValues(affectedInstances),
-    onSubmit: handleSubmit,
-    validationSchema: VALIDATION_SCHEMA,
+  const {
+    data: upgradesResponse,
+    isPending: isPendingUpgrades,
+    error: upgradesError,
+  } = useSearchUpgrades({
+    offset: (currentPage - 1) * pageSize,
+    limit: pageSize,
+    security: upgradeType === "security" ? FilterState.TRUE : undefined,
+    text: search,
+    computer_query: query ?? "",
   });
 
-  const handleExcludedPackagesChange = async (
-    newExcludedPackages: UpgradesFormProps["excludedPackages"],
-  ) => formik.setFieldValue("excludedPackages", newExcludedPackages);
+  if (upgradesError) {
+    throw upgradesError;
+  }
 
-  return (
-    <Form onSubmit={formik.handleSubmit}>
-      <UpgradeInfo instances={selectedInstances} />
+  const reset = () => {
+    setToggledUpgrades([]);
+    disableSelectAllUpgrades();
+    setCurrentPage(DEFAULT_CURRENT_PAGE);
+  };
 
-      <Tabs
-        links={getTabLinks({
-          activeTabLinkId,
-          onTabLinkClick: (id) => {
-            setActiveTabLinkId(id);
-          },
-          withUsnsTab: instancesWithUsn.length > 0,
-        })}
-      />
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    reset();
+  };
 
-      <AppErrorBoundary>
-        <div tabIndex={0} role="tabpanel" aria-labelledby={activeTabLinkId}>
-          {activeTabLinkId === "tab-link-instances" && (
-            <Suspense fallback={<LoadingState />}>
-              <TAB_PANELS.instances
-                excludedPackages={formik.values.excludedPackages}
-                instances={affectedInstances}
-                onExcludedPackagesChange={handleExcludedPackagesChange}
-              />
-            </Suspense>
+  const clearSearch = () => {
+    setInputValue("");
+    handleSearch("");
+  };
+
+  const handleUpgradeTypeSelect = (value: string) => {
+    setUpgradeType(value);
+    reset();
+  };
+
+  switch (step) {
+    case "list":
+      return (
+        <>
+          <div className={classes.header}>
+            <SearchBox
+              className={classNames("u-no-margin--bottom", classes.search)}
+              externallyControlled
+              value={inputValue}
+              onChange={setInputValue}
+              onClear={clearSearch}
+              onSearch={handleSearch}
+              autoComplete="off"
+            />
+            <TableFilter
+              type="single"
+              showSelectionOnToggleLabel
+              label="Upgrade type"
+              onItemSelect={handleUpgradeTypeSelect}
+              options={UPGRADE_TYPE_OPTIONS}
+              selectedItem={upgradeType}
+              hasBadge={upgradeType !== "all"}
+            />
+          </div>
+          <SidePanelTableFilterChips
+            filters={[
+              {
+                label: "Search",
+                item: search,
+                clear: clearSearch,
+              },
+              {
+                label: "Upgrades",
+                item: upgradeType === "security" ? "Security" : undefined,
+                clear: () => {
+                  handleUpgradeTypeSelect("all");
+                },
+              },
+            ]}
+          />
+          {isPendingUpgrades ? (
+            <LoadingState />
+          ) : (
+            <UpgradesList
+              currentUpgrades={upgradesResponse.data.packages}
+              toggledUpgrades={toggledUpgrades}
+              setToggledUpgrades={setToggledUpgrades}
+              upgradeCount={upgradesResponse.data.count}
+              isSelectAllUpgradesEnabled={isSelectAllUpgradesEnabled}
+              enableSelectAllUpgrades={enableSelectAllUpgrades}
+              disableSelectAllUpgrades={disableSelectAllUpgrades}
+              query={query}
+            />
           )}
-          {activeTabLinkId === "tab-link-packages" && (
-            <Suspense fallback={<LoadingState />}>
-              <TAB_PANELS.packages
-                excludedPackages={formik.values.excludedPackages}
-                instances={affectedInstances}
-                onExcludedPackagesChange={handleExcludedPackagesChange}
-              />
-            </Suspense>
-          )}
-          {activeTabLinkId === "tab-link-usns" && (
-            <Suspense fallback={<LoadingState />}>
-              <TAB_PANELS.usns
-                excludedUsns={formik.values.excludedUsns}
-                instances={instancesWithUsn}
-                onExcludedUsnsChange={async (usns) =>
-                  formik.setFieldValue("excludedUsns", usns)
-                }
-              />
-            </Suspense>
-          )}
-        </div>
-      </AppErrorBoundary>
+          <SidePanelTablePagination
+            currentPage={currentPage}
+            pageSize={pageSize}
+            paginate={setCurrentPage}
+            setPageSize={setPageSize}
+            totalItems={upgradesResponse?.data.count}
+            currentItemCount={upgradesResponse?.data.packages.length}
+          />
+          <SidePanelFormButtons
+            onCancel={closeSidePanel}
+            submitButtonText="Next"
+            submitButtonDisabled={
+              isPendingUpgrades ||
+              !(isSelectAllUpgradesEnabled || toggledUpgrades.length)
+            }
+            onSubmit={() => {
+              setStep("summary");
+              setSidePanelTitle("Summary");
+              changeSidePanelSize("medium");
+            }}
+          />
+        </>
+      );
 
-      <SidePanelFormButtons
-        submitButtonLoading={formik.isSubmitting}
-        submitButtonText="Upgrade"
-      />
-    </Form>
-  );
+    case "summary":
+      return (
+        <UpgradesSummary
+          isSelectAllUpgradesEnabled={isSelectAllUpgradesEnabled}
+          onBackButtonPress={() => {
+            setStep("list");
+            setSidePanelTitle(
+              `Upgrade ${getSelectionLabel(selectedInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
+            );
+            changeSidePanelSize("large");
+          }}
+          query={query}
+          search={search}
+          toggledUpgrades={toggledUpgrades}
+          upgradeType={upgradeType}
+        />
+      );
+  }
 };
 
 export default Upgrades;

@@ -1,5 +1,5 @@
-import type { MenuLink, Position } from "@canonical/react-components";
 import type { ReactNode } from "react";
+import type { MenuLink, Position } from "@canonical/react-components";
 
 export interface ButtonLikeProps {
   children?: ReactNode;

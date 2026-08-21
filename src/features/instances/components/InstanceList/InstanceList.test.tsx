@@ -15,10 +15,12 @@ import { describe, expect, vi } from "vitest";
 import InstanceList from "./InstanceList";
 
 const props: ComponentProps<typeof InstanceList> = {
-  instances: instances.slice(0, DEFAULT_PAGE_SIZE),
   selectedInstances: [],
+  instances: instances.slice(0, DEFAULT_PAGE_SIZE),
   setColumnFilterOptions: vi.fn(),
   setSelectedInstances: vi.fn(),
+  selectAllInstances: vi.fn(),
+  deselectAllInstances: vi.fn(),
   instanceCount: instances.length,
   isAllSelected: false,
   onSelectAll: vi.fn(),
