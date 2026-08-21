@@ -96,14 +96,18 @@ const InstancesPage: FC = () => {
             <Tooltip
               message={
                 <>
-                  <span>Account name: {currentAccount.name}</span>
+                  <span className={classes.instancesPageAccountName}>
+                    Account name: {currentAccount.name}
+                  </span>
                   <br />
                   <Link
+                    className={classes.instancesPageTooltipLink}
                     href="https://ubuntu.com/landscape/docs/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/"
                     target="_blank"
                     rel="nofollow noopener noreferrer"
                   >
-                    Learn how to register new instances to your Landscape organization
+                    Learn how to register new instances to your Landscape
+                    organization
                   </Link>
                 </>
               }
