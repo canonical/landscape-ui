@@ -334,3 +334,8 @@ export const operations: Operation[] = [
   failedMirrorOperation,
   failedPublicationOperation,
 ];
+
+export const batchGetOperationNamesWithMissing = [
+  "operations/ssss-cccc-dddd",
+  "operations/non-existent-operation",
+] as const;

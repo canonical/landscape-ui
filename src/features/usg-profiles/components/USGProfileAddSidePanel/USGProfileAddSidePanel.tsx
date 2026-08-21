@@ -4,7 +4,7 @@ import { DEFAULT_ACCESS_GROUP_NAME, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import classNames from "classnames";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { useState } from "react";
 import type { FormikErrors } from "formik";
@@ -61,7 +61,7 @@ const USGProfileAddSidePanel: FC<USGProfileAddSidePanelProps> = ({
       randomize_delivery: false,
       deliver_delay_window: 1,
       restart_deliver_delay: 1,
-      start_date: moment().utc().format(INPUT_DATE_TIME_FORMAT),
+      start_date: date().utc().format(INPUT_DATE_TIME_FORMAT),
       start_type: "on-a-date",
       tags: [],
       tailoring_file: null,

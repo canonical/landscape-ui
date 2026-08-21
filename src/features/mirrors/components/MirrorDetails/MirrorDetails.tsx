@@ -14,7 +14,7 @@ import { useGetMirror } from "../../api";
 import usePageParams from "@/hooks/usePageParams";
 import { getSourceType, shouldShowAuthentication } from "./helpers";
 import MirrorPackagesCount from "../MirrorPackagesCount";
-import moment from "moment";
+import date from "@/libs/date";
 import {
   DEFAULT_POLLING_INTERVAL,
   DISPLAY_DATE_TIME_FORMAT,
@@ -244,7 +244,7 @@ const MirrorDetails: FC = () => {
                   label="Last update"
                   value={
                     mirror.lastDownloadDate &&
-                    moment(mirror.lastDownloadDate).format(
+                    date(mirror.lastDownloadDate).format(
                       DISPLAY_DATE_TIME_FORMAT,
                     )
                   }

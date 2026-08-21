@@ -8,7 +8,7 @@ import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { ActionButton, Input, Notification } from "@canonical/react-components";
 import { useFormik } from "formik";
-import moment from "moment";
+import date from "@/libs/date";
 import { useEffect, useState, type FC } from "react";
 import * as Yup from "yup";
 import { useGetUsgProfileReport } from "../../../../api";
@@ -92,8 +92,8 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
   const formik = useFormik<USGProfileDownloadAuditFormValues>({
     initialValues: {
       audit_timeframe: "specific-date",
-      end_date: moment().format(INPUT_DATE_FORMAT),
-      start_date: moment().format(INPUT_DATE_FORMAT),
+      end_date: date().format(INPUT_DATE_FORMAT),
+      start_date: date().format(INPUT_DATE_FORMAT),
       level_of_detail: "summary-only",
     },
 
@@ -108,12 +108,12 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
                 .required("This field is required.")
                 .test({
                   test: (end_date) =>
-                    moment(end_date).isSameOrAfter(moment(start_date)),
+                    date(end_date).isSameOrAfter(date(start_date)),
                   message: "The end date must not be before the start date.",
                 })
                 .test({
                   test: (end_date) =>
-                    moment(end_date).utc(true).isSameOrBefore(moment()),
+                    date(end_date).utc(true).isSameOrBefore(date()),
                   message: "The end date must not be in the future.",
                 })
             : schema,
@@ -123,7 +123,7 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
         .required("This field is required.")
         .test({
           test: (start_date) =>
-            moment(start_date).utc(true).isSameOrBefore(moment()),
+            date(start_date).utc(true).isSameOrBefore(date()),
           message: "The date must not be in the future.",
         }),
     }),
@@ -243,7 +243,7 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
                 type="date"
                 {...formik.getFieldProps("start_date")}
                 error={getFormikError(formik, "start_date")}
-                max={moment().utc().format(INPUT_DATE_FORMAT)}
+                max={date().utc().format(INPUT_DATE_FORMAT)}
               />
             ),
           },
@@ -258,7 +258,7 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
                     type="date"
                     {...formik.getFieldProps("start_date")}
                     error={getFormikError(formik, "start_date")}
-                    max={moment(formik.values.end_date)
+                    max={date(formik.values.end_date)
                       .utc()
                       .format(INPUT_DATE_FORMAT)}
                   />
@@ -271,8 +271,8 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
                     type="date"
                     {...formik.getFieldProps("end_date")}
                     error={getFormikError(formik, "end_date")}
-                    max={moment().utc().format(INPUT_DATE_FORMAT)}
-                    min={moment(formik.values.start_date).format(
+                    max={date().utc().format(INPUT_DATE_FORMAT)}
+                    min={date(formik.values.start_date).format(
                       INPUT_DATE_FORMAT,
                     )}
                   />

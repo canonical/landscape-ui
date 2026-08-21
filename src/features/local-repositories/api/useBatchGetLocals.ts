@@ -10,29 +10,34 @@ export const useBatchGetLocals = (names: string[]) => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isLoading } = useQuery<
-    Record<string, string>,
+    { lookup: Record<string, string>; unreachable: string[] },
     AxiosError<LocalServiceBatchGetLocalsError>
   >({
     queryKey: ["locals", "batch", names],
     queryFn: async () => {
       const response = await authFetchDebArchive.post<BatchGetLocalsResponse>(
         "locals:batchGet",
-        { names },
+        { names, returnPartialSuccess: true },
       );
 
       const lookup: Record<string, string> = {};
+      const unreachable = response.data.unreachable ?? [];
       for (const local of response.data.locals ?? []) {
         if (local.name) {
           lookup[local.name] = local.displayName;
         }
       }
-      return lookup;
+      return {
+        lookup,
+        unreachable,
+      };
     },
     enabled: names.length > 0,
   });
 
   return {
-    localDisplayNames: data ?? {},
+    localDisplayNames: data?.lookup ?? {},
+    unreachableLocals: data?.unreachable ?? [],
     isLoadingLocalDisplayNames: isLoading,
   };
 };

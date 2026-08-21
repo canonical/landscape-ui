@@ -1,6 +1,6 @@
 import type { ExportFieldGroup, ExportFormValues } from "@/features/exports";
 import { INPUT_DATE_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 
 const VISIBLE_COLUMN_FIELD_IDS: string[] = [
   "summary",
@@ -13,7 +13,7 @@ const VISIBLE_COLUMN_FIELD_IDS: string[] = [
 export const INITIAL_VALUES: ExportFormValues = {
   name: "",
   selectedFieldIds: VISIBLE_COLUMN_FIELD_IDS,
-  retainUntil: moment().add(3, "years").format(INPUT_DATE_FORMAT),
+  retainUntil: date().add(3, "years").format(INPUT_DATE_FORMAT),
 };
 
 export const EXPORT_FIELD_GROUPS: readonly ExportFieldGroup[] = [

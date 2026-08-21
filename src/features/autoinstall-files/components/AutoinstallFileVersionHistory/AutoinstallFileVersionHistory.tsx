@@ -3,7 +3,7 @@ import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, ModularTable } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC, ReactNode } from "react";
 import { lazy, Suspense, useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
@@ -88,7 +88,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
           },
         }: CellProps<AutoinstallFileVersionInfo>): ReactNode => (
           <div className="font-monospace">
-            {moment(created_at).format(DISPLAY_DATE_TIME_FORMAT)}
+            {date(created_at).format(DISPLAY_DATE_TIME_FORMAT)}
           </div>
         ),
       },
