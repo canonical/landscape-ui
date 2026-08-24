@@ -13,7 +13,7 @@ const PRAGMA_ICONS_DIR = path.join(
 );
 
 const getPragmaIconPath = (requestUrl: string | undefined) => {
-  const pathname = new URL(requestUrl ?? "", "http://localhost").pathname;
+  const { pathname } = new URL(requestUrl ?? "", "http://localhost");
 
   if (!pathname.startsWith(PRAGMA_ICONS_ROUTE)) {
     return null;
@@ -70,8 +70,8 @@ export const createPragmaIconsPlugin = (): Plugin => {
   return {
     name: "serve-pragma-icons",
     configResolved(config) {
-      root = config.root;
-      outDir = config.build.outDir;
+      ({ root } = config);
+      ({ outDir } = config.build);
     },
     configureServer: servePragmaIcons,
     configurePreviewServer: servePragmaIcons,
