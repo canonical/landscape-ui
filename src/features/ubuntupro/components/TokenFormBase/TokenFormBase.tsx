@@ -171,7 +171,7 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
                 </Button>
               }
             >
-              <p>
+              <p className="u-margin--bottom">
                 Your Ubuntu Pro token can&apos;t be attached to the selected{" "}
                 {pluralize(selectedInstances.length, ["instance"])} because{" "}
                 {pluralize(selectedInstances.length, [

@@ -67,7 +67,7 @@ const InviteAdministratorForm: FC = () => {
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <p>
+      <p className="u-margin--bottom">
         An invitation, sent by email, contains a link a prospective
         administrator can use to join this account.
       </p>

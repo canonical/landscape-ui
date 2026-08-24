@@ -90,7 +90,9 @@ const ProviderListActions: FC<ProviderListActionsProps> = ({
           onConfirm={handleProviderDelete}
           close={closeModal}
         >
-          <p>This will delete the {provider.name} provider.</p>
+          <p className="u-margin--bottom">
+            This will delete the {provider.name} provider.
+          </p>
         </ConfirmationModal>
       )}
     </>

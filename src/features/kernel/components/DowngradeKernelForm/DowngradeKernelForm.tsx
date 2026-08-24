@@ -153,7 +153,7 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
           confirmationModalProps={{
             title: "Downgrading kernel and restarting instance",
             children: (
-              <p>
+              <p className="u-margin--bottom">
                 Are you sure? This action will downgrade the kernel and restart
                 the instance.
               </p>
@@ -173,7 +173,9 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
           confirmationModalProps={{
             title: "Downgrading kernel",
             children: (
-              <p>Are you sure? This action will downgrade the kernel.</p>
+              <p className="u-margin--bottom">
+                Are you sure? This action will downgrade the kernel.
+              </p>
             ),
             confirmButtonLabel: "Downgrade",
             confirmButtonAppearance: "negative",

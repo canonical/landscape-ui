@@ -51,7 +51,7 @@ const IgnorableNotifcation: FC<USGProfileAuditRetentionNotificationProps> = ({
           ignore={ignore}
           {...modalProps}
         >
-          <p>{children}</p>
+          <p className="u-margin--bottom">{children}</p>
         </IgnorableModal>
       )}
     </>

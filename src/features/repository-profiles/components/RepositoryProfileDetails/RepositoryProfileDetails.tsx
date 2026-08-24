@@ -165,7 +165,7 @@ const RepositoryProfileDetails: FC = () => {
         close={closeModal}
         renderInPortal
       >
-        <p>
+        <p className="u-margin--bottom">
           This will remove &quot;{profile.title}&quot; profile. This action is{" "}
           <b>irreversible</b>.
         </p>

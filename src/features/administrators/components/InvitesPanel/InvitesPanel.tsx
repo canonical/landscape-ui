@@ -104,7 +104,7 @@ const InvitesPanel: FC = () => {
               confirmationModalProps={{
                 title: `Revoke invitation for ${row.original.name}`,
                 children: (
-                  <p>
+                  <p className="u-margin--bottom">
                     This action will prevent {row.original.name} from joining
                     your Landscape organization.
                   </p>
@@ -124,7 +124,7 @@ const InvitesPanel: FC = () => {
               confirmationModalProps={{
                 title: `Resend invitation for ${row.original.name}`,
                 children: (
-                  <p>
+                  <p className="u-margin--bottom">
                     {row.original.name} will receive a new invitation email.
                   </p>
                 ),
@@ -150,7 +150,7 @@ const InvitesPanel: FC = () => {
         <LoadingState />
       ) : (
         <>
-          <p className="u-text--muted p-text--small">
+          <p className="u-text--muted p-text--small u-margin--bottom">
             Unclaimed invitations expire after 14 days.
           </p>
           <ResponsiveTable

@@ -59,7 +59,7 @@ const RegenerateRecoveryKeyModal: FC<RegenerateRecoveryKeyModalProps> = ({
   const getRecoveryKeyContent = (): ReactNode => {
     if (isRecoveryKeyGenerationActivityInProgress) {
       return (
-        <p>
+        <p className="u-margin--bottom">
           A recovery key generation activity is currently in progress. If you
           proceed, a new activity will be queued for this instance.
         </p>
@@ -67,7 +67,7 @@ const RegenerateRecoveryKeyModal: FC<RegenerateRecoveryKeyModalProps> = ({
     }
 
     return (
-      <p>
+      <p className="u-margin--bottom">
         Regenerating the recovery key will make the existing key unavailable
         until the new key is generated. You won’t be able to view the key
         immediately after requesting regeneration.

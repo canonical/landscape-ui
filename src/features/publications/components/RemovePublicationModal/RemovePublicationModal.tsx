@@ -55,7 +55,7 @@ const RemovePublicationModal: FC<RemovePublicationModalProps> = ({
       onConfirm={handleRemovePublication}
       close={close}
     >
-      <p>
+      <p className="u-margin--bottom">
         Removing this publication will prevent you from being able to publish
         mirrors to it or manage it from Landscape. This WILL NOT remove the
         publication from its publication target. This action is{" "}

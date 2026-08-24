@@ -568,7 +568,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           confirmButtonLoading={isDisassociating}
           onConfirm={handleDisassociateEmployee}
         >
-          <p>
+          <p className="u-margin--bottom">
             You are about to disassociate instance {instance.title} from{" "}
             {employee?.name}. This will revoke their access to the instance’s
             details and recovery key.
@@ -623,7 +623,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         confirmationText={`sanitize ${instance.title}`}
         title="Sanitize instance"
       >
-        <p>
+        <p className="u-margin--bottom">
           Sanitization will permanently delete the encryption keys for{" "}
           {instance.title}, making its data completely irrecoverable. This
           action cannot be undone. Please confirm your wish to proceed.

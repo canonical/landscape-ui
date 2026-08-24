@@ -8,7 +8,7 @@ const NoAccess: FC = () => {
 
   return (
     <AuthTemplate title="You don't have access to this organization">
-      <p className="u-text--muted">
+      <p className="u-text--muted u-margin--bottom">
         Contact an administrator to get invited to this organization.
       </p>
       <Button

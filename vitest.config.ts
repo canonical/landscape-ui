@@ -1,6 +1,10 @@
+import { readFileSync } from "fs";
 import { resolve } from "path";
 import { defineConfig } from "vitest/config";
 import packageJson from "./package.json" with { type: "json" };
+
+// Strip Vite's query suffix (e.g. "?v=hash") from a module id to get a real path.
+const cleanUrl = (id: string) => id.replace(/[?#].*$/, "");
 
 export default defineConfig({
   test: {
@@ -36,6 +40,17 @@ export default defineConfig({
     ],
     pool: "threads",
     testTimeout: 30000,
+    server: {
+      deps: {
+        // Inline the Pragma barrel so Vite (not Node) transforms it: this lets
+        // the CSS -> styleMock alias catch the ".css" side-effect imports its
+        // _work_in_progress components pull in. Without this, Node's native ESM
+        // loader hits those CSS files and throws "Unknown file extension .css".
+        // Anchored to the package boundary so it does not also match the future
+        // @canonical/react-ds-global-form (Track A3).
+        inline: [/@canonical\/react-ds-global(\/|$)/],
+      },
+    },
     coverage: {
       provider: "v8",
       reporter: ["cobertura", "json-summary", "html"],
@@ -69,6 +84,37 @@ export default defineConfig({
       "@": resolve(import.meta.dirname, "src"),
     },
   },
+  plugins: [
+    {
+      // @canonical/react-ds-global's sourcemaps point to unpublished src/ paths.
+      // Strip them and return an empty map to silence Vite's "missing source" test warnings.
+      name: "strip-pragma-sourcemaps",
+      enforce: "pre",
+      load(id) {
+        const filePath = cleanUrl(id).replace(/^\/@fs/, "");
+        if (
+          !filePath.includes("@canonical/react-ds-global/") ||
+          !filePath.endsWith(".js")
+        ) {
+          return null;
+        }
+        let original: string;
+        try {
+          original = readFileSync(filePath, "utf-8");
+        } catch {
+          return null;
+        }
+        const code = original.replace(/\r?\n?\/\/# sourceMappingURL=\S+/g, "");
+        if (code === original) {
+          return null;
+        }
+        return {
+          code,
+          map: { version: 3, sources: [], names: [], mappings: "" },
+        };
+      },
+    },
+  ],
   define: {
     __APP_VERSION__: JSON.stringify(packageJson.version),
   },

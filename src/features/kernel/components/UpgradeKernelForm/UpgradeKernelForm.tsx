@@ -153,7 +153,7 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
           confirmationModalProps={{
             title: "Upgrading kernel and restarting instance",
             children: (
-              <p>
+              <p className="u-margin--bottom">
                 Are you sure? This action will upgrade the kernel and restart
                 the instance.
               </p>
@@ -172,7 +172,11 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
           appearance="positive"
           confirmationModalProps={{
             title: "Upgrading kernel",
-            children: <p>Are you sure? This action will upgrade the kernel.</p>,
+            children: (
+              <p className="u-margin--bottom">
+                Are you sure? This action will upgrade the kernel.
+              </p>
+            ),
             confirmButtonLabel: "Upgrade",
             confirmButtonAppearance: "positive",
             confirmButtonLoading: isUpgradingKernel,
