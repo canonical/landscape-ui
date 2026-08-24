@@ -1,8 +1,11 @@
 import { http, HttpResponse } from "msw";
-import { API_URL_OLD } from "@/constants";
+import { API_URL, API_URL_OLD } from "@/constants";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import type { AccessGroup } from "@/features/access-groups";
-import { isAction } from "@/tests/server/handlers/_helpers";
+import {
+  isAction,
+  shouldApplyEndpointStatus,
+} from "@/tests/server/handlers/_helpers";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { createEndpointStatusError } from "./_constants";
 
@@ -12,20 +15,25 @@ export default [
       return;
     }
 
-    const endpointStatus = getEndpointStatus();
+    if (shouldApplyEndpointStatus("GetAccessGroups")) {
+      const endpointStatus = getEndpointStatus("GetAccessGroups");
 
-    if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "GetAccessGroups"
-    ) {
-      throw createEndpointStatusError();
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      if (endpointStatus.status === "empty") {
+        return HttpResponse.json([]);
+      }
     }
 
-    if (endpointStatus.status === "empty") {
-      return HttpResponse.json([]);
-    }
+    const url = new URL(request.url);
+    const name = url.searchParams.get("names.1");
+    const response = name
+      ? accessGroups.filter((accessGroup) => accessGroup.name === name)
+      : accessGroups;
 
-    return HttpResponse.json(accessGroups);
+    return HttpResponse.json(response);
   }),
 
   http.get(API_URL_OLD, ({ request }) => {
@@ -50,5 +58,21 @@ export default [
       parent: url.searchParams.get("parent"),
       children: "",
     });
+  }),
+
+  http.patch(`${API_URL}access-groups/:name`, ({ params }) => {
+    if (shouldApplyEndpointStatus("access-groups/:name")) {
+      const { status } = getEndpointStatus("access-groups/:name");
+
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
+
+    const accessGroup = accessGroups.find(
+      (group) => group.name === params.name,
+    );
+
+    return HttpResponse.json(accessGroup ?? accessGroups[0]);
   }),
 ];
