@@ -2,7 +2,7 @@ import ModalTablePagination from "@/components/layout/TablePagination/components
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ModularTable } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
@@ -11,7 +11,8 @@ import TooltipCell from "@/components/layout/TooltipCell";
 import PublicationLink from "./PublicationLink/PublicationLink";
 import MirrorLink from "./MirrorLink/MirrorLink";
 import LocalLink from "./LocalLink/LocalLink";
-import { getSourceType } from "@/features/publications";
+import { getSourceType, isMissingSource } from "@/features/publications";
+import MissingSourceLabel from "../MissingSourceLabel";
 
 const EMPTY_SOURCE_DISPLAY_NAMES: Record<string, string> = {};
 
@@ -21,6 +22,7 @@ interface AssociatedPublicationsListProps {
   readonly openInNewTab?: boolean;
   readonly showSources?: boolean;
   readonly sourceDisplayNames?: Record<string, string>;
+  readonly unreachableSourceNames?: string[];
 }
 
 const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
@@ -29,6 +31,7 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
   openInNewTab = false,
   showSources = true,
   sourceDisplayNames = EMPTY_SOURCE_DISPLAY_NAMES,
+  unreachableSourceNames = [],
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -65,8 +68,15 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
               }: CellProps<Publication>): ReactNode => {
                 const sourceType = getSourceType(source);
                 const displayName = sourceDisplayNames[source];
+                const isNotFoundSource = isMissingSource({
+                  source,
+                  sourceType,
+                  unreachableSourceNames,
+                });
                 let content: ReactNode;
-                if (sourceType === "Mirror") {
+                if (isNotFoundSource) {
+                  content = <MissingSourceLabel />;
+                } else if (sourceType === "Mirror") {
                   content = (
                     <MirrorLink
                       mirrorName={source}
@@ -88,7 +98,13 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
                 return openInNewTab ? (
                   content
                 ) : (
-                  <TooltipCell message={displayName ?? source ?? ""}>
+                  <TooltipCell
+                    message={
+                      isNotFoundSource
+                        ? "Source not found"
+                        : (displayName ?? source ?? "")
+                    }
+                  >
                     {content}
                   </TooltipCell>
                 );
@@ -107,14 +123,14 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
         }: CellProps<Publication>): ReactNode =>
           publishTime ? (
             <span>
-              {moment(publishTime).format(DISPLAY_DATE_TIME_FORMAT) + " UTC"}
+              {date(publishTime).format(DISPLAY_DATE_TIME_FORMAT) + " UTC"}
             </span>
           ) : (
             <NoData />
           ),
       },
     ],
-    [openInNewTab, showSources, sourceDisplayNames],
+    [openInNewTab, showSources, sourceDisplayNames, unreachableSourceNames],
   );
 
   const pagedData =

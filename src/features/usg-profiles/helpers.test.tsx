@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { INPUT_DATE_TIME_FORMAT } from "@/constants";
+import date from "@/libs/date";
 import type { NotificationHelper } from "@/types/Notification";
 import { render } from "@testing-library/react";
-import moment from "moment";
 import { describe, expect, it, vi } from "vitest";
 import { usgProfiles } from "@/tests/mocks/usgProfiles";
 import {
@@ -274,7 +274,7 @@ describe("getInitialValues", () => {
     expect(values.deliver_delay_window).toBe(20);
     expect(values.tailoring_file).toBeNull();
     expect(values.start_date).toBe(
-      moment("2024-05-15T15:47:07Z").format(INPUT_DATE_TIME_FORMAT),
+      date("2024-05-15T15:47:07Z").format(INPUT_DATE_TIME_FORMAT),
     );
   });
 
@@ -309,7 +309,7 @@ describe("getInitialValues", () => {
 
     expect(values.end_type).toBe("on-a-date");
     expect(values.end_date).toBe(
-      moment("2024-12-31T00:00:00Z").format(INPUT_DATE_TIME_FORMAT),
+      date("2024-12-31T00:00:00Z").format(INPUT_DATE_TIME_FORMAT),
     );
   });
 
@@ -352,7 +352,7 @@ describe("getInitialValues", () => {
 
     expect(values.unit_of_time).toBe("DAILY");
     expect(values.start_date).toBe(
-      moment("2024-05-15T15:47:07Z").format(INPUT_DATE_TIME_FORMAT),
+      date("2024-05-15T15:47:07Z").format(INPUT_DATE_TIME_FORMAT),
     );
   });
 });

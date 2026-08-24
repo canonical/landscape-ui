@@ -91,14 +91,17 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
 
   const lockUser = async () => {
     await performUserAction(lockUserMutation, "locked");
+    setLockOpen(false);
   };
 
   const unlockUser = async () => {
     await performUserAction(unlockUserMutation, "unlocked");
+    setUnlockOpen(false);
   };
 
   const removeUser = async () => {
     await performUserAction(removeUserMutation, "removed");
+    setRemoveOpen(false);
   };
 
   const handleAddUser = () => {

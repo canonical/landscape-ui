@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { FeatureGuard } from "@/components/guards/FeatureGuard";
 import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
+import { TSV_EXPORTS_ENABLED } from "@/constants";
 import { PATHS } from "@/libs/routes";
 import { DashboardRoutes } from "./DashboardRoutes";
 
@@ -75,6 +76,9 @@ describe("DashboardRoutes", () => {
     const identityProvidersRoute = allRoutes.find(
       (route) => route.props.path === PATHS.settings.identityProviders,
     );
+    const exportsRoute = allRoutes.find(
+      (route) => route.props.path === PATHS.exports.root,
+    );
 
     const wslProfilesRoute = allRoutes.find(
       (route) => route.props.path === PATHS.profiles.wsl,
@@ -89,5 +93,12 @@ describe("DashboardRoutes", () => {
     expect(employeesRoute.props.element.type).toBe(FeatureGuard);
     expect(identityProvidersRoute.props.element.type).toBe(FeatureGuard);
     expect(wslProfilesRoute.props.element.type).toBe(FeatureGuard);
+
+    if (TSV_EXPORTS_ENABLED) {
+      assert(exportsRoute?.props.element);
+      expect(exportsRoute.props.element.type).not.toBe(FeatureGuard);
+    } else {
+      expect(exportsRoute).toBeUndefined();
+    }
   });
 });

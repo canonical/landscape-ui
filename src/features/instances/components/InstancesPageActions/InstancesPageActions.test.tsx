@@ -1,7 +1,8 @@
+import * as Constants from "@/constants";
 import { API_URL } from "@/constants";
 import { features } from "@/tests/mocks/features";
-import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import {
   instances,
   ubuntuInstance,
@@ -55,6 +56,7 @@ const renderPageActions = (
 
 describe("InstancesPageActions", () => {
   beforeEach(() => {
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
     setScreenSize("xxl");
     setEndpointStatus("default");
   });
@@ -150,6 +152,22 @@ describe("InstancesPageActions", () => {
 
       expect(
         screen.queryByRole("menuitem", { name: /view report/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("'Export selection as TSV' menu item should not be visible when feature disabled", async () => {
+      vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
+
+      renderPageActions();
+
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[0] }),
+      );
+
+      expect(
+        screen.queryByRole("menuitem", {
+          name: /export selection as tsv/i,
+        }),
       ).not.toBeInTheDocument();
     });
 
