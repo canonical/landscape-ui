@@ -1,8 +1,9 @@
 @import "vanilla-framework/scss/settings_font";
 @import "vanilla-framework/scss/settings_spacing";
 
+// Vanilla's paragraph bottom margin; Pragma zeroes element spacing by design.
 .u-margin--bottom {
-  margin-bottom: 1.125rem; // TODO: change properly
+  margin-bottom: 1.125rem;
 }
 
 .u-off-screen:not(:focus, :active) {
