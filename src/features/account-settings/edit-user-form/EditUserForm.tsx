@@ -62,11 +62,6 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
       email: Yup.string()
         .email("Please provide a valid email address")
         .required("This field is required"),
-      defaultOrganisation: Yup.string().test(
-        "valid-organisation",
-        "Please select a valid organisation",
-        (value) => !!value && user.accounts.some((acc) => acc.name === value),
-      ),
     }),
     onSubmit: async (values) => {
       try {
