@@ -141,8 +141,9 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         options={ORGANISATIONS_OPTIONS}
         {...formik.getFieldProps("defaultOrganisation")}
         error={
-          formik.touched.timezone && formik.errors.timezone
-            ? formik.errors.timezone
+          formik.touched.defaultOrganisation &&
+          formik.errors.defaultOrganisation
+            ? formik.errors.defaultOrganisation
             : undefined
         }
       />
