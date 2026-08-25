@@ -62,6 +62,12 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
       email: Yup.string()
         .email("Please provide a valid email address")
         .required("This field is required"),
+      defaultOrganisation: Yup.string()
+        .required("This field is required")
+        .oneOf(
+          user.accounts.map((acc) => acc.name),
+          "Please select a valid organisation",
+        ),
     }),
     onSubmit: async (values) => {
       try {
@@ -71,13 +77,9 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
             email: values.email,
             timezone: values.timezone,
           }),
-          ...(values.defaultOrganisation
-            ? [
-                mutateSetPreferredAccount({
-                  preferred_account: values.defaultOrganisation,
-                }),
-              ]
-            : []),
+          mutateSetPreferredAccount({
+            preferred_account: values.defaultOrganisation,
+          }),
         ]);
         updateUser({
           ...authUser!,
