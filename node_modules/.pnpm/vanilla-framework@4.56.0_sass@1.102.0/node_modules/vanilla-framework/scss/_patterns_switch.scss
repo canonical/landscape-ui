@@ -1,0 +1,64 @@
+@use 'sass:color';
+@import 'settings';
+$knob-size: $sp-unit * 2;
+
+@mixin vf-p-switch {
+  .p-switch {
+    align-items: center;
+    display: flex;
+  }
+
+  .p-switch__input {
+    margin: 0;
+    opacity: 0;
+    position: absolute;
+
+    &:checked + .p-switch__slider::before {
+      border: $input-border-thickness solid $colors--theme--link-default;
+      left: 50%;
+    }
+
+    &:disabled + .p-switch__slider {
+      @extend %vf-disabled-element;
+    }
+
+    &:checked + .p-switch__slider {
+      background: $colors--theme--link-default;
+    }
+
+    &:focus {
+      outline: none;
+
+      + .p-switch__slider {
+        outline: $bar-thickness solid $colors--theme--focus;
+      }
+    }
+  }
+
+  .p-switch__slider {
+    background: $colors--theme--border-high-contrast;
+    border-radius: $knob-size;
+    display: inline-block;
+    height: $knob-size;
+    margin: 0;
+    position: relative;
+    width: $knob-size * 2;
+
+    &::before {
+      @include vf-transition($duration: slow);
+
+      background: $colors--theme--background-default;
+      border: $input-border-thickness solid $colors--theme--border-high-contrast;
+      border-radius: 50%;
+      content: '';
+      height: $knob-size;
+      left: 0;
+      position: absolute;
+      width: $knob-size;
+    }
+  }
+
+  .p-switch__label {
+    margin-left: $sph--small;
+  }
+}

@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-BOrZKZpZ.js";import{t}from"./dist-mO5vyAPj.js";var n=t(),r=e(),i=({code:e})=>(0,r.jsx)(n.CodeSnippet,{blocks:[{title:`Code preview`,code:e,wrapLines:!0,appearance:`numbered`}]});export{i as default};
