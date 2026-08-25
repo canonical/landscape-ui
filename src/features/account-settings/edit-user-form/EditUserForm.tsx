@@ -48,13 +48,12 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
   }));
 
   const formik = useFormik<FormProps>({
-    enableReinitialize: true,
     initialValues: {
       name: user.name,
       timezone: user.timezone,
       email: user.email,
       defaultOrganisation:
-        authUser?.accounts.find((acc) => acc.name === user.preferred_account)
+        user.accounts.find((acc) => acc.name === user.preferred_account)
           ?.name ?? "",
     },
     validationSchema: Yup.object().shape({
@@ -72,16 +71,14 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
     }),
     onSubmit: async (values) => {
       try {
-        await Promise.all([
-          editUserMutation({
-            name: values.name,
-            email: values.email,
-            timezone: values.timezone,
-          }),
-          mutateSetPreferredAccount({
-            preferred_account: values.defaultOrganisation,
-          }),
-        ]);
+        await editUserMutation({
+          name: values.name,
+          email: values.email,
+          timezone: values.timezone,
+        });
+        await mutateSetPreferredAccount({
+          preferred_account: values.defaultOrganisation,
+        });
         updateUser({
           ...authUser!,
           email: values.email,
