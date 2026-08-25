@@ -48,6 +48,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
   }));
 
   const formik = useFormik<FormProps>({
+    enableReinitialize: true,
     initialValues: {
       name: user.name,
       timezone: user.timezone,
