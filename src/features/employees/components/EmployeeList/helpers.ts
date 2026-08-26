@@ -1,4 +1,4 @@
-import type { HTMLProps, RefObject } from "react";
+import type { HTMLProps } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import type { ExpandedCell } from "@/types/ExpandedCell";
 import type { Employee } from "../../types";
@@ -37,15 +37,4 @@ export const handleCellProps =
     }
 
     return cellProps;
-  };
-
-export const getTableRows =
-  (ref: RefObject<HTMLTableRowElement[]>) =>
-  (instance: HTMLDivElement | null) => {
-    if (!instance) {
-      return;
-    }
-    ref.current = [
-      ...instance.querySelectorAll<HTMLTableRowElement>("tbody tr"),
-    ];
   };

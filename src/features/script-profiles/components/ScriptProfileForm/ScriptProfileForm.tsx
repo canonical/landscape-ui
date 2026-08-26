@@ -22,7 +22,7 @@ import {
 import classNames from "classnames";
 import { isAxiosError } from "axios";
 import { useFormik } from "formik";
-import moment from "moment";
+import date from "@/libs/date";
 import { useLayoutEffect, useRef, type ComponentProps, type FC } from "react";
 import * as Yup from "yup";
 import { useGetScriptProfileLimits } from "../../api";
@@ -354,7 +354,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
             type="datetime-local"
             label="Date"
             required
-            min={moment().utc(true).format(INPUT_DATE_TIME_FORMAT)}
+            min={date().utc(true).format(INPUT_DATE_TIME_FORMAT)}
             {...formik.getFieldProps("timestamp")}
             error={getFormikError(formik, "timestamp")}
           />
@@ -366,7 +366,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
               type="datetime-local"
               label="Start date"
               required
-              min={moment().utc(true).format(INPUT_DATE_TIME_FORMAT)}
+              min={date().utc(true).format(INPUT_DATE_TIME_FORMAT)}
               {...formik.getFieldProps("start_after")}
               error={getFormikError(formik, "start_after")}
             />

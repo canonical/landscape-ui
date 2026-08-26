@@ -13,29 +13,22 @@ import type { FC } from "react";
 import { Link } from "react-router";
 
 const AlertNotificationsPage: FC = () => {
-  const { getAlertsSummaryQuery } = useAlertsSummary();
+  const { alertsSummary, isGettingAlertsSummary } = useAlertsSummary();
 
-  const {
-    data: getAlertsSummaryQueryResult,
-    isLoading: getAlertsSummaryQueryLoading,
-  } = getAlertsSummaryQuery();
-
-  const hasPendingInstancesAlert =
-    getAlertsSummaryQueryResult?.data.alerts_summary.some(
-      (alert) => alert.alert_type === "PendingComputersAlert",
-    );
+  const hasPendingInstancesAlert = alertsSummary.some(
+    (alert) => alert.alert_type === "PendingComputersAlert",
+  );
 
   const { pendingInstances, isGettingPendingInstances } =
     useGetPendingInstances(undefined, {
       enabled: hasPendingInstancesAlert,
     });
 
-  const alerts = getAlertsSummaryQueryResult?.data.alerts_summary || [];
+  const isGettingAlerts =
+    isGettingAlertsSummary ||
+    (hasPendingInstancesAlert && isGettingPendingInstances);
 
-  if (
-    (hasPendingInstancesAlert && isGettingPendingInstances) ||
-    getAlertsSummaryQueryLoading
-  ) {
+  if (isGettingAlerts) {
     return <LoadingState />;
   }
 
@@ -43,7 +36,7 @@ const AlertNotificationsPage: FC = () => {
     <PageMain>
       <PageHeader title="Alerts" />
       <PageContent>
-        {!alerts.length ? (
+        {!alertsSummary.length ? (
           <EmptyState
             title="No subscribed alerts found"
             icon="connected"
@@ -61,7 +54,7 @@ const AlertNotificationsPage: FC = () => {
           />
         ) : (
           <AlertNotificationsList
-            alerts={alerts}
+            alerts={alertsSummary}
             pendingInstances={pendingInstances}
           />
         )}

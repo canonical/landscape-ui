@@ -1,11 +1,11 @@
 import type { Activity } from "@/features/activities";
+import date from "@/libs/date";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectErrorNotification } from "@/tests/helpers";
 import { usgProfiles } from "@/tests/mocks/usgProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import moment from "moment";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import USGProfileDownloadAuditForm from "./USGProfileDownloadAuditForm";
 
@@ -83,7 +83,7 @@ describe("USGProfileDownloadAuditForm", () => {
     assert(endDateInput, "End date input not found");
 
     fireEvent.change(endDateInput, {
-      target: { value: moment().subtract(1, "day").format("YYYY-MM-DD") },
+      target: { value: date().subtract(1, "day").format("YYYY-MM-DD") },
     });
     fireEvent.blur(endDateInput);
 

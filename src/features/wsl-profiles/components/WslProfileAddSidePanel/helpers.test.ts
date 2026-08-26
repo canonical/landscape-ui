@@ -43,7 +43,7 @@ describe("getValidationSchema", () => {
         customImageName: "ubuntu-24.04",
         rootfsImage: "https://example.com/rootfs",
       }),
-    ).rejects.toThrow(/Instance name cannot match/);
+    ).rejects.toThrow(/Image name cannot match/);
   });
 
   it("accepts a non-reserved custom image name", async () => {

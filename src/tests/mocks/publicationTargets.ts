@@ -46,4 +46,18 @@ export const publicationTargets: PublicationTarget[] = [
       linkMethod: "HARDLINK",
     },
   },
+  {
+    name: "publicationTargets/eeeeeeee-0000-0000-0000-000000000005",
+    publicationTargetId: "eeeeeeee-0000-0000-0000-000000000005",
+    displayName: "missing mirror source target",
+    filesystem: {
+      path: "/srv/landscape/missing-mirror-target",
+      linkMethod: "HARDLINK",
+    },
+  },
 ];
+
+export const batchGetPublicationTargetNamesWithMissing = [
+  "publicationTargets/aaaaaaaa-0000-0000-0000-000000000001",
+  "publicationTargets/non-existent-publication-target",
+] as const;

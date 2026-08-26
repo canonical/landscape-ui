@@ -1,4 +1,4 @@
-import type { HTMLProps, RefObject } from "react";
+import type { HTMLProps } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import type { PermissionOption } from "@/pages/dashboard/settings/roles/types";
 import type { Role } from "@/types/Role";
@@ -91,16 +91,4 @@ export const handleRowProps =
     }
 
     return rowProps;
-  };
-
-export const getTableRows =
-  (ref: RefObject<HTMLTableRowElement[]>) =>
-  (instance: HTMLDivElement | null) => {
-    if (!instance) {
-      return;
-    }
-
-    ref.current = [
-      ...instance.querySelectorAll<HTMLTableRowElement>("tbody tr"),
-    ];
   };

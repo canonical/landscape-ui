@@ -28,6 +28,11 @@ const WslProfileEditSidePanel = lazy(
   () => import("@/features/wsl-profiles/components/WslProfileEditSidePanel"),
 );
 
+const WslProfileNonCompliantInstancesSidePanel = lazy(
+  () =>
+    import("@/features/wsl-profiles/components/WslProfileNonCompliantInstancesSidePanel"),
+);
+
 const WslProfilesPage: FC = () => {
   const { wslProfilesCount: allWslProfilesCount } = useGetWslProfiles(
     { limit: 1 },
@@ -62,7 +67,12 @@ const WslProfilesPage: FC = () => {
     isRemovingWslProfile,
   ]);
 
-  useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
+  useSetDynamicFilterValidation("sidePath", [
+    "add",
+    "edit",
+    "view",
+    "noncompliant",
+  ]);
 
   const { isGettingWslLimits, wslProfileLimit } = useGetWslLimits();
   const isWslProfileLimitReached = allWslProfilesCount >= wslProfileLimit;
@@ -95,7 +105,11 @@ const WslProfilesPage: FC = () => {
           isPending={isGettingWslLimits || isGettingWslProfiles}
         />
       </PageContent>
-      <SidePanel onClose={popSidePathUntilClear} isOpen={!!sidePath.length}>
+      <SidePanel
+        onClose={popSidePathUntilClear}
+        isOpen={!!sidePath.length}
+        size={lastSidePathSegment === "noncompliant" ? "large" : undefined}
+      >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <WslProfileAddSidePanel />
@@ -114,6 +128,12 @@ const WslProfilesPage: FC = () => {
               type={ProfileTypes.wsl}
               profile={wslProfile}
             />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "noncompliant" && (
+          <SidePanel.Suspense key="noncompliant">
+            <WslProfileNonCompliantInstancesSidePanel wslProfile={wslProfile} />
           </SidePanel.Suspense>
         )}
       </SidePanel>

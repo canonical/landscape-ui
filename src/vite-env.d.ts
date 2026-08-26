@@ -8,6 +8,7 @@ interface ImportMetaEnv {
   readonly VITE_ROOT_PATH: string;
   readonly VITE_SELF_HOSTED_ENV: string | undefined;
   readonly VITE_REPORT_VIEW_ENABLED: string;
+  readonly VITE_TSV_EXPORTS_ENABLED: string;
   readonly VITE_DETAILED_UPGRADES_VIEW_ENABLED: string;
   readonly VITE_MSW_ENABLED: string;
   readonly VITE_MSW_ENDPOINTS_TO_INTERCEPT: string;
