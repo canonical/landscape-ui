@@ -60,22 +60,30 @@ const CreateScript: FC = () => {
       }
       closeSidePanel();
     } catch (error) {
-      let customMessage: string | undefined;
-
       // This overrides the error message to be a bit more detailed.
-      if (isAxiosError<ApiError>(error) && error.response) {
+      if (
+        isAxiosError<ApiError>(error) &&
+        typeof error.response?.data === "object" &&
+        error.response.data !== null
+      ) {
         const { error: errorCode, message } = error.response.data;
         const isDuplicateTitleError =
           errorCode === "ScriptTitleExists" ||
-          /script.+title.+already.+present/i.test(message);
+          (typeof message === "string" &&
+            /script.+title.+already.+present/i.test(message));
 
         if (isDuplicateTitleError) {
-          customMessage =
-            "This script title is unavailable. It is either already in use or was previously archived or redacted. Script titles cannot be reused.";
+          debug(
+            new Error(
+              "This script title is unavailable. It is either already in use or was previously archived or redacted. Script titles cannot be reused.",
+              { cause: error },
+            ),
+          );
+          return;
         }
       }
 
-      debug(error, customMessage);
+      debug(error);
     }
   };
 

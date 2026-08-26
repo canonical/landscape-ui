@@ -6,17 +6,16 @@ import useNotify from "./useNotify";
 export default function useDebug() {
   const { notify } = useNotify();
 
-  return (error: unknown, customMessage?: string) => {
+  return (error: unknown) => {
     let errorMessage: string;
 
     if (isAxiosError<ApiError>(error) && error.response) {
-      errorMessage = customMessage ?? error.response.data.message;
+      const { message } = error.response.data;
+      errorMessage = message;
 
       if (IS_DEV_ENV) {
         console.error(error.response);
       }
-    } else if (customMessage) {
-      errorMessage = customMessage;
     } else if (error instanceof Error && error.message) {
       const { message } = error;
       errorMessage = message;
