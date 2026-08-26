@@ -12,6 +12,11 @@
 }
 
 .baseNotificationStyle {
+  :global(.p-notification__title) {
+    letter-spacing: normal;
+    font-variant: normal;
+  }
+
   overflow-wrap: break-word;
 }
 

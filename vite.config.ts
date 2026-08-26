@@ -91,6 +91,9 @@ export default defineConfig(({ mode }) => {
     build: {
       // Monaco is lazy-loaded but still produces a large chunk. We can remove this when we stop using Monaco.
       chunkSizeWarningLimit: 4000,
+      rolldownOptions: {
+        external: /^\/icons\/[^?#]+\.svg(?:#[^?]*)?$/,
+      },
     },
     plugins: [
       react(),
