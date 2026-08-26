@@ -1,34 +1,10 @@
-landscape-dashboard (26.10~beta.4-0landscape0) jammy; urgency=medium
+landscape-dashboard (26.04.2-0landscape0) jammy; urgency=medium
 
-  * Release 26.10~beta.4 for jammy
+  * Release 26.04.2 for jammy
 
- -- Joey Mucci <joseph.mucci@canonical.com>  Sun, 05 Jul 2026 18:57:58 -0400
+ -- Ardavan Behnia <ardavan.behnia@canonical.com>  Wed, 26 Aug 2026 11:59:08 -0700
 
-landscape-dashboard (26.10~beta.3-0landscape0) jammy; urgency=medium
-
-  * Release 26.10~beta.3 for jammy
-
- -- Joey Mucci <joseph.mucci@canonical.com>  Thu, 18 Jun 2026 20:05:36 +0000
-
-landscape-dashboard (26.10~beta.2-0landscape0) jammy; urgency=medium
-
-  * Release 26.10~beta.2 for jammy
-
- -- Joey Mucci <joseph.mucci@canonical.com>  Fri, 05 Jun 2026 16:28:10 -0400
-
-landscape-dashboard (26.10~beta.1-0landscape0) jammy; urgency=medium
-
-  * Release 26.10~beta.1 for jammy
-
- -- Joey Mucci <joseph.mucci@canonical.com>  Fri, 22 May 2026 17:21:46 -0400
-
-landscape-dashboard (26.04.1~rc1-0landscape0) jammy; urgency=medium
-
-  * Release 26.04.1~rc1 for jammy
-
- -- Joey Mucci <joseph.mucci@canonical.com>  Tue, 14 Apr 2026 16:14:18 -0400
-
-landscape-dashboard (1.23.0-0landscape0) noble; urgency=medium
+landscape-dashboard (1.23.0-0landscape0) jammy; urgency=medium
 
   * Release 1.23.0 for noble
 

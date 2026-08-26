@@ -10,15 +10,14 @@
     <link href="/assets/d5fc1819-UbuntuMono[wght]-latin-v0.869.woff2" />
     <link href="/assets/f1ea362b-Ubuntu[wdth,wght]-latin-v0.896a.woff2" />
     <title>Landscape</title>
-    <script type="module" crossorigin src="/assets/index-D7pT9DnD.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/chunk-CMxvf4Kt.js">
-    <link rel="modulepreload" crossorigin href="/assets/preload-helper-zJ_50EbN.js">
-    <link rel="modulepreload" crossorigin href="/assets/jsx-runtime-BGORY6w-.js">
-    <link rel="modulepreload" crossorigin href="/assets/dist-D4JZc7R4.js">
-    <link rel="modulepreload" crossorigin href="/assets/chunk-QUQL4437-DMe0uX2Q.js">
-    <link rel="modulepreload" crossorigin href="/assets/constants-CrKnaGyp.js">
-    <link rel="stylesheet" crossorigin href="/assets/dist-1XkBqRBD.css">
-    <link rel="stylesheet" crossorigin href="/assets/index-CnrxjDS2.css">
+    <script type="module" crossorigin src="/assets/index-D7d8Sk2H.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/jsx-runtime-BOrZKZpZ.js">
+    <link rel="modulepreload" crossorigin href="/assets/dist-mO5vyAPj.js">
+    <link rel="modulepreload" crossorigin href="/assets/routes-tsL3sCuu.js">
+    <link rel="modulepreload" crossorigin href="/assets/constants-CA9VfaD9.js">
+    <link rel="modulepreload" crossorigin href="/assets/hooks-BXcjFCkU.js">
+    <link rel="stylesheet" crossorigin href="/assets/dist-BaBU5-Hu.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-DvrNybQ-.css">
   </head>
   <body>
     <div id="root"></div>
@@ -28,7 +27,11 @@
         const systemDark = window.matchMedia(
           "(prefers-color-scheme: dark)",
         ).matches;
-        const shouldDark = saved === "true" || (!saved && systemDark);
+        // "true"/"false" are legacy values of the dark mode switch
+        const shouldDark =
+          saved === "dark" ||
+          saved === "true" ||
+          (saved !== "light" && saved !== "false" && systemDark);
         if (shouldDark) {
           document.body.classList.add("is-dark");
           document.body.style.colorScheme = "dark";
