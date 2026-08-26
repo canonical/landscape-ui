@@ -1,6 +1,6 @@
 export interface UserDetails {
   accounts: AccountKeyAndRoleInformation[];
-  allowable_emails: string[];
+  allowable_emails: string[] | null;
   email: string;
   identity: string;
   last_login_host: string;
