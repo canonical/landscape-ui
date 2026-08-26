@@ -65,8 +65,8 @@ export const useArchiveScriptModal = ({
       archiveModalBody: (
         <p>
           Archiving the script will prevent it from running in the future. Its
-          record will be retained, and
-          <strong> the script name cannot be reused.</strong>
+          record will be retained, and{" "}
+          <strong>the script name cannot be reused.</strong>
           <br />
           <br />
           This action is <strong>irreversible</strong>.
@@ -82,8 +82,8 @@ export const useArchiveScriptModal = ({
       <>
         <p>
           Archiving the script will prevent it from running in the future. Its
-          record will be retained, and
-          <strong> the script name cannot be reused.</strong>
+          record will be retained, and{" "}
+          <strong>the script name cannot be reused.</strong>
           <br />
           <br />
           The script is also associated with the following profiles:
@@ -99,7 +99,7 @@ export const useArchiveScriptModal = ({
           names will also be <strong>unavailable for reuse</strong>.
           <br />
           <br />
-          This action is <b>irreversible</b>.
+          This action is <strong>irreversible</strong>.
         </p>
       </>
     ),

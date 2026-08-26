@@ -69,10 +69,10 @@ export const useDeleteScriptModal = ({
           Redacting this script will permanently remove its contents from
           Landscape. However, a record of the script, including who redacted it
           and when, will be retained in the database. The script name{" "}
-          <b>cannot be reused as a result.</b>
+          <strong>cannot be reused as a result.</strong>
           <br />
           <br />
-          This action is <b>irreversible</b>.
+          This action is <strong>irreversible</strong>.
         </p>
       ),
     };
@@ -86,8 +86,8 @@ export const useDeleteScriptModal = ({
         <p>
           Redacting this script will permanently remove its contents from
           Landscape. However, a record of the script, including who redacted it
-          and when, will be retained in the database. The script name
-          <b> cannot be reused as a result.</b>
+          and when, will be retained in the database. The script name{" "}
+          <strong>cannot be reused as a result.</strong>
           <br />
           <br />
           The script is also associated with the following profiles:
@@ -103,7 +103,7 @@ export const useDeleteScriptModal = ({
           will be able to run again.
           <br />
           <br />
-          This action is <b>irreversible</b>.
+          This action is <strong>irreversible</strong>.
         </p>
       </>
     ),
