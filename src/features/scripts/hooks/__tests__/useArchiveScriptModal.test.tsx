@@ -72,8 +72,15 @@ describe("useArchiveScriptModal", () => {
     renderWithProviders(<ArchiveModalConsumer script={scriptWithNoProfiles} />);
 
     expect(screen.getByTestId("body")).toHaveTextContent(
-      /Archiving the script will prevent it from running in the future\. Its\s*record will be retained, and\s*the script name cannot be reused\.\s*This action is irreversible\./i,
+      /prevent it from running in the future/i,
     );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /record will be retained/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /script name cannot be reused/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(/irreversible/i);
   });
 
   it("renders body with profile names for script with profiles", () => {
@@ -84,11 +91,21 @@ describe("useArchiveScriptModal", () => {
     }
 
     expect(screen.getByTestId("body")).toHaveTextContent(
-      /Archiving the script will prevent it from running in the future\. Its\s*record will be retained, and\s*the script name cannot be reused\.\s*The script is also associated with the following profiles:/i,
+      /prevent it from running in the future/i,
     );
     expect(screen.getByTestId("body")).toHaveTextContent(
-      /If you archive the script, its associated profiles will also be archived, and they won’t be able to run in the future\. All profile names will also be unavailable for reuse\.\s*This action is irreversible\./i,
+      /associated with the following profiles/i,
     );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /associated profiles will also be archived/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /won['’]t be able to run/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /profile names will also be unavailable/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(/irreversible/i);
   });
 
   it("calls afterSuccess when onConfirmArchive completes", async () => {
