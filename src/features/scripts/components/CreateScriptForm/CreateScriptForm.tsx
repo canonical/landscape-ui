@@ -60,6 +60,8 @@ const CreateScript: FC = () => {
       }
       closeSidePanel();
     } catch (error) {
+      let customMessage: string | undefined;
+
       // This overrides the error message to be a bit more detailed.
       if (isAxiosError<ApiError>(error) && error.response) {
         const { error: errorCode, message } = error.response.data;
@@ -68,12 +70,12 @@ const CreateScript: FC = () => {
           /script.+title.+already.+present/i.test(message);
 
         if (isDuplicateTitleError) {
-          error.response.data.message =
+          customMessage =
             "This script title is unavailable. It is either already in use or was previously archived or redacted. Script titles cannot be reused.";
         }
       }
 
-      debug(error);
+      debug(error, customMessage);
     }
   };
 
