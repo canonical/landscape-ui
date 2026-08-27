@@ -63,7 +63,10 @@ interface DelayWindow extends Record<string, unknown> {
 }
 
 // Suitable for activity types: `ActivityGroup`
-export type ActivityGroup = ActivityCommon & DelayWindow;
+export type ActivityGroup = ActivityCommon &
+  DelayWindow & {
+    children?: ActivityCommon[];
+  };
 
 // Suitable for activity types: `SyncPocketRequest`
 export type SyncPocketRequest = ActivityCommon & ScheduleWindow & PocketInfo;

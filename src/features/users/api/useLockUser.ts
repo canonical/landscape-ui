@@ -21,7 +21,10 @@ export const useLockUser = () => {
     mutationKey: ["users", "lock"],
     mutationFn: async (params) => authFetch.post("users/lock", params),
     onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["users"] }),
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["users"] }),
+        queryClient.invalidateQueries({ queryKey: ["userActivities"] }),
+      ]),
   });
 
   return {

@@ -6,6 +6,7 @@ import classNames from "classnames";
 import classes from "./MultiSelectField.module.scss";
 
 interface MultiSelectFieldProps extends Omit<MultiSelectProps, "help"> {
+  readonly caution?: ReactNode;
   readonly className?: string;
   readonly help?: ReactNode;
   readonly innerRef?: Ref<HTMLDivElement>;
@@ -17,6 +18,7 @@ interface MultiSelectFieldProps extends Omit<MultiSelectProps, "help"> {
 }
 
 const MultiSelectField: FC<MultiSelectFieldProps> = ({
+  caution,
   className,
   disabled,
   disabledItems,
@@ -34,6 +36,7 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
   ...otherProps
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const cautionMessage = caution ?? warning;
 
   // Keep the latest callbacks in refs so the MutationObserver always
   // calls the most recent version without needing to re-observe.
@@ -108,7 +111,7 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
       className={classNames(
         "p-form-validation p-form__group",
         { "is-error": !!error },
-        { "is-caution": !!warning },
+        { "is-caution": !!cautionMessage },
         classes.container,
         className,
       )}
@@ -141,9 +144,9 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
           <span>{error}</span>
         </p>
       )}
-      {warning && (
+      {cautionMessage && (
         <p className="p-form-validation__message">
-          <span>{warning}</span>
+          <span>{cautionMessage}</span>
         </p>
       )}
     </div>

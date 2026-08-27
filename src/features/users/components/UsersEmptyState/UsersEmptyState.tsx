@@ -1,11 +1,6 @@
 import EmptyState from "@/components/layout/EmptyState";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import {
-  ADD_USER_LABEL,
-  EMPTY_STATE_BODY,
-  EMPTY_STATE_TITLE,
-} from "./constants";
 
 interface UsersEmptyStateProps {
   readonly onAddUser: () => void;
@@ -14,8 +9,8 @@ interface UsersEmptyStateProps {
 const UsersEmptyState: FC<UsersEmptyStateProps> = ({ onAddUser }) => {
   return (
     <EmptyState
-      title={EMPTY_STATE_TITLE}
-      body={EMPTY_STATE_BODY}
+      title="No users found"
+      body="Add new users by clicking the button below."
       icon="connected"
       cta={[
         <Button
@@ -24,7 +19,7 @@ const UsersEmptyState: FC<UsersEmptyStateProps> = ({ onAddUser }) => {
           appearance="positive"
           onClick={onAddUser}
         >
-          {ADD_USER_LABEL}
+          Add user
         </Button>,
       ]}
     />

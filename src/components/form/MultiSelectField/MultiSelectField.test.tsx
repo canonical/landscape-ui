@@ -71,4 +71,37 @@ describe("MultiSelectField", () => {
 
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
   });
+
+  it("renders a caution message with caution styling", () => {
+    renderWithProviders(
+      <MultiSelectField
+        label="Field"
+        caution="This field has a pending change"
+        items={items}
+        onItemsUpdate={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByText("This field has a pending change"),
+    ).toBeInTheDocument();
+    expect(
+      screen
+        .getByText("This field has a pending change")
+        .closest(".is-caution"),
+    ).toBeInTheDocument();
+  });
+
+  it("continues to render warning as caution", () => {
+    renderWithProviders(
+      <MultiSelectField
+        label="Field"
+        warning="This field has a warning"
+        items={items}
+        onItemsUpdate={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("This field has a warning")).toBeInTheDocument();
+  });
 });

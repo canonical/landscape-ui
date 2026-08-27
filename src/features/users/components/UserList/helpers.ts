@@ -23,3 +23,10 @@ export const handleCellProps = ({ column }: Cell<User>) => {
 
   return cellProps;
 };
+
+export const getUserStatusIcon = (user: User) => {
+  if (user.pending_activity) {
+    return "spinner";
+  }
+  return user.enabled ? "lock-unlock" : "lock-locked-active";
+};

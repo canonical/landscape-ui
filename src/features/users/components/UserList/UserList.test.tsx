@@ -1,4 +1,5 @@
 import NoData, { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { PATHS, ROUTES } from "@/libs/routes";
 import { setScreenSize } from "@/tests/helpers";
 import { users } from "@/tests/mocks/user";
 import { userGroups } from "@/tests/mocks/userGroup";
@@ -36,18 +37,29 @@ describe("UserList", () => {
 
   describe("Table Interactions", () => {
     it("shows locked and unlocked user icon in the user table", async () => {
+      assert(lockedUser);
+      assert(unlockedUser);
       renderWithProviders(<UserList {...props} />);
 
-      const unlockedStatuses = screen.getAllByRole("cell", {
-        name: "Unlocked",
-      });
+      const unlockedRow = screen
+        .getByRole("button", {
+          name: `Show details of user ${unlockedUser.username}`,
+        })
+        .closest("tr");
+      const lockedRow = screen
+        .getByRole("button", {
+          name: `Show details of user ${lockedUser.username}`,
+        })
+        .closest("tr");
 
-      const lockedStatuses = screen.getAllByRole("cell", {
-        name: "Locked",
-      });
-
-      expect(lockedStatuses[0]).toHaveIcon("lock-locked-active");
-      expect(unlockedStatuses[0]).toHaveIcon("lock-unlock");
+      assert(unlockedRow);
+      assert(lockedRow);
+      expect(
+        within(unlockedRow).getByRole("cell", { name: "Status" }),
+      ).toHaveIcon("lock-unlock");
+      expect(
+        within(lockedRow).getByRole("cell", { name: "Status" }),
+      ).toHaveIcon("lock-locked-active");
     });
 
     it("should select all users when clicking ToggleAll checkbox", async () => {
@@ -114,7 +126,12 @@ describe("UserList", () => {
   describe("User details sidepanel", () => {
     beforeEach(() => {
       setScreenSize("lg");
-      renderWithProviders(<UserList {...props} />);
+      renderWithProviders(
+        <UserList {...props} />,
+        undefined,
+        ROUTES.instances.details.single(props.instanceId),
+        `/${PATHS.instances.root}/${PATHS.instances.single}`,
+      );
     });
     it("should open side panel when user in table is clicked", async () => {
       const user = await screen.findByRole("button", {
@@ -216,6 +233,68 @@ describe("UserList", () => {
 
       const sidePanel = await screen.findByRole("complementary");
       expect(within(sidePanel).getByText("Edit user")).toBeInTheDocument();
+    });
+
+    it("should show lock and destructive delete actions for an unlocked user", async () => {
+      const user = userEvent.setup();
+      assert(unlockedUser);
+
+      const actionsToggle = await screen.findByRole("button", {
+        name: `"${unlockedUser.name}" user actions`,
+      });
+      await user.click(actionsToggle);
+
+      const lockMenuItem = screen.getByRole("menuitem", {
+        name: `Lock "${unlockedUser.name}" user`,
+      });
+      expect(lockMenuItem).toBeInTheDocument();
+      expect(
+        screen.queryByRole("menuitem", {
+          name: `Unlock "${unlockedUser.name}" user`,
+        }),
+      ).not.toBeInTheDocument();
+
+      const deleteMenuItem = screen.getByRole("menuitem", {
+        name: `Delete "${unlockedUser.name}" user`,
+      });
+      expect(within(deleteMenuItem).getByText("Delete")).toHaveClass(
+        "u-text--negative",
+      );
+
+      await user.click(lockMenuItem);
+      expect(
+        screen.getByRole("dialog", {
+          name: `Lock user ${unlockedUser.username}`,
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it("should show unlock and destructive delete actions for a locked user", async () => {
+      const user = userEvent.setup();
+      assert(lockedUser);
+
+      const actionsToggle = await screen.findByRole("button", {
+        name: `"${lockedUser.name}" user actions`,
+      });
+      await user.click(actionsToggle);
+
+      expect(
+        screen.getByRole("menuitem", {
+          name: `Unlock "${lockedUser.name}" user`,
+        }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("menuitem", {
+          name: `Lock "${lockedUser.name}" user`,
+        }),
+      ).not.toBeInTheDocument();
+      expect(
+        within(
+          screen.getByRole("menuitem", {
+            name: `Delete "${lockedUser.name}" user`,
+          }),
+        ).getByText("Delete"),
+      ).toHaveClass("u-text--negative");
     });
   });
 

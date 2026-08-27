@@ -168,6 +168,11 @@ describe("UserPanelActionButtons", () => {
       );
 
       expect(container).toHaveTexts(formLockedUserButtons);
+      const deleteButton = screen.getByRole("button", { name: "Delete" });
+      expect(deleteButton).not.toHaveClass("p-button--negative");
+      expect(within(deleteButton).getByText("Delete")).toHaveClass(
+        "u-text--negative",
+      );
     });
 
     it("renders buttons for unheld user in sidepanel", () => {
@@ -268,8 +273,12 @@ describe("UserPanelActionButtons", () => {
         }),
       );
       expect(
-        await screen.findByText("Successfully requested to be locked"),
+        await screen.findByText("An activity is queued to lock user1."),
       ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "View details" }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 
     it("submits lock action when clear-selection handler is omitted", async () => {
@@ -295,7 +304,7 @@ describe("UserPanelActionButtons", () => {
       );
 
       expect(
-        await screen.findByText("Successfully requested to be locked"),
+        await screen.findByText("An activity is queued to lock user1."),
       ).toBeInTheDocument();
     });
 
@@ -324,8 +333,12 @@ describe("UserPanelActionButtons", () => {
         }),
       );
       expect(
-        await screen.findByText("Successfully requested to be unlocked"),
+        await screen.findByText("An activity is queued to unlock user2."),
       ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "View details" }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 
     it("opens delete confirmation and submits remove action", async () => {
@@ -359,7 +372,7 @@ describe("UserPanelActionButtons", () => {
       );
 
       expect(
-        await screen.findByText("Successfully requested to be removed"),
+        await screen.findByText("An activity is queued to delete user2."),
       ).toBeInTheDocument();
     });
 
@@ -456,6 +469,40 @@ describe("UserPanelActionButtons", () => {
       expect(
         screen.queryByRole("heading", { name: "Delete users" }),
       ).not.toBeInTheDocument();
+    });
+
+    it("displays existing activity warning in modal when user has a pending activity", async () => {
+      const user = userEvent.setup();
+      const userWithPendingActivity = {
+        ...users[0],
+        enabled: true,
+        pending_activity: {
+          activity_id: 103,
+          activity_status: "undelivered" as const,
+          summary: "Lock out user john (UID 1000)",
+          operation: "lock" as const,
+        },
+      };
+
+      renderWithProviders(
+        <UserPanelActionButtons
+          selectedUsers={[userWithPendingActivity]}
+          sidePanel
+        />,
+        undefined,
+        routePath,
+        routePattern,
+      );
+
+      await user.click(screen.getByRole("button", { name: "Lock" }));
+      expect(
+        within(screen.getByRole("dialog")).getByRole("link", {
+          name: "View activity",
+        }),
+      ).toHaveAttribute("href", ROUTES.activities.root({ query: "id:103" }));
+      expect(screen.getByRole("dialog")).toHaveTextContent(
+        "This user has a pending activity to be locked. View activity. If you proceed, a new activity will be queued for this user.",
+      );
     });
   });
 });
