@@ -5,13 +5,13 @@
 }
 
 .instancesPageHelperContent {
-  align-items: center;
-  display: flex;
-  justify-content: center;
+  align-self: flex-end;
   margin: $spv--x-small;
+  padding-bottom: $spv--x-small;
 }
 
-.instancesPageTooltipLink {
-  display: inline-block;
-  margin-top: $spv--x-small;
+.instancesPageAccountInfoButton {
+  border: none;
+  cursor: pointer;
+  padding: 0;
 }
