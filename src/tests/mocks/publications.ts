@@ -110,4 +110,23 @@ export const publications = [
     skipContents: false,
     publishTime: new Date("March 1, 2026"),
   },
+  {
+    name: "publications/9f3d7e0a-1111-2222-3333-444444444444",
+    publicationId: "9f3d7e0a-1111-2222-3333-444444444444",
+    publicationTarget:
+      "publicationTargets/eeeeeeee-0000-0000-0000-000000000005",
+    source: "mirrors/non-existent-mirror",
+    displayName: "missing mirror source publication",
+    distribution: "oracular",
+    label: "Missing source publication",
+    origin: "Canonical",
+    architectures: ["amd64"],
+    acquireByHash: true,
+    butAutomaticUpgrades: false,
+    notAutomatic: false,
+    multiDist: false,
+    skipBz2: false,
+    skipContents: false,
+    publishTime: new Date("May 1, 2026"),
+  },
 ] as const satisfies Publication[];

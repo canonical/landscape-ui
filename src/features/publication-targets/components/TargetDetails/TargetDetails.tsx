@@ -51,10 +51,18 @@ const TargetDetails: FC = () => {
     [publications],
   );
 
-  const { mirrorDisplayNames, isLoadingMirrorDisplayNames } =
-    useBatchGetMirrors(mirrorNames);
-  const { localDisplayNames, isLoadingLocalDisplayNames } =
+  const {
+    mirrorDisplayNames,
+    unreachableMirrors,
+    isLoadingMirrorDisplayNames,
+  } = useBatchGetMirrors(mirrorNames);
+  const { localDisplayNames, unreachableLocals, isLoadingLocalDisplayNames } =
     useBatchGetLocals(localNames);
+
+  const unreachableSourceNames = useMemo(
+    () => [...new Set([...unreachableMirrors, ...unreachableLocals])],
+    [unreachableLocals, unreachableMirrors],
+  );
 
   const sourceDisplayNames = useMemo(
     () => ({ ...mirrorDisplayNames, ...localDisplayNames }),
@@ -249,6 +257,7 @@ const TargetDetails: FC = () => {
                 sourceDisplayNames={
                   isLoadingDisplayNames ? undefined : sourceDisplayNames
                 }
+                unreachableSourceNames={unreachableSourceNames}
               />
             )}
           </Blocks.Item>

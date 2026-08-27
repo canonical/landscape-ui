@@ -1,6 +1,6 @@
 import { PAGE_SIZE_OPTIONS } from "@/components/layout/TablePagination/components/TablePaginationBase/constants";
 import { DAYS_FILTER_OPTIONS } from "@/features/events-log";
-import moment from "moment";
+import date from "@/libs/date";
 import type { ParamsConfig } from "./types";
 
 export const DEFAULT_CURRENT_PAGE = 1;
@@ -46,7 +46,7 @@ export const PARAMS_CONFIG: ParamsConfig = [
     urlParam: "fromDate",
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_STRING,
-    validator: (val: string) => moment(val, moment.ISO_8601, true).isValid(),
+    validator: (val: string) => date(val, date.ISO_8601, true).isValid(),
   },
   {
     urlParam: "groupBy",
@@ -98,7 +98,7 @@ export const PARAMS_CONFIG: ParamsConfig = [
     urlParam: "toDate",
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_STRING,
-    validator: (val: string) => moment(val, moment.ISO_8601, true).isValid(),
+    validator: (val: string) => date(val, date.ISO_8601, true).isValid(),
   },
   {
     urlParam: "type",

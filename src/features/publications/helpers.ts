@@ -14,6 +14,20 @@ export const getSourceType = (source: string) => {
   return "Unknown";
 };
 
+export const isMissingSource = ({
+  source,
+  sourceType,
+  unreachableSourceNames,
+}: {
+  source: string;
+  sourceType: string;
+  unreachableSourceNames: string[];
+}) => {
+  const isSupportedSourceType =
+    sourceType === "Mirror" || sourceType === "Local repository";
+  return isSupportedSourceType && unreachableSourceNames.includes(source);
+};
+
 export const getSourceName = (source: string) => {
   const parts = source.split("/");
   return parts.length > 1 ? (parts[1] ?? source) : source;

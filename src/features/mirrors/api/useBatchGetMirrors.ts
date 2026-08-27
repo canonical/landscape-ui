@@ -10,29 +10,35 @@ export const useBatchGetMirrors = (names: string[]) => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isLoading } = useQuery<
-    Record<string, string>,
+    { lookup: Record<string, string>; unreachable: string[] },
     AxiosError<MirrorServiceBatchGetMirrorsError>
   >({
     queryKey: ["mirrors", "batch", names],
     queryFn: async () => {
       const response = await authFetchDebArchive.post<BatchGetMirrorsResponse>(
         "mirrors:batchGet",
-        { names },
+        { names, returnPartialSuccess: true },
       );
 
       const lookup: Record<string, string> = {};
+      const unreachable = response.data.unreachable ?? [];
+
       for (const mirror of response.data.mirrors ?? []) {
         if (mirror.name) {
           lookup[mirror.name] = mirror.displayName;
         }
       }
-      return lookup;
+      return {
+        lookup,
+        unreachable,
+      };
     },
     enabled: names.length > 0,
   });
 
   return {
-    mirrorDisplayNames: data ?? {},
+    mirrorDisplayNames: data?.lookup ?? {},
+    unreachableMirrors: data?.unreachable ?? [],
     isLoadingMirrorDisplayNames: isLoading,
   };
 };
