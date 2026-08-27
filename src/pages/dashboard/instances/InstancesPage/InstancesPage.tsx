@@ -97,7 +97,7 @@ const InstancesPage: FC = () => {
         helperContent={
           <span className={classes.instancesPageHelperContent}>
             <span
-              className={`p-tooltip ${classes.instancesPageAccountInfo}`}
+              className="p-tooltip"
               onMouseEnter={() => {
                 setIsAccountInfoOpen(true);
               }}
@@ -109,6 +109,12 @@ const InstancesPage: FC = () => {
               }}
               onBlur={(event) => {
                 if (event.currentTarget.contains(event.relatedTarget)) {
+                  return;
+                }
+                setIsAccountInfoOpen(false);
+              }}
+              onKeyDown={(event) => {
+                if (event.key !== "Escape") {
                   return;
                 }
                 setIsAccountInfoOpen(false);
