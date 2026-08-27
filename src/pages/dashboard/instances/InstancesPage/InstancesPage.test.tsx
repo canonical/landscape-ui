@@ -48,7 +48,7 @@ describe("InstancesPage", () => {
     expect(await screen.findByText(/Account name:/)).toBeInTheDocument();
 
     const link = screen.getByRole("link", {
-      name: "Learn how to register new instances to your Landscape organization",
+      name: "Press enter to browse documentation on how to register new instances to your Landscape organization",
     });
     expect(link).toHaveAttribute("href", MANAGE_INSTANCES_DOCUMENTATION_URL);
 

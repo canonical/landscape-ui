@@ -134,6 +134,8 @@ const InstancesPage: FC = () => {
                   id="instancesPageAccountInfoPanel"
                   className="p-tooltip__message"
                   style={{ display: "inline" }}
+                  role="status"
+                  aria-live="polite"
                 >
                   <span>Account name: {currentAccount.name}</span>
                   <br />
@@ -141,6 +143,7 @@ const InstancesPage: FC = () => {
                     href={MANAGE_INSTANCES_DOCUMENTATION_URL}
                     target="_blank"
                     rel="nofollow noopener noreferrer"
+                    aria-label="Press enter to browse documentation on how to register new instances to your Landscape organization"
                   >
                     Learn how to register new instances to your Landscape
                     organization
