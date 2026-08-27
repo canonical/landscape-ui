@@ -6,5 +6,6 @@ export * from "./useLockUser";
 export * from "./useUnlockUser";
 export * from "./useGetGroups";
 export * from "./useGetUserGroups";
+export * from "./useGetUserActivities";
 export * from "./useAddUserToGroup";
 export * from "./useRemoveUserFromGroup";

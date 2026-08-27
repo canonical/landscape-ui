@@ -1,29 +1,18 @@
-import {
-  Button,
-  ConfirmationModal,
-  Icon,
-  ICONS,
-  Input,
-} from "@canonical/react-components";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
+import { lazy, Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { User } from "@/types/User";
+import { hasOneItem } from "@/utils/_helpers";
 import NewUserForm from "../NewUserForm";
-import {
-  getSelectedUsernames,
-  getUserLockStatusCounts,
-  renderModalBody,
-  UserAction,
-} from "./helpers";
+import { getUserLockStatusCounts } from "./helpers";
 import LoadingState from "@/components/layout/LoadingState";
-import { useParams } from "react-router";
-import type { UrlParams } from "@/types/UrlParams";
 import { ResponsiveButtons } from "@/components/ui";
-import { useLockUser, useRemoveUser, useUnlockUser } from "../../api";
+import UserLockModal from "../UserLockModal";
+import UserUnlockModal from "../UserUnlockModal";
+import UserDeleteModal from "../UserDeleteModal";
 
 const EditUserForm = lazy(async () => import("../EditUserForm"));
 
@@ -38,58 +27,27 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
   handleClearSelection,
   sidePanel = false,
 }) => {
-  const [confirmDeleteHomeFolders, setConfirmDeleteHomeFolders] =
-    useState(false);
+  const { setSidePanelContent } = useSidePanel();
+  const {
+    value: isLockOpen,
+    setTrue: openLockModal,
+    setFalse: closeLockModal,
+  } = useBoolean();
+  const {
+    value: isUnlockOpen,
+    setTrue: openUnlockModal,
+    setFalse: closeUnlockModal,
+  } = useBoolean();
+  const {
+    value: isRemoveOpen,
+    setTrue: openRemoveModal,
+    setFalse: closeRemoveModal,
+  } = useBoolean();
 
-  const { instanceId: urlInstanceId } = useParams<UrlParams>();
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { setSidePanelContent, closeSidePanel } = useSidePanel();
-  const { removeUser, isRemovingUser } = useRemoveUser();
-  const { lockUser, isLockingUser } = useLockUser();
-  const { unlockUser, isUnlockingUser } = useUnlockUser();
-  const [lockOpen, setLockOpen] = useState(false);
-  const [unlockOpen, setUnlockOpen] = useState(false);
-  const [removeOpen, setRemoveOpen] = useState(false);
-
-  const instanceId = Number(urlInstanceId);
-  const user = selectedUsers.length === 1 ? selectedUsers[0] : undefined;
+  const user = hasOneItem(selectedUsers) ? selectedUsers[0] : undefined;
 
   const { locked: lockedUsersCount, unlocked: unlockedUsersCount } =
     getUserLockStatusCounts(selectedUsers);
-
-  const performUserAction = async (
-    mutation: typeof removeUser | typeof lockUser | typeof unlockUser,
-    actionType: string,
-  ) => {
-    try {
-      await mutation({
-        computer_ids: [instanceId],
-        usernames: getSelectedUsernames(selectedUsers),
-        delete_home:
-          actionType === "removed" ? confirmDeleteHomeFolders : undefined,
-      });
-      if (handleClearSelection) {
-        handleClearSelection();
-      }
-      closeSidePanel();
-      notify.success({ message: `Successfully requested to be ${actionType}` });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const handleLockUser = async () => {
-    await performUserAction(lockUser, "locked");
-  };
-
-  const handleUnlockUser = async () => {
-    await performUserAction(unlockUser, "unlocked");
-  };
-
-  const handleRemoveUser = async () => {
-    await performUserAction(removeUser, "removed");
-  };
 
   const handleAddUser = () => {
     setSidePanelContent("Add new user", <NewUserForm />);
@@ -102,10 +60,6 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
         <EditUserForm user={currentUser} />
       </Suspense>,
     );
-  };
-
-  const handleToggleDeleteUserHomeFolders = () => {
-    setConfirmDeleteHomeFolders((prevState) => !prevState);
   };
 
   return (
@@ -137,9 +91,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
                 hasIcon
                 type="button"
                 disabled={unlockedUsersCount === 0}
-                onClick={() => {
-                  setLockOpen(true);
-                }}
+                onClick={openLockModal}
               >
                 <Icon name="lock-locked" />
                 <span>Lock</span>
@@ -151,9 +103,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
                 hasIcon
                 type="button"
                 disabled={lockedUsersCount === 0}
-                onClick={() => {
-                  setUnlockOpen(true);
-                }}
+                onClick={openUnlockModal}
               >
                 <Icon name="lock-unlock" />
                 <span>Unlock</span>
@@ -179,87 +129,38 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
               hasIcon
               type="button"
               disabled={0 === selectedUsers.length}
-              onClick={() => {
-                setRemoveOpen(true);
-              }}
+              onClick={openRemoveModal}
             >
-              <Icon name={ICONS.delete} />
-              <span>Delete</span>
+              <Icon
+                name={sidePanel ? `${ICONS.delete}--negative` : ICONS.delete}
+              />
+              <span className={sidePanel ? "u-text--negative" : undefined}>
+                Delete
+              </span>
             </Button>,
           ]}
         />
       </div>
-      {lockOpen && (
-        <ConfirmationModal
-          title={`Lock ${
-            user ? `user ${user.username}` : `${selectedUsers.length} users`
-          }`}
-          close={() => {
-            setLockOpen(false);
-          }}
-          confirmButtonLabel="Lock"
-          confirmButtonAppearance="positive"
-          confirmButtonLoading={isLockingUser}
-          confirmButtonDisabled={isLockingUser}
-          onConfirm={handleLockUser}
-          renderInPortal
-        >
-          {renderModalBody({
-            user: user,
-            selectedUsers: selectedUsers,
-            userAction: UserAction.Lock,
-          })}
-        </ConfirmationModal>
+      {isLockOpen && (
+        <UserLockModal
+          close={closeLockModal}
+          selectedUsers={selectedUsers}
+          handleClearSelection={handleClearSelection}
+        />
       )}
-      {unlockOpen && (
-        <ConfirmationModal
-          title={`Unlock ${
-            user ? `user ${user.username}` : `${selectedUsers.length} users`
-          }`}
-          close={() => {
-            setUnlockOpen(false);
-          }}
-          confirmButtonLabel="Unlock"
-          confirmButtonAppearance="positive"
-          confirmButtonLoading={isUnlockingUser}
-          confirmButtonDisabled={isUnlockingUser}
-          onConfirm={handleUnlockUser}
-          renderInPortal
-        >
-          {renderModalBody({
-            user: user,
-            selectedUsers: selectedUsers,
-            userAction: UserAction.Unlock,
-          })}
-        </ConfirmationModal>
+      {isUnlockOpen && (
+        <UserUnlockModal
+          close={closeUnlockModal}
+          selectedUsers={selectedUsers}
+          handleClearSelection={handleClearSelection}
+        />
       )}
-      {removeOpen && (
-        <ConfirmationModal
-          title={`Delete ${user ? user.username : "users"}`}
-          close={() => {
-            setRemoveOpen(false);
-          }}
-          confirmButtonLabel="Delete"
-          confirmButtonAppearance="negative"
-          confirmButtonLoading={isRemovingUser}
-          confirmButtonDisabled={isRemovingUser}
-          onConfirm={handleRemoveUser}
-          renderInPortal
-        >
-          <div>
-            <p className="u-no-margin--bottom">
-              {user
-                ? `This will delete user ${user.username}. You can delete this user's home folders at the same time.`
-                : "This will delete selected users. You can delete their home folders as well."}
-            </p>
-            <Input
-              label="Delete the home folders as well"
-              type="checkbox"
-              checked={confirmDeleteHomeFolders}
-              onChange={handleToggleDeleteUserHomeFolders}
-            />
-          </div>
-        </ConfirmationModal>
+      {isRemoveOpen && (
+        <UserDeleteModal
+          close={closeRemoveModal}
+          selectedUsers={selectedUsers}
+          handleClearSelection={handleClearSelection}
+        />
       )}
     </>
   );

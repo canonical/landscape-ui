@@ -1,16 +1,16 @@
-import ListActions, {
-  LIST_ACTIONS_COLUMN_PROPS,
-} from "@/components/layout/ListActions";
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { User } from "@/types/User";
-import { Button, CheckboxInput, Icon } from "@canonical/react-components";
+import { Button, CheckboxInput } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import classes from "./UserList.module.scss";
+import PendingUserActivity from "../PendingUserActivity";
+import UserListActions from "../UserListActions";
+import { getUserStatusIcon, handleCellProps } from "./helpers";
 
 const EditUserForm = lazy(async () => import("../EditUserForm"));
 const UserDetails = lazy(async () => import("../UserDetails"));
@@ -57,7 +57,7 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
   const columns = useMemo<Column<User>[]>(
     () => [
       {
-        accessor: "checkbox",
+        accessor: "username",
         Header: (
           <>
             <CheckboxInput
@@ -104,26 +104,21 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
         ),
       },
       {
+        accessor: "enabled",
         Header: "status",
-        Cell: ({ row: { original } }: CellProps<User>) => (
-          <div className={classes.status}>
-            {original.enabled ? (
-              <>
-                <Icon name="lock-unlock" />
-                <span>Unlocked</span>
-              </>
-            ) : (
-              <>
-                <Icon name="lock-locked-active" />
-                <span>Locked</span>
-              </>
-            )}
-          </div>
-        ),
+        Cell: ({ row: { original } }: CellProps<User>) => {
+          if (original.pending_activity) {
+            return <PendingUserActivity user={original} />;
+          }
+          return original.enabled ? "Unlocked" : "Locked";
+        },
+        getCellIcon: ({ row }: CellProps<User>) =>
+          getUserStatusIcon(row.original),
       },
       { Header: "UID", accessor: "uid" },
       {
         Header: "Full name",
+        accessor: "name",
         Cell: ({ row: { original } }: CellProps<User>) =>
           original.name || <NoData />,
       },
@@ -131,18 +126,11 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
         Header: LIST_ACTIONS_COLUMN_PROPS.Header,
         className: LIST_ACTIONS_COLUMN_PROPS.className,
         Cell: ({ row: { original } }: CellProps<User>) => (
-          <ListActions
-            toggleAriaLabel={`"${original.name}" user actions`}
-            actions={[
-              {
-                icon: "edit",
-                label: "Edit",
-                "aria-label": `Edit "${original.name}" user`,
-                onClick: () => {
-                  handleEditUser(original);
-                },
-              },
-            ]}
+          <UserListActions
+            user={original}
+            onEdit={() => {
+              handleEditUser(original);
+            }}
           />
         ),
       },
@@ -155,6 +143,7 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
       columns={columns}
       data={users}
       emptyMsg="No users found according to your search parameters."
+      getCellProps={handleCellProps}
     />
   );
 };
