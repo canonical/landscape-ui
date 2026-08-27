@@ -19,6 +19,11 @@ const EditAccessGroupSidePanel = lazy(
   () => import("@/features/access-groups/components/EditAccessGroupSidePanel"),
 );
 
+const ViewAccessGroupSidePanel = lazy(
+  async () =>
+    import("@/features/access-groups/components/ViewAccessGroupSidePanel"),
+);
+
 const AccessGroupsPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
   const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
@@ -33,7 +38,7 @@ const AccessGroupsPage: FC = () => {
     );
   };
 
-  useSetDynamicFilterValidation("sidePath", ["edit"]);
+  useSetDynamicFilterValidation("sidePath", ["view", "edit"]);
 
   return (
     <PageMain>
@@ -59,6 +64,12 @@ const AccessGroupsPage: FC = () => {
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <EditAccessGroupSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="view">
+            <ViewAccessGroupSidePanel />
           </SidePanel.Suspense>
         )}
       </SidePanel>

@@ -56,4 +56,16 @@ describe("AccessGroupsPage", () => {
     expect(await screen.findByText("Title")).toBeInTheDocument();
     expect(screen.getByText("Parent")).toBeInTheDocument();
   });
+
+  it("opens view access group side panel when clicking an access group", async () => {
+    renderWithProviders(
+      <AccessGroupsPage />,
+      undefined,
+      `/?sidePath=view&name=desktop`,
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "Desktop machines" }),
+    ).toBeInTheDocument();
+  });
 });

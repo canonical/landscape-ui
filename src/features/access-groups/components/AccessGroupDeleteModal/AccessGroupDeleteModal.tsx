@@ -64,6 +64,7 @@ const AccessGroupDeleteModal: FC<AccessGroupDeleteModalProps> = ({
       confirmButtonLoading={isRemoving}
       onConfirm={tryRemove}
       close={close}
+      renderInPortal
     >
       {instancesCount > 0 ? (
         <p>
