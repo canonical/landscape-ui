@@ -37,7 +37,7 @@ describe("InstancesPage", () => {
     await expectLoadingState();
 
     const button = screen.getByRole("button", {
-      name: "New instance registration information, documentation link available",
+      name: /New instance registration information, documentation link available/,
     });
     expect(button).toHaveAttribute("aria-expanded", "false");
 
@@ -70,7 +70,7 @@ describe("InstancesPage", () => {
     await expectLoadingState();
 
     const button = screen.getByRole("button", {
-      name: "New instance registration information, documentation link available",
+      name: /New instance registration information, documentation link available/,
     });
 
     await user.hover(button);

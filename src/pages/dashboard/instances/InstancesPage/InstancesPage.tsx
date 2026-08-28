@@ -129,28 +129,17 @@ const InstancesPage: FC = () => {
               <button
                 type="button"
                 className={classes.instancesPageAccountInfoButton}
-                aria-label="New instance registration information, documentation link available"
-                aria-controls={
-                  isAccountInfoOpen
-                    ? "instancesPageAccountInfoPanel"
-                    : undefined
-                }
-                aria-describedby={
-                  isAccountInfoOpen
-                    ? "instancesPageAccountInfoAccountName"
-                    : undefined
-                }
+                aria-label={`New instance registration information, documentation link available. Account name: ${currentAccount.name}`}
                 aria-expanded={isAccountInfoOpen}
               >
                 <Icon name={ICONS.information} aria-hidden />
               </button>
               {isAccountInfoOpen && (
                 <span
-                  id="instancesPageAccountInfoPanel"
                   className="p-tooltip__message"
                   style={{ display: "inline" }}
                 >
-                  <span id="instancesPageAccountInfoAccountName">
+                  <span>
                     Account name: {currentAccount.name}
                   </span>
                   <br />
