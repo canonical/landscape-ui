@@ -187,11 +187,8 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
           typeof error.response?.data === "object" &&
           error.response.data !== null
         ) {
-          const { error: errorCode, message } = error.response.data;
-          const isDuplicateTitleError =
-            errorCode === "ScriptProfileTitleExists" ||
-            (typeof message === "string" &&
-              /script profile.+title.+already.+exists/i.test(message));
+          const { error: errorCode } = error.response.data;
+          const isDuplicateTitleError = errorCode === "ScriptProfileDuplicate";
 
           if (isDuplicateTitleError) {
             debug(
