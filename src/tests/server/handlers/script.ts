@@ -21,6 +21,8 @@ import {
   createEndpointStatusNetworkError,
 } from "./_constants";
 
+const SUCCESSFUL_RESPONSE_STATUS = 200;
+
 export default [
   http.get(`${API_URL}scripts`, async ({ request }) => {
     const DEFAULT_PAGE_SIZE = 20;
@@ -173,6 +175,16 @@ export default [
       endpointStatus.status === "variant" &&
       endpointStatus.path === "CreateScript"
     ) {
+      if (
+        typeof endpointStatus.response === "object" &&
+        endpointStatus.response !== null &&
+        endpointStatus.response.statusCode !== null
+      ) {
+        const { statusCode, ...responseBody } = endpointStatus.response;
+        return HttpResponse.json(responseBody, {
+          status: (statusCode as number) || SUCCESSFUL_RESPONSE_STATUS,
+        });
+      }
       return HttpResponse.json(endpointStatus.response);
     }
 

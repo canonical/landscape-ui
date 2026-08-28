@@ -12,6 +12,8 @@ import {
   shouldApplyEndpointStatus,
 } from "./_helpers";
 
+const SUCCESSFUL_RESPONSE_STATUS = 200;
+
 export default [
   http.get(`${API_URL}script-profiles`, ({ request }) => {
     const { searchParams } = new URL(request.url);
@@ -71,6 +73,16 @@ export default [
         }
 
         if (endpointStatus.status === "variant") {
+          if (
+            typeof endpointStatus.response === "object" &&
+            endpointStatus.response !== null &&
+            endpointStatus.response.statusCode !== null
+          ) {
+            const { statusCode, ...responseBody } = endpointStatus.response;
+            return HttpResponse.json(responseBody, {
+              status: (statusCode as number) || SUCCESSFUL_RESPONSE_STATUS,
+            });
+          }
           return HttpResponse.json(endpointStatus.response);
         }
       }
@@ -145,6 +157,16 @@ export default [
       }
 
       if (endpointStatus.status === "variant") {
+        if (
+          typeof endpointStatus.response === "object" &&
+          endpointStatus.response !== null &&
+          endpointStatus.response.statusCode !== null
+        ) {
+          const { statusCode, ...responseBody } = endpointStatus.response;
+          return HttpResponse.json(responseBody, {
+            status: (statusCode as number) || SUCCESSFUL_RESPONSE_STATUS,
+          });
+        }
         return HttpResponse.json(endpointStatus.response);
       }
     }
