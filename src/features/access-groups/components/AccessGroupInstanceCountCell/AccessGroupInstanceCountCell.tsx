@@ -14,7 +14,7 @@ const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
   accessGroup,
 }) => {
   const { instancesCount, isGettingInstances } = useGetInstances({
-    query: `access-group: ${accessGroup.name}`,
+    query: `access-group:${accessGroup.name}`,
     limit: 1,
   });
 
