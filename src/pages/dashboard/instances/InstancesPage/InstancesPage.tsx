@@ -92,6 +92,7 @@ const InstancesPage: FC = () => {
             isGettingInstances={isGettingInstances}
             selectedInstances={selectedInstances}
             isAllSelected={isAllSelected}
+            onRemoveSuccess={clearSelection}
           />,
         ]}
       />
