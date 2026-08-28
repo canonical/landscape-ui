@@ -2,4 +2,4 @@
 "landscape-ui": minor
 ---
 
-Add Access group details side panel
+Add a side panel to view access group details
