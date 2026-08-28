@@ -12,6 +12,8 @@ import AccessGroupListActions from "../AccessGroupListActions";
 import { buildHierarchy, findAncestors, handleCellProps } from "./helpers";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
+const INDENTATION = 1.25;
+
 interface AccessGroupListProps {
   readonly accessGroups: AccessGroup[];
 }
@@ -65,6 +67,9 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
         accessor: "title",
         Header: "title",
         Cell: ({ row }: CellProps<AccessGroupWithInstancesCount>) => {
+          const { depth } = row as Row<AccessGroupWithInstancesCount> & {
+            depth: number;
+          };
           return (
             <Button
               appearance="link"
@@ -73,6 +78,7 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
                 sidePath: ["view"],
                 name: row.original.name,
               })}
+              style={{ paddingLeft: `${depth * INDENTATION}rem` }}
             >
               {row.original.title}
             </Button>
