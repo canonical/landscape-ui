@@ -145,7 +145,7 @@ export default [
       }
 
       if (endpointStatus.status === "variant") {
-        return HttpResponse.json(endpointStatus.response, { status: 400 });
+        return HttpResponse.json(endpointStatus.response);
       }
     }
 
