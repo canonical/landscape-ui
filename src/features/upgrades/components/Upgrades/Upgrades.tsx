@@ -49,7 +49,7 @@ const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
     offset: (currentPage - 1) * pageSize,
     limit: pageSize,
     security: upgradeType === "security" ? FilterState.TRUE : undefined,
-    text: search,
+    text: search || undefined,
     computer_query: query ?? "",
   });
 
