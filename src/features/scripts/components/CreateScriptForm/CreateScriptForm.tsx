@@ -66,11 +66,8 @@ const CreateScript: FC = () => {
         typeof error.response?.data === "object" &&
         error.response.data !== null
       ) {
-        const { error: errorCode, message } = error.response.data;
-        const isDuplicateTitleError =
-          errorCode === "ScriptTitleExists" ||
-          (typeof message === "string" &&
-            /script.+title.+already.+present/i.test(message));
+        const { error: errorCode } = error.response.data;
+        const isDuplicateTitleError = errorCode === "DuplicateScript";
 
         if (isDuplicateTitleError) {
           debug(
