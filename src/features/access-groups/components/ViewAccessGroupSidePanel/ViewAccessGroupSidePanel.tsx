@@ -1,32 +1,22 @@
 import type { FC } from "react";
 import SidePanel from "@/components/layout/SidePanel";
 import InfoGrid from "@/components/layout/InfoGrid/InfoGrid";
-import { useGetInstances } from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import AccessGroupAdministratorsTable from "./AccessGroupAdministratorsTable/AccessGroupAdministratorsTable";
 import Blocks from "@/components/layout/Blocks/Blocks";
 import { Button, Icon } from "@canonical/react-components";
-import { ROUTES } from "@/libs/routes";
-import StaticLink from "@/components/layout/StaticLink";
-import { pluralize } from "@/utils/_helpers";
 import { useBoolean } from "usehooks-ts";
 import AccessGroupDeleteModal from "../AccessGroupDeleteModal";
 import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import { ResponsiveButtons } from "@/components/ui";
-import LoadingState from "@/components/layout/LoadingState";
+import AccessGroupInstanceCountCell from "../AccessGroupInstanceCountCell";
 
 const ViewAccessGroupSidePanel: FC = () => {
   const { name, createPageParamsSetter } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse, isLoading } = getAccessGroupQuery();
-  const { instancesCount, isGettingInstances } = useGetInstances(
-    {
-      query: `access-group:${name}`,
-      limit: 1,
-    },
-    { listenToUrlParams: false },
-  );
+
   const {
     value: isDeleteModalOpen,
     setTrue: openDeleteModal,
@@ -53,14 +43,6 @@ const ViewAccessGroupSidePanel: FC = () => {
   const childNames = accessGroup.children
     ? accessGroup.children.split(",").filter(Boolean)
     : [];
-
-  const instancesValue = instancesCount ? (
-    <StaticLink to={ROUTES.instances.root({ accessGroups: [name] })}>
-      {pluralize(instancesCount, ["instance"], "exact")}
-    </StaticLink>
-  ) : (
-    "0 instances"
-  );
 
   return (
     <>
@@ -135,7 +117,7 @@ const ViewAccessGroupSidePanel: FC = () => {
               <InfoGrid.Item
                 label="Associated instances"
                 value={
-                  isGettingInstances ? <LoadingState inline /> : instancesValue
+                  <AccessGroupInstanceCountCell accessGroup={accessGroup} />
                 }
               />
             </InfoGrid>
