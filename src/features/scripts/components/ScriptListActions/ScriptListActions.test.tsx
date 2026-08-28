@@ -117,12 +117,12 @@ describe("Scripts List Contextual Menu", () => {
       await user.click(contextualMenuButton);
 
       expect(
-        screen.queryByRole("button", {
+        screen.queryByRole("menuitem", {
           name: `Edit ${archivedScript.title} script`,
         }),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByRole("button", {
+        screen.queryByRole("menuitem", {
           name: `Archive ${archivedScript.title} script`,
         }),
       ).not.toBeInTheDocument();
@@ -142,17 +142,17 @@ describe("Scripts List Contextual Menu", () => {
       await user.click(contextualMenuButton);
 
       expect(
-        screen.queryByRole("button", {
+        screen.queryByRole("menuitem", {
           name: `Edit ${redactedScript.title} script`,
         }),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByRole("button", {
+        screen.queryByRole("menuitem", {
           name: `Archive ${redactedScript.title} script`,
         }),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByRole("button", {
+        screen.queryByRole("menuitem", {
           name: `Redact ${redactedScript.title} script`,
         }),
       ).not.toBeInTheDocument();
