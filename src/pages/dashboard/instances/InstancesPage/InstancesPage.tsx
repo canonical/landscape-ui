@@ -131,7 +131,9 @@ const InstancesPage: FC = () => {
                 className={classes.instancesPageAccountInfoButton}
                 aria-label="New instance registration information, documentation link available"
                 aria-controls={
-                  isAccountInfoOpen ? "instancesPageAccountInfoPanel" : undefined
+                  isAccountInfoOpen
+                    ? "instancesPageAccountInfoPanel"
+                    : undefined
                 }
                 aria-describedby={
                   isAccountInfoOpen
