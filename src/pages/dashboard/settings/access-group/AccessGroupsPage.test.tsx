@@ -57,7 +57,7 @@ describe("AccessGroupsPage", () => {
     expect(screen.getByText("Parent")).toBeInTheDocument();
   });
 
-  it("opens view access group side panel when clicking an access group", async () => {
+  it("opens view access group side panel", async () => {
     renderWithProviders(
       <AccessGroupsPage />,
       undefined,
