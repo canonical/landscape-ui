@@ -139,15 +139,14 @@ const InstancesPage: FC = () => {
                   className="p-tooltip__message"
                   style={{ display: "inline" }}
                 >
-                  <span>
-                    Account name: {currentAccount.name}
-                  </span>
+                  <span>Account name: {currentAccount.name}</span>
                   <br />
                   <Link
                     href={MANAGE_INSTANCES_DOCUMENTATION_URL}
                     target="_blank"
                     rel="nofollow noopener noreferrer"
-                    aria-label="Press enter to browse documentation on how to register new instances to your Landscape organization"
+                    aria-label="Learn how to register new instances to your Landscape
+                    organization (opens a new tab to Landscape documentation)"
                   >
                     Learn how to register new instances to your Landscape
                     organization
