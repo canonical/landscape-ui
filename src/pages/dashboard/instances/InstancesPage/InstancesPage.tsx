@@ -101,14 +101,20 @@ const InstancesPage: FC = () => {
               onMouseEnter={() => {
                 setIsAccountInfoOpen(true);
               }}
-              onMouseLeave={() => {
+              onMouseLeave={(event) => {
+                if (event.currentTarget.contains(document.activeElement)) {
+                  return;
+                }
                 setIsAccountInfoOpen(false);
               }}
               onFocus={() => {
                 setIsAccountInfoOpen(true);
               }}
               onBlur={(event) => {
-                if (event.currentTarget.contains(event.relatedTarget)) {
+                if (
+                  event.relatedTarget instanceof Node &&
+                  event.currentTarget.contains(event.relatedTarget)
+                ) {
                   return;
                 }
                 setIsAccountInfoOpen(false);
