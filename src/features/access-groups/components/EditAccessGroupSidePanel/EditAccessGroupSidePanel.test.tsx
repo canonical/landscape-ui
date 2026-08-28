@@ -34,7 +34,7 @@ describe("EditAccessGroupSidePanel", () => {
   });
 
   it("renders a loading state while the access group is being fetched", () => {
-    renderWithProviders(<EditAccessGroupSidePanel />);
+    renderWithBoundary(childGroup.name);
 
     expect(screen.getByRole("status")).toBeInTheDocument();
   });

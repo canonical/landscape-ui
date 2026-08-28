@@ -21,7 +21,7 @@ export default function useGetAccessGroup(name: string) {
 
   return {
     accessGroup: data?.data[0],
-    isGettingAccessGroup: isPending,
+    isGettingAccessGroup: !!name && isPending,
     accessGroupError: error,
   };
 }
