@@ -153,10 +153,6 @@ export default [
     if (shouldApplyEndpointStatus("script-profiles")) {
       const endpointStatus = getEndpointStatus("script-profiles");
 
-      if (endpointStatus.status === "error") {
-        throw createEndpointStatusNetworkError();
-      }
-
       if (endpointStatus.status === "variant") {
         if (
           typeof endpointStatus.response === "object" &&
