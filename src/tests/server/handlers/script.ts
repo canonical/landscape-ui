@@ -173,7 +173,7 @@ export default [
       endpointStatus.status === "variant" &&
       endpointStatus.path === "CreateScript"
     ) {
-      return HttpResponse.json(endpointStatus.response, { status: 400 });
+      return HttpResponse.json(endpointStatus.response);
     }
 
     return HttpResponse.json({ id: 99 });
