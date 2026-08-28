@@ -73,6 +73,10 @@ export default [
       (group) => group.name === params.name,
     );
 
-    return HttpResponse.json(accessGroup ?? accessGroups[0]);
+    if (accessGroup) {
+      return HttpResponse.json(accessGroup);
+    }
+
+    return HttpResponse.json({}, { status: 404 });
   }),
 ];
