@@ -387,19 +387,7 @@ export default [
 
     return HttpResponse.json(baseResponse);
   }),
-  http.get(`${API_URL}me`, async ({ request }) => {
-    if (shouldApplyEndpointStatus("tooltip")) {
-      const endpointStatus = getEndpointStatus("tooltip");
-
-      if (endpointStatus.status === "loading") {
-        await delay();
-      }
-
-      if (endpointStatus.status === "variant") {
-        return HttpResponse.json(endpointStatus.response);
-      }
-    }
-
+  http.get(`${API_URL}me`, ({ request }) => {
     const authHeader = request.headers.get("Authorization");
     const token = authHeader?.replace("Bearer ", "");
 
