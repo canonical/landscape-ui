@@ -22,7 +22,11 @@ interface Props {
 const AccessGroupAdministratorsTable: FC<Props> = ({ accessGroupName }) => {
   const { getRolesQuery } = useRoles();
   const { getAdministratorsQuery } = useAdministrators();
-  const { data: rolesResponse, isLoading: isRolesLoading } = getRolesQuery();
+  const {
+    data: rolesResponse,
+    isLoading: isRolesLoading,
+    isError: isRolesError,
+  } = getRolesQuery();
   const { data: adminsResponse, isLoading: isAdminsLoading } =
     getAdministratorsQuery();
   const isLoading = isRolesLoading || isAdminsLoading;
@@ -127,7 +131,11 @@ const AccessGroupAdministratorsTable: FC<Props> = ({ accessGroupName }) => {
       data={rows}
       getCellProps={handleCellProps}
       getRowProps={handleRowProps}
-      emptyMsg="No administrators have roles associated with this access group."
+      emptyMsg={
+        isRolesError
+          ? "Unable to retrieve associated roles."
+          : "No administrators have roles associated with this access group."
+      }
       minWidth={460}
     />
   );
