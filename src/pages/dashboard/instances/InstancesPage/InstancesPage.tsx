@@ -129,8 +129,9 @@ const InstancesPage: FC = () => {
               <button
                 type="button"
                 className={classes.instancesPageAccountInfoButton}
-                aria-label="New instance registration information"
+                aria-label="New instance registration information, documentation link available"
                 aria-controls="instancesPageAccountInfoPanel"
+                aria-describedby="instancesPageAccountInfoAccountName"
                 aria-expanded={isAccountInfoOpen}
               >
                 <Icon name={ICONS.information} aria-hidden />
@@ -140,10 +141,10 @@ const InstancesPage: FC = () => {
                   id="instancesPageAccountInfoPanel"
                   className="p-tooltip__message"
                   style={{ display: "inline" }}
-                  role="status"
-                  aria-live="polite"
                 >
-                  <span>Account name: {currentAccount.name}</span>
+                  <span id="instancesPageAccountInfoAccountName">
+                    Account name: {currentAccount.name}
+                  </span>
                   <br />
                   <Link
                     href={MANAGE_INSTANCES_DOCUMENTATION_URL}
