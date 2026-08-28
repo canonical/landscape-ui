@@ -72,6 +72,7 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
           };
           return (
             <Button
+              type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top"
               onClick={createPageParamsSetter({

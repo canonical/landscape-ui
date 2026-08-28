@@ -14,15 +14,19 @@ import { useBoolean } from "usehooks-ts";
 import AccessGroupDeleteModal from "../AccessGroupDeleteModal";
 import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import { ResponsiveButtons } from "@/components/ui";
+import LoadingState from "@/components/layout/LoadingState";
 
 const ViewAccessGroupSidePanel: FC = () => {
   const { name, createPageParamsSetter } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse, isLoading } = getAccessGroupQuery();
-  const { instancesCount } = useGetInstances({
-    query: `access-group:${name}`,
-    limit: 1,
-  });
+  const { instancesCount, isGettingInstances } = useGetInstances(
+    {
+      query: `access-group:${name}`,
+      limit: 1,
+    },
+    { listenToUrlParams: false },
+  );
   const {
     value: isDeleteModalOpen,
     setTrue: openDeleteModal,
@@ -49,6 +53,14 @@ const ViewAccessGroupSidePanel: FC = () => {
   const childNames = accessGroup.children
     ? accessGroup.children.split(",").filter(Boolean)
     : [];
+
+  const instancesValue = instancesCount ? (
+    <StaticLink to={ROUTES.instances.root({ accessGroups: [name] })}>
+      {pluralize(instancesCount, ["instance"], "exact")}
+    </StaticLink>
+  ) : (
+    "0 instances"
+  );
 
   return (
     <>
@@ -123,15 +135,7 @@ const ViewAccessGroupSidePanel: FC = () => {
               <InfoGrid.Item
                 label="Associated instances"
                 value={
-                  instancesCount ? (
-                    <StaticLink
-                      to={ROUTES.instances.root({ accessGroups: [name] })}
-                    >
-                      {pluralize(instancesCount, ["instance"], "exact")}
-                    </StaticLink>
-                  ) : (
-                    "0 instances"
-                  )
+                  isGettingInstances ? <LoadingState inline /> : instancesValue
                 }
               />
             </InfoGrid>
