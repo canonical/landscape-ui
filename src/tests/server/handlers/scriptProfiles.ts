@@ -76,7 +76,8 @@ export default [
           if (
             typeof endpointStatus.response === "object" &&
             endpointStatus.response !== null &&
-            endpointStatus.response.statusCode !== null
+            typeof (endpointStatus.response as { statusCode?: unknown })
+              .statusCode === "number"
           ) {
             const { statusCode, ...responseBody } = endpointStatus.response;
             return HttpResponse.json(responseBody, {
@@ -160,7 +161,8 @@ export default [
         if (
           typeof endpointStatus.response === "object" &&
           endpointStatus.response !== null &&
-          endpointStatus.response.statusCode !== null
+          typeof (endpointStatus.response as { statusCode?: unknown })
+            .statusCode === "number"
         ) {
           const { statusCode, ...responseBody } = endpointStatus.response;
           return HttpResponse.json(responseBody, {

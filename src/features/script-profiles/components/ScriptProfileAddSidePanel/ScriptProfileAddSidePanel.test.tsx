@@ -58,7 +58,8 @@ describe("ScriptProfileAddSidePanel", () => {
       status: "variant",
       path: "script-profiles",
       response: {
-        error: "ScriptProfileTitleExists",
+        error: "ScriptProfileDuplicate",
+        statusCode: 409,
         message: "Script profile with this title already exists.",
       },
     });
