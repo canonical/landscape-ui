@@ -145,8 +145,7 @@ const InstancesPage: FC = () => {
                     href={MANAGE_INSTANCES_DOCUMENTATION_URL}
                     target="_blank"
                     rel="nofollow noopener noreferrer"
-                    aria-label="Learn how to register new instances to your Landscape
-                    organization (opens a new tab to Landscape documentation)"
+                    aria-label="Learn how to register new instances to your Landscape organization (opens a new tab to Landscape documentation)"
                   >
                     Learn how to register new instances to your Landscape
                     organization
