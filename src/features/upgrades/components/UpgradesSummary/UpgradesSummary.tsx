@@ -4,7 +4,8 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import type { PackageChangePlanSummaryItem } from "@/features/packages";
 import {
-  TargetState,
+  getApplicableCount,
+  PackagesActionSummaryCount,
   useExecutePackageChangePlan,
   useGetPackageChangePlanSummary,
 } from "@/features/packages";
@@ -65,17 +66,17 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
         Header: "Affected instances",
         Cell: ({
           row: { original: upgrade },
-        }: CellProps<PackageChangePlanSummaryItem>) =>
-          pluralize(
-            upgrade.package_state_counts.find(
-              (stateCount) => stateCount.state === TargetState.APPLICABLE,
-            )?.count ?? 0,
-            ["instance"],
-            "exact",
-          ),
+        }: CellProps<PackageChangePlanSummaryItem>) => (
+          <PackagesActionSummaryCount
+            count={getApplicableCount(upgrade)}
+            action="upgrad"
+            packageChangePlanId={packageChangePlanId}
+            packageChangePlanSummaryItem={upgrade}
+          />
+        ),
       },
     ],
-    [],
+    [packageChangePlanId],
   );
 
   if (summaryError) {

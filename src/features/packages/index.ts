@@ -7,3 +7,5 @@ export { usePackages } from "./hooks";
 export type { GetPackagesParams } from "./hooks";
 export * from "./types";
 export * from "./helpers";
+export { default as PackagesActionSummaryCount } from "./components/PackagesActionSummary/components/PackagesActionSummaryCount";
+export { getApplicableCount } from "./components/PackagesActionSummary/helpers";

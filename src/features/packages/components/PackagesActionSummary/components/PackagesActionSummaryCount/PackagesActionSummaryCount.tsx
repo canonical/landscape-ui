@@ -3,15 +3,12 @@ import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import PackagesActionSummaryDetails from "../PackagesActionSummaryDetails";
 import { pluralize } from "@/utils/_helpers";
-import type {
-  PackageAction,
-  PackageChangePlanSummaryItem,
-} from "@/features/packages";
+import type { PackageChangePlanSummaryItem } from "@/features/packages";
 import SidePanel from "@/components/layout/SidePanel";
 
 export interface PackagesActionSummaryCountProps {
   readonly count: number;
-  readonly action: PackageAction;
+  readonly action: string;
   readonly packageChangePlanId: number;
   readonly packageChangePlanSummaryItem: PackageChangePlanSummaryItem;
 }
