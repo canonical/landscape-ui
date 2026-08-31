@@ -18,7 +18,7 @@ describe("AccessGroupDeleteModal", () => {
 
   it("should render with required text input and default warning", async () => {
     const emptyAccessGroup = accessGroups.find(
-      (value) => value.name == "empty-access-group",
+      (value) => value.name === "empty-access-group",
     );
     assert(emptyAccessGroup);
 
@@ -72,7 +72,7 @@ describe("AccessGroupDeleteModal", () => {
 
   it("should render a specific warning for a single affected instance", async () => {
     const singleAccessGroup = accessGroups.find(
-      (value) => value.name == "singular-access-group",
+      (value) => value.name === "singular-access-group",
     );
     assert(singleAccessGroup);
 
