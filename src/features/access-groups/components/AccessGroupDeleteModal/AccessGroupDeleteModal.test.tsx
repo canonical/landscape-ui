@@ -12,6 +12,10 @@ const handleClose = vi.fn();
 const [accessGroup] = accessGroups;
 
 describe("AccessGroupDeleteModal", () => {
+  beforeEach(() => {
+    handleClose.mockClear();
+  });
+
   it("should render with required text input and default warning", async () => {
     const emptyAccessGroup = accessGroups.find(
       (value) => value.name == "empty-access-group",
@@ -85,67 +89,71 @@ describe("AccessGroupDeleteModal", () => {
     await screen.findByText(/move it to the parent access group/i);
     await screen.findByText(/applied to this instance/i);
   });
-});
 
-it("should close the side panel and show a success notification on successful deletion", async () => {
-  renderWithProviders(
-    <>
+  it("should close the side panel and show a success notification on successful deletion", async () => {
+    renderWithProviders(
+      <>
+        <AccessGroupDeleteModal
+          accessGroup={accessGroup}
+          opened
+          close={handleClose}
+          parentAccessGroupTitle={accessGroup.parent}
+        />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/?sidePath=view",
+    );
+
+    await userEvent.type(
+      screen.getByRole("textbox"),
+      `delete ${accessGroup.title}`,
+    );
+
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Delete" }),
+    );
+
+    expect(
+      await screen.findByText(
+        `You have successfully deleted the "${accessGroup.title}" access group.`,
+      ),
+    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(handleClose).toHaveBeenCalled();
+    });
+
+    expect(getLocationDisplay()).not.toHaveTextContent("sidePath");
+  });
+
+  it("should show an error notification when deletion fails", async () => {
+    setEndpointStatus({ status: "error", path: "RemoveAccessGroup" });
+
+    renderWithProviders(
       <AccessGroupDeleteModal
         accessGroup={accessGroup}
         opened
         close={handleClose}
         parentAccessGroupTitle={accessGroup.parent}
-      />
-      <LocationDisplay />
-    </>,
-    undefined,
-    "/?sidePath=view",
-  );
+      />,
+    );
 
-  await userEvent.type(
-    screen.getByRole("textbox"),
-    `delete ${accessGroup.title}`,
-  );
+    await userEvent.type(
+      screen.getByRole("textbox"),
+      `delete ${accessGroup.title}`,
+    );
 
-  await userEvent.click(await screen.findByRole("button", { name: "Delete" }));
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Delete" }),
+    );
 
-  expect(
-    await screen.findByText(
-      `You have successfully deleted the "${accessGroup.title}" access group.`,
-    ),
-  ).toBeInTheDocument();
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
 
-  await waitFor(() => {
-    expect(handleClose).toHaveBeenCalled();
-  });
-
-  expect(getLocationDisplay()).not.toHaveTextContent("sidePath");
-});
-
-it("should show an error notification when deletion fails", async () => {
-  setEndpointStatus({ status: "error", path: "RemoveAccessGroup" });
-
-  renderWithProviders(
-    <AccessGroupDeleteModal
-      accessGroup={accessGroup}
-      opened
-      close={handleClose}
-      parentAccessGroupTitle={accessGroup.parent}
-    />,
-  );
-
-  await userEvent.type(
-    screen.getByRole("textbox"),
-    `delete ${accessGroup.title}`,
-  );
-
-  await userEvent.click(await screen.findByRole("button", { name: "Delete" }));
-
-  expect(
-    await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
-  ).toBeInTheDocument();
-
-  await waitFor(() => {
-    expect(handleClose).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(handleClose).toHaveBeenCalled();
+    });
   });
 });
