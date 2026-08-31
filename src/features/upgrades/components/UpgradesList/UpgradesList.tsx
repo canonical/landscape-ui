@@ -3,30 +3,22 @@ import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import { useCallback, useMemo, type FC } from "react";
 import type { CellProps, Column } from "react-table";
-import AffectedInstancesLink from "../AffectedInstancesLink";
 import classes from "./UpgradesList.module.scss";
 import type { Package } from "@/features/packages";
+import { pluralize } from "@/utils/_helpers";
 
 interface UpgradesListProps {
   readonly upgradeCount: number;
   readonly currentUpgrades: Package[];
   readonly toggledUpgrades: Package[];
   readonly setToggledUpgrades: (packages: Package[]) => void;
-  readonly enableSelectAllUpgrades: () => void;
-  readonly disableSelectAllUpgrades: () => void;
-  readonly isSelectAllUpgradesEnabled: boolean;
-  readonly query?: string;
 }
 
 const UpgradesList: FC<UpgradesListProps> = ({
   currentUpgrades,
   toggledUpgrades,
   setToggledUpgrades,
-  isSelectAllUpgradesEnabled,
   upgradeCount,
-  enableSelectAllUpgrades,
-  disableSelectAllUpgrades,
-  query,
 }) => {
   const compare = (upgrade1: Package, upgrade2: Package) => {
     return upgrade1.id === upgrade2.id;
@@ -34,10 +26,9 @@ const UpgradesList: FC<UpgradesListProps> = ({
 
   const clearSelection = useCallback(() => {
     setToggledUpgrades([]);
-    disableSelectAllUpgrades();
-  }, [disableSelectAllUpgrades, setToggledUpgrades]);
+  }, [setToggledUpgrades]);
 
-  const isToggled = useCallback(
+  const isSelected = useCallback(
     (upgrade: Package) => {
       const match = (toggledUpgrade: Package) => {
         return compare(upgrade, toggledUpgrade);
@@ -48,14 +39,14 @@ const UpgradesList: FC<UpgradesListProps> = ({
     [toggledUpgrades],
   );
 
-  const isNotToggled = useCallback(
+  const isNotSelected = useCallback(
     (upgrade: Package) => {
-      return !isToggled(upgrade);
+      return !isSelected(upgrade);
     },
-    [isToggled],
+    [isSelected],
   );
 
-  const untoggle = useCallback(
+  const deselect = useCallback(
     (...upgrades: Package[]) => {
       const doesNotMatchAny = (toggledUpgrade: Package) => {
         const doesNotMatch = (upgrade: Package) => {
@@ -72,36 +63,22 @@ const UpgradesList: FC<UpgradesListProps> = ({
     [setToggledUpgrades, toggledUpgrades],
   );
 
-  const untoggleAll = useCallback(() => {
-    untoggle(...currentUpgrades);
-  }, [currentUpgrades, untoggle]);
+  const deselectAll = useCallback(() => {
+    deselect(...currentUpgrades);
+  }, [currentUpgrades, deselect]);
 
-  const toggle = useCallback(
+  const select = useCallback(
     (...upgrades: Package[]) => {
-      const untoggledUpgrades = upgrades.filter(isNotToggled);
+      const untoggledUpgrades = upgrades.filter(isNotSelected);
 
-      if (
-        isSelectAllUpgradesEnabled &&
-        toggledUpgrades.length + untoggledUpgrades.length >= upgradeCount
-      ) {
-        clearSelection();
-      } else {
-        setToggledUpgrades([...toggledUpgrades, ...untoggledUpgrades]);
-      }
+      setToggledUpgrades([...toggledUpgrades, ...untoggledUpgrades]);
     },
-    [
-      clearSelection,
-      isNotToggled,
-      isSelectAllUpgradesEnabled,
-      setToggledUpgrades,
-      toggledUpgrades,
-      upgradeCount,
-    ],
+    [isNotSelected, setToggledUpgrades, toggledUpgrades],
   );
 
-  const toggleAll = useCallback(() => {
-    toggle(...currentUpgrades);
-  }, [currentUpgrades, toggle]);
+  const selectAll = useCallback(() => {
+    select(...currentUpgrades);
+  }, [currentUpgrades, select]);
 
   const columns = useMemo<Column<Package>[]>(
     () => [
@@ -115,24 +92,17 @@ const UpgradesList: FC<UpgradesListProps> = ({
               inline
               disabled={!currentUpgrades.length}
               indeterminate={
-                currentUpgrades.some(isToggled) &&
-                currentUpgrades.some(isNotToggled)
+                currentUpgrades.some(isSelected) &&
+                currentUpgrades.some(isNotSelected)
               }
               checked={
-                isSelectAllUpgradesEnabled
-                  ? currentUpgrades.every(isNotToggled)
-                  : currentUpgrades.every(isToggled) && !!currentUpgrades.length
+                currentUpgrades.every(isSelected) && !!currentUpgrades.length
               }
               onChange={() => {
-                if (
-                  (isSelectAllUpgradesEnabled &&
-                    currentUpgrades.every(isToggled)) ||
-                  (!isSelectAllUpgradesEnabled &&
-                    currentUpgrades.some(isToggled))
-                ) {
-                  untoggleAll();
+                if (currentUpgrades.some(isSelected)) {
+                  deselectAll();
                 } else {
-                  toggleAll();
+                  selectAll();
                 }
               }}
             />
@@ -149,16 +119,12 @@ const UpgradesList: FC<UpgradesListProps> = ({
                 </span>
               }
               labelClassName="u-no-padding"
-              checked={
-                isSelectAllUpgradesEnabled
-                  ? isNotToggled(upgradePackage)
-                  : isToggled(upgradePackage)
-              }
+              checked={isSelected(upgradePackage)}
               onChange={() => {
-                if (isToggled(upgradePackage)) {
-                  untoggle(upgradePackage);
+                if (isSelected(upgradePackage)) {
+                  deselect(upgradePackage);
                 } else {
-                  toggle(upgradePackage);
+                  select(upgradePackage);
                 }
               }}
             />
@@ -173,16 +139,10 @@ const UpgradesList: FC<UpgradesListProps> = ({
           upgradePackage.version,
       },
       {
-        Header: "Upgrade type",
-        Cell: ({ row: { original: upgradePackage } }: CellProps<Package>) =>
-          upgradePackage.usn ? "Security" : "Regular",
-      },
-      {
         accessor: "computers",
         Header: "Affected instances",
-        Cell: ({ row: { original: upgradePackage } }: CellProps<Package>) => (
-          <AffectedInstancesLink upgrade={upgradePackage} query={query} />
-        ),
+        Cell: ({ row: { original: upgradePackage } }: CellProps<Package>) =>
+          pluralize(upgradePackage.computers.count, ["instance"], "exact"),
       },
       {
         accessor: "summary",
@@ -191,26 +151,21 @@ const UpgradesList: FC<UpgradesListProps> = ({
     ],
     [
       currentUpgrades,
-      isSelectAllUpgradesEnabled,
-      isNotToggled,
-      isToggled,
-      untoggleAll,
-      toggleAll,
-      toggle,
-      untoggle,
-      query,
+      isNotSelected,
+      isSelected,
+      deselectAll,
+      selectAll,
+      select,
+      deselect,
     ],
   );
 
-  const subhead = (isSelectAllUpgradesEnabled || !!toggledUpgrades.length) &&
+  const subhead = !!toggledUpgrades.length &&
     upgradeCount > currentUpgrades.length && (
       <td colSpan={5} className="u-no-padding">
         <ResponsiveTableSubhead>
           <span>
-            {isSelectAllUpgradesEnabled
-              ? upgradeCount - toggledUpgrades.length
-              : toggledUpgrades.length}{" "}
-            of {upgradeCount} packages selected
+            {toggledUpgrades.length} of {upgradeCount} packages selected
           </span>
           <Button
             className="u-no-padding u-no-margin"
@@ -219,37 +174,6 @@ const UpgradesList: FC<UpgradesListProps> = ({
           >
             Clear selection
           </Button>
-          {((isSelectAllUpgradesEnabled && currentUpgrades.some(isToggled)) ||
-            (!isSelectAllUpgradesEnabled &&
-              currentUpgrades.some(isNotToggled))) && (
-            <Button
-              className="u-no-padding u-no-margin"
-              appearance="link"
-              onClick={() => {
-                if (isSelectAllUpgradesEnabled) {
-                  untoggleAll();
-                } else {
-                  toggleAll();
-                }
-              }}
-            >
-              Select all packages on this page
-            </Button>
-          )}
-          {((!isSelectAllUpgradesEnabled &&
-            toggledUpgrades.length < upgradeCount) ||
-            (isSelectAllUpgradesEnabled && toggledUpgrades.length > 0)) && (
-            <Button
-              className="u-no-padding u-no-margin"
-              appearance="link"
-              onClick={() => {
-                setToggledUpgrades([]);
-                enableSelectAllUpgrades();
-              }}
-            >
-              Select all packages on all pages
-            </Button>
-          )}
         </ResponsiveTableSubhead>
       </td>
     );

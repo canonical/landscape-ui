@@ -13,7 +13,7 @@ import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-import { getFeatures, hasUpgrades, hasSecurityUpgrades } from "../../helpers";
+import { getFeatures, hasUpgrades } from "../../helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
@@ -24,11 +24,6 @@ const RunInstanceScriptForm = lazy(
 );
 const Upgrades = lazy(
   async () => import("@/features/upgrades/components/Upgrades"),
-);
-const UpgradesSummary = lazy(async () =>
-  import("@/features/upgrades").then((module) => ({
-    default: module.UpgradesSummary,
-  })),
 );
 const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
 const DistributionUpgrades = lazy(
@@ -139,26 +134,6 @@ const InstancesPageActions = memo(function InstancesPageActions({
         <Upgrades selectedInstances={selectedInstances} />
       </Suspense>,
       "large",
-    );
-  };
-
-  const handleAllUpgradesRequest = () => {
-    setSidePanelContent(
-      "Apply all upgrades",
-      <Suspense fallback={<LoadingState />}>
-        <UpgradesSummary isSelectAllUpgradesEnabled />
-      </Suspense>,
-      "medium",
-    );
-  };
-
-  const handleAllSecurityUpgradesRequest = () => {
-    setSidePanelContent(
-      "Apply all security upgrades",
-      <Suspense fallback={<LoadingState />}>
-        <UpgradesSummary isSelectAllUpgradesEnabled upgradeType="security" />
-      </Suspense>,
-      "medium",
     );
   };
 
@@ -403,36 +378,10 @@ const InstancesPageActions = memo(function InstancesPageActions({
       children: (
         <>
           <Icon name="arrow-up" />
-          <span>Upgrade (by package)</span>
+          <span>Upgrade</span>
         </>
       ),
       onClick: handleUpgradesRequest,
-      disabled: noInstanceHasUpgrades,
-      hasIcon: true,
-    },
-    {
-      children: (
-        <>
-          <Icon name="arrow-up" />
-          <span>Security upgrades (by USN)</span>
-        </>
-      ),
-      onClick: handleAllSecurityUpgradesRequest,
-      disabled: selectedInstances.every(
-        (instance) =>
-          !hasSecurityUpgrades(instance.alerts) ||
-          !getFeatures(instance).packages,
-      ),
-      hasIcon: true,
-    },
-    {
-      children: (
-        <>
-          <Icon name="arrow-up" />
-          <span>Apply all upgrades</span>
-        </>
-      ),
-      onClick: handleAllUpgradesRequest,
       disabled: noInstanceHasUpgrades,
       hasIcon: true,
     },

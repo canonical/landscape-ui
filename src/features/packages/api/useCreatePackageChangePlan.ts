@@ -48,11 +48,9 @@ export type HoldConfig = ByIds;
 
 export type UnholdConfig = ByIds;
 
-export type UpgradeConfig =
-  | {
-      select_by_ids: ByIds;
-    }
-  | { select_by_category: ByCategory };
+export interface UpgradeConfig {
+  select_by_ids: ByIds;
+}
 
 export interface ChangeVersionConfig {
   version_changes?: VersionChange[];

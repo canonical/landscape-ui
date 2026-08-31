@@ -1,4 +1,4 @@
-import { SidePanelTableFilterChips, TableFilter } from "@/components/filter";
+import { SidePanelTableFilterChips } from "@/components/filter";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
@@ -10,13 +10,11 @@ import { getSelectionLabel } from "@/utils/_helpers";
 import { SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import { useState, type FC } from "react";
-import { useBoolean } from "usehooks-ts";
 import UpgradesList from "../UpgradesList";
 import UpgradesSummary from "../UpgradesSummary";
 import classes from "./Upgrades.module.scss";
-import { UPGRADE_TYPE_OPTIONS } from "./constants";
 import type { Package } from "@/features/packages";
-import { FilterState, useSearchUpgrades } from "@/features/packages";
+import { useSearchUpgrades } from "@/features/packages";
 
 interface UpgradesProps {
   readonly selectedInstances: Instance[];
@@ -32,14 +30,7 @@ const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
-  const [upgradeType, setUpgradeType] = useState("all");
   const [step, setStep] = useState<"list" | "summary">("list");
-
-  const {
-    value: isSelectAllUpgradesEnabled,
-    setTrue: enableSelectAllUpgrades,
-    setFalse: disableSelectAllUpgrades,
-  } = useBoolean();
 
   const {
     data: upgradesResponse,
@@ -48,7 +39,6 @@ const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
   } = useSearchUpgrades({
     offset: (currentPage - 1) * pageSize,
     limit: pageSize,
-    security: upgradeType === "security" ? FilterState.TRUE : undefined,
     text: search || undefined,
     computer_query: query ?? "",
   });
@@ -59,7 +49,6 @@ const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
 
   const reset = () => {
     setToggledUpgrades([]);
-    disableSelectAllUpgrades();
     setCurrentPage(DEFAULT_CURRENT_PAGE);
   };
 
@@ -73,48 +62,25 @@ const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
     handleSearch("");
   };
 
-  const handleUpgradeTypeSelect = (value: string) => {
-    setUpgradeType(value);
-    reset();
-  };
-
   switch (step) {
     case "list":
       return (
         <>
-          <div className={classes.header}>
-            <SearchBox
-              className={classNames("u-no-margin--bottom", classes.search)}
-              externallyControlled
-              value={inputValue}
-              onChange={setInputValue}
-              onClear={clearSearch}
-              onSearch={handleSearch}
-              autoComplete="off"
-            />
-            <TableFilter
-              type="single"
-              showSelectionOnToggleLabel
-              label="Upgrade type"
-              onItemSelect={handleUpgradeTypeSelect}
-              options={UPGRADE_TYPE_OPTIONS}
-              selectedItem={upgradeType}
-              hasBadge={upgradeType !== "all"}
-            />
-          </div>
+          <SearchBox
+            className={classNames(classes.search)}
+            externallyControlled
+            value={inputValue}
+            onChange={setInputValue}
+            onClear={clearSearch}
+            onSearch={handleSearch}
+            autoComplete="off"
+          />
           <SidePanelTableFilterChips
             filters={[
               {
                 label: "Search",
                 item: search,
                 clear: clearSearch,
-              },
-              {
-                label: "Upgrades",
-                item: upgradeType === "security" ? "Security" : undefined,
-                clear: () => {
-                  handleUpgradeTypeSelect("all");
-                },
               },
             ]}
           />
@@ -126,10 +92,6 @@ const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
               toggledUpgrades={toggledUpgrades}
               setToggledUpgrades={setToggledUpgrades}
               upgradeCount={upgradesResponse.data.count}
-              isSelectAllUpgradesEnabled={isSelectAllUpgradesEnabled}
-              enableSelectAllUpgrades={enableSelectAllUpgrades}
-              disableSelectAllUpgrades={disableSelectAllUpgrades}
-              query={query}
             />
           )}
           <SidePanelTablePagination
@@ -143,10 +105,7 @@ const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
           <SidePanelFormButtons
             onCancel={closeSidePanel}
             submitButtonText="Next"
-            submitButtonDisabled={
-              isPendingUpgrades ||
-              !(isSelectAllUpgradesEnabled || toggledUpgrades.length)
-            }
+            submitButtonDisabled={isPendingUpgrades || !toggledUpgrades.length}
             onSubmit={() => {
               setStep("summary");
               setSidePanelTitle("Summary");
@@ -159,7 +118,6 @@ const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
     case "summary":
       return (
         <UpgradesSummary
-          isSelectAllUpgradesEnabled={isSelectAllUpgradesEnabled}
           onBackButtonPress={() => {
             setStep("list");
             setSidePanelTitle(
@@ -170,7 +128,6 @@ const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
           query={query}
           search={search}
           toggledUpgrades={toggledUpgrades}
-          upgradeType={upgradeType}
         />
       );
   }

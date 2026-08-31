@@ -3,11 +3,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import type { Package } from "@/features/packages";
-import {
-  FilterState,
-  usePackages,
-  useSearchUpgrades,
-} from "@/features/packages";
+import { usePackages, useSearchUpgrades } from "@/features/packages";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
@@ -17,13 +13,11 @@ import {
 import { pluralize } from "@/utils/_helpers";
 import { useMemo, useState, type FC } from "react";
 import type { CellProps, Column } from "react-table";
-import AffectedInstancesLink from "../AffectedInstancesLink";
 import classes from "./UpgradesSummary.module.scss";
 
 interface UpgradesSummaryProps {
   readonly toggledUpgrades?: Package[];
   readonly isSelectAllUpgradesEnabled?: boolean;
-  readonly upgradeType?: string;
   readonly search?: string;
   readonly query?: string;
   readonly onBackButtonPress?: () => void;
@@ -32,7 +26,6 @@ interface UpgradesSummaryProps {
 const UpgradesSummary: FC<UpgradesSummaryProps> = ({
   toggledUpgrades = [],
   isSelectAllUpgradesEnabled,
-  upgradeType,
   search,
   query,
   onBackButtonPress,
@@ -57,7 +50,6 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
     {
       offset: (currentPage - 1) * pageSize,
       limit: pageSize,
-      security: upgradeType === "security" ? FilterState.TRUE : undefined,
       computer_query: query ?? "",
       text: search,
     },
@@ -74,15 +66,14 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
           upgrade.name,
       },
       {
-        Header: "Affected instances",
-        Cell: ({ row: { original: upgrade } }: CellProps<Package>) => (
-          <AffectedInstancesLink upgrade={upgrade} query={query} />
-        ),
-      },
-      {
-        Header: "Current version",
+        Header: "Upgrade version",
         Cell: ({ row: { original: upgrade } }: CellProps<Package>) =>
           upgrade.version,
+      },
+      {
+        Header: "Affected instances",
+        Cell: ({ row: { original: upgrade } }: CellProps<Package>) =>
+          pluralize(upgrade.computers.count, ["instance"], "exact"),
       },
     ],
     [query],
@@ -102,7 +93,6 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
         mode: isSelectAllUpgradesEnabled ? "exclude" : "include",
         query,
         packages: toggledUpgrades.map((upgrade) => upgrade.id),
-        security_only: upgradeType === "security",
       });
 
       closeSidePanel();
@@ -118,7 +108,7 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
   return (
     <>
       <span className={classes.summary}>
-        {pluralize(upgradeCount, ["package upgrade"], "exact")} will be applied.
+        The following packages will be upgraded:
       </span>
       <ResponsiveTable
         columns={columns}
