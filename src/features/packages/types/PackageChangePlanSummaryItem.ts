@@ -9,7 +9,7 @@ export interface StateCount {
   count: number;
 }
 
-export interface PackageChangePlanSummaryItem {
+export interface PackageChangePlanSummaryItem extends Record<string, unknown> {
   package_id: number;
   package_name: string;
   package_version: string;

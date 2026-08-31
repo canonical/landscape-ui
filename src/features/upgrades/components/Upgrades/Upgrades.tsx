@@ -14,23 +14,36 @@ import UpgradesList from "../UpgradesList";
 import UpgradesSummary from "../UpgradesSummary";
 import classes from "./Upgrades.module.scss";
 import type { Package } from "@/features/packages";
-import { useSearchUpgrades } from "@/features/packages";
+import {
+  useCreatePackageChangePlan,
+  useDeletePackageChangePlan,
+  useSearchUpgrades,
+} from "@/features/packages";
 
 interface UpgradesProps {
   readonly selectedInstances: Instance[];
-  readonly query?: string;
 }
 
-const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
-  const { closeSidePanel, setSidePanelTitle, changeSidePanelSize } =
-    useSidePanel();
+const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
+  const {
+    closeSidePanel,
+    setSidePanelTitle,
+    changeSidePanelSize,
+    setOnCloseOverride,
+  } = useSidePanel();
 
-  const [toggledUpgrades, setToggledUpgrades] = useState<Package[]>([]);
+  const [selectedUpgrades, setSelectedUpgrades] = useState<Package[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
-  const [step, setStep] = useState<"list" | "summary">("list");
+  const [packageChangePlanId, setPackageChangePlanId] = useState<number | null>(
+    null,
+  );
+
+  const computerQuery = selectedInstances
+    .map((instance) => `id:${instance.id}`)
+    .join(" OR ");
 
   const {
     data: upgradesResponse,
@@ -40,15 +53,22 @@ const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
     offset: (currentPage - 1) * pageSize,
     limit: pageSize,
     text: search || undefined,
-    computer_query: query ?? "",
+    computer_query: computerQuery,
   });
+
+  const {
+    mutateAsync: createPackageChangePlan,
+    isPending: isCreatingPackageChangePlan,
+  } = useCreatePackageChangePlan();
+
+  const { mutateAsync: deletePackageChangePlan } = useDeletePackageChangePlan();
 
   if (upgradesError) {
     throw upgradesError;
   }
 
   const reset = () => {
-    setToggledUpgrades([]);
+    setSelectedUpgrades([]);
     setCurrentPage(DEFAULT_CURRENT_PAGE);
   };
 
@@ -62,8 +82,8 @@ const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
     handleSearch("");
   };
 
-  switch (step) {
-    case "list":
+  switch (packageChangePlanId) {
+    case null:
       return (
         <>
           <SearchBox
@@ -89,8 +109,8 @@ const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
           ) : (
             <UpgradesList
               currentUpgrades={upgradesResponse.data.packages}
-              toggledUpgrades={toggledUpgrades}
-              setToggledUpgrades={setToggledUpgrades}
+              toggledUpgrades={selectedUpgrades}
+              setToggledUpgrades={setSelectedUpgrades}
               upgradeCount={upgradesResponse.data.count}
             />
           )}
@@ -105,29 +125,45 @@ const Upgrades: FC<UpgradesProps> = ({ query, selectedInstances }) => {
           <SidePanelFormButtons
             onCancel={closeSidePanel}
             submitButtonText="Next"
-            submitButtonDisabled={isPendingUpgrades || !toggledUpgrades.length}
-            onSubmit={() => {
-              setStep("summary");
+            submitButtonDisabled={isPendingUpgrades || !selectedUpgrades.length}
+            submitButtonLoading={isCreatingPackageChangePlan}
+            onSubmit={async () => {
+              const config = {
+                upgrade_config: {
+                  select_by_ids: {
+                    package_ids: selectedUpgrades.map(({ id }) => id),
+                  },
+                },
+              };
+
+              const { data } = await createPackageChangePlan({
+                computer_query: computerQuery,
+                ...config,
+              });
+
               setSidePanelTitle("Summary");
               changeSidePanelSize("medium");
+              setPackageChangePlanId(data.id);
+              setOnCloseOverride(() => {
+                deletePackageChangePlan(data.id);
+                closeSidePanel();
+              });
             }}
           />
         </>
       );
 
-    case "summary":
+    default:
       return (
         <UpgradesSummary
           onBackButtonPress={() => {
-            setStep("list");
             setSidePanelTitle(
               `Upgrade ${getSelectionLabel(selectedInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
             );
             changeSidePanelSize("large");
+            setPackageChangePlanId(null);
           }}
-          query={query}
-          search={search}
-          toggledUpgrades={toggledUpgrades}
+          packageChangePlanId={packageChangePlanId}
         />
       );
   }

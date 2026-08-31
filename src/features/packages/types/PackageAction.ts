@@ -4,8 +4,4 @@ export type InstalledPackageAction =
 export type InstalledPackageActionAppearance = "positive" | "negative";
 
 export type PackageAction =
-  | "install"
-  | "uninstall"
-  | "changeVersion"
-  | "hold"
-  | "unhold";
+  "install" | "uninstall" | "changeVersion" | "hold" | "unhold";
