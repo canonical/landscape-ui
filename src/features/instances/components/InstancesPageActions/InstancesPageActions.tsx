@@ -129,7 +129,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleUpgradesRequest = () => {
     setSidePanelContent(
-      `Apply upgrades to ${getSelectionLabel(selectedInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
+      `Apply upgrades to ${getSelectionLabel(selectedInstances, (instance) => instance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
         <Upgrades selectedInstances={selectedInstances} />
       </Suspense>,

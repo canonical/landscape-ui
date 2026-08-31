@@ -1,6 +1,6 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
-import { Button, CheckboxInput } from "@canonical/react-components";
+import { CheckboxInput } from "@canonical/react-components";
 import { useCallback, useMemo, type FC } from "react";
 import type { CellProps, Column } from "react-table";
 import classes from "./UpgradesList.module.scss";
@@ -10,14 +10,14 @@ import { pluralize } from "@/utils/_helpers";
 interface UpgradesListProps {
   readonly upgradeCount: number;
   readonly currentUpgrades: Package[];
-  readonly toggledUpgrades: Package[];
-  readonly setToggledUpgrades: (packages: Package[]) => void;
+  readonly selectedUpgrades: Package[];
+  readonly setSelectedUpgrades: (packages: Package[]) => void;
 }
 
 const UpgradesList: FC<UpgradesListProps> = ({
   currentUpgrades,
-  toggledUpgrades,
-  setToggledUpgrades,
+  selectedUpgrades,
+  setSelectedUpgrades,
   upgradeCount,
 }) => {
   const compare = (upgrade1: Package, upgrade2: Package) => {
@@ -25,8 +25,8 @@ const UpgradesList: FC<UpgradesListProps> = ({
   };
 
   const clearSelection = useCallback(() => {
-    setToggledUpgrades([]);
-  }, [setToggledUpgrades]);
+    setSelectedUpgrades([]);
+  }, [setSelectedUpgrades]);
 
   const isSelected = useCallback(
     (upgrade: Package) => {
@@ -34,9 +34,9 @@ const UpgradesList: FC<UpgradesListProps> = ({
         return compare(upgrade, toggledUpgrade);
       };
 
-      return toggledUpgrades.some(match);
+      return selectedUpgrades.some(match);
     },
-    [toggledUpgrades],
+    [selectedUpgrades],
   );
 
   const isNotSelected = useCallback(
@@ -56,11 +56,11 @@ const UpgradesList: FC<UpgradesListProps> = ({
         return upgrades.every(doesNotMatch);
       };
 
-      const newUpgrades = toggledUpgrades.filter(doesNotMatchAny);
+      const newUpgrades = selectedUpgrades.filter(doesNotMatchAny);
 
-      setToggledUpgrades(newUpgrades);
+      setSelectedUpgrades(newUpgrades);
     },
-    [setToggledUpgrades, toggledUpgrades],
+    [setSelectedUpgrades, selectedUpgrades],
   );
 
   const deselectAll = useCallback(() => {
@@ -71,9 +71,9 @@ const UpgradesList: FC<UpgradesListProps> = ({
     (...upgrades: Package[]) => {
       const untoggledUpgrades = upgrades.filter(isNotSelected);
 
-      setToggledUpgrades([...toggledUpgrades, ...untoggledUpgrades]);
+      setSelectedUpgrades([...selectedUpgrades, ...untoggledUpgrades]);
     },
-    [isNotSelected, setToggledUpgrades, toggledUpgrades],
+    [isNotSelected, setSelectedUpgrades, selectedUpgrades],
   );
 
   const selectAll = useCallback(() => {
@@ -160,21 +160,15 @@ const UpgradesList: FC<UpgradesListProps> = ({
     ],
   );
 
-  const subhead = !!toggledUpgrades.length &&
+  const subhead = !!selectedUpgrades.length &&
     upgradeCount > currentUpgrades.length && (
       <td colSpan={5} className="u-no-padding">
-        <ResponsiveTableSubhead>
-          <span>
-            {toggledUpgrades.length} of {upgradeCount} packages selected
-          </span>
-          <Button
-            className="u-no-padding u-no-margin"
-            appearance="link"
-            onClick={clearSelection}
-          >
-            Clear selection
-          </Button>
-        </ResponsiveTableSubhead>
+        <ResponsiveTableSubhead
+          itemName="package"
+          onClearSelection={clearSelection}
+          selectedCount={selectedUpgrades.length}
+          totalCount={upgradeCount}
+        />
       </td>
     );
 

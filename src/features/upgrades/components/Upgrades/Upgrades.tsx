@@ -109,8 +109,8 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
           ) : (
             <UpgradesList
               currentUpgrades={upgradesResponse.data.packages}
-              toggledUpgrades={selectedUpgrades}
-              setToggledUpgrades={setSelectedUpgrades}
+              selectedUpgrades={selectedUpgrades}
+              setSelectedUpgrades={setSelectedUpgrades}
               upgradeCount={upgradesResponse.data.count}
             />
           )}

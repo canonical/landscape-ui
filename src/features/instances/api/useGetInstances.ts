@@ -70,7 +70,7 @@ export const useGetInstances = (
 
   return {
     instances: response?.data.results ?? [],
-    instancesCount: response?.data.count ?? 0,
+    instancesCount: response?.data.count,
     instancesError: error,
     isErrorInstances: isError,
     isFetchingInstances: isFetching,

@@ -11,7 +11,7 @@ import { memo, useState } from "react";
 import usePageParams from "@/hooks/usePageParams";
 
 interface InstancesContainerProps {
-  readonly instanceCount: number;
+  readonly instanceCount: number | undefined;
   readonly instances: Instance[];
   readonly selectedInstances: Instance[];
   readonly setSelectedInstances: (instances: Instance[]) => void;
