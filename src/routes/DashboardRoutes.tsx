@@ -212,6 +212,7 @@ export const DashboardRoutes = (
           path={PATHS.account.apiCredentials}
           element={<Pages.ApiCredentials />}
         />
+        <Route path={PATHS.account.about} element={<Pages.AboutPage />} />
       </Route>
     </Route>
   </Route>

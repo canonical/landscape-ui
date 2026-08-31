@@ -5,6 +5,7 @@ export const ACCOUNT_PATHS = {
   general: "general",
   alerts: "alerts",
   apiCredentials: "api-credentials",
+  about: "about",
 } as const;
 
 const base = `/${ACCOUNT_PATHS.root}`;
@@ -16,4 +17,5 @@ export const ACCOUNT_ROUTES = {
   general: createRoute(buildAccountPath(ACCOUNT_PATHS.general)),
   alerts: createRoute(buildAccountPath(ACCOUNT_PATHS.alerts)),
   apiCredentials: createRoute(buildAccountPath(ACCOUNT_PATHS.apiCredentials)),
+  about: createRoute(buildAccountPath(ACCOUNT_PATHS.about)),
 } as const;

@@ -17,5 +17,9 @@ export const ACCOUNT_SETTINGS = {
       label: "API credentials",
       path: ROUTES.account.apiCredentials(),
     },
+    {
+      label: "About",
+      path: ROUTES.account.about(),
+    },
   ] as const,
 } satisfies MenuItem;
