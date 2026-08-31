@@ -26,11 +26,11 @@ Change type (tick one):
 
 ## Docs
 
-User-facing changes need a companion PR against [landscape-documentation](https://github.com/canonical/landscape-documentation) (see [docs/DOCUMENTATION.md](../docs/DOCUMENTATION.md) for when it's required and how to target branches). Tick one:
+Changes that affect a documented workflow need a companion PR against [landscape-documentation](https://github.com/canonical/landscape-documentation) (see [docs/DOCUMENTATION.md](../docs/DOCUMENTATION.md) for when it's required and how to target branches). Tick one:
 
 - [ ] **Docs PR opened** — Link: `______`
 - [ ] **Docs PR needed, deferred** — tracked in: `______`
-- [ ] **Not user-facing** — no documentation impact
+- [ ] **No docs needed** — internal change, or user-facing but doesn't alter any documented workflow
 
 ## Reviewer Setup
 

@@ -2,12 +2,12 @@
 
 Landscape's public documentation lives in a separate repository:
 [canonical/landscape-documentation](https://github.com/canonical/landscape-documentation).
-When a change in this repository is user-facing, it needs a companion docs PR
-against that repository. This document explains when and how.
+When a change in this repository alters a documented workflow, it needs a
+companion docs PR against that repository. This document explains when and how.
 
 ## When a docs PR is required
 
-Open a companion docs PR when a change alters what users see or do in the web
+Open a companion docs PR when a change alters what users **do** in the web
 portal, for example:
 
 - A new page, feature, or workflow
@@ -69,5 +69,7 @@ already exists for the feature.
 ## PR checklist integration
 
 The pull request template in this repository includes a **Docs** section. Every
-PR must either link the companion docs PR or state that the change is not
-user-facing.
+PR must either link the companion docs PR or state that no docs change is
+needed. Note that "user-facing" and "needs docs" are not the same test: a
+purely visual change can be user-facing and still tick **No docs needed**, as
+long as it doesn't alter a documented workflow.
