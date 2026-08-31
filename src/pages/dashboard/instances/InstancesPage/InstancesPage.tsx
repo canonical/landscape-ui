@@ -142,6 +142,7 @@ const InstancesPage: FC = () => {
                   <span>Account name: {currentAccount.name}</span>
                   <br />
                   <Link
+                    className={classes.instancesPageDocumentationLink}
                     href={MANAGE_INSTANCES_DOCUMENTATION_URL}
                     target="_blank"
                     rel="nofollow noopener noreferrer"

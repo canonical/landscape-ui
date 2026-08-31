@@ -1,4 +1,5 @@
 @import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
 
 .instancesPageHeader {
   column-gap: $spv--x-small;
@@ -7,11 +8,17 @@
 .instancesPageHelperContent {
   align-self: flex-end;
   margin: $spv--x-small;
-  padding-bottom: $spv--x-small;
+  padding-bottom: 2px;
 }
 
 .instancesPageAccountInfoButton {
   border: none;
   cursor: pointer;
   padding: 0;
+}
+
+.instancesPageDocumentationLink {
+  &:visited {
+    color: $color-link;
+  }
 }
