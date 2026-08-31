@@ -1,5 +1,6 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import useDebug from "@/hooks/useDebug";
+import usePageParams from "@/hooks/usePageParams";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import { useGetInstances } from "@/features/instances";
@@ -21,15 +22,16 @@ const AccessGroupDeleteModal: FC<AccessGroupDeleteModalProps> = ({
   parentAccessGroupTitle,
 }) => {
   const debug = useDebug();
+  const { closeSidePanel } = usePageParams();
   const { notify } = useNotify();
   const { removeAccessGroupQuery } = useRoles();
   const { mutateAsync: remove, isPending: isRemoving } = removeAccessGroupQuery;
 
   const tryRemove = async () => {
     try {
-      await remove({
-        name: accessGroup.name,
-      });
+      await remove({ name: accessGroup.name });
+
+      closeSidePanel();
 
       notify.success({
         title: `You have successfully deleted the "${accessGroup.title}" access group.`,

@@ -6,6 +6,9 @@ import ViewAccessGroupSidePanel from "./ViewAccessGroupSidePanel";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { ErrorBoundary } from "@sentry/react";
+import type { AccessGroup } from "@/features/access-groups";
 
 const renderComponent = (name = "desktop") =>
   renderWithProviders(
@@ -73,6 +76,61 @@ describe("ViewAccessGroupSidePanel", () => {
       screen.getByRole("dialog", {
         name: "Deleting Desktop machines access group",
       }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows loading state while data is being fetched", async () => {
+    setEndpointStatus("loading");
+    renderComponent();
+
+    expect(await screen.findByRole("status")).toBeInTheDocument();
+  });
+
+  it("throws when the access group is not found", async () => {
+    setEndpointStatus({ status: "error", path: "GetAccessGroups" });
+
+    renderWithProviders(
+      <ErrorBoundary fallback={<p>error boundary fallback</p>}>
+        <ViewAccessGroupSidePanel />
+      </ErrorBoundary>,
+      undefined,
+      "?sidePath=view&name=nonexistent",
+    );
+
+    expect(
+      await screen.findByText("error boundary fallback"),
+    ).toBeInTheDocument();
+  });
+
+  it("falls back to raw parent name when parent is not in the list", async () => {
+    const orphanGroup: AccessGroup = {
+      name: "orphan",
+      title: "Orphan Group",
+      parent: "missing-parent",
+      children: "",
+    };
+    setEndpointStatus({ status: "variant", response: [orphanGroup] });
+    renderComponent("orphan");
+
+    await screen.findByRole("heading", { name: "Orphan Group" });
+    expect(
+      screen.getByRole("button", { name: "missing-parent" }),
+    ).toBeInTheDocument();
+  });
+
+  it("falls back to raw child name when child is not in the list", async () => {
+    const parentGroup: AccessGroup = {
+      name: "parent-group",
+      title: "Parent Group",
+      parent: "",
+      children: "ghost-child",
+    };
+    setEndpointStatus({ status: "variant", response: [parentGroup] });
+    renderComponent("parent-group");
+
+    await screen.findByRole("heading", { name: "Parent Group" });
+    expect(
+      screen.getByRole("button", { name: "ghost-child" }),
     ).toBeInTheDocument();
   });
 });

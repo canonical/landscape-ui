@@ -25,6 +25,12 @@ export default [
       if (endpointStatus.status === "empty") {
         return HttpResponse.json([]);
       }
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json(
+          (endpointStatus.response ?? []) as AccessGroup[],
+        );
+      }
     }
 
     const url = new URL(request.url);
@@ -41,6 +47,12 @@ export default [
       !isAction(request, ["ChangeComputersAccessGroup", "RemoveAccessGroup"])
     ) {
       return;
+    }
+
+    const endpointStatus = getEndpointStatus("RemoveAccessGroup");
+
+    if (endpointStatus.status === "error") {
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json({ success: true });

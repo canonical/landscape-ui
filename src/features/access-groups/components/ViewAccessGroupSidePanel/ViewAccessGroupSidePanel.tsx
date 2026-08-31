@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { lazy, type FC } from "react";
 import SidePanel from "@/components/layout/SidePanel";
 import InfoGrid from "@/components/layout/InfoGrid/InfoGrid";
 import usePageParams from "@/hooks/usePageParams";
@@ -7,10 +7,13 @@ import AccessGroupAdministratorsTable from "./AccessGroupAdministratorsTable/Acc
 import Blocks from "@/components/layout/Blocks/Blocks";
 import { Button, Icon } from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
-import AccessGroupDeleteModal from "../AccessGroupDeleteModal";
 import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import { ResponsiveButtons } from "@/components/ui";
 import AccessGroupInstanceCountCell from "../AccessGroupInstanceCountCell";
+
+const AccessGroupDeleteModal = lazy(
+  async () => import("../AccessGroupDeleteModal"),
+);
 
 const ViewAccessGroupSidePanel: FC = () => {
   const { name, createPageParamsSetter } = usePageParams();
