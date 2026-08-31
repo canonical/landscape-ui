@@ -1,8 +1,9 @@
 import type {
+  PackageWithVersions,
   SearchPackagesRequest,
   SearchPackagesResponse,
 } from "@/features/packages";
-import { mapActionToQueryParams, type Package } from "@/features/packages";
+import { mapActionToQueryParams } from "@/features/packages";
 import type { FC } from "react";
 import classes from "./PackageSearchDowngradeItem.module.scss";
 import type { MultiSelectItem } from "@canonical/react-components";
@@ -20,7 +21,7 @@ import classNames from "classnames";
 
 interface PackageSearchDowngradeItemProps {
   readonly instanceIds: number[];
-  readonly selectedPackage: [Package, number[]];
+  readonly selectedPackage: PackageWithVersions;
   readonly onDelete: () => void;
   readonly onItemsUpdate: (items: MultiSelectItem[]) => void;
 }

@@ -1,13 +1,14 @@
-import { availableVersions, selectedPackages } from "@/tests/mocks/packagesOld";
+import { availableVersions } from "@/tests/mocks/packagesOld";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PackagesActionForm from "./PackagesActionForm";
+import { packages } from "@/tests/mocks/packages";
 
 const instanceId = 1;
 
-const [firstPackage, secondPackage] = selectedPackages;
+const [firstPackage, secondPackage] = packages;
 
 const versionLabel = (content: string) =>
   content.includes(availableVersions[0].name);

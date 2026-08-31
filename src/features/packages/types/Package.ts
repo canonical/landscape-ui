@@ -32,3 +32,5 @@ export class Package implements Record<string, unknown> {
     this.computers = { count: computerCount };
   }
 }
+
+export type PackageWithVersions = [Package, number[]];

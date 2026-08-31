@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PackagesActionSummary from "./PackagesActionSummary";
-import { selectedPackages } from "@/tests/mocks/packagesOld";
+import { packages } from "@/tests/mocks/packages";
 
 describe("PackagesActionSummary", () => {
   it("should render all selected packages", async () => {
@@ -10,7 +10,8 @@ describe("PackagesActionSummary", () => {
       <PackagesActionSummary
         action="uninstall"
         instanceIds={[1, 2, 3]}
-        selectedPackages={selectedPackages}
+        onBackButtonPress={() => undefined}
+        packageChangePlanId={1}
       />,
     );
 
@@ -21,7 +22,7 @@ describe("PackagesActionSummary", () => {
       }),
     );
     const items = await screen.findAllByRole("listitem");
-    expect(items).toHaveLength(selectedPackages.length);
+    expect(items).toHaveLength(packages.length);
   });
 
   it("should not render if there are no selected Packages", async () => {
@@ -29,7 +30,8 @@ describe("PackagesActionSummary", () => {
       <PackagesActionSummary
         action="unhold"
         instanceIds={[1, 2, 3]}
-        selectedPackages={[]}
+        onBackButtonPress={() => undefined}
+        packageChangePlanId={1}
       />,
     );
 

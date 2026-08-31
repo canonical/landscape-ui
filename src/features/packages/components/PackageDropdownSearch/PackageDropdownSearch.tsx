@@ -5,7 +5,7 @@ import Downshift from "downshift";
 import type { FC } from "react";
 import { useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
-import type { Package, PackageAction } from "../../types";
+import type { Package, PackageAction, PackageWithVersions } from "../../types";
 import PackageDropdownSearchCount from "./components/PackageDropdownSearchCount";
 import PackageDropdownSearchItem from "./components/PackageDropdownSearchItem";
 import PackageDropdownSearchList from "./components/PackageDropdownSearchList";
@@ -22,8 +22,8 @@ import useSearchPackages from "../../api/useSearchPackages";
 
 interface PackageDropdownSearchProps {
   readonly instanceIds: number[];
-  readonly selectedItems: [Package, number[]][];
-  readonly setSelectedItems: (packages: [Package, number[]][]) => void;
+  readonly selectedItems: PackageWithVersions[];
+  readonly setSelectedItems: (packages: PackageWithVersions[]) => void;
   readonly action: PackageAction;
 }
 
@@ -176,7 +176,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                   exact={exact}
                   queryResult={packagesQueryResult}
                   search={search}
-                  selectedPackages={selectedItems}
+                  selectedPackages={selectedItems.map(([item]) => item)}
                 />
               </div>
             )}
@@ -217,7 +217,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
             ) : (
               <PackageDropdownSearchItem
                 key={`${selectedPackage[0].id}${index}`}
-                selectedPackage={selectedPackage}
+                selectedPackage={selectedPackage[0]}
                 onDelete={handleDelete}
               />
             );

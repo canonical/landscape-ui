@@ -5,17 +5,25 @@ import PackageSearchDowngradeItem from "./PackageSearchDowngradeItem";
 import { ICONS } from "@canonical/react-components";
 import userEvent from "@testing-library/user-event";
 import { downgradeVersions } from "@/tests/mocks/packagesOld";
+import type { ComponentProps } from "react";
 
 const props = {
-  selectedPackage: {
-    name: "libthai0",
-    id: 15,
-    versions: [],
-  },
+  selectedPackage: [
+    {
+      name: "libthai0",
+      id: 15,
+      version: "0.1.28-1",
+      computers: {
+        count: 4,
+      },
+      summary: "Thai language support library",
+    },
+    [],
+  ],
   onDelete: vi.fn(),
-  onUpdateVersions: vi.fn(),
-  query: "id:1",
-};
+  onItemsUpdate: vi.fn(),
+  instanceIds: [1, 2, 3, 4],
+} as const satisfies ComponentProps<typeof PackageSearchDowngradeItem>;
 
 window.HTMLElement.prototype.scrollIntoView = vi.fn();
 
@@ -30,10 +38,10 @@ describe("PackageSearchDowngradeItem", () => {
   it("renders package with delete button and all versions", async () => {
     renderWithProviders(<PackageSearchDowngradeItem {...props} />);
 
-    screen.getByText(props.selectedPackage.name);
+    screen.getByText(props.selectedPackage[0].name);
     expect(
       screen.getByRole("button", {
-        name: `Delete ${props.selectedPackage.name}`,
+        name: `Delete ${props.selectedPackage[0].name}`,
       }),
     ).toHaveIcon(ICONS.delete);
 
@@ -54,7 +62,7 @@ describe("PackageSearchDowngradeItem", () => {
     renderWithProviders(<PackageSearchDowngradeItem {...props} />);
 
     const deleteButton = screen.getByRole("button", {
-      name: `Delete ${props.selectedPackage.name}`,
+      name: `Delete ${props.selectedPackage[0].name}`,
     });
     await user.click(deleteButton);
     expect(props.onDelete).toHaveBeenCalled();
@@ -91,7 +99,7 @@ describe("PackageSearchDowngradeItem", () => {
       });
       await user.click(selection);
 
-      expect(props.onUpdateVersions).toBeCalledWith([
+      expect(props.onItemsUpdate).toBeCalledWith([
         {
           name: version.name,
           source: version.source,
@@ -116,7 +124,7 @@ describe("PackageSearchDowngradeItem", () => {
       const selectedDowngrades = availableDowngrades.filter(
         ({ source }) => source == availableDowngrades[0]?.source,
       );
-      expect(props.onUpdateVersions).toBeCalledWith(selectedDowngrades);
+      expect(props.onItemsUpdate).toBeCalledWith(selectedDowngrades);
     });
 
     it("removes a version when it is deselected", async () => {
@@ -145,7 +153,7 @@ describe("PackageSearchDowngradeItem", () => {
       });
       await user.click(selection);
 
-      expect(props.onUpdateVersions).toBeCalledWith([]);
+      expect(props.onItemsUpdate).toBeCalledWith([]);
     });
   });
 });

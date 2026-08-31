@@ -4,28 +4,26 @@ import { describe, expect, it } from "vitest";
 import PackageDropdownSearchItem from "./PackageDropdownSearchItem";
 import { ICONS } from "@canonical/react-components";
 import userEvent from "@testing-library/user-event";
-import { availableVersions } from "@/tests/mocks/packagesOld";
+import type { ComponentProps } from "react";
 
-const props = {
+const props: ComponentProps<typeof PackageDropdownSearchItem> = {
   selectedPackage: {
     name: "libthai0",
     id: 15,
-    versions: [],
+    computers: {
+      count: 4,
+    },
+    summary: "Thai language support library",
+    version: "0.1.28-1",
   },
   onDelete: vi.fn(),
-  onUpdateVersions: vi.fn(),
-  query: "id:1",
 };
-
-const versionNames = availableVersions.map(({ name }) => ({ name: name }));
 
 describe("PackageDropdownSearchItem", () => {
   const user = userEvent.setup();
 
   it("renders package with delete button and all versions", async () => {
-    renderWithProviders(
-      <PackageDropdownSearchItem {...props} action="unhold" />,
-    );
+    renderWithProviders(<PackageDropdownSearchItem {...props} />);
 
     await screen.findByLabelText("Unhold as not installed on 1 instance");
 
@@ -46,95 +44,10 @@ describe("PackageDropdownSearchItem", () => {
   });
 
   it("deletes package when delete button is clicked", async () => {
-    renderWithProviders(
-      <PackageDropdownSearchItem {...props} action="install" />,
-    );
+    renderWithProviders(<PackageDropdownSearchItem {...props} />);
 
     const deleteButton = screen.getByRole("button");
     await user.click(deleteButton);
     expect(props.onDelete).toHaveBeenCalled();
-  });
-
-  describe("Version Selection", () => {
-    it("adds a version when it is selected", async () => {
-      renderWithProviders(
-        <PackageDropdownSearchItem {...props} action="uninstall" />,
-      );
-
-      const [version] = await screen.findAllByRole("checkbox", {
-        name: /Uninstall version/i,
-      });
-      assert(version);
-
-      await user.click(version);
-      expect(props.onUpdateVersions).toBeCalledWith([
-        {
-          name: availableVersions[0].name,
-        },
-      ]);
-    });
-
-    it("removes a version when it is deselected", async () => {
-      const selectedPackage = {
-        ...props.selectedPackage,
-        versions: versionNames,
-      };
-
-      renderWithProviders(
-        <PackageDropdownSearchItem
-          {...props}
-          selectedPackage={selectedPackage}
-          action="uninstall"
-        />,
-      );
-
-      const [title, version] = await screen.findAllByRole("checkbox", {
-        checked: true,
-      });
-      expect(title).toHaveAccessibleName(selectedPackage.name);
-      assert(version);
-
-      await user.click(version);
-      expect(props.onUpdateVersions).toBeCalledWith(versionNames.slice(1));
-    });
-
-    it("adds all versions when title is selected", async () => {
-      renderWithProviders(
-        <PackageDropdownSearchItem {...props} action="install" />,
-      );
-
-      const title = await screen.findByRole("checkbox", {
-        name: props.selectedPackage.name,
-      });
-
-      await user.click(title);
-      expect(props.onUpdateVersions).toHaveBeenCalledWith(versionNames);
-    });
-
-    it("removes all versions when title is deselected", async () => {
-      const selectedPackage = {
-        name: props.selectedPackage.name,
-        id: props.selectedPackage.id,
-        versions: versionNames.slice(0, 2),
-      };
-
-      renderWithProviders(
-        <PackageDropdownSearchItem
-          {...props}
-          selectedPackage={selectedPackage}
-          action="hold"
-        />,
-      );
-
-      await screen.findByLabelText("Hold as not installed on 1 instance");
-
-      const title = await screen.findByRole("checkbox", {
-        name: selectedPackage.name,
-      });
-      expect(title).toBePartiallyChecked();
-
-      await user.click(title);
-      expect(props.onUpdateVersions).toHaveBeenCalledWith([]);
-    });
   });
 });

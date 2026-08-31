@@ -1,7 +1,6 @@
-import type { PackageOld, SelectedPackage } from "@/features/packages";
+import type { Package, SearchPackagesResponse } from "@/features/packages";
 import { packagesOld } from "@/tests/mocks/packagesOld";
 import { renderWithProviders } from "@/tests/render";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type {
   InfiniteData,
   UseInfiniteQueryResult,
@@ -15,13 +14,13 @@ import PackageDropdownSearchList from "./PackageDropdownSearchList";
 import classes from "./PackageDropdownSearchList.module.scss";
 
 type QueryResultType = UseInfiniteQueryResult<
-  InfiniteData<AxiosResponse<ApiPaginatedResponse<PackageOld>>>
+  InfiniteData<AxiosResponse<SearchPackagesResponse>>
 > & { isError: false };
 
 const mockDownshift = {
   highlightedIndex: -1,
   getItemProps: vi.fn(),
-} as unknown as ControllerStateAndHelpers<PackageOld>;
+} as unknown as ControllerStateAndHelpers<Package>;
 
 const mockQueryResult = {
   data: {
@@ -50,14 +49,17 @@ const mockQueryResult = {
 const selectedPackage = {
   name: "accountsservice",
   id: 174788,
-  versions: [{ name: "0.6.55-0ubuntu12~20.04.6" }],
-} as const satisfies SelectedPackage;
+  computers: {
+    count: 1,
+  },
+  summary: "query and manipulate user account information",
+  version: "0.6.55-0ubuntu12~20.04.6",
+} as const satisfies Package;
 
 const props = {
   downshiftOptions: mockDownshift,
   queryResult: mockQueryResult,
   selectedPackages: [selectedPackage],
-  hasOneInstance: false,
   exact: false,
   search: "",
 } as const satisfies ComponentProps<typeof PackageDropdownSearchList>;
@@ -98,16 +100,6 @@ describe("PackageDropdownSearchList", () => {
     expect(searchResult.closest("div")?.textContent).toEqual(
       selectedPackage.name,
     );
-  });
-
-  it("renders specific version for 1 instance with 1 version", () => {
-    renderWithProviders(
-      <PackageDropdownSearchList {...props} hasOneInstance={true} />,
-    );
-
-    const { name, versions } = selectedPackage;
-    screen.getByText(name);
-    screen.getByText(versions[0].name);
   });
 
   it("renders empty message for exact search", async () => {

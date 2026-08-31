@@ -6,7 +6,7 @@ import { Button, Icon, ICONS } from "@canonical/react-components";
 import { pluralize } from "@/utils/_helpers";
 
 interface PackageDropdownSearchItemProps {
-  readonly selectedPackage: [Package, number[]];
+  readonly selectedPackage: Package;
   readonly onDelete: () => void;
 }
 
@@ -17,22 +17,22 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
   return (
     <li
       className={classNames("u-no-margin--bottom", classes.selectedContainer)}
-      key={selectedPackage[0].id}
+      key={selectedPackage.id}
     >
       <div>
         <div className="font-monospace">
-          {selectedPackage[0].name} {selectedPackage[0].version}
+          {selectedPackage.name} {selectedPackage.version}
         </div>
         <div className="u-text--muted p-text--small u-no-margin">
           Available on{" "}
-          {pluralize(selectedPackage[0].computers.count, ["instance"], "exact")}
+          {pluralize(selectedPackage.computers.count, ["instance"], "exact")}
         </div>
       </div>
       <Button
         type="button"
         appearance="link"
         className="u-no-margin--bottom u-no-padding--top"
-        aria-label={`Delete ${selectedPackage[0].name}`}
+        aria-label={`Delete ${selectedPackage.name}`}
         onClick={onDelete}
       >
         <Icon name={ICONS.delete} />

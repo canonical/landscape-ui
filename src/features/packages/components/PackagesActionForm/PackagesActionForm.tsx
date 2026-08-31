@@ -1,7 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useSidePanel from "@/hooks/useSidePanel";
 import { type FC, useState } from "react";
-import type { Package, PackageAction } from "../../types";
+import type { PackageAction, PackageWithVersions } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
 import PackagesActionSummary from "../PackagesActionSummary";
 import {
@@ -21,7 +21,7 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
   action,
 }) => {
   const [selectedPackages, setSelectedPackages] = useState<
-    [Package, number[]][]
+    PackageWithVersions[]
   >([]);
   const [packageChangePlanId, setPackageChangePlanId] = useState<number | null>(
     null,
