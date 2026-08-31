@@ -26,10 +26,6 @@ describe("documentationUrls", () => {
     );
   });
 
-  it("MANAGE_INSTANCES_DOCUMENTATION_URL contains the docs base path", () => {
-    expect(MANAGE_INSTANCES_DOCUMENTATION_URL).toContain(BASE_PATH);
-  });
-
   it("MANAGE_INSTANCES_DOCUMENTATION_URL points to the correct page", () => {
     expect(MANAGE_INSTANCES_DOCUMENTATION_URL).toBe(
       `${BASE_PATH}/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/`,
