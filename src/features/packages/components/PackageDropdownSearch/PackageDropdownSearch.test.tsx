@@ -7,8 +7,8 @@ import { describe, expect, it, vi } from "vitest";
 import PackageDropdownSearch from "./PackageDropdownSearch";
 
 const props: ComponentProps<typeof PackageDropdownSearch> = {
-  selectedPackages: [],
-  setSelectedPackages: vi.fn(),
+  selectedItems: [],
+  setSelectedItems: vi.fn(),
   instanceIds: [],
   action: "install",
 };
@@ -45,10 +45,7 @@ describe("PackageDropdownSearch", () => {
 
     it("shows message when packages limit is reached", () => {
       renderWithProviders(
-        <PackageDropdownSearch
-          {...props}
-          selectedPackages={selectedPackages}
-        />,
+        <PackageDropdownSearch {...props} selectedItems={selectedPackages} />,
       );
 
       screen.findByText(/maximum of 10 packages/i);
@@ -83,7 +80,7 @@ describe("PackageDropdownSearch", () => {
       });
       await user.click(packageItem);
 
-      expect(props.setSelectedPackages).toHaveBeenCalled();
+      expect(props.setSelectedItems).toHaveBeenCalled();
     });
 
     it("clears search box after selecting a package", async () => {
@@ -104,10 +101,7 @@ describe("PackageDropdownSearch", () => {
   describe("Selected packages display", () => {
     it("shows all selected packages in results list", () => {
       renderWithProviders(
-        <PackageDropdownSearch
-          {...props}
-          selectedPackages={selectedPackages}
-        />,
+        <PackageDropdownSearch {...props} selectedItems={selectedPackages} />,
       );
 
       for (const pkg of selectedPackages) {
@@ -120,7 +114,7 @@ describe("PackageDropdownSearch", () => {
         <PackageDropdownSearch
           {...props}
           action="changeVersion"
-          selectedPackages={[selectedPackage]}
+          selectedItems={[selectedPackage]}
         />,
       );
 
@@ -130,16 +124,13 @@ describe("PackageDropdownSearch", () => {
 
     it("removes package when delete button is clicked", async () => {
       renderWithProviders(
-        <PackageDropdownSearch
-          {...props}
-          selectedPackages={[selectedPackage]}
-        />,
+        <PackageDropdownSearch {...props} selectedItems={[selectedPackage]} />,
       );
 
       const deleteButton = screen.getByRole("button", { name: /delete/i });
       await user.click(deleteButton);
 
-      expect(props.setSelectedPackages).toHaveBeenCalled();
+      expect(props.setSelectedItems).toHaveBeenCalled();
     });
   });
 });

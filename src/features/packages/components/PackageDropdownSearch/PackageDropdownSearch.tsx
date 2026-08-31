@@ -22,19 +22,19 @@ import useSearchPackages from "../../api/useSearchPackages";
 
 interface PackageDropdownSearchProps {
   readonly instanceIds: number[];
-  readonly selectedPackages: [Package, number[]][];
-  readonly setSelectedPackages: (packages: [Package, number[]][]) => void;
+  readonly selectedItems: [Package, number[]][];
+  readonly setSelectedItems: (packages: [Package, number[]][]) => void;
   readonly action: PackageAction;
 }
 
 const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   instanceIds,
-  selectedPackages,
-  setSelectedPackages,
+  selectedItems,
+  setSelectedItems,
   action,
 }) => {
   const [search, setSearch] = useDebounceValue("", DEBOUNCE_DELAY);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState<string>("");
   const { value: exact, toggle: toggleExact } = useBoolean();
 
   const { value: isOpen, setFalse: close, setTrue: open } = useBoolean();
@@ -79,12 +79,12 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
       return;
     }
 
-    setSelectedPackages([...selectedPackages, [item, []]]);
+    setSelectedItems([...selectedItems, [item, []]]);
     clearSearchBox();
     close();
   };
 
-  const isOverLimit = selectedPackages.length >= MAX_SELECTED_PACKAGES;
+  const isOverLimit = selectedItems.length >= MAX_SELECTED_PACKAGES;
 
   const getWarningVerb = () => {
     switch (action) {
@@ -176,7 +176,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                   exact={exact}
                   queryResult={packagesQueryResult}
                   search={search}
-                  selectedPackages={selectedPackages}
+                  selectedPackages={selectedItems}
                 />
               </div>
             )}
@@ -192,11 +192,11 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
         )}
       >{`Packages to ${getHeaderVerb()}`}</div>
 
-      {selectedPackages.length ? (
+      {selectedItems.length ? (
         <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">
-          {selectedPackages.map((selectedPackage, index) => {
+          {selectedItems.map((selectedPackage, index) => {
             const handleDelete = () => {
-              setSelectedPackages(selectedPackages.toSpliced(index, 1));
+              setSelectedItems(selectedItems.toSpliced(index, 1));
             };
 
             return action == "changeVersion" ? (
@@ -206,8 +206,8 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                 onDelete={handleDelete}
                 instanceIds={instanceIds}
                 onItemsUpdate={(items) => {
-                  setSelectedPackages(
-                    selectedPackages.toSpliced(index, 1, [
+                  setSelectedItems(
+                    selectedItems.toSpliced(index, 1, [
                       selectedPackage[0],
                       items.map((item) => item.value as number),
                     ]),

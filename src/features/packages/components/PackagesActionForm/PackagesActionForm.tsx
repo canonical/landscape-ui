@@ -42,8 +42,8 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
         <>
           <PackageDropdownSearch
             instanceIds={instanceIds}
-            selectedPackages={selectedPackages}
-            setSelectedPackages={setSelectedPackages}
+            selectedItems={selectedPackages}
+            setSelectedItems={setSelectedPackages}
             action={action}
           />
           <SidePanelFormButtons
