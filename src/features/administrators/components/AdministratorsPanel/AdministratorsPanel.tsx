@@ -3,14 +3,13 @@ import { lazy, Suspense } from "react";
 import { Button } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import EmptyState from "@/components/layout/EmptyState";
-import useAdministrators from "@/hooks/useAdministrators";
+import useAdministrators from "../../api/useAdministrators";
 import useSidePanel from "@/hooks/useSidePanel";
-import AdministratorsPanelContent from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorsPanelContent";
+import AdministratorsPanelContent from "../AdministratorsPanelContent";
 import { ADMINISTRATORS_DOCUMENTATION_URL } from "@/constants";
 
 const InviteAdministratorForm = lazy(
-  () =>
-    import("@/pages/dashboard/settings/administrators/tabs/administrators/InviteAdministratorForm"),
+  () => import("../InviteAdministratorForm"),
 );
 
 const AdministratorsPanel: FC = () => {

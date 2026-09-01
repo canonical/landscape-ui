@@ -1,9 +1,9 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import useInvitations from "@/hooks/useAdministrators";
+import useInvitations from "../../api/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import type { Invitation } from "@/types/Invitation";
+import type { Invitation } from "../../types/Invitation";
 import { ConfirmationButton } from "@canonical/react-components";
 import date from "@/libs/date";
 import type { FC } from "react";

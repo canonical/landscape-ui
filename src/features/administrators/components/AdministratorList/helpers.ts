@@ -1,4 +1,4 @@
-import type { Administrator } from "@/types/Administrator";
+import type { Administrator } from "../../types/Administrator";
 import type { HTMLProps } from "react";
 import type { Cell, TableCellProps } from "react-table";
 

@@ -1,8 +1,8 @@
 import ListActions from "@/components/layout/ListActions";
-import useAdministrators from "@/hooks/useAdministrators";
+import useAdministrators from "../../api/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import type { Administrator } from "@/types/Administrator";
+import type { Administrator } from "../../types/Administrator";
 import { ConfirmationModal } from "@canonical/react-components";
 import { type FC } from "react";
 import { useBoolean } from "usehooks-ts";
