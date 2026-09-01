@@ -212,6 +212,14 @@ export const DashboardRoutes = (
           path={PATHS.account.apiCredentials}
           element={<Pages.ApiCredentials />}
         />
+        <Route
+          path={PATHS.account.selfHostedLicense}
+          element={
+            <SelfHostedGuard>
+              <Pages.SelfHostedLicensePage />
+            </SelfHostedGuard>
+          }
+        />
       </Route>
     </Route>
   </Route>

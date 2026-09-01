@@ -4,6 +4,8 @@ import classes from "./SecondaryNavigation.module.scss";
 import { useMediaQuery } from "usehooks-ts";
 import type { FC, ReactNode } from "react";
 import type { MenuItem } from "../Navigation/types";
+import useEnv from "@/hooks/useEnv";
+import { getFilteredByEnvItems } from "../Navigation/helpers";
 
 interface SecondaryNavigationProps {
   readonly title: ReactNode;
@@ -17,8 +19,14 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
   children,
 }) => {
   const location = useLocation();
+  const { isSaas, isSelfHosted } = useEnv();
 
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
+  const filteredItems = getFilteredByEnvItems({
+    isSaas,
+    isSelfHosted,
+    items,
+  });
 
   if (!isLargeScreen) {
     return null;
@@ -54,7 +62,7 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
             {title}
           </h2>
           <ul className="p-side-navigation__list">
-            {items.map((item) => {
+            {filteredItems.map((item) => {
               const isActive = matchPath(item.path, location.pathname);
               return (
                 <li key={item.path}>
@@ -63,7 +71,7 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
                     className={classNames(
                       "p-side-navigation__link",
                       classes.secondaryNavigation__link,
-                      { [classes.isActive]: isActive },
+                      isActive && classes.isActive,
                     )}
                     to={item.path}
                   >

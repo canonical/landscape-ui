@@ -17,5 +17,10 @@ export const ACCOUNT_SETTINGS = {
       label: "API credentials",
       path: ROUTES.account.apiCredentials(),
     },
+    {
+      label: "Self hosted license",
+      path: ROUTES.account.selfHostedLicense(),
+      env: "selfHosted",
+    },
   ] as const,
 } satisfies MenuItem;

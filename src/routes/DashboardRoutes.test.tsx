@@ -60,6 +60,7 @@ describe("DashboardRoutes", () => {
     expect(paths).toContain(PATHS.account.apiCredentials);
     expect(paths).toContain(PATHS.repositories.mirrors);
     expect(paths).toContain(PATHS.settings.employees);
+    expect(paths).toContain(PATHS.account.selfHostedLicense);
   });
 
   it("uses self-hosted and feature guards for guarded paths", () => {
@@ -80,6 +81,10 @@ describe("DashboardRoutes", () => {
       (route) => route.props.path === PATHS.exports.root,
     );
 
+    const selfHostedLicenseRoute = allRoutes.find(
+      (route) => route.props.path === PATHS.account.selfHostedLicense,
+    );
+
     const wslProfilesRoute = allRoutes.find(
       (route) => route.props.path === PATHS.profiles.wsl,
     );
@@ -88,11 +93,13 @@ describe("DashboardRoutes", () => {
     assert(employeesRoute?.props.element);
     assert(identityProvidersRoute?.props.element);
     assert(wslProfilesRoute?.props.element);
+    assert(selfHostedLicenseRoute?.props.element);
 
     expect(mirrorsRoute.props.element.type).toBe(SelfHostedGuard);
     expect(employeesRoute.props.element.type).toBe(FeatureGuard);
     expect(identityProvidersRoute.props.element.type).toBe(FeatureGuard);
     expect(wslProfilesRoute.props.element.type).toBe(FeatureGuard);
+    expect(selfHostedLicenseRoute.props.element.type).toBe(SelfHostedGuard);
 
     if (TSV_EXPORTS_ENABLED) {
       assert(exportsRoute?.props.element);
