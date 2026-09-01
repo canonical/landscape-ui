@@ -1,4 +1,9 @@
+.header {
+  flex-direction: column;
+}
+
 .description {
   margin: 0;
-  width: min(100%, 600px);
+  max-width: 600px;
+  min-width: 215px;
 }
