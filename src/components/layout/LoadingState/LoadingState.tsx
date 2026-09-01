@@ -1,7 +1,7 @@
 import { Icon, ICONS } from "@canonical/react-components";
-import classNames from "classnames";
 import type { FC, Ref } from "react";
 import classes from "./LoadingState.module.scss";
+import classNames from "classnames";
 
 interface LoadingStateProps {
   readonly centerOnScreen?: boolean;

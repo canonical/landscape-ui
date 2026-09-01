@@ -1,5 +1,5 @@
 import type { Package, SearchPackagesResponse } from "@/features/packages";
-import { packagesOld } from "@/tests/mocks/packagesOld";
+import { packages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
 import type {
   InfiniteData,
@@ -27,10 +27,10 @@ const mockQueryResult = {
     pages: [
       {
         data: {
-          count: packagesOld.length,
+          count: packages.length,
           next: null,
-          previous: null,
-          results: packagesOld,
+          prev: null,
+          packages: packages,
         },
         status: 200,
         statusText: "OK",
@@ -46,15 +46,7 @@ const mockQueryResult = {
   fetchNextPage: vi.fn(),
 } as unknown as QueryResultType;
 
-const selectedPackage = {
-  name: "accountsservice",
-  id: 174788,
-  computers: {
-    count: 1,
-  },
-  summary: "query and manipulate user account information",
-  version: "0.6.55-0ubuntu12~20.04.6",
-} as const satisfies Package;
+const [selectedPackage] = packages;
 
 const props = {
   downshiftOptions: mockDownshift,
@@ -65,18 +57,20 @@ const props = {
 } as const satisfies ComponentProps<typeof PackageDropdownSearchList>;
 
 describe("PackageDropdownSearchList", () => {
-  it("renders list of packages when query is completed", () => {
+  it("renders list of packages when query is completed", async () => {
     renderWithProviders(<PackageDropdownSearchList {...props} />);
 
-    for (const pkg of packagesOld) {
-      screen.getByText(pkg.name);
+    for (const pkg of packages) {
+      screen.getByText(`${pkg.name} ${pkg.version}`);
     }
   });
 
   it("renders selected packages disabled in dropdown", () => {
     renderWithProviders(<PackageDropdownSearchList {...props} />);
 
-    const listItem = screen.getByText(selectedPackage.name).closest("li");
+    const listItem = screen
+      .getByText(`${selectedPackage.name} ${selectedPackage.version}`)
+      .closest("li");
     expect(listItem).toHaveClass(classes.disabled);
   });
 
@@ -98,7 +92,7 @@ describe("PackageDropdownSearchList", () => {
     const searchResult = screen.getByText(search);
     expect(searchResult).toHaveStyle("font-weight: bolder;");
     expect(searchResult.closest("div")?.textContent).toEqual(
-      selectedPackage.name,
+      `${selectedPackage.name} ${selectedPackage.version}`,
     );
   });
 
