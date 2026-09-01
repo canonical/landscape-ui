@@ -4,7 +4,6 @@ import { describe, expect, it } from "vitest";
 import PackageSearchDowngradeItem from "./PackageSearchDowngradeItem";
 import { ICONS } from "@canonical/react-components";
 import userEvent from "@testing-library/user-event";
-import { downgradeVersions } from "@/tests/mocks/packagesOld";
 import type { ComponentProps } from "react";
 
 const props = {
@@ -26,11 +25,6 @@ const props = {
 } as const satisfies ComponentProps<typeof PackageSearchDowngradeItem>;
 
 window.HTMLElement.prototype.scrollIntoView = vi.fn();
-
-const availableDowngrades = downgradeVersions.flatMap(
-  ({ name: source, downgrades }) =>
-    downgrades.map(({ name }) => ({ source: source, name: name })),
-);
 
 describe("PackageSearchDowngradeItem", () => {
   const user = userEvent.setup();
