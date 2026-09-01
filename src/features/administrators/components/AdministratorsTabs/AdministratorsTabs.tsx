@@ -6,6 +6,7 @@ import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
 import { Suspense, useState } from "react";
 import classes from "./AdministratorsTabs.module.scss";
+import type { Administrator } from "../../types";
 
 const tabLinks = [
   {
@@ -18,7 +19,13 @@ const tabLinks = [
   },
 ];
 
-const AdministratorsTabs: FC = () => {
+interface AdministratorsTabsProps {
+  readonly administrators: Administrator[];
+}
+
+const AdministratorsTabs: FC<AdministratorsTabsProps> = ({
+  administrators,
+}) => {
   const { closeSidePanel } = useSidePanel();
 
   const [currentTabLinkId, setCurrentTabLinkId] = useState(
@@ -48,7 +55,7 @@ const AdministratorsTabs: FC = () => {
       >
         <Suspense fallback={<LoadingState />}>
           {"tab-link-administrators" === currentTabLinkId && (
-            <AdministratorsPanel />
+            <AdministratorsPanel administrators={administrators} />
           )}
           {"tab-link-invites" === currentTabLinkId && <InvitesPanel />}
         </Suspense>
