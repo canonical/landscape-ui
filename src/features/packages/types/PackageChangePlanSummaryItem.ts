@@ -1,8 +1,4 @@
-export enum TargetState {
-  TARGET_STATE_UNSPECIFIED = 0,
-  APPLICABLE = 1,
-  NOT_APPLICABLE = 2,
-}
+export type TargetState = "applicable" | "not_applicable";
 
 export interface StateCount {
   state: TargetState;

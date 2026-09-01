@@ -2,7 +2,6 @@ import type {
   PackageChangePlanSummaryItem,
   Package,
 } from "@/features/packages";
-import { TargetState } from "@/features/packages";
 
 export const packages = [
   {
@@ -285,8 +284,8 @@ export const packageChangePlanSummaryItems = [
     package_name: packages[0].name,
     package_version: packages[0].version,
     package_state_counts: [
-      { state: TargetState.APPLICABLE, count: 5 },
-      { state: TargetState.NOT_APPLICABLE, count: 1 },
+      { state: "applicable", count: 5 },
+      { state: "not_applicable", count: 1 },
     ],
   },
   {
@@ -294,8 +293,8 @@ export const packageChangePlanSummaryItems = [
     package_name: packages[1].name,
     package_version: packages[1].version,
     package_state_counts: [
-      { state: TargetState.APPLICABLE, count: 8 },
-      { state: TargetState.NOT_APPLICABLE, count: 13 },
+      { state: "applicable", count: 8 },
+      { state: "not_applicable", count: 13 },
     ],
   },
   {
@@ -303,8 +302,8 @@ export const packageChangePlanSummaryItems = [
     package_name: packages[2].name,
     package_version: packages[2].version,
     package_state_counts: [
-      { state: TargetState.APPLICABLE, count: 57 },
-      { state: TargetState.NOT_APPLICABLE, count: 11 },
+      { state: "applicable", count: 57 },
+      { state: "not_applicable", count: 11 },
     ],
   },
   {
@@ -312,8 +311,8 @@ export const packageChangePlanSummaryItems = [
     package_name: packages[3].name,
     package_version: packages[3].version,
     package_state_counts: [
-      { state: TargetState.APPLICABLE, count: 328 },
-      { state: TargetState.NOT_APPLICABLE, count: 119 },
+      { state: "applicable", count: 328 },
+      { state: "not_applicable", count: 119 },
     ],
   },
   {
@@ -321,8 +320,8 @@ export const packageChangePlanSummaryItems = [
     package_name: packages[4].name,
     package_version: packages[4].version,
     package_state_counts: [
-      { state: TargetState.APPLICABLE, count: 565 },
-      { state: TargetState.NOT_APPLICABLE, count: 90 },
+      { state: "applicable", count: 565 },
+      { state: "not_applicable", count: 90 },
     ],
   },
   {
@@ -330,8 +329,8 @@ export const packageChangePlanSummaryItems = [
     package_name: packages[5].name,
     package_version: packages[5].version,
     package_state_counts: [
-      { state: TargetState.APPLICABLE, count: 71 },
-      { state: TargetState.NOT_APPLICABLE, count: 12 },
+      { state: "applicable", count: 71 },
+      { state: "not_applicable", count: 12 },
     ],
   },
   {
@@ -339,8 +338,8 @@ export const packageChangePlanSummaryItems = [
     package_name: packages[6].name,
     package_version: packages[6].version,
     package_state_counts: [
-      { state: TargetState.APPLICABLE, count: 34 },
-      { state: TargetState.NOT_APPLICABLE, count: 6 },
+      { state: "applicable", count: 34 },
+      { state: "not_applicable", count: 6 },
     ],
   },
   {
@@ -348,8 +347,8 @@ export const packageChangePlanSummaryItems = [
     package_name: packages[7].name,
     package_version: packages[7].version,
     package_state_counts: [
-      { state: TargetState.APPLICABLE, count: 100 },
-      { state: TargetState.NOT_APPLICABLE, count: 10 },
+      { state: "applicable", count: 100 },
+      { state: "not_applicable", count: 10 },
     ],
   },
   {
@@ -357,8 +356,8 @@ export const packageChangePlanSummaryItems = [
     package_name: packages[8].name,
     package_version: packages[8].version,
     package_state_counts: [
-      { state: TargetState.APPLICABLE, count: 2 },
-      { state: TargetState.NOT_APPLICABLE, count: 0 },
+      { state: "applicable", count: 2 },
+      { state: "not_applicable", count: 0 },
     ],
   },
   {
@@ -366,8 +365,8 @@ export const packageChangePlanSummaryItems = [
     package_name: packages[9].name,
     package_version: packages[9].version,
     package_state_counts: [
-      { state: TargetState.APPLICABLE, count: 0 },
-      { state: TargetState.NOT_APPLICABLE, count: 17 },
+      { state: "applicable", count: 0 },
+      { state: "not_applicable", count: 17 },
     ],
   },
 ] as const satisfies PackageChangePlanSummaryItem[];

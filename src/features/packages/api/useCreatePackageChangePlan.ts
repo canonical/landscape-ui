@@ -4,23 +4,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { PackageChangePlan } from "../types/PackageChangePlan";
 
-export enum Category {
-  CATEGORY_UNSPECIFIED = 0,
-  ALL = 1,
-  ALL_SECURITY = 2,
-}
-
 export interface ByIds {
   package_ids?: number[];
 }
 
 export interface ByNames {
   package_names?: string[];
-}
-
-export interface ByCategory {
-  category: Category;
-  excluded_package_ids?: number[];
 }
 
 export interface VersionChange {

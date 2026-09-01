@@ -7,17 +7,16 @@ import type {
   UseInfiniteQueryOptions,
 } from "@tanstack/react-query";
 import type { Package } from "../types/Package";
-import type { FilterState } from "../types/FilterState";
 
 export interface SearchPackagesRequest {
   computer_query: string;
   text?: string;
   names?: string[];
-  installed?: FilterState;
-  available?: FilterState;
-  upgrade?: FilterState;
-  held?: FilterState;
-  security?: FilterState;
+  installed?: boolean;
+  available?: boolean;
+  upgrade?: boolean;
+  held?: boolean;
+  security?: boolean;
   limit?: number;
   offset?: number;
 }

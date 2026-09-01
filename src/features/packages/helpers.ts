@@ -1,28 +1,28 @@
-import { FilterState, type PackageAction } from "./types";
+import type { PackageAction } from "./types";
 
 export const mapActionToQueryParams = (action: PackageAction) => {
   switch (action) {
     case "install":
       return {
-        available: FilterState.TRUE,
-        installed: FilterState.FALSE,
-        held: FilterState.FALSE,
-        upgrade: FilterState.FALSE,
+        available: true,
+        installed: false,
+        held: false,
+        upgrade: false,
       };
 
     case "uninstall":
     case "changeVersion":
       return {
-        installed: FilterState.TRUE,
-        held: FilterState.FALSE,
-        upgrade: FilterState.FALSE,
+        installed: true,
+        held: false,
+        upgrade: false,
       };
 
     case "hold":
-      return { held: FilterState.FALSE };
+      return { held: false };
 
     case "unhold":
-      return { held: FilterState.TRUE };
+      return { held: true };
   }
 };
 

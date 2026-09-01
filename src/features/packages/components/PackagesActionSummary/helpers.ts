@@ -1,12 +1,11 @@
 import type { PackageAction, PackageChangePlanSummaryItem } from "../../types";
-import { TargetState } from "../../types";
 
 export const getApplicableCount = (
   packageChangePlanSummaryItem: PackageChangePlanSummaryItem,
 ): number => {
   const applicableStateCount =
     packageChangePlanSummaryItem.package_state_counts.find(
-      (packageStateCount) => packageStateCount.state === TargetState.APPLICABLE,
+      (packageStateCount) => packageStateCount.state === "applicable",
     );
 
   return applicableStateCount ? applicableStateCount.count : 0;

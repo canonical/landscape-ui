@@ -12,12 +12,7 @@ import type {
   SearchUpgradesRequest,
   SearchUpgradesResponse,
 } from "@/features/packages";
-import {
-  PackageChangePlanAction,
-  PackageChangePlanState,
-  type GetPackagesParams,
-  type PackageOld,
-} from "@/features/packages";
+import type { GetPackagesParams, PackageOld } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
 import {
@@ -283,8 +278,8 @@ export default [
     async () => {
       return HttpResponse.json<PackageChangePlan>({
         id: 1,
-        state: PackageChangePlanState.CREATED,
-        action: PackageChangePlanAction.INSTALL,
+        state: "created",
+        action: "install",
         created_at: new Date().toISOString(),
         item_count: 10,
       });

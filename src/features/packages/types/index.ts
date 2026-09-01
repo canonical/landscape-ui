@@ -1,5 +1,4 @@
 export * from "./AvailableVersion";
-export * from "./FilterState";
 export * from "./Package";
 export * from "./PackageAction";
 export * from "./PackageChangePlan";
