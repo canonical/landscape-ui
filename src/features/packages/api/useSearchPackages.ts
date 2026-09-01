@@ -8,15 +8,17 @@ import type {
 } from "@tanstack/react-query";
 import type { Package } from "../types/Package";
 
+export type FilterState = "unspecified" | "true" | "false";
+
 export interface SearchPackagesRequest {
   computer_query: string;
   text?: string;
   names?: string[];
-  installed?: boolean;
-  available?: boolean;
-  upgrade?: boolean;
-  held?: boolean;
-  security?: boolean;
+  installed?: FilterState;
+  available?: FilterState;
+  upgrade?: FilterState;
+  held?: FilterState;
+  security?: FilterState;
   limit?: number;
   offset?: number;
 }

@@ -4,25 +4,25 @@ export const mapActionToQueryParams = (action: PackageAction) => {
   switch (action) {
     case "install":
       return {
-        available: true,
-        installed: false,
-        held: false,
-        upgrade: false,
-      };
+        available: "true",
+        installed: "false",
+        held: "false",
+        upgrade: "false",
+      } as const;
 
     case "uninstall":
     case "changeVersion":
       return {
-        installed: true,
-        held: false,
-        upgrade: false,
-      };
+        installed: "true",
+        held: "false",
+        upgrade: "false",
+      } as const;
 
     case "hold":
-      return { held: false };
+      return { held: "false" } as const;
 
     case "unhold":
-      return { held: true };
+      return { held: "true" } as const;
   }
 };
 

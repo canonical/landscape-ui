@@ -52,7 +52,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
   } = useSearchUpgrades({
     offset: (currentPage - 1) * pageSize,
     limit: pageSize,
-    text: search || undefined,
+    text: search.trim() || undefined,
     computer_query: computerQuery,
   });
 
