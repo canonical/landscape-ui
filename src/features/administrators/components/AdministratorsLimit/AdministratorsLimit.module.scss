@@ -1,0 +1,13 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.limitInfo {
+  display: flex;
+  gap: 3rem;
+  padding-left: $sph--x-large;
+  padding-right: $sph--x-large;
+}
+
+.limitItem {
+  display: flex;
+  flex-direction: column;
+}

@@ -41,4 +41,8 @@ export default [
 
     return new HttpResponse(null, { status: 200 });
   }),
+
+  http.get(`${API_URL}max-people-count`, () => {
+    return HttpResponse.json({ max_people_count: 10 });
+  }),
 ];
