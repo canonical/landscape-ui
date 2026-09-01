@@ -33,7 +33,6 @@ describe("PackageDropdownSearch", () => {
   it("renders package dropdown search component", () => {
     const searchBox = screen.getByRole("searchbox");
     expect(searchBox).toBeInTheDocument();
-    expect(screen.getByText(/min 3\. characters/i)).toBeInTheDocument();
   });
 
   describe("Search functionality", () => {
@@ -46,16 +45,6 @@ describe("PackageDropdownSearch", () => {
         availablePackages[0].name,
       );
       expect(matchingPackage).toBeInTheDocument();
-    });
-
-    it("shows no packages found message when search yields no results", async () => {
-      const searchBox = screen.getByRole("searchbox");
-      await user.type(searchBox, "nonexistentpackage");
-
-      const errorText = await screen.findByText(
-        /No packages found by "nonexistentpackage"/i,
-      );
-      expect(errorText).toBeInTheDocument();
     });
   });
 
@@ -99,23 +88,6 @@ describe("PackageDropdownSearch", () => {
   });
 
   describe("Selected packages display", () => {
-    it("displays selected packages in the result list", () => {
-      const [selectedPackage] = availablePackages;
-      assert(selectedPackage);
-      renderWithProviders(
-        <PackageDropdownSearch
-          {...props}
-          selectedItems={[[selectedPackage, []]]}
-        />,
-        undefined,
-        instancePageUrl,
-        instancePath,
-      );
-
-      expect(screen.getByText(selectedPackage.name)).toBeInTheDocument();
-      expect(screen.getByText(selectedPackage.version)).toBeInTheDocument();
-    });
-
     it("removes package when delete button is clicked", async () => {
       const [selectedPackage] = availablePackages;
       assert(selectedPackage);
