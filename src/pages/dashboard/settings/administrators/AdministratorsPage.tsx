@@ -88,7 +88,11 @@ const AdministratorsPage: FC = () => {
           </PageContent>
         </>
       )}
-      {isModalOpen && <AdministratorLimitModal close={closeModal} />}
+      {isModalOpen && (
+        <Suspense fallback={<LoadingState centerOnScreen />}>
+          <AdministratorLimitModal close={closeModal} />
+        </Suspense>
+      )}
     </PageMain>
   );
 };
