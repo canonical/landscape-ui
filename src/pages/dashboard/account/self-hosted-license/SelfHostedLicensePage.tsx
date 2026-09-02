@@ -33,58 +33,58 @@ const SelfHostedLicensePage: FC = () => {
         <hr className="p-rule" />
         <div className={classes.content}>
           <FormSection title="Setting up the license file">
-          <p>
-            In order to run Self-hosted Landscape, a license file needs to be
-            present on the system where the software will be installed.
-          </p>
+            <p>
+              In order to run Self-hosted Landscape, a license file needs to be
+              present on the system where the software will be installed.
+            </p>
 
-          <p>
-            Your license file contains information that uniquely indentifies
-            your account and the number of seats you are entitled to, as well as
-            the expiration date of your license.
-          </p>
+            <p>
+              Your license file contains information that uniquely indentifies
+              your account and the number of seats you are entitled to, as well
+              as the expiration date of your license.
+            </p>
 
-          <Button appearance="positive" hasIcon>
-            <i className="p-icon--begin-downloading" />
-            <span>Download license file</span>
-          </Button>
+            <Button appearance="positive" hasIcon>
+              <i className="p-icon--begin-downloading" />
+              <span>Download license file</span>
+            </Button>
 
-          <p>
-            Self-hosted Landscape expects to find your license file in the
-            following location:
-          </p>
+            <p>
+              Self-hosted Landscape expects to find your license file in the
+              following location:
+            </p>
 
-          <CodeSnippet
-            blocks={[
-              {
-                code: "/etc/landscape/license.txt",
-              },
-            ]}
-          />
+            <CodeSnippet
+              blocks={[
+                {
+                  code: "/etc/landscape/license.txt",
+                },
+              ]}
+            />
 
-          <p>
-            If you have the <span className={classes.curl}>curl</span> package
-            installed, you can perform the two steps above with a single
-            command. Access is controlled by a private token which uniquely
-            identifies download requests from your account:
-          </p>
+            <p>
+              If you have the <span className={classes.curl}>curl</span> package
+              installed, you can perform the two steps above with a single
+              command. Access is controlled by a private token which uniquely
+              identifies download requests from your account:
+            </p>
 
-          <CodeSnippet
-            blocks={[
-              {
-                code: "sudo curl -so /etc/landscape/license.txt \\ http://onward:7846c5ce-235c-11e0-970c-60fb42f8d69c@landscape.yuriy.works/license.txt",
-                wrapLines: true,
-              },
-            ]}
-          />
+            <CodeSnippet
+              blocks={[
+                {
+                  code: "sudo curl -so /etc/landscape/license.txt \\ http://onward:7846c5ce-235c-11e0-970c-60fb42f8d69c@landscape.yuriy.works/license.txt",
+                  wrapLines: true,
+                },
+              ]}
+            />
 
-          <p>
-            If your credentials have been compromised, you can regenerate them
-            on the{" "}
-            <RouterLink to={ROUTES.account.apiCredentials()}>
-              API credentials page.
-            </RouterLink>
-          </p>
+            <p>
+              If your credentials have been compromised, you can regenerate them
+              on the{" "}
+              <RouterLink to={ROUTES.account.apiCredentials()}>
+                API credentials page.
+              </RouterLink>
+            </p>
           </FormSection>
         </div>
       </PageContent>
