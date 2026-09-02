@@ -29,9 +29,10 @@ const SelfHostedLicensePage: FC = () => {
           </p>
         }
       />
-      <PageContent container="medium" align="left">
+      <PageContent>
         <hr className="p-rule" />
-        <FormSection title="Setting up the license file">
+        <div className={classes.content}>
+          <FormSection title="Setting up the license file">
           <p>
             In order to run Self-hosted Landscape, a license file needs to be
             present on the system where the software will be installed.
@@ -84,7 +85,8 @@ const SelfHostedLicensePage: FC = () => {
               API credentials page.
             </RouterLink>
           </p>
-        </FormSection>
+          </FormSection>
+        </div>
       </PageContent>
     </PageMain>
   );

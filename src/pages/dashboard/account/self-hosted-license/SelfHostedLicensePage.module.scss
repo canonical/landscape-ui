@@ -8,6 +8,11 @@
   min-width: 215px;
 }
 
+.content {
+  width: 100%;
+  max-width: 60rem;
+}
+
 .curl {
   color: var(--color-palette-aubergine-590, #923d83);
 }
