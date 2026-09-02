@@ -44,7 +44,7 @@ describe("AccessGroupsPage", () => {
   it("opens add access group side panel", async () => {
     const user = userEvent.setup();
 
-    renderWithProviders(<AccessGroupsPage />, undefined, `/?sidePath=add`);
+    renderWithProviders(<AccessGroupsPage />);
 
     await user.click(screen.getByRole("button", { name: "Add access group" }));
 
