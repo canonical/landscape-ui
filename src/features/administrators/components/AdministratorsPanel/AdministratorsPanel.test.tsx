@@ -2,31 +2,29 @@ import { renderWithProviders } from "@/tests/render";
 import AdministratorsPanel from "./AdministratorsPanel";
 import { screen } from "@testing-library/react";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { expectLoadingState } from "@/tests/helpers";
 import userEvent from "@testing-library/user-event";
 import { ADMINISTRATORS_DOCUMENTATION_URL } from "@/constants";
 
 describe("AdministratorsPanel", () => {
   const user = userEvent.setup();
 
-  it("renders without crashing", async () => {
-    renderWithProviders(<AdministratorsPanel />);
+  it("renders without crashing", () => {
+    renderWithProviders(<AdministratorsPanel administrators={[]} />);
 
-    await expectLoadingState();
-
-    const table = screen.getByRole("table");
-    expect(table).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /there are no administrators in your landscape organization./i,
+      ),
+    ).toBeInTheDocument();
   });
 
-  it("renders an empty state", async () => {
+  it("renders an empty state", () => {
     setEndpointStatus({
       path: "GetAdministrators",
       status: "empty",
     });
 
-    renderWithProviders(<AdministratorsPanel />);
-
-    await expectLoadingState();
+    renderWithProviders(<AdministratorsPanel administrators={[]} />);
 
     const emptyState = screen.getByText(
       /there are no administrators in your landscape organization./i,
@@ -34,15 +32,13 @@ describe("AdministratorsPanel", () => {
     expect(emptyState).toBeInTheDocument();
   });
 
-  it("renders docs link with expected href in empty state", async () => {
+  it("renders docs link with expected href in empty state", () => {
     setEndpointStatus({
       path: "GetAdministrators",
       status: "empty",
     });
 
-    renderWithProviders(<AdministratorsPanel />);
-
-    await expectLoadingState();
+    renderWithProviders(<AdministratorsPanel administrators={[]} />);
 
     const docsLink = screen.getByRole("link", {
       name: /how to manage administrators in landscape/i,
@@ -57,9 +53,7 @@ describe("AdministratorsPanel", () => {
       status: "empty",
     });
 
-    renderWithProviders(<AdministratorsPanel />);
-
-    await expectLoadingState();
+    renderWithProviders(<AdministratorsPanel administrators={[]} />);
 
     const emptyState = screen.getByText(
       /there are no administrators in your landscape organization./i,

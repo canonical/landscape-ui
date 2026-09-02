@@ -8,19 +8,9 @@ describe("AdministratorsLimit", () => {
       <AdministratorsLimit administratorsCount={4} administratorsLimit={20} />,
     );
 
-    expect(screen.getByText("4")).toBeInTheDocument();
-    expect(screen.getByText("20 limit")).toBeInTheDocument();
-  });
-
-  it("does not render while loading", () => {
-    const { container } = renderWithProviders(
-      <AdministratorsLimit
-        administratorsCount={4}
-        administratorsLimit={20}
-        isLoading
-      />,
-    );
-
-    expect(container).toBeEmptyDOMElement();
+    expect(screen.getByText("Maximum administrators")).toBeInTheDocument();
+    expect(screen.getByText("20")).toBeInTheDocument();
+    expect(screen.getByText("Remaining administrators")).toBeInTheDocument();
+    expect(screen.getByText("16")).toBeInTheDocument();
   });
 });
