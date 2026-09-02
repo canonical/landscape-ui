@@ -19,7 +19,7 @@ describe("documentationUrls", () => {
 
   it("ADMINISTRATORS_DOCUMENTATION_URL points to the correct page", () => {
     expect(ADMINISTRATORS_DOCUMENTATION_URL).toBe(
-      `${BASE_PATH}/administrators`,
+      `${BASE_PATH}/how-to-guides/web-portal/web-portal-24-04-or-later/manage-administrators-and-roles/`,
     );
   });
 });
