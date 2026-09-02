@@ -7,9 +7,17 @@ import { Button, CodeSnippet, Link } from "@canonical/react-components";
 import type { FC } from "react";
 import { Link as RouterLink } from "react-router";
 import { SELF_HOSTED_LANDSCAPE_DOCUMENTATION_URL } from "./constants";
+import { useGetSelfHostedLicense } from "./api/useGetSelfHostedLicense";
 import classes from "./SelfHostedLicensePage.module.scss";
 
 const SelfHostedLicensePage: FC = () => {
+  const { downloadUrl, isGettingSelfHostedLicense } =
+    useGetSelfHostedLicense();
+
+  const curlCommand = !isGettingSelfHostedLicense && downloadUrl
+    ? `sudo curl -so /etc/landscape/license.txt \\ ${downloadUrl}`
+    : "Loading...";
+
   return (
     <PageMain>
       <PageHeader
@@ -72,7 +80,7 @@ const SelfHostedLicensePage: FC = () => {
             <CodeSnippet
               blocks={[
                 {
-                  code: "sudo curl -so /etc/landscape/license.txt \\ http://onward:7846c5ce-235c-11e0-970c-60fb42f8d69c@landscape.yuriy.works/license.txt",
+                  code: curlCommand,
                   wrapLines: true,
                 },
               ]}

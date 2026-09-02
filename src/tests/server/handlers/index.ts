@@ -32,6 +32,7 @@ import repository from "./repository";
 import repositoryProfiles from "./repositoryProfiles";
 import roles from "./roles";
 import scriptProfiles from "./scriptProfiles";
+import selfHostedLicense from "./selfHostedLicense";
 import usgProfiles from "./usgProfiles";
 import snap from "./snap";
 import standaloneAccount from "./standaloneAccount";
@@ -82,6 +83,7 @@ export default [
   ...scriptProfiles,
   ...snap,
   ...standaloneAccount,
+  ...selfHostedLicense,
   ...tag,
   ...ubuntuPro,
   ...upgradeProfile,
