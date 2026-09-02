@@ -1,21 +1,20 @@
+// Targets only anchor/link elements that open a new tab or window
 a[target="_blank"] {
+  // Targets the small space after the link text to display the external link icon
   &::after {
-    content: "";
-    vertical-align: middle;
-
     @extend %icon;
-    @include vf-icon-external-link($colors--light-theme--link-default);
-
-    .is-dark & {
-      @include vf-icon-external-link($colors--dark-theme--focus);
-    }
-
-    /* The CustomSelect highlight background color is the default link color so
-     * we make the text white instead
-     */
-    .highlight & {
-      @include vf-icon-external-link($colors--dark-theme--text-default);
-    }
+    // This means icons use the computed color from this "pseudo-element,” which it inherits from the external <a> link.
+    // Aka icons get their color from their associated link text. This simplifies light mode and dark mode - so external link icons match their link text.
+    background-color: currentcolor;
+    // creates the ::after pseudo-element for the link icon to be rendered on
+    content: "";
+    // supplies the external-link SVG as a stencil. Only the opaque icon shape is visible. This is where the color is applied to via background-color
+    mask-image: vf-icon-external-link-url($colors--light-theme--icon);
+    // These position the stencil around the link icon's box.
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    vertical-align: middle;
   }
 }
 
