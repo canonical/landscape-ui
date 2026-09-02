@@ -27,21 +27,21 @@ const AccessGroupListActions: FC<AccessGroupListActionsProps> = ({
         toggleAriaLabel={`${accessGroup.title} access group actions`}
         actions={[
           {
-            icon: "edit",
-            label: "Edit",
-            "aria-label": `Edit "${accessGroup.title}" access group`,
-            onClick: createPageParamsSetter({
-              name: accessGroup.name,
-              sidePath: ["edit"],
-            }),
-          },
-          {
             icon: "show",
             label: "View details",
             "aria-label": `View "${accessGroup.title}" access group details`,
             onClick: createPageParamsSetter({
               name: accessGroup.name,
               sidePath: ["view"],
+            }),
+          },
+          {
+            icon: "edit",
+            label: "Edit",
+            "aria-label": `Edit "${accessGroup.title}" access group`,
+            onClick: createPageParamsSetter({
+              name: accessGroup.name,
+              sidePath: ["edit"],
             }),
           },
         ]}

@@ -27,7 +27,7 @@ const AccessGroupsPage: FC = () => {
     lastSidePathSegment,
     sidePath,
     popSidePathUntilClear,
-    createSidePathPusher,
+    createPageParamsSetter,
   } = usePageParams();
 
   useSetDynamicFilterValidation("sidePath", ["add", "view", "edit"]);
@@ -40,7 +40,10 @@ const AccessGroupsPage: FC = () => {
           <Button
             key="add-access-group"
             appearance="positive"
-            onClick={createSidePathPusher("add")}
+            onClick={createPageParamsSetter({
+              sidePath: ["add"],
+              name: "",
+            })}
             type="button"
             className="u-no-margin--right"
           >

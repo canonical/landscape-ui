@@ -16,7 +16,8 @@ const AccessGroupDeleteModal = lazy(
 );
 
 const ViewAccessGroupSidePanel: FC = () => {
-  const { name, createPageParamsSetter } = usePageParams();
+  const { name, createPageParamsSetter, createSidePathPusher } =
+    usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse, isLoading } = getAccessGroupQuery();
 
@@ -52,7 +53,17 @@ const ViewAccessGroupSidePanel: FC = () => {
       <SidePanel.Header>{accessGroup.title}</SidePanel.Header>
       {isNotRootGroup && (
         <ResponsiveButtons
+          alwaysVisible={2}
           buttons={[
+            <Button
+              key="edit"
+              hasIcon
+              type="button"
+              onClick={createSidePathPusher("edit")}
+            >
+              <Icon name="edit" />
+              <span>Edit</span>
+            </Button>,
             <Button
               key="delete"
               hasIcon
@@ -100,7 +111,7 @@ const ViewAccessGroupSidePanel: FC = () => {
                         return (
                           <span key={childName}>
                             <Button
-                              className="u-no-padding--top u-no-margin--bottom"
+                              className="u-no-padding u-no-margin"
                               type="button"
                               appearance="link"
                               onClick={createPageParamsSetter({

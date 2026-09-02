@@ -1,4 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { describe, it, expect } from "vitest";
 import { Suspense } from "react";
 import SidePanel from "@/components/layout/SidePanel";
@@ -47,6 +48,10 @@ describe("ViewAccessGroupSidePanel", () => {
     await screen.findByRole("heading", { name: "Details" });
 
     expect(screen.queryByText("Parent")).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", { name: "Edit" }),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Delete" }),
     ).not.toBeInTheDocument();
@@ -65,6 +70,23 @@ describe("ViewAccessGroupSidePanel", () => {
     expect(
       await screen.findByRole("heading", { name: "Server machines" }),
     ).toBeInTheDocument();
+  });
+
+  it("sets the edit side path and name in the URL when Edit is clicked", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <>
+        <ViewAccessGroupSidePanel />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "?sidePath=view&name=desktop",
+    );
+
+    await user.click(await screen.findByRole("button", { name: "Edit" }));
+
+    expect(getLocationDisplay()).toHaveTextContent("sidePath=view%2Cedit");
+    expect(getLocationDisplay()).toHaveTextContent("name=desktop");
   });
 
   it("renders the delete button for non-default access groups", async () => {

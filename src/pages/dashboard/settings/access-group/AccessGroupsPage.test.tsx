@@ -44,17 +44,13 @@ describe("AccessGroupsPage", () => {
   it("opens add access group side panel", async () => {
     const user = userEvent.setup();
 
-    renderWithProviders(
-      <AccessGroupsPage />,
-      undefined,
-      ROUTES.settings.accessGroups(),
-      `/${PATHS.settings.root}/${PATHS.settings.accessGroups}`,
-    );
+    renderWithProviders(<AccessGroupsPage />, undefined, `/?sidePath=add`);
 
     await user.click(screen.getByRole("button", { name: "Add access group" }));
 
-    expect(await screen.findByText("Title")).toBeInTheDocument();
-    expect(screen.getByText("Parent")).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Add access group" }),
+    ).toBeInTheDocument();
   });
 
   it("opens view access group side panel", async () => {
@@ -66,6 +62,18 @@ describe("AccessGroupsPage", () => {
 
     expect(
       await screen.findByRole("heading", { name: "Desktop machines" }),
+    ).toBeInTheDocument();
+  });
+
+  it("opens edit access group side panel", async () => {
+    renderWithProviders(
+      <AccessGroupsPage />,
+      undefined,
+      `/?sidePath=edit&name=server`,
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "Edit Server machines" }),
     ).toBeInTheDocument();
   });
 });

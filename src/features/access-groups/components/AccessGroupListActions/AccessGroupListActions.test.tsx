@@ -82,4 +82,32 @@ describe("AccessGroupListActions", () => {
     expect(location).toHaveTextContent("sidePath=view");
     expect(location).toHaveTextContent(`name=${accessGroup.name}`);
   });
+
+  it("opens the edit side panel when Edit is clicked", async () => {
+    renderWithProviders(
+      <>
+        <AccessGroupListActions
+          accessGroup={accessGroup}
+          parentAccessGroupTitle="Global access"
+        />
+        <LocationDisplay />
+      </>,
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: `${accessGroup.title} access group actions`,
+      }),
+    );
+
+    await user.click(
+      screen.getByRole("menuitem", {
+        name: `Edit "${accessGroup.title}" access group`,
+      }),
+    );
+
+    const location = getLocationDisplay();
+    expect(location).toHaveTextContent("sidePath=edit");
+    expect(location).toHaveTextContent(`name=${accessGroup.name}`);
+  });
 });
