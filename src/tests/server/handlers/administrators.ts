@@ -58,6 +58,14 @@ export default [
   }),
 
   http.get(`${API_URL}max-people-count`, () => {
+    if (shouldApplyEndpointStatus("max-people-count")) {
+      const { response, status } = getEndpointStatus("max-people-count");
+
+      if (status === "variant" && response) {
+        return HttpResponse.json(response);
+      }
+    }
+
     return HttpResponse.json({ max_people_count: 10 });
   }),
 ];
