@@ -48,7 +48,8 @@ export default [
     }
 
     if (shouldApplyEndpointStatus("InviteAdministrator")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("InviteAdministrator");
+
       if (status === "error") {
         throw createEndpointStatusError();
       }
