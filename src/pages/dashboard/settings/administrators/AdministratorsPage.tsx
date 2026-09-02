@@ -12,13 +12,23 @@ import {
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
 
 const InviteAdministratorForm = lazy(
   () => import("@/features/administrators/components/InviteAdministratorForm"),
 );
 
+const AdministratorLimitModal = lazy(
+  () => import("@/features/administrators/components/AdministratorLimitModal"),
+);
+
 const AdministratorsPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
+  const {
+    value: isModalOpen,
+    setTrue: openModal,
+    setFalse: closeModal,
+  } = useBoolean(false);
 
   const { getAdministratorsQuery } = useAdministrators();
   const {
@@ -34,12 +44,16 @@ const AdministratorsPage: FC = () => {
     isGettingAdministratorsLimit || getAdministratorsQueryIsLoading;
 
   const handleInviteAdministrator = () => {
-    setSidePanelContent(
-      "Invite administrator",
-      <Suspense fallback={<LoadingState />}>
-        <InviteAdministratorForm />
-      </Suspense>,
-    );
+    if (administrators.length >= administratorsLimit) {
+      openModal();
+    } else {
+      setSidePanelContent(
+        "Invite administrator",
+        <Suspense fallback={<LoadingState />}>
+          <InviteAdministratorForm />
+        </Suspense>,
+      );
+    }
   };
 
   return (
@@ -54,7 +68,6 @@ const AdministratorsPage: FC = () => {
                   key="invite-administrator"
                   onClick={handleInviteAdministrator}
                   type="button"
-                  disabled={administrators.length >= administratorsLimit}
                 >
                   Invite administrator
                 </Button>,
@@ -75,6 +88,7 @@ const AdministratorsPage: FC = () => {
           </PageContent>
         </>
       )}
+      {isModalOpen && <AdministratorLimitModal close={closeModal} />}
     </PageMain>
   );
 };
