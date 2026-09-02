@@ -2,8 +2,10 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import FormSection from "@/components/form/FormSection";
-import { Button, Link } from "@canonical/react-components";
+import { ROUTES } from "@/libs/routes";
+import { Button, CodeSnippet, Link } from "@canonical/react-components";
 import type { FC } from "react";
+import { Link as RouterLink } from "react-router";
 import { SELF_HOSTED_LANDSCAPE_DOCUMENTATION_URL } from "./constants";
 import classes from "./SelfHostedLicensePage.module.scss";
 
@@ -51,7 +53,37 @@ const SelfHostedLicensePage: FC = () => {
             following location:
           </p>
 
-          
+          <CodeSnippet
+            blocks={[
+              {
+                code: "/etc/landscape/license.txt",
+              },
+            ]}
+          />
+
+          <p>
+            If you have the <span className={classes.curl}>curl</span> package
+            installed, you can perform the two steps above with a single
+            command. Access is controlled by a private token which uniquely
+            identifies download requests from your account:
+          </p>
+
+          <CodeSnippet
+            blocks={[
+              {
+                code: "sudo curl -so /etc/landscape/license.txt \\ http://onward:7846c5ce-235c-11e0-970c-60fb42f8d69c@landscape.yuriy.works/license.txt",
+                wrapLines: true,
+              },
+            ]}
+          />
+
+          <p>
+            If your credentials have been compromised, you can regenerate them
+            on the{" "}
+            <RouterLink to={ROUTES.account.apiCredentials()}>
+              API credentials page.
+            </RouterLink>
+          </p>
         </FormSection>
       </PageContent>
     </PageMain>
