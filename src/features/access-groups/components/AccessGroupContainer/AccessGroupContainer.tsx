@@ -10,44 +10,46 @@ import { ACCESS_GROUPS_DOCUMENTATION_URL } from "./constants";
 
 const AccessGroupsContainer: FC = () => {
   const { getAccessGroupQuery } = useRoles();
-  const { createSidePathPusher } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
 
   const { data: accessGroupResponse, isPending: isLoadingAccessGroups } =
     getAccessGroupQuery();
 
   const accessGroups = accessGroupResponse?.data || [];
 
+  if (isLoadingAccessGroups) {
+    return <LoadingState />;
+  }
+
+  if (accessGroups.length === 0) {
+    return (
+      <EmptyState
+        title="No access groups found"
+        icon="copy"
+        body="You haven't added any access groups yet."
+        link={{
+          href: ACCESS_GROUPS_DOCUMENTATION_URL,
+          text: "How to manage access groups in Landscape",
+        }}
+        cta={[
+          <Button
+            key="add-access-group"
+            appearance="positive"
+            onClick={createPageParamsSetter({ sidePath: ["add"], name: "" })}
+            type="button"
+            className="u-no-margin--right"
+          >
+            Add access group
+          </Button>,
+        ]}
+      />
+    );
+  }
+
   return (
     <>
-      {isLoadingAccessGroups && <LoadingState />}
-      {!isLoadingAccessGroups && accessGroups.length === 0 && (
-        <EmptyState
-          title="No access groups found"
-          icon="copy"
-          body="You haven't added any access groups yet."
-          link={{
-            href: ACCESS_GROUPS_DOCUMENTATION_URL,
-            text: "How to manage access groups in Landscape",
-          }}
-          cta={[
-            <Button
-              key="add-access-group"
-              appearance="positive"
-              onClick={createSidePathPusher("add")}
-              type="button"
-              className="u-no-margin--right"
-            >
-              Add access group
-            </Button>,
-          ]}
-        />
-      )}
-      {!isLoadingAccessGroups && accessGroups.length > 0 && (
-        <>
-          <AccessGroupHeader />
-          <AccessGroupList accessGroups={accessGroups} />
-        </>
-      )}
+      <AccessGroupHeader />
+      <AccessGroupList accessGroups={accessGroups} />
     </>
   );
 };

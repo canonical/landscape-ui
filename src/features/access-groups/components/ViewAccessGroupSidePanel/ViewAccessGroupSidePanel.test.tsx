@@ -10,6 +10,16 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { ErrorBoundary } from "@sentry/react";
 import type { AccessGroup } from "@/features/access-groups";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
+
+const renderWithError = () =>
+  renderWithProviders(
+    <ErrorBoundary fallback={({ error }) => <p>{(error as Error).message}</p>}>
+      <ViewAccessGroupSidePanel />
+    </ErrorBoundary>,
+    undefined,
+    "?sidePath=view&name=nonexistent",
+  );
 
 const renderComponent = (name = "desktop") =>
   renderWithProviders(
@@ -108,19 +118,23 @@ describe("ViewAccessGroupSidePanel", () => {
     expect(await screen.findByRole("status")).toBeInTheDocument();
   });
 
-  it("throws when the access group is not found", async () => {
+  it("shows error message when the the request fails", async () => {
     setEndpointStatus({ status: "error", path: "GetAccessGroups" });
 
-    renderWithProviders(
-      <ErrorBoundary fallback={<p>error boundary fallback</p>}>
-        <ViewAccessGroupSidePanel />
-      </ErrorBoundary>,
-      undefined,
-      "?sidePath=view&name=nonexistent",
-    );
+    renderWithError();
 
     expect(
-      await screen.findByText("error boundary fallback"),
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
+  });
+
+  it("shows not found message when the access group is missing", async () => {
+    setEndpointStatus({ status: "empty", path: "GetAccessGroups" });
+
+    renderWithError();
+
+    expect(
+      await screen.findByText('Access group "nonexistent" was not found'),
     ).toBeInTheDocument();
   });
 

@@ -19,7 +19,11 @@ const ViewAccessGroupSidePanel: FC = () => {
   const { name, createPageParamsSetter, createSidePathPusher } =
     usePageParams();
   const { getAccessGroupQuery } = useRoles();
-  const { data: accessGroupsResponse, isLoading } = getAccessGroupQuery();
+  const {
+    data: accessGroupsResponse,
+    isPending,
+    error,
+  } = getAccessGroupQuery();
 
   const {
     value: isDeleteModalOpen,
@@ -27,7 +31,7 @@ const ViewAccessGroupSidePanel: FC = () => {
     setFalse: closeDeleteModal,
   } = useBoolean();
 
-  if (isLoading) {
+  if (isPending) {
     return <SidePanel.LoadingState />;
   }
 
@@ -35,7 +39,7 @@ const ViewAccessGroupSidePanel: FC = () => {
   const accessGroup = accessGroups.find((group) => group.name === name);
 
   if (!accessGroup) {
-    throw new Error(`Access group "${name}" was not found`);
+    throw new Error(error?.message ?? `Access group "${name}" was not found`);
   }
 
   const isNotRootGroup = accessGroup.name !== DEFAULT_ACCESS_GROUP_NAME;
