@@ -1,7 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import AdministratorsPanel from "./AdministratorsPanel";
 import { screen } from "@testing-library/react";
-import { setEndpointStatus } from "@/tests/controllers/controller";
 import userEvent from "@testing-library/user-event";
 import { ADMINISTRATORS_DOCUMENTATION_URL } from "@/constants";
 
@@ -19,11 +18,6 @@ describe("AdministratorsPanel", () => {
   });
 
   it("renders an empty state", () => {
-    setEndpointStatus({
-      path: "GetAdministrators",
-      status: "empty",
-    });
-
     renderWithProviders(<AdministratorsPanel administrators={[]} />);
 
     const emptyState = screen.getByText(
@@ -33,11 +27,6 @@ describe("AdministratorsPanel", () => {
   });
 
   it("renders docs link with expected href in empty state", () => {
-    setEndpointStatus({
-      path: "GetAdministrators",
-      status: "empty",
-    });
-
     renderWithProviders(<AdministratorsPanel administrators={[]} />);
 
     const docsLink = screen.getByRole("link", {
@@ -48,11 +37,6 @@ describe("AdministratorsPanel", () => {
   });
 
   it("opens invitation sidepanel when clicking invite administrator on empty state", async () => {
-    setEndpointStatus({
-      path: "GetAdministrators",
-      status: "empty",
-    });
-
     renderWithProviders(<AdministratorsPanel administrators={[]} />);
 
     const emptyState = screen.getByText(
