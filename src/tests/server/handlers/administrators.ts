@@ -62,6 +62,10 @@ export default [
     if (shouldApplyEndpointStatus("max-people-count")) {
       const { response, status } = getEndpointStatus("max-people-count");
 
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+
       if (status === "variant" && response) {
         return HttpResponse.json(response);
       }
