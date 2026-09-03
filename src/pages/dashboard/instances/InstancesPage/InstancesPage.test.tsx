@@ -85,6 +85,26 @@ describe("InstancesPage", () => {
     expect(screen.queryByText(/Account name:/)).not.toBeInTheDocument();
   });
 
+  it("closes registration information when Escape is pressed", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<InstancesPage />);
+
+    await expectLoadingState();
+
+    const button = screen.getByRole("button", {
+      name: /New instance registration information, documentation link available/,
+    });
+
+    await user.tab();
+
+    expect(await screen.findByText(/Account name:/)).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+
+    expect(button).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText(/Account name:/)).not.toBeInTheDocument();
+  });
+
   it("shows empty state when instances endpoint is empty", async () => {
     setEndpointStatus({ status: "empty", path: "computers" });
 
