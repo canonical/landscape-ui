@@ -8,10 +8,14 @@ describe("SelfHostedLicensePage", () => {
   it("renders the server-provided license download URL in the curl command", async () => {
     renderWithProviders(<SelfHostedLicensePage />);
 
-    expect(
-      await screen.findByText(
-        `sudo curl -so /etc/landscape/license.txt \\ ${selfHostedLicense.download_url}`,
-      ),
-    ).toBeInTheDocument();
+    const codeSnippet = await screen.findByText(
+      (_, element) =>
+        element?.tagName === "CODE" &&
+        element.textContent ===
+          `sudo curl -so /etc/landscape/license.txt \\
+${selfHostedLicense.download_url}`,
+    );
+
+    expect(codeSnippet).toBeInTheDocument();
   });
 });

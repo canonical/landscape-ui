@@ -15,7 +15,8 @@ const SelfHostedLicensePage: FC = () => {
     useGetSelfHostedLicense();
 
   const curlCommand = !isGettingSelfHostedLicense && downloadUrl
-    ? `sudo curl -so /etc/landscape/license.txt \\ ${downloadUrl}`
+    ? `sudo curl -so /etc/landscape/license.txt \\
+${downloadUrl}`
     : "Loading...";
 
   return (
