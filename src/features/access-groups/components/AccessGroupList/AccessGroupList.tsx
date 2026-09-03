@@ -2,6 +2,7 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
 import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
+import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column, Row } from "react-table";
@@ -11,12 +12,14 @@ import AccessGroupListActions from "../AccessGroupListActions";
 import { buildHierarchy, findAncestors, handleCellProps } from "./helpers";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
+const INDENTATION = 1.25;
+
 interface AccessGroupListProps {
   readonly accessGroups: AccessGroup[];
 }
 
 const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
-  const { groupBy, search } = usePageParams();
+  const { groupBy, search, createPageParamsSetter } = usePageParams();
 
   const accessGroupsData: AccessGroupWithInstancesCount[] = useMemo(() => {
     const filteredAccessGroups = search
@@ -64,14 +67,22 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
         accessor: "title",
         Header: "title",
         Cell: ({ row }: CellProps<AccessGroupWithInstancesCount>) => {
+          const { depth } = row as Row<AccessGroupWithInstancesCount> & {
+            depth: number;
+          };
           return (
-            <div
-              style={{
-                paddingLeft: `${(row as Row<AccessGroupWithInstancesCount> & { depth: number }).depth * 1.25}rem`, // eslint-disable-line @typescript-eslint/no-magic-numbers
-              }}
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top"
+              onClick={createPageParamsSetter({
+                sidePath: ["view"],
+                name: row.original.name,
+              })}
+              style={{ paddingLeft: `${depth * INDENTATION}rem` }}
             >
-              <span>{row.original.title}</span>
-            </div>
+              {row.original.title}
+            </Button>
           );
         },
       },
@@ -125,7 +136,7 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
         },
       },
     ],
-    [groupBy, accessGroups],
+    [accessGroups, createPageParamsSetter],
   );
 
   return (

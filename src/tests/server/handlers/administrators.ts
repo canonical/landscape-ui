@@ -1,9 +1,13 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { administrators } from "@/tests/mocks/administrators";
-import { isAction } from "@/tests/server/handlers/_helpers";
+import {
+  isAction,
+  shouldApplyEndpointStatus,
+} from "@/tests/server/handlers/_helpers";
 import type { Administrator } from "@/types/Administrator";
 import { http, HttpResponse } from "msw";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, never, Administrator[]>(API_URL_OLD, ({ request }) => {
@@ -11,10 +15,16 @@ export default [
       return;
     }
 
-    const { path, status } = getEndpointStatus();
+    if (shouldApplyEndpointStatus("GetAdministrators")) {
+      const { status } = getEndpointStatus("GetAdministrators");
 
-    if (path === "GetAdministrators" && status === "empty") {
-      return HttpResponse.json([]);
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      if (status === "empty") {
+        return HttpResponse.json([]);
+      }
     }
 
     return HttpResponse.json(administrators);
