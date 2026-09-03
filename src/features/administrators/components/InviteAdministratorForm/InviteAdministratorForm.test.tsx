@@ -114,7 +114,7 @@ describe("InviteAdministratorForm", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.queryByRole("heading", { name: "Invite Administrator" }),
+      screen.queryByRole("button", { name: /send invite/i }),
     ).not.toBeInTheDocument();
   });
 

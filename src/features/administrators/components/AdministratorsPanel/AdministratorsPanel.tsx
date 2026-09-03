@@ -30,33 +30,31 @@ const AdministratorsPanel: FC<AdministratorsPanelProps> = ({
     );
   };
 
-  return (
-    <>
-      {!administrators.length ? (
-        <EmptyState
-          body="There are no administrators in your Landscape organization."
-          link={{
-            href: ADMINISTRATORS_DOCUMENTATION_URL,
-            text: "How to manage administrators in Landscape",
-          }}
-          cta={[
-            <Button
-              type="button"
-              appearance="positive"
-              key="invite-administrator"
-              onClick={handleInviteAdministrator}
-            >
-              Invite Administrator
-            </Button>,
-          ]}
-          icon="user"
-          title="No administrators found"
-        />
-      ) : (
-        <AdministratorsPanelContent administrators={administrators} />
-      )}
-    </>
-  );
+  if (!administrators.length) {
+    return (
+      <EmptyState
+        body="There are no administrators in your Landscape organization."
+        link={{
+          href: ADMINISTRATORS_DOCUMENTATION_URL,
+          text: "How to manage administrators in Landscape",
+        }}
+        cta={[
+          <Button
+            type="button"
+            appearance="positive"
+            key="invite-administrator"
+            onClick={handleInviteAdministrator}
+          >
+            Invite Administrator
+          </Button>,
+        ]}
+        icon="user"
+        title="No administrators found"
+      />
+    );
+  }
+
+  return <AdministratorsPanelContent administrators={administrators} />;
 };
 
 export default AdministratorsPanel;
