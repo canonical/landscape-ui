@@ -1,19 +1,17 @@
+/* stylelint-disable property-no-vendor-prefix */
+
 a[target="_blank"] {
   &::after {
     @extend %icon;
 
     background-color: currentcolor;
     content: "";
-    /* stylelint-disable-next-line property-no-vendor-prefix */
     -webkit-mask-image: vf-icon-external-link-url($colors--light-theme--icon);
     mask-image: vf-icon-external-link-url($colors--light-theme--icon);
-    /* stylelint-disable-next-line property-no-vendor-prefix */
     -webkit-mask-position: center;
     mask-position: center;
-    /* stylelint-disable-next-line property-no-vendor-prefix */
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
-    /* stylelint-disable-next-line property-no-vendor-prefix */
     -webkit-mask-size: contain;
     mask-size: contain;
     vertical-align: middle;
