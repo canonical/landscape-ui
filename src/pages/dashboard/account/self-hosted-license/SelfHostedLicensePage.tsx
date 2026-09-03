@@ -6,6 +6,7 @@ import { ROUTES } from "@/libs/routes";
 import { Button, CodeSnippet, Link } from "@canonical/react-components";
 import type { FC } from "react";
 import { Link as RouterLink } from "react-router";
+import { redirectToExternalUrl } from "@/features/auth/helpers";
 import { SELF_HOSTED_LANDSCAPE_DOCUMENTATION_URL } from "./constants";
 import { useGetSelfHostedLicense } from "./api/useGetSelfHostedLicense";
 import classes from "./SelfHostedLicensePage.module.scss";
@@ -18,6 +19,12 @@ const SelfHostedLicensePage: FC = () => {
     ? `sudo curl -so /etc/landscape/license.txt \\
 ${downloadUrl}`
     : "Loading...";
+
+  const handleDownload = () => {
+    if (downloadUrl) {
+      redirectToExternalUrl(downloadUrl);
+    }
+  };
 
   return (
     <PageMain>
@@ -53,7 +60,13 @@ ${downloadUrl}`
               as the expiration date of your license.
             </p>
 
-            <Button appearance="positive" hasIcon>
+            <Button
+              appearance="positive"
+              disabled={isGettingSelfHostedLicense || !downloadUrl}
+              hasIcon
+              onClick={handleDownload}
+              type="button"
+            >
               <i className="p-icon--begin-downloading" />
               <span>Download license file</span>
             </Button>
