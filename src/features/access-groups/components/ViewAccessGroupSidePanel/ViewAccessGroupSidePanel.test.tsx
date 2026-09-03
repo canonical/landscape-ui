@@ -118,7 +118,7 @@ describe("ViewAccessGroupSidePanel", () => {
     expect(await screen.findByRole("status")).toBeInTheDocument();
   });
 
-  it("shows error message when the the request fails", async () => {
+  it("shows error message when the request fails", async () => {
     setEndpointStatus({ status: "error", path: "GetAccessGroups" });
 
     renderWithError();
