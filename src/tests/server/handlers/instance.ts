@@ -66,7 +66,7 @@ function matchComputersQuery(
   endpointStatus: ReturnType<typeof getEndpointStatus>,
   limit: number,
   offset: number,
-): HttpResponse | null {
+): HttpResponse<JsonBodyType> | null {
   if (
     endpointStatus.status === "empty" &&
     endpointStatus.path === "computers-pro-empty" &&
@@ -382,7 +382,7 @@ export default [
 
   http.get(`${API_URL}computers/:computerId`, async ({ params, request }) => {
     // The real route only matches integer ids (`/computers/<int:computer_id>`),
-    // letting static paths like `computers/compliance-report` reach their own handlers.
+    // letting static paths like `computers/report` reach their own handlers.
     if (!/^\d+$/.test(String(params.computerId))) {
       return;
     }
