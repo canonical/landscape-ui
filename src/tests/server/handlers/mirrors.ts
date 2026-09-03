@@ -45,13 +45,36 @@ const getMirrorsResponse = (requestUrl: string) => {
 
 const getBatchMirrorsResponse = async (
   request: Request,
-): Promise<StrictResponse<BatchGetMirrorsResponse>> => {
-  const body = (await request.json()) as { names?: string[] };
+): Promise<
+  StrictResponse<BatchGetMirrorsResponse | { code: number; message: string }>
+> => {
+  const body = (await request.json()) as {
+    names?: string[];
+    returnPartialSuccess?: boolean;
+  };
   const requestedNames = body.names ?? [];
   const matched = mirrors.filter(({ name }) =>
     name ? requestedNames.includes(name) : false,
   );
-  return HttpResponse.json({ mirrors: matched });
+  const matchedNames = new Set(matched.map(({ name }) => name));
+  const unreachable = requestedNames.filter((name) => !matchedNames.has(name));
+
+  // Mirrors the real API: an unreachable name fails the whole batch unless
+  // the caller opts into partial success.
+  if (unreachable.length > 0 && !body.returnPartialSuccess) {
+    return HttpResponse.json(
+      {
+        code: 5,
+        message: `The following mirrors could not be found: ${unreachable.join(", ")}`,
+      },
+      { status: 404 },
+    );
+  }
+
+  return HttpResponse.json({
+    mirrors: matched,
+    ...(unreachable.length > 0 ? { unreachable } : {}),
+  });
 };
 
 export default [

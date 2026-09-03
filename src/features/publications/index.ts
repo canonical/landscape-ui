@@ -15,6 +15,7 @@ export { default as AssociatedPublicationsCount } from "./components/AssociatedP
 export {
   getSourceName,
   getSourceType,
+  isMissingSource,
   getInstallsAndUpgradesValues,
   getInitialValues,
 } from "./helpers";

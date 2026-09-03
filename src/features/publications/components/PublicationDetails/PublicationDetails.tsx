@@ -11,7 +11,7 @@ import {
   DISPLAY_DATE_TIME_FORMAT,
   DEFAULT_POLLING_INTERVAL,
 } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 import {
   OperationStatusContent,
@@ -19,17 +19,20 @@ import {
   OperationErrorNotification,
 } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
+import MissingSourceLabel from "../MissingSourceLabel";
 
 interface PublicationDetailsProps {
   readonly publication: Publication;
   readonly sourceDisplayName: string;
   readonly publicationTargetDisplayName: string;
+  readonly isSourceNotFound?: boolean;
 }
 
 const PublicationDetails = ({
   publication,
   sourceDisplayName,
   publicationTargetDisplayName,
+  isSourceNotFound = false,
 }: PublicationDetailsProps) => {
   const {
     value: isRemoveModalOpen,
@@ -118,7 +121,12 @@ const PublicationDetails = ({
               label="Source type"
               value={getSourceType(publication.source)}
             />
-            <InfoGrid.Item label="Source" value={sourceDisplayName} />
+            <InfoGrid.Item
+              label="Source"
+              value={
+                isSourceNotFound ? <MissingSourceLabel /> : sourceDisplayName
+              }
+            />
 
             <InfoGrid.Item
               label="Status"
@@ -134,7 +142,7 @@ const PublicationDetails = ({
               label="Last published"
               value={
                 publication.publishTime
-                  ? moment(publication.publishTime).format(
+                  ? date(publication.publishTime).format(
                       DISPLAY_DATE_TIME_FORMAT,
                     )
                   : NO_DATA_TEXT

@@ -4,6 +4,10 @@
 @import "vanilla-framework/scss/settings_spacing";
 @import "vanilla-framework/scss/global_functions";
 
+.badge {
+  margin-left: auto;
+}
+
 .container {
   border-top: 1px solid $colors--theme--border-default;
   display: flex;
@@ -16,6 +20,7 @@
 }
 
 .link {
+  align-items: center;
   padding-bottom: 0.7 * $sp-unit !important;
   padding-left: 4.5 * $sp-unit !important;
   padding-top: 0.7 * $sp-unit !important;

@@ -9,6 +9,7 @@ export const ROOT_PATH = import.meta.env.VITE_ROOT_PATH;
 export const API_VERSION = "2011-08-01";
 export const APP_TITLE = import.meta.env.VITE_APP_TITLE;
 export const INPUT_DATE_FORMAT = "YYYY-MM-DD";
+export const INPUT_DATE_TIME_MINUTE_FORMAT = `${INPUT_DATE_FORMAT}THH:mm`;
 export const INPUT_DATE_TIME_FORMAT = `${INPUT_DATE_FORMAT}THH:mm:ss`;
 export const DISPLAY_DATE_FORMAT = "MMM D, YYYY";
 export const DISPLAY_DATE_TIME_FORMAT = "MMM DD, YYYY, HH:mm";
@@ -16,6 +17,8 @@ export const NOT_AVAILABLE = "N/A";
 export const APP_VERSION = import.meta.env.VITE_APP_VERSION;
 export const APP_COMMIT = import.meta.env.VITE_APP_COMMIT;
 export const FEEDBACK_LINK = "https://bugs.launchpad.net/landscape";
+export const TSV_EXPORTS_ENABLED =
+  import.meta.env.VITE_TSV_EXPORTS_ENABLED === "true";
 export const CONTACT_SUPPORT_TEAM_MESSAGE =
   "Something went wrong. Please try again or contact our support team.";
 export const DETAILED_UPGRADES_VIEW_ENABLED =
