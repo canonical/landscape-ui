@@ -4,13 +4,17 @@ a[target="_blank"] {
 
     background-color: currentcolor;
     content: "";
+    /* stylelint-disable-next-line property-no-vendor-prefix */
+    -webkit-mask-image: vf-icon-external-link-url($colors--light-theme--icon);
     mask-image: vf-icon-external-link-url($colors--light-theme--icon);
-    mask-image: vf-icon-external-link-url($colors--light-theme--icon);
+    /* stylelint-disable-next-line property-no-vendor-prefix */
+    -webkit-mask-position: center;
     mask-position: center;
-    mask-position: center;
+    /* stylelint-disable-next-line property-no-vendor-prefix */
+    -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    mask-size: contain;
+    /* stylelint-disable-next-line property-no-vendor-prefix */
+    -webkit-mask-size: contain;
     mask-size: contain;
     vertical-align: middle;
   }
