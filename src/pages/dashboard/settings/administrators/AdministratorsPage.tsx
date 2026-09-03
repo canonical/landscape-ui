@@ -56,6 +56,10 @@ const AdministratorsPage: FC = () => {
     }
   };
 
+  if (isGettingAdminInfo) {
+    return <LoadingState />;
+  }
+
   return (
     <PageMain>
       <PageHeader
@@ -75,19 +79,13 @@ const AdministratorsPage: FC = () => {
             : undefined
         }
       />
-      {isGettingAdminInfo ? (
-        <LoadingState />
-      ) : (
-        <>
-          <AdministratorsLimit
-            administratorsCount={administrators.length}
-            administratorsLimit={administratorsLimit}
-          />
-          <PageContent hasTable>
-            <AdministratorsTabs administrators={administrators} />
-          </PageContent>
-        </>
-      )}
+      <AdministratorsLimit
+        administratorsCount={administrators.length}
+        administratorsLimit={administratorsLimit}
+      />
+      <PageContent hasTable>
+        <AdministratorsTabs administrators={administrators} />
+      </PageContent>
       {isModalOpen && (
         <Suspense fallback={<LoadingState centerOnScreen />}>
           <AdministratorLimitModal close={closeModal} />
