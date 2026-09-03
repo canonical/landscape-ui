@@ -3,7 +3,7 @@ import type { CellProps, Column, Cell, Row } from "react-table";
 import type { HTMLProps } from "react";
 import type { TableCellProps, TableRowProps } from "react-table";
 import useRoles from "@/hooks/useRoles";
-import useAdministrators from "@/hooks/useAdministrators";
+import { useAdministrators } from "@/features/administrators";
 import LoadingState from "@/components/layout/LoadingState";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
