@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
-import { REPORT_VIEW_ENABLED } from "@/constants";
+import { REPORT_VIEW_ENABLED, TSV_EXPORTS_ENABLED } from "@/constants";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
@@ -38,12 +38,14 @@ interface InstancesPageActionsProps {
   readonly isGettingInstances: boolean;
   readonly selectedInstances: Instance[];
   readonly isAllSelected: boolean;
+  readonly onRemoveSuccess?: () => void;
 }
 
 const InstancesPageActions = memo(function InstancesPageActions({
   isGettingInstances,
   selectedInstances,
   isAllSelected,
+  onRemoveSuccess,
 }: InstancesPageActionsProps) {
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
@@ -326,17 +328,21 @@ const InstancesPageActions = memo(function InstancesPageActions({
       hasIcon: true,
       disabled: !hasSelectedInstances,
     },
-    {
-      children: (
-        <>
-          <Icon name="export" />
-          <span>Export selection as TSV</span>
-        </>
-      ),
-      onClick: handleExport,
-      hasIcon: true,
-      disabled: !hasInstancesToExport,
-    },
+    ...(TSV_EXPORTS_ENABLED
+      ? [
+          {
+            children: (
+              <>
+                <Icon name="export" />
+                <span>Export selection as TSV</span>
+              </>
+            ),
+            onClick: handleExport,
+            hasIcon: true,
+            disabled: !hasInstancesToExport,
+          },
+        ]
+      : []),
     ...(REPORT_VIEW_ENABLED
       ? [
           {
@@ -423,6 +429,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         close={closeRemoveModal}
         instances={selectedInstances}
         isOpen={removeModalOpen}
+        onSuccess={onRemoveSuccess}
       />
     </>
   );

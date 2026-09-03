@@ -68,14 +68,36 @@ export default [
   http.post<never, BatchGetLocalsRequest>(
     `${API_URL_DEB_ARCHIVE}locals\\:batchGet`,
     async ({ request }) => {
-      const { names } = await request.json();
+      const body = (await request.json()) as BatchGetLocalsRequest;
+      const names = body.names ?? [];
 
       if (shouldApplyEndpointStatus("locals")) {
         return applyEndpointStatus({ locals: [] });
       }
 
+      const matchedLocals = repositories.filter(({ name }) =>
+        names.includes(name ?? ""),
+      );
+      const matchedNames = new Set<string>(
+        matchedLocals.flatMap(({ name }) => (name ? [name] : [])),
+      );
+      const unreachable = names.filter((name) => !matchedNames.has(name));
+
+      // Mirrors the real API: an unreachable name fails the whole batch unless
+      // the caller opts into partial success.
+      if (unreachable.length > 0 && !body.returnPartialSuccess) {
+        return HttpResponse.json(
+          {
+            code: 5,
+            message: `The following locals could not be found: ${unreachable.join(", ")}`,
+          },
+          { status: 404 },
+        );
+      }
+
       return HttpResponse.json({
-        locals: repositories.filter(({ name }) => names.includes(name ?? "")),
+        locals: matchedLocals,
+        ...(unreachable.length > 0 ? { unreachable } : {}),
       });
     },
   ),

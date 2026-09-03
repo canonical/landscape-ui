@@ -5,8 +5,8 @@ import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import date from "@/libs/date";
 import { http, HttpResponse } from "msw";
-import moment from "moment";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ScriptProfileForm from "./ScriptProfileForm";
@@ -16,10 +16,10 @@ describe("ScriptProfileForm", () => {
     initialValues: {
       all_computers: false,
       interval: "0 0 * * *",
-      start_after: moment().format(INPUT_DATE_TIME_FORMAT),
+      start_after: date().format(INPUT_DATE_TIME_FORMAT),
       tags: [],
       time_limit: 300,
-      timestamp: moment().format(INPUT_DATE_TIME_FORMAT),
+      timestamp: date().format(INPUT_DATE_TIME_FORMAT),
       title: "New profile",
       trigger_type: "event",
       username: "root",
@@ -83,10 +83,10 @@ describe("ScriptProfileForm instances request params", () => {
     initialValues: {
       all_computers: false,
       interval: "0 0 * * *",
-      start_after: moment().format(INPUT_DATE_TIME_FORMAT),
+      start_after: date().format(INPUT_DATE_TIME_FORMAT),
       tags: [],
       time_limit: 300,
-      timestamp: moment().format(INPUT_DATE_TIME_FORMAT),
+      timestamp: date().format(INPUT_DATE_TIME_FORMAT),
       title: "New profile",
       trigger_type: "event",
       username: "root",
@@ -147,10 +147,10 @@ describe("ScriptProfileForm edge cases", () => {
     initialValues: {
       all_computers: false,
       interval: "0 0 * * *",
-      start_after: moment().format(INPUT_DATE_TIME_FORMAT),
+      start_after: date().format(INPUT_DATE_TIME_FORMAT),
       tags: [],
       time_limit: 300,
-      timestamp: moment().format(INPUT_DATE_TIME_FORMAT),
+      timestamp: date().format(INPUT_DATE_TIME_FORMAT),
       title: "New profile",
       trigger_type: "event",
       username: "root",
@@ -199,7 +199,7 @@ describe("ScriptProfileForm edge cases", () => {
           ...props.initialValues,
           trigger_type: "recurring",
           interval: "invalid",
-          start_after: moment().format(INPUT_DATE_TIME_FORMAT),
+          start_after: date().format(INPUT_DATE_TIME_FORMAT),
         }}
       />,
     );

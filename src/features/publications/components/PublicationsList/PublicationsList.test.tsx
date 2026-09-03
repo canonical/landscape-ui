@@ -4,9 +4,11 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PublicationsList from "./PublicationsList";
-import { mirrors } from "@/tests/mocks/mirrors";
+import { batchGetMirrorNamesWithMissing, mirrors } from "@/tests/mocks/mirrors";
+import { batchGetLocalNamesWithMissing } from "@/tests/mocks/localRepositories";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { resetLroProgress } from "@/tests/server/handlers/operations";
+import type { Publication } from "@canonical/landscape-openapi";
 
 const buildDisplayNameMaps = (pubs: typeof publications) => {
   const sourceDisplayNames: Record<string, string> = {};
@@ -125,5 +127,74 @@ describe("PublicationsList", () => {
         'No publications found with the search: "test-publication"',
       ),
     ).toBeInTheDocument();
+  });
+
+  it("does not link unresolved mirror sources", () => {
+    const [, missingMirrorSource] = batchGetMirrorNamesWithMissing;
+    if (!missingMirrorSource) {
+      throw new Error("Missing mirror source fixture");
+    }
+
+    const missingMirrorPublication = publications.find(
+      (pub) => pub.source === missingMirrorSource,
+    );
+    if (!missingMirrorPublication) {
+      throw new Error("Missing mock publication for non-existent mirror");
+    }
+
+    renderWithProviders(
+      <PublicationsList
+        publications={[missingMirrorPublication]}
+        sourceDisplayNames={sourceDisplayNames}
+        unreachableSourceNames={[missingMirrorSource]}
+        publicationTargetDisplayNames={publicationTargetDisplayNames}
+      />,
+    );
+
+    expect(screen.getAllByText("Source not found").length).toBeGreaterThan(0);
+    expect(
+      screen.queryByRole("link", { name: "Source not found" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not link unresolved local sources", () => {
+    const [, missingLocalSource] = batchGetLocalNamesWithMissing;
+    if (!missingLocalSource) {
+      throw new Error("Missing local source fixture");
+    }
+
+    const missingLocalPublication: Publication = {
+      name: "publications/missing-local-source-in-list",
+      publicationId: "missing-local-source-in-list",
+      displayName: "missing local source publication",
+      label: "missing-local",
+      publicationTarget:
+        "publicationTargets/aaaaaaaa-0000-0000-0000-000000000001",
+      source: missingLocalSource,
+      distribution: "jammy",
+      origin: "Canonical",
+      architectures: ["amd64"],
+      acquireByHash: false,
+      butAutomaticUpgrades: false,
+      notAutomatic: false,
+      multiDist: false,
+      skipBz2: false,
+      skipContents: false,
+      publishTime: new Date("March 12, 2026"),
+    };
+
+    renderWithProviders(
+      <PublicationsList
+        publications={[missingLocalPublication]}
+        sourceDisplayNames={{ "locals/aaaa-bbbb-cccc": "Known local" }}
+        unreachableSourceNames={[missingLocalSource]}
+        publicationTargetDisplayNames={publicationTargetDisplayNames}
+      />,
+    );
+
+    expect(screen.getAllByText("Source not found").length).toBeGreaterThan(0);
+    expect(
+      screen.queryByRole("link", { name: "Source not found" }),
+    ).not.toBeInTheDocument();
   });
 });
