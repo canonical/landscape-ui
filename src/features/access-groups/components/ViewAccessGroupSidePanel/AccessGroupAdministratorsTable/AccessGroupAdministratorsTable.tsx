@@ -71,7 +71,7 @@ const AccessGroupAdministratorsTable: FC<Props> = ({ accessGroupName }) => {
       },
       {
         accessor: "roles",
-        Header: "Role",
+        Header: "Roles",
         Cell: ({ row: { original, index } }: CellProps<AdminRoleRow>) => (
           <TruncatedCell
             content={original.roles.map((role) => (

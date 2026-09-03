@@ -21,7 +21,7 @@ describe("AccessGroupAdministratorsTable", () => {
       await screen.findByRole("columnheader", { name: "Administrator" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "Role" }),
+      screen.getByRole("columnheader", { name: "Roles" }),
     ).toBeInTheDocument();
   });
 
