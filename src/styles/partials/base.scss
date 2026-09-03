@@ -1,23 +1,14 @@
-// Targets only anchor/link elements that open a new tab or window
 a[target="_blank"] {
-  // Targets the small space after the link text to display the external link icon
   &::after {
     @extend %icon;
 
-    // This means icons use the computed color from this "pseudo-element,” which it inherits from the external <a> link.
-    // Aka icons get their color from their associated link text. This simplifies light mode and dark mode - so external link icons match their link text.
     background-color: currentcolor;
 
-    // creates the ::after pseudo-element for the link icon to be rendered on
     content: "";
 
-    // Note: the webkit declarations below are not duplicates, they are equivalent declarations under two property names and are used to support webkit-based browsers.
-
-    // supplies the external-link SVG as a stencil. Only the opaque icon shape is visible. This is where the color is applied to via background-color
     -webkit-mask-image: vf-icon-external-link-url($colors--light-theme--icon);
     mask-image: vf-icon-external-link-url($colors--light-theme--icon);
 
-    // These position the stencil around the link icon's box.
     -webkit-mask-position: center;
     mask-position: center;
     -webkit-mask-repeat: no-repeat;
