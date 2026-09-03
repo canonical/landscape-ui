@@ -20,6 +20,6 @@
 
 .instancesPageDocumentationLink {
   &:visited {
-    color: var(--vf-color-link-default);
+    color: $colors--theme--link-default;
   }
 }
