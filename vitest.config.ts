@@ -6,6 +6,8 @@ import packageJson from "./package.json" with { type: "json" };
 // Strip Vite's query suffix (e.g. "?v=hash") from a module id to get a real path.
 const cleanUrl = (id: string) => id.replace(/[?#].*$/, "");
 
+const viteIdToFilePath = (id: string) => cleanUrl(id).replace(/^\/@fs\//, "");
+
 export default defineConfig({
   test: {
     exclude: [
@@ -91,7 +93,7 @@ export default defineConfig({
       name: "strip-pragma-sourcemaps",
       enforce: "pre",
       load(id) {
-        const filePath = cleanUrl(id).replace(/^\/@fs/, "");
+        const filePath = viteIdToFilePath(id);
         if (
           !filePath.includes("@canonical/react-ds-global/") ||
           !filePath.endsWith(".js")

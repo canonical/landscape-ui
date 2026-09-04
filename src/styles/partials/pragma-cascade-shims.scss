@@ -5,37 +5,50 @@
 // its bundled `normalize.css` wins every specificity tie against Vanilla's bare
 // element selectors.
 
-// Each rule below restores the pre-Pragma value. `:not([hidden])` inherits its
-// argument's specificity, lifting the selector to (0,1,1) so it wins on
-// specificity rather than source order.
+// Each rule below restores the pre-Pragma value. Repeating the type selector
+// with `:is()` lifts specificity above normalize without overriding component
+// classes. `:not(:where([hidden]))` keeps hidden elements out without adding
+// specificity.
 
 // DELETE THIS FILE once `@canonical/styles` imports normalize with
 // `layer(normalize)`. That one upstream change makes every rule here redundant.
 
-// Not covered here: typography spacing (`p`, `h1`-`h6`, help and validation
-// text). Pragma removes those element margins by design, so `u-margin--bottom`
-// and the form-support rules in `form.scss` are permanent, not shims.
+// Not covered here: typography spacing (`p`, `h1`-`h6`). Pragma removes those
+// element margins by design, so explicit spacing is permanent, not a shim.
 
 // normalize `html { line-height: 1.15 }` overrides Vanilla's 1.5rem baseline,
 // which inherits app-wide. Literal value: Vanilla derives this through a
 // settings map rather than exposing a variable.
-html:not([hidden]) {
+html:is(html):not(:where([hidden])) {
   line-height: 1.5rem;
 }
 
-// normalize `margin: 0` on form controls. Only `select` and `textarea` are
-// affected; the other 13 selectors in Vanilla's field rule are attribute
-// selectors that already out-specify normalize.
-select:not([hidden]),
-textarea:not([hidden]) {
+// normalize restores browser-default presentation after Vanilla's base rules.
+// These values are intentionally not taken from Pragma typography: bare legacy
+// elements keep their current appearance until their components are migrated.
+code:is(code):not(:where([hidden])),
+kbd:is(kbd):not(:where([hidden])),
+pre:is(pre):not(:where([hidden])),
+samp:is(samp):not(:where([hidden])) {
+  font-family: unquote($font-monospace);
+}
+
+b:is(b):not(:where([hidden])),
+strong:is(strong):not(:where([hidden])) {
+  font-weight: $font-weight-bold;
+}
+
+small:is(small):not(:where([hidden])) {
+  font-size: #{map-get($settings-text-small, font-size)}rem;
+}
+
+select:is(select):not(:where([hidden])),
+textarea:is(textarea):not(:where([hidden])) {
+  font-family: unquote($font-base-family);
+  line-height: map-get($settings-text-default, line-height);
   margin-bottom: $input-margin-bottom;
 }
 
-// normalize `line-height: 1.15` on form controls overrides the 1.5rem Vanilla
-// sets, rendering these ~5.6px shorter. Only the bare element selectors lose;
-// typed inputs (`[type='text']` etc.) already out-specify normalize.
-button:not([hidden]),
-select:not([hidden]),
-textarea:not([hidden]) {
-  line-height: 1.5rem;
+fieldset:is(fieldset):not(:where([hidden])) {
+  padding: calc($spv--large - $input-border-thickness);
 }
