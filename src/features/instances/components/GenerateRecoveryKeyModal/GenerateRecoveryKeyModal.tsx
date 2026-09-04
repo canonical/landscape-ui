@@ -59,7 +59,7 @@ const GenerateRecoveryKeyModal: FC<GenerateRecoveryKeyModalProps> = ({
       onConfirm={handleGenerateRecoveryKey}
       renderInPortal
     >
-      <p>
+      <p className="u-margin--bottom">
         This key allows you to unlock and access encrypted data on instance if
         the primary encryption passphrase is unavailable or forgotten. Share it
         only through a secure method. You won’t be able to view the key until

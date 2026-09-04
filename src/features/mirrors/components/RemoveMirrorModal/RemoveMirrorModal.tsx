@@ -53,20 +53,22 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
   };
 
   const content = !publications.length ? (
-    <p>
+    <p className="u-margin--bottom">
       This action will remove the mirror from Landscape and it won’t be
       available to be published in the future.{" "}
       <strong>This action is irreversible.</strong>
     </p>
   ) : (
     <>
-      <p>This mirror is associated with the following publications:</p>
+      <p className="u-margin--bottom">
+        This mirror is associated with the following publications:
+      </p>
       <AssociatedPublicationsList
         publications={publications}
         openInNewTab
         showSources={false}
       />
-      <p>
+      <p className="u-margin--bottom">
         After removal you won’t be able to update any of these publications, but
         they will continue to be available.{" "}
         <strong>This action is irreversible.</strong>

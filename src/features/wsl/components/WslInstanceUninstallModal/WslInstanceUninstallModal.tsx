@@ -73,7 +73,7 @@ const WslInstanceUninstallModal: FC<WslInstanceUninstallModalProps> = ({
       confirmationText={`uninstall ${title}`}
       onConfirm={uninstall}
     >
-      <p>
+      <p className="u-margin--bottom">
         {pluralize(instances.length, [
           "This will permanently uninstall this instance from the Windows host machine and remove it from Landscape.",
           "This will permanently uninstall the selected instances from the Windows host machine and remove them from Landscape.",

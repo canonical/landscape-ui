@@ -104,7 +104,11 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           }
           confirmationModalProps={{
             title: `Approve ${title}`,
-            children: <p>Are you sure you want to approve {title}?</p>,
+            children: (
+              <p className="u-margin--bottom">
+                Are you sure you want to approve {title}?
+              </p>
+            ),
             confirmButtonLabel: "Approve",
             confirmButtonAppearance: "positive",
             confirmButtonDisabled: isApprovingActivities,
@@ -124,7 +128,11 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           }
           confirmationModalProps={{
             title: `Cancel ${title}`,
-            children: <p>Are you sure you want to cancel {title}?</p>,
+            children: (
+              <p className="u-margin--bottom">
+                Are you sure you want to cancel {title}?
+              </p>
+            ),
             confirmButtonLabel: "Confirm",
             confirmButtonAppearance: "negative",
             confirmButtonDisabled: isCancelingActivities,
@@ -144,7 +152,11 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           }
           confirmationModalProps={{
             title: `Redo ${title}`,
-            children: <p>Are you sure you want to redo {title}?</p>,
+            children: (
+              <p className="u-margin--bottom">
+                Are you sure you want to redo {title}?
+              </p>
+            ),
             confirmButtonLabel: "Redo",
             confirmButtonAppearance: "positive",
             confirmButtonDisabled: isRedoingActivities,

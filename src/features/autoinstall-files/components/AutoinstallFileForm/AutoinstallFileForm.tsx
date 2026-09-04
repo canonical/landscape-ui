@@ -250,7 +250,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
           confirmButtonProps={{ type: "button" }}
           renderInPortal
         >
-          <p>
+          <p className="u-margin--bottom">
             The autoinstall file you submitted overrides the following fields:
           </p>
           <ul>
@@ -258,7 +258,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
               <li key={field}>{field}</li>
             ))}
           </ul>
-          <p>
+          <p className="u-margin--bottom">
             Overriding these fields could cause client registration to fail if
             not formatted correctly.
           </p>

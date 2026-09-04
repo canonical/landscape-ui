@@ -33,7 +33,7 @@ const SearchHelpPopup: FC<SearchHelpPopupProps> = ({ open, onClose, data }) => {
   return (
     open && (
       <Modal title="Search help" close={onClose} className={classes.modal}>
-        <p>
+        <p className="u-margin--bottom">
           Available search terms for use in the search box. If multiple search
           terms are separated by OR, any of the conditions will match.
           Otherwise, all conditions must be met for an instance to match. When a

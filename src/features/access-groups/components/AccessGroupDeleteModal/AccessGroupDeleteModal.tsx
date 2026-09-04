@@ -69,7 +69,7 @@ const AccessGroupDeleteModal: FC<AccessGroupDeleteModalProps> = ({
       renderInPortal
     >
       {instancesCount > 0 ? (
-        <p>
+        <p className="u-margin--bottom">
           &quot;{accessGroup.title}&quot; is associated with{" "}
           {instancesCountText}. Deleting &quot;{accessGroup.title}&quot; will
           move {itOrThem} to the parent access group, &quot;
@@ -78,13 +78,13 @@ const AccessGroupDeleteModal: FC<AccessGroupDeleteModalProps> = ({
           {thisOrTheseInstances}.
         </p>
       ) : (
-        <p>
+        <p className="u-margin--bottom">
           Profiles may be associated with &quot;{accessGroup.title}&quot;.
           Deleting &quot;{accessGroup.title}&quot; will move any associated
           profiles to its parent group, &quot;{parentAccessGroupTitle}&quot;.
         </p>
       )}
-      <p>
+      <p className="u-margin--bottom">
         This action is <strong>irreversible</strong>.
       </p>
     </TextConfirmationModal>
