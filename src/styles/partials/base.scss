@@ -1,11 +1,11 @@
-/* stylelint-disable property-no-vendor-prefix */
-
 a[target="_blank"] {
   &::after {
     @extend %icon;
 
     background-color: currentcolor;
     content: "";
+
+    /* stylelint-disable property-no-vendor-prefix */
     -webkit-mask-image: vf-icon-external-link-url($colors--light-theme--icon);
     mask-image: vf-icon-external-link-url($colors--light-theme--icon);
     -webkit-mask-position: center;
@@ -14,6 +14,8 @@ a[target="_blank"] {
     mask-repeat: no-repeat;
     -webkit-mask-size: contain;
     mask-size: contain;
+    /* stylelint-enable property-no-vendor-prefix */
+
     vertical-align: middle;
   }
 }
