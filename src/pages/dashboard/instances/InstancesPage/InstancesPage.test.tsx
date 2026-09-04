@@ -1,14 +1,18 @@
 import * as Constants from "@/constants";
+import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
+import { features } from "@/tests/mocks/features";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
+import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import { screen } from "@testing-library/react";
+import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import InstancesPage from "./InstancesPage";
 
 describe("InstancesPage", () => {
   beforeEach(() => {
-    vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(true);
     vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
     setEndpointStatus("default");
   });
@@ -46,7 +50,21 @@ describe("InstancesPage", () => {
   });
 
   it("does not show the report panel for a stale report side path when feature is disabled", async () => {
-    vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
+    server.use(
+      http.get(`${API_URL}features`, () =>
+        HttpResponse.json(
+          generatePaginatedResponse({
+            data: features.map((feature) =>
+              feature.key === "instance-reports"
+                ? { ...feature, enabled: false }
+                : feature,
+            ),
+            offset: 0,
+            limit: 20,
+          }),
+        ),
+      ),
+    );
 
     renderWithProviders(<InstancesPage />, {}, "/?sidePath=report");
 

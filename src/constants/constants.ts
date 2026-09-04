@@ -17,8 +17,6 @@ export const NOT_AVAILABLE = "N/A";
 export const APP_VERSION = import.meta.env.VITE_APP_VERSION;
 export const APP_COMMIT = import.meta.env.VITE_APP_COMMIT;
 export const FEEDBACK_LINK = "https://bugs.launchpad.net/landscape";
-export const REPORT_VIEW_ENABLED =
-  import.meta.env.VITE_REPORT_VIEW_ENABLED === "true";
 export const TSV_EXPORTS_ENABLED =
   import.meta.env.VITE_TSV_EXPORTS_ENABLED === "true";
 export const CONTACT_SUPPORT_TEAM_MESSAGE =
