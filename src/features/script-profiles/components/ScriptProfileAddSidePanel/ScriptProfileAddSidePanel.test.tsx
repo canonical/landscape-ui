@@ -55,7 +55,7 @@ describe("ScriptProfileAddSidePanel", () => {
 
   it("rewords duplicate script profile title errors", async () => {
     setEndpointStatus({
-      status: "variant",
+      status: "error",
       path: "script-profiles",
       response: {
         error: "ScriptProfileDuplicate",

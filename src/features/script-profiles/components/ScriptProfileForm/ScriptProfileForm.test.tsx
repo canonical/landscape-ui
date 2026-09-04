@@ -263,7 +263,7 @@ describe("ScriptProfileForm edge cases", () => {
 
   it("updates server script profile title exists error to a more detailed message", async () => {
     setEndpointStatus({
-      status: "variant",
+      status: "error",
       path: "script-profiles",
       response: {
         error: "ScriptProfileDuplicate",

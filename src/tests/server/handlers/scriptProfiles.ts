@@ -12,8 +12,6 @@ import {
   shouldApplyEndpointStatus,
 } from "./_helpers";
 
-const SUCCESSFUL_RESPONSE_STATUS = 200;
-
 export default [
   http.get(`${API_URL}script-profiles`, ({ request }) => {
     const { searchParams } = new URL(request.url);
@@ -65,7 +63,16 @@ export default [
         const endpointStatus = getEndpointStatus();
 
         if (endpointStatus.status === "error") {
-          throw createEndpointStatusError();
+          const { statusCode, error, message } =
+            (endpointStatus.response as
+              | {
+                  statusCode?: number;
+                  error?: string;
+                  message?: string;
+                }
+              | undefined) ?? {};
+
+          throw createEndpointStatusError(statusCode, error, message);
         }
 
         if (endpointStatus.status === "empty") {
@@ -73,17 +80,6 @@ export default [
         }
 
         if (endpointStatus.status === "variant") {
-          if (
-            typeof endpointStatus.response === "object" &&
-            endpointStatus.response !== null &&
-            typeof (endpointStatus.response as { statusCode?: unknown })
-              .statusCode === "number"
-          ) {
-            const { statusCode, ...responseBody } = endpointStatus.response;
-            return HttpResponse.json(responseBody, {
-              status: (statusCode as number) || SUCCESSFUL_RESPONSE_STATUS,
-            });
-          }
           return HttpResponse.json(endpointStatus.response);
         }
       }
@@ -153,19 +149,17 @@ export default [
     if (shouldApplyEndpointStatus("script-profiles")) {
       const endpointStatus = getEndpointStatus("script-profiles");
 
-      if (endpointStatus.status === "variant") {
-        if (
-          typeof endpointStatus.response === "object" &&
-          endpointStatus.response !== null &&
-          typeof (endpointStatus.response as { statusCode?: unknown })
-            .statusCode === "number"
-        ) {
-          const { statusCode, ...responseBody } = endpointStatus.response;
-          return HttpResponse.json(responseBody, {
-            status: (statusCode as number) || SUCCESSFUL_RESPONSE_STATUS,
-          });
-        }
-        return HttpResponse.json(endpointStatus.response);
+      if (endpointStatus.status === "error") {
+        const { statusCode, error, message } =
+          (endpointStatus.response as
+            | {
+                statusCode?: number;
+                error?: string;
+                message?: string;
+              }
+            | undefined) ?? {};
+
+        throw createEndpointStatusError(statusCode, error, message);
       }
     }
 
