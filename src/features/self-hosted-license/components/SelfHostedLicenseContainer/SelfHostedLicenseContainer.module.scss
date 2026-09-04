@@ -1,3 +1,17 @@
 .curl {
   color: var(--color-palette-aubergine-590, #923d83);
 }
+
+.formSection {
+  > div {
+    column-gap: 0;
+    grid-template-columns: 21.875rem 42.25rem 21.875rem;
+  }
+
+  @container (max-width: 85.9375rem) {
+    > div {
+      row-gap: 0.5rem;
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}

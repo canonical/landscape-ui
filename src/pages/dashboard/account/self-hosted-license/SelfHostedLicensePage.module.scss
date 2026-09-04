@@ -1,5 +1,9 @@
 .header {
   flex-direction: column;
+
+  :global(.p-panel__title) {
+    padding-bottom: 0.25rem;
+  }
 }
 
 .description {
@@ -10,5 +14,5 @@
 
 .content {
   width: 100%;
-  max-width: 64rem;
+  max-width: 86rem;
 }

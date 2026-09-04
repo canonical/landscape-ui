@@ -12,7 +12,10 @@ const SelfHostedLicenseContainer: FC = () => {
   const { downloadUrl, isGettingSelfHostedLicense } = useGetSelfHostedLicense();
 
   return (
-    <FormSection title="Setting up the license file">
+    <FormSection
+      title="Setting up the license file"
+      className={classes.formSection}
+    >
       <p>
         In order to run Self-hosted Landscape, a license file needs to be
         present on the system where the software will be installed.
