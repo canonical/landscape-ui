@@ -1,0 +1,105 @@
+# API Contract Eval Loop
+#
+# Weekly (and on-demand) agentic evaluation of API-contract test coverage.
+# Runs the full Vitest coverage suite to produce the MSW contract-coverage
+# report, deterministically diffs frontend-exercised routes against the
+# Playwright API-contract specs (e2e/docker-stack/api/), then asks an LLM to
+# draft Playwright spec suggestions for the top-5 gaps. All outputs are
+# uploaded as the `api-contract-eval-report` artifact (plus step summary).
+#
+# Prerequisites (repo settings):
+#   - secret LLM_API_KEY: an OpenRouter API key (https://openrouter.ai/keys),
+#     or any OpenAI-compatible provider key.
+#   - var LLM_BASE_URL (optional): defaults to https://openrouter.ai/api/v1
+#   - var LLM_MODEL (optional): defaults to openai/gpt-4o-mini
+# Note: GitHub Models was the original default but entered retirement
+# brownouts (HTTP 410, observed 2026-07-31) — OpenRouter is the default.
+#
+# Failure semantics: coverage or gap-collection failures fail the job fast.
+# LLM failures still upload the deterministic gaps.json (upload runs always).
+
+name: API Contract Eval Loop
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Mondays 06:00 UTC — weekly cadence; the coverage run is too expensive per-PR.
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Env mirrors the unit-test workflow (tics-full.yml) so the Vitest suite
+    # gets identical API/proxy/root-path configuration in CI.
+    environment: dev
+    env:
+      VITE_API_URL: ${{ vars.API_URL }}
+      VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
+      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE }}
+      VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
+      VITE_APP_TITLE: Landscape
+      VITE_ROOT_PATH: /new_dashboard/
+      VITE_REPORT_VIEW_ENABLED: false
+      VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
+      VITE_APP_VERSION: "26.04.0.12"
+      VITE_APP_COMMIT: ${{ github.sha }}
+      VITE_SELF_HOSTED_ENV: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run coverage (produces msw-contract-coverage.json)
+        env:
+          NODE_OPTIONS: --max_old_space_size=4096
+          VITE_API_URL: ${{ vars.API_URL }}
+          VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
+          VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE }}
+          VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
+          VITE_APP_TITLE: Landscape
+          VITE_ROOT_PATH: /new_dashboard/
+          VITE_APP_VERSION: "26.04.0.12"
+          VITE_APP_COMMIT: ${{ github.sha }}
+          VITE_SELF_HOSTED_ENV: true
+        run: pnpm coverage:full
+
+      # Fail-fast validation gate: malformed/missing report exits here.
+      - name: Collect gaps (deterministic)
+        run: pnpm eval:collect
+
+      - name: Suggest tests (LLM)
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+          LLM_MODEL: ${{ vars.LLM_MODEL }}
+        run: pnpm eval:suggest
+
+      - name: Upload eval report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: api-contract-eval-report
+          path: src/tests/contract-coverage/eval-loop/out/
+          retention-days: 14
