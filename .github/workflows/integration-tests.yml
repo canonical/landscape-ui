@@ -234,7 +234,7 @@ jobs:
               -f compose.yaml -f compose.ci-override.yaml \
               up -d \
               postgresql rabbitmq rsyslog builder \
-              package-search api appserver fake-openid \
+              package-search api appserver \
               debarchive
 
       # The builder runs schema patches then exits. The api container passes its
