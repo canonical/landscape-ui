@@ -29,6 +29,8 @@ body.is-dark {
   --vf-color-link-visited: #{$colors--dark-theme--focus};
 }
 
+// Pragma typography changes Vanilla notification titles; retain their existing
+// presentation until the component is migrated.
 .p-notification__title {
   font-variant: normal;
   letter-spacing: normal;

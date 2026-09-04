@@ -20,7 +20,7 @@ const normalizeRootPath = (rootPath = "/") => {
     : `${absoluteRootPath}/`;
 };
 
-const getPragmaIconPath = (
+export const getPragmaIconPath = (
   requestUrl: string | undefined,
   iconsRoutes: string[],
 ) => {
@@ -74,6 +74,9 @@ const servePragmaIcons = (
       const iconStream = fs.createReadStream(filePath);
       iconStream.on("error", (streamError) => {
         if (res.headersSent) {
+          server.config.logger.warn(
+            `Failed to serve Pragma icon "${filePath}": ${streamError.message}`,
+          );
           res.destroy(streamError);
           return;
         }

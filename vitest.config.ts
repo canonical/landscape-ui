@@ -96,7 +96,7 @@ export default defineConfig({
         const filePath = viteIdToFilePath(id);
         if (
           !filePath.includes("@canonical/react-ds-global/") ||
-          !filePath.endsWith(".js")
+          !/\.m?jsx?$/.test(filePath)
         ) {
           return null;
         }

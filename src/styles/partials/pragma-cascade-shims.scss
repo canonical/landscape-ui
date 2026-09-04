@@ -1,4 +1,5 @@
 // Temporary shims for Pragma's unlayered cascade.
+// Compatibility target: `@canonical/styles` 0.34.0. Re-audit before upgrading.
 // `@canonical/styles` declares `@layer normalize, ds.reset, ds.modifiers,
 // ds.components` but never assigns any of its imports to those layers, so
 // everything it ships is unlayered. Since it loads after Vanilla in `main.tsx`,
