@@ -136,7 +136,7 @@ describe("CreateScriptForm", () => {
 
   it("Updates server script title exists error to a more detailed message", async () => {
     setEndpointStatus({
-      status: "variant",
+      status: "error",
       path: "CreateScript",
       response: {
         statusCode: 409,

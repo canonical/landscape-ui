@@ -1,8 +1,8 @@
 import { HttpResponse } from "msw";
 
 export const ENDPOINT_STATUS_API_ERROR_MESSAGE = `The endpoint status is set to "error".`;
-
 const DEFAULT_ERROR_STATUS = 500;
+const DEFAULT_ERROR = "EndpointStatusError";
 
 /**
  * @deprecated Use {@link createEndpointStatusError} instead.
@@ -25,11 +25,15 @@ export const getEndpointStatusApiError = () =>
  * Prefer this over the static `ENDPOINT_STATUS_API_ERROR` constant because
  * response objects should not be shared across handler invocations.
  */
-export const createEndpointStatusError = (status = DEFAULT_ERROR_STATUS) =>
+export const createEndpointStatusError = (
+  status = DEFAULT_ERROR_STATUS,
+  error = DEFAULT_ERROR,
+  message = ENDPOINT_STATUS_API_ERROR_MESSAGE,
+) =>
   HttpResponse.json(
     {
-      error: "EndpointStatusError",
-      message: ENDPOINT_STATUS_API_ERROR_MESSAGE,
+      error,
+      message,
     },
     { status },
   );
