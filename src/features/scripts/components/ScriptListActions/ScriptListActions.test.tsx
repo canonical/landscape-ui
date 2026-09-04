@@ -103,7 +103,7 @@ describe("Scripts List Contextual Menu", () => {
       ).toBeInTheDocument();
       expect(
         screen.getByRole("menuitem", {
-          name: `Delete ${activeScript.title} script`,
+          name: `Redact ${activeScript.title} script`,
         }),
       ).toBeInTheDocument();
     });
@@ -117,18 +117,18 @@ describe("Scripts List Contextual Menu", () => {
       await user.click(contextualMenuButton);
 
       expect(
-        screen.queryByRole("button", {
+        screen.queryByRole("menuitem", {
           name: `Edit ${archivedScript.title} script`,
         }),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByRole("button", {
+        screen.queryByRole("menuitem", {
           name: `Archive ${archivedScript.title} script`,
         }),
       ).not.toBeInTheDocument();
       expect(
         screen.getByRole("menuitem", {
-          name: `Delete ${archivedScript.title} script`,
+          name: `Redact ${archivedScript.title} script`,
         }),
       ).toBeInTheDocument();
     });
@@ -142,18 +142,18 @@ describe("Scripts List Contextual Menu", () => {
       await user.click(contextualMenuButton);
 
       expect(
-        screen.queryByRole("button", {
+        screen.queryByRole("menuitem", {
           name: `Edit ${redactedScript.title} script`,
         }),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByRole("button", {
+        screen.queryByRole("menuitem", {
           name: `Archive ${redactedScript.title} script`,
         }),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByRole("button", {
-          name: `Delete ${redactedScript.title} script`,
+        screen.queryByRole("menuitem", {
+          name: `Redact ${redactedScript.title} script`,
         }),
       ).not.toBeInTheDocument();
     });
@@ -205,7 +205,7 @@ describe("Scripts List Contextual Menu", () => {
       await user.click(contextualMenuButton);
 
       const deleteMenuItem = screen.queryByRole("menuitem", {
-        name: `Delete ${nonRedactableActiveScript.title} script`,
+        name: `Redact ${nonRedactableActiveScript.title} script`,
       });
 
       expect(deleteMenuItem).toBeInTheDocument();
@@ -214,7 +214,7 @@ describe("Scripts List Contextual Menu", () => {
   });
 
   describe("contextual menu modals", () => {
-    it("should open the delete modal with script profiles when the delete button is clicked", async () => {
+    it("should open the redact modal with script profiles when the redact button is clicked", async () => {
       renderWithProviders(
         <ScriptListActions script={activeScriptWithProfiles} />,
       );
@@ -225,18 +225,18 @@ describe("Scripts List Contextual Menu", () => {
       await user.click(contextualMenuButton);
 
       const deleteMenuItem = screen.getByRole("menuitem", {
-        name: `Delete ${activeScriptWithProfiles.title} script`,
+        name: `Redact ${activeScriptWithProfiles.title} script`,
       });
 
       await user.click(deleteMenuItem);
 
-      const deleteModal = screen.getByRole("dialog", {
-        name: `Delete ${activeScriptWithProfiles.title}`,
+      const deleteModal = await screen.findByRole("dialog", {
+        name: `Redact ${activeScriptWithProfiles.title}`,
       });
       expect(deleteModal).toBeInTheDocument();
       expect(
-        screen.getByRole("button", {
-          name: "Delete both script and profiles",
+        await screen.findByRole("button", {
+          name: "Redact script and archive profiles",
         }),
       ).toBeInTheDocument();
 
@@ -244,7 +244,7 @@ describe("Scripts List Contextual Menu", () => {
       expect(list).toBeInTheDocument();
     });
 
-    it("should open the delete modal with no script profiles when the delete button is clicked", async () => {
+    it("should open the redact modal with no script profiles when the redact button is clicked", async () => {
       renderWithProviders(
         <ScriptListActions script={activeScriptWithNoProfiles} />,
       );
@@ -254,18 +254,18 @@ describe("Scripts List Contextual Menu", () => {
       await user.click(contextualMenuButton);
 
       const deleteMenuItem = screen.getByRole("menuitem", {
-        name: `Delete ${activeScriptWithNoProfiles.title} script`,
+        name: `Redact ${activeScriptWithNoProfiles.title} script`,
       });
       expect(deleteMenuItem).toBeInTheDocument();
 
       await user.click(deleteMenuItem);
-      const deleteModal = screen.getByRole("dialog", {
-        name: `Delete ${activeScriptWithNoProfiles.title}`,
+      const deleteModal = await screen.findByRole("dialog", {
+        name: `Redact ${activeScriptWithNoProfiles.title}`,
       });
       expect(deleteModal).toBeInTheDocument();
       expect(
-        screen.getByRole("button", {
-          name: "Delete",
+        await screen.findByRole("button", {
+          name: "Redact",
         }),
       ).toBeInTheDocument();
 
@@ -273,8 +273,8 @@ describe("Scripts List Contextual Menu", () => {
       expect(list).not.toBeInTheDocument();
 
       expect(
-        screen.getByText(
-          /deleting the script will remove the contents from Landscape./i,
+        await screen.findByText(
+          /redacting this script will permanently remove its contents from Landscape./i,
         ),
       ).toBeInTheDocument();
     });
@@ -295,12 +295,12 @@ describe("Scripts List Contextual Menu", () => {
 
       await user.click(archiveMenuItem);
 
-      const archiveModal = screen.getByRole("dialog", {
+      const archiveModal = await screen.findByRole("dialog", {
         name: `Archive ${archivedScriptWithProfiles.title}`,
       });
       expect(archiveModal).toBeInTheDocument();
       expect(
-        screen.getByRole("button", {
+        await screen.findByRole("button", {
           name: "Archive both script and profiles",
         }),
       ).toBeInTheDocument();
@@ -324,12 +324,12 @@ describe("Scripts List Contextual Menu", () => {
       expect(archiveMenuItem).toBeInTheDocument();
 
       await user.click(archiveMenuItem);
-      const archiveModal = screen.getByRole("dialog", {
+      const archiveModal = await screen.findByRole("dialog", {
         name: `Archive ${archivedScriptWithNoProfiles.title}`,
       });
       expect(archiveModal).toBeInTheDocument();
       expect(
-        screen.getByRole("button", {
+        await screen.findByRole("button", {
           name: "Archive",
         }),
       ).toBeInTheDocument();
@@ -338,7 +338,7 @@ describe("Scripts List Contextual Menu", () => {
       expect(list).not.toBeInTheDocument();
 
       expect(
-        screen.getByText(
+        await screen.findByText(
           /archiving the script will prevent it from running in the future./i,
         ),
       ).toBeInTheDocument();
@@ -397,7 +397,7 @@ describe("Scripts List Contextual Menu", () => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 
-    it("should delete the script and close the modal after confirmation", async () => {
+    it("should redact the script and close the modal after confirmation", async () => {
       renderWithProviders(
         <ScriptListActions script={activeScriptWithNoProfiles} />,
       );
@@ -408,22 +408,22 @@ describe("Scripts List Contextual Menu", () => {
 
       await user.click(
         screen.getByRole("menuitem", {
-          name: `Delete ${activeScriptWithNoProfiles.title} script`,
+          name: `Redact ${activeScriptWithNoProfiles.title} script`,
         }),
       );
       await user.type(
         screen.getByRole("textbox"),
-        `delete ${activeScriptWithNoProfiles.title}`,
+        `redact ${activeScriptWithNoProfiles.title}`,
       );
-      await user.click(screen.getByRole("button", { name: "Delete" }));
+      await user.click(screen.getByRole("button", { name: "Redact" }));
 
       expect(
-        await screen.findByText(/script removed successfully/i),
+        await screen.findByText(/script.*redacted successfully/i),
       ).toBeInTheDocument();
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 
-    it("should close the delete modal and surface the API error when deleting fails", async () => {
+    it("should close the redact modal and surface the API error when redaction fails", async () => {
       setEndpointStatus({ status: "error", path: "redact" });
       renderWithProviders(
         <ScriptListActions script={activeScriptWithNoProfiles} />,
@@ -435,14 +435,14 @@ describe("Scripts List Contextual Menu", () => {
 
       await user.click(
         screen.getByRole("menuitem", {
-          name: `Delete ${activeScriptWithNoProfiles.title} script`,
+          name: `Redact ${activeScriptWithNoProfiles.title} script`,
         }),
       );
       await user.type(
         screen.getByRole("textbox"),
-        `delete ${activeScriptWithNoProfiles.title}`,
+        `redact ${activeScriptWithNoProfiles.title}`,
       );
-      await user.click(screen.getByRole("button", { name: "Delete" }));
+      await user.click(screen.getByRole("button", { name: "Redact" }));
 
       expect(
         await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),

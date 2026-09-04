@@ -64,9 +64,12 @@ export const useArchiveScriptModal = ({
       archiveModalButtonLabel: "Archive",
       archiveModalBody: (
         <p>
-          Archiving the script will prevent it from running in the future.
+          Archiving the script will prevent it from running in the future. Its
+          record will be retained, and{" "}
+          <strong>the script name cannot be reused.</strong>
           <br />
-          This action is <b>irreversible</b>.
+          <br />
+          This action is <strong>irreversible</strong>.
         </p>
       ),
     };
@@ -78,9 +81,12 @@ export const useArchiveScriptModal = ({
     archiveModalBody: (
       <>
         <p>
-          Archiving the script will prevent it from running in the future.
+          Archiving the script will prevent it from running in the future. Its
+          record will be retained, and{" "}
+          <strong>the script name cannot be reused.</strong>
           <br />
-          The script is associated with the following profiles:
+          <br />
+          The script is also associated with the following profiles:
         </p>
         <ul>
           {script.script_profiles.map((profile) => (
@@ -88,10 +94,12 @@ export const useArchiveScriptModal = ({
           ))}
         </ul>
         <p>
-          If you archive the script and the profiles, they won’t be able to run
-          in the future.
+          If you archive the script, its associated profiles will also be
+          archived, and they won’t be able to run in the future. All archived
+          profile names will also be <strong>unavailable for reuse</strong>.
           <br />
-          This action is <b>irreversible</b>.
+          <br />
+          This action is <strong>irreversible</strong>.
         </p>
       </>
     ),

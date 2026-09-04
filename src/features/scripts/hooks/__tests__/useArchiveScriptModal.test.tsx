@@ -71,6 +71,15 @@ describe("useArchiveScriptModal", () => {
   it("renders body with irreversible message for script with no profiles", () => {
     renderWithProviders(<ArchiveModalConsumer script={scriptWithNoProfiles} />);
 
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /prevent it from running in the future/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /record will be retained/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /script name cannot be reused/i,
+    );
     expect(screen.getByTestId("body")).toHaveTextContent(/irreversible/i);
   });
 
@@ -80,6 +89,23 @@ describe("useArchiveScriptModal", () => {
     for (const profile of scriptWithProfiles.script_profiles) {
       expect(screen.getByTestId("body")).toHaveTextContent(profile.title);
     }
+
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /prevent it from running in the future/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /associated with the following profiles/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /associated profiles will also be archived/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /won['’]t be able to run/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /profile names will also be unavailable/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(/irreversible/i);
   });
 
   it("calls afterSuccess when onConfirmArchive completes", async () => {

@@ -7,6 +7,7 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import date from "@/libs/date";
 import { http, HttpResponse } from "msw";
+import axios from "axios";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ScriptProfileForm from "./ScriptProfileForm";
@@ -258,6 +259,34 @@ describe("ScriptProfileForm edge cases", () => {
 
     expect(await screen.findByText(/submission failed/i)).toBeInTheDocument();
     expect(props.onSuccess).not.toHaveBeenCalled();
+  });
+
+  it("updates server script profile title exists error to a more detailed message", async () => {
+    setEndpointStatus({
+      status: "error",
+      path: "script-profiles",
+      response: {
+        error: "ScriptProfileDuplicate",
+        statusCode: 409,
+        message: "Script profile title already exists.",
+      },
+    });
+
+    const onSubmit = vi.fn().mockImplementation(async () => {
+      await axios.post(`${API_URL}script-profiles`);
+    });
+
+    renderWithProviders(<ScriptProfileForm {...props} onSubmit={onSubmit} />);
+
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Submit" }),
+    );
+
+    expect(
+      await screen.findByText(
+        "This script profile title is unavailable. It is either already in use or was previously archived. Script profile titles cannot be reused.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("renders nothing when the script profile limits are unavailable", async () => {

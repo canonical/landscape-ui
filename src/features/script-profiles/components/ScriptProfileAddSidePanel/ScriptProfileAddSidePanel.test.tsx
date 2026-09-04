@@ -52,4 +52,50 @@ describe("ScriptProfileAddSidePanel", () => {
       await screen.findByText("You have successfully created My new profile"),
     ).toBeInTheDocument();
   });
+
+  it("rewords duplicate script profile title errors", async () => {
+    setEndpointStatus({
+      status: "error",
+      path: "script-profiles",
+      response: {
+        error: "ScriptProfileDuplicate",
+        statusCode: 409,
+        message: "Script profile with this title already exists.",
+      },
+    });
+
+    const user = userEvent.setup();
+
+    renderWithProviders(<ScriptProfileAddSidePanel />);
+
+    await user.type(
+      await screen.findByRole("textbox", { name: "Title" }),
+      "Existing profile",
+    );
+
+    const scriptSearch = screen.getByPlaceholderText(/search for scripts/i);
+    await user.click(scriptSearch);
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId("dropdownElement").length).toBeGreaterThan(
+        0,
+      );
+    });
+    const [firstScript] = screen.getAllByTestId("dropdownElement");
+    assert(firstScript);
+    await user.click(firstScript);
+
+    await user.click(screen.getByRole("button", { name: "Trigger" }));
+    await user.click(
+      await screen.findByRole("option", { name: /post enrollment/i }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Add profile" }));
+
+    expect(
+      await screen.findByText(
+        "This script profile title is unavailable. It is either already in use or was previously archived. Script profile titles cannot be reused.",
+      ),
+    ).toBeInTheDocument();
+  });
 });

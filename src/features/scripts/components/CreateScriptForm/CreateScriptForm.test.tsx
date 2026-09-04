@@ -134,6 +134,34 @@ describe("CreateScriptForm", () => {
     ).toBeInTheDocument();
   });
 
+  it("Updates server script title exists error to a more detailed message", async () => {
+    setEndpointStatus({
+      status: "error",
+      path: "CreateScript",
+      response: {
+        statusCode: 409,
+        error: "DuplicateScript",
+        message: "Script with specified title is already present.",
+      },
+    });
+
+    const user = userEvent.setup();
+    renderWithProviders(<CreateScriptForm />);
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Title" }),
+      "Existing script",
+    );
+    await user.type(screen.getByTestId("mock-monaco"), "echo run");
+    await user.click(screen.getByRole("button", { name: "Add script" }));
+
+    expect(
+      await screen.findByText(
+        "This script title is unavailable. It is either already in use or was previously archived or redacted. Script titles cannot be reused.",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("shows error notification when create script attachment fails", async () => {
     const user = userEvent.setup();
     setEndpointStatus({ status: "error", path: "CreateScriptAttachment" });
