@@ -7,7 +7,6 @@ import { ROUTES } from "@/libs/routes";
 import { Button, CodeSnippet, Link } from "@canonical/react-components";
 import type { FC } from "react";
 import { Link as RouterLink } from "react-router";
-import { redirectToExternalUrl } from "@/features/auth";
 import { SELF_HOSTED_LANDSCAPE_DOCUMENTATION_URL } from "./constants";
 import { useGetSelfHostedLicense } from "./api/useGetSelfHostedLicense";
 import classes from "./SelfHostedLicensePage.module.scss";
@@ -25,7 +24,7 @@ ${downloadUrl}`
 
   const handleDownload = () => {
     if (downloadUrl) {
-      redirectToExternalUrl(downloadUrl);
+      window.open(downloadUrl, "_blank", "noopener,noreferrer");
     }
   };
 
