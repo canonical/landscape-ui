@@ -29,6 +29,11 @@ body.is-dark {
   --vf-color-link-visited: #{$colors--dark-theme--focus};
 }
 
+.p-notification__title {
+  font-variant: normal;
+  letter-spacing: normal;
+}
+
 input:-webkit-autofill,
 input:focus,
 input:-webkit-autofill:hover,
