@@ -7,7 +7,7 @@
  * by the debarchive-seeder container (4 publication targets: "Dev S3 Bucket",
  * "Staging S3 Bucket", "Prod S3 Bucket", "Swift Store") is visible in the UI.
  *
- * The publication targets page calls GET /v1beta1/publicationTargets via the
+ * The publication targets page calls GET /v1/publicationTargets via the
  * Vite dev proxy (VITE_API_DEBARCHIVE_PROXY_TARGET → http://localhost:8000).
  * This exercises the full request path: React → useFetchDebArchive → Vite proxy
  * → landscape-debarchive container.

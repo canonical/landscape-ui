@@ -18,9 +18,7 @@ test.describe("Local Repositories API Contract", () => {
     token = await getAuthToken(request);
   });
 
-  test("POST/LIST/DELETE /v1beta1/locals lifecycle works", async ({
-    request,
-  }) => {
+  test("POST/LIST/DELETE /v1/locals lifecycle works", async ({ request }) => {
     const payload: LocalWritable = {
       displayName: makeTestRepoName(),
       comment: "A test repository created by Playwright API test",
@@ -32,7 +30,7 @@ test.describe("Local Repositories API Contract", () => {
 
     try {
       await test.step("create local repository", async () => {
-        const response = await request.post("/v1beta1/locals", {
+        const response = await request.post("/v1/locals", {
           data: payload,
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -45,7 +43,7 @@ test.describe("Local Repositories API Contract", () => {
       });
 
       await test.step("list local repositories and find created repo", async () => {
-        const response = await request.get("/v1beta1/locals", {
+        const response = await request.get("/v1/locals", {
           headers: { Authorization: `Bearer ${token}` },
         });
         expect(response.ok()).toBeTruthy();
@@ -66,7 +64,7 @@ test.describe("Local Repositories API Contract", () => {
     } finally {
       if (createdRepoName) {
         await test.step("delete created local repository", async () => {
-          const response = await request.delete(`/v1beta1/${createdRepoName}`, {
+          const response = await request.delete(`/v1/${createdRepoName}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           expect(response.ok(), await response.text()).toBeTruthy();

@@ -74,7 +74,7 @@ async function cleanupMirror(
   const token = await getAuthToken(request);
 
   // Verify the mirror still exists before attempting deletion.
-  const listRes = await request.get("/v1beta1/mirrors", {
+  const listRes = await request.get("/v1/mirrors", {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!listRes.ok()) return;
@@ -83,7 +83,7 @@ async function cleanupMirror(
   const exists = body.mirrors?.some((m) => m.name === resourceName);
   if (!exists) return;
 
-  await request.delete(`/v1beta1/${resourceName}`, {
+  await request.delete(`/v1/${resourceName}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 }
@@ -96,7 +96,7 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     if (!mirrorName && mirrorDisplayName) {
       try {
         const token = await getAuthToken(request);
-        const listRes = await request.get("/v1beta1/mirrors", {
+        const listRes = await request.get("/v1/mirrors", {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (listRes.ok()) {
@@ -167,12 +167,12 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     request,
   }) => {
     const token = await getAuthToken(request);
-    const listRes = await request.get("/v1beta1/mirrors", {
+    const listRes = await request.get("/v1/mirrors", {
       headers: { Authorization: `Bearer ${token}` },
     });
     expect(
       listRes.ok(),
-      `GET /v1beta1/mirrors failed: ${listRes.status()}`,
+      `GET /v1/mirrors failed: ${listRes.status()}`,
     ).toBe(true);
     const body = (await listRes.json()) as DebarchiveMirrorList;
     const created = body.mirrors?.find(

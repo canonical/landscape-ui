@@ -11,7 +11,7 @@
  *      of the mocked @self-hosted test in e2e/features/repositories/mirrors.spec.ts.
  *
  *   2. Real API data renders — seeded mirrors ("Ubuntu Noble Main", "Ubuntu Jammy Main")
- *      are fetched from the debarchive service (GET /v1beta1/mirrors) and appear in
+ *      are fetched from the debarchive service (GET /v1/mirrors) and appear in
  *      the table. This goes beyond what the mocked test can verify.
  *
  * The mirrors page calls the debarchive service via the Vite proxy

@@ -66,7 +66,7 @@ async function cleanupTarget(
   const token = await getAuthToken(request);
 
   // Verify the target still exists before attempting deletion.
-  const listRes = await request.get("/v1beta1/publicationTargets", {
+  const listRes = await request.get("/v1/publicationTargets", {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!listRes.ok()) return;
@@ -77,7 +77,7 @@ async function cleanupTarget(
   );
   if (!exists) return;
 
-  await request.delete(`/v1beta1/${resourceName}`, {
+  await request.delete(`/v1/${resourceName}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 }
@@ -139,13 +139,13 @@ test.describe("publication targets CRUD (real debarchive)", () => {
 
       await test.step("capture resource name for cleanup", async () => {
         const token = await getAuthToken(request);
-        const listRes = await request.get("/v1beta1/publicationTargets", {
+        const listRes = await request.get("/v1/publicationTargets", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         expect(
           listRes.ok(),
-          `GET /v1beta1/publicationTargets failed: ${listRes.status()}`,
+          `GET /v1/publicationTargets failed: ${listRes.status()}`,
         ).toBe(true);
 
         const body = (await listRes.json()) as PublicationTargetListResponse;
@@ -235,7 +235,7 @@ test.describe("publication targets CRUD (real debarchive)", () => {
       if (!targetResourceName) {
         try {
           const token = await getAuthToken(request);
-          const listRes = await request.get("/v1beta1/publicationTargets", {
+          const listRes = await request.get("/v1/publicationTargets", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (listRes.ok()) {
