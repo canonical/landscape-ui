@@ -83,4 +83,21 @@ describe("AdministratorsPage", () => {
       }),
     ).toBeInTheDocument();
   });
+  it("opens the admin limit error modal when the request fails", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({ path: "max-people-count", status: "error" });
+
+    renderWithProviders(<AdministratorsPage />);
+
+    const inviteButton = await screen.findByRole("button", {
+      name: "Invite administrator",
+    });
+    await user.click(inviteButton);
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Administrator limit cannot be determined",
+      }),
+    ).toBeInTheDocument();
+  });
 });
