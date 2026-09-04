@@ -40,7 +40,7 @@ describe("RolesContainer", () => {
 
     expect(screen.getByText(/no roles found/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/how to manage administrators in landscape/i),
+      screen.getByText(/how to manage roles in landscape/i),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /add role/i }),
@@ -55,7 +55,7 @@ describe("RolesContainer", () => {
     await expectLoadingState();
 
     const docsLink = screen.getByRole("link", {
-      name: /how to manage administrators in landscape/i,
+      name: /how to manage roles in landscape/i,
     });
 
     expect(docsLink).toHaveAttribute("href", ADMINISTRATORS_DOCUMENTATION_URL);

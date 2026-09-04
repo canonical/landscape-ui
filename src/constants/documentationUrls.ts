@@ -11,4 +11,4 @@
 
 import { EXTERNAL_PATHS } from "@/libs/routes/external";
 
-export const ADMINISTRATORS_DOCUMENTATION_URL = `${EXTERNAL_PATHS.documentation}/administrators`;
+export const ADMINISTRATORS_DOCUMENTATION_URL = `${EXTERNAL_PATHS.documentation}/how-to-guides/web-portal/web-portal-24-04-or-later/manage-administrators-and-roles/`;

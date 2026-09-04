@@ -41,4 +41,36 @@ export default [
 
     return new HttpResponse(null, { status: 200 });
   }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "InviteAdministrator")) {
+      return;
+    }
+
+    if (shouldApplyEndpointStatus("InviteAdministrator")) {
+      const { status } = getEndpointStatus("InviteAdministrator");
+
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
+
+    return new HttpResponse(null, { status: 200 });
+  }),
+
+  http.get(`${API_URL}max-people-count`, () => {
+    if (shouldApplyEndpointStatus("max-people-count")) {
+      const { response, status } = getEndpointStatus("max-people-count");
+
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      if (status === "variant" && response) {
+        return HttpResponse.json(response);
+      }
+    }
+
+    return HttpResponse.json({ max_people_count: 10 });
+  }),
 ];
