@@ -60,7 +60,7 @@ export default [
     `${API_URL}script-profiles/:profileId`,
     ({ params }) => {
       if (shouldApplyEndpointStatus("script-profiles/:profileId")) {
-        const endpointStatus = getEndpointStatus();
+        const endpointStatus = getEndpointStatus("script-profiles/:profileId");
 
         if (endpointStatus.status === "error") {
           throw createEndpointStatusError();
