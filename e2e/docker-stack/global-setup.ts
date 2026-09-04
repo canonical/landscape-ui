@@ -71,11 +71,8 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
 
     await context.storageState({ path: STORAGE_STATE_PATH });
 
-    // Warm the ubuntu-archive-info blob cache. On a fresh container the first
-    // request triggers an outbound fetch to archive.ubuntu.com and
-    // esm.ubuntu.com which can take 10-30 s. Poll until both endpoints return
-    // non-empty distribution lists before allowing tests to start, so the
-    // AddMirrorForm Distribution select is never still-loading when tests run.
+    // Warm the Ubuntu archive-info blob cache. The mirror CRUD test needs a
+    // populated Ubuntu archive distribution selector before it begins.
     const meRes = await context.request.get(`${API_URL}me`);
     if (meRes.ok()) {
       const meBody = (await meRes.json()) as { token?: string };
@@ -117,7 +114,7 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
           );
         };
 
-        await Promise.all([pollUntilReady("archive"), pollUntilReady("ESM")]);
+        await pollUntilReady("archive");
       }
     }
   } finally {
