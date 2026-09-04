@@ -14,12 +14,16 @@ import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 
-const InviteAdministratorForm = lazy(
-  () => import("@/features/administrators/components/InviteAdministratorForm"),
+const InviteAdministratorForm = lazy(() =>
+  import("@/features/administrators").then((m) => ({
+    default: m.InviteAdministratorForm,
+  })),
 );
 
-const AdministratorLimitModal = lazy(
-  () => import("@/features/administrators/components/AdministratorLimitModal"),
+const AdministratorLimitModal = lazy(() =>
+  import("@/features/administrators").then((m) => ({
+    default: m.AdministratorLimitModal,
+  })),
 );
 
 const AdministratorsPage: FC = () => {
@@ -43,6 +47,10 @@ const AdministratorsPage: FC = () => {
   const isGettingAdminInfo =
     isGettingAdministratorsLimit || getAdministratorsQueryIsLoading;
 
+  if (isGettingAdminInfo) {
+    return <LoadingState />;
+  }
+
   const handleInviteAdministrator = () => {
     if (administrators.length >= administratorsLimit) {
       openModal();
@@ -55,10 +63,6 @@ const AdministratorsPage: FC = () => {
       );
     }
   };
-
-  if (isGettingAdminInfo) {
-    return <LoadingState />;
-  }
 
   return (
     <PageMain>
@@ -88,7 +92,10 @@ const AdministratorsPage: FC = () => {
       </PageContent>
       {isModalOpen && (
         <Suspense fallback={<LoadingState centerOnScreen />}>
-          <AdministratorLimitModal close={closeModal} />
+          <AdministratorLimitModal
+            close={closeModal}
+            isLimitError={administratorsLimit === 0}
+          />
         </Suspense>
       )}
     </PageMain>

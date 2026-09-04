@@ -10,15 +10,26 @@ const AdministratorsLimit: FC<AdministratorsLimitProps> = ({
   administratorsCount,
   administratorsLimit,
 }) => {
+  const adminValues =
+    administratorsLimit === 0
+      ? {
+          limit: "Unable to determine",
+          count: "Unable to determine",
+        }
+      : {
+          limit: administratorsLimit,
+          count: administratorsLimit - administratorsCount,
+        };
+
   return (
     <div className={classes.limitInfo}>
       <div className={classes.limitItem}>
         <span className="u-text--muted">Maximum administrators</span>
-        <span>{administratorsLimit}</span>
+        <span>{adminValues.limit}</span>
       </div>
       <div className={classes.limitItem}>
         <span className="u-text--muted">Remaining administrators</span>
-        <span>{administratorsLimit - administratorsCount}</span>
+        <span>{adminValues.count}</span>
       </div>
     </div>
   );
