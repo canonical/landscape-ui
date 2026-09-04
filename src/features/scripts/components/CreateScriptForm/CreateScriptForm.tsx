@@ -61,11 +61,7 @@ const CreateScript: FC = () => {
       closeSidePanel();
     } catch (error) {
       // This overrides the error message to be a bit more detailed.
-      if (
-        isAxiosError<ApiError>(error) &&
-        typeof error.response?.data === "object" &&
-        error.response.data !== null
-      ) {
+      if (isAxiosError<ApiError>(error) && error.response?.data) {
         const { error: errorCode } = error.response.data;
         const isDuplicateTitleError = errorCode === "DuplicateScript";
 
