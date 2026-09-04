@@ -1,5 +1,6 @@
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
+import classes from "./DownloadLicenseButton.module.scss";
 
 interface DownloadLicenseButtonProps {
   readonly downloadUrl?: string;
@@ -23,6 +24,7 @@ const DownloadLicenseButton: FC<DownloadLicenseButtonProps> = ({
       hasIcon
       onClick={handleDownload}
       type="button"
+      className={classes.downloadLicenseButton}
     >
       <i className="p-icon--begin-downloading" />
       <span>Download license file</span>
