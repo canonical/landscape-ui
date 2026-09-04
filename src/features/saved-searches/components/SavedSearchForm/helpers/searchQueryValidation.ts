@@ -297,7 +297,6 @@ const validateKeyToken = (
     case "contract-expires-within-days":
     case "license-expires-within-days":
     case "last-ping":
-    case "last-ping-minutes":
     case "usn-outstanding":
     case "usn-applied-in":
       return validateNumericKeyToken(key, val);
