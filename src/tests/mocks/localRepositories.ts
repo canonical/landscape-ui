@@ -54,3 +54,8 @@ export const packages = Array.from(
   { length: 25 },
   (_, i) => `package-${i + 1}`,
 );
+
+export const batchGetLocalNamesWithMissing = [
+  "locals/aaaa-bbbb-cccc",
+  "locals/non-existent-local",
+] as const;

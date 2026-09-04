@@ -1,4 +1,4 @@
-import type { Administrator } from "@/types/Administrator";
+import type { Administrator } from "@/features/administrators";
 import { administratorRoles } from "./roles";
 
 export const administrators = [

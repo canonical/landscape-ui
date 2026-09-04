@@ -11,6 +11,7 @@ Start here, then follow the smallest relevant link:
 - Frontend conventions and constraints: [docs/FRONTEND.md](docs/FRONTEND.md)
 - Testing workflow: [docs/testing/index.md](docs/testing/index.md)
 - Verification workflow: [docs/verification/index.md](docs/verification/index.md)
+- User-facing documentation (companion docs PRs): [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md)
 - Security policy: [SECURITY.md](SECURITY.md)
 - Release process and versioning: [RELEASES.md](RELEASES.md)
 - Contribution basics: [CONTRIBUTING.md](CONTRIBUTING.md)

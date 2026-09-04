@@ -7,6 +7,10 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
+    build: {
+      // Monaco is lazy-loaded but still produces a large chunk. We can remove this when we stop using Monaco.
+      chunkSizeWarningLimit: 4000,
+    },
     plugins: [
       react(),
       {

@@ -1,7 +1,8 @@
+import SidePanel from "@/components/layout/SidePanel";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -12,7 +13,7 @@ import { getFormikError } from "@/utils/formikErrors";
 const NewAccessGroupForm: FC = () => {
   const { createAccessGroupQuery, getAccessGroupQuery } = useRoles();
   const { mutateAsync } = createAccessGroupQuery;
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel } = usePageParams();
   const { data: accessGroupsResponse, isLoading: isGettingAccessGroups } =
     getAccessGroupQuery();
 
@@ -38,27 +39,32 @@ const NewAccessGroupForm: FC = () => {
   });
 
   return (
-    <Form noValidate onSubmit={formik.handleSubmit}>
-      <Input
-        type="text"
-        label="Title"
-        required
-        error={getFormikError(formik, "title")}
-        {...formik.getFieldProps("title")}
-      />
-      <Select
-        required
-        label="Parent"
-        disabled={isGettingAccessGroups}
-        options={accessGroupsOptionsResults}
-        error={getFormikError(formik, "parent")}
-        {...formik.getFieldProps("parent")}
-      />
-      <SidePanelFormButtons
-        submitButtonLoading={formik.isSubmitting}
-        submitButtonText="Add access group"
-      />
-    </Form>
+    <>
+      <SidePanel.Header>Add access group</SidePanel.Header>
+      <SidePanel.Content>
+        <Form noValidate onSubmit={formik.handleSubmit}>
+          <Input
+            type="text"
+            label="Title"
+            required
+            error={getFormikError(formik, "title")}
+            {...formik.getFieldProps("title")}
+          />
+          <Select
+            required
+            label="Parent"
+            disabled={isGettingAccessGroups}
+            options={accessGroupsOptionsResults}
+            error={getFormikError(formik, "parent")}
+            {...formik.getFieldProps("parent")}
+          />
+          <SidePanelFormButtons
+            submitButtonLoading={formik.isSubmitting}
+            submitButtonText="Add access group"
+          />
+        </Form>
+      </SidePanel.Content>
+    </>
   );
 };
 

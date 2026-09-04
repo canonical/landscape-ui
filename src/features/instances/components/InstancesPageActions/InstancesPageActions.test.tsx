@@ -1,13 +1,13 @@
 import * as Constants from "@/constants";
-import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import {
   instances,
   ubuntuInstance,
   windowsInstance,
 } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { afterEach, beforeEach, vi } from "vitest";
@@ -52,6 +52,7 @@ const renderPageActions = (
 describe("InstancesPageActions", () => {
   beforeEach(() => {
     vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(true);
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
     setScreenSize("xxl");
     setEndpointStatus("default");
   });
@@ -133,6 +134,22 @@ describe("InstancesPageActions", () => {
 
       expect(
         screen.queryByRole("menuitem", { name: /view report/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("'Export selection as TSV' menu item should not be visible when feature disabled", async () => {
+      vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
+
+      renderPageActions();
+
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[0] }),
+      );
+
+      expect(
+        screen.queryByRole("menuitem", {
+          name: /export selection as tsv/i,
+        }),
       ).not.toBeInTheDocument();
     });
 
@@ -350,6 +367,10 @@ describe("InstancesPageActions", () => {
     });
 
     it("'Remove from Landscape' menu item", async () => {
+      const onRemoveSuccess = vi.fn();
+      cleanup();
+      renderPageActions({ onRemoveSuccess });
+
       await userEvent.click(
         screen.getByRole("button", { name: MENU_LABELS[0] }),
       );
@@ -360,6 +381,16 @@ describe("InstancesPageActions", () => {
       expect(
         screen.getByRole("heading", { name: /remove .* from Landscape/i }),
       ).toBeInTheDocument();
+
+      await userEvent.type(
+        screen.getByRole("textbox"),
+        `remove ${selected.length} instances`,
+      );
+      await userEvent.click(screen.getByRole("button", { name: /^remove$/i }));
+
+      await waitFor(() => {
+        expect(onRemoveSuccess).toHaveBeenCalledTimes(1);
+      });
     });
 
     it("'Assign access group' menu item", async () => {

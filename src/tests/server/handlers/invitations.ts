@@ -1,6 +1,6 @@
 import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import type { InvitationSummary } from "@/types/Invitation";
+import type { InvitationSummary } from "@/features/administrators";
 import { http, HttpResponse } from "msw";
 import {
   generatePaginatedResponse,

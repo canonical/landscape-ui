@@ -10,7 +10,7 @@ import {
 } from "@/features/kernel";
 import usePageParams from "@/hooks/usePageParams";
 import type { UrlParams } from "@/types/UrlParams";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { useMemo } from "react";
 import { useParams } from "react-router";
@@ -58,7 +58,7 @@ const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
       "",
     expirationDate:
       kernelInfo?.UpgradeRequiredDate &&
-      moment(kernelInfo?.UpgradeRequiredDate).isValid()
+      date(kernelInfo?.UpgradeRequiredDate).isValid()
         ? kernelInfo.UpgradeRequiredDate
         : "",
     status: kernelStatuses?.data.smart_status ?? "",

@@ -1,7 +1,7 @@
 import type { ExportFieldGroup, ExportFormValues } from "@/features/exports";
 import { EXPORT_FIELD_GROUPS } from "@/features/instances";
 import { INPUT_DATE_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 
 export const BUCKET_OPTIONS = [
   { value: "over-60", label: "60+ days outstanding" },
@@ -74,5 +74,5 @@ export const INITIAL_EXPORT_VALUES: ExportFormValues = {
     "resolved_cves",
     "unresolved_cves",
   ],
-  retainUntil: moment().add(3, "years").format(INPUT_DATE_FORMAT),
+  retainUntil: date().add(3, "years").format(INPUT_DATE_FORMAT),
 };

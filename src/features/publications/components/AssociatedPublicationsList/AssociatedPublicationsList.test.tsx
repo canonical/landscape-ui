@@ -6,6 +6,8 @@ import { describe, expect, it } from "vitest";
 import AssociatedPublicationsList from "./AssociatedPublicationsList";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import type { Publication } from "@canonical/landscape-openapi";
+import { batchGetMirrorNamesWithMissing } from "@/tests/mocks/mirrors";
+import { batchGetLocalNamesWithMissing } from "@/tests/mocks/localRepositories";
 
 const pubWithoutPublishTime: Publication = {
   name: "publications/no-date-id",
@@ -16,7 +18,7 @@ const pubWithoutPublishTime: Publication = {
   source: "mirrors/no-date-mirror",
   distribution: "jammy",
   origin: "",
-  architectures: [],
+  architectures: ["amd64"],
   acquireByHash: false,
   butAutomaticUpgrades: false,
   notAutomatic: false,
@@ -34,7 +36,7 @@ const pubWithUnknownSource: Publication = {
   source: "ppa/some-ppa",
   distribution: "jammy",
   origin: "",
-  architectures: [],
+  architectures: ["amd64"],
   acquireByHash: false,
   butAutomaticUpgrades: false,
   notAutomatic: false,
@@ -401,6 +403,76 @@ describe("AssociatedPublicationsList", () => {
       );
 
       expect(screen.getByText("My Custom Local Repo")).toBeInTheDocument();
+    });
+
+    it("renders Source not found and no link for missing mirror sources", () => {
+      const [, missingMirrorSource] = batchGetMirrorNamesWithMissing;
+      if (!missingMirrorSource) {
+        throw new Error("Missing mirror source fixture");
+      }
+
+      const missingMirrorPublication = publications.find(
+        (publication) => publication.source === missingMirrorSource,
+      );
+      if (!missingMirrorPublication) {
+        throw new Error("Missing mock publication for non-existent mirror");
+      }
+
+      renderWithProviders(
+        <AssociatedPublicationsList
+          publications={[missingMirrorPublication]}
+          sourceDisplayNames={{
+            "mirrors/ubuntu-archive-mirror": "Ubuntu archive mirror",
+          }}
+          unreachableSourceNames={[missingMirrorSource]}
+        />,
+      );
+
+      expect(screen.getByText("Source not found")).toBeInTheDocument();
+      expect(
+        screen.queryByRole("link", { name: "Source not found" }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("renders Source not found and no link for missing local sources", () => {
+      const [, missingLocalSource] = batchGetLocalNamesWithMissing;
+      if (!missingLocalSource) {
+        throw new Error("Missing local source fixture");
+      }
+
+      const missingLocalPublication: Publication = {
+        name: "publications/missing-local-source-id",
+        publicationId: "missing-local-source-id",
+        displayName: "Missing local source publication",
+        label: "missing-local",
+        publicationTarget: "publicationTargets/test",
+        source: missingLocalSource,
+        distribution: "jammy",
+        origin: "",
+        architectures: [],
+        acquireByHash: false,
+        butAutomaticUpgrades: false,
+        notAutomatic: false,
+        multiDist: false,
+        skipBz2: false,
+        skipContents: false,
+        publishTime: new Date("March 12, 2026"),
+      };
+
+      renderWithProviders(
+        <AssociatedPublicationsList
+          publications={[missingLocalPublication]}
+          sourceDisplayNames={{
+            "locals/some-local-uuid": "My Custom Local Repo",
+          }}
+          unreachableSourceNames={[missingLocalSource]}
+        />,
+      );
+
+      expect(screen.getByText("Source not found")).toBeInTheDocument();
+      expect(
+        screen.queryByRole("link", { name: "Source not found" }),
+      ).not.toBeInTheDocument();
     });
   });
 });

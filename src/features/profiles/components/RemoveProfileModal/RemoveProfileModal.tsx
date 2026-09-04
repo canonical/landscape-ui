@@ -29,7 +29,7 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
 
   const { notify } = useNotify();
   const debug = useDebug();
-  const { setPageParams } = usePageParams();
+  const { closeSidePanel } = usePageParams();
   const { removeProfile, isRemovingProfile } = useProfiles();
 
   const handleRemoveProfile = async () => {
@@ -39,7 +39,7 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
         name: profile.name,
       });
 
-      setPageParams({ sidePath: [], name: "" });
+      closeSidePanel();
 
       notify.success({
         title: `${capitalize(type)} profile ${removalType}d`,
