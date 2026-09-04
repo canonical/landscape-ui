@@ -2,18 +2,14 @@ import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import ListTitle from "@/components/layout/ListTitle";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
 import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import type { Instance } from "@/types/Instance";
-import {
-  Button,
-  CheckboxInput,
-  Icon,
-  Tooltip,
-} from "@canonical/react-components";
+import { CheckboxInput, Icon, Tooltip } from "@canonical/react-components";
 import classNames from "classnames";
 import date from "@/libs/date";
 import { memo, useCallback, useEffect, useId, useMemo } from "react";
@@ -413,31 +409,15 @@ const InstanceList = memo(function InstanceList({
   const subhead = showSubhead && (
     <tr>
       <td colSpan={filteredColumns.length} className="u-no-padding">
-        <div className={classes.subhead}>
-          <span>
-            {isAllSelected
-              ? `All ${instanceCount} instances selected`
-              : `${selectedInstances.length} of ${instanceCount} instances selected`}
-          </span>
-          <div className={classes.buttons}>
-            {!isAllSelected && (
-              <Button
-                className="u-no-padding u-no-margin"
-                appearance="link"
-                onClick={onSelectAll}
-              >
-                Select all {instanceCount} instances
-              </Button>
-            )}
-            <Button
-              className="u-no-padding u-no-margin"
-              appearance="link"
-              onClick={onClearSelection}
-            >
-              Clear selection
-            </Button>
-          </div>
-        </div>
+        <ResponsiveTableSubhead
+          itemName="instance"
+          onClearSelection={onClearSelection}
+          selectedCount={selectedInstances.length}
+          totalCount={instanceCount}
+          canSelectAll
+          onSelectAll={onSelectAll}
+          isAllSelected={isAllSelected}
+        />
       </td>
     </tr>
   );

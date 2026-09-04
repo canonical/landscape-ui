@@ -2,12 +2,14 @@ import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 import { REPORT_VIEW_ENABLED, TSV_EXPORTS_ENABLED } from "@/constants";
+import type { PackageAction } from "@/features/packages";
+import { PackagesActionForm } from "@/features/packages";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { hasOneItem, pluralize } from "@/utils/_helpers";
+import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -16,6 +18,7 @@ import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModa
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
+import { getActionFormTitle } from "@/features/packages";
 const RunInstanceScriptForm = lazy(
   async () => import("@/features/scripts/components/RunInstanceScriptForm"),
 );
@@ -92,8 +95,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
         ) ? (
           <div className={classes.warning}>
             <p>
-              You selected {selectedInstances.length} instances. This script
-              will:
+              You selected{" "}
+              {pluralize(selectedInstances.length, ["instance"], "exact")}. This
+              script will:
             </p>
 
             <ul>
@@ -125,7 +129,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleUpgradesRequest = () => {
     setSidePanelContent(
-      "Upgrades",
+      `Apply upgrades to ${getSelectionLabel(selectedInstances, (instance) => instance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
         <Upgrades selectedInstances={selectedInstances} />
       </Suspense>,
@@ -142,6 +146,18 @@ const InstancesPageActions = memo(function InstancesPageActions({
         />
       </Suspense>,
       "medium",
+    );
+  };
+
+  const openPackagesActionForm = (action: PackageAction) => {
+    setSidePanelContent(
+      getActionFormTitle(action),
+      <Suspense fallback={<LoadingState />}>
+        <PackagesActionForm
+          instanceIds={selectedInstances.map(({ id }) => id)}
+          action={action}
+        />
+      </Suspense>,
     );
   };
 
@@ -192,6 +208,17 @@ const InstancesPageActions = memo(function InstancesPageActions({
       instance.ubuntu_pro_info?.result === "success" &&
       instance.ubuntu_pro_info.attached,
   );
+
+  const noInstanceHasUpgrades =
+    !hasSelectedInstances ||
+    selectedInstances.every(
+      (instance) =>
+        !hasUpgrades(instance.alerts) || !getFeatures(instance).packages,
+    );
+
+  const noInstanceHasPackageFeature =
+    !hasSelectedInstances ||
+    selectedInstances.every((instance) => !getFeatures(instance).packages);
 
   const proServicesLinks = [
     allInstancesHaveToken
@@ -292,20 +319,6 @@ const InstancesPageActions = memo(function InstancesPageActions({
     {
       children: (
         <>
-          <Icon name="change-version" />
-          <span>Upgrade</span>
-        </>
-      ),
-      onClick: handleUpgradesRequest,
-      hasIcon: true,
-      disabled:
-        !hasSelectedInstances ||
-        selectedInstances.every((instance) => !hasUpgrades(instance.alerts)) ||
-        isGettingInstances,
-    },
-    {
-      children: (
-        <>
           <Icon name="arrow-up" />
           <span>Upgrade distributions</span>
         </>
@@ -360,6 +373,85 @@ const InstancesPageActions = memo(function InstancesPageActions({
       : []),
   ].filter((link) => link.children);
 
+  const debManagementLinks = [
+    {
+      children: (
+        <>
+          <Icon name="arrow-up" />
+          <span>Upgrade</span>
+        </>
+      ),
+      onClick: handleUpgradesRequest,
+      disabled: noInstanceHasUpgrades,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="begin-downloading" />
+          <span>Install</span>
+        </>
+      ),
+      disabled: noInstanceHasPackageFeature,
+      onClick: () => {
+        openPackagesActionForm("install");
+      },
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="delete" />
+          <span>Uninstall</span>
+        </>
+      ),
+      onClick: () => {
+        openPackagesActionForm("uninstall");
+      },
+      disabled: noInstanceHasPackageFeature,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="restart" />
+          <span>Change version</span>
+        </>
+      ),
+      disabled: noInstanceHasPackageFeature,
+      onClick: () => {
+        openPackagesActionForm("changeVersion");
+      },
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="pause" />
+          <span>Hold</span>
+        </>
+      ),
+      onClick: () => {
+        openPackagesActionForm("hold");
+      },
+      disabled: noInstanceHasPackageFeature,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="play" />
+          <span>Unhold</span>
+        </>
+      ),
+      onClick: () => {
+        openPackagesActionForm("unhold");
+      },
+      disabled: noInstanceHasPackageFeature,
+      hasIcon: true,
+    },
+  ];
+
   return (
     <>
       <ResponsiveButtons
@@ -406,6 +498,15 @@ const InstancesPageActions = memo(function InstancesPageActions({
               hasToggleIcon
             />
           ),
+          <ContextualMenu
+            key="deb-management"
+            hasToggleIcon
+            links={debManagementLinks}
+            position="right"
+            toggleLabel={<span>Deb management</span>}
+            toggleClassName="u-no-margin--bottom"
+            toggleDisabled={0 === selectedInstances.length}
+          />,
         ]}
       />
 

@@ -1,226 +1,231 @@
-import BoldSubstring from "@/components/form/BoldSubstring";
-import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
-import type { UrlParams } from "@/types/UrlParams";
-import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
+import { pluralize } from "@/utils/_helpers";
+import { SearchBox, Switch } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
 import type { FC } from "react";
-import React, { useState } from "react";
-import { useParams } from "react-router";
-import { useDebounceCallback } from "usehooks-ts";
-import { usePackages } from "../../hooks";
-import type { InstancePackage } from "../../types";
-import { DEBOUNCE_DELAY } from "./constants";
+import { useState } from "react";
+import { useBoolean, useDebounceValue } from "usehooks-ts";
+import type { Package, PackageAction, PackageWithVersions } from "../../types";
+import PackageDropdownSearchCount from "./components/PackageDropdownSearchCount";
+import PackageDropdownSearchItem from "./components/PackageDropdownSearchItem";
+import PackageDropdownSearchList from "./components/PackageDropdownSearchList";
+import {
+  DEBOUNCE_DELAY,
+  MAX_SELECTED_PACKAGES,
+  QUERY_LIMIT,
+} from "./constants";
 import classes from "./PackageDropdownSearch.module.scss";
+import { mapActionToQueryParams, mapActionToSearch } from "../../helpers";
+import PackageSearchDowngradeItem from "./components/PackageSearchDowngradeItem";
+import type { SearchPackagesRequest } from "../../api/useSearchPackages";
+import useSearchPackages from "../../api/useSearchPackages";
 
 interface PackageDropdownSearchProps {
-  readonly selectedItems: InstancePackage[];
-  readonly setSelectedItems: (items: InstancePackage[]) => void;
+  readonly instanceIds: number[];
+  readonly selectedItems: PackageWithVersions[];
+  readonly setSelectedItems: (packages: PackageWithVersions[]) => void;
+  readonly action: PackageAction;
 }
 
 const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
+  instanceIds,
   selectedItems,
   setSelectedItems,
+  action,
 }) => {
-  const [search, setSearch] = useState<string>("");
-  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useDebounceValue("", DEBOUNCE_DELAY);
   const [inputValue, setInputValue] = useState<string>("");
+  const { value: exact, toggle: toggleExact } = useBoolean();
 
-  const { instanceId: urlInstanceId } = useParams<UrlParams>();
-  const debug = useDebug();
-  const { getInstancePackagesQuery } = usePackages();
+  const { value: isOpen, setFalse: close, setTrue: open } = useBoolean();
 
-  const instanceId = Number(urlInstanceId);
-
-  const { data: packageDataRes, isFetching } = getInstancePackagesQuery(
-    {
-      instance_id: instanceId,
-      available: true,
-      installed: false,
-      upgrade: false,
-      held: false,
-      limit: 50,
-      search: search,
-    },
-    {
-      enabled: search.length > 2,
-    },
-  );
-
-  const packageData = packageDataRes?.data?.results ?? [];
-
-  const getAvailablePackageSuggestions = (item: InstancePackage): boolean => {
-    return !selectedItems.map((item) => item.name).includes(item.name);
+  const queryParams: SearchPackagesRequest = {
+    computer_query: instanceIds.map((id) => `id:${id}`).join(" OR "),
+    limit: QUERY_LIMIT,
+    ...mapActionToQueryParams(action),
   };
 
-  const suggestions = packageData.filter(getAvailablePackageSuggestions);
+  if (exact) {
+    queryParams.names = [search];
+  } else {
+    queryParams.text = search.trim() || undefined;
+  }
 
-  const handleDeleteSelectedItem = (name: string) => {
-    setSelectedItems(selectedItems.filter((item) => item.name !== name));
-  };
+  const packagesQueryResult = useSearchPackages(queryParams, {
+    enabled: !(exact && !search),
+  });
 
-  const closeDropdown = () => {
-    setOpen(false);
-  };
+  const {
+    data: packagesResponse,
+    isPending: isPendingPackages,
+    error: packagesError,
+  } = packagesQueryResult;
 
-  const handleClearSearch = () => {
-    setInputValue("");
-    setSearch("");
-  };
-
-  const handleDropdownState = () => {
-    if (inputValue.length > 2) {
-      setOpen(true);
-    } else {
-      setOpen(false);
-    }
-  };
+  if (packagesError) {
+    throw packagesError;
+  }
 
   const handleSearchBoxChange = (value: string) => {
     setInputValue(value);
-    if (value.length > 2) {
-      setSearch(value);
-    }
+    setSearch(value);
   };
 
-  const debouncedSearch = useDebounceCallback(() => {
-    try {
-      handleDropdownState();
-    } catch (err) {
-      debug(err);
-    }
-  }, DEBOUNCE_DELAY);
-
-  const handleAddToSelectedItems = (item: InstancePackage) => {
-    setSelectedItems([...selectedItems, item]);
-    handleClearSearch();
+  const clearSearchBox = () => {
+    handleSearchBoxChange("");
   };
 
-  const handleSelectItem = (item: InstancePackage | null) => {
+  const handleSelectItem = (item: Package | null) => {
     if (!item) {
       return;
     }
-    handleAddToSelectedItems(item);
-    setOpen(false);
+
+    setSelectedItems([...selectedItems, [item, []]]);
+    clearSearchBox();
+    close();
   };
 
-  const handleOnKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Escape") {
-      event.currentTarget.blur();
-    } else {
-      debouncedSearch();
+  const isOverLimit = selectedItems.length >= MAX_SELECTED_PACKAGES;
+
+  const getWarningVerb = () => {
+    switch (action) {
+      case "install":
+        return "install";
+      case "uninstall":
+        return "uninstall";
+      case "hold":
+        return "hold";
+      case "unhold":
+        return "unhold";
+      case "changeVersion":
+        return "change version on";
     }
   };
 
-  const getHelpText = () => {
-    if (!open && inputValue.length < 3) {
-      return "Min 3. characters";
+  const getHeaderVerb = () => {
+    switch (action) {
+      case "install":
+        return "install";
+      case "uninstall":
+        return "uninstall";
+      case "hold":
+        return "hold";
+      case "unhold":
+        return "unhold";
+      case "changeVersion":
+        return "change version";
     }
-    if (packageData.length === 0 && search && !isFetching) {
-      return `No packages found by "${search}"`;
-    }
-    return null;
   };
-
-  const helpText = getHelpText();
 
   return (
     <div className={classes.container}>
       <Downshift
         onSelect={handleSelectItem}
-        itemToString={() => ""}
-        isOpen={open}
+        itemToString={(item) => (item ? item.name : "")}
+        isOpen={isOpen}
+        onOuterClick={close}
       >
-        {({ getInputProps, getItemProps, getMenuProps, highlightedIndex }) => (
+        {(downshiftOptions) => (
           <div className="p-autocomplete">
             <SearchBox
-              {...getInputProps()}
-              placeholder="Search for available packages"
+              {...downshiftOptions.getInputProps()}
+              placeholder={`Search ${mapActionToSearch(action)} packages`}
               className="u-no-margin--bottom"
               shouldRefocusAfterReset
               externallyControlled
               autocomplete="off"
               value={inputValue}
               onChange={handleSearchBoxChange}
-              onClear={handleClearSearch}
-              onBlur={closeDropdown}
-              onFocus={handleDropdownState}
-              onKeyUp={handleOnKeyUp}
+              onClear={clearSearchBox}
+              onClick={open}
+              disabled={isOverLimit}
             />
-            {helpText ? (
-              <span className="p-form-help-text">{helpText}</span>
-            ) : null}
-            {open && (suggestions.length > 0 || isFetching) ? (
-              <ul
+            {isOverLimit && (
+              <span className="p-form-help-text">
+                You can {getWarningVerb()} a maximum of{" "}
+                {pluralize(MAX_SELECTED_PACKAGES, ["package"], "exact")} in one
+                single operation.
+              </span>
+            )}
+
+            {isOpen && (
+              <div
                 className={classNames(
-                  "p-list p-card--highlighted u-no-padding u-no-margin--bottom p-autocomplete__suggestions",
+                  "p-card--highlighted",
+                  "u-no-margin",
+                  "u-no-padding",
                   classes.suggestionsContainer,
                 )}
-                {...getMenuProps()}
+                {...downshiftOptions.getMenuProps()}
               >
-                {isFetching ? (
-                  <LoadingState />
-                ) : (
-                  suggestions.map((item: InstancePackage, index: number) => (
-                    <li
-                      className={classNames("p-list__item", classes.pointer, {
-                        [classes.highlighted]: highlightedIndex === index,
-                      })}
-                      key={item.name}
-                      {...getItemProps({
-                        item,
-                        index,
-                      })}
-                    >
-                      <div className="u-truncate" data-testid="dropdownElement">
-                        <BoldSubstring text={item.name} substring={search} />
-                      </div>
-                      <div>
-                        <small className="u-text-muted">
-                          {item.available_version}
-                        </small>
-                      </div>
-                    </li>
-                  ))
-                )}
-              </ul>
-            ) : null}
+                <div className={classes.topRow}>
+                  <Switch
+                    label="Exact match"
+                    onChange={toggleExact}
+                    checked={exact}
+                  />
+
+                  {!isPendingPackages && (
+                    <PackageDropdownSearchCount
+                      count={packagesResponse.pages.at(-1)?.data.count}
+                    />
+                  )}
+                </div>
+
+                <PackageDropdownSearchList
+                  downshiftOptions={downshiftOptions}
+                  exact={exact}
+                  queryResult={packagesQueryResult}
+                  search={search}
+                  selectedPackages={selectedItems.map(([item]) => item)}
+                />
+              </div>
+            )}
           </div>
         )}
       </Downshift>
 
-      <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">
-        {selectedItems.length
-          ? selectedItems.map((item) => (
-              <li
-                className={classNames(
-                  "p-autocomplete__result p-list__item p-card u-no-margin--bottom",
-                  classes.selectedContainer,
-                )}
-                key={item.name}
-              >
-                <div>
-                  <div>{item.name}</div>
-                  <small className="u-text--muted p-text--small">
-                    {item.available_version}
-                  </small>
-                </div>
-                <Button
-                  type="button"
-                  appearance="link"
-                  className="u-no-margin--bottom"
-                  aria-label={`Delete ${item.name}`}
-                  onClick={() => {
-                    handleDeleteSelectedItem(item.name);
-                  }}
-                >
-                  <Icon name={ICONS.delete} />
-                </Button>
-              </li>
-            ))
-          : null}
-      </ul>
+      <div
+        className={classNames(
+          "p-text--small-caps",
+          "u-no-padding",
+          classes.header,
+        )}
+      >{`Packages to ${getHeaderVerb()}`}</div>
+
+      {selectedItems.length ? (
+        <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">
+          {selectedItems.map((selectedPackage, index) => {
+            const handleDelete = () => {
+              setSelectedItems(selectedItems.toSpliced(index, 1));
+            };
+
+            return action == "changeVersion" ? (
+              <PackageSearchDowngradeItem
+                key={`${selectedPackage[0].id}${index}`}
+                selectedPackage={selectedPackage}
+                onDelete={handleDelete}
+                instanceIds={instanceIds}
+                onItemsUpdate={(items) => {
+                  setSelectedItems(
+                    selectedItems.toSpliced(index, 1, [
+                      selectedPackage[0],
+                      items.map((item) => item.value as number),
+                    ]),
+                  );
+                }}
+              />
+            ) : (
+              <PackageDropdownSearchItem
+                key={`${selectedPackage[0].id}${index}`}
+                selectedPackage={selectedPackage[0]}
+                onDelete={handleDelete}
+              />
+            );
+          })}
+        </ul>
+      ) : (
+        <div>No packages have been added yet.</div>
+      )}
     </div>
   );
 };

@@ -1,360 +1,372 @@
 import type {
-  DowngradePackageVersion,
-  InstancePackage,
+  PackageChangePlanSummaryItem,
   Package,
 } from "@/features/packages";
 
 export const packages = [
   {
-    id: 15,
-    name: "libthai0",
-    summary: "Thai language support library",
-    computers: [
-      {
-        id: 1,
-        status: "installed",
-        current_version: "0.1.9-1",
-        available_version: "0.1.9-1-1",
-      },
-      {
-        id: 2,
-        status: "installed",
-        current_version: "0.1.9-1",
-        available_version: "0.1.9-1-1",
-      },
-      {
-        id: 3,
-        status: "installed",
-        current_version: "0.1.9-1",
-        available_version: "0.1.9-1-1",
-      },
-      {
-        id: 4,
-        status: "installed",
-        current_version: "0.1.9-1",
-        available_version: "0.1.9-1-1",
-      },
-      {
-        id: 5,
-        status: "installed",
-        current_version: "0.1.9-1",
-        available_version: "0.1.9-1-1",
-      },
-      {
-        id: 6,
-        status: "installed",
-        current_version: "0.1.9-1",
-        available_version: "0.1.9-1-1",
-      },
-    ],
-  },
-  {
-    id: 58667,
-    name: "binutils-common",
-    summary: "Common files for the GNU assembler, linker and binary utilities",
-    computers: [
-      {
-        id: 20,
-        status: "security",
-        current_version: "2.38-4ubuntu2.3",
-        available_version: "2.38-4ubuntu-pro2.4",
-      },
-      {
-        id: 1,
-        status: "security",
-        current_version: "2.38-4ubuntu2.3",
-        available_version: "2.38-4ubuntu2.4",
-      },
-    ],
-  },
-  {
-    id: 9779,
-    name: "libbinutils",
-    summary: "GNU binary utilities (private shared library)",
-    computers: [
-      {
-        id: 20,
-        status: "security",
-        current_version: "2.38-4ubuntu2.3",
-        available_version: "2.38-4ubuntu2.4",
-      },
-      {
-        id: 1,
-        status: "installed",
-        current_version: null,
-        available_version: null,
-      },
-    ],
-  },
-  {
-    id: 174788,
-    name: "accountsservice",
-    summary: "query and manipulate user account information",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "0.6.55-0ubuntu11",
-        available_version: "0.6.55-0ubuntu12~20.04.6",
-      },
-    ],
-  },
-  {
-    id: 141906,
-    name: "alsa-ucm-conf",
-    summary: "ALSA Use Case Manager configuration files",
-    computers: [
-      {
-        id: 21,
-        status: "installed",
-        current_version: "1.2.2-1",
-        available_version: "1.2.2-1ubuntu0.13",
-      },
-      {
-        id: 1,
-        status: "installed",
-        current_version: "1.2.2-1",
-        available_version: "1.2.2-1ubuntu0.13",
-      },
-    ],
-  },
-  {
-    id: 117729,
-    name: "base-files",
-    summary: "Debian base system miscellaneous files",
-    computers: [
-      {
-        id: 21,
-        status: "installed",
-        current_version: "11ubuntu5",
-        available_version: "11ubuntu5.7",
-      },
-      {
-        id: 1,
-        status: "held",
-        current_version: "11ubuntu5",
-        available_version: "11ubuntu5.7",
-      },
-    ],
-  },
-  {
-    id: 119557,
-    name: "bash",
-    summary: "GNU Bourne Again SHell",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "5.0-6ubuntu1",
-        available_version: "5.0-6ubuntu1.2",
-      },
-    ],
-  },
-  {
-    id: 112691,
-    name: "bcache-tools",
-    summary: "bcache userspace tools",
-    computers: [
-      {
-        id: 21,
-        status: "installed",
-        current_version: "1.0.8-3",
-        available_version: "1.0.8-3ubuntu0.1",
-      },
-    ],
-  },
-  {
-    id: 114990,
-    name: "bind9-dnsutils",
-    summary: "Clients provided with BIND 9",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "1:9.16.1-0ubuntu2.1",
-        available_version: "1:9.16.1-0ubuntu2.16",
-      },
-    ],
-  },
-  {
-    id: 107211,
-    name: "bind9-libs",
-    summary: "Shared Libraries used by BIND 9",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "1:9.16.1-0ubuntu2.1",
-        available_version: "1:9.16.1-0ubuntu2.16",
-      },
-    ],
-  },
-  {
-    id: 160136,
-    name: "bsdutils",
-    summary: "basic utilities from 4.4BSD-Lite",
-    computers: [
-      {
-        id: 21,
-        status: "installed",
-        current_version: "1:2.34-0.1ubuntu9",
-        available_version: "1:2.34-0.1ubuntu9.4",
-      },
-    ],
-  },
-  {
-    id: 115909,
-    name: "busybox-static",
-    summary: "Standalone rescue shell with tons of builtin utilities",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "1:1.30.1-4ubuntu6",
-        available_version: "1:1.30.1-4ubuntu6.4",
-      },
-    ],
-  },
-  {
-    id: 111339,
-    name: "ca-certificates",
-    summary: "Common CA certificates",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "20190110ubuntu1",
-        available_version: "20230311ubuntu0.20.04.1",
-      },
-    ],
-  },
-  {
-    id: 114533,
-    name: "cloud-init",
-    summary: "initialization and customization tool for cloud instances",
-    computers: [
-      {
-        id: 21,
-        status: "installed",
-        current_version: "20.1-10-g71af48df-0ubuntu5",
-        available_version: "23.3.3-0ubuntu0~20.04.1",
-      },
-    ],
-  },
-  {
-    id: 158772,
-    name: "cloud-initramfs-dyn-netconf",
-    summary: "write a network interface file in /run for BOOTIF",
-    computers: [
-      {
-        id: 21,
-        status: "installed",
-        current_version: "0.45ubuntu1",
-        available_version: "0.45ubuntu2",
-      },
-    ],
-  },
-  {
-    id: 158773,
-    name: "cpio",
-    summary: "GNU cpio -- a program to manage archives of files",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "2.13+dfsg-2",
-        available_version: "2.13+dfsg-2ubuntu0.3",
-      },
-    ],
-  },
-  {
-    id: 104505,
-    name: "cryptsetup",
-    summary: "disk encryption support - startup scripts",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "2:2.2.2-3ubuntu2",
-        available_version: "2:2.2.2-3ubuntu2.4",
-      },
-    ],
-  },
-  {
-    id: 164749,
-    name: "cryptsetup-bin",
-    summary: "disk encryption support - command line tools",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "2:2.2.2-3ubuntu2",
-        available_version: "2:2.2.2-3ubuntu2.4",
-      },
-    ],
-  },
-  {
-    id: 146052,
-    name: "cryptsetup-run",
-    summary: "transitional dummy package for cryptsetup",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "2:2.2.2-3ubuntu2",
-        available_version: "2:2.2.2-3ubuntu2.4",
-      },
-    ],
-  },
-  {
-    id: 117735,
-    name: "curl",
-    summary: "command line tool for transferring data with URL syntax",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "7.68.0-1ubuntu2",
-        available_version: "7.68.0-1ubuntu2.21",
-      },
-    ],
-  },
-  {
-    id: 99999,
-    name: "no-upgrades-pkg",
-    summary: "package without available upgrades",
-    computers: [
-      {
-        id: 999,
-        status: "installed",
-        current_version: "1.0.0",
-        available_version: null,
-      },
-    ],
-  },
-] as const satisfies Package[];
-
-export const getInstancePackages = (instanceId: number): InstancePackage[] => {
-  return packages
-    .filter(({ computers }) => computers.some(({ id }) => id === instanceId))
-    .flatMap(({ computers, ...commonProps }) =>
-      computers
-        .filter(({ id }) => id === instanceId)
-        .map((instanceProps) => ({ ...instanceProps, ...commonProps })),
-    );
-};
-
-export const downgradePackageVersions = [
-  {
     id: 1,
     name: "libthai0",
     summary: "Thai language support library",
-    version: "0.1.8-2",
+    version: "0.1.9-1",
+    computers: {
+      count: 6,
+    },
   },
   {
     id: 2,
-    name: "libthai0",
-    summary: "Thai language support library",
-    version: "0.1.7-3",
+    name: "binutils-common",
+    summary: "Common files for the GNU assembler, linker and binary utilities",
+    version: "2.38-4ubuntu2.3",
+    computers: {
+      count: 2,
+    },
   },
-] as const satisfies DowngradePackageVersion[];
+  {
+    id: 3,
+    name: "libbinutils",
+    summary: "GNU binary utilities (private shared library)",
+    version: "2.38-4ubuntu2.3",
+    computers: {
+      count: 2,
+    },
+  },
+  {
+    id: 4,
+    name: "package-with-very-long-name-that-should-be-truncated-in-the-ui",
+    summary:
+      "This package has a very long name and should be truncated in the UI",
+    version:
+      "1.2.3.4.5.6.7.8.9.10.11.12.13.14.15.16.17.18.19.20.21.22.23.24.25.26.27.28.29",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 5,
+    name: "accountsservice",
+    summary: "query and manipulate user account information",
+    version: "0.6.55-0ubuntu11",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 6,
+    name: "alsa-ucm-conf",
+    summary: "ALSA Use Case Manager configuration files",
+    version: "1.2.2-1",
+    computers: {
+      count: 2,
+    },
+  },
+  {
+    id: 7,
+    name: "apt",
+    summary: "APT package management utility",
+    version: "2.3.1",
+    computers: {
+      count: 23,
+    },
+  },
+  {
+    id: 8,
+    name: "apt",
+    summary: "APT package management utility",
+    version: "1.4.8",
+    computers: {
+      count: 7,
+    },
+  },
+  {
+    id: 9,
+    name: "apt-venv",
+    summary: "APT virtual environment",
+    version: "2.1.0",
+    computers: {
+      count: 42,
+    },
+  },
+  {
+    id: 10,
+    name: "apt-venv",
+    summary: "APT virtual environment",
+    version: "2.2.3",
+    computers: {
+      count: 15,
+    },
+  },
+  {
+    id: 11,
+    name: "apt-doc",
+    summary: "APT documentation",
+    version: "2.0.9",
+    computers: {
+      count: 38,
+    },
+  },
+  {
+    id: 12,
+    name: "apt-src",
+    summary: "APT source package management tool",
+    version: "2.3.0",
+    computers: {
+      count: 29,
+    },
+  },
+  {
+    id: 13,
+    name: "apt-src",
+    summary: "APT source package management tool",
+    version: "2.3.2",
+    computers: {
+      count: 4,
+    },
+  },
+  {
+    id: 14,
+    name: "base-files",
+    summary: "Debian base system miscellaneous files",
+    version: "11ubuntu5",
+    computers: {
+      count: 2,
+    },
+  },
+  {
+    id: 15,
+    name: "bash",
+    summary: "GNU Bourne Again SHell",
+    version: "5.0-6ubuntu1",
+    computers: {
+      count: 2,
+    },
+  },
+  {
+    id: 16,
+    name: "bcache-tools",
+    summary: "bcache userspace tools",
+    version: "1.0.8-3",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 17,
+    name: "bind9-dnsutils",
+    summary: "Clients provided with BIND 9",
+    version: "1:9.16.1-0ubuntu2.1",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 1,
+    name: "bind9-libs",
+    summary: "Shared Libraries used by BIND 9",
+    version: "1:9.16.1-0ubuntu2.1",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 19,
+    name: "bsdutils",
+    summary: "basic utilities from 4.4BSD-Lite",
+    version: "1:2.34-0.1ubuntu9",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 20,
+    name: "busybox-static",
+    summary: "Standalone rescue shell with tons of builtin utilities",
+    version: "1:1.30.1-4ubuntu6",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 21,
+    name: "ca-certificates",
+    summary: "Common CA certificates",
+    version: "20190110ubuntu1",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 22,
+    name: "cloud-init",
+    summary: "initialization and customization tool for cloud instances",
+    version: "20.1-10-g71af48df-0ubuntu5",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 23,
+    name: "cloud-initramfs-dyn-netconf",
+    summary: "write a network interface file in /run for BOOTIF",
+    version: "0.45ubuntu1",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 24,
+    name: "cpio",
+    summary: "GNU cpio -- a program to manage archives of files",
+    version: "2.13+dfsg-2",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 25,
+    name: "cron-apt",
+    summary: "periodically run apt-get update and upgrade",
+    version: "2.1.4",
+    computers: {
+      count: 11,
+    },
+  },
+  {
+    id: 26,
+    name: "cryptsetup",
+    summary: "disk encryption support - startup scripts",
+    version: "2:2.2.2-3ubuntu2",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 27,
+    name: "cryptsetup-bin",
+    summary: "disk encryption support - command line tools",
+    version: "2:2.2.2-3ubuntu2",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 28,
+    name: "cryptsetup-run",
+    summary: "transitional dummy package for cryptsetup",
+    version: "2:2.2.2-3ubuntu2",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 29,
+    name: "curl",
+    summary: "command line tool for transferring data with URL syntax",
+    version: "7.68.0-1ubuntu2",
+    computers: {
+      count: 1,
+    },
+  },
+  {
+    id: 30,
+    name: "no-upgrades-pkg",
+    summary: "package without available upgrades",
+    version: "1.0.0",
+    computers: {
+      count: 1,
+    },
+  },
+] as const satisfies Package[];
+
+export const packageChangePlanSummaryItems = [
+  {
+    package_id: packages[0].id,
+    package_name: packages[0].name,
+    package_version: packages[0].version,
+    package_state_counts: [
+      { state: "applicable", count: 5 },
+      { state: "not_applicable", count: 1 },
+    ],
+  },
+  {
+    package_id: packages[1].id,
+    package_name: packages[1].name,
+    package_version: packages[1].version,
+    package_state_counts: [
+      { state: "applicable", count: 8 },
+      { state: "not_applicable", count: 13 },
+    ],
+  },
+  {
+    package_id: packages[2].id,
+    package_name: packages[2].name,
+    package_version: packages[2].version,
+    package_state_counts: [
+      { state: "applicable", count: 57 },
+      { state: "not_applicable", count: 11 },
+    ],
+  },
+  {
+    package_id: packages[3].id,
+    package_name: packages[3].name,
+    package_version: packages[3].version,
+    package_state_counts: [
+      { state: "applicable", count: 328 },
+      { state: "not_applicable", count: 119 },
+    ],
+  },
+  {
+    package_id: packages[4].id,
+    package_name: packages[4].name,
+    package_version: packages[4].version,
+    package_state_counts: [
+      { state: "applicable", count: 565 },
+      { state: "not_applicable", count: 90 },
+    ],
+  },
+  {
+    package_id: packages[5].id,
+    package_name: packages[5].name,
+    package_version: packages[5].version,
+    package_state_counts: [
+      { state: "applicable", count: 71 },
+      { state: "not_applicable", count: 12 },
+    ],
+  },
+  {
+    package_id: packages[6].id,
+    package_name: packages[6].name,
+    package_version: packages[6].version,
+    package_state_counts: [
+      { state: "applicable", count: 34 },
+      { state: "not_applicable", count: 6 },
+    ],
+  },
+  {
+    package_id: packages[7].id,
+    package_name: packages[7].name,
+    package_version: packages[7].version,
+    package_state_counts: [
+      { state: "applicable", count: 100 },
+      { state: "not_applicable", count: 10 },
+    ],
+  },
+  {
+    package_id: packages[8].id,
+    package_name: packages[8].name,
+    package_version: packages[8].version,
+    package_state_counts: [
+      { state: "applicable", count: 2 },
+      { state: "not_applicable", count: 0 },
+    ],
+  },
+  {
+    package_id: packages[9].id,
+    package_name: packages[9].name,
+    package_version: packages[9].version,
+    package_state_counts: [
+      { state: "applicable", count: 0 },
+      { state: "not_applicable", count: 17 },
+    ],
+  },
+] as const satisfies PackageChangePlanSummaryItem[];
