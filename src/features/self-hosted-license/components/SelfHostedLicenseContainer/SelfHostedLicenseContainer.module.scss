@@ -1,7 +1,3 @@
-.curl {
-  color: var(--color-palette-aubergine-590, #923d83);
-}
-
 .formSection {
   > div {
     column-gap: 0;
@@ -14,4 +10,18 @@
       grid-template-columns: minmax(0, 1fr);
     }
   }
+
+  p,
+  :global(.p-code-snippet) {
+    max-width: 42.25rem;
+    width: 100%;
+  }
+}
+
+.paragraph1 {
+  margin-bottom: 1rem;
+}
+
+.curl {
+  color: var(--color-palette-aubergine-590, #923d83);
 }

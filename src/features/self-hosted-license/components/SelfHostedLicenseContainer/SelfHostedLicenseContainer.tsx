@@ -16,12 +16,11 @@ const SelfHostedLicenseContainer: FC = () => {
       title="Setting up the license file"
       className={classes.formSection}
     >
-      <p>
+      <p className={classes.paragraph1}>
         In order to run Self-hosted Landscape, a license file needs to be
         present on the system where the software will be installed.
-      </p>
-
-      <p>
+        <br />
+        <br />
         Your license file contains information that uniquely indentifies your
         account and the number of seats you are entitled to, as well as the
         expiration date of your license.
@@ -33,8 +32,8 @@ const SelfHostedLicenseContainer: FC = () => {
       />
 
       <p>
-        Self-hosted Landscape expects to find your license file in the
-        following location:
+        Self-hosted Landscape expects to find your license file in the following
+        location:
       </p>
 
       <CodeSnippet
