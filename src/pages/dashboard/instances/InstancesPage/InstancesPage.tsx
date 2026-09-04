@@ -4,6 +4,7 @@ import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
 import {
   DETAILED_UPGRADES_VIEW_ENABLED,
+  MANAGE_INSTANCES_DOCUMENTATION_URL,
   REPORT_VIEW_ENABLED,
   TSV_EXPORTS_ENABLED,
 } from "@/constants";
@@ -14,9 +15,11 @@ import {
 } from "@/features/instances";
 import { getExportTitle } from "@/features/exports";
 import { setSelectedInstanceIds } from "@/features/instances";
+import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
+import { Icon, ICONS, Link } from "@canonical/react-components";
 import {
   lazy,
   useCallback,
@@ -26,6 +29,7 @@ import {
   type FC,
 } from "react";
 import InstancesContainer from "../InstancesContainer";
+import classes from "./InstancesPage.module.scss";
 
 const InstancesExportForm = lazy(
   async () => import("@/features/instances/components/InstancesExportForm"),
@@ -37,6 +41,8 @@ const ReportView = lazy(async () => {
 });
 
 const InstancesPage: FC = () => {
+  const { currentAccount } = useAuthAccounts();
+
   useSetDynamicFilterValidation("sidePath", [
     ...(TSV_EXPORTS_ENABLED ? ["export"] : []),
     ...(REPORT_VIEW_ENABLED ? ["report"] : []),
@@ -65,6 +71,7 @@ const InstancesPage: FC = () => {
 
   const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
+  const [isAccountInfoOpen, setIsAccountInfoOpen] = useState(false);
 
   const clearSelection = useCallback(() => {
     setSelectedInstances([]);
@@ -86,6 +93,69 @@ const InstancesPage: FC = () => {
     <PageMain>
       <PageHeader
         title="Instances"
+        className={classes.instancesPageHeader}
+        helperContent={
+          <span className={classes.instancesPageHelperContent}>
+            <span
+              className="p-tooltip"
+              onMouseEnter={() => {
+                setIsAccountInfoOpen(true);
+              }}
+              onMouseLeave={(event) => {
+                if (event.currentTarget.contains(document.activeElement)) {
+                  return;
+                }
+                setIsAccountInfoOpen(false);
+              }}
+              onFocus={() => {
+                setIsAccountInfoOpen(true);
+              }}
+              onBlur={(event) => {
+                if (
+                  event.relatedTarget instanceof Node &&
+                  event.currentTarget.contains(event.relatedTarget)
+                ) {
+                  return;
+                }
+                setIsAccountInfoOpen(false);
+              }}
+              onKeyDown={(event) => {
+                if (event.key !== "Escape") {
+                  return;
+                }
+                setIsAccountInfoOpen(false);
+              }}
+            >
+              <button
+                type="button"
+                className={classes.instancesPageAccountInfoButton}
+                aria-label={`New instance registration information, documentation link available. Account name: ${currentAccount.name}`}
+                aria-expanded={isAccountInfoOpen}
+              >
+                <Icon name={ICONS.information} aria-hidden />
+              </button>
+              {isAccountInfoOpen && (
+                <span
+                  className="p-tooltip__message"
+                  style={{ display: "inline" }}
+                >
+                  <span>Account name: {currentAccount.name}</span>
+                  <br />
+                  <Link
+                    className={classes.instancesPageDocumentationLink}
+                    href={MANAGE_INSTANCES_DOCUMENTATION_URL}
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                    aria-label="Learn how to register new instances to your Landscape organization (opens a new tab to Landscape documentation)"
+                  >
+                    Learn how to register new instances to your Landscape
+                    organization
+                  </Link>
+                </span>
+              )}
+            </span>
+          </span>
+        }
         actions={[
           <InstancesPageActions
             key="actions"

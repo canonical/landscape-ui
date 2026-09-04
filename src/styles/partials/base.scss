@@ -1,21 +1,22 @@
 a[target="_blank"] {
   &::after {
-    content: "";
-    vertical-align: middle;
-
     @extend %icon;
-    @include vf-icon-external-link($colors--light-theme--link-default);
 
-    .is-dark & {
-      @include vf-icon-external-link($colors--dark-theme--focus);
-    }
+    background-color: currentcolor;
+    content: "";
 
-    /* The CustomSelect highlight background color is the default link color so
-     * we make the text white instead
-     */
-    .highlight & {
-      @include vf-icon-external-link($colors--dark-theme--text-default);
-    }
+    /* stylelint-disable property-no-vendor-prefix */
+    -webkit-mask-image: vf-icon-external-link-url($colors--light-theme--icon);
+    mask-image: vf-icon-external-link-url($colors--light-theme--icon);
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    /* stylelint-enable property-no-vendor-prefix */
+
+    vertical-align: middle;
   }
 }
 
