@@ -1,14 +1,9 @@
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import PublicationTargetAddButton from "./PublicationTargetAddButton";
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 describe("PublicationTargetAddButton", () => {
   const user = userEvent.setup();
@@ -33,8 +28,6 @@ describe("PublicationTargetAddButton", () => {
       screen.getByRole("button", { name: /add publication target/i }),
     );
 
-    expect(screen.getByTestId("location").textContent).toContain(
-      "sidePath=add",
-    );
+    expect(getLocationDisplay().textContent).toContain("sidePath=add");
   });
 });

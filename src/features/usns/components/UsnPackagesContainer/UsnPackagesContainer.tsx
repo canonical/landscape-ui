@@ -30,17 +30,23 @@ const UsnPackagesContainer: FC<UsnPackagesContainerProps> = ({
   const {
     data: getAffectedPackagesQueryResult,
     isLoading: getAffectedPackagesQueryLoading,
-  } = getAffectedPackagesQuery({
-    usn,
-    computer_ids: isRemovable ? [instanceId] : instances.map(({ id }) => id),
-  });
+  } = getAffectedPackagesQuery(
+    {
+      usn,
+      computer_ids: isRemovable ? [instanceId] : instances.map(({ id }) => id),
+    },
+    { enabled: !!usn },
+  );
 
   const usnPackages = getAffectedPackagesQueryResult?.data ?? [];
 
+  if (getAffectedPackagesQueryLoading) {
+    return <LoadingState />;
+  }
+
   return (
     <>
-      {getAffectedPackagesQueryLoading && <LoadingState />}
-      {!getAffectedPackagesQueryLoading && listType === "instances" && (
+      {listType === "instances" ? (
         <UsnInstanceList
           instances={instances}
           limit={limit}
@@ -50,10 +56,9 @@ const UsnPackagesContainer: FC<UsnPackagesContainerProps> = ({
           usn={usn}
           usnPackages={usnPackages}
         />
-      )}
-      {!getAffectedPackagesQueryLoading && listType === "packages" && (
+      ) : (
         <UsnPackageList
-          instanceTitle={instances[0]!.title}
+          instanceTitle={instances[0]?.title ?? ""}
           limit={limit}
           onLimitChange={() => {
             setLimit((prevState) => prevState + 5);

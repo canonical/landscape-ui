@@ -13,7 +13,19 @@ const useSetDynamicFilterValidation = (
       return;
     }
 
-    pageParamsManager.setDynamicAllowedValues(urlParam, allowedValues);
+    const registrationId = pageParamsManager.registerDynamicAllowedValues(
+      urlParam,
+      allowedValues,
+    );
+
+    return () => {
+      pageParamsManager.unregisterDynamicAllowedValues(
+        urlParam,
+        registrationId,
+      );
+    };
+    // allowedValuesString is a stable stand-in for allowedValues to avoid re-running on every new array reference
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlParam, allowedValuesString]);
 };
 

@@ -91,14 +91,17 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
 
   const lockUser = async () => {
     await performUserAction(lockUserMutation, "locked");
+    setLockOpen(false);
   };
 
   const unlockUser = async () => {
     await performUserAction(unlockUserMutation, "unlocked");
+    setUnlockOpen(false);
   };
 
   const removeUser = async () => {
     await performUserAction(removeUserMutation, "removed");
+    setRemoveOpen(false);
   };
 
   const handleAddUser = () => {
@@ -212,6 +215,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           confirmButtonLoading={isLocking}
           confirmButtonDisabled={isLocking}
           onConfirm={lockUser}
+          renderInPortal
         >
           {renderModalBody({
             user: user,
@@ -233,6 +237,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           confirmButtonLoading={isUnlocking}
           confirmButtonDisabled={isUnlocking}
           onConfirm={unlockUser}
+          renderInPortal
         >
           {renderModalBody({
             user: user,
@@ -252,6 +257,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           confirmButtonLoading={isRemoving}
           confirmButtonDisabled={isRemoving}
           onConfirm={removeUser}
+          renderInPortal
         >
           <div>
             <p className="u-no-margin--bottom">

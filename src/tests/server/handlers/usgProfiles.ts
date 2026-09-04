@@ -4,12 +4,36 @@ import type { AddUSGProfileParams, USGProfile } from "@/features/usg-profiles";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { usgProfiles } from "@/tests/mocks/usgProfiles";
 import { http, HttpResponse } from "msw";
-import { generatePaginatedResponse } from "./_helpers";
+import {
+  generatePaginatedResponse,
+  shouldApplyEndpointStatus,
+} from "./_helpers";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get(`${API_URL}usg-profiles`, ({ request }) => {
     const { searchParams } = new URL(request.url);
-    const endpointStatus = getEndpointStatus();
+    if (shouldApplyEndpointStatus("usg-profiles")) {
+      const endpointStatus = getEndpointStatus("usg-profiles");
+
+      if (endpointStatus.status === "error") {
+        return createEndpointStatusError();
+      }
+
+      if (endpointStatus.status === "empty") {
+        return HttpResponse.json(
+          generatePaginatedResponse({ data: [], offset: 0, limit: 0 }),
+        );
+      }
+
+      if (endpointStatus.status === "variant") {
+        const data =
+          (endpointStatus.response as USGProfile[] | undefined) ?? [];
+        return HttpResponse.json(
+          generatePaginatedResponse({ data, offset: 0, limit: data.length }),
+        );
+      }
+    }
 
     const search = searchParams.get("search") || "";
     const status = searchParams.get("status") ?? "";
@@ -36,7 +60,7 @@ export default [
 
     return HttpResponse.json(
       generatePaginatedResponse({
-        data: endpointStatus.status === "empty" ? [] : filteredProfiles,
+        data: filteredProfiles,
         offset,
         limit,
         search,
@@ -45,7 +69,7 @@ export default [
     );
   }),
 
-  http.post<never, AddUSGProfileParams, USGProfile>(
+  http.post<never, AddUSGProfileParams>(
     `${API_URL}usg-profiles`,
     async ({ request }) => {
       const {
@@ -57,6 +81,14 @@ export default [
         all_computers = false,
         tags = [],
       } = await request.json();
+
+      if (shouldApplyEndpointStatus("usg-profiles")) {
+        const endpointStatus = getEndpointStatus();
+
+        if (endpointStatus.status === "error") {
+          return createEndpointStatusError();
+        }
+      }
 
       return HttpResponse.json<USGProfile>({
         access_group,
@@ -91,19 +123,39 @@ export default [
     },
   ),
 
-  http.post(`${API_URL}usg-profiles/:id\\:execute`, async () => {
-    const endpointStatus = getEndpointStatus();
-    if (endpointStatus.status === "error") {
-      return HttpResponse.json(
-        {
-          error: "InternalServerError",
-          message: "Error response",
-        },
-        {
-          status: 500,
-        },
-      );
+  http.patch(`${API_URL}security-profiles/:id`, ({ params }) => {
+    if (shouldApplyEndpointStatus("usg-profiles")) {
+      const endpointStatus = getEndpointStatus("usg-profiles");
+
+      if (endpointStatus.status === "error") {
+        return createEndpointStatusError();
+      }
     }
+
+    const profile =
+      usgProfiles.find((usgProfile) => usgProfile.id === Number(params.id)) ??
+      usgProfiles[0];
+
+    return HttpResponse.json<USGProfile>(profile as USGProfile);
+  }),
+
+  http.post(`${API_URL}usg-profiles/:id\\:execute`, async () => {
+    if (shouldApplyEndpointStatus("usg-profiles/execute")) {
+      const endpointStatus = getEndpointStatus("usg-profiles/execute");
+
+      if (endpointStatus.status === "error") {
+        return HttpResponse.json(
+          {
+            error: "InternalServerError",
+            message: "Error response",
+          },
+          {
+            status: 500,
+          },
+        );
+      }
+    }
+
     return HttpResponse.json();
   }),
 
@@ -124,6 +176,18 @@ export default [
   }),
 
   http.get(`${API_URL}usg-profiles/:id/report`, () => {
+    if (shouldApplyEndpointStatus("usg-profiles/report")) {
+      const endpointStatus = getEndpointStatus("usg-profiles/report");
+
+      if (endpointStatus.status === "error") {
+        return createEndpointStatusError();
+      }
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json<Activity>(endpointStatus.response as Activity);
+      }
+    }
+
     return HttpResponse.json<Activity>({
       activity_status: "undelivered",
       approval_time: null,
@@ -144,6 +208,12 @@ export default [
       schedule_before_time: null,
       summary: "",
       type: "",
+    });
+  }),
+
+  http.get(`${API_URL}usg-profiles/blob`, () => {
+    return new HttpResponse("id,severity,result\n1,high,pass\n", {
+      headers: { "Content-Type": "text/csv;charset=utf-8;" },
     });
   }),
 ];

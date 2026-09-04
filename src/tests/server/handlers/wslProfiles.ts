@@ -6,7 +6,10 @@ import {
   generatePaginatedResponse,
   shouldApplyEndpointStatus,
 } from "./_helpers";
-import { createEndpointStatusNetworkError } from "./_constants";
+import {
+  createEndpointStatusError,
+  createEndpointStatusNetworkError,
+} from "./_constants";
 
 export default [
   http.get(`${API_URL}child-instance-profiles`, ({ request }) => {
@@ -46,6 +49,18 @@ export default [
     );
   }),
 
+  http.post(`${API_URL}child-instance-profiles`, () => {
+    if (shouldApplyEndpointStatus("create-wsl-profile")) {
+      const { status } = getEndpointStatus();
+
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
+
+    return HttpResponse.json(wslProfiles[0]);
+  }),
+
   http.get(`${API_URL}child-instance-profiles/:name`, ({ params }) => {
     if (shouldApplyEndpointStatus("child-instance-profiles/:name")) {
       const { status } = getEndpointStatus();
@@ -56,6 +71,31 @@ export default [
 
       if (status === "empty") {
         return HttpResponse.json(undefined);
+      }
+    }
+
+    const response = wslProfiles.find(
+      (wslProfile) => wslProfile.name === params.name,
+    );
+
+    if (!response) {
+      return HttpResponse.json(
+        {
+          error: "UnknownChildInstanceProfile",
+          message: `No child instance profile with name ${params.name}`,
+        },
+        { status: 404 },
+      );
+    }
+    return HttpResponse.json(response);
+  }),
+
+  http.patch(`${API_URL}child-instance-profiles/:name`, ({ params }) => {
+    if (shouldApplyEndpointStatus("child-instance-profiles/:name")) {
+      const { status } = getEndpointStatus();
+
+      if (status === "error") {
+        throw createEndpointStatusError();
       }
     }
 

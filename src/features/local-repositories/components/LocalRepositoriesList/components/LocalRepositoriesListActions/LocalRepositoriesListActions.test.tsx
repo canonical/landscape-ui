@@ -1,3 +1,4 @@
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { describe, it, expect } from "vitest";
 import LocalRepositoriesListActions from "./LocalRepositoriesListActions";
@@ -5,19 +6,8 @@ import { repositories } from "@/tests/mocks/localRepositories";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { OperationProvider } from "@/features/operations";
-import { useLocation } from "react-router";
 
 const [repository, repositoryImporting] = repositories;
-
-const ComponentWithLocation = () => {
-  const location = useLocation();
-  return (
-    <>
-      <LocalRepositoriesListActions repository={repository} />
-      <div data-testid="location">{location.search}</div>
-    </>
-  );
-};
 
 describe("LocalRepositoriesListActions", () => {
   it("opens menu with repository actions", async () => {
@@ -93,7 +83,12 @@ describe("LocalRepositoriesListActions", () => {
 
   it("opens publish side panel when publish is clicked", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<ComponentWithLocation />);
+    renderWithProviders(
+      <>
+        <LocalRepositoriesListActions repository={repository} />
+        <LocationDisplay />
+      </>,
+    );
 
     await user.click(
       await screen.findByRole("button", {
@@ -103,7 +98,7 @@ describe("LocalRepositoriesListActions", () => {
 
     await user.click(await screen.findByRole("menuitem", { name: "Publish" }));
 
-    const location = await screen.findByTestId("location");
+    const location = getLocationDisplay();
     expect(location).toHaveTextContent("sidePath=publish");
     expect(location).toHaveTextContent(`name=${repository.localId}`);
   });

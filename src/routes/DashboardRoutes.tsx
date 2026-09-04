@@ -9,6 +9,7 @@ import { REPOSITORY_SUBMENU } from "@/templates/dashboard/Navigation/constants";
 import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
 import classes from "@/templates/dashboard/DashboardTemplate.module.scss";
 import ProfilesOutlet from "@/routes/ProfilesOutlet";
+import { TSV_EXPORTS_ENABLED } from "@/constants";
 
 export const DashboardRoutes = (
   <Route
@@ -27,7 +28,9 @@ export const DashboardRoutes = (
         path={PATHS.alerts.root}
         element={<Pages.AlertNotificationsPage />}
       />
-      <Route path={PATHS.exports.root} element={<Pages.ExportsPage />} />
+      {TSV_EXPORTS_ENABLED && (
+        <Route path={PATHS.exports.root} element={<Pages.ExportsPage />} />
+      )}
       <Route path={PATHS.error.envError} element={<Pages.EnvError />} />
 
       {/* --- Instances --- */}
@@ -40,6 +43,7 @@ export const DashboardRoutes = (
 
       {/* --- Profiles --- */}
       <Route path={PATHS.profiles.root} element={<ProfilesOutlet />}>
+        <Route index element={<Pages.ProfilesPage />} />
         <Route
           path={PATHS.profiles.repositoryProfiles}
           element={<Pages.RepositoryProfilesPage />}
@@ -97,6 +101,14 @@ export const DashboardRoutes = (
           </SelfHostedGuard>
         }
       >
+        <Route
+          index
+          element={
+            <SelfHostedGuard>
+              <Pages.RepositoriesPage />
+            </SelfHostedGuard>
+          }
+        />
         <Route
           path={PATHS.repositories.mirrors}
           element={

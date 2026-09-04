@@ -11,7 +11,7 @@ import type { UrlParams } from "@/types/UrlParams";
 import { hasOneItem, pluralize } from "@/utils/_helpers";
 import { Form } from "@canonical/react-components";
 import { useFormik } from "formik";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { useParams } from "react-router";
 import { useSnapAction } from "../../api";
@@ -42,7 +42,7 @@ const UnholdSnapForm: FC<UnholdSnapFormProps> = ({ installedSnaps }) => {
       try {
         const deliverAfter =
           !values.deliver_immediately && values.deliver_after
-            ? moment(values.deliver_after).format()
+            ? date(values.deliver_after).format()
             : undefined;
         await snapAction({
           computer_ids: [instanceId],

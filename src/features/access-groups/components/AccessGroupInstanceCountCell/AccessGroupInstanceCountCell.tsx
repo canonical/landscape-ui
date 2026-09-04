@@ -3,20 +3,18 @@ import { useGetInstances } from "@/features/instances";
 import { pluralize } from "@/utils/_helpers";
 import { type FC } from "react";
 import { Link } from "react-router";
-import type { AccessGroupWithInstancesCount } from "../../types/AccessGroup";
+import type { AccessGroup } from "../../types/AccessGroup";
 import { ROUTES } from "@/libs/routes";
 
 interface AccessGroupInstanceCountCellProps {
-  readonly accessGroup: AccessGroupWithInstancesCount;
+  readonly accessGroup: AccessGroup;
 }
 
 const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
   accessGroup,
 }) => {
   const { instancesCount, isGettingInstances } = useGetInstances({
-    query: `access-group: ${accessGroup.name}`,
-    with_alerts: true,
-    with_upgrades: true,
+    query: `access-group:${accessGroup.name}`,
     limit: 1,
   });
 
@@ -32,7 +30,11 @@ const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
     );
   }
 
-  return "0 instances";
+  if (instancesCount === 0) {
+    return "0 instances";
+  }
+
+  return "Unable to determine";
 };
 
 export default AccessGroupInstanceCountCell;

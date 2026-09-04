@@ -2,7 +2,7 @@ import type { ListFilter } from "@/types/Filters";
 import type { SelectOption } from "@/types/SelectOption";
 import type { Status } from "./types";
 import * as Yup from "yup";
-import moment from "moment";
+import date from "@/libs/date";
 
 export const STATUS_FILTERS = {
   Online: {
@@ -149,12 +149,7 @@ const ARCHIVED_STATUS_OPTION: SelectOption = {
 };
 
 type FilterKey =
-  | "os"
-  | "groupBy"
-  | "status"
-  | "upgrades"
-  | "wsl"
-  | "contractExpiryDays";
+  "os" | "groupBy" | "status" | "upgrades" | "wsl" | "contractExpiryDays";
 
 export const FILTERS = {
   os: {
@@ -274,11 +269,11 @@ export const REBOOT_OR_SHUT_DOWN_VALIDATION_SCHEMA = Yup.object().shape({
         .required("This field is required")
         .test({
           message: "Invalid date",
-          test: (value) => moment(value).isValid(),
+          test: (value) => date(value).isValid(),
         })
         .test({
           message: "Date must be in the future",
-          test: (value) => moment(value).isAfter(),
+          test: (value) => date(value).isAfter(),
         }),
   }),
   deliverImmediately: Yup.boolean(),

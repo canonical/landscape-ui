@@ -6,10 +6,8 @@ import {
   activities,
   activityTypes,
   INVALID_ACTIVITY_SEARCH_QUERY,
-  manyDeliveredActivities,
-  manyUnapprovedActivities,
 } from "@/tests/mocks/activity";
-import moment from "moment";
+import date from "@/libs/date";
 import { http, HttpResponse } from "msw";
 import {
   createEndpointStatusError,
@@ -60,7 +58,7 @@ const parseActivitiesQuery = (
 export default [
   http.get(`${API_URL}activities`, async ({ request }) => {
     if (shouldApplyEndpointStatus("activities")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("activities");
 
       if (status === "error") {
         throw createEndpointStatusError();
@@ -80,7 +78,7 @@ export default [
     const offset = Number(url.searchParams.get("offset")) || 0;
     const limit = Number(url.searchParams.get("limit")) || 1;
     const query = url.searchParams.get("query") ?? "";
-    const endpointStatus = getEndpointStatus();
+    const endpointStatus = getEndpointStatus("activities");
 
     if (query === INVALID_ACTIVITY_SEARCH_QUERY) {
       throw HttpResponse.json(
@@ -98,6 +96,17 @@ export default [
       endpointStatus.status === "variant" &&
       endpointStatus.path === "activities"
     ) {
+      if (Array.isArray(endpointStatus.response)) {
+        const data = endpointStatus.response as Activity[];
+        return HttpResponse.json(
+          generatePaginatedResponse<Activity>({
+            data,
+            limit: data.length,
+            offset: 0,
+          }),
+        );
+      }
+
       const { unapproved, delivered } = endpointStatus.response as {
         unapproved: Activity[];
         delivered: Activity[];
@@ -105,20 +114,6 @@ export default [
       const bulkData = status === "unapproved" ? unapproved : delivered;
       return HttpResponse.json(
         generatePaginatedResponse<Activity>({ data: bulkData, limit, offset }),
-      );
-    }
-
-    if (endpointStatus.path === "many-activities") {
-      const bulkData =
-        status === "unapproved"
-          ? manyUnapprovedActivities
-          : manyDeliveredActivities;
-      return HttpResponse.json(
-        generatePaginatedResponse<Activity>({
-          data: bulkData,
-          limit,
-          offset,
-        }),
       );
     }
 
@@ -240,7 +235,7 @@ export default [
       retain_until:
         typeof body.retain_until === "string"
           ? body.retain_until
-          : moment().add(3, "years").toISOString(),
+          : (date().add(3, "years").toISOString() ?? ""),
       query: typeof body.query === "string" ? body.query : null,
     };
     return HttpResponse.json(job, { status: 201 });

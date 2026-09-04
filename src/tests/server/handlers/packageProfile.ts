@@ -49,7 +49,7 @@ export default [
       }
     }
 
-    return HttpResponse.error();
+    return HttpResponse.json();
   }),
 
   http.post(`${API_URL}packageprofiles`, () => {

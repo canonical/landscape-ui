@@ -77,6 +77,25 @@ describe("HoldSnapForm", () => {
       ).toBeInTheDocument();
     });
 
+    it("sets the hold date using a local datetime value", async () => {
+      const expectedEarliestTime =
+        Math.floor(Date.now() / (60 * 1000)) * (60 * 1000);
+
+      await userEvent.click(screen.getByLabelText("Select date"));
+
+      const holdUntil = screen.getByDisplayValue(
+        /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/,
+      );
+      const expectedLatestTime =
+        Math.floor(Date.now() / (60 * 1000)) * (60 * 1000);
+      const selectedTime = new Date(
+        (holdUntil as HTMLInputElement).value,
+      ).getTime();
+
+      expect(selectedTime).toBeGreaterThanOrEqual(expectedEarliestTime);
+      expect(selectedTime).toBeLessThanOrEqual(expectedLatestTime);
+    });
+
     it("hides the datetime input when switching back to Indefinitely", async () => {
       await userEvent.click(screen.getByLabelText("Select date"));
       expect(

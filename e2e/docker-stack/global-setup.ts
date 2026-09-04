@@ -93,11 +93,18 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
               },
             );
             if (res.ok()) {
-              const body = (await res.json()) as { distributions?: unknown[] };
-              if (
-                Array.isArray(body.distributions) &&
-                body.distributions.length > 0
-              ) {
+              // "archive" responses carry distributions at the top level;
+              // "ESM" responses wrap per-service archives under "results".
+              const body = (await res.json()) as {
+                distributions?: unknown[];
+                results?: unknown[];
+              };
+              const ready =
+                archiveType === "archive"
+                  ? Array.isArray(body.distributions) &&
+                    body.distributions.length > 0
+                  : Array.isArray(body.results) && body.results.length > 0;
+              if (ready) {
                 return;
               }
             }
@@ -105,8 +112,8 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
               setTimeout(resolve, ARCHIVE_WARM_POLL_MS),
             );
           }
-          console.warn(
-            `[global-setup] archive-info (${archiveType}) did not return distributions within ${ARCHIVE_WARM_TIMEOUT_MS / 1000}s — tests may see a disabled Distribution select`,
+          throw new Error(
+            `[global-setup] archive-info (${archiveType}) did not return distributions within ${ARCHIVE_WARM_TIMEOUT_MS / 1000}s. Tests were not started.`,
           );
         };
 

@@ -1,10 +1,7 @@
 import type { MirrorWritable } from "@canonical/landscape-openapi";
 
 type SourceType =
-  | "ubuntu-archive"
-  | "ubuntu-snapshots"
-  | "ubuntu-pro"
-  | "third-party";
+  "ubuntu-archive" | "ubuntu-snapshots" | "ubuntu-pro" | "third-party";
 
 export const UBUNTU_ARCHIVE_HOST = "archive.ubuntu.com";
 export const UBUNTU_SNAPSHOTS_HOST = "snapshot.ubuntu.com";

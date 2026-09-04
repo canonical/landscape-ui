@@ -270,6 +270,9 @@ describe("UserPanelActionButtons", () => {
       expect(
         await screen.findByText("Successfully requested to be locked"),
       ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: /lock user/i }),
+      ).not.toBeInTheDocument();
     });
 
     it("submits lock action when clear-selection handler is omitted", async () => {
@@ -326,6 +329,9 @@ describe("UserPanelActionButtons", () => {
       expect(
         await screen.findByText("Successfully requested to be unlocked"),
       ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: /unlock user/i }),
+      ).not.toBeInTheDocument();
     });
 
     it("opens delete confirmation and submits remove action", async () => {
@@ -361,6 +367,9 @@ describe("UserPanelActionButtons", () => {
       expect(
         await screen.findByText("Successfully requested to be removed"),
       ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: /delete user/i }),
+      ).not.toBeInTheDocument();
     });
 
     it("shows error notification when user action fails", async () => {

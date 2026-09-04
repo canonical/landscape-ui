@@ -121,7 +121,6 @@ describe("PackagesPanel", () => {
   });
 
   it("shows error boundary when packages endpoint returns an error", async () => {
-    vi.spyOn(console, "error").mockReturnValue(undefined);
     setEndpointStatus({ status: "error", path: "computers-packages" });
 
     renderWithProviders(
@@ -134,5 +133,18 @@ describe("PackagesPanel", () => {
     );
 
     expect(await screen.findByText(/unexpected error/i)).toBeInTheDocument();
+  });
+
+  it("shows loading state when packages endpoint is loading", async () => {
+    setEndpointStatus({ status: "loading", path: "computers-packages" });
+
+    renderWithProviders(
+      <PackagesPanel />,
+      undefined,
+      "/instances/999",
+      "/instances/:instanceId",
+    );
+
+    expect(await screen.findByRole("status")).toBeInTheDocument();
   });
 });

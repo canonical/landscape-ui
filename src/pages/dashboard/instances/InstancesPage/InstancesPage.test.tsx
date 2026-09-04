@@ -9,6 +9,7 @@ import InstancesPage from "./InstancesPage";
 describe("InstancesPage", () => {
   beforeEach(() => {
     vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(true);
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
     setEndpointStatus("default");
   });
 
@@ -45,7 +46,6 @@ describe("InstancesPage", () => {
   });
 
   it("does not show the report panel for a stale report side path when feature is disabled", async () => {
-    vi.restoreAllMocks();
     vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
 
     renderWithProviders(<InstancesPage />, {}, "/?sidePath=report");
@@ -54,6 +54,16 @@ describe("InstancesPage", () => {
 
     expect(
       screen.queryByRole("heading", { name: /instance summary report/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not show the export panel for a stale export side path", async () => {
+    renderWithProviders(<InstancesPage />, {}, "/?sidePath=export");
+
+    await expectLoadingState();
+
+    expect(
+      screen.queryByRole("button", { name: "Generate TSV" }),
     ).not.toBeInTheDocument();
   });
 });

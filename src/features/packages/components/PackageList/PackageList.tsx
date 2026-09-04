@@ -20,7 +20,6 @@ import type { CellProps, Column } from "react-table";
 import type { InstancePackage } from "../../types";
 import PackageListActions from "../PackageListActions";
 import UbuntuProNotification from "../UbuntuProNotification";
-import { LOADING_PACKAGE } from "./constants";
 import {
   getPackageStatusInfo,
   handleCellProps,
@@ -35,7 +34,6 @@ interface PackageListProps {
   readonly emptyMsg: string;
   readonly onPackagesSelect: (packages: InstancePackage[]) => void;
   readonly packages: InstancePackage[];
-  readonly packagesLoading: boolean;
   readonly selectedPackages: InstancePackage[];
   readonly selectAll?: boolean;
 }
@@ -44,7 +42,6 @@ const PackageList: FC<PackageListProps> = ({
   emptyMsg,
   onPackagesSelect,
   packages,
-  packagesLoading,
   selectedPackages,
   selectAll,
 }) => {
@@ -53,14 +50,6 @@ const PackageList: FC<PackageListProps> = ({
 
   const { instanceId, childInstanceId } = useParams<UrlParams>();
   const { setSidePanelContent } = useSidePanel();
-
-  const packagesToShow = useMemo(() => {
-    if (!packagesLoading) {
-      return packages;
-    }
-
-    return [LOADING_PACKAGE];
-  }, [packages, packagesLoading]);
 
   const handleSelectPackage = useCallback(
     (pkg: InstancePackage) => {
@@ -102,28 +91,64 @@ const PackageList: FC<PackageListProps> = ({
     [setSidePanelContent],
   );
 
+  const selectablePackages = useMemo(
+    () => packages.filter((pkg) => !isUbuntuProRequired(pkg)),
+    [packages],
+  );
+
   const columns = useMemo<Column<InstancePackage>[]>(
     () => [
       {
-        accessor: "checkbox",
-        className: classes.checkbox,
+        accessor: "name",
         Header: (
-          <CheckboxInput
-            inline
-            label={<span className="u-off-screen">Toggle all</span>}
-            checked={
-              selectedPackages.length === packages.length && packages.length > 0
-            }
-            indeterminate={
-              selectedPackages.length < packages.length &&
-              selectedPackages.length > 0
-            }
-            disabled={packages.length === 0}
-            onChange={handleToggleAllPackages}
-          />
+          <>
+            <CheckboxInput
+              inline
+              label={<span className="u-off-screen">Toggle all</span>}
+              checked={
+                selectedPackages.length === packages.length &&
+                packages.length > 0
+              }
+              indeterminate={
+                selectedPackages.length < packages.length &&
+                selectedPackages.length > 0
+              }
+              disabled={selectablePackages.length === 0}
+              onChange={handleToggleAllPackages}
+            />
+            Name
+          </>
         ),
-        Cell: ({ row }: CellProps<InstancePackage>) =>
-          isUbuntuProRequired(row.original) ? (
+        Cell: ({ row }: CellProps<InstancePackage>) => {
+          const getCellContent = (disabled = false) => (
+            <>
+              <CheckboxInput
+                inline
+                label={
+                  <span className="u-off-screen">{`Toggle ${row.original.name}`}</span>
+                }
+                checked={selectedPackages.some(
+                  ({ name }) => name === row.original.name,
+                )}
+                onChange={() => {
+                  handleSelectPackage(row.original);
+                }}
+                disabled={disabled}
+              />
+              <Button
+                type="button"
+                appearance="link"
+                className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+                onClick={() => {
+                  handlePackageClick(row.original);
+                }}
+              >
+                {row.original.name}
+              </Button>
+            </>
+          );
+
+          return isUbuntuProRequired(row.original) ? (
             <Tooltip
               message={
                 <div>
@@ -140,54 +165,10 @@ const PackageList: FC<PackageListProps> = ({
                 </div>
               }
             >
-              <CheckboxInput
-                inline
-                disabled
-                label={
-                  <span className="u-off-screen">{`Toggle ${row.original.name}`}</span>
-                }
-                checked={selectedPackages.some(
-                  ({ name }) => name === row.original.name,
-                )}
-                onChange={() => {
-                  handleSelectPackage(row.original);
-                }}
-              />
+              {getCellContent(true)}
             </Tooltip>
           ) : (
-            <CheckboxInput
-              inline
-              label={
-                <span className="u-off-screen">{`Toggle ${row.original.name}`}</span>
-              }
-              checked={selectedPackages.some(
-                ({ name }) => name === row.original.name,
-              )}
-              onChange={() => {
-                handleSelectPackage(row.original);
-              }}
-            />
-          ),
-      },
-      {
-        accessor: "name",
-        Header: "Name",
-        Cell: ({ row }: CellProps<InstancePackage>) => {
-          if (row.original.name === "loading") {
-            return <LoadingState />;
-          }
-
-          return (
-            <Button
-              type="button"
-              appearance="link"
-              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-              onClick={() => {
-                handlePackageClick(row.original);
-              }}
-            >
-              {row.original.name}
-            </Button>
+            getCellContent()
           );
         },
       },
@@ -235,6 +216,7 @@ const PackageList: FC<PackageListProps> = ({
       handleToggleAllPackages,
       instanceId,
       packages,
+      selectablePackages,
       selectedPackages,
     ],
   );
@@ -250,9 +232,9 @@ const PackageList: FC<PackageListProps> = ({
       )}
       <ResponsiveTable
         columns={columns}
-        data={packagesToShow}
+        data={packages}
         getCellProps={(cell) => {
-          return handleCellProps(cell, columns.length);
+          return handleCellProps(cell);
         }}
         emptyMsg={emptyMsg}
         minWidth={1150}

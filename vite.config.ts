@@ -7,13 +7,20 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
+    build: {
+      // Monaco is lazy-loaded but still produces a large chunk. We can remove this when we stop using Monaco.
+      chunkSizeWarningLimit: 4000,
+    },
     plugins: [
       react(),
       {
         name: "exclude-msw",
         apply: "build",
         closeBundle() {
-          const mswPath = path.resolve(__dirname, "dist/mockServiceWorker.js");
+          const mswPath = path.resolve(
+            import.meta.dirname,
+            "dist/mockServiceWorker.js",
+          );
           if (fs.existsSync(mswPath)) {
             fs.unlinkSync(mswPath);
           }
@@ -22,7 +29,7 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "src"),
+        "@": path.resolve(import.meta.dirname, "src"),
       },
     },
     optimizeDeps: {

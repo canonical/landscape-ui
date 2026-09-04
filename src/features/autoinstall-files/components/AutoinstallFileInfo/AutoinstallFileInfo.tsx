@@ -1,6 +1,6 @@
 import InfoGrid from "@/components/layout/InfoGrid";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import type { AutoinstallFile } from "../../types";
 
@@ -16,12 +16,12 @@ const AutoinstallFileInfo: FC<AutoinstallFileInfoProps> = ({ file }) => (
 
     <InfoGrid.Item
       label="Last modified"
-      value={moment(file.last_modified_at).format(DISPLAY_DATE_TIME_FORMAT)}
+      value={date(file.last_modified_at).format(DISPLAY_DATE_TIME_FORMAT)}
     />
 
     <InfoGrid.Item
       label="Date created"
-      value={moment(file.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
+      value={date(file.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
     />
   </InfoGrid>
 );

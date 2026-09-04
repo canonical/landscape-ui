@@ -66,9 +66,10 @@ test.describe("Local Repositories API Contract", () => {
     } finally {
       if (createdRepoName) {
         await test.step("delete created local repository", async () => {
-          await request.delete(`/v1beta1/${createdRepoName}`, {
+          const response = await request.delete(`/v1beta1/${createdRepoName}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
+          expect(response.ok(), await response.text()).toBeTruthy();
         });
       }
     }
