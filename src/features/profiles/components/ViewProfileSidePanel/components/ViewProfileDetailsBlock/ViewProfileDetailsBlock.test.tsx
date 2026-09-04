@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { Suspense } from "react";
 import { describe, expect, it } from "vitest";
 import ViewProfileDetailsBlock from "./ViewProfileDetailsBlock";
