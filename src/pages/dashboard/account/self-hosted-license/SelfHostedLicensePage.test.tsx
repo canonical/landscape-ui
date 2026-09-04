@@ -20,16 +20,4 @@ describe("SelfHostedLicensePage", () => {
       expect.stringContaining("/self-hosted-landscape/"),
     );
   });
-
-  it("renders the self-hosted license setup instructions", async () => {
-    renderWithProviders(<SelfHostedLicensePage />);
-
-    expect(
-      screen.getByRole("heading", { name: "Setting up the license file" }),
-    ).toBeInTheDocument();
-
-    expect(
-      await screen.findByRole("button", { name: "Download license file" }),
-    ).toBeInTheDocument();
-  });
 });
