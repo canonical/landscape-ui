@@ -20,11 +20,14 @@ const BUCKET_IDS: Record<BucketKey, readonly number[]> = {
   "within-2": [1, 2, 3, 4],
 };
 const CLASSIFIED_IDS = new Set(Object.values(BUCKET_IDS).flat());
+const sixtyDayBucket =
+  complianceReport.usn_fixed_in.find((bucket) => bucket.days === 60) ??
+  ({ count: 0, computer_ids: [], days: 60 } as const);
 const OTHER_IDS: readonly number[] = [
   ...new Set([
     ...complianceReport.securely_patched.computer_ids,
     ...complianceReport.not_securely_patched.computer_ids,
-    ...complianceReport.usn_fixed_in["60"].computer_ids,
+    ...sixtyDayBucket.computer_ids,
     ...complianceReport.usn_pending_over_60_days.computer_ids,
   ]),
 ].filter((id) => !CLASSIFIED_IDS.has(id));

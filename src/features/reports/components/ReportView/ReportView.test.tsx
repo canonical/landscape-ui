@@ -312,13 +312,15 @@ describe("ReportView", () => {
       http.get(`${API_URL}computers/compliance-report`, () =>
         HttpResponse.json({
           ...complianceReport,
-          usn_fixed_in: {
-            ...complianceReport.usn_fixed_in,
-            "60": {
-              count: 9,
-              computer_ids: [1, 2, 3, 4, 5, 6, 7, 8, THIRTY_SIXTY_ID],
-            },
-          },
+          usn_fixed_in: complianceReport.usn_fixed_in.map((bucket) =>
+            bucket.days === 60
+              ? {
+                  ...bucket,
+                  count: 9,
+                  computer_ids: [1, 2, 3, 4, 5, 6, 7, 8, THIRTY_SIXTY_ID],
+                }
+              : bucket,
+          ),
         }),
       ),
     );

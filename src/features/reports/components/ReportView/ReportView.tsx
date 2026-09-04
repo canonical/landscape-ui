@@ -27,6 +27,10 @@ import MetricBarTable from "../MetricBarTable";
 import classes from "./ReportView.module.scss";
 
 const EMPTY_BUCKET = { count: 0, computer_ids: [] };
+const USN_FIXED_IN_2_DAYS = 2;
+const USN_FIXED_IN_14_DAYS = 14;
+const USN_FIXED_IN_30_DAYS = 30;
+const USN_FIXED_IN_60_DAYS = 60;
 
 const EMPTY_REPORT: ComplianceReport = {
   generated_at: new Date(0).toISOString(),
@@ -35,12 +39,12 @@ const EMPTY_REPORT: ComplianceReport = {
   not_securely_patched: EMPTY_BUCKET,
   covered_by_upgrade_profiles: EMPTY_BUCKET,
   contacted_recently: EMPTY_BUCKET,
-  usn_fixed_in: {
-    "2": EMPTY_BUCKET,
-    "14": EMPTY_BUCKET,
-    "30": EMPTY_BUCKET,
-    "60": EMPTY_BUCKET,
-  },
+  usn_fixed_in: [
+    { days: USN_FIXED_IN_2_DAYS, ...EMPTY_BUCKET },
+    { days: USN_FIXED_IN_14_DAYS, ...EMPTY_BUCKET },
+    { days: USN_FIXED_IN_30_DAYS, ...EMPTY_BUCKET },
+    { days: USN_FIXED_IN_60_DAYS, ...EMPTY_BUCKET },
+  ],
   usn_pending_over_60_days: EMPTY_BUCKET,
 };
 
@@ -126,11 +130,18 @@ const ReportView: FC<ReportViewProps> = ({
   // still unpatched for under 60 days, or patched after more than 60 days — is
   // reported honestly as "Other". We carry the exact computer ids per bucket so
   // the deep link matches the report's count precisely.
+  const bucketsByDays = new Map(
+    reportData.usn_fixed_in.map((bucket) => [bucket.days, bucket]),
+  );
   const pendingIds = reportData.usn_pending_over_60_days.computer_ids;
-  const withinTwoIds = reportData.usn_fixed_in["2"].computer_ids;
-  const withinFourteenIds = reportData.usn_fixed_in["14"].computer_ids;
-  const withinThirtyIds = reportData.usn_fixed_in["30"].computer_ids;
-  const withinSixtyIds = reportData.usn_fixed_in["60"].computer_ids;
+  const withinTwoIds =
+    bucketsByDays.get(USN_FIXED_IN_2_DAYS)?.computer_ids ?? [];
+  const withinFourteenIds =
+    bucketsByDays.get(USN_FIXED_IN_14_DAYS)?.computer_ids ?? [];
+  const withinThirtyIds =
+    bucketsByDays.get(USN_FIXED_IN_30_DAYS)?.computer_ids ?? [];
+  const withinSixtyIds =
+    bucketsByDays.get(USN_FIXED_IN_60_DAYS)?.computer_ids ?? [];
   const pendingSet = new Set(pendingIds);
   const withinTwoSet = new Set(withinTwoIds);
   const withinFourteenSet = new Set(withinFourteenIds);
