@@ -63,16 +63,7 @@ export default [
         const endpointStatus = getEndpointStatus();
 
         if (endpointStatus.status === "error") {
-          const { statusCode, error, message } =
-            (endpointStatus.response as
-              | {
-                  statusCode?: number;
-                  error?: string;
-                  message?: string;
-                }
-              | undefined) ?? {};
-
-          throw createEndpointStatusError(statusCode, error, message);
+          throw createEndpointStatusError();
         }
 
         if (endpointStatus.status === "empty") {
