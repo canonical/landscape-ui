@@ -26,6 +26,25 @@ describe("AdministratorsPage", () => {
     ).toBeInTheDocument();
   });
 
+  it("hides Invite administrator button in empty state", async () => {
+    setEndpointStatus({ path: "GetAdministrators", status: "empty" });
+    renderWithProviders(<AdministratorsPage />);
+
+    expect(
+      await screen.findByRole("heading", { name: "Administrators" }),
+    ).toBeInTheDocument();
+
+    const heading = await screen.findByRole("heading", {
+      name: "Administrators",
+    });
+    const header = heading.parentElement;
+    assert(header);
+
+    expect(
+      within(header).queryByRole("button", { name: "Invite administrator" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("opens invite administrator side panel on button click", async () => {
     const user = userEvent.setup();
     renderWithProviders(<AdministratorsPage />);

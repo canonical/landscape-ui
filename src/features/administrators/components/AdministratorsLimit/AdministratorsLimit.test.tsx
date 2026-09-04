@@ -13,4 +13,12 @@ describe("AdministratorsLimit", () => {
     expect(screen.getByText("Remaining administrators")).toBeInTheDocument();
     expect(screen.getByText("16")).toBeInTheDocument();
   });
+
+  it("renders administrators error message", () => {
+    renderWithProviders(
+      <AdministratorsLimit administratorsCount={4} administratorsLimit={0} />,
+    );
+
+    expect(screen.getAllByText("Unable to determine")).toHaveLength(2);
+  });
 });

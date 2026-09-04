@@ -17,6 +17,24 @@ describe("AdministratorLimitModal", () => {
     expect(screen.getByText(/reach out to support/i)).toBeInTheDocument();
   });
 
+  it("renders error message when the limit is undetermined", () => {
+    renderWithProviders(
+      <AdministratorLimitModal close={vi.fn()} isLimitError />,
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Administrator limit cannot be determined",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/new invitations are temporarily disabled/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/try again later or contact our support team/i),
+    ).toBeInTheDocument();
+  });
+
   it("calls close when the modal is closed", async () => {
     const close = vi.fn();
     const user = userEvent.setup();
