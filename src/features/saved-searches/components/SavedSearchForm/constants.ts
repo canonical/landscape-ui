@@ -37,7 +37,6 @@ export const VALID_ROOT_KEYS = [
   "ami-id",
   "availability-zone",
   "last-ping",
-  "last-ping-minutes",
   "usn-outstanding",
   "usn-applied-in",
   "has",
@@ -80,7 +79,6 @@ export const NUMERIC_KEYS: ValidRootKey[] = [
   "contract-expires-within-days",
   "license-expires-within-days",
   "last-ping",
-  "last-ping-minutes",
   "usn-outstanding",
   "usn-applied-in",
 ];
