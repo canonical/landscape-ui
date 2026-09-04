@@ -1,6 +1,7 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import LoadingState from "@/components/layout/LoadingState";
 import FormSection from "@/components/form/FormSection";
 import { ROUTES } from "@/libs/routes";
 import { Button, CodeSnippet, Link } from "@canonical/react-components";
@@ -12,13 +13,15 @@ import { useGetSelfHostedLicense } from "./api/useGetSelfHostedLicense";
 import classes from "./SelfHostedLicensePage.module.scss";
 
 const SelfHostedLicensePage: FC = () => {
-  const { downloadUrl, isGettingSelfHostedLicense } =
-    useGetSelfHostedLicense();
+  const { downloadUrl, isGettingSelfHostedLicense } = useGetSelfHostedLicense();
 
-  const curlCommand = !isGettingSelfHostedLicense && downloadUrl
-    ? `sudo curl -so /etc/landscape/license.txt \\
+  const curlCommand =
+    !isGettingSelfHostedLicense && downloadUrl ? (
+      `sudo curl -so /etc/landscape/license.txt \\
 ${downloadUrl}`
-    : "Loading...";
+    ) : (
+      <LoadingState />
+    );
 
   const handleDownload = () => {
     if (downloadUrl) {
