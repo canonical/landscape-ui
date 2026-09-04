@@ -1,66 +1,35 @@
-import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import { renderWithProviders } from "@/tests/render";
-import { expectLoadingState } from "@/tests/helpers";
-import { selfHostedLicense } from "@/tests/mocks/selfHostedLicense";
 import SelfHostedLicensePage from "./SelfHostedLicensePage";
 
 describe("SelfHostedLicensePage", () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it("renders the server-provided license download URL in the curl command", async () => {
-    renderWithProviders(<SelfHostedLicensePage />);
-
-    const codeSnippet = await screen.findByText(
-      (_, element) =>
-        element?.tagName === "CODE" &&
-        element.textContent ===
-          `sudo curl -so /etc/landscape/license.txt \\
-${selfHostedLicense.download_url}`,
-    );
-
-    expect(codeSnippet).toBeInTheDocument();
-  });
-
-  it("shows a loading spinner in the code block while the license is being fetched", async () => {
-    renderWithProviders(<SelfHostedLicensePage />);
-
-    await expectLoadingState();
-  });
-
-  it("disables the download button while the license is being fetched, then enables it", async () => {
+  it("renders the page title and documentation link", () => {
     renderWithProviders(<SelfHostedLicensePage />);
 
     expect(
-      screen.getByRole("button", { name: "Download license file" }),
-    ).toHaveAttribute("aria-disabled", "true");
+      screen.getByRole("heading", { name: "Self hosted license" }),
+    ).toBeInTheDocument();
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Download license file" }),
-      ).not.toHaveAttribute("aria-disabled");
-    });
+    expect(
+      screen.getByRole("link", {
+        name: "Learn more about self hosted landscape",
+      }),
+    ).toHaveAttribute(
+      "href",
+      expect.stringContaining("/self-hosted-landscape/"),
+    );
   });
 
-  it("opens the license file download URL in a new tab", async () => {
-    const user = userEvent.setup();
-    const windowOpenSpy = vi
-      .spyOn(window, "open")
-      .mockImplementation(() => null);
-
+  it("renders the self-hosted license setup instructions", async () => {
     renderWithProviders(<SelfHostedLicensePage />);
 
-    await user.click(
-      await screen.findByRole("button", { name: "Download license file" }),
-    );
+    expect(
+      screen.getByRole("heading", { name: "Setting up the license file" }),
+    ).toBeInTheDocument();
 
-    expect(windowOpenSpy).toHaveBeenCalledWith(
-      selfHostedLicense.download_url,
-      "_blank",
-      "noopener,noreferrer",
-    );
+    expect(
+      await screen.findByRole("button", { name: "Download license file" }),
+    ).toBeInTheDocument();
   });
 });
