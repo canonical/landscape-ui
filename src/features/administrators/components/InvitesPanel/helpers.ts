@@ -1,4 +1,4 @@
-import type { Invitation } from "@/types/Invitation";
+import type { Invitation } from "../../types/Invitation";
 import type { HTMLProps } from "react";
 import type { Cell, TableCellProps } from "react-table";
 

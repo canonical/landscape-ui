@@ -5,7 +5,7 @@ import {
   isAction,
   shouldApplyEndpointStatus,
 } from "@/tests/server/handlers/_helpers";
-import type { Administrator } from "@/types/Administrator";
+import type { Administrator } from "@/features/administrators";
 import { http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";
 

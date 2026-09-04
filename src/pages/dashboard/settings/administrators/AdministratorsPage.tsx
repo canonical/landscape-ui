@@ -3,14 +3,13 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import useSidePanel from "@/hooks/useSidePanel";
-import AdministratorsTabs from "@/pages/dashboard/settings/administrators/AdministratorsTabs";
+import { AdministratorsTabs } from "@/features/administrators";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 
 const InviteAdministratorForm = lazy(
-  () =>
-    import("@/pages/dashboard/settings/administrators/tabs/administrators/InviteAdministratorForm"),
+  () => import("@/features/administrators/components/InviteAdministratorForm"),
 );
 
 const AdministratorsPage: FC = () => {

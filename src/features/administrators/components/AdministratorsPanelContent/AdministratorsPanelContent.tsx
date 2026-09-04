@@ -1,9 +1,9 @@
 import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import AdministratorList from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorList";
-import AdministratorsPanelHeader from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorsPanelHeader";
-import type { Administrator } from "@/types/Administrator";
+import AdministratorList from "../AdministratorList";
+import AdministratorsPanelHeader from "../AdministratorsPanelHeader";
+import type { Administrator } from "../../types/Administrator";
 import type { FC } from "react";
 
 interface AdministratorsPanelContentProps {

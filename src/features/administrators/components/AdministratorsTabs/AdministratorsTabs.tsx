@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import AdministratorsPanel from "@/pages/dashboard/settings/administrators/tabs/administrators";
-import InvitesPanel from "@/pages/dashboard/settings/administrators/tabs/invites";
+import AdministratorsPanel from "../AdministratorsPanel";
+import InvitesPanel from "../InvitesPanel";
 import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
 import { Suspense, useState } from "react";

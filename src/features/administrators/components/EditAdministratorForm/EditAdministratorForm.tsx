@@ -1,12 +1,12 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoGrid from "@/components/layout/InfoGrid";
-import useAdministrators from "@/hooks/useAdministrators";
+import useAdministrators from "../../api/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import type { Administrator } from "@/types/Administrator";
+import type { Administrator } from "../../types/Administrator";
 import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
 import {

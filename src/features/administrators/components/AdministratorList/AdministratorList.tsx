@@ -1,8 +1,8 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import useSidePanel from "@/hooks/useSidePanel";
-import AdministratorRolesCell from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorRolesCell";
-import EditAdministratorForm from "@/pages/dashboard/settings/administrators/tabs/administrators/EditAdministratorForm";
-import type { Administrator } from "@/types/Administrator";
+import AdministratorRolesCell from "../AdministratorRolesCell";
+import EditAdministratorForm from "../EditAdministratorForm";
+import type { Administrator } from "../../types/Administrator";
 import type { Role } from "@/types/Role";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button } from "@canonical/react-components";
@@ -41,18 +41,18 @@ const AdministratorList: FC<AdministratorListProps> = ({
     [roles],
   );
 
-  const handleAdministratorClick = (administrator: Administrator) => {
-    setSidePanelContent(
-      administrator.name,
-      <EditAdministratorForm
-        key={administrator.id}
-        administrator={administrator}
-      />,
-    );
-  };
+  const columns = useMemo<Column<Administrator>[]>(() => {
+    const handleAdministratorClick = (administrator: Administrator) => {
+      setSidePanelContent(
+        administrator.name,
+        <EditAdministratorForm
+          key={administrator.id}
+          administrator={administrator}
+        />,
+      );
+    };
 
-  const columns = useMemo<Column<Administrator>[]>(
-    () => [
+    return [
       {
         accessor: "name",
         Header: "Name",
@@ -90,9 +90,8 @@ const AdministratorList: FC<AdministratorListProps> = ({
           <AdministratorListActions administrator={row.original} />
         ),
       },
-    ],
-    [administratorsData, roleOptions],
-  );
+    ];
+  }, [roleOptions, setSidePanelContent]);
 
   return (
     <ResponsiveTable

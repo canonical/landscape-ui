@@ -3,7 +3,7 @@ import type { FC } from "react";
 import { Form, Input } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import useAdministrators from "@/hooks/useAdministrators";
+import useAdministrators from "../../api/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
