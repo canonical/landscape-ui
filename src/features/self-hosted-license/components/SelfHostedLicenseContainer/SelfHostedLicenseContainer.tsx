@@ -44,7 +44,7 @@ const SelfHostedLicenseContainer: FC = () => {
         ]}
       />
 
-      <p>
+      <p className={classes.paragraph3}>
         If you have the <span className={classes.curl}>curl</span> package
         installed, you can perform the two steps above with a single command.
         Access is controlled by a private token which uniquely identifies
@@ -56,7 +56,7 @@ const SelfHostedLicenseContainer: FC = () => {
         isLoading={isGettingSelfHostedLicense}
       />
 
-      <p>
+      <p className={classes.paragraph4}>
         If your credentials have been compromised, you can regenerate them on
         the{" "}
         <RouterLink to={ROUTES.account.apiCredentials()}>
