@@ -10,10 +10,12 @@ describe("LicenseCurlCommand", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Loading...");
   });
 
-  it("shows a loading spinner when there is no download URL yet", () => {
+  it("shows an error message when loading completes without a download URL", () => {
     renderWithProviders(<LicenseCurlCommand isLoading={false} />);
 
-    expect(screen.getByRole("status")).toBeInTheDocument();
+    expect(
+      screen.getByText("Unable to get the download license curl command."),
+    ).toBeInTheDocument();
   });
 
   it("renders the curl command once the download URL is available", () => {
