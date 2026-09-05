@@ -16,10 +16,19 @@
     max-width: 42.25rem;
     width: 100%;
   }
+
+  :global(.p-code-snippet) {
+    margin: 0.5rem 0;
+  }
 }
 
 .paragraph1 {
   margin-bottom: 1rem;
+}
+
+.paragraph2 {
+  padding-top: 0;
+  margin: 0;
 }
 
 .curl {

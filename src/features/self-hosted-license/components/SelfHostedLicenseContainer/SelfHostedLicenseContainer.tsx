@@ -31,7 +31,7 @@ const SelfHostedLicenseContainer: FC = () => {
         isLoading={isGettingSelfHostedLicense}
       />
 
-      <p>
+      <p className={classes.paragraph2}>
         Self-hosted Landscape expects to find your license file in the following
         location:
       </p>
