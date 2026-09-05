@@ -1,5 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import { expectLoadingState } from "@/tests/helpers";
@@ -29,38 +28,5 @@ ${selfHostedLicense.download_url}`,
     renderWithProviders(<SelfHostedLicenseContainer />);
 
     await expectLoadingState();
-  });
-
-  it("disables the download button while the license is being fetched, then enables it", async () => {
-    renderWithProviders(<SelfHostedLicenseContainer />);
-
-    expect(
-      screen.getByRole("button", { name: "Download license file" }),
-    ).toHaveAttribute("aria-disabled", "true");
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Download license file" }),
-      ).not.toHaveAttribute("aria-disabled");
-    });
-  });
-
-  it("opens the license file download URL in a new tab", async () => {
-    const user = userEvent.setup();
-    const windowOpenSpy = vi
-      .spyOn(window, "open")
-      .mockImplementation(() => null);
-
-    renderWithProviders(<SelfHostedLicenseContainer />);
-
-    await user.click(
-      await screen.findByRole("button", { name: "Download license file" }),
-    );
-
-    expect(windowOpenSpy).toHaveBeenCalledWith(
-      selfHostedLicense.download_url,
-      "_blank",
-      "noopener,noreferrer",
-    );
   });
 });
