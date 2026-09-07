@@ -122,6 +122,9 @@ export const GeneralOrganisationSettings = Loadable(
 export const IdentityProvidersPage = Loadable(
   lazy(() => import("@/pages/dashboard/settings/identity-providers")),
 );
+export const LicensesPage = Loadable(
+  lazy(() => import("@/pages/dashboard/settings/licenses")),
+);
 export const GeneralSettings = Loadable(
   lazy(() => import("@/pages/dashboard/account/general")),
 );

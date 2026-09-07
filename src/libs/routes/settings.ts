@@ -7,6 +7,7 @@ export const SETTINGS_PATHS = {
   employees: "employees",
   general: "general",
   identityProviders: "identity-providers",
+  licenses: "licenses",
   roles: "roles",
 } as const;
 
@@ -23,5 +24,6 @@ export const SETTINGS_ROUTES = {
   identityProviders: createRoute(
     buildSettingsPath(SETTINGS_PATHS.identityProviders),
   ),
+  licenses: createRoute(buildSettingsPath(SETTINGS_PATHS.licenses)),
   roles: createRoute(buildSettingsPath(SETTINGS_PATHS.roles)),
 };
