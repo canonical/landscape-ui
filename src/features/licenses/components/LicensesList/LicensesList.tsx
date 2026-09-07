@@ -1,0 +1,65 @@
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import { DISPLAY_DATE_FORMAT } from "@/constants";
+import date from "@/libs/date";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
+import type { License } from "../../types";
+import { ROUTES } from "@/libs/routes/routes";
+import { Link } from "react-router";
+
+interface LicensesListProps {
+  readonly licenses: License[];
+}
+
+const LicensesList: FC<LicensesListProps> = ({ licenses }) => {
+  const columns = useMemo<Column<License>[]>(
+    () => [
+      {
+        Header: "Expiration date",
+        Cell: ({ row: { original: license } }: CellProps<License>) => {
+          if (license.expiration_date) {
+            return date(license.expiration_date).format(DISPLAY_DATE_FORMAT);
+          }
+
+          return "Never";
+        },
+      },
+      {
+        Header: "Seats used",
+        Cell: ({ row: { original: license } }: CellProps<License>) =>
+          license.used_seats === 0 ? (
+            "0"
+          ) : (
+            <Link
+              to={ROUTES.instances.root({ query: `license-id:${license.id}` })}
+            >
+              {license.used_seats}
+            </Link>
+          ),
+      },
+      {
+        Header: "Seats free",
+        Cell: ({ row: { original: license } }: CellProps<License>) =>
+          license.available_seats,
+      },
+      {
+        Header: "License type",
+        Cell: ({ row: { original: license } }: CellProps<License>) =>
+          license.license_type,
+      },
+    ],
+    [],
+  );
+
+  return (
+    <ResponsiveTable
+      columns={columns}
+      data={licenses}
+      emptyMsg="No licenses found."
+      minWidth={500}
+    />
+  );
+};
+
+export default LicensesList;
