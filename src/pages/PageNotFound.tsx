@@ -6,7 +6,9 @@ import { ROUTES } from "@/libs/routes";
 const PageNotFound: FC = () => {
   return (
     <AuthTemplate title="Page not found">
-      <p>It seems that page you&apos;re looking for doesn&apos;t exist.</p>
+      <p className="u-margin--bottom">
+        It seems that page you&apos;re looking for doesn&apos;t exist.
+      </p>
       <Link
         to={ROUTES.root.root()}
         className="p-button--positive u-no-margin--bottom"

@@ -77,7 +77,7 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
                 confirmationModalProps={{
                   title: "Upgrade affected packages",
                   children: (
-                    <p>
+                    <p className="u-margin--bottom">
                       This will upgrade affected packages for{" "}
                       {pluralize(usns.length, [
                         `"${usns[0]}" security issue`,

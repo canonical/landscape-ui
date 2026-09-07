@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import EmptyState from "@/components/layout/EmptyState";
-import { MANAGE_INSTANCES_DOCUMENTATION_URL } from "./constants";
+import { MANAGE_INSTANCES_DOCUMENTATION_URL } from "@/constants";
 
 const InstancesEmptyState: FC = () => {
   return (
