@@ -6,9 +6,9 @@ import PageMain from "@/components/layout/PageMain";
 import { LicensesList, useGetLicenses } from "@/features/licenses";
 import { ROUTES } from "@/libs/routes";
 import { Icon, Link } from "@canonical/react-components";
-import classes from "./LicensePage.module.scss";
 import type { FC } from "react";
 import { Link as RouteLink } from "react-router";
+import classes from "./LicensesPage.module.scss";
 
 const LicensesPage: FC = () => {
   const { licenses, isGettingLicenses } = useGetLicenses();
