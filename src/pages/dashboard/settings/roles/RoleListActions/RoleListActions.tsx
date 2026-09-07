@@ -79,7 +79,7 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
           confirmButtonLoading={isRemoving}
           onConfirm={tryRemove}
         >
-          <p>
+          <p className="u-margin--bottom">
             <span>This will remove &apos;{role.name}&apos; role.</span>
 
             {role.persons.length > 0 && (

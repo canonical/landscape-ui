@@ -91,7 +91,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           (instance) => !getFeatures(instance).scripts,
         ) ? (
           <div className={classes.warning}>
-            <p>
+            <p className="u-margin--bottom">
               You selected {selectedInstances.length} instances. This script
               will:
             </p>

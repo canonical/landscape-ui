@@ -87,7 +87,7 @@ const USGProfileForm: FC<USGProfileFormProps> = ({
 
     return (
       <>
-        <p>
+        <p className="u-margin--bottom">
           {confirmationStepDescription} This will{" "}
           {phrase(
             [

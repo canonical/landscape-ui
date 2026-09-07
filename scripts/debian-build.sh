@@ -24,7 +24,8 @@ dch \
 tar -cf "../landscape-dashboard_$1.orig.tar" \
   assets \
   favicon.svg \
-  index.html
+  index.html \
+  icons
 
 gzip "../landscape-dashboard_$1.orig.tar"
 debuild -S -sa --no-sign

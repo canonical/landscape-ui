@@ -114,7 +114,7 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
           formik.handleSubmit();
         }}
       >
-        <p>
+        <p className="u-margin--bottom">
           This will prevent {employee.name} from logging in to Landscape and
           from registering any new instances with their account
         </p>
@@ -132,13 +132,13 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
           />
           {formik.values.sanitizeInstances && (
             <div className={classes.additionalActionContainer}>
-              <p>
+              <p className="u-margin--bottom">
                 Sanitization will permanently delete the encryption keys for
                 associated instances, making its data completely irrecoverable.
                 This action cannot be undone. Please confirm you wish to
                 proceed.
               </p>
-              <p>
+              <p className="u-margin--bottom">
                 Type{" "}
                 <b className={classes.confirmationText}>sanitize instances</b>{" "}
                 to confirm
@@ -171,12 +171,12 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
 
           {formik.values.removeFromLandscape && (
             <div className={classes.additionalActionContainer}>
-              <p>
+              <p className="u-margin--bottom">
                 This will remove all associated instances from Landscape, along
                 with their stored data. To manage them again, you would need to
                 re-register them in Landscape.
               </p>
-              <p>
+              <p className="u-margin--bottom">
                 Type{" "}
                 <b className={classes.confirmationText}>remove instances</b> to
                 confirm
