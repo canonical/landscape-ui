@@ -14,16 +14,12 @@ import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 
-const InviteAdministratorForm = lazy(() =>
-  import("@/features/administrators").then((m) => ({
-    default: m.InviteAdministratorForm,
-  })),
+const InviteAdministratorForm = lazy(
+  () => import("@/features/administrators/components/InviteAdministratorForm"),
 );
 
-const AdministratorLimitModal = lazy(() =>
-  import("@/features/administrators").then((m) => ({
-    default: m.AdministratorLimitModal,
-  })),
+const AdministratorLimitModal = lazy(
+  () => import("@/features/administrators/components/AdministratorLimitModal"),
 );
 
 const AdministratorsPage: FC = () => {
