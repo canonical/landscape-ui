@@ -3,6 +3,10 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import LicensesList from "./LicensesList";
 import { licenses } from "@/tests/mocks/licenses";
+import { DISPLAY_DATE_FORMAT } from "@/constants/constants";
+import date from "@/libs/date";
+
+const [unusedLicensed, licenseWithNoExpiration] = licenses;
 
 describe("LicensesList", () => {
   it("renders column headers", () => {
@@ -11,7 +15,11 @@ describe("LicensesList", () => {
     expect(
       screen.getByRole("columnheader", { name: "Expiration date" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Nov 29, 2026")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        date(unusedLicensed.expiration_date).format(DISPLAY_DATE_FORMAT),
+      ),
+    ).toBeInTheDocument();
 
     expect(
       screen.getByRole("columnheader", { name: "Seats used" }),
@@ -30,27 +38,15 @@ describe("LicensesList", () => {
   });
 
   it("renders 'Never' when a license has no expiration date", () => {
-    const licenseWithNoExpiration = licenses.find(
-      (license) => license.expiration_date === null,
-    );
-    assert(licenseWithNoExpiration, "Needs license mock with no expiration");
-
     renderWithProviders(<LicensesList licenses={[licenseWithNoExpiration]} />);
 
     expect(screen.getByText("Never")).toBeInTheDocument();
   });
 
   it("renders zero seats used as plain text without a link", () => {
-    const licenseWithNoSeatsUsed = licenses.find(
-      (license) => license.used_seats === 0,
-    );
+    renderWithProviders(<LicensesList licenses={[unusedLicensed]} />);
 
-    assert(licenseWithNoSeatsUsed, "Needs license mock with 0 seats used");
-
-    renderWithProviders(<LicensesList licenses={[licenseWithNoSeatsUsed]} />);
-
-    expect(screen.getByText("0")).toBeInTheDocument();
-    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    expect(screen.getByText("0")).not.toHaveRole("link");
   });
 
   it("renders the empty message when there are no licenses", () => {

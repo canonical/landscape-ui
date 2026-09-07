@@ -1,6 +1,6 @@
 import type { License } from "@/features/licenses";
 
-export const licenses: License[] = [
+export const licenses = [
   {
     id: 1,
     available_seats: 50,
@@ -22,4 +22,4 @@ export const licenses: License[] = [
     used_seats: 5,
     license_type: "Ubuntu Pro Free",
   },
-];
+] as const satisfies License[];

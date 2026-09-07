@@ -1,9 +1,6 @@
-import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
-import server from "@/tests/server";
 import { screen } from "@testing-library/react";
-import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import LicensesPage from "./LicensesPage";
 import { ROUTES } from "@/libs/routes";
@@ -38,9 +35,7 @@ describe("LicensesPage", () => {
   });
 
   it("renders the empty state when there are no licenses", async () => {
-    server.use(
-      http.get(`${API_URL}legacy-licenses`, () => HttpResponse.json([])),
-    );
+    setEndpointStatus({ status: "empty", path: "legacy-licenses" });
 
     renderWithProviders(<LicensesPage />);
 
