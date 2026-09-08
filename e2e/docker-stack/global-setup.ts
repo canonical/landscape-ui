@@ -115,10 +115,19 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
             if (res.ok()) {
               // "archive" responses carry distributions at the top level;
               // "ESM" responses wrap per-service archives under "results".
-              const body = JSON.parse(rawBody) as {
-                distributions?: unknown[];
-                results?: unknown[];
-              };
+              let body: { distributions?: unknown[]; results?: unknown[] };
+              try {
+                body = JSON.parse(rawBody) as typeof body;
+              } catch (error) {
+                // A 2xx with a non-JSON body (e.g. proxy/gateway error page)
+                // is treated as "not ready yet" so the timeout error below
+                // still fires with useful diagnostics instead of a raw parse crash.
+                lastBodySummary = `non-JSON response: ${String(error)}`;
+                await new Promise((resolve) =>
+                  setTimeout(resolve, ARCHIVE_WARM_POLL_MS),
+                );
+                continue;
+              }
               const ready =
                 archiveType === "archive"
                   ? Array.isArray(body.distributions) &&
