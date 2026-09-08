@@ -1,8 +1,8 @@
 import InfoItem from "@/components/layout/InfoItem";
 import { NOT_AVAILABLE } from "@/constants";
 import type { UserDetails } from "@/features/general-settings";
-import { cardClasses } from "@/components/layout/Card";
 import useDebug from "@/hooks/useDebug";
+import { Card } from "@canonical/react-ds-global";
 
 import {
   Col,
@@ -98,9 +98,9 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
 
     return (
       <div key={account.title} className={classes.container}>
-        <div className={cardClasses.card}>
-          <div className={cardClasses.header}>
-            <p className={cardClasses.title}>{account.title}</p>
+        <Card>
+          <Card.Header className={classes.header}>
+            <strong>{account.title}</strong>
             <ConfirmationButton
               className={classNames("u-no-margin--bottom", {
                 "is-small": isLargeScreen,
@@ -125,10 +125,8 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
             >
               {action} API credentials
             </ConfirmationButton>
-          </div>
-          <div
-            className={classNames(cardClasses.content, classes.tableWrapper)}
-          >
+          </Card.Header>
+          <Card.Content className={classes.tableWrapper}>
             {isLargeScreen ? (
               <ModularTable
                 columns={columns}
@@ -153,8 +151,8 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
                 </Row>
               ))
             )}
-          </div>
-        </div>
+          </Card.Content>
+        </Card>
       </div>
     );
   });

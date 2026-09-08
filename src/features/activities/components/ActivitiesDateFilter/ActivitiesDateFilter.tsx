@@ -1,7 +1,8 @@
 import tableFilterClasses from "@/components/filter/TableFilter/TableFilter.module.scss";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import { Badge, Button, Form, Input } from "@canonical/react-components";
+import { Button, Form, Input } from "@canonical/react-components";
+import { Badge } from "@canonical/react-ds-global";
 import { useFormik } from "formik";
 import type { FC, ReactNode } from "react";
 import classes from "./ActivitiesDateFilter.module.scss";

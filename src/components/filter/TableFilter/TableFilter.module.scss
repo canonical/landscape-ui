@@ -12,10 +12,6 @@
   margin-right: -$sph--x-small;
   text-align: right;
 
-  &:not(.multiple) {
-    width: 2.5 * $sp-unit;
-  }
-
   &.multiple {
     width: $sph--x-large;
   }
