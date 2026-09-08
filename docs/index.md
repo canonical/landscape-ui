@@ -9,6 +9,7 @@ This directory is the repository knowledge base and the system of record for int
 - [FRONTEND.md](FRONTEND.md): prescriptive frontend implementation rules for code placement, component structure, and repo conventions
 - [testing/index.md](testing/index.md): automated test map covering unit/component tests, E2E tests, and coverage guidance
 - [verification/index.md](verification/index.md): implementation completion rules, TDD expectations, and closed-loop validation
+- [DOCUMENTATION.md](DOCUMENTATION.md): when and how to open companion PRs against the public docs repo (landscape-documentation)
 
 ## Existing Root Docs
 

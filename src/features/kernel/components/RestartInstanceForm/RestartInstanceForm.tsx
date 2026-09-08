@@ -136,7 +136,7 @@ const RestartInstanceForm: FC<RestartInstanceFormProps> = ({
             confirmationModalProps={{
               title: "Upgrading kernel and restarting instance",
               children: (
-                <p>
+                <p className="u-margin--bottom">
                   Are you sure? This action will upgrade the kernel and restart
                   the instance.
                 </p>
@@ -157,7 +157,9 @@ const RestartInstanceForm: FC<RestartInstanceFormProps> = ({
           confirmationModalProps={{
             title: "Restarting instance",
             children: (
-              <p>Are you sure? This action will restart the instance.</p>
+              <p className="u-margin--bottom">
+                Are you sure? This action will restart the instance.
+              </p>
             ),
             confirmButtonLabel: "Restart",
             confirmButtonAppearance: "negative",

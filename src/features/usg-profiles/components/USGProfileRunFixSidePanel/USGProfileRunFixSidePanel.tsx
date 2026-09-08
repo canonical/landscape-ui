@@ -72,7 +72,7 @@ const USGProfileRunFixSidePanel: FC = () => {
           }}
           onSubmit={handleSubmit}
         >
-          <p>
+          <p className="u-margin--bottom">
             Running this profile will apply remediation fixes to the associated
             instances, restart them, and generate an audit. Proceed to execute
             the run manually.

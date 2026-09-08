@@ -141,8 +141,10 @@ const CreateScript: FC = () => {
       />
 
       <>
-        <h5>List of attachments</h5>
-        <p className="u-text--muted">
+        <p className="u-margin--bottom">
+          <strong>List of attachments</strong>
+        </p>
+        <p className="u-text--muted u-margin--bottom">
           Attachments that will be sent along with the script. You can attach up
           to 5 files, for a maximum of 1.00MB. Filenames must be unique. On the
           client, the attachments will be placed in the directory whose name is

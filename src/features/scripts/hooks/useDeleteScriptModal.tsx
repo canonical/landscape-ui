@@ -65,7 +65,7 @@ export const useDeleteScriptModal = ({
       ...commonModalFields,
       deleteModalButtonLabel: "Delete",
       deleteModalBody: (
-        <p>
+        <p className="u-margin--bottom">
           Deleting the script will remove the contents from Landscape.
           <br />
           This action is <b>irreversible</b>.
@@ -79,7 +79,7 @@ export const useDeleteScriptModal = ({
     deleteModalButtonLabel: "Delete both script and profiles",
     deleteModalBody: (
       <>
-        <p>
+        <p className="u-margin--bottom">
           Deleting the script will remove the contents from Landscape. The
           script is associated with the following profiles:
         </p>
@@ -88,7 +88,7 @@ export const useDeleteScriptModal = ({
             <li key={profile.id}>{profile.title}</li>
           ))}
         </ul>
-        <p>
+        <p className="u-margin--bottom">
           If you delete the script, the script and its profiles won’t be able to
           run in the future. <br />
           This action is <b>irreversible</b>.
