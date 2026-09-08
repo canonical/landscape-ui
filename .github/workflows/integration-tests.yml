@@ -223,7 +223,17 @@ jobs:
           echo "Waiting for PostgreSQL to be ready..."
           timeout 60 bash -c \
             'until docker exec landscape-postgres pg_isready -U postgres -q; do sleep 2; done'
-          docker exec landscape-postgres createdb -U postgres landscape-debarchive || true
+          # createdb exits 1 for both "already exists" and real failures (bad auth, disk
+          # full, etc.); only tolerate the former so genuine errors fail the job here.
+          if ! output=$(docker exec landscape-postgres createdb -U postgres landscape-debarchive 2>&1); then
+            if echo "$output" | grep -q "already exists"; then
+              echo "landscape-debarchive database already exists, continuing"
+            else
+              echo "$output"
+              echo "::error::Failed to create landscape-debarchive database"
+              exit 1
+            fi
+          fi
           echo "landscape-debarchive database ready"
 
       - name: Start backend stack
@@ -347,12 +357,18 @@ jobs:
       # before spending time on Playwright/browser startup.
       - name: Wait for landscape-server archive-info cache to warm up
         run: |
-          token=$(curl -sf --max-time 5 -X POST http://localhost:9091/api/v2/login \
-            -H "Content-Type: application/json" \
-            -d '{"email":"'"$CI_ADMIN_EMAIL"'","password":"'"$CI_ADMIN_PASSWORD"'"}' \
-            | python3 -c 'import json,sys; raw=sys.stdin.read(); print(json.loads(raw)["token"] if raw else "")')
+          token=""
+          for attempt in 1 2 3; do
+            token=$(curl -sf --max-time 5 -X POST http://localhost:9091/api/v2/login \
+              -H "Content-Type: application/json" \
+              -d '{"email":"'"$CI_ADMIN_EMAIL"'","password":"'"$CI_ADMIN_PASSWORD"'"}' \
+              | python3 -c 'import json,sys; raw=sys.stdin.read(); print(json.loads(raw)["token"] if raw else "")')
+            [ -n "$token" ] && break
+            echo "Login attempt $attempt failed, retrying..."
+            sleep 5
+          done
           if [ -z "$token" ]; then
-            echo "::error::Login request failed — no token returned, cannot warm up archive-info cache"
+            echo "::error::Login request failed after 3 attempts — no token returned, cannot warm up archive-info cache"
             exit 1
           fi
           timeout 90 bash -c '
