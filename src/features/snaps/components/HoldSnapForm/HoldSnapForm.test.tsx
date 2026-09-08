@@ -1,11 +1,17 @@
+import { API_URL } from "@/constants";
 import { PATHS } from "@/libs/routes";
-import { installedSnaps } from "@/tests/mocks/snap";
+import {
+  installedSnaps,
+  successfulSnapInstallResponse,
+} from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import { describe, expect, it, beforeEach } from "vitest";
-import type { InstalledSnap } from "../../types";
+import type { InstalledSnap, SnapActionParams } from "../../types";
 import HoldSnapForm from "./HoldSnapForm";
 
 const unheldSnap =
@@ -117,6 +123,25 @@ describe("HoldSnapForm", () => {
 
       expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
       expect(await screen.findByText(/to be held/i)).toBeInTheDocument();
+    });
+
+    it("sends the hold time nested in args", async () => {
+      let requestBody: SnapActionParams | null = null;
+      server.use(
+        http.post(`${API_URL}snaps`, async ({ request }) => {
+          requestBody = (await request.json()) as SnapActionParams;
+          return HttpResponse.json(successfulSnapInstallResponse);
+        }),
+      );
+      renderHoldSnapForm();
+
+      await userEvent.click(screen.getByRole("button", { name: /hold/i }));
+
+      expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
+      expect(requestBody).toMatchObject({
+        action: "hold",
+        snaps: [{ name: unheldSnap.snap.name, args: { time: "forever" } }],
+      });
     });
 
     it("submits with a specific date hold and shows success notification", async () => {

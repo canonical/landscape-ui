@@ -1,10 +1,18 @@
+import { API_URL } from "@/constants";
 import { PATHS } from "@/libs/routes";
-import { availableSnapInfo, installedSnaps } from "@/tests/mocks/snap";
+import {
+  availableSnapInfo,
+  installedSnaps,
+  successfulSnapInstallResponse,
+} from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import { assert, describe, expect, it, beforeEach } from "vitest";
+import type { InstalledSnap, SnapActionParams } from "../../types";
 import SwitchSnapForm from "./SwitchSnapForm";
 
 const snapWithChannels = installedSnaps.find((snap) => {
@@ -37,7 +45,7 @@ const snapInfoWithNoChannels =
   ) ?? null;
 
 const renderSwitchSnapForm = (
-  snap = snapWithChannels,
+  snap: InstalledSnap = snapWithChannels,
   snapInfo = snapInfoWithChannels,
 ) =>
   renderWithProviders(
@@ -127,6 +135,24 @@ describe("SwitchSnapForm", () => {
   });
 
   describe("form submission", () => {
+    const captureRequest = () => {
+      const captured: { body: SnapActionParams | null } = { body: null };
+      server.use(
+        http.post(`${API_URL}snaps`, async ({ request }) => {
+          captured.body = (await request.json()) as SnapActionParams;
+          return HttpResponse.json(successfulSnapInstallResponse);
+        }),
+      );
+      return captured;
+    };
+
+    const firstChannelMap = [...(snapInfoWithChannels?.["channel-map"] ?? [])]
+      .sort((a, b) =>
+        a.channel.architecture.localeCompare(b.channel.architecture),
+      )
+      .at(0);
+    assert(firstChannelMap);
+
     it("submits successfully and shows success notification", async () => {
       renderSwitchSnapForm();
 
@@ -134,6 +160,35 @@ describe("SwitchSnapForm", () => {
 
       expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
       expect(await screen.findByText(/to be switched/i)).toBeInTheDocument();
+    });
+
+    it("sends the selected channel and revision nested in args", async () => {
+      const captured = captureRequest();
+      renderSwitchSnapForm({ ...snapWithChannels, confinement: "strict" });
+
+      await userEvent.click(screen.getByRole("button", { name: /switch/i }));
+
+      expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
+      expect(captured.body?.snaps).toEqual([
+        {
+          name: snapWithChannels.snap.name,
+          args: {
+            channel: firstChannelMap.channel.name,
+            revision: firstChannelMap.revision.toString(),
+            classic: false,
+          },
+        },
+      ]);
+    });
+
+    it("sends the classic flag for a classic confined snap", async () => {
+      const captured = captureRequest();
+      renderSwitchSnapForm({ ...snapWithChannels, confinement: "classic" });
+
+      await userEvent.click(screen.getByRole("button", { name: /switch/i }));
+
+      expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
+      expect(captured.body?.snaps[0]?.args?.classic).toBe(true);
     });
 
     it("submits with scheduled delivery and shows success notification", async () => {

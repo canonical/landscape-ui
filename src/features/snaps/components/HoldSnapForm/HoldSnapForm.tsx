@@ -60,7 +60,7 @@ const HoldSnapForm: FC<HoldSnapFormProps> = ({ installedSnaps }) => {
           action: "hold",
           snaps: installedSnaps.map((snap) => ({
             name: snap.snap.name,
-            time: holdTime,
+            args: { time: holdTime },
           })),
           deliver_after: deliverAfter,
           deliver_after_window: !values.randomize_delivery

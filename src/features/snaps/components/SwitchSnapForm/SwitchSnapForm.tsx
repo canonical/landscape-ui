@@ -62,8 +62,11 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({
           action: "refresh",
           snaps: installedSnaps.map((snap) => ({
             name: snap.snap.name,
-            channel: getChannelName(snapInfo, values.release),
-            revision: getChannelRevision(snapInfo, values.release),
+            args: {
+              channel: getChannelName(snapInfo, values.release),
+              revision: getChannelRevision(snapInfo, values.release),
+              classic: snap.confinement === "classic",
+            },
           })),
           deliver_after: deliverAfter,
           deliver_after_window: !values.randomize_delivery
