@@ -1,4 +1,5 @@
 import { API_URL } from "@/constants";
+import { USN_FIXED_IN_60_DAYS } from "../../constants";
 import server from "@/tests/server";
 import { complianceReport } from "@/tests/server/handlers/reports";
 import { renderWithProviders } from "@/tests/render";
@@ -20,9 +21,16 @@ const BUCKET_IDS: Record<BucketKey, readonly number[]> = {
   "within-2": [1, 2, 3, 4],
 };
 const CLASSIFIED_IDS = new Set(Object.values(BUCKET_IDS).flat());
-const sixtyDayBucket =
-  complianceReport.usn_fixed_in.find((bucket) => bucket.days === 60) ??
-  ({ count: 0, computer_ids: [], days: 60 } as const);
+const sixtyDayBucket = complianceReport.usn_fixed_in.find(
+  (bucket) => bucket.days === USN_FIXED_IN_60_DAYS,
+);
+
+if (!sixtyDayBucket) {
+  throw new Error(
+    "Expected compliance report fixture to include 60-day bucket",
+  );
+}
+
 const OTHER_IDS: readonly number[] = [
   ...new Set([
     ...complianceReport.securely_patched.computer_ids,

@@ -1,12 +1,14 @@
+import type { UsnFixedInDays } from "./constants";
+
 export interface ReportBucket {
   count: number;
-  // The V2 computers/compliance-report endpoint always returns the ids per bucket (an
-  // empty array when the count is zero), so this is required, not optional.
+  // The V2 computers/compliance-report endpoint always returns the ids per bucket
+  // (an empty array when the count is zero), so this is required, not optional.
   computer_ids: number[];
 }
 
 export type UsnFixedInBucket = ReportBucket & {
-  days: number;
+  days: UsnFixedInDays;
 };
 
 export interface ComplianceReport {

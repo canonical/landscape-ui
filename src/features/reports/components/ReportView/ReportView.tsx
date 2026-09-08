@@ -17,6 +17,12 @@ import classNames from "classnames";
 import type { FC } from "react";
 import { useState, useSyncExternalStore } from "react";
 import { useGetComplianceReport } from "../../api";
+import {
+  USN_FIXED_IN_2_DAYS,
+  USN_FIXED_IN_14_DAYS,
+  USN_FIXED_IN_30_DAYS,
+  USN_FIXED_IN_60_DAYS,
+} from "../../constants";
 import type { ComplianceReport } from "../../types";
 import type { DonutSegment } from "../ReportDonutChart";
 import ReportDonutChart from "../ReportDonutChart";
@@ -27,10 +33,6 @@ import MetricBarTable from "../MetricBarTable";
 import classes from "./ReportView.module.scss";
 
 const EMPTY_BUCKET = { count: 0, computer_ids: [] };
-const USN_FIXED_IN_2_DAYS = 2;
-const USN_FIXED_IN_14_DAYS = 14;
-const USN_FIXED_IN_30_DAYS = 30;
-const USN_FIXED_IN_60_DAYS = 60;
 
 const EMPTY_REPORT: ComplianceReport = {
   generated_at: new Date(0).toISOString(),
