@@ -128,12 +128,17 @@ jobs:
           GOPRIVATE="github.com/canonical/*" go mod vendor
           echo "Vendored $(find vendor -name '*.go' | wc -l) Go source files"
 
+      # var/blobs/repository must be pre-created here (not left to Docker to
+      # auto-create on bind mount) because Docker creates missing bind-mount
+      # source dirs as root, which the api container's non-root UID:GID can't
+      # write to — causing a 500 on repository/ubuntu-archive-info.
       - name: Create landscape-server bind-mount directories
         run: |
           mkdir -p \
             .landscape-packaging/landscape-server/.venv \
             .landscape-packaging/landscape-server/build \
-            .landscape-packaging/landscape-server/var/log
+            .landscape-packaging/landscape-server/var/log \
+            .landscape-packaging/landscape-server/var/blobs/repository
 
       # compose.yaml uses the env_file `format: raw` attribute (on the services
       # started here via the x-server-env-file anchor), which requires Docker
@@ -345,12 +350,16 @@ jobs:
           token=$(curl -sf --max-time 5 -X POST http://localhost:9091/api/v2/login \
             -H "Content-Type: application/json" \
             -d '{"email":"'"$CI_ADMIN_EMAIL"'","password":"'"$CI_ADMIN_PASSWORD"'"}' \
-            | python3 -c 'import json,sys; print(json.load(sys.stdin)["token"])')
+            | python3 -c 'import json,sys; raw=sys.stdin.read(); print(json.loads(raw)["token"] if raw else "")')
+          if [ -z "$token" ]; then
+            echo "::error::Login request failed — no token returned, cannot warm up archive-info cache"
+            exit 1
+          fi
           timeout 90 bash -c '
             until curl -sf --max-time 5 \
                     -H "Authorization: Bearer '"$token"'" \
                     "http://localhost:9091/api/v2/repository/ubuntu-archive-info?archive_type=archive" \
-                  | python3 -c "import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get(\"distributions\") else 1)";
+                  | python3 -c "import json,sys; raw=sys.stdin.read(); d=json.loads(raw) if raw else {}; sys.exit(0 if d.get(\"distributions\") else 1)";
             do sleep 5; done' || {
             echo "=== Timed out waiting for archive-info to warm up ==="
             echo "--- API logs (last 100 lines) ---"
