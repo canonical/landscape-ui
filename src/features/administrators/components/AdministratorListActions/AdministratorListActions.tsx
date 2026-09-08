@@ -67,7 +67,7 @@ const AdministratorListActions: FC<AdministratorListActionsProps> = ({
           confirmButtonLoading={isDisabling}
           onConfirm={tryDisable}
         >
-          <p>
+          <p className="u-margin--bottom">
             This will remove the administrator from your Landscape organization.
           </p>
         </ConfirmationModal>
