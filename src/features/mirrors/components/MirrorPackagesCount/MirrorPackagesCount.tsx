@@ -1,6 +1,6 @@
 import NoData from "@/components/layout/NoData";
 import { pluralize } from "@/utils/_helpers";
-import LoadingState from "@/components/layout/LoadingState";
+import { Spinner } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import { useGetMirrorPackagesCount } from "../../api";
 
@@ -17,7 +17,7 @@ const MirrorPackagesCount: FC<MirrorPackagesCountProps> = ({ mirrorName }) => {
   } = useGetMirrorPackagesCount({ mirrorName });
 
   if (isPackagesCountError || !mirrorName) return <NoData />;
-  if (isGettingPackagesCount) return <LoadingState inline />;
+  if (isGettingPackagesCount) return <Spinner />;
 
   return pluralize(
     mirrorPackagesCount,

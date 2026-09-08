@@ -1,4 +1,5 @@
-import { Card, Icon } from "@canonical/react-components";
+import { Icon } from "@canonical/react-components";
+import { Card } from "@canonical/react-ds-global";
 import type { FC, ReactNode } from "react";
 import classes from "./Flow.module.scss";
 
