@@ -78,21 +78,43 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
       const meBody = (await meRes.json()) as { token?: string };
       if (meBody.token) {
         const bearer = `Bearer ${meBody.token}`;
-        const deadline = Date.now() + ARCHIVE_WARM_TIMEOUT_MS;
+        const startedAt = Date.now();
+        const deadline = startedAt + ARCHIVE_WARM_TIMEOUT_MS;
 
         const pollUntilReady = async (archiveType: string): Promise<void> => {
+          // Tracks the last observed response so a timeout error can explain
+          // *why* the archive wasn't ready (e.g. 5xx vs empty payload) instead
+          // of just "gave up after 90s".
+          let lastStatus: number | string = "no response received";
+          let lastBodySummary = "n/a";
+
           while (Date.now() < deadline) {
-            const res = await context.request.get(
-              `${API_URL}repository/ubuntu-archive-info`,
-              {
-                params: { archive_type: archiveType },
-                headers: { Authorization: bearer },
-              },
-            );
+            let res;
+            try {
+              res = await context.request.get(
+                `${API_URL}repository/ubuntu-archive-info`,
+                {
+                  params: { archive_type: archiveType },
+                  headers: { Authorization: bearer },
+                },
+              );
+            } catch (error) {
+              lastStatus = "request failed";
+              lastBodySummary = String(error);
+              await new Promise((resolve) =>
+                setTimeout(resolve, ARCHIVE_WARM_POLL_MS),
+              );
+              continue;
+            }
+
+            lastStatus = res.status();
+            const rawBody = await res.text();
+            lastBodySummary = rawBody.slice(0, 500);
+
             if (res.ok()) {
               // "archive" responses carry distributions at the top level;
               // "ESM" responses wrap per-service archives under "results".
-              const body = (await res.json()) as {
+              const body = JSON.parse(rawBody) as {
                 distributions?: unknown[];
                 results?: unknown[];
               };
@@ -109,8 +131,16 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
               setTimeout(resolve, ARCHIVE_WARM_POLL_MS),
             );
           }
+
+          const waitedSeconds = Math.round((Date.now() - startedAt) / 1000);
           throw new Error(
-            `[global-setup] archive-info (${archiveType}) did not return distributions within ${ARCHIVE_WARM_TIMEOUT_MS / 1000}s. Tests were not started.`,
+            `[global-setup] archive-info (${archiveType}) did not return distributions within ${ARCHIVE_WARM_TIMEOUT_MS / 1000}s (waited ${waitedSeconds}s).\n` +
+              `Last response status: ${lastStatus}\n` +
+              `Last response body (truncated): ${lastBodySummary}\n` +
+              "This endpoint triggers a live fetch from archive.ubuntu.com/esm.ubuntu.com " +
+              "on first request (see generate_and_store_esm_and_archive_infos in " +
+              "landscape-server); a slow or blocked upstream network call is the most " +
+              "likely cause. Tests were not started.",
           );
         };
 

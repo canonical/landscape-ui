@@ -333,6 +333,35 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
+      # repository/ubuntu-archive-info has no seed step (unlike debarchive above) —
+      # it triggers a live fetch from archive.ubuntu.com/esm.ubuntu.com on first
+      # request (see generate_and_store_esm_and_archive_infos in landscape-server)
+      # and caches the result in the api container. Not covered by the
+      # API/appserver liveness check above. The self-hosted suite's global-setup
+      # polls the same endpoint, but this step fails fast with clear CI logs
+      # before spending time on Playwright/browser startup.
+      - name: Wait for landscape-server archive-info cache to warm up
+        run: |
+          token=$(curl -sf --max-time 5 -X POST http://localhost:9091/api/v2/login \
+            -H "Content-Type: application/json" \
+            -d '{"email":"'"$CI_ADMIN_EMAIL"'","password":"'"$CI_ADMIN_PASSWORD"'"}' \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["token"])')
+          timeout 90 bash -c '
+            until curl -sf --max-time 5 \
+                    -H "Authorization: Bearer '"$token"'" \
+                    "http://localhost:9091/api/v2/repository/ubuntu-archive-info?archive_type=archive" \
+                  | python3 -c "import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get(\"distributions\") else 1)";
+            do sleep 5; done' || {
+            echo "=== Timed out waiting for archive-info to warm up ==="
+            echo "--- API logs (last 100 lines) ---"
+            docker compose -p "ls-integration-${{ github.run_id }}" \
+              -f .landscape-packaging/docker/ui-dev/compose.yaml \
+              -f .landscape-packaging/docker/ui-dev/compose.ci-override.yaml \
+              logs --tail=100 api
+            exit 1
+          }
+          echo "Ubuntu archive-info is warm"
+
       - name: Run API Contract tests
         run: pnpm exec playwright test --config e2e/docker-stack/playwright.api-contract.config.ts
 
