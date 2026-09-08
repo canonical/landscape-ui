@@ -1,0 +1,12 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.selectedContainer {
+  align-items: start;
+  background: $colors--theme--background-alt;
+  display: flex;
+  gap: $sph--small;
+  justify-content: space-between;
+  margin-top: $spv--small;
+  padding: $spv--small $sph--large;
+}

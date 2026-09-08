@@ -1,0 +1,29 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.container {
+  position: relative;
+}
+
+.topRow {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: $spv--small $sph--large;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $colors--theme--border-default;
+  }
+}
+
+.suggestionsContainer {
+  max-height: 20rem;
+  position: absolute;
+  width: 100%;
+  z-index: var(--z-dropdown);
+}
+
+.header {
+  margin-bottom: $spv--small;
+  margin-top: $spv--x-large;
+}
