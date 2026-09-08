@@ -146,12 +146,18 @@ describe("SwitchSnapForm", () => {
       return captured;
     };
 
-    const firstChannelMap = [...(snapInfoWithChannels?.["channel-map"] ?? [])]
-      .sort((a, b) =>
-        a.channel.architecture.localeCompare(b.channel.architecture),
-      )
-      .at(0);
-    assert(firstChannelMap);
+    const channelMap = snapInfoWithChannels?.["channel-map"] ?? [];
+    const strictChannel = channelMap.find(
+      (channel) => channel.confinement === "strict",
+    );
+    const classicChannel = channelMap.find(
+      (channel) => channel.confinement === "classic",
+    );
+    assert(strictChannel, "No strict release available to switch to.");
+    assert(classicChannel, "No classic release available to switch to.");
+
+    const releaseValue = (channel: typeof strictChannel) =>
+      `${channel.channel.name} - ${channel.channel.architecture}`;
 
     it("submits successfully and shows success notification", async () => {
       renderSwitchSnapForm();
@@ -162,10 +168,14 @@ describe("SwitchSnapForm", () => {
       expect(await screen.findByText(/to be switched/i)).toBeInTheDocument();
     });
 
-    it("sends the selected channel and revision nested in args", async () => {
+    it("sends the selected strict release nested in args without the classic flag", async () => {
       const captured = captureRequest();
-      renderSwitchSnapForm({ ...snapWithChannels, confinement: "strict" });
+      renderSwitchSnapForm({ ...snapWithChannels, confinement: "classic" });
 
+      await userEvent.selectOptions(
+        screen.getByRole("combobox"),
+        releaseValue(strictChannel),
+      );
       await userEvent.click(screen.getByRole("button", { name: /switch/i }));
 
       expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
@@ -173,22 +183,35 @@ describe("SwitchSnapForm", () => {
         {
           name: snapWithChannels.snap.name,
           args: {
-            channel: firstChannelMap.channel.name,
-            revision: firstChannelMap.revision.toString(),
+            channel: strictChannel.channel.name,
+            revision: strictChannel.revision.toString(),
             classic: false,
           },
         },
       ]);
     });
 
-    it("sends the classic flag for a classic confined snap", async () => {
+    it("sends the classic flag when switching to a classic release", async () => {
       const captured = captureRequest();
-      renderSwitchSnapForm({ ...snapWithChannels, confinement: "classic" });
+      renderSwitchSnapForm({ ...snapWithChannels, confinement: "strict" });
 
+      await userEvent.selectOptions(
+        screen.getByRole("combobox"),
+        releaseValue(classicChannel),
+      );
       await userEvent.click(screen.getByRole("button", { name: /switch/i }));
 
       expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
-      expect(captured.body?.snaps[0]?.args?.classic).toBe(true);
+      expect(captured.body?.snaps).toEqual([
+        {
+          name: snapWithChannels.snap.name,
+          args: {
+            channel: classicChannel.channel.name,
+            revision: classicChannel.revision.toString(),
+            classic: true,
+          },
+        },
+      ]);
     });
 
     it("submits with scheduled delivery and shows success notification", async () => {

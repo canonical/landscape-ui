@@ -20,10 +20,9 @@ import type { AvailableSnapInfo, InstalledSnap } from "../../types";
 import { VALIDATION_SCHEMA } from "./constants";
 import type { SwitchFormValues } from "./types";
 import {
-  getChannelName,
   getChannelOptions,
-  getChannelRevision,
   getInitialValues,
+  getSelectedChannel,
 } from "./helpers";
 
 interface SwitchSnapFormProps {
@@ -57,15 +56,16 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({
           !values.deliver_immediately && values.deliver_after
             ? date(values.deliver_after).format()
             : undefined;
+        const selectedChannel = getSelectedChannel(snapInfo, values.release);
         await snapAction({
           computer_ids: [instanceId],
           action: "refresh",
           snaps: installedSnaps.map((snap) => ({
             name: snap.snap.name,
             args: {
-              channel: getChannelName(snapInfo, values.release),
-              revision: getChannelRevision(snapInfo, values.release),
-              classic: snap.confinement === "classic",
+              channel: selectedChannel?.channel.name,
+              revision: selectedChannel?.revision.toString(),
+              classic: selectedChannel?.confinement === "classic",
             },
           })),
           deliver_after: deliverAfter,
