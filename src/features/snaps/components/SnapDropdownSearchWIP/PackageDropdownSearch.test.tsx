@@ -1,0 +1,114 @@
+import { ROUTES } from "@/libs/routes";
+import { packages as availablePackages } from "@/tests/mocks/packages";
+import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import PackageDropdownSearch from "./PackageDropdownSearch";
+
+const instanceId = 1;
+const instancePageUrl = ROUTES.instances.details.single(instanceId);
+const instancePath = `${ROUTES.instances.root()}/:instanceId`;
+
+const props: ComponentProps<typeof PackageDropdownSearch> = {
+  selectedItems: [],
+  setSelectedItems: vi.fn(),
+  action: "install",
+  instanceIds: [instanceId],
+};
+
+describe("PackageDropdownSearch", () => {
+  const user = userEvent.setup();
+
+  beforeEach(() => {
+    renderWithProviders(
+      <PackageDropdownSearch {...props} />,
+      undefined,
+      instancePageUrl,
+      instancePath,
+    );
+  });
+
+  it("renders package dropdown search component", () => {
+    const searchBox = screen.getByRole("searchbox");
+    expect(searchBox).toBeInTheDocument();
+  });
+
+  describe("Search functionality", () => {
+    it("shows matching packages after searching", async () => {
+      const searchBox = screen.getByRole("searchbox");
+      assert(availablePackages[0]);
+      await user.type(searchBox, availablePackages[0].name);
+
+      const matchingPackage = await screen.findByText(
+        availablePackages[0].name,
+      );
+      expect(matchingPackage).toBeInTheDocument();
+    });
+  });
+
+  describe("Package selection", () => {
+    it("adds package to selected items when clicked", async () => {
+      assert(availablePackages[0]);
+      const searchBox = screen.getByRole("searchbox");
+      await user.type(searchBox, availablePackages[0].name);
+
+      const packageItem = await screen.findByText(availablePackages[0].name);
+      await user.click(packageItem);
+
+      expect(props.setSelectedItems).toHaveBeenCalled();
+    });
+
+    it("clears search box after selecting a package", async () => {
+      assert(availablePackages[0]);
+      const searchBox = screen.getByRole("searchbox");
+      await user.type(searchBox, availablePackages[0].name);
+
+      const packageItem = await screen.findByText(availablePackages[0].name);
+      await user.click(packageItem);
+
+      expect(searchBox).toHaveValue("");
+    });
+  });
+
+  describe("Clear search functionality", () => {
+    it("clears search input when clear button is clicked", async () => {
+      const searchBox = screen.getByRole("searchbox");
+      await user.type(searchBox, "test");
+      expect(searchBox).toHaveValue("test");
+
+      const clearButton = screen.getByRole("button", {
+        name: /clear search field/i,
+      });
+      await user.click(clearButton);
+
+      expect(searchBox).toHaveValue("");
+    });
+  });
+
+  describe("Selected packages display", () => {
+    it("removes package when delete button is clicked", async () => {
+      const [selectedPackage] = availablePackages;
+      assert(selectedPackage);
+      renderWithProviders(
+        <PackageDropdownSearch
+          {...props}
+          selectedItems={[[selectedPackage, []]]}
+        />,
+        undefined,
+        instancePageUrl,
+        instancePath,
+      );
+
+      const deleteButton = screen.getByRole("button", {
+        name: /delete/i,
+      });
+
+      assert(deleteButton);
+      await user.click(deleteButton);
+
+      expect(props.setSelectedItems).toHaveBeenCalled();
+    });
+  });
+});
