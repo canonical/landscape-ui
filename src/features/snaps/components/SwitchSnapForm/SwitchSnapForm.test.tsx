@@ -168,7 +168,7 @@ describe("SwitchSnapForm", () => {
       expect(await screen.findByText(/to be switched/i)).toBeInTheDocument();
     });
 
-    it("sends the selected strict release nested in args without the classic flag", async () => {
+    it("sends classic: false when switching to a strict release", async () => {
       const captured = captureRequest();
       renderSwitchSnapForm({ ...snapWithChannels, confinement: "classic" });
 
