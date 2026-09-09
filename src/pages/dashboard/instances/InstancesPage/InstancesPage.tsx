@@ -93,7 +93,6 @@ const InstancesPage: FC = () => {
     <PageMain>
       <PageHeader
         title="Instances"
-        className={classes.instancesPageHeader}
         helperContent={
           <span className={classes.instancesPageHelperContent}>
             <span
