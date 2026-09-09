@@ -63,7 +63,7 @@ export const useArchiveScriptModal = ({
       ...commonModalFields,
       archiveModalButtonLabel: "Archive",
       archiveModalBody: (
-        <p>
+        <p className="u-margin--bottom">
           Archiving the script will prevent it from running in the future. Its
           record will be retained, and{" "}
           <strong>the script name cannot be reused.</strong>
@@ -80,7 +80,7 @@ export const useArchiveScriptModal = ({
     archiveModalButtonLabel: "Archive both script and profiles",
     archiveModalBody: (
       <>
-        <p>
+        <p className="u-margin--bottom">
           Archiving the script will prevent it from running in the future. Its
           record will be retained, and{" "}
           <strong>the script name cannot be reused.</strong>
@@ -93,7 +93,7 @@ export const useArchiveScriptModal = ({
             <li key={profile.id}>{profile.title}</li>
           ))}
         </ul>
-        <p>
+        <p className="u-margin--bottom">
           If you archive the script, its associated profiles will also be
           archived, and they won’t be able to run in the future. All archived
           profile names will also be <strong>unavailable for reuse</strong>.

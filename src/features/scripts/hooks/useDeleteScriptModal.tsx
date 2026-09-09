@@ -65,7 +65,7 @@ export const useDeleteScriptModal = ({
       ...commonModalFields,
       deleteModalButtonLabel: "Redact",
       deleteModalBody: (
-        <p>
+        <p className="u-margin--bottom">
           Redacting this script will permanently remove its contents from
           Landscape. However, a record of the script, including who redacted it
           and when, will be retained in the database. The script name{" "}
@@ -83,7 +83,7 @@ export const useDeleteScriptModal = ({
     deleteModalButtonLabel: "Redact script and archive profiles",
     deleteModalBody: (
       <>
-        <p>
+        <p className="u-margin--bottom">
           Redacting this script will permanently remove its contents from
           Landscape. However, a record of the script, including who redacted it
           and when, will be retained in the database. The script name{" "}
@@ -97,7 +97,7 @@ export const useDeleteScriptModal = ({
             <li key={profile.id}>{profile.title}</li>
           ))}
         </ul>
-        <p>
+        <p className="u-margin--bottom">
           Redacting the script will archive its associated profiles, making
           their names unavailable for reuse. Neither the script nor its profiles
           will be able to run again.

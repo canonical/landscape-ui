@@ -38,12 +38,14 @@ interface InstancesPageActionsProps {
   readonly isGettingInstances: boolean;
   readonly selectedInstances: Instance[];
   readonly isAllSelected: boolean;
+  readonly onRemoveSuccess?: () => void;
 }
 
 const InstancesPageActions = memo(function InstancesPageActions({
   isGettingInstances,
   selectedInstances,
   isAllSelected,
+  onRemoveSuccess,
 }: InstancesPageActionsProps) {
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
@@ -89,7 +91,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           (instance) => !getFeatures(instance).scripts,
         ) ? (
           <div className={classes.warning}>
-            <p>
+            <p className="u-margin--bottom">
               You selected {selectedInstances.length} instances. This script
               will:
             </p>
@@ -427,6 +429,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         close={closeRemoveModal}
         instances={selectedInstances}
         isOpen={removeModalOpen}
+        onSuccess={onRemoveSuccess}
       />
     </>
   );

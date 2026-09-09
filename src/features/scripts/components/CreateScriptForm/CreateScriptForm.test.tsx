@@ -21,7 +21,7 @@ describe("CreateScriptForm", () => {
     ).toBeInTheDocument();
 
     expect(screen.getByText("Access group")).toBeInTheDocument();
-    expect(screen.getByText(/list of attachments/i)).toBeInTheDocument();
+    expect(screen.getByText(/list of attachments/i).tagName).toBe("STRONG");
     expect(screen.getByText(/add script/i)).toBeInTheDocument();
   });
 

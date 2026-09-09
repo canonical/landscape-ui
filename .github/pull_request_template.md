@@ -24,6 +24,14 @@ Change type (tick one):
 - [ ] **UI verified** — I have verified the changes locally.
 - [ ] **Linting clean** — No linting errors are present (especially in `scripts/`).
 
+## Docs
+
+Changes that affect a documented workflow need a companion PR against [landscape-documentation](https://github.com/canonical/landscape-documentation) (see [docs/DOCUMENTATION.md](../docs/DOCUMENTATION.md) for when it's required and how to target branches). Tick one:
+
+- [ ] **Docs PR opened** — Link: `______`
+- [ ] **Docs PR needed, deferred** — tracked in: `______`
+- [ ] **No docs needed** — internal change, or user-facing but doesn't alter any documented workflow
+
 ## Reviewer Setup
 
 This section is intended to help reviewers find which pages of the UI were changed, and whether any special conditions are required to run the code.
