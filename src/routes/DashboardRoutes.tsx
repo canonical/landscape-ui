@@ -2,11 +2,12 @@ import { Outlet, Route } from "react-router";
 import { PATHS } from "@/libs/routes";
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { FeatureGuard } from "@/components/guards/FeatureGuard";
+import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
+import { SelfHostedLicenseGuard } from "@/features/self-hosted-license";
 import * as Pages from "@/routes/elements";
 import SecondaryNavigation from "@/templates/dashboard/SecondaryNavigation";
 import { ACCOUNT_SETTINGS } from "@/templates/dashboard/SecondaryNavigation/constants";
 import { REPOSITORY_SUBMENU } from "@/templates/dashboard/Navigation/constants";
-import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
 import classes from "@/templates/dashboard/DashboardTemplate.module.scss";
 import ProfilesOutlet from "@/routes/ProfilesOutlet";
 import { TSV_EXPORTS_ENABLED } from "@/constants";
@@ -215,9 +216,9 @@ export const DashboardRoutes = (
         <Route
           path={PATHS.account.selfHostedLicense}
           element={
-            <SelfHostedGuard>
+            <SelfHostedLicenseGuard>
               <Pages.SelfHostedLicensePage />
-            </SelfHostedGuard>
+            </SelfHostedLicenseGuard>
           }
         />
       </Route>

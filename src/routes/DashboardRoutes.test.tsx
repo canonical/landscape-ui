@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { FeatureGuard } from "@/components/guards/FeatureGuard";
 import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
+import { SelfHostedLicenseGuard } from "@/features/self-hosted-license";
 import { TSV_EXPORTS_ENABLED } from "@/constants";
 import { PATHS } from "@/libs/routes";
 import { DashboardRoutes } from "./DashboardRoutes";
@@ -63,7 +64,7 @@ describe("DashboardRoutes", () => {
     expect(paths).toContain(PATHS.account.selfHostedLicense);
   });
 
-  it("uses self-hosted and feature guards for guarded paths", () => {
+  it("uses the appropriate guards (self-hosted, feature, self-hosted license) for guarded paths", () => {
     const allRoutes = flattenRoutes(
       DashboardRoutes as ReactElement<RouteLikeProps>,
     );
@@ -99,7 +100,7 @@ describe("DashboardRoutes", () => {
     expect(employeesRoute.props.element.type).toBe(FeatureGuard);
     expect(identityProvidersRoute.props.element.type).toBe(FeatureGuard);
     expect(wslProfilesRoute.props.element.type).toBe(FeatureGuard);
-    expect(selfHostedLicenseRoute.props.element.type).toBe(SelfHostedGuard);
+    expect(selfHostedLicenseRoute.props.element.type).toBe(SelfHostedLicenseGuard);
 
     if (TSV_EXPORTS_ENABLED) {
       assert(exportsRoute?.props.element);
