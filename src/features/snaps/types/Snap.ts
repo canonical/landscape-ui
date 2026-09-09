@@ -50,4 +50,5 @@ export interface AvailableSnapInfo extends AvailableSnap {
 export interface SelectedSnaps extends AvailableSnap {
   channel: string;
   revision: string;
+  confinement: string;
 }
