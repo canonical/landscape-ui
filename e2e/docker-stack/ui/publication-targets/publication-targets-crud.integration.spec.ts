@@ -39,7 +39,6 @@
  */
 import { expect, test, type APIRequestContext } from "@playwright/test";
 import { getAuthToken } from "../../helpers/auth";
-import { dismissWelcomePopup } from "../../helpers/ui";
 
 test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
 
@@ -89,8 +88,6 @@ test.describe("publication targets CRUD (real debarchive)", () => {
     page,
     request,
   }) => {
-    await dismissWelcomePopup(page);
-
     const createdDisplayName = `CI Test Target ${Date.now()}`;
     const updatedDisplayName = `${createdDisplayName} Updated`;
     let currentDisplayName = createdDisplayName;

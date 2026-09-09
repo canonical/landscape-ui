@@ -39,7 +39,6 @@
  */
 import { expect, test, type APIRequestContext } from "@playwright/test";
 import { getAuthToken } from "../../helpers/auth";
-import { dismissWelcomePopup } from "../../helpers/ui";
 
 test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
 
@@ -114,7 +113,6 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
   });
 
   test("creates a new mirror via the UI", async ({ page }) => {
-    await dismissWelcomePopup(page);
     const uniqueDisplayName = `CI Test Mirror ${Date.now()}`;
     mirrorDisplayName = uniqueDisplayName;
 
@@ -170,10 +168,9 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     const listRes = await request.get("/v1/mirrors", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    expect(
-      listRes.ok(),
-      `GET /v1/mirrors failed: ${listRes.status()}`,
-    ).toBe(true);
+    expect(listRes.ok(), `GET /v1/mirrors failed: ${listRes.status()}`).toBe(
+      true,
+    );
     const body = (await listRes.json()) as DebarchiveMirrorList;
     const created = body.mirrors?.find(
       (m) => m.displayName === mirrorDisplayName,
@@ -186,7 +183,6 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
   });
 
   test("edits the created mirror display name", async ({ page }) => {
-    await dismissWelcomePopup(page);
     const updatedDisplayName = `${mirrorDisplayName} Updated`;
 
     await page.goto("/repositories/mirrors");
@@ -246,7 +242,6 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
   });
 
   test("deletes the created mirror", async ({ page }) => {
-    await dismissWelcomePopup(page);
     await page.goto("/repositories/mirrors");
     await page.waitForLoadState("networkidle");
 

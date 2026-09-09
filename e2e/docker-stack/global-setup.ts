@@ -70,6 +70,12 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
     await page.locator('button[type="submit"]').click();
     await page.waitForURL(/overview/, { timeout: 30_000 });
 
+    // Bake the welcome-modal dismissal into the shared storageState so every
+    // spec reusing it skips the first-run popup without repeating this call.
+    await page.evaluate(() => {
+      window.localStorage.setItem("_landscape_isWelcomePopupClosed", "true");
+    });
+
     await context.storageState({ path: STORAGE_STATE_PATH });
 
     // Warm the Ubuntu archive-info blob cache. The mirror CRUD test needs a
