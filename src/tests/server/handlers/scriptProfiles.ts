@@ -11,7 +11,6 @@ import {
   generatePaginatedResponse,
   shouldApplyEndpointStatus,
 } from "./_helpers";
-import { error } from "console";
 
 export default [
   http.get(`${API_URL}script-profiles`, ({ request }) => {
