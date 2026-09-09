@@ -6,7 +6,7 @@ export const licenses = [
     available_seats: 50,
     expiration_date: "2026-11-30T00:00:00Z",
     used_seats: 0,
-    license_type: "Full",
+    license_type: "",
   },
   {
     id: 2,
