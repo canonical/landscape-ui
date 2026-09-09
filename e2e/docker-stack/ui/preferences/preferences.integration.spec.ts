@@ -21,16 +21,12 @@
  *
  * AUTH STRATEGY
  * ─────────────
- * `GET /api/v2/me` is authenticated by the session cookie in storageState only
- * (the app uses a bare axios instance without the auth interceptor for this
- * endpoint). It returns `AuthUser.token`; every subsequent call includes
+ * `getAuthToken` (helpers/auth.ts) calls `POST /api/v2/login` with the seeded
+ * admin credentials to obtain `AuthUser.token`; every subsequent call includes
  * `Authorization: Bearer <token>`.
  */
 import { expect, test, type APIRequestContext } from "@playwright/test";
 import { getAuthToken } from "../../helpers/auth";
-
-// Re-use the session authenticated in global-setup.
-test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 

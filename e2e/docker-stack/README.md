@@ -110,8 +110,6 @@ Create a file matching `*.integration.spec.ts` under `e2e/docker-stack/ui/`. `gl
 ```ts
 import { test, expect } from "@playwright/test";
 
-test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
-
 test.describe("my feature (real backend)", () => {
   test("does something real", async ({ page }) => {
     await page.goto("/my-feature");
@@ -128,8 +126,6 @@ Name the file `*.saas.integration.spec.ts`. These run with `VITE_SELF_HOSTED_ENV
 
 ```ts
 import { test, expect } from "@playwright/test";
-
-test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
 
 test("self-hosted-only route redirects to /env-error in SaaS mode", async ({
   page,

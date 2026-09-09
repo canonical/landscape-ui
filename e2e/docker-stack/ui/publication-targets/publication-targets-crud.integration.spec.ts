@@ -29,8 +29,9 @@
  * ────
  * The debarchive service uses JWT auth managed transparently by
  * useFetchDebArchive. The storageState from global-setup is sufficient for
- * all UI interactions. Direct API calls in afterAll use the v2 /me endpoint
- * to obtain a bearer token, then call the debarchive API directly.
+ * all UI interactions. Direct API calls in afterAll use getAuthToken
+ * (POST /api/v2/login) to obtain a bearer token, then call the debarchive API
+ * directly.
  *
  * CLEANUP
  * ───────
@@ -39,8 +40,6 @@
  */
 import { expect, test, type APIRequestContext } from "@playwright/test";
 import { getAuthToken } from "../../helpers/auth";
-
-test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 

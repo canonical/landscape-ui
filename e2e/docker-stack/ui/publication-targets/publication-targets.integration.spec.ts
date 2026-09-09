@@ -20,8 +20,6 @@
  */
 import { expect, test } from "@playwright/test";
 
-test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
-
 const SEEDED_TARGETS = [
   "Dev S3 Bucket",
   "Staging S3 Bucket",

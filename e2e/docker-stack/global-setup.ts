@@ -11,7 +11,7 @@ const API_TIMEOUT_MS = 5_000;
 const ENV_FILE = ".env.integration.local";
 const ARCHIVE_WARM_TIMEOUT_MS = 90_000;
 const ARCHIVE_WARM_POLL_MS = 3_000;
-const SERVER_ERROR = 500;
+const BODY_PREVIEW_CHARS = 500;
 
 // Load local credentials file if present (gitignored). Values already in
 // process.env (e.g. from CI) take precedence because override is false.
@@ -116,7 +116,7 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
 
             lastStatus = res.status();
             const rawBody = await res.text();
-            lastBodySummary = rawBody.slice(0, SERVER_ERROR);
+            lastBodySummary = rawBody.slice(0, BODY_PREVIEW_CHARS);
 
             if (res.ok()) {
               // "archive" responses carry distributions at the top level;

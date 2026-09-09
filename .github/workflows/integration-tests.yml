@@ -194,7 +194,6 @@ jobs:
       # Builds a production-like debarchive image from debarchive/docker/Dockerfile.e2e
       # (multi-stage: golang:1.26 builder → debian:bookworm-slim runtime).
       # No air, no dlv, no ptrace. The binary is at /root/server; CMD ["./server"].
-      # vendor/modules.txt was patched above so the COPY . . layer is already correct.
       - name: Build debarchive CI image
         run: |
           docker build \

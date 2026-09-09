@@ -31,8 +31,6 @@
  */
 import { expect, test } from "@playwright/test";
 
-test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
-
 const SEEDED_MIRRORS = ["Ubuntu Noble Main", "Ubuntu Jammy Main"];
 
 test.describe("mirrors page (self-hosted, real debarchive)", () => {
