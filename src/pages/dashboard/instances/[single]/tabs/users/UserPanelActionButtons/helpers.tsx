@@ -60,16 +60,24 @@ export const renderModalBody = ({
     getUserLockStatusCounts(selectedUsers);
 
   if (user) {
-    return <p>{getSingleUserMessage(userAction)}</p>;
+    return (
+      <p className="u-margin--bottom">{getSingleUserMessage(userAction)}</p>
+    );
   } else if (
     (userAction === UserAction.Lock && lockedCount === 0) ||
     (userAction === UserAction.Unlock && unlockedCount === 0)
   ) {
-    return <p>{getUsersWithSameStateMessage(userAction)}</p>;
+    return (
+      <p className="u-margin--bottom">
+        {getUsersWithSameStateMessage(userAction)}
+      </p>
+    );
   } else {
     return (
       <>
-        <p>{capitalize(userAction)}ing users removes their login access.</p>
+        <p className="u-margin--bottom">
+          {capitalize(userAction)}ing users removes their login access.
+        </p>
         You selected{" "}
         <PluralizeWithBoldCount count={selectedUsers.length} singular="user" />.
         This will:

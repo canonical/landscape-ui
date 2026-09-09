@@ -23,7 +23,7 @@ const NoPublicationTargetsModal: FC<NoPublicationTargetsModalProps> = ({
       close={close}
       renderInPortal
     >
-      <p>
+      <p className="u-margin--bottom">
         In order to publish a mirror or a local repository you must first add a
         publication target to indicate the location you wish to publish that
         mirror to.
