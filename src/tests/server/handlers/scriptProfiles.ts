@@ -11,6 +11,7 @@ import {
   generatePaginatedResponse,
   shouldApplyEndpointStatus,
 } from "./_helpers";
+import { error } from "console";
 
 export default [
   http.get(`${API_URL}script-profiles`, ({ request }) => {
@@ -141,16 +142,19 @@ export default [
       const endpointStatus = getEndpointStatus("script-profiles");
 
       if (endpointStatus.status === "error") {
-        const { statusCode, error, message } =
-          (endpointStatus.response as
-            | {
-                statusCode?: number;
-                error?: string;
-                message?: string;
-              }
-            | undefined) ?? {};
+        const {
+          statusCode,
+          error: errorCode,
+          message,
+        } = (endpointStatus.response as
+          | {
+              statusCode?: number;
+              error?: string;
+              message?: string;
+            }
+          | undefined) ?? {};
 
-        throw createEndpointStatusError(statusCode, error, message);
+        throw createEndpointStatusError(statusCode, errorCode, message);
       }
     }
 
