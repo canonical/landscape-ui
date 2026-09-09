@@ -7,6 +7,7 @@ import type { CellProps, Column } from "react-table";
 import type { License } from "../../types";
 import { ROUTES } from "@/libs/routes";
 import { Link } from "react-router";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 interface LicensesListProps {
   readonly licenses: License[];
@@ -46,7 +47,7 @@ const LicensesList: FC<LicensesListProps> = ({ licenses }) => {
       {
         Header: "License type",
         Cell: ({ row: { original: license } }: CellProps<License>) =>
-          license.license_type,
+          license.license_type || NO_DATA_TEXT,
       },
     ],
     [],
