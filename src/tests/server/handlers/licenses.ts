@@ -6,7 +6,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { createEndpointStatusError } from "./_constants";
 
 export default [
-  http.get(`${API_URL}legacy-licenses`, async () => {
+  http.get(`${API_URL}legacy-licenses`, async ({ request }) => {
     if (shouldApplyEndpointStatus("legacy-licenses")) {
       const { status, response } = getEndpointStatus("legacy-licenses");
 
@@ -27,6 +27,20 @@ export default [
       }
     }
 
-    return HttpResponse.json({ results: licenses });
+    const { searchParams } = new URL(request.url);
+
+    if (searchParams.get("include_details") === "true") {
+      return HttpResponse.json({ results: licenses });
+    }
+
+    const results = licenses.map(
+      ({ id, available_seats, expiration_date }) => ({
+        id,
+        available_seats,
+        expiration_date,
+      }),
+    );
+
+    return HttpResponse.json({ results });
   }),
 ];

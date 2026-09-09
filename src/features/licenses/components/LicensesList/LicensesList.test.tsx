@@ -3,7 +3,7 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import LicensesList from "./LicensesList";
 import { licenses } from "@/tests/mocks/licenses";
-import { DISPLAY_DATE_FORMAT } from "@/constants/constants";
+import { DISPLAY_DATE_FORMAT } from "@/constants";
 import date from "@/libs/date";
 
 const [unusedLicensed, licenseWithNoExpiration] = licenses;

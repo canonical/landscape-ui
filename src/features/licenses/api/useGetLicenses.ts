@@ -22,7 +22,10 @@ export const useGetLicenses = (
     error,
   } = useQuery<AxiosResponse<GetLicensesResponse>, AxiosError<ApiError>>({
     queryKey: ["licenses"],
-    queryFn: async () => authFetch.get("legacy-licenses"),
+    queryFn: async () =>
+      authFetch.get("legacy-licenses", {
+        params: { include_details: true },
+      }),
     ...config,
   });
 

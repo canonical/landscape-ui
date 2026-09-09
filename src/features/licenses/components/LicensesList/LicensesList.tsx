@@ -5,7 +5,7 @@ import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { License } from "../../types";
-import { ROUTES } from "@/libs/routes/routes";
+import { ROUTES } from "@/libs/routes";
 import { Link } from "react-router";
 
 interface LicensesListProps {
