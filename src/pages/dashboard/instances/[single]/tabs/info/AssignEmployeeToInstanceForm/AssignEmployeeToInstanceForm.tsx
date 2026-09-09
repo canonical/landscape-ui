@@ -73,7 +73,7 @@ const AssignEmployeeToInstanceForm: FC<AssignEmployeeToInstanceFormProps> = ({
 
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
-      <p>
+      <p className="u-margin--bottom">
         You can associate the instance with the selected employee, allowing them
         to view its details and recovery key.
       </p>

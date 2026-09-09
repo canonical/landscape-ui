@@ -29,8 +29,9 @@
  * ────
  * The debarchive service uses JWT auth managed transparently by
  * useFetchDebArchive. The storageState from global-setup is sufficient for
- * all UI interactions. Direct API calls in afterAll use the v2 /me endpoint
- * to obtain a bearer token, then call the debarchive API directly.
+ * all UI interactions. Direct API calls in afterAll use getAuthToken
+ * (POST /api/v2/login) to obtain a bearer token, then call the debarchive API
+ * directly.
  *
  * CLEANUP
  * ───────
@@ -39,9 +40,6 @@
  */
 import { expect, test, type APIRequestContext } from "@playwright/test";
 import { getAuthToken } from "../../helpers/auth";
-import { dismissWelcomePopup } from "../../helpers/ui";
-
-test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
 
 // ─── shared state ────────────────────────────────────────────────────────────
 
@@ -74,7 +72,7 @@ async function cleanupMirror(
   const token = await getAuthToken(request);
 
   // Verify the mirror still exists before attempting deletion.
-  const listRes = await request.get("/v1beta1/mirrors", {
+  const listRes = await request.get("/v1/mirrors", {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!listRes.ok()) return;
@@ -83,7 +81,7 @@ async function cleanupMirror(
   const exists = body.mirrors?.some((m) => m.name === resourceName);
   if (!exists) return;
 
-  await request.delete(`/v1beta1/${resourceName}`, {
+  await request.delete(`/v1/${resourceName}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 }
@@ -96,7 +94,7 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     if (!mirrorName && mirrorDisplayName) {
       try {
         const token = await getAuthToken(request);
-        const listRes = await request.get("/v1beta1/mirrors", {
+        const listRes = await request.get("/v1/mirrors", {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (listRes.ok()) {
@@ -114,7 +112,6 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
   });
 
   test("creates a new mirror via the UI", async ({ page }) => {
-    await dismissWelcomePopup(page);
     const uniqueDisplayName = `CI Test Mirror ${Date.now()}`;
     mirrorDisplayName = uniqueDisplayName;
 
@@ -167,13 +164,12 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     request,
   }) => {
     const token = await getAuthToken(request);
-    const listRes = await request.get("/v1beta1/mirrors", {
+    const listRes = await request.get("/v1/mirrors", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    expect(
-      listRes.ok(),
-      `GET /v1beta1/mirrors failed: ${listRes.status()}`,
-    ).toBe(true);
+    expect(listRes.ok(), `GET /v1/mirrors failed: ${listRes.status()}`).toBe(
+      true,
+    );
     const body = (await listRes.json()) as DebarchiveMirrorList;
     const created = body.mirrors?.find(
       (m) => m.displayName === mirrorDisplayName,
@@ -186,7 +182,6 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
   });
 
   test("edits the created mirror display name", async ({ page }) => {
-    await dismissWelcomePopup(page);
     const updatedDisplayName = `${mirrorDisplayName} Updated`;
 
     await page.goto("/repositories/mirrors");
@@ -246,7 +241,6 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
   });
 
   test("deletes the created mirror", async ({ page }) => {
-    await dismissWelcomePopup(page);
     await page.goto("/repositories/mirrors");
     await page.waitForLoadState("networkidle");
 
@@ -257,7 +251,9 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     await expect(mirrorRow).toBeVisible({ timeout: 15_000 });
 
     // Open the actions menu.
-    await mirrorRow.getByRole("button").last().click();
+    await mirrorRow
+      .getByRole("button", { name: `${mirrorDisplayName} mirror actions` })
+      .click();
 
     // Click "Remove" in the dropdown.
     // ContextualMenu items render with role="menuitem" (not "button") — use that role.

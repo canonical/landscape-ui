@@ -380,7 +380,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
             title="No instances to run script on"
             close={hideRunConfirm}
           >
-            <p>
+            <p className="u-margin--bottom">
               {NO_TAGGED_FEATURED_INSTANCES_WARNING_MESSAGE} Select different
               tags and try again.
             </p>
@@ -406,7 +406,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
           close={hideRunConfirm}
           confirmButtonAppearance="positive"
         >
-          <p>
+          <p className="u-margin--bottom">
             This script will run on the following instances, which are
             associated with the selected{" "}
             {pluralize(formik.values.tags.length, ["tag"])}.

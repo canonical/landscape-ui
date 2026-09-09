@@ -92,26 +92,51 @@ describe("AvailableSnap", () => {
       const options = screen.getAllByRole("option");
       assert(options[0]);
       const selectedChannel = options[0].textContent;
+      const selectedChannelMap = chosenSnap["channel-map"].find(
+        (channel) =>
+          `${channel.channel.name} - ${channel.channel.architecture}` ===
+          selectedChannel,
+      );
+      assert(selectedChannelMap);
+
       await userEvent.click(button);
       expect(props.handleAddToSelectedItems).toHaveBeenCalledWith({
         "snap-id": chosenSnap["snap-id"],
         name: chosenSnap.name,
         snap: chosenSnap.snap,
-        revision:
-          chosenSnap["channel-map"]
-            .find(
-              (channel) =>
-                `${channel.channel.name} - ${channel.channel.architecture}` ===
-                selectedChannel,
-            )
-            ?.revision.toString() ?? "Unknown revision",
-        channel:
-          chosenSnap["channel-map"].find(
-            (channel) =>
-              `${channel.channel.name} - ${channel.channel.architecture}` ===
-              selectedChannel,
-          )?.channel.name ?? "Unknown channel",
+        revision: selectedChannelMap.revision.toString(),
+        channel: selectedChannelMap.channel.name,
+        confinement: selectedChannelMap.confinement,
       });
+    });
+
+    it("should add snap with classic confinement of the selected release", async () => {
+      const classicChannelMap = chosenSnap["channel-map"].find(
+        (channel) => channel.confinement === "classic",
+      );
+      assert(classicChannelMap);
+
+      const options: HTMLOptionElement[] = screen.getAllByRole("option");
+      const classicOption = options.find((option) =>
+        option.textContent?.includes(
+          `${classicChannelMap.channel.name} - ${classicChannelMap.channel.architecture}`,
+        ),
+      );
+      assert(classicOption);
+
+      await userEvent.selectOptions(
+        screen.getByRole("combobox"),
+        classicOption,
+      );
+      await userEvent.click(screen.getByRole("button", { name: /Add/i }));
+
+      expect(props.handleAddToSelectedItems).toHaveBeenCalledWith(
+        expect.objectContaining({
+          revision: classicChannelMap.revision.toString(),
+          channel: classicChannelMap.channel.name,
+          confinement: "classic",
+        }),
+      );
     });
 
     it("should delete snap from to be confirmed items", async () => {

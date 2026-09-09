@@ -55,7 +55,6 @@ The GitHub App must be installed on `canonical/landscape-packaging`, `canonical/
 > installation. A fine-grained PAT is used as a temporary workaround. Once the App is
 > installed on `landscape-proto`, add it to the `repositories:` list in the
 > `create-github-app-token` step and remove the `git config url.insteadOf` line (~4 lines).
-> See [debarchive-feature-context.md](debarchive-feature-context.md) for the full credential chain.
 
 ## dispatch input: `packaging_ref`
 
@@ -74,10 +73,9 @@ Since `landscape-go` and `landscape-server` are submodules of `landscape-packagi
 | Initialise submodules                             | 10 s           |
 | **Start backend stack** (cold Docker image build) | **4 min 32 s** |
 | Wait for API ready (after builder exits)          | 10 s           |
-| Seed admin account                                | 4 s            |
-| Install Playwright browsers                       | 2 min 49 s     |
-| Run integration tests                             | ~30 s          |
-| **Total**                                         | **~8 min**     |
+| Install Playwright browsers                       | ~25 s          |
+| Run API Contract / selfHosted / SaaS test suites  | ~2 min 30 s    |
+| **Total**                                         | **~10 min**    |
 
 The dominant cost is the cold Docker image build. A self-hosted runner with cached images would reduce this to seconds.
 
@@ -91,10 +89,12 @@ The dominant cost is the cold Docker image build. A self-hosted runner with cach
 
 ### 1. Start the backend stack
 
-From your `landscape-packaging/docker/ui-dev/` directory:
+From your `landscape-packaging/docker/ui-dev/` directory, start the stack with the schema
+bootstrapping arguments matching CI (the builder bootstraps the schema on first `make up`,
+so sample data must be requested from the start):
 
 ```bash
-make up
+LANDSCAPE_BOOTSTRAP_SCHEMA_ARGS="--with-computers --with-free-disk-space --with-free-memory-and-swap --with-load-averages --with-temperatures --with-network-traffic --with-active-processes --with-packages --with-package-activities --with-script-activities --with-users-and-groups --with-cpu-usage --with-ceph-usage --with-compute-usage --with-swift-usage --with-user-and-group-activities --with-custom-graph --with-scripts --with-account-password foo" make up
 ```
 
 Wait until both of these respond:
@@ -104,12 +104,6 @@ curl -sf http://localhost:9091/api/v2/login/methods
 curl -sf http://localhost:8080/
 ```
 
-### 2. Seed the admin account (one-time per fresh stack)
-
-```bash
-LANDSCAPE_BOOTSTRAP_SCHEMA_ARGS="--with-computers --with-free-disk-space --with-free-memory-and-swap --with-load-averages --with-temperatures --with-network-traffic --with-active-processes --with-packages --with-package-activities --with-script-activities --with-users-and-groups --with-cpu-usage --with-ceph-usage --with-compute-usage --with-swift-usage --with-user-and-group-activities --with-custom-graph --with-scripts --with-account-password foo" make up
-```
-
 Create `.env.integration.local` in this repo root (gitignored):
 
 ```ini
@@ -117,11 +111,11 @@ CI_ADMIN_EMAIL=john@example.com
 CI_ADMIN_PASSWORD=pwd
 ```
 
-### 3. Install Playwright browsers (first time or after upgrades)
+### 2. Install Playwright browsers (first time or after upgrades)
 
     pnpm exec playwright install --with-deps chromium
 
-### 4. Run integration tests
+### 3. Run integration tests
 
 ```bash
 # Self-hosted mode (requires live backend)
@@ -142,11 +136,11 @@ Reports are written to `playwright-integration-report/` and `playwright-integrat
 | `globalSetup` writes `storageState`                                                        | Individual tests reuse the authenticated session; login is tested once explicitly                                                                                                                                                                                                                                                  |
 | **`vite --mode e2e.selfHosted` / `vite --mode e2e.saas` (dev server, not `vite preview`)** | The dev server activates Vite's proxy (`/api` → `localhost:9091`), making all API calls same-origin. Required for session cookie auth: `GET /api/v2/me` uses `publicFetch` (no `withCredentials`), so cookies are only sent when the request is same-origin. `vite preview` serves cross-origin, breaking authentication silently. |
 | `*.saas.integration.spec.ts` naming                                                        | Excluded from self-hosted config via `testIgnore`; picked up only by `playwright.integration.saas.config.ts`. The naming convention is self-documenting and requires no per-test config.                                                                                                                                           |
-| Relative API URLs in `.env.e2e`                                                            | `/api/v2/`, `/api/`, `/v1beta1/` route through the Vite proxy. `VITE_API_PROXY_TARGET` and `VITE_API_DEBARCHIVE_PROXY_TARGET` configure the targets.                                                                                                                                                                               |
+| Relative API URLs in `.env.e2e`                                                            | `/api/v2/`, `/api/`, `/v1/` route through the Vite proxy. `VITE_API_PROXY_TARGET` and `VITE_API_DEBARCHIVE_PROXY_TARGET` configure the targets.                                                                                                                                                                                    |
 | Explicit service list in `docker compose up`                                               | Starts only services needed for standalone mode; avoids building debarchive unless explicitly included.                                                                                                                                                                                                                            |
 | GitHub App token instead of PAT                                                            | Short-lived (≤1 h), scoped to specific repos, no human credentials. SSH submodule URLs rewritten to HTTPS via `url.insteadOf` after checkout.                                                                                                                                                                                      |
 | `docker wait landscape-builder` (not `docker compose wait`)                                | `docker compose wait` resolves the project by file path and fails when the working directory differs between steps. `docker wait` operates on the container name directly.                                                                                                                                                         |
-| `landscape-go` vendor directory generated in CI                                            | `vendor/` is gitignored in landscape-go. Regenerated via `GOPRIVATE=... go mod vendor` using `LANDSCAPE_PROTO_TOKEN`. See [debarchive-feature-context.md](debarchive-feature-context.md).                                                                                                                                          |
+| `landscape-go` vendor directory generated in CI                                            | `vendor/` is gitignored in landscape-go. Regenerated via `GOPRIVATE=... go mod vendor` using `LANDSCAPE_PROTO_TOKEN`.                                                                                                                                                                                                              |
 
 ## Phase 2 — complete ✅
 
@@ -156,8 +150,6 @@ Reports are written to `playwright-integration-report/` and `playwright-integrat
 - Retired PAT-based fallback workflow ✅
 - `packaging_ref` dispatch input for manual backend override ✅
 - Path-based trigger filters (docs/markdown changes don't trigger runs) ✅
-
-See [debarchive-feature-context.md](debarchive-feature-context.md) for all Phase 2 lessons and pitfalls.
 
 ## Phase 3 roadmap
 
@@ -186,23 +178,16 @@ See [debarchive-feature-context.md](debarchive-feature-context.md) for all Phase
   upstream (`command`, `working_dir`, `healthcheck`, `pull_policy`, `GO_DOTENV`, `GOFLAGS`).
   A standalone file eliminates this class of issue entirely.
   Alternative: upstream PR to `landscape-packaging` adding a `--profile ci` compose variant.
-  See [debarchive-feature-context.md](debarchive-feature-context.md) for the full option
-  analysis (Option A / B / C).
 
   **Gate: seeder stability.** Do not migrate to a standalone file until all of the following
   are true:
-  1. The debarchive seeder exits 0 in CI without the non-blocking workaround — meaning the
-     new seeder version (idempotent 409 handling) has merged into `landscape-packaging` and
-     the submodule pin has been bumped.
-  2. The seeder strict exit-code check has been re-enabled in the workflow (remove the
-     `::warning::` bypass and restore `exit 1` on non-zero seeder exit).
-  3. A full CI run has passed without any seeder-related warnings for at least 3 consecutive
+  1. A full CI run has passed without any seeder-related warnings for at least 3 consecutive
      nightly runs (check **Actions → Integration Tests → schedule** runs).
-  4. No new debarchive API endpoints have been added in the last two weeks (the service
+  2. No new debarchive API endpoints have been added in the last two weeks (the service
      interface is no longer actively growing). Check `landscape-go` commit history on the
      `debarchive/` path.
 
-  Once all four gates pass, the service contract is stable enough that a standalone
+  Once both gates pass, the service contract is stable enough that a standalone
   `compose.ci.yaml` won't need frequent updates.
 
 - **Migrate `LANDSCAPE_PROTO_TOKEN` to App install.** When the `landscape-packager` App is

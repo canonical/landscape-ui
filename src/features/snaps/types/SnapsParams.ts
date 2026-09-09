@@ -1,8 +1,13 @@
-interface AffectedSnap {
-  name: string;
+export interface SnapChangeArgs {
   channel?: string;
   revision?: string;
+  classic?: boolean;
   time?: string;
+}
+
+export interface SnapChange {
+  name: string;
+  args?: SnapChangeArgs;
 }
 
 export interface GetAvailableSnapInfoParams {
@@ -13,7 +18,7 @@ export interface GetAvailableSnapInfoParams {
 export interface SnapActionParams {
   action: string;
   computer_ids: number[];
-  snaps: AffectedSnap[];
+  snaps: SnapChange[];
   deliver_after?: string;
   deliver_after_window?: number;
 }

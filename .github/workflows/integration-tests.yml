@@ -128,12 +128,17 @@ jobs:
           GOPRIVATE="github.com/canonical/*" go mod vendor
           echo "Vendored $(find vendor -name '*.go' | wc -l) Go source files"
 
+      # var/blobs/repository must be pre-created here (not left to Docker to
+      # auto-create on bind mount) because Docker creates missing bind-mount
+      # source dirs as root, which the api container's non-root UID:GID can't
+      # write to — causing a 500 on repository/ubuntu-archive-info.
       - name: Create landscape-server bind-mount directories
         run: |
           mkdir -p \
             .landscape-packaging/landscape-server/.venv \
             .landscape-packaging/landscape-server/build \
-            .landscape-packaging/landscape-server/var/log
+            .landscape-packaging/landscape-server/var/log \
+            .landscape-packaging/landscape-server/var/blobs/repository
 
       # compose.yaml uses the env_file `format: raw` attribute (on the services
       # started here via the x-server-env-file anchor), which requires Docker
@@ -189,7 +194,6 @@ jobs:
       # Builds a production-like debarchive image from debarchive/docker/Dockerfile.e2e
       # (multi-stage: golang:1.26 builder → debian:bookworm-slim runtime).
       # No air, no dlv, no ptrace. The binary is at /root/server; CMD ["./server"].
-      # vendor/modules.txt was patched above so the COPY . . layer is already correct.
       - name: Build debarchive CI image
         run: |
           docker build \
@@ -218,7 +222,17 @@ jobs:
           echo "Waiting for PostgreSQL to be ready..."
           timeout 60 bash -c \
             'until docker exec landscape-postgres pg_isready -U postgres -q; do sleep 2; done'
-          docker exec landscape-postgres createdb -U postgres landscape-debarchive || true
+          # createdb exits 1 for both "already exists" and real failures (bad auth, disk
+          # full, etc.); only tolerate the former so genuine errors fail the job here.
+          if ! output=$(docker exec landscape-postgres createdb -U postgres landscape-debarchive 2>&1); then
+            if echo "$output" | grep -q "already exists"; then
+              echo "landscape-debarchive database already exists, continuing"
+            else
+              echo "$output"
+              echo "::error::Failed to create landscape-debarchive database"
+              exit 1
+            fi
+          fi
           echo "landscape-debarchive database ready"
 
       - name: Start backend stack
@@ -234,7 +248,7 @@ jobs:
               -f compose.yaml -f compose.ci-override.yaml \
               up -d \
               postgresql rabbitmq rsyslog builder \
-              package-search api appserver fake-openid \
+              package-search api appserver \
               debarchive
 
       # The builder runs schema patches then exits. The api container passes its
@@ -332,6 +346,45 @@ jobs:
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
+
+      # repository/ubuntu-archive-info has no seed step (unlike debarchive above) —
+      # it triggers a live fetch from archive.ubuntu.com/esm.ubuntu.com on first
+      # request (see generate_and_store_esm_and_archive_infos in landscape-server)
+      # and caches the result in the api container. Not covered by the
+      # API/appserver liveness check above. The self-hosted suite's global-setup
+      # polls the same endpoint, but this step fails fast with clear CI logs
+      # before spending time on Playwright/browser startup.
+      - name: Wait for landscape-server archive-info cache to warm up
+        run: |
+          token=""
+          for attempt in 1 2 3; do
+            token=$(curl -sf --max-time 5 -X POST http://localhost:9091/api/v2/login \
+              -H "Content-Type: application/json" \
+              -d '{"email":"'"$CI_ADMIN_EMAIL"'","password":"'"$CI_ADMIN_PASSWORD"'"}' \
+              | python3 -c 'import json,sys; raw=sys.stdin.read(); print(json.loads(raw)["token"] if raw else "")')
+            [ -n "$token" ] && break
+            echo "Login attempt $attempt failed, retrying..."
+            sleep 5
+          done
+          if [ -z "$token" ]; then
+            echo "::error::Login request failed after 3 attempts — no token returned, cannot warm up archive-info cache"
+            exit 1
+          fi
+          timeout 90 bash -c '
+            until curl -sf --max-time 5 \
+                    -H "Authorization: Bearer '"$token"'" \
+                    "http://localhost:9091/api/v2/repository/ubuntu-archive-info?archive_type=archive" \
+                  | python3 -c "import json,sys; raw=sys.stdin.read(); d=json.loads(raw) if raw else {}; sys.exit(0 if d.get(\"distributions\") else 1)";
+            do sleep 5; done' || {
+            echo "=== Timed out waiting for archive-info to warm up ==="
+            echo "--- API logs (last 100 lines) ---"
+            docker compose -p "ls-integration-${{ github.run_id }}" \
+              -f .landscape-packaging/docker/ui-dev/compose.yaml \
+              -f .landscape-packaging/docker/ui-dev/compose.ci-override.yaml \
+              logs --tail=100 api
+            exit 1
+          }
+          echo "Ubuntu archive-info is warm"
 
       - name: Run API Contract tests
         run: pnpm exec playwright test --config e2e/docker-stack/playwright.api-contract.config.ts

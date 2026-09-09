@@ -1,0 +1,21 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.instancesPageHelperContent {
+  align-self: center;
+  margin-left: $sph--small;
+  margin-right: $sph--small;
+}
+
+.instancesPageAccountInfoButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.instancesPageDocumentationLink {
+  &:visited {
+    color: $colors--theme--link-default;
+  }
+}

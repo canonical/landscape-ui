@@ -11,8 +11,6 @@ export default defineConfig({
   retries: 1,
   forbidOnly: !!process.env.CI,
 
-  globalSetup: "./global-setup.ts",
-
   reporter: [
     [
       "html",
@@ -38,6 +36,5 @@ export default defineConfig({
     trace: "on-first-retry",
     video: "retain-on-failure",
     ignoreHTTPSErrors: true,
-    storageState: "e2e/docker-stack/.auth/state.json",
   },
 });

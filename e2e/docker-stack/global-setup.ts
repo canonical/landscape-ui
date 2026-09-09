@@ -11,6 +11,7 @@ const API_TIMEOUT_MS = 5_000;
 const ENV_FILE = ".env.integration.local";
 const ARCHIVE_WARM_TIMEOUT_MS = 90_000;
 const ARCHIVE_WARM_POLL_MS = 3_000;
+const BODY_PREVIEW_CHARS = 500;
 
 // Load local credentials file if present (gitignored). Values already in
 // process.env (e.g. from CI) take precedence because override is false.
@@ -69,36 +70,70 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
     await page.locator('button[type="submit"]').click();
     await page.waitForURL(/overview/, { timeout: 30_000 });
 
+    // Bake the welcome-modal dismissal into the shared storageState so every
+    // spec reusing it skips the first-run popup without repeating this call.
+    await page.evaluate(() => {
+      window.localStorage.setItem("_landscape_isWelcomePopupClosed", "true");
+    });
+
     await context.storageState({ path: STORAGE_STATE_PATH });
 
-    // Warm the ubuntu-archive-info blob cache. On a fresh container the first
-    // request triggers an outbound fetch to archive.ubuntu.com and
-    // esm.ubuntu.com which can take 10-30 s. Poll until both endpoints return
-    // non-empty distribution lists before allowing tests to start, so the
-    // AddMirrorForm Distribution select is never still-loading when tests run.
+    // Warm the Ubuntu archive-info blob cache. The mirror CRUD test needs a
+    // populated Ubuntu archive distribution selector before it begins.
     const meRes = await context.request.get(`${API_URL}me`);
     if (meRes.ok()) {
       const meBody = (await meRes.json()) as { token?: string };
       if (meBody.token) {
         const bearer = `Bearer ${meBody.token}`;
-        const deadline = Date.now() + ARCHIVE_WARM_TIMEOUT_MS;
+        const startedAt = Date.now();
+        const deadline = startedAt + ARCHIVE_WARM_TIMEOUT_MS;
 
         const pollUntilReady = async (archiveType: string): Promise<void> => {
+          // Tracks the last observed response so a timeout error can explain
+          // *why* the archive wasn't ready (e.g. 5xx vs empty payload) instead
+          // of just "gave up after 90s".
+          let lastStatus: number | string = "no response received";
+          let lastBodySummary = "n/a";
+
           while (Date.now() < deadline) {
-            const res = await context.request.get(
-              `${API_URL}repository/ubuntu-archive-info`,
-              {
-                params: { archive_type: archiveType },
-                headers: { Authorization: bearer },
-              },
-            );
+            let res;
+            try {
+              res = await context.request.get(
+                `${API_URL}repository/ubuntu-archive-info`,
+                {
+                  params: { archive_type: archiveType },
+                  headers: { Authorization: bearer },
+                },
+              );
+            } catch (error) {
+              lastStatus = "request failed";
+              lastBodySummary = String(error);
+              await new Promise((resolve) =>
+                setTimeout(resolve, ARCHIVE_WARM_POLL_MS),
+              );
+              continue;
+            }
+
+            lastStatus = res.status();
+            const rawBody = await res.text();
+            lastBodySummary = rawBody.slice(0, BODY_PREVIEW_CHARS);
+
             if (res.ok()) {
               // "archive" responses carry distributions at the top level;
               // "ESM" responses wrap per-service archives under "results".
-              const body = (await res.json()) as {
-                distributions?: unknown[];
-                results?: unknown[];
-              };
+              let body: { distributions?: unknown[]; results?: unknown[] };
+              try {
+                body = JSON.parse(rawBody) as typeof body;
+              } catch (error) {
+                // A 2xx with a non-JSON body (e.g. proxy/gateway error page)
+                // is treated as "not ready yet" so the timeout error below
+                // still fires with useful diagnostics instead of a raw parse crash.
+                lastBodySummary = `non-JSON response: ${String(error)}`;
+                await new Promise((resolve) =>
+                  setTimeout(resolve, ARCHIVE_WARM_POLL_MS),
+                );
+                continue;
+              }
               const ready =
                 archiveType === "archive"
                   ? Array.isArray(body.distributions) &&
@@ -112,12 +147,20 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
               setTimeout(resolve, ARCHIVE_WARM_POLL_MS),
             );
           }
+
+          const waitedSeconds = Math.round((Date.now() - startedAt) / 1000);
           throw new Error(
-            `[global-setup] archive-info (${archiveType}) did not return distributions within ${ARCHIVE_WARM_TIMEOUT_MS / 1000}s. Tests were not started.`,
+            `[global-setup] archive-info (${archiveType}) did not return distributions within ${ARCHIVE_WARM_TIMEOUT_MS / 1000}s (waited ${waitedSeconds}s).\n` +
+              `Last response status: ${lastStatus}\n` +
+              `Last response body (truncated): ${lastBodySummary}\n` +
+              "This endpoint triggers a live fetch from archive.ubuntu.com/esm.ubuntu.com " +
+              "on first request (see generate_and_store_esm_and_archive_infos in " +
+              "landscape-server); a slow or blocked upstream network call is the most " +
+              "likely cause. Tests were not started.",
           );
         };
 
-        await Promise.all([pollUntilReady("archive"), pollUntilReady("ESM")]);
+        await pollUntilReady("archive");
       }
     }
   } finally {

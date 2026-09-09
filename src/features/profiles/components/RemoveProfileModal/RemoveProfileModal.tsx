@@ -65,8 +65,8 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
       confirmationText={`${removalType} ${profile.title}`}
       renderInPortal
     >
-      <p>{getModalMessage(type, profile.title)}</p>
-      <p>
+      <p className="u-margin--bottom">{getModalMessage(type, profile.title)}</p>
+      <p className="u-margin--bottom">
         This action is <strong>irreversible</strong>.
       </p>
     </TextConfirmationModal>

@@ -63,7 +63,7 @@ export const useArchiveScriptModal = ({
       ...commonModalFields,
       archiveModalButtonLabel: "Archive",
       archiveModalBody: (
-        <p>
+        <p className="u-margin--bottom">
           Archiving the script will prevent it from running in the future.
           <br />
           This action is <b>irreversible</b>.
@@ -77,7 +77,7 @@ export const useArchiveScriptModal = ({
     archiveModalButtonLabel: "Archive both script and profiles",
     archiveModalBody: (
       <>
-        <p>
+        <p className="u-margin--bottom">
           Archiving the script will prevent it from running in the future.
           <br />
           The script is associated with the following profiles:
@@ -87,7 +87,7 @@ export const useArchiveScriptModal = ({
             <li key={profile.id}>{profile.title}</li>
           ))}
         </ul>
-        <p>
+        <p className="u-margin--bottom">
           If you archive the script and the profiles, they won’t be able to run
           in the future.
           <br />
