@@ -5,6 +5,7 @@ import SecondaryNavigation from "./SecondaryNavigation";
 import { ACCOUNT_SETTINGS } from "./constants";
 import { PATHS, ROUTES } from "@/libs/routes";
 import { useMediaQuery } from "usehooks-ts";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 
 // Mock useMediaQuery to simulate large screen
 vi.mock("usehooks-ts", async () => {
@@ -72,6 +73,25 @@ describe("SecondaryNavigation", () => {
     expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
 
     vi.mocked(useMediaQuery).mockImplementation(() => true);
+  });
+
+  it("hides the self-hosted license item when the account is not entitled", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "self-hosted/enabled",
+      response: { lds_enabled: false },
+    });
+
+    renderWithProviders(
+      <SecondaryNavigation
+        title={ACCOUNT_SETTINGS.label}
+        items={ACCOUNT_SETTINGS.items}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("link", { name: "Self hosted license" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders children when provided", () => {

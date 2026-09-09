@@ -20,7 +20,7 @@ export const ACCOUNT_SETTINGS = {
     {
       label: "Self hosted license",
       path: ROUTES.account.selfHostedLicense(),
-      env: "selfHosted",
+      requiresSelfHostedLicense: true,
     },
   ] as const,
 } satisfies MenuItem;

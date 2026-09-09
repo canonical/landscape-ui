@@ -12,18 +12,34 @@ interface Props {
 
 const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
   const { isSaas, envLoading } = useEnv();
-  const { isGettingSelfHostedEnabled, isSelfHostedEnabled, isSelfHostedEnabledError } =
-    useGetSelfHostedEnabled(!envLoading && isSaas);
+  const selfHostedEnabledQuery = !envLoading && isSaas;
+  const {
+    isGettingSelfHostedEnabled,
+    isSelfHostedEnabled,
+    isSelfHostedEnabledError,
+  } = useGetSelfHostedEnabled(selfHostedEnabledQuery);
   const navigate = useNavigate();
   const shouldRender =
     isSaas && isSelfHostedEnabled && !isSelfHostedEnabledError;
 
   useEffect(() => {
-    if (envLoading || isGettingSelfHostedEnabled || shouldRender) return;
+    if (
+      envLoading ||
+      (selfHostedEnabledQuery && isGettingSelfHostedEnabled) ||
+      shouldRender
+    ) {
+      return;
+    }
     navigate(ROUTES.errors.envError(), { replace: true });
-  }, [envLoading, isGettingSelfHostedEnabled, navigate, shouldRender]);
+  }, [
+    envLoading,
+    isGettingSelfHostedEnabled,
+    navigate,
+    selfHostedEnabledQuery,
+    shouldRender,
+  ]);
 
-  if (envLoading || (isSaas && isGettingSelfHostedEnabled)) {
+  if (envLoading || (selfHostedEnabledQuery && isGettingSelfHostedEnabled)) {
     return <LoadingState />;
   }
 

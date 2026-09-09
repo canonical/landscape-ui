@@ -56,6 +56,9 @@ describe("SelfHostedLicenseGuard", () => {
 
     expect(await screen.findByText("Environment Error")).toBeInTheDocument();
     expect(
+      screen.getByText("This feature is not available in SaaS mode."),
+    ).toBeInTheDocument();
+    expect(
       screen.queryByRole("heading", { name: "Self hosted license" }),
     ).not.toBeInTheDocument();
   });
@@ -67,7 +70,10 @@ describe("SelfHostedLicenseGuard", () => {
       isSelfHosted: true,
     });
 
-    expect(await screen.findByText("Redirecting...")).toBeInTheDocument();
+    expect(await screen.findByText("Environment Error")).toBeInTheDocument();
+    expect(
+      screen.getByText("This feature is not available in Self Hosted mode."),
+    ).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Self hosted license" }),
     ).not.toBeInTheDocument();
