@@ -1,4 +1,8 @@
 import classNames from "classnames";
+import {
+  Breadcrumbs,
+  type LinkComponentProps,
+} from "@canonical/react-ds-global";
 import { type FC, type ReactNode, useLayoutEffect, useRef } from "react";
 import { Link } from "react-router";
 import { useMediaQuery } from "usehooks-ts";
@@ -14,6 +18,16 @@ interface PageHeaderProps {
   readonly visualTitle?: string;
   readonly helperContent?: ReactNode;
 }
+
+const BreadcrumbLink: FC<LinkComponentProps> = ({
+  href = "",
+  children,
+  ...props
+}) => (
+  <Link to={href} {...props}>
+    {children}
+  </Link>
+);
 
 const PageHeader: FC<PageHeaderProps> = ({
   title,
@@ -52,25 +66,18 @@ const PageHeader: FC<PageHeaderProps> = ({
     >
       {breadcrumbs && breadcrumbs.length > 0 && (
         <div className={classes.breadcrumbs}>
-          <nav className="p-breadcrumbs" aria-label="Breadcrumbs">
-            <ol className="p-breadcrumbs__items u-no-margin--bottom">
-              {breadcrumbs.map((breadcrumb, index) =>
-                !breadcrumb.current ? (
-                  <li className="p-breadcrumbs__item" key={index}>
-                    <Link to={breadcrumb.path ?? ""}>{breadcrumb.label}</Link>
-                  </li>
-                ) : (
-                  <li
-                    className="p-breadcrumbs__item"
-                    key={index}
-                    aria-current="page"
-                  >
-                    {breadcrumb.label}
-                  </li>
-                ),
-              )}
-            </ol>
-          </nav>
+          <Breadcrumbs
+            aria-label="Breadcrumbs"
+            LinkComponent={BreadcrumbLink}
+            items={breadcrumbs.map((breadcrumb) =>
+              breadcrumb.current
+                ? { label: breadcrumb.label, current: true, key: "current" }
+                : {
+                    label: breadcrumb.label,
+                    url: breadcrumb.path,
+                  },
+            )}
+          />
         </div>
       )}
       {hideTitle ? (

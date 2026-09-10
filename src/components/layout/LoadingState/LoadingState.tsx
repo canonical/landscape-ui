@@ -1,4 +1,6 @@
-import { Icon, ICONS } from "@canonical/react-components";
+import { ROOT_PATH } from "@/constants";
+import { getIconRootPath } from "@/libs/icons";
+import { Spinner } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import classes from "./LoadingState.module.scss";
 import classNames from "classnames";
@@ -8,11 +10,13 @@ interface LoadingStateProps {
   readonly inline?: boolean;
 }
 
+const iconRootPath = getIconRootPath(ROOT_PATH);
+
 const LoadingState: FC<LoadingStateProps> = ({ centerOnScreen, inline }) => {
   const spinningElement = (
     <>
       <span className="u-off-screen">Loading...</span>
-      <Icon name={ICONS.spinner} className="u-animation--spin" aria-hidden />
+      <Spinner rootPath={iconRootPath} />
     </>
   );
 

@@ -1,6 +1,10 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
+.cardGrid {
+  --grid-row-gap: 0;
+}
+
 .root {
   align-items: center;
   background-color: $colors--theme--background-alt;
@@ -8,17 +12,19 @@
   flex-direction: column;
   justify-content: center;
   min-height: 100vh;
+}
 
-  :global(.p-card) {
-    border: 0;
-    margin-left: auto;
-    margin-right: auto;
-    width: 500px;
-  }
+.card {
+  border: 0;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+  width: 500px;
+}
 
-  :global(.p-card__inner) {
-    padding-bottom: $spv--x-large;
-    padding-left: $sph--x-large;
-    padding-right: $sph--x-large;
-  }
+.inner {
+  padding-top: $spv--large;
+  padding-bottom: $spv--x-large;
+  padding-left: $sph--x-large;
+  padding-right: $sph--x-large;
 }

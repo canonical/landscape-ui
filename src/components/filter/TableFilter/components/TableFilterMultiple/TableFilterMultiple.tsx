@@ -1,10 +1,6 @@
 import SearchBoxWithForm from "@/components/form/SearchBoxWithForm";
-import {
-  Badge,
-  Button,
-  ContextualMenu,
-  Input,
-} from "@canonical/react-components";
+import { Button, ContextualMenu, Input } from "@canonical/react-components";
+import { Badge } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import type { ChangeEvent, FC } from "react";
 import { getCommonContextualMenuProps } from "../../helpers";

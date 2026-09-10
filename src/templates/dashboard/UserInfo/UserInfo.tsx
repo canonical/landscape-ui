@@ -1,7 +1,8 @@
 import type { FC } from "react";
 import { useState } from "react";
 import useAuth from "@/hooks/useAuth";
-import { ActionButton, Badge, Button, Icon } from "@canonical/react-components";
+import { ActionButton, Button, Icon } from "@canonical/react-components";
+import { Badge } from "@canonical/react-ds-global";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
 import { Link, useLocation } from "react-router";
@@ -189,7 +190,7 @@ const UserInfo: FC = () => {
               <Badge
                 className={classes.badge}
                 value={alertsSummaryCount}
-                isNegative
+                criticality="error"
               />
             )}
           </Link>

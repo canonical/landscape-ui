@@ -1,6 +1,6 @@
+import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { pluralize } from "@/utils/_helpers";
-import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
 import { useGetMirrorPackagesCount } from "../../api";
 

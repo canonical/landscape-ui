@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { getFeatures } from "@/features/instances";
 import useAuth from "@/hooks/useAuth";
 import type { Instance } from "@/types/Instance";
-import { Badge } from "@canonical/react-components";
+import { Badge } from "@canonical/react-ds-global";
 
 interface GetTabLabelProps {
   id: string;
@@ -42,7 +42,10 @@ const getTabLabel = ({
     return (
       <>
         <span>{label}</span>
-        <Badge value={packageCount} />
+        <Badge
+          value={packageCount}
+          criticality="information"
+        />
       </>
     );
   }
@@ -51,7 +54,7 @@ const getTabLabel = ({
     return (
       <>
         <span>{label}</span>
-        <Badge value={usnCount} isNegative />
+        <Badge value={usnCount} criticality="error" />
       </>
     );
   }
@@ -60,7 +63,10 @@ const getTabLabel = ({
     return (
       <>
         <span>{label}</span>
-        <Badge value={kernelCount} />
+        <Badge
+          value={kernelCount}
+          criticality="information"
+        />
       </>
     );
   }
