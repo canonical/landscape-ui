@@ -18,8 +18,8 @@ const AlertsList: FC<AlertsListProps> = ({ alerts, availableTagOptions }) => {
   );
   return (
     <Card className={classes.card}>
-      <Card.Header>
-        <p>{account?.title || "Alerts"}</p>
+      <Card.Header className={classes.header}>
+        <strong>{account?.title || "Alerts"}</strong>
       </Card.Header>
       <Card.Content className={classes.content}>
         <AlertsTable

@@ -2,13 +2,17 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .toggle {
+  align-items: center;
+  display: inline-flex;
+  gap: $sph--small;
   margin-bottom: 0;
   padding-left: $sph--large;
   white-space: nowrap;
 }
 
 .badgeContainer {
-  display: inline-block;
+  align-items: center;
+  display: inline-flex;
   margin-right: -$sph--x-small;
   text-align: right;
 
