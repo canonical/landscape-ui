@@ -1,14 +1,10 @@
 @import "vanilla-framework/scss/settings_spacing";
 @import "vanilla-framework/scss/settings_colors";
 
-.instancesPageHeader {
-  column-gap: $spv--x-small;
-}
-
 .instancesPageHelperContent {
-  align-self: flex-end;
-  margin: $spv--x-small;
-  padding-bottom: 2px;
+  align-self: center;
+  margin-left: $sph--small;
+  margin-right: $sph--small;
 }
 
 .instancesPageAccountInfoButton {
