@@ -44,7 +44,7 @@ export const useDeleteScriptModal = ({
       });
 
       notify.success({
-        message: `The script named "${script.title}" was redacted successfully`,
+        message: `"${script.title}" redacted successfully`,
         title: "Script redacted",
       });
     } catch (error) {
@@ -60,16 +60,22 @@ export const useDeleteScriptModal = ({
     onConfirmDelete: handleScriptDelete,
   };
 
+  const redactionWarning = (
+    <>
+      Redacting this script will permanently remove its contents from Landscape.
+      However, a record of the script, including who redacted it and when, will
+      be retained in the database. As a result, the script name{" "}
+      <strong>cannot be reused.</strong>
+    </>
+  );
+
   if (script.script_profiles.length === 0) {
     return {
       ...commonModalFields,
       deleteModalButtonLabel: "Redact",
       deleteModalBody: (
         <p className="u-margin--bottom">
-          Redacting this script will permanently remove its contents from
-          Landscape. However, a record of the script, including who redacted it
-          and when, will be retained in the database. The script name{" "}
-          <strong>cannot be reused as a result.</strong>
+          {redactionWarning}
           <br />
           <br />
           This action is <strong>irreversible</strong>.
@@ -84,10 +90,7 @@ export const useDeleteScriptModal = ({
     deleteModalBody: (
       <>
         <p className="u-margin--bottom">
-          Redacting this script will permanently remove its contents from
-          Landscape. However, a record of the script, including who redacted it
-          and when, will be retained in the database. The script name{" "}
-          <strong>cannot be reused as a result.</strong>
+          {redactionWarning}
           <br />
           <br />
           The script is also associated with the following profiles:
