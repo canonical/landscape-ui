@@ -267,8 +267,6 @@ describe("ScriptProfileForm edge cases", () => {
       path: "script-profiles",
       response: {
         error: "ScriptProfileDuplicate",
-        statusCode: 409,
-        message: "Script profile title already exists.",
       },
     });
 

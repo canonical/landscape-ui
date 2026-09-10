@@ -59,8 +59,6 @@ describe("ScriptProfileAddSidePanel", () => {
       path: "script-profiles",
       response: {
         error: "ScriptProfileDuplicate",
-        statusCode: 409,
-        message: "Script profile with this title already exists.",
       },
     });
 

@@ -139,9 +139,7 @@ describe("CreateScriptForm", () => {
       status: "error",
       path: "CreateScript",
       response: {
-        statusCode: 409,
         error: "DuplicateScript",
-        message: "Script with specified title is already present.",
       },
     });
 

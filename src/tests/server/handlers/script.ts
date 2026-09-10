@@ -166,19 +166,16 @@ export default [
       endpointStatus.status === "error" &&
       endpointStatus.path === "CreateScript"
     ) {
-      const {
-        statusCode,
-        error: errorCode,
-        message,
-      } = (endpointStatus.response as
-        | {
-            statusCode?: number;
-            error?: string;
-            message?: string;
-          }
-        | undefined) ?? {};
+      const { error } =
+        (endpointStatus.response as
+          | {
+              error?: string;
+            }
+          | undefined) ?? {};
 
-      throw createEndpointStatusError(statusCode, errorCode, message);
+      throw createEndpointStatusError({
+        error,
+      });
     }
 
     return HttpResponse.json({ id: 99 });

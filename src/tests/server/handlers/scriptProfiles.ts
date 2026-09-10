@@ -141,19 +141,16 @@ export default [
       const endpointStatus = getEndpointStatus("script-profiles");
 
       if (endpointStatus.status === "error") {
-        const {
-          statusCode,
-          error: errorCode,
-          message,
-        } = (endpointStatus.response as
-          | {
-              statusCode?: number;
-              error?: string;
-              message?: string;
-            }
-          | undefined) ?? {};
+        const { error } =
+          (endpointStatus.response as
+            | {
+                error?: string;
+              }
+            | undefined) ?? {};
 
-        throw createEndpointStatusError(statusCode, errorCode, message);
+        throw createEndpointStatusError({
+          error,
+        });
       }
     }
 
