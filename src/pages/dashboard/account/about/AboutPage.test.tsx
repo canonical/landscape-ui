@@ -23,11 +23,19 @@ describe("AboutPage", () => {
     const { container } = renderWithProviders(<AboutPage />);
 
     expect(screen.getByText("About")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "UI version" }),
+    ).toBeInTheDocument();
+    expect(container).toHaveInfoItem("App version", APP_VERSION);
     expect(container).toHaveInfoItem(
-      "UI version",
-      `${APP_VERSION} (${APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"})`,
+      "UI hash",
+      APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown",
     );
-    expect(container).toHaveInfoItem("Server version", "1.2.3 (abcdef)");
+    expect(
+      screen.getByRole("heading", { name: "Server version" }),
+    ).toBeInTheDocument();
+    expect(container).toHaveInfoItem("Package version", "1.2.3");
+    expect(container).toHaveInfoItem("Revision", "abcdef");
   });
 
   it("falls back to unknown when UI version or hash are unavailable", () => {
@@ -41,7 +49,8 @@ describe("AboutPage", () => {
 
     const { container } = renderWithProviders(<AboutPage />);
 
-    expect(container).toHaveInfoItem("UI version", "unknown (unknown)");
+    expect(container).toHaveInfoItem("App version", "unknown");
+    expect(container).toHaveInfoItem("UI hash", "unknown");
   });
 
   it("falls back to unknown when server package version or revision are unavailable", () => {
@@ -53,7 +62,8 @@ describe("AboutPage", () => {
 
     const { container } = renderWithProviders(<AboutPage />);
 
-    expect(container).toHaveInfoItem("Server version", "unknown (unknown)");
+    expect(container).toHaveInfoItem("Package version", "unknown");
+    expect(container).toHaveInfoItem("Revision", "unknown");
   });
 
   it("shows a loading state while env details are being fetched", () => {
@@ -64,6 +74,7 @@ describe("AboutPage", () => {
     renderWithProviders(<AboutPage />);
 
     expect(screen.getByRole("status")).toHaveTextContent("Loading...");
+    expect(screen.queryByText("UI version")).not.toBeInTheDocument();
     expect(screen.queryByText("Server version")).not.toBeInTheDocument();
   });
 });

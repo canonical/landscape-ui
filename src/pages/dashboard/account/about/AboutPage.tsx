@@ -7,6 +7,7 @@ import PageMain from "@/components/layout/PageMain";
 import { APP_COMMIT, APP_VERSION } from "@/constants";
 import useEnv from "@/hooks/useEnv";
 import type { FC } from "react";
+import classes from "./AboutPage.module.scss";
 
 const AboutPage: FC = () => {
   const { envLoading, packageVersion, revision } = useEnv();
@@ -15,21 +16,32 @@ const AboutPage: FC = () => {
     <PageMain>
       <PageHeader title="About" />
       <PageContent container="medium" align="left">
-        <FormSection title="Version">
-          {envLoading && <LoadingState />}
-          {!envLoading && (
-            <InfoGrid>
-              <InfoGrid.Item
-                label="UI version"
-                value={`${APP_VERSION || "unknown"} (${APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"})`}
-              />
-              <InfoGrid.Item
-                label="Server version"
-                value={`${packageVersion || "unknown"} (${revision || "unknown"})`}
-              />
-            </InfoGrid>
-          )}
-        </FormSection>
+        {envLoading && <LoadingState />}
+        {!envLoading && (
+          <>
+            <FormSection title="UI version">
+              <InfoGrid className={classes.versionGrid} dense>
+                <InfoGrid.Item
+                  label="App version"
+                  value={APP_VERSION || "unknown"}
+                />
+                <InfoGrid.Item
+                  label="UI hash"
+                  value={APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"}
+                />
+              </InfoGrid>
+            </FormSection>
+            <FormSection title="Server version">
+              <InfoGrid className={classes.versionGrid} dense>
+                <InfoGrid.Item
+                  label="Package version"
+                  value={packageVersion || "unknown"}
+                />
+                <InfoGrid.Item label="Revision" value={revision || "unknown"} />
+              </InfoGrid>
+            </FormSection>
+          </>
+        )}
       </PageContent>
     </PageMain>
   );
