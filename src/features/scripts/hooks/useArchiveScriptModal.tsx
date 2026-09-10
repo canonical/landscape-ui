@@ -58,15 +58,21 @@ export const useArchiveScriptModal = ({
     onConfirmArchive: handleScriptArchive,
   };
 
+  const archiveWarning = (
+    <>
+      Archiving the script will prevent it from running in the future. Its
+      record will be retained, and{" "}
+      <strong>the script name will be unavailable for reuse.</strong>
+    </>
+  );
+
   if (script.script_profiles.length === 0) {
     return {
       ...commonModalFields,
       archiveModalButtonLabel: "Archive",
       archiveModalBody: (
         <p className="u-margin--bottom">
-          Archiving the script will prevent it from running in the future. Its
-          record will be retained, and{" "}
-          <strong>the script name cannot be reused.</strong>
+          {archiveWarning}
           <br />
           <br />
           This action is <strong>irreversible</strong>.
@@ -81,9 +87,7 @@ export const useArchiveScriptModal = ({
     archiveModalBody: (
       <>
         <p className="u-margin--bottom">
-          Archiving the script will prevent it from running in the future. Its
-          record will be retained, and{" "}
-          <strong>the script name cannot be reused.</strong>
+          {archiveWarning}
           <br />
           <br />
           The script is also associated with the following profiles:

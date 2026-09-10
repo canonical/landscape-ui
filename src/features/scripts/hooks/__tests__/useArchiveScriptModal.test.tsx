@@ -78,7 +78,7 @@ describe("useArchiveScriptModal", () => {
       /record will be retained/i,
     );
     expect(screen.getByTestId("body")).toHaveTextContent(
-      /script name cannot be reused/i,
+      /script name will be unavailable for reuse/i,
     );
     expect(screen.getByTestId("body")).toHaveTextContent(/irreversible/i);
   });
