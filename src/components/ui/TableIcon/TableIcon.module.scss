@@ -1,0 +1,12 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.wrapper {
+  display: flex;
+
+  // Align the icon with the table cell's leading icon gutter.
+  transform: translateX(-1.5rem);
+}
+
+.iconSpan {
+  margin-right: 0.75rem;
+}

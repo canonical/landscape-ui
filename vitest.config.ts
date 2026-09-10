@@ -1,7 +1,14 @@
 import { readFileSync } from "fs";
-import { resolve } from "path";
+import { createRequire } from "module";
+import { dirname, resolve } from "path";
 import { defineConfig } from "vitest/config";
 import packageJson from "./package.json" with { type: "json" };
+
+const require = createRequire(import.meta.url);
+const reactDsGlobalLib = resolve(
+  dirname(require.resolve("@canonical/react-ds-global/package.json")),
+  "dist/esm/lib",
+);
 
 // Strip Vite's query suffix (e.g. "?v=hash") from a module id to get a real path.
 const cleanUrl = (id: string) => id.replace(/[?#].*$/, "");
@@ -23,6 +30,10 @@ export default defineConfig({
     globalSetup: [resolve(import.meta.dirname, "src/tests/global-setup.ts")],
     setupFiles: [resolve(import.meta.dirname, "src/tests/setup.ts")],
     alias: [
+      {
+        find: /^#lib\/(.*)$/,
+        replacement: `${reactDsGlobalLib}/$1`,
+      },
       {
         find: /^.*\.(css|scss|sass)$/,
         replacement: resolve(import.meta.dirname, "src/tests/styleMock.ts"),

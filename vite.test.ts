@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
 import fs from "fs";
-import type { PathLike, ReadStream, Stats } from "fs";
+import type { ReadStream } from "fs";
 import type { IncomingMessage, ServerResponse } from "http";
 import * as path from "path";
 import type { ResolvedConfig, ViteDevServer } from "vite";
@@ -64,17 +64,39 @@ describe("createPragmaIconsPlugin", () => {
     });
   });
 
+  it("serves application icons before packaged icons", () => {
+    const iconStream = Object.assign(new EventEmitter(), {
+      pipe: vi.fn(),
+    }) as unknown as ReadStream;
+    const createReadStream = vi
+      .spyOn(fs, "createReadStream")
+      .mockReturnValue(iconStream);
+    const { middleware } = registerPluginMiddleware();
+    const response = {
+      destroy: vi.fn(),
+      headersSent: false,
+      setHeader: vi.fn(),
+    };
+    const next = vi.fn();
+
+    middleware({ url: "/icons/google.svg" }, response, next);
+
+    expect(createReadStream).toHaveBeenCalledWith(
+      path.resolve(import.meta.dirname, "src/assets/icons/google.svg"),
+    );
+    expect(response.setHeader).toHaveBeenCalledWith(
+      "Content-Type",
+      "image/svg+xml",
+    );
+    expect(iconStream.pipe).toHaveBeenCalledWith(response);
+    expect(next).not.toHaveBeenCalled();
+  });
+
   it("logs stream failures after response headers are sent", () => {
     const streamError = new Error("read failed");
     const iconStream = Object.assign(new EventEmitter(), {
       pipe: vi.fn(),
     }) as unknown as ReadStream;
-    vi.spyOn(fs, "stat").mockImplementation(((
-      _filePath: PathLike,
-      callback: (error: NodeJS.ErrnoException | null, stats: Stats) => void,
-    ) => {
-      callback(null, { isFile: () => true } as Stats);
-    }) as unknown as typeof fs.stat);
     vi.spyOn(fs, "createReadStream").mockReturnValue(iconStream);
     const { middleware, warn } = registerPluginMiddleware();
     const response = {
@@ -96,6 +118,7 @@ describe("createPragmaIconsPlugin", () => {
     const root = "/tmp/landscape-ui";
     const outDir = "build";
     const copy = vi.spyOn(fs, "cpSync").mockImplementation(() => undefined);
+    vi.spyOn(fs, "existsSync").mockReturnValue(true);
     const plugin = createPragmaIconsPlugin();
     const configResolved = plugin.configResolved as (
       config: ResolvedConfig,
@@ -105,8 +128,15 @@ describe("createPragmaIconsPlugin", () => {
     configResolved({ root, build: { outDir } } as ResolvedConfig);
     writeBundle();
 
-    expect(copy).toHaveBeenCalledWith(
+    expect(copy).toHaveBeenNthCalledWith(
+      1,
       expect.any(String),
+      path.resolve(root, outDir, "icons"),
+      { force: true, recursive: true },
+    );
+    expect(copy).toHaveBeenNthCalledWith(
+      2,
+      path.resolve(root, "src/assets/icons"),
       path.resolve(root, outDir, "icons"),
       { force: true, recursive: true },
     );
