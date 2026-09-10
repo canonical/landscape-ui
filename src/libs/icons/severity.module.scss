@@ -1,0 +1,22 @@
+@import "vanilla-framework/scss/settings_colors";
+
+.danger {
+  color: $color-negative;
+}
+
+.warning {
+  color: $color-caution;
+}
+
+.positive {
+  color: $color-positive;
+}
+
+.info {
+  color: $color-information;
+}
+
+.neutral {
+  color: $color-mid-dark;
+  opacity: 0.85;
+}
