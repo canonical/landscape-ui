@@ -97,7 +97,10 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
         : "Generate";
 
     return (
-      <div key={account.title} className={classes.container}>
+      <div
+        key={account.title}
+        className={classNames(classes.container, "grid")}
+      >
         <Card>
           <Card.Header className={classes.header}>
             <strong>{account.title}</strong>

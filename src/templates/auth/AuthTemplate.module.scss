@@ -1,6 +1,10 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
+.cardGrid {
+  --grid-row-gap: 0;
+}
+
 .root {
   align-items: center;
   background-color: $colors--theme--background-alt;
