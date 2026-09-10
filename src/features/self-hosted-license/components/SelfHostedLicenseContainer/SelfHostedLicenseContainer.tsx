@@ -1,9 +1,9 @@
 import FormSection from "@/components/form/FormSection";
 import { ROUTES } from "@/libs/routes";
-import { CodeSnippet } from "@canonical/react-components";
 import type { FC } from "react";
 import { Link as RouterLink } from "react-router";
 import { useGetSelfHostedLicense } from "../../api/useGetSelfHostedLicense";
+import CopyableCodeSnippet from "../CopyableCodeSnippet";
 import DownloadLicenseButton from "../DownloadLicenseButton";
 import LicenseCurlCommand from "../LicenseCurlCommand";
 import classes from "./SelfHostedLicenseContainer.module.scss";
@@ -36,13 +36,7 @@ const SelfHostedLicenseContainer: FC = () => {
         location:
       </p>
 
-      <CodeSnippet
-        blocks={[
-          {
-            code: "/etc/landscape/license.txt",
-          },
-        ]}
-      />
+      <CopyableCodeSnippet value="/etc/landscape/license.txt" />
 
       <p className={classes.paragraph3}>
         If you have the <span className={classes.curl}>curl</span> package

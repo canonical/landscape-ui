@@ -18,6 +18,8 @@
 }
 
 .content {
+  box-sizing: border-box;
+  min-width: 300px;
   width: 100%;
   max-width: 86rem;
 }
