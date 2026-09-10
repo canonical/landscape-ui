@@ -1,5 +1,6 @@
 import { Icon } from "@canonical/react-components";
 import { Card } from "@canonical/react-ds-global";
+import classNames from "classnames";
 import type { FC, ReactNode } from "react";
 import classes from "./Flow.module.scss";
 
@@ -21,7 +22,7 @@ const Flow: FC<FlowProps> = ({ cards }) => {
       <div className={classes.line} />
 
       {cards.map((card, key) => (
-        <div key={key}>
+        <div key={key} className={classNames("grid", classes.cardGrid)}>
           <Card>
             <Card.Content>
               <div className={classes.header}>

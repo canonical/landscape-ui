@@ -1,4 +1,4 @@
-import { Icon, ICONS } from "@canonical/react-components";
+import { Spinner } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import classes from "./LoadingState.module.scss";
 import classNames from "classnames";
@@ -12,7 +12,7 @@ const LoadingState: FC<LoadingStateProps> = ({ centerOnScreen, inline }) => {
   const spinningElement = (
     <>
       <span className="u-off-screen">Loading...</span>
-      <Icon name={ICONS.spinner} className="u-animation--spin" aria-hidden />
+      <Spinner />
     </>
   );
 

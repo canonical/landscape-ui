@@ -1,6 +1,10 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
+.cardGrid {
+  --grid-row-gap: 0;
+}
+
 .body {
   margin-left: $sph--x-large;
 }
