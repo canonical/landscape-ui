@@ -3,7 +3,6 @@ import { getFeatures } from "@/features/instances";
 import useAuth from "@/hooks/useAuth";
 import type { Instance } from "@/types/Instance";
 import { Badge } from "@canonical/react-ds-global";
-import classes from "./SingleInstanceTabs.module.scss";
 
 interface GetTabLabelProps {
   id: string;
@@ -45,7 +44,6 @@ const getTabLabel = ({
         <span>{label}</span>
         <Badge
           value={packageCount}
-          className={classes.badge}
           criticality="information"
         />
       </>
@@ -56,7 +54,7 @@ const getTabLabel = ({
     return (
       <>
         <span>{label}</span>
-        <Badge value={usnCount} criticality="error" className={classes.badge} />
+        <Badge value={usnCount} criticality="error" />
       </>
     );
   }
@@ -67,7 +65,6 @@ const getTabLabel = ({
         <span>{label}</span>
         <Badge
           value={kernelCount}
-          className={classes.badge}
           criticality="information"
         />
       </>
