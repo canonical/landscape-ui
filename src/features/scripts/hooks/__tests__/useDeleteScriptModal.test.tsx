@@ -113,7 +113,9 @@ describe("useDeleteScriptModal", () => {
     await user.click(screen.getByRole("button", { name: /confirm delete/i }));
 
     expect(
-      await screen.findByText(/script.*redacted successfully/i),
+      await screen.findByText(
+        `"${scriptWithNoProfiles.title}" redacted successfully`,
+      ),
     ).toBeInTheDocument();
   });
 

@@ -418,7 +418,9 @@ describe("Scripts List Contextual Menu", () => {
       await user.click(screen.getByRole("button", { name: "Redact" }));
 
       expect(
-        await screen.findByText(/script.*redacted successfully/i),
+        await screen.findByText(
+          `"${activeScriptWithNoProfiles.title}" redacted successfully`,
+        ),
       ).toBeInTheDocument();
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
