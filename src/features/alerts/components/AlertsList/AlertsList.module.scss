@@ -21,4 +21,24 @@
 .content {
   display: flex;
   min-height: 0;
+  padding-bottom: 0 !important;
+
+  table {
+    margin-bottom: 0;
+  }
+
+  thead tr {
+    border-bottom-color: $colors--theme--border-default;
+  }
+
+  td,
+  th {
+    &:first-child {
+      padding-left: 0;
+    }
+
+    &:last-child {
+      padding-right: 0;
+    }
+  }
 }
