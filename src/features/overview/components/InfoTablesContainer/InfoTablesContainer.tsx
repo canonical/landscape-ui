@@ -441,7 +441,7 @@ const InfoTablesContainer: FC = () => {
             confirmationModalProps={{
               title: `Upgrade ${currentUpgradesTab === "usns" ? "USNs" : "packages"}`,
               children: (
-                <p>
+                <p className="u-margin--bottom">
                   Are you sure you want to upgrade all{" "}
                   {currentUpgradesTab === "usns" ? "USNs" : "packages"}?
                 </p>
@@ -535,7 +535,9 @@ const InfoTablesContainer: FC = () => {
               confirmationModalProps={{
                 title: "Approve activities",
                 children: (
-                  <p>Are you sure you want to approve selected activities?</p>
+                  <p className="u-margin--bottom">
+                    Are you sure you want to approve selected activities?
+                  </p>
                 ),
                 confirmButtonLabel: "Approve",
                 confirmButtonAppearance: "positive",

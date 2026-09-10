@@ -21,12 +21,14 @@ const WelcomePopupModal: FC<WelcomeBannerProps> = ({ hideBanner }) => {
         </Button>
       }
     >
-      <p>Welcome to the new Landscape web portal (Preview)!</p>
-      <p>
+      <p className="u-margin--bottom">
+        Welcome to the new Landscape web portal (Preview)!
+      </p>
+      <p className="u-margin--bottom">
         This portal is still a work-in-progress. Some features may not be
         available yet and you may encounter some bugs.
       </p>
-      <p>
+      <p className="u-margin--bottom">
         You can switch back to the classic portal at any time and{" "}
         <a href={FEEDBACK_LINK} target="_blank" rel="noopener noreferrer">
           share your feedback with us on Discourse

@@ -55,7 +55,7 @@ const MirrorFilterHelpButton: FC = () => {
             close={closeModal}
             className={classes.modal}
           >
-            <p>
+            <p className="u-margin--bottom">
               Available search terms for use in package queries. If multiple
               terms are separated by <code>|</code> (OR), any of the conditions
               will match. Terms separated by <code>,</code> (AND) must all

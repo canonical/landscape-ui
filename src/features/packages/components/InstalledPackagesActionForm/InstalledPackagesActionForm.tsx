@@ -177,7 +177,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
                 error={getFormikError(formik, "version")}
               />
             ) : (
-              <p>No downgrade versions</p>
+              <p className="u-margin--bottom">No downgrade versions</p>
             )}
           </Col>
         </Row>
@@ -192,7 +192,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
           />
         )}
       {(action === "hold" || action === "unhold") && (
-        <p>{getActionInfo(packages, action)}</p>
+        <p className="u-margin--bottom">{getActionInfo(packages, action)}</p>
       )}
       {["remove", "upgrade", "hold", "unhold"].includes(action) && (
         <>

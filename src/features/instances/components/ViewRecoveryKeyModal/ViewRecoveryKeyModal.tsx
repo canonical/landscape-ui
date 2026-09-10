@@ -40,7 +40,7 @@ const ViewRecoveryKeyModal: FC<ViewRecoveryKeyModalProps> = ({
     return (
       <>
         {isRecoveryKeyGenerationActivityInProgress && (
-          <p>
+          <p className="u-margin--bottom">
             A recovery key generation activity is in progress. You can still
             view the current key until the activity completes.
           </p>
@@ -64,7 +64,7 @@ const ViewRecoveryKeyModal: FC<ViewRecoveryKeyModalProps> = ({
       cancelButtonProps={{ style: { display: "none" } }}
       renderInPortal
     >
-      <p>
+      <p className="u-margin--bottom">
         This key allows you to unlock and access encrypted data on instance if
         the primary encryption passphrase is unavailable or forgotten. Share it
         only through a secure method.

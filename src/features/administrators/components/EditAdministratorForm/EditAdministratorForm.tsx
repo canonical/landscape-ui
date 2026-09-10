@@ -124,7 +124,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
         confirmationModalProps={{
           title: "Disable Administrator",
           children: (
-            <p>
+            <p className="u-margin--bottom">
               This will remove the administrator from your Landscape
               organization.
             </p>
