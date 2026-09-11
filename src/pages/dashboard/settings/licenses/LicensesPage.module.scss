@@ -1,0 +1,22 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.subtitle {
+  column-gap: $sph--x-small;
+  display: flex;
+  flex-wrap: wrap;
+  max-width: calc(100% - 10rem);
+
+  @media (width <= 619px) {
+    max-width: 100%;
+
+    // Description shortened to leave room for the "Add license" action button
+    > :first-child {
+      flex: 0 0 calc(100% - 9rem);
+    }
+
+    // Link pushed to its own full-width line below
+    > :last-child {
+      flex: 0 0 100%;
+    }
+  }
+}

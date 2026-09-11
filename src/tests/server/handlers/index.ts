@@ -15,6 +15,7 @@ import features from "./features";
 import instance from "./instance";
 import invitations from "./invitations";
 import kernel from "./kernel";
+import licenses from "./licenses";
 import mirrors from "./mirrors";
 import localRepository from "./localRepository";
 import oidcIssuers from "./oidcIssuers";
@@ -61,6 +62,7 @@ export default [
   ...instance,
   ...invitations,
   ...kernel,
+  ...licenses,
   ...mirrors,
   ...localRepository,
   ...operations,
