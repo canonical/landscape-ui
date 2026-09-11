@@ -71,6 +71,6 @@ export default [
       }
     }
 
-    return HttpResponse.json({ max_people_count: 10 });
+    return HttpResponse.json({ max_people_count: 20 });
   }),
 ];

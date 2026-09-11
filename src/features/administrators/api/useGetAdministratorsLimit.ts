@@ -19,7 +19,7 @@ export const useGetAdministratorsLimit = (
 ) => {
   const authFetch = useFetch();
 
-  const { data, isPending } = useQuery<
+  const { data, isPending, isError } = useQuery<
     AxiosResponse<MaxPeopleCountResponse>,
     AxiosError<ApiError>
   >({
@@ -31,5 +31,6 @@ export const useGetAdministratorsLimit = (
   return {
     administratorsLimit: data?.data.max_people_count ?? 0,
     isGettingAdministratorsLimit: isPending,
+    isAdministratorsError: isError,
   };
 };

@@ -19,12 +19,12 @@ describe("AdministratorLimitModal", () => {
 
   it("renders error message when the limit is undetermined", () => {
     renderWithProviders(
-      <AdministratorLimitModal close={vi.fn()} isLimitError />,
+      <AdministratorLimitModal close={vi.fn()} isAdminInfoError />,
     );
 
     expect(
       screen.getByRole("heading", {
-        name: "Administrator limit cannot be determined",
+        name: "Remaining invitations cannot be determined",
       }),
     ).toBeInTheDocument();
     expect(
@@ -35,13 +35,26 @@ describe("AdministratorLimitModal", () => {
     ).toBeInTheDocument();
   });
 
-  it("calls close when the modal is closed", async () => {
+  it("calls close when the footer close button is clicked", async () => {
     const close = vi.fn();
     const user = userEvent.setup();
 
     renderWithProviders(<AdministratorLimitModal close={close} />);
 
-    await user.click(screen.getByRole("button", { name: /close/i }));
+    await user.click(screen.getByRole("button", { name: "Close" }));
+
+    expect(close).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls close when the modal header close button is clicked", async () => {
+    const close = vi.fn();
+    const user = userEvent.setup();
+
+    renderWithProviders(<AdministratorLimitModal close={close} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Close active modal" }),
+    );
 
     expect(close).toHaveBeenCalledTimes(1);
   });

@@ -8,19 +8,13 @@ import {
   AdministratorsLimit,
   useGetAdministratorsLimit,
   useAdministrators,
+  AdministratorLimitModal,
+  InviteAdministratorForm,
 } from "@/features/administrators";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-
-const InviteAdministratorForm = lazy(
-  () => import("@/features/administrators/components/InviteAdministratorForm"),
-);
-
-const AdministratorLimitModal = lazy(
-  () => import("@/features/administrators/components/AdministratorLimitModal"),
-);
 
 const AdministratorsPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
@@ -30,25 +24,35 @@ const AdministratorsPage: FC = () => {
     setFalse: closeModal,
   } = useBoolean(false);
 
-  const { getAdministratorsQuery } = useAdministrators();
+  const { getAdministratorsQuery, getInvitationsQuery } = useAdministrators();
+  const { data: administratorsData, isPending: isGettingAdministrators } =
+    getAdministratorsQuery();
   const {
-    data: getAdministratorsQueryResult,
-    isLoading: getAdministratorsQueryIsLoading,
-  } = getAdministratorsQuery();
+    data: invitationsData,
+    isPending: isGettingInvitations,
+    isError: isInvitationsError,
+  } = getInvitationsQuery();
 
-  const { administratorsLimit, isGettingAdministratorsLimit } =
-    useGetAdministratorsLimit();
+  const {
+    administratorsLimit,
+    isGettingAdministratorsLimit,
+    isAdministratorsError,
+  } = useGetAdministratorsLimit();
 
-  const administrators = getAdministratorsQueryResult?.data ?? [];
+  const administrators = administratorsData?.data ?? [];
+  const invitations = invitationsData?.data.results ?? [];
+
   const isGettingAdminInfo =
-    isGettingAdministratorsLimit || getAdministratorsQueryIsLoading;
+    isGettingAdministratorsLimit ||
+    isGettingAdministrators ||
+    isGettingInvitations;
+  const isAdminInfoError = isAdministratorsError || isInvitationsError;
 
-  if (isGettingAdminInfo) {
-    return <LoadingState />;
-  }
+  const totalAdminsAndInvites = administrators.length + invitations.length;
+  const isAdminLimitReached = totalAdminsAndInvites >= administratorsLimit;
 
   const handleInviteAdministrator = () => {
-    if (administrators.length >= administratorsLimit) {
+    if (isAdminLimitReached || isAdminInfoError) {
       openModal();
     } else {
       setSidePanelContent(
@@ -79,18 +83,28 @@ const AdministratorsPage: FC = () => {
             : undefined
         }
       />
-      <AdministratorsLimit
-        administratorsCount={administrators.length}
-        administratorsLimit={administratorsLimit}
-      />
-      <PageContent hasTable>
-        <AdministratorsTabs administrators={administrators} />
-      </PageContent>
+      {isGettingAdminInfo ? (
+        <LoadingState />
+      ) : (
+        <>
+          <AdministratorsLimit
+            adminAndInviteCount={totalAdminsAndInvites}
+            administratorsLimit={administratorsLimit}
+            isAdminInfoError={isAdminInfoError}
+          />
+          <PageContent hasTable>
+            <AdministratorsTabs
+              administrators={administrators}
+              invitationsCount={invitations.length}
+            />
+          </PageContent>
+        </>
+      )}
       {isModalOpen && (
         <Suspense fallback={<LoadingState centerOnScreen />}>
           <AdministratorLimitModal
             close={closeModal}
-            isLimitError={administratorsLimit === 0}
+            isAdminInfoError={isAdminInfoError}
           />
         </Suspense>
       )}

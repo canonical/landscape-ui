@@ -27,4 +27,16 @@ describe("AdministratorsTabs", () => {
 
     expect(await screen.findByText(/ben@example.com/i)).toBeInTheDocument();
   });
+
+  it("shows the invitations count badge on the Invites tab", async () => {
+    renderWithProviders(
+      <AdministratorsTabs
+        administrators={administrators}
+        invitationsCount={5}
+      />,
+    );
+
+    const invitesTab = await screen.findByRole("tab", { name: /Invites/ });
+    expect(invitesTab).toHaveTextContent("5");
+  });
 });

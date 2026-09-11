@@ -26,6 +26,28 @@ describe("AdministratorsPage", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows a loading state while admin info is being fetched", () => {
+    renderWithProviders(<AdministratorsPage />);
+
+    expect(screen.getByRole("status")).toBeInTheDocument();
+  });
+
+  it("renders the administrators info", async () => {
+    renderWithProviders(<AdministratorsPage />);
+
+    expect(
+      await screen.findByText("Maximum administrators"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Remaining invitations")).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("columnheader", { name: "Name" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Bob Mellow" }),
+    ).toBeInTheDocument();
+  });
+
   it("hides Invite administrator button in empty state", async () => {
     setEndpointStatus({ path: "GetAdministrators", status: "empty" });
     renderWithProviders(<AdministratorsPage />);
@@ -83,6 +105,7 @@ describe("AdministratorsPage", () => {
       }),
     ).toBeInTheDocument();
   });
+
   it("opens the admin limit error modal when the request fails", async () => {
     const user = userEvent.setup();
     setEndpointStatus({ path: "max-people-count", status: "error" });
@@ -96,7 +119,7 @@ describe("AdministratorsPage", () => {
 
     expect(
       await screen.findByRole("heading", {
-        name: "Administrator limit cannot be determined",
+        name: "Remaining invitations cannot be determined",
       }),
     ).toBeInTheDocument();
   });
