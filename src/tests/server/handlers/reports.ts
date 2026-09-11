@@ -29,7 +29,7 @@ export const complianceReport: ComplianceReport = {
 // A report for a selection the server accounted for but with nothing to show,
 // so the "empty" endpoint status can be simulated for this endpoint too.
 const emptyBucket = { count: 0, computer_ids: [] };
-const emptyUsnFixedInBuckets = [
+const emptyUsnFixedInBuckets: ComplianceReport["usn_fixed_in"] = [
   { days: 2, ...emptyBucket },
   { days: 14, ...emptyBucket },
   { days: 30, ...emptyBucket },
