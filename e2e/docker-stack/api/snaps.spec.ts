@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { getAuthToken } from "../helpers/auth";
 
 const HTTP_BAD_REQUEST = 400;
+const ONE_DAY_MS = 86_400_000;
 
 test.describe("Snaps API Contract", () => {
   let token = "";
@@ -33,7 +34,10 @@ test.describe("Snaps API Contract", () => {
         action: "hold",
         computer_ids: [computerId],
         snaps: [
-          { name: "no-such-snap", args: { time: new Date(Date.now() + 86_400_000).toISOString() } },
+          {
+            name: "no-such-snap",
+            args: { time: new Date(Date.now() + ONE_DAY_MS).toISOString() },
+          },
         ],
       },
       headers: { Authorization: `Bearer ${token}` },
