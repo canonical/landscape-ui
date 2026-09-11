@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { getAuthToken } from "../helpers/auth";
 
+const HTTP_BAD_REQUEST = 400;
+
 test.describe("Snaps API Contract", () => {
   let token = "";
   let computerId = 0;
@@ -37,7 +39,7 @@ test.describe("Snaps API Contract", () => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    expect(res.status()).toBe(400);
+    expect(res.status()).toBe(HTTP_BAD_REQUEST);
     const body = await res.json();
     expect(body.error).toBe("ApiRequestError");
     expect(body.message).toContain("not applicable");
@@ -56,7 +58,7 @@ test.describe("Snaps API Contract", () => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    expect(res.status()).toBe(400);
+    expect(res.status()).toBe(HTTP_BAD_REQUEST);
     const body = await res.json();
     expect(body.error).toBe("ApiRequestError");
     expect(body.message).toContain("Invalid args");
