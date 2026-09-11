@@ -10,6 +10,7 @@ import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
 import { ROUTES } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import type * as AlertNotifications from "@/features/alert-notifications";
 import { useAlertsSummary } from "@/features/alert-notifications";
 
 vi.mock("@/hooks/useAuth");
@@ -36,6 +37,10 @@ const mockAuth: AuthContextProps = {
   hasAccounts: false,
 };
 
+const { useAlertsSummary: realUseAlertsSummary } = await vi.importActual<
+  typeof AlertNotifications
+>("@/features/alert-notifications");
+
 const labels = ["Unknown user", "Alerts", "Sign out"];
 
 describe("UserInfo", () => {
@@ -43,7 +48,7 @@ describe("UserInfo", () => {
     vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
     vi.mocked(useAuth).mockReturnValue(mockAuth);
     setEndpointStatus("default");
-    mockUseAlertsSummary(false);
+    vi.mocked(useAlertsSummary).mockImplementation(realUseAlertsSummary);
   });
 
   afterEach(() => {
@@ -157,13 +162,12 @@ describe("UserInfo", () => {
     expect(alertsLink).toHaveAttribute("aria-current", "page");
   });
 
-  it("shows the alerts indicator when there are alerts", () => {
-    mockUseAlertsSummary(true);
+  it("shows the alerts indicator when there are alerts", async () => {
     renderWithProviders(<UserInfo />);
 
     const alertsLink = screen.getByRole("link", { name: /alerts/i });
     expect(
-      within(alertsLink).getByLabelText("There are unresolved alerts"),
+      await within(alertsLink).findByLabelText("There are unresolved alerts"),
     ).toBeInTheDocument();
   });
 
