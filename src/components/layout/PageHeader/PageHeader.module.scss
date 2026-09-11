@@ -9,3 +9,16 @@
 .visualTitle {
   flex-shrink: 0;
 }
+
+.header {
+  flex-direction: column;
+}
+
+.contentRow {
+  display: flex;
+}
+
+.subtitle {
+  color: $colors--theme--text-muted;
+  padding-bottom: $sph--small;
+}

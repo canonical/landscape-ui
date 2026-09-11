@@ -5,9 +5,9 @@ import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { LicensesList, useGetLicenses } from "@/features/licenses";
 import { ROUTES } from "@/libs/routes";
-import { Icon, Link } from "@canonical/react-components";
+import { Link as ExternalLink } from "@canonical/react-components";
 import type { FC } from "react";
-import { Link as RouteLink } from "react-router";
+import { Link as Link } from "react-router";
 import classes from "./LicensesPage.module.scss";
 
 const LicensesPage: FC = () => {
@@ -21,28 +21,30 @@ const LicensesPage: FC = () => {
     <PageMain>
       <PageHeader
         title="Licenses"
+        subtitle={
+          <div className={classes.subtitle}>
+            <span>Keep track of your active licenses.</span>
+            <Link to={ROUTES.instances.root({ query: "license-id:none" })}>
+              View instances without a Landscape license.
+            </Link>
+          </div>
+        }
         actions={
           licenses.length
             ? [
-                <Link
+                <ExternalLink
                   key="add-license"
-                  className="p-button--positive has-icon"
                   href="https://ubuntu.com/pro"
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="p-button--positive u-no-margin--bottom"
                 >
-                  <Icon name="plus" light />
-                  <span>Add license</span>
-                </Link>,
+                  Add license
+                </ExternalLink>,
               ]
             : undefined
         }
       />
-      <div className={classes.unlicensed}>
-        <RouteLink to={ROUTES.instances.root({ query: "license-id:none" })}>
-          View instances without a Landscape license.
-        </RouteLink>
-      </div>
       <PageContent hasTable>
         {!licenses.length ? (
           <EmptyState
