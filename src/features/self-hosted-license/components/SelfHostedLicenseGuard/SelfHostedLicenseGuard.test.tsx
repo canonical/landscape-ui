@@ -48,8 +48,8 @@ describe("SelfHostedLicenseGuard", () => {
   it("redirects when the SaaS account is not self-hosted enabled", async () => {
     setEndpointStatus({
       status: "variant",
-      path: "self-hosted/enabled",
-      response: { lds_enabled: false },
+      path: "self-hosted/status",
+      response: { enabled: false },
     });
 
     renderWithRoutes(envState);

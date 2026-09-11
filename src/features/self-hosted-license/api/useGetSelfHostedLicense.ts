@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
 interface SelfHostedLicenseResponse {
-  download_url: string;
+  license_url: string;
 }
 
 export const useGetSelfHostedLicense = () => {
@@ -15,11 +15,11 @@ export const useGetSelfHostedLicense = () => {
     AxiosError<ApiError>
   >({
     queryKey: ["selfHostedLicense"],
-    queryFn: async () => authFetch.get("self-hosted/license"),
+    queryFn: async () => authFetch.get("self-hosted/license-url"),
   });
 
   return {
-    downloadUrl: response?.data.download_url,
+    downloadUrl: response?.data.license_url,
     isGettingSelfHostedLicense: isPending,
   };
 };

@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
 interface SelfHostedEnabledResponse {
-  lds_enabled: boolean;
+  enabled: boolean;
 }
 
 export const useGetSelfHostedEnabled = (enabled: boolean) => {
@@ -15,13 +15,13 @@ export const useGetSelfHostedEnabled = (enabled: boolean) => {
     AxiosError<ApiError>
   >({
     queryKey: ["selfHostedEnabled"],
-    queryFn: async () => authFetch.get("self-hosted/enabled"),
+    queryFn: async () => authFetch.get("self-hosted/status"),
     enabled,
   });
 
   return {
     isGettingSelfHostedEnabled: isPending,
-    isSelfHostedEnabled: response?.data.lds_enabled ?? false,
+    isSelfHostedEnabled: response?.data.enabled ?? false,
     isSelfHostedEnabledError: isError,
   };
 };

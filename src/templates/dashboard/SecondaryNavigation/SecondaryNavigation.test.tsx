@@ -17,7 +17,7 @@ vi.mock("usehooks-ts", async () => {
 });
 
 describe("SecondaryNavigation", () => {
-  it("renders correctly", () => {
+  it("renders correctly", async () => {
     renderWithProviders(
       <SecondaryNavigation
         title={ACCOUNT_SETTINGS.label}
@@ -28,11 +28,13 @@ describe("SecondaryNavigation", () => {
     expect(
       screen.getByRole("heading", { name: ACCOUNT_SETTINGS.label }),
     ).toBeInTheDocument();
-    ACCOUNT_SETTINGS.items?.forEach((item) => {
-      expect(
-        screen.getByRole("link", { name: item.label }),
-      ).toBeInTheDocument();
-    });
+    await Promise.all(
+      ACCOUNT_SETTINGS.items?.map(async (item) => {
+        expect(
+          await screen.findByRole("link", { name: item.label }),
+        ).toBeInTheDocument();
+      }) ?? [],
+    );
   });
 
   it("can set an active item", () => {
@@ -78,8 +80,8 @@ describe("SecondaryNavigation", () => {
   it("hides the self-hosted license item when the account is not entitled", async () => {
     setEndpointStatus({
       status: "variant",
-      path: "self-hosted/enabled",
-      response: { lds_enabled: false },
+      path: "self-hosted/status",
+      response: { enabled: false },
     });
 
     renderWithProviders(

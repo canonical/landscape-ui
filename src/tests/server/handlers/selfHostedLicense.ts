@@ -3,7 +3,7 @@ import { selfHostedLicense } from "@/tests/mocks/selfHostedLicense";
 import { http, HttpResponse } from "msw";
 
 export default [
-  http.get(`${API_URL}self-hosted/license`, () =>
+  http.get(`${API_URL}self-hosted/license-url`, () =>
     HttpResponse.json(selfHostedLicense),
   ),
 ];
