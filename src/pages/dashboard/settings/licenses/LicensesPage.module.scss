@@ -6,7 +6,7 @@
   flex-wrap: wrap;
   max-width: calc(100% - 10rem);
 
-  @media (max-width: 619px) {
+  @media (width <= 619px) {
     max-width: 100%;
 
     // Description shortened to leave room for the "Add license" action button
