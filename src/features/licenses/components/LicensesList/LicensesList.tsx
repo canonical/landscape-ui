@@ -18,13 +18,10 @@ const LicensesList: FC<LicensesListProps> = ({ licenses }) => {
     () => [
       {
         Header: "Expiration date",
-        Cell: ({ row: { original: license } }: CellProps<License>) => {
-          if (license.expiration_date) {
-            return date(license.expiration_date).format(DISPLAY_DATE_FORMAT);
-          }
-
-          return "Never";
-        },
+        Cell: ({ row: { original: license } }: CellProps<License>) =>
+          license.expiration_date
+            ? date(license.expiration_date).utc().format(DISPLAY_DATE_FORMAT)
+            : "Never",
       },
       {
         Header: "Seats used",
@@ -58,7 +55,7 @@ const LicensesList: FC<LicensesListProps> = ({ licenses }) => {
       columns={columns}
       data={licenses}
       emptyMsg="No licenses found."
-      minWidth={500}
+      minWidth={550}
     />
   );
 };

@@ -18,7 +18,7 @@ describe("LicensesList", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        date(unusedLicensed.expiration_date).format(DISPLAY_DATE_FORMAT),
+        date(unusedLicensed.expiration_date).utc().format(DISPLAY_DATE_FORMAT),
       ),
     ).toBeInTheDocument();
 
