@@ -16,8 +16,12 @@ import {
 import { allLoginMethods } from "@/tests/mocks/loginMethods";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { invitationState } from "./invitations";
+import { accountsDefault } from "@/tests/mocks/accounts";
+import { authUser } from "@/tests/mocks/auth";
+import { reauthenticationRequiredAccounts } from "@/tests/mocks/staffAccounts";
 import { createEndpointStatusError } from "./_constants";
 import { shouldApplyEndpointStatus } from "./_helpers";
+import { getStaffAccountByName, staffState } from "./staffAccounts";
 
 interface SwitchAccountParams {
   account_name: string;
@@ -52,7 +56,10 @@ export default [
   http.post<never, LoginRequestParams, AuthStateResponse>(
     `${API_URL}login`,
     () => {
-      return HttpResponse.json(authResponse);
+      return HttpResponse.json({
+        ...authResponse,
+        global_roles: [...staffState.globalRoles],
+      });
     },
   ),
 
@@ -84,12 +91,58 @@ export default [
     return HttpResponse.json(allLoginMethods);
   }),
 
-  http.post<never, SwitchAccountParams, SwitchAccountResponse>(
+  // Mirrors `switch_account_handler`: staff (a literal SupportProvider check,
+  // like the server's) may enter accounts they are not a member of and bypass
+  // the target's re-authentication policy; non-members get the same
+  // non-disclosing 400 as an unknown account.
+  http.post<never, SwitchAccountParams>(
     `${API_URL}switch-account`,
     async ({ request }) => {
       const { account_name } = await request.json();
 
-      return HttpResponse.json({
+      const unknownAccountResponse = () =>
+        HttpResponse.json(
+          {
+            error: "UnknownAccountError",
+            message: "The specified account couldn't be found.",
+          },
+          { status: 400 },
+        );
+
+      // The mock caller is a member of the accounts in both member-account
+      // mocks (`authUser.accounts` and `accountsDefault` — different tests
+      // build their auth state from either).
+      const memberAccountNames = [
+        ...authUser.accounts.map(({ name }) => name),
+        ...accountsDefault.map(({ name }) => name),
+      ];
+
+      const isMember = memberAccountNames.includes(account_name);
+
+      if (!getStaffAccountByName(account_name) && !isMember) {
+        return unknownAccountResponse();
+      }
+      const isStaff = staffState.globalRoles.includes("SupportProvider");
+
+      if (!isMember && !isStaff) {
+        return unknownAccountResponse();
+      }
+
+      if (
+        !isStaff &&
+        reauthenticationRequiredAccounts.includes(account_name)
+      ) {
+        return HttpResponse.json(
+          {
+            error: "ApiRequestError",
+            message: `Account '${account_name}' requires re-authentication.`,
+            detail: null,
+          },
+          { status: 401 },
+        );
+      }
+
+      return HttpResponse.json<SwitchAccountResponse>({
         token: `${account_name}-token`,
       });
     },
@@ -397,6 +450,7 @@ export default [
         email: "new-user@example.com",
         name: "New Ubuntu One User",
         token: "new-user-token",
+        global_roles: [],
       };
 
       return HttpResponse.json(response);
@@ -413,6 +467,7 @@ export default [
         return_to: null,
         attach_code: null,
         invitation_id: null,
+        global_roles: [],
       });
     }
 
@@ -447,6 +502,7 @@ export default [
         return_to: null,
         attach_code: null,
         invitation_id: null,
+        global_roles: [],
       });
     }
 
@@ -465,9 +521,13 @@ export default [
         return_to: null,
         attach_code: null,
         invitation_id: null,
+        global_roles: [],
       });
     }
-    return HttpResponse.json(authResponse);
+    return HttpResponse.json({
+      ...authResponse,
+      global_roles: [...staffState.globalRoles],
+    });
   }),
 
   http.get(`${API_URL}classic_dashboard_url`, () => {

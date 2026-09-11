@@ -34,6 +34,7 @@ import roles from "./roles";
 import scriptProfiles from "./scriptProfiles";
 import usgProfiles from "./usgProfiles";
 import snap from "./snap";
+import staffAccounts from "./staffAccounts";
 import standaloneAccount from "./standaloneAccount";
 import tag from "./tag";
 import ubuntuPro from "./ubuntuPro";
@@ -81,6 +82,7 @@ export default [
   ...script,
   ...scriptProfiles,
   ...snap,
+  ...staffAccounts,
   ...standaloneAccount,
   ...tag,
   ...ubuntuPro,
