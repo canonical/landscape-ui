@@ -26,7 +26,7 @@ const LicensesList: FC<LicensesListProps> = ({ licenses }) => {
       {
         Header: "Seats used",
         Cell: ({ row: { original: license } }: CellProps<License>) =>
-          license.used_seats === 0 ? (
+          !license.used_seats ? (
             "0"
           ) : (
             <Link
