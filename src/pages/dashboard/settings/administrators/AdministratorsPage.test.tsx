@@ -1,11 +1,14 @@
 import { screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import AdministratorsPage from "./AdministratorsPage";
 import userEvent from "@testing-library/user-event";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 
 describe("AdministratorsPage", () => {
-  const user = userEvent.setup();
+  afterEach(() => {
+    setEndpointStatus("default");
+  });
 
   it("renders Administrators heading", async () => {
     renderWithProviders(<AdministratorsPage />);
@@ -23,7 +26,85 @@ describe("AdministratorsPage", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows a loading state while admin info is being fetched", () => {
+    renderWithProviders(<AdministratorsPage />);
+
+    expect(screen.getByRole("status")).toBeInTheDocument();
+  });
+
+  it("renders the administrators info", async () => {
+    renderWithProviders(<AdministratorsPage />);
+
+    expect(
+      await screen.findByText("Maximum administrators"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Remaining invitations")).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("columnheader", { name: "Name" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Bob Mellow" }),
+    ).toBeInTheDocument();
+  });
+
+  it("hides Invite administrator button in empty state", async () => {
+    setEndpointStatus({ path: "GetAdministrators", status: "empty" });
+    renderWithProviders(<AdministratorsPage />);
+
+    expect(
+      await screen.findByRole("heading", { name: "Administrators" }),
+    ).toBeInTheDocument();
+
+    const heading = await screen.findByRole("heading", {
+      name: "Administrators",
+    });
+    const header = heading.parentElement;
+    assert(header);
+
+    expect(
+      within(header).queryByRole("button", { name: "Invite administrator" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("opens invite administrator side panel from the empty-state button", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({ path: "GetAdministrators", status: "empty" });
+    renderWithProviders(<AdministratorsPage />);
+
+    const inviteButton = await screen.findByRole("button", {
+      name: /invite administrator/i,
+    });
+    await user.click(inviteButton);
+
+    const sidePanel = await screen.findByRole("complementary");
+    expect(
+      within(sidePanel).getByRole("heading", { name: /invite administrator/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("opens the error modal from the empty-state button when admin info fails", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus([
+      { path: "GetAdministrators", status: "empty" },
+      { path: "max-people-count", status: "error" },
+    ]);
+    renderWithProviders(<AdministratorsPage />);
+
+    const inviteButton = await screen.findByRole("button", {
+      name: /invite administrator/i,
+    });
+    await user.click(inviteButton);
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Remaining invitations cannot be determined",
+      }),
+    ).toBeInTheDocument();
+  });
+
   it("opens invite administrator side panel on button click", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<AdministratorsPage />);
 
     const inviteButton = await screen.findByRole("button", {
@@ -36,6 +117,64 @@ describe("AdministratorsPage", () => {
 
     expect(
       within(sidePanel).getByRole("heading", { name: /invite administrator/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("opens the administrator limit modal when the limit is reached", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({
+      path: "max-people-count",
+      status: "variant",
+      response: { max_people_count: 10 },
+    });
+
+    renderWithProviders(<AdministratorsPage />);
+
+    const inviteButton = await screen.findByRole("button", {
+      name: "Invite administrator",
+    });
+    await user.click(inviteButton);
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Administrator limit reached",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("opens the error modal when the admin limit request fails", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({ path: "max-people-count", status: "error" });
+
+    renderWithProviders(<AdministratorsPage />);
+
+    const inviteButton = await screen.findByRole("button", {
+      name: "Invite administrator",
+    });
+    await user.click(inviteButton);
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Remaining invitations cannot be determined",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("opens the error modal when the invitations request fails", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({ path: "invitations", status: "error" });
+
+    renderWithProviders(<AdministratorsPage />);
+
+    const inviteButton = await screen.findByRole("button", {
+      name: "Invite administrator",
+    });
+    await user.click(inviteButton);
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Remaining invitations cannot be determined",
+      }),
     ).toBeInTheDocument();
   });
 });

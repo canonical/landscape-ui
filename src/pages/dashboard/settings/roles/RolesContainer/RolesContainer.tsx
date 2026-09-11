@@ -29,7 +29,7 @@ const RolesContainer: FC = () => {
             body="You haven’t added any roles yet."
             link={{
               href: ADMINISTRATORS_DOCUMENTATION_URL,
-              text: "How to manage administrators in Landscape",
+              text: "How to manage roles in Landscape",
             }}
             cta={[
               <Button
