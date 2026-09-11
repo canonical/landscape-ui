@@ -30,7 +30,7 @@ export const useGetComplianceReport = (
   } = useQuery<AxiosResponse<ComplianceReport>, AxiosError<ApiError>>({
     queryKey: ["complianceReport", resolvedParams],
     queryFn: async () =>
-      authFetch.get("computers/report", { params: resolvedParams }),
+      authFetch.get("computers/compliance-report", { params: resolvedParams }),
     ...options,
   });
 

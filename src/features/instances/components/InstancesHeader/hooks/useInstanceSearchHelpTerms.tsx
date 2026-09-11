@@ -348,16 +348,6 @@ const useInstanceSearchHelpTerms = () => {
       ),
     },
     {
-      term: "last-ping-minutes:<nr-of-minutes>",
-      description: (
-        <span>
-          Instances that were active in the last{" "}
-          <code>&lt;nr-of-minutes&gt;</code> minutes, where{" "}
-          <code>&lt;nr-of-minutes&gt;</code> is a value between 1 and 525600.
-        </span>
-      ),
-    },
-    {
       term: "usn-outstanding:<nr-of-days>",
       description: (
         <span>
