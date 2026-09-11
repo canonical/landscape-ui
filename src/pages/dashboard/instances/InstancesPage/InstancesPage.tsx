@@ -1,3 +1,4 @@
+import InteractiveTooltip from "@/components/layout/InteractiveTooltip";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
@@ -73,7 +74,6 @@ const InstancesPage: FC = () => {
 
   const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
-  const [isAccountInfoOpen, setIsAccountInfoOpen] = useState(false);
 
   const clearSelection = useCallback(() => {
     setSelectedInstances([]);
@@ -96,66 +96,28 @@ const InstancesPage: FC = () => {
       <PageHeader
         title="Instances"
         helperContent={
-          <span className={classes.instancesPageHelperContent}>
-            <span
-              className="p-tooltip"
-              onMouseEnter={() => {
-                setIsAccountInfoOpen(true);
-              }}
-              onMouseLeave={(event) => {
-                if (event.currentTarget.contains(document.activeElement)) {
-                  return;
-                }
-                setIsAccountInfoOpen(false);
-              }}
-              onFocus={() => {
-                setIsAccountInfoOpen(true);
-              }}
-              onBlur={(event) => {
-                if (
-                  event.relatedTarget instanceof Node &&
-                  event.currentTarget.contains(event.relatedTarget)
-                ) {
-                  return;
-                }
-                setIsAccountInfoOpen(false);
-              }}
-              onKeyDown={(event) => {
-                if (event.key !== "Escape") {
-                  return;
-                }
-                setIsAccountInfoOpen(false);
-              }}
-            >
-              <button
-                type="button"
-                className={classes.instancesPageAccountInfoButton}
-                aria-label={`New instance registration information, documentation link available. Account name: ${currentAccount.name}`}
-                aria-expanded={isAccountInfoOpen}
-              >
-                <Icon name={ICONS.information} aria-hidden />
-              </button>
-              {isAccountInfoOpen && (
-                <span
-                  className="p-tooltip__message"
-                  style={{ display: "inline" }}
+          <InteractiveTooltip
+            className={classes.instancesPageHelperContent}
+            label="New instance registration information"
+            message={
+              <>
+                Account name: {currentAccount.name}
+                <br />
+                <Link
+                  className={classes.instancesPageDocumentationLink}
+                  href={MANAGE_INSTANCES_DOCUMENTATION_URL}
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                  aria-label="Learn how to register new instances to your Landscape organization (opens a new tab to Landscape documentation)"
                 >
-                  <span>Account name: {currentAccount.name}</span>
-                  <br />
-                  <Link
-                    className={classes.instancesPageDocumentationLink}
-                    href={MANAGE_INSTANCES_DOCUMENTATION_URL}
-                    target="_blank"
-                    rel="nofollow noopener noreferrer"
-                    aria-label="Learn how to register new instances to your Landscape organization (opens a new tab to Landscape documentation)"
-                  >
-                    Learn how to register new instances to your Landscape
-                    organization
-                  </Link>
-                </span>
-              )}
-            </span>
-          </span>
+                  Learn how to register new instances to your Landscape
+                  organization
+                </Link>
+              </>
+            }
+          >
+            <Icon name={ICONS.information} aria-hidden />
+          </InteractiveTooltip>
         }
         actions={[
           <InstancesPageActions

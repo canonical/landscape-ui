@@ -7,7 +7,7 @@ import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import userEvent from "@testing-library/user-event";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import InstancesPage from "./InstancesPage";
@@ -34,78 +34,25 @@ describe("InstancesPage", () => {
     expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
   });
 
-  it("opens registration information on focus and closes on blur", async () => {
+  it("shows the account name and registration documentation link", async () => {
     const user = userEvent.setup();
     renderWithProviders(<InstancesPage />);
 
     await expectLoadingState();
 
-    const button = screen.getByRole("button", {
-      name: /New instance registration information, documentation link available/,
-    });
-    expect(button).toHaveAttribute("aria-expanded", "false");
+    await user.hover(
+      screen.getByRole("button", {
+        name: "New instance registration information",
+      }),
+    );
 
-    await user.tab();
-
-    expect(button).toHaveFocus();
-    expect(button).toHaveAttribute("aria-expanded", "true");
-    expect(await screen.findByText(/Account name:/)).toBeInTheDocument();
-
-    const link = screen.getByRole("link", {
-      name: "Learn how to register new instances to your Landscape organization (opens a new tab to Landscape documentation)",
-    });
-    expect(link).toHaveAttribute("href", MANAGE_INSTANCES_DOCUMENTATION_URL);
-
-    await user.tab();
-
-    expect(link).toHaveFocus();
-    expect(button).toHaveAttribute("aria-expanded", "true");
-
-    await user.tab();
-
-    expect(button).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByText(/Account name:/)).not.toBeInTheDocument();
-  });
-
-  it("opens registration information on hover and closes on mouse leave", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<InstancesPage />);
-
-    await expectLoadingState();
-
-    const button = screen.getByRole("button", {
-      name: /New instance registration information, documentation link available/,
-    });
-
-    await user.hover(button);
-
-    expect(button).toHaveAttribute("aria-expanded", "true");
-    expect(await screen.findByText(/Account name:/)).toBeInTheDocument();
-
-    await user.unhover(button);
-
-    expect(button).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByText(/Account name:/)).not.toBeInTheDocument();
-  });
-
-  it("closes registration information when Escape is pressed", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<InstancesPage />);
-
-    await expectLoadingState();
-
-    const button = screen.getByRole("button", {
-      name: /New instance registration information, documentation link available/,
-    });
-
-    await user.tab();
-
-    expect(await screen.findByText(/Account name:/)).toBeInTheDocument();
-
-    await user.keyboard("{Escape}");
-
-    expect(button).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByText(/Account name:/)).not.toBeInTheDocument();
+    const tooltip = screen.getByRole("tooltip");
+    expect(tooltip).toHaveTextContent(/Account name: \S+/);
+    expect(
+      within(tooltip).getByRole("link", {
+        name: "Learn how to register new instances to your Landscape organization (opens a new tab to Landscape documentation)",
+      }),
+    ).toHaveAttribute("href", MANAGE_INSTANCES_DOCUMENTATION_URL);
   });
 
   it("shows empty state when instances endpoint is empty", async () => {
