@@ -32,6 +32,11 @@ describe("RemoveProfileModal", () => {
     );
 
     expect(screen.getByText("Archive script profile")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Archiving "Profile One" script profile will prevent it from running in the future. Its name also cannot be reused.',
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByText("archive Profile One")).toBeInTheDocument();
     await userEvent.type(screen.getByRole("textbox"), "archive Profile One");
     await userEvent.click(screen.getByRole("button", { name: "Archive" }));

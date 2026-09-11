@@ -9,6 +9,7 @@ import { ScriptDropdown } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
+import type { ApiError } from "@/types/api/ApiError";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Col,
@@ -19,6 +20,7 @@ import {
   Row,
 } from "@canonical/react-components";
 import classNames from "classnames";
+import { isAxiosError } from "axios";
 import { useFormik } from "formik";
 import date from "@/libs/date";
 import { useLayoutEffect, useRef, type ComponentProps, type FC } from "react";
@@ -179,6 +181,22 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
           }
         }
       } catch (error) {
+        // This overrides the error message to be a bit more detailed.
+        if (isAxiosError<ApiError>(error) && error.response?.data) {
+          const { error: errorCode } = error.response.data;
+          const isDuplicateTitleError = errorCode === "ScriptProfileDuplicate";
+
+          if (isDuplicateTitleError) {
+            debug(
+              new Error(
+                "This script profile title is unavailable. It is either already in use or was previously archived. Script profile titles cannot be reused.",
+                { cause: error },
+              ),
+            );
+            return;
+          }
+        }
+
         debug(error);
         return;
       }

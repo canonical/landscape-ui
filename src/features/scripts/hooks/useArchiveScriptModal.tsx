@@ -58,15 +58,24 @@ export const useArchiveScriptModal = ({
     onConfirmArchive: handleScriptArchive,
   };
 
+  const archiveWarning = (
+    <>
+      Archiving the script will prevent it from running in the future. Its
+      record will be retained, and{" "}
+      <strong>the script name will be unavailable for reuse.</strong>
+    </>
+  );
+
   if (script.script_profiles.length === 0) {
     return {
       ...commonModalFields,
       archiveModalButtonLabel: "Archive",
       archiveModalBody: (
         <p className="u-margin--bottom">
-          Archiving the script will prevent it from running in the future.
+          {archiveWarning}
           <br />
-          This action is <b>irreversible</b>.
+          <br />
+          This action is <strong>irreversible</strong>.
         </p>
       ),
     };
@@ -78,9 +87,10 @@ export const useArchiveScriptModal = ({
     archiveModalBody: (
       <>
         <p className="u-margin--bottom">
-          Archiving the script will prevent it from running in the future.
+          {archiveWarning}
           <br />
-          The script is associated with the following profiles:
+          <br />
+          The script is also associated with the following profiles:
         </p>
         <ul>
           {script.script_profiles.map((profile) => (
@@ -88,10 +98,12 @@ export const useArchiveScriptModal = ({
           ))}
         </ul>
         <p className="u-margin--bottom">
-          If you archive the script and the profiles, they won’t be able to run
-          in the future.
+          If you archive the script, its associated profiles will also be
+          archived, and they won’t be able to run in the future. All archived
+          profile names will also be <strong>unavailable for reuse</strong>.
           <br />
-          This action is <b>irreversible</b>.
+          <br />
+          This action is <strong>irreversible</strong>.
         </p>
       </>
     ),
