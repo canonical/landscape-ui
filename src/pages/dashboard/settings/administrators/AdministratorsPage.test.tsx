@@ -89,7 +89,7 @@ describe("AdministratorsPage", () => {
     setEndpointStatus({
       path: "max-people-count",
       status: "variant",
-      response: { max_people_count: 5 },
+      response: { max_people_count: 10 },
     });
 
     renderWithProviders(<AdministratorsPage />);
@@ -106,9 +106,27 @@ describe("AdministratorsPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("opens the admin limit error modal when the request fails", async () => {
+  it("opens the error modal when the admin limit request fails", async () => {
     const user = userEvent.setup();
     setEndpointStatus({ path: "max-people-count", status: "error" });
+
+    renderWithProviders(<AdministratorsPage />);
+
+    const inviteButton = await screen.findByRole("button", {
+      name: "Invite administrator",
+    });
+    await user.click(inviteButton);
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Remaining invitations cannot be determined",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("opens the error modal when the invitations request fails", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({ path: "invitations", status: "error" });
 
     renderWithProviders(<AdministratorsPage />);
 
