@@ -10,7 +10,6 @@ import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
 import { ROUTES } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { alertsSummary } from "@/tests/mocks/alerts";
 
 vi.mock("@/hooks/useAuth");
 
@@ -146,16 +145,16 @@ describe("UserInfo", () => {
     expect(alertsLink).toHaveAttribute("aria-current", "page");
   });
 
-  it("renders the alerts badge with the displayed alert count", async () => {
+  it("shows the alerts indicator when there are alerts", async () => {
     renderWithProviders(<UserInfo />);
 
     const alertsLink = screen.getByRole("link", { name: /alerts/i });
     expect(
-      await within(alertsLink).findByText(String(alertsSummary.length)),
+      await within(alertsLink).findByLabelText("There are unresolved alerts"),
     ).toBeInTheDocument();
   });
 
-  it("hides the alerts badge when there are no alerts", async () => {
+  it("hides the alerts indicator when there are no alerts", async () => {
     setEndpointStatus("empty");
 
     renderWithProviders(<UserInfo />);
@@ -163,7 +162,9 @@ describe("UserInfo", () => {
     const alertsLink = screen.getByRole("link", { name: /alerts/i });
 
     await waitFor(() => {
-      expect(within(alertsLink).queryByText(/^\d+$/)).not.toBeInTheDocument();
+      expect(
+        within(alertsLink).queryByLabelText("There are unresolved alerts"),
+      ).not.toBeInTheDocument();
     });
   });
 
