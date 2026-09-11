@@ -33,7 +33,7 @@ test.describe("Snaps API Contract", () => {
         action: "hold",
         computer_ids: [computerId],
         snaps: [
-          { name: "no-such-snap", args: { time: "2026-12-31T12:00:00Z" } },
+          { name: "no-such-snap", args: { time: new Date(Date.now() + 86_400_000).toISOString() } },
         ],
       },
       headers: { Authorization: `Bearer ${token}` },
