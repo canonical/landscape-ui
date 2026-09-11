@@ -1,35 +1,19 @@
 import type { FC } from "react";
 import type { Administrator } from "@/features/administrators";
-import { lazy, Suspense } from "react";
 import { Button } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
 import EmptyState from "@/components/layout/EmptyState";
-import useSidePanel from "@/hooks/useSidePanel";
 import AdministratorsPanelContent from "../AdministratorsPanelContent";
 import { ADMINISTRATORS_DOCUMENTATION_URL } from "@/constants";
 
-const InviteAdministratorForm = lazy(
-  () => import("../InviteAdministratorForm"),
-);
-
 interface AdministratorsPanelProps {
   readonly administrators: Administrator[];
+  readonly handleInvite: () => void;
 }
 
 const AdministratorsPanel: FC<AdministratorsPanelProps> = ({
   administrators,
+  handleInvite,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
-
-  const handleInviteAdministrator = () => {
-    setSidePanelContent(
-      "Invite administrator",
-      <Suspense fallback={<LoadingState />}>
-        <InviteAdministratorForm />
-      </Suspense>,
-    );
-  };
-
   if (!administrators.length) {
     return (
       <EmptyState
@@ -43,7 +27,7 @@ const AdministratorsPanel: FC<AdministratorsPanelProps> = ({
             type="button"
             appearance="positive"
             key="invite-administrator"
-            onClick={handleInviteAdministrator}
+            onClick={handleInvite}
           >
             Invite Administrator
           </Button>,

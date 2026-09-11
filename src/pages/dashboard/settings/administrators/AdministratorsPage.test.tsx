@@ -67,6 +67,42 @@ describe("AdministratorsPage", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("opens invite administrator side panel from the empty-state button", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({ path: "GetAdministrators", status: "empty" });
+    renderWithProviders(<AdministratorsPage />);
+
+    const inviteButton = await screen.findByRole("button", {
+      name: /invite administrator/i,
+    });
+    await user.click(inviteButton);
+
+    const sidePanel = await screen.findByRole("complementary");
+    expect(
+      within(sidePanel).getByRole("heading", { name: /invite administrator/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("opens the error modal from the empty-state button when admin info fails", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus([
+      { path: "GetAdministrators", status: "empty" },
+      { path: "max-people-count", status: "error" },
+    ]);
+    renderWithProviders(<AdministratorsPage />);
+
+    const inviteButton = await screen.findByRole("button", {
+      name: /invite administrator/i,
+    });
+    await user.click(inviteButton);
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Remaining invitations cannot be determined",
+      }),
+    ).toBeInTheDocument();
+  });
+
   it("opens invite administrator side panel on button click", async () => {
     const user = userEvent.setup();
     renderWithProviders(<AdministratorsPage />);

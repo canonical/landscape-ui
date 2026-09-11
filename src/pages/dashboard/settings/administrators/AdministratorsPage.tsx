@@ -40,7 +40,7 @@ const AdministratorsPage: FC = () => {
   } = useGetAdministratorsLimit();
 
   const administrators = administratorsData?.data ?? [];
-  const invitations = invitationsData?.data.results ?? [];
+  const invitationsCount = invitationsData?.data.count ?? 0;
 
   const isGettingAdminInfo =
     isGettingAdministratorsLimit ||
@@ -48,7 +48,7 @@ const AdministratorsPage: FC = () => {
     isGettingInvitations;
   const isAdminInfoError = isAdministratorsError || isInvitationsError;
 
-  const totalAdminsAndInvites = administrators.length + invitations.length;
+  const totalAdminsAndInvites = administrators.length + invitationsCount;
   const isAdminLimitReached = totalAdminsAndInvites >= administratorsLimit;
 
   const handleInviteAdministrator = () => {
@@ -95,7 +95,8 @@ const AdministratorsPage: FC = () => {
           <PageContent hasTable>
             <AdministratorsTabs
               administrators={administrators}
-              invitationsCount={invitations.length}
+              invitationsCount={invitationsCount}
+              handleInvite={handleInviteAdministrator}
             />
           </PageContent>
         </>

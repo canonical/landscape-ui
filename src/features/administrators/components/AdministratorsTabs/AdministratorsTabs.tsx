@@ -11,11 +11,13 @@ import type { Administrator } from "../../types";
 interface AdministratorsTabsProps {
   readonly administrators: Administrator[];
   readonly invitationsCount?: number;
+  readonly handleInvite: () => void;
 }
 
 const AdministratorsTabs: FC<AdministratorsTabsProps> = ({
   administrators,
   invitationsCount,
+  handleInvite,
 }) => {
   const { closeSidePanel } = useSidePanel();
 
@@ -62,7 +64,10 @@ const AdministratorsTabs: FC<AdministratorsTabsProps> = ({
       >
         <Suspense fallback={<LoadingState />}>
           {"tab-link-administrators" === currentTabLinkId && (
-            <AdministratorsPanel administrators={administrators} />
+            <AdministratorsPanel
+              administrators={administrators}
+              handleInvite={handleInvite}
+            />
           )}
           {"tab-link-invites" === currentTabLinkId && <InvitesPanel />}
         </Suspense>
