@@ -1,11 +1,10 @@
 import FormSection from "@/components/form/FormSection";
-import { ROUTES } from "@/libs/routes";
 import type { FC } from "react";
-import { Link as RouterLink } from "react-router";
 import { useGetSelfHostedLicense } from "../../api/useGetSelfHostedLicense";
 import CopyableCodeSnippet from "../CopyableCodeSnippet";
 import DownloadLicenseButton from "../DownloadLicenseButton";
 import LicenseCurlCommand from "../LicenseCurlCommand";
+import RegenerateLicenseButton from "../RegenerateLicenseButton";
 import classes from "./SelfHostedLicenseContainer.module.scss";
 
 const SelfHostedLicenseContainer: FC = () => {
@@ -51,12 +50,10 @@ const SelfHostedLicenseContainer: FC = () => {
       />
 
       <p className={classes.paragraph4}>
-        If your credentials have been compromised, you can regenerate them on
-        the{" "}
-        <RouterLink to={ROUTES.account.apiCredentials()}>
-          API credentials page.
-        </RouterLink>
+        If your credentials have been compromised, you can regenerate them:
       </p>
+
+      <RegenerateLicenseButton />
     </FormSection>
   );
 };
