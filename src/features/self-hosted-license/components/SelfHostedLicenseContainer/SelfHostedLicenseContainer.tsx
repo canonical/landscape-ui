@@ -54,6 +54,17 @@ const SelfHostedLicenseContainer: FC = () => {
       </p>
 
       <RegenerateLicenseButton />
+
+      <p className={classes.paragraph5}>
+        It's recommended that you protect this file by making it readable only
+        by the root and Landscape users:
+      </p>
+
+      <CopyableCodeSnippet
+        value={`sudo chown root:landscape /etc/landscape/license.txt
+sudo chmod 0640 /etc/landscape/license.txt`}
+        wrapLines
+      />
     </FormSection>
   );
 };
