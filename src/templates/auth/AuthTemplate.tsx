@@ -13,7 +13,7 @@ interface AuthTemplateProps {
 
 const AuthTemplate: FC<AuthTemplateProps> = ({ title, children }) => {
   return (
-    <div className={classes.root}>
+    <div className={classNames("surface", classes.root)}>
       <Row className="p-strip page-row">
         <Col emptyLarge={4} size={6}>
           <div className={classNames("grid", classes.cardGrid)}>
@@ -26,7 +26,7 @@ const AuthTemplate: FC<AuthTemplateProps> = ({ title, children }) => {
                 }}
                 theme={Theme.DARK}
               />
-              <div className={classes.inner}>
+              <div className={classNames("surface", classes.inner)}>
                 <h1 className="p-heading--4">{title}</h1>
                 <div>{children}</div>
               </div>
