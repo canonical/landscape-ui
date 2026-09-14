@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { getAuthToken } from "../helpers/auth";
+import date from "@/libs/date";
 
 const HTTP_BAD_REQUEST = 400;
 const ONE_DAY_MS = 86_400_000;
@@ -36,7 +37,7 @@ test.describe("Snaps API Contract", () => {
         snaps: [
           {
             name: "no-such-snap",
-            args: { time: new Date(Date.now() + ONE_DAY_MS).toISOString() },
+            args: { time: date(new Date(Date.now() + ONE_DAY_MS)).format() },
           },
         ],
       },
