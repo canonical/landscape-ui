@@ -62,6 +62,7 @@ const SETTINGS_SUBMENU: MenuItem[] = [
     path: ROUTES.settings.identityProviders(),
     requiresFeature: "oidc-configuration",
   },
+  { label: "Licenses", path: ROUTES.settings.licenses() },
 ];
 
 export const MENU_ITEMS: MenuItem[] = [
