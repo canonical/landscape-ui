@@ -65,38 +65,51 @@ const ReportView: FC<ReportViewProps> = ({
     usePageParams();
   const handleExport = createSidePathPusher("export");
 
-  // The report is a snapshot of the selection at the time the panel was
-  // opened (or last regenerated); the live selection is only observed to
-  // tell the user when the snapshot has gone stale.
+  // The report is a snapshot of the selection (both the chosen ids and
+  // whether "all" was selected) at the time the panel was opened or last
+  // regenerated; the live selection is only observed to tell the user when
+  // the snapshot has gone stale. Nothing here may read the live isAllSelected
+  // prop directly for fetching/rendering, or the report would silently
+  // refetch whenever the selection mode changes instead of waiting for the
+  // user to regenerate.
   const currentIds = useSyncExternalStore(
     subscribeToSelectedInstanceIds,
     getSelectedInstanceIds,
   );
-  // Initialize snapshot from props (frozen at open time) or fall back to current
   const initialIds = isAllSelected
-    ? currentIds // When all selected, use full current IDs from store
+    ? currentIds
     : (selectedInstanceIds ?? currentIds);
-  const [reportIds, setReportIds] = useState<readonly number[]>(initialIds);
-  const reportIdSet = new Set(reportIds);
+  const [reportSelection, setReportSelection] = useState({
+    ids: initialIds,
+    isAllSelected: Boolean(isAllSelected),
+    allSelectedQuery: allSelectedQuery ?? "",
+  });
+  const reportIdSet = new Set(reportSelection.ids);
   const selectionChanged =
-    !isAllSelected &&
-    (currentIds.length !== reportIds.length ||
-      !currentIds.every((id) => reportIdSet.has(id)));
+    Boolean(isAllSelected) !== reportSelection.isAllSelected ||
+    (!isAllSelected &&
+      (currentIds.length !== reportSelection.ids.length ||
+        !currentIds.every((id) => reportIdSet.has(id))));
 
-  const shouldFetchReport = Boolean(isAllSelected) || reportIds.length > 0;
+  const shouldFetchReport =
+    reportSelection.isAllSelected || reportSelection.ids.length > 0;
 
   let query = "";
-  if (isAllSelected) {
-    query = allSelectedQuery ?? "";
-  } else if (reportIds.length > 0) {
-    query = `id:${reportIds.join(" OR id:")}`;
+  if (reportSelection.isAllSelected) {
+    query = reportSelection.allSelectedQuery;
+  } else if (reportSelection.ids.length > 0) {
+    query = `id:${reportSelection.ids.join(" OR id:")}`;
   }
 
   const { report, isGettingComplianceReport, isComplianceReportError } =
     useGetComplianceReport({ query }, { enabled: shouldFetchReport });
 
   const regenerateReport = () => {
-    setReportIds(currentIds);
+    setReportSelection({
+      ids: currentIds,
+      isAllSelected: Boolean(isAllSelected),
+      allSelectedQuery: allSelectedQuery ?? "",
+    });
   };
 
   // A shareable deep link to the instances list filtered to exactly these
@@ -112,10 +125,17 @@ const ReportView: FC<ReportViewProps> = ({
   }
 
   if (shouldFetchReport && (isComplianceReportError || !report)) {
+    // Without the Header the panel has no close control, trapping the user
+    // on an error they can only escape by editing the URL.
     return (
-      <Notification severity="negative" title="Error">
-        {CONTACT_SUPPORT_TEAM_MESSAGE}
-      </Notification>
+      <>
+        <SidePanel.Header>Report</SidePanel.Header>
+        <SidePanel.Content>
+          <Notification severity="negative" title="Error">
+            {CONTACT_SUPPORT_TEAM_MESSAGE}
+          </Notification>
+        </SidePanel.Content>
+      </>
     );
   }
 
@@ -123,7 +143,9 @@ const ReportView: FC<ReportViewProps> = ({
     ? (report as ComplianceReport)
     : EMPTY_REPORT;
   const { total } = reportData;
-  const headerCount = isAllSelected ? total : reportIds.length;
+  const headerCount = reportSelection.isAllSelected
+    ? total
+    : reportSelection.ids.length;
 
   // Every instance lands in exactly one bucket, worst first: instances with
   // USNs outstanding for over 60 days take priority, the rest are split by the
@@ -318,12 +340,12 @@ const ReportView: FC<ReportViewProps> = ({
             severity="information"
             title="Selection has changed"
             actions={
-              currentIds.length > 0
+              isAllSelected || currentIds.length > 0
                 ? [{ label: "Regenerate report", onClick: regenerateReport }]
                 : undefined
             }
           >
-            {`This report still covers the ${pluralize(reportIds.length, ["instance"], "exact")} selected when it was generated.`}
+            {`This report still covers the ${pluralize(headerCount, ["instance"], "exact")} selected when it was generated.`}
           </Notification>
         )}
         <section className={classes.section}>

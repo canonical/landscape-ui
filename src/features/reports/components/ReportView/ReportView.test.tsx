@@ -177,6 +177,17 @@ describe("ReportView", () => {
     expect(screen.getByText("Error")).toBeInTheDocument();
   });
 
+  it("can still be closed when the report fails to load", async () => {
+    setEndpointStatus({ status: "error", path: "computers/compliance-report" });
+
+    renderWithProviders(
+      <ReportView selectedInstanceIds={instanceIds} isAllSelected={false} />,
+    );
+
+    await screen.findByText("Error");
+    expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
+  });
+
   it("shows when the report was generated", async () => {
     renderWithProviders(
       <ReportView selectedInstanceIds={instanceIds} isAllSelected={false} />,
@@ -407,6 +418,77 @@ describe("ReportView", () => {
     expect(
       screen.queryByRole("button", { name: "Regenerate report" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("warns instead of auto-refetching when switching from a subset to select-all", async () => {
+    const user = userEvent.setup();
+    let requestCount = 0;
+    server.use(
+      http.get(`${API_URL}computers/compliance-report`, () => {
+        requestCount += 1;
+        return HttpResponse.json(complianceReport);
+      }),
+    );
+
+    const { rerender } = renderWithProviders(
+      <ReportView selectedInstanceIds={instanceIds} isAllSelected={false} />,
+    );
+    await screen.findByText("Security upgrades");
+    expect(requestCount).toBe(1);
+
+    rerender(<ReportView isAllSelected allSelectedQuery="tag:prod" />);
+
+    expect(screen.getByText("Selection has changed")).toBeInTheDocument();
+    // The report stays frozen on the original subset; switching modes must
+    // not silently trigger a refetch.
+    expect(
+      screen.getByText(`Report for ${instanceIds.length} instances`),
+    ).toBeInTheDocument();
+    expect(requestCount).toBe(1);
+
+    await user.click(screen.getByRole("button", { name: "Regenerate report" }));
+
+    expect(requestCount).toBe(2);
+    expect(screen.queryByText("Selection has changed")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(`Report for ${complianceReport.total} instances`),
+    ).toBeInTheDocument();
+  });
+
+  it("warns when switching from select-all back to a subset", async () => {
+    act(() => {
+      setSelectedInstanceIds([1, 2]);
+    });
+
+    const { rerender } = renderWithProviders(
+      <ReportView isAllSelected allSelectedQuery="tag:prod" />,
+    );
+    await screen.findByText("Security upgrades");
+
+    rerender(<ReportView selectedInstanceIds={[1, 2]} isAllSelected={false} />);
+
+    expect(screen.getByText("Selection has changed")).toBeInTheDocument();
+    // Still shows the frozen all-selected report until regenerated.
+    expect(
+      screen.getByText(`Report for ${complianceReport.total} instances`),
+    ).toBeInTheDocument();
+  });
+
+  it("offers a regenerate action when switching to select-all even if the selection store is empty", async () => {
+    act(() => {
+      setSelectedInstanceIds([]);
+    });
+
+    const { rerender } = renderWithProviders(
+      <ReportView selectedInstanceIds={instanceIds} isAllSelected={false} />,
+    );
+    await screen.findByText("Security upgrades");
+
+    rerender(<ReportView isAllSelected allSelectedQuery="tag:prod" />);
+
+    expect(
+      screen.getByRole("button", { name: "Regenerate report" }),
+    ).toBeInTheDocument();
   });
 
   it("opens the export panel when Export as TSV is clicked", async () => {
