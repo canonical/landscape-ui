@@ -1,5 +1,10 @@
-// Temporary shims for Pragma's unlayered cascade.
+// Temporary shims for the Vanilla/Pragma overlap. Two sections, each with its
+// own removal trigger — do not delete one when the other becomes redundant.
 // Compatibility target: `@canonical/styles` 0.34.0. Re-audit before upgrading.
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 1. Unlayered cascade — remove when `@canonical/styles` layers its normalize.
+// ─────────────────────────────────────────────────────────────────────────────
 // `@canonical/styles` declares `@layer normalize, ds.reset, ds.modifiers,
 // ds.components` but never assigns any of its imports to those layers, so
 // everything it ships is unlayered. Since it loads after Vanilla in `main.tsx`,
@@ -10,9 +15,6 @@
 // with `:is()` lifts specificity above normalize without overriding component
 // classes. `:not(:where([hidden]))` keeps hidden elements out without adding
 // specificity.
-
-// DELETE THIS FILE once `@canonical/styles` imports normalize with
-// `layer(normalize)`. That one upstream change makes every rule here redundant.
 
 // Not covered here: typography spacing (`p`, `h1`-`h6`). Pragma removes those
 // element margins by design, so explicit spacing is permanent, not a shim.
@@ -52,4 +54,67 @@ textarea:is(textarea):not(:where([hidden])) {
 
 fieldset:is(fieldset):not(:where([hidden])) {
   padding: calc($spv--large - $input-border-thickness);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 2. Vanilla inputs on Pragma surfaces — remove per component as it is ported.
+// ─────────────────────────────────────────────────────────────────────────────
+// Vanilla's input colours predate Pragma surfaces, so a Vanilla field inside a
+// `.surface` keeps the page-level fill and loses contrast with its container.
+// These rules only apply inside a surface; everywhere else Vanilla is untouched.
+
+// Pragma exposes one resting input colour per surface, so hover and active stay
+// flat rather than falling back to Vanilla's off-surface tints. `:focus` and
+// autofill have to match the `!important` rule in `base.scss`, and repainting
+// Chrome's autofill fill needs the inset shadow — `background-color` alone
+// cannot override it.
+.surface {
+  .p-form-validation__input {
+    &,
+    &:hover,
+    &:active {
+      background-color: var(--surface-color-foreground-input);
+    }
+
+    &:focus,
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active {
+      background-color: var(--surface-color-foreground-input) !important;
+      border-top-color: var(--surface-color-foreground-input) !important;
+      box-shadow: 0 0 0 30px var(--surface-color-foreground-input) inset !important;
+    }
+  }
+}
+
+// Vanilla's validation tints are translucent and were designed to sit on the
+// page, not on a layer. Keep them as an image over the layer's fill so they
+// composite against the input rather than the container. Focus is left alone:
+// the inset shadow above covers the tint, which is the pre-Pragma behaviour.
+// Pragma drops the fill tint entirely (design review 15/07); adopt that when the
+// Field/Input components land, so the change ships everywhere at once rather
+// than only on surfaces.
+@mixin surface-input-tint($color) {
+  .p-form-validation__input {
+    &,
+    &:hover,
+    &:active {
+      background-image: linear-gradient(#{$color}, #{$color});
+    }
+  }
+}
+
+.surface {
+  .is-caution {
+    @include surface-input-tint(var(--vf-color-background-caution-default));
+  }
+
+  .is-error {
+    @include surface-input-tint(var(--vf-color-background-negative-default));
+  }
+
+  .is-success {
+    @include surface-input-tint(var(--vf-color-background-positive-default));
+  }
 }
