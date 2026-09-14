@@ -15,7 +15,10 @@ const CopyableCodeSnippet: FC<CopyableCodeSnippetProps> = ({
   return (
     <div className={classes.codeBlock}>
       <CodeSnippet blocks={[{ code: value, wrapLines }]} />
-      <CopyCodeButton className={classes.copyButton} value={value} />
+      <CopyCodeButton
+        className={`${classes.copyButton} ${wrapLines ? classes.multiline : ""}`}
+        value={value}
+      />
     </div>
   );
 };
