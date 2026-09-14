@@ -3,45 +3,112 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import useSidePanel from "@/hooks/useSidePanel";
-import { AdministratorsTabs } from "@/features/administrators";
+import {
+  AdministratorsTabs,
+  AdministratorsLimit,
+  useGetAdministratorsLimit,
+  useAdministrators,
+  AdministratorLimitModal,
+  InviteAdministratorForm,
+} from "@/features/administrators";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
-
-const InviteAdministratorForm = lazy(
-  () => import("@/features/administrators/components/InviteAdministratorForm"),
-);
+import { Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
 
 const AdministratorsPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
+  const {
+    value: isModalOpen,
+    setTrue: openModal,
+    setFalse: closeModal,
+  } = useBoolean(false);
+
+  const { getAdministratorsQuery, getInvitationsQuery } = useAdministrators();
+  const { data: administratorsData, isPending: isGettingAdministrators } =
+    getAdministratorsQuery();
+  const {
+    data: invitationsData,
+    isPending: isGettingInvitations,
+    isError: isInvitationsError,
+  } = getInvitationsQuery();
+
+  const {
+    administratorsLimit,
+    isGettingAdministratorsLimit,
+    isAdministratorsError,
+  } = useGetAdministratorsLimit();
+
+  const administrators = administratorsData?.data ?? [];
+  const invitationsCount = invitationsData?.data.count ?? 0;
+
+  const isGettingAdminInfo =
+    isGettingAdministratorsLimit ||
+    isGettingAdministrators ||
+    isGettingInvitations;
+  const isAdminInfoError = isAdministratorsError || isInvitationsError;
+
+  const totalAdminsAndInvites = administrators.length + invitationsCount;
+  const isAdminLimitReached = totalAdminsAndInvites >= administratorsLimit;
 
   const handleInviteAdministrator = () => {
-    setSidePanelContent(
-      "Invite administrator",
-      <Suspense fallback={<LoadingState />}>
-        <InviteAdministratorForm />
-      </Suspense>,
-    );
+    if (isAdminLimitReached || isAdminInfoError) {
+      openModal();
+    } else {
+      setSidePanelContent(
+        "Invite administrator",
+        <Suspense fallback={<LoadingState />}>
+          <InviteAdministratorForm />
+        </Suspense>,
+      );
+    }
   };
 
   return (
     <PageMain>
       <PageHeader
         title="Administrators"
-        actions={[
-          <Button
-            appearance="positive"
-            key="invite-administrator"
-            onClick={handleInviteAdministrator}
-            type="button"
-          >
-            Invite administrator
-          </Button>,
-        ]}
+        actions={
+          administrators.length
+            ? [
+                <Button
+                  appearance="positive"
+                  key="invite-administrator"
+                  onClick={handleInviteAdministrator}
+                  type="button"
+                >
+                  Invite administrator
+                </Button>,
+              ]
+            : undefined
+        }
       />
-      <PageContent hasTable>
-        <AdministratorsTabs />
-      </PageContent>
+      {isGettingAdminInfo ? (
+        <LoadingState />
+      ) : (
+        <>
+          <AdministratorsLimit
+            adminAndInviteCount={totalAdminsAndInvites}
+            administratorsLimit={administratorsLimit}
+            isAdminInfoError={isAdminInfoError}
+          />
+          <PageContent hasTable>
+            <AdministratorsTabs
+              administrators={administrators}
+              invitationsCount={invitationsCount}
+              handleInvite={handleInviteAdministrator}
+            />
+          </PageContent>
+        </>
+      )}
+      {isModalOpen && (
+        <Suspense fallback={<LoadingState centerOnScreen />}>
+          <AdministratorLimitModal
+            close={closeModal}
+            isAdminInfoError={isAdminInfoError}
+          />
+        </Suspense>
+      )}
     </PageMain>
   );
 };
