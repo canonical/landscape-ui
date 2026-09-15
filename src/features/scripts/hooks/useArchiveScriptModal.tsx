@@ -62,7 +62,7 @@ export const useArchiveScriptModal = ({
     <>
       Archiving the script will prevent it from running in the future. Its
       record will be retained, and{" "}
-      <strong>the script name will be unavailable for reuse.</strong>
+      <strong>the script name cannot be reused.</strong>
     </>
   );
 
@@ -99,8 +99,8 @@ export const useArchiveScriptModal = ({
         </ul>
         <p className="u-margin--bottom">
           If you archive the script, its associated profiles will also be
-          archived, and they won’t be able to run in the future. All archived
-          profile names will also be <strong>unavailable for reuse</strong>.
+          archived, and they won’t be able to run in the future. <strong>The associated
+          profile names cannot be reused.</strong>
           <br />
           <br />
           This action is <strong>irreversible</strong>.

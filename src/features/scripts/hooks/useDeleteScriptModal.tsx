@@ -62,10 +62,9 @@ export const useDeleteScriptModal = ({
 
   const redactionWarning = (
     <>
-      Redacting this script will permanently remove its contents from Landscape.
+      Redacting this script will <strong>permanently remove its contents from Landscape.</strong>{" "}
       However, a record of the script, including who redacted it and when, will
-      be retained in the database. As a result, the script name{" "}
-      <strong>cannot be reused.</strong>
+      be retained in the database. As a result, <strong>the script name cannot be reused.</strong>
     </>
   );
 
@@ -101,9 +100,9 @@ export const useDeleteScriptModal = ({
           ))}
         </ul>
         <p className="u-margin--bottom">
-          Redacting the script will archive its associated profiles, making
-          their names unavailable for reuse. Neither the script nor its profiles
-          will be able to run again.
+          Redacting the script will archive its associated profiles, and their
+          names cannot be reused. Neither the script nor its profiles will be
+          able to run again.
           <br />
           <br />
           This action is <strong>irreversible</strong>.

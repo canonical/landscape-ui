@@ -34,7 +34,7 @@ describe("RemoveProfileModal", () => {
     expect(screen.getByText("Archive script profile")).toBeInTheDocument();
     expect(
       screen.getByText(
-        'Archiving "Profile One" script profile will prevent it from running in the future. Its name also cannot be reused.',
+        'Archiving the "Profile One" script profile will prevent it from running in the future. The profile name cannot be reused.',
       ),
     ).toBeInTheDocument();
     expect(screen.getByText("archive Profile One")).toBeInTheDocument();

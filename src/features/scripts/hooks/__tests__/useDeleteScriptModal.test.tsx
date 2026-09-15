@@ -88,7 +88,7 @@ describe("useDeleteScriptModal", () => {
     }
 
     expect(screen.getByTestId("body")).toHaveTextContent(
-      /Redacting the script will archive its associated profiles, making their names unavailable for reuse\. Neither the script nor its profiles will be able to run again\./i,
+      /Redacting the script will archive its associated profiles, and their names cannot be reused\. Neither the script nor its profiles will be able to run again\./i,
     );
   });
 
