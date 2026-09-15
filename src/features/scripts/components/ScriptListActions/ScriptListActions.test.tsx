@@ -274,7 +274,7 @@ describe("Scripts List Contextual Menu", () => {
 
       expect(
         await screen.findByText(
-          /redacting this script will permanently remove its contents from Landscape./i,
+          /permanently remove its contents from Landscape\./i,
         ),
       ).toBeInTheDocument();
     });
