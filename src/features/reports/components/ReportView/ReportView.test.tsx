@@ -248,6 +248,28 @@ describe("ReportView", () => {
     expect(capturedQuery).toBe("tag:prod");
   });
 
+  it("sends an empty query when all unfiltered results are selected", async () => {
+    let hasQueryParam = false;
+    let capturedQuery: string | null = null;
+    server.use(
+      http.get(`${API_URL}computers/compliance-report`, ({ request }) => {
+        const searchParams = new URL(request.url).searchParams;
+        hasQueryParam = searchParams.has("query");
+        capturedQuery = searchParams.get("query");
+        return HttpResponse.json(complianceReport);
+      }),
+    );
+
+    renderWithProviders(
+      <ReportView selectedInstanceIds={undefined} isAllSelected />,
+    );
+
+    await screen.findByText("Security upgrades");
+
+    expect(hasQueryParam).toBe(true);
+    expect(capturedQuery).toBe("");
+  });
+
   it("uses report total in header when all results are selected", async () => {
     act(() => {
       setSelectedInstanceIds([
