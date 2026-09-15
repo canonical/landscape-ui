@@ -9,28 +9,27 @@ import classNames from "classnames";
 import type { ControllerStateAndHelpers } from "downshift";
 import type { FC } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
-import type { Package } from "../../../../types";
-import classes from "./PackageDropdownSearchList.module.scss";
-import type { SearchPackagesResponse } from "../../../../api/useSearchPackages";
+import classes from "./SnapDropdownSearchList.module.scss";
 import { pluralize } from "@/utils/_helpers";
 import TooltipCell from "@/components/layout/TooltipCell";
+import type { SelectedSnaps } from "../../../../types";
 
-interface PackageDropdownSearchListProps {
-  readonly downshiftOptions: ControllerStateAndHelpers<Package>;
+interface SnapBulkSearchListProps {
+  readonly downshiftOptions: ControllerStateAndHelpers<SelectedSnaps>;
   readonly exact: boolean;
   readonly queryResult: UseInfiniteQueryResult<
-    InfiniteData<AxiosResponse<SearchPackagesResponse>>
+    InfiniteData<AxiosResponse<SearchSnapsResponse>>
   > & { isError: false };
   readonly search: string;
-  readonly selectedPackages: Package[];
+  readonly selectedSnaps: SelectedSnaps[];
 }
 
-const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
+const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
   downshiftOptions,
   exact,
   queryResult,
   search,
-  selectedPackages,
+  selectedSnaps,
 }) => {
   const { ref: loadingStateRef } = useIntersectionObserver({
     onChange: (isIntersecting) => {
@@ -48,7 +47,7 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
     return <LoadingState />;
   }
 
-  const results = queryResult.data.pages.flatMap((page) => page.data.packages);
+  const results = queryResult.data.pages.flatMap((page) => page.data.snaps);
 
   if (results.length) {
     return (
@@ -58,8 +57,8 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
             "p-list u-no-margin p-autocomplete__suggestions",
           )}
         >
-          {results.map((item: Package, index: number) => {
-            const disabled = selectedPackages.some(({ id }) => item.id === id);
+          {results.map((item: SelectedSnaps, index: number) => {
+            const disabled = selectedSnaps.some(({ id }) => item.id === id);
 
             const props = disabled
               ? {}
@@ -72,16 +71,16 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
                     downshiftOptions.highlightedIndex === index,
                   [classes.disabled]: disabled,
                 })}
-                key={`${item.name}-${item.version}`}
+                key={`${item.name}-${item.channel}`}
                 {...props}
               >
                 <div className="u-truncate font-monospace">
                   <TooltipCell
-                    message={`${item.name} ${item.version}`}
+                    message={`${item.name} ${item.channel}`}
                     position="top-center"
                   >
                     <BoldSubstring text={item.name} substring={search} />{" "}
-                    {item.version}
+                    {item.channel}
                   </TooltipCell>
                 </div>
                 <div
@@ -99,15 +98,11 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
     );
   }
 
-  if (!exact) {
-    return <div className={classes.empty}>No packages found.</div>;
-  }
-
   if (search) {
-    return <div className={classes.empty}>Package not found.</div>;
+    return <div className={classes.empty}>No snaps found.</div>;
   }
 
   return;
 };
 
-export default PackageDropdownSearchList;
+export default SnapBulkSearchList;

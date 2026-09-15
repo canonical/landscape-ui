@@ -11,3 +11,5 @@ export type {
   InstalledSnap,
   SelectedSnaps,
 } from "./Snap";
+
+export type { SnapAction } from "./SnapAtBulk";

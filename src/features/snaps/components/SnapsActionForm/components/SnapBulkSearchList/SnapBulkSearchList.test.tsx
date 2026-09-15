@@ -10,8 +10,8 @@ import { AxiosHeaders, type AxiosResponse } from "axios";
 import type { ControllerStateAndHelpers } from "downshift";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
-import PackageDropdownSearchList from "./PackageDropdownSearchList";
-import classes from "./PackageDropdownSearchList.module.scss";
+import PackageDropdownSearchList from "./SnapBulkSearchList";
+import classes from "./SnapDropdownSearchList.module.scss";
 
 type QueryResultType = UseInfiniteQueryResult<
   InfiniteData<AxiosResponse<SearchPackagesResponse>>
