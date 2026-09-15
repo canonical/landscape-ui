@@ -59,6 +59,8 @@ pnpm dev       # Vite dev server (5173)
 pnpm build     # Lint + typecheck + Vite build
 pnpm vitest    # Unit/integration tests
 pnpm test      # Playwright E2E
+pnpm eval:collect  # API-contract gap report (needs `pnpm coverage:full` first)
+pnpm eval:suggest  # LLM-drafted spec suggestions (needs LLM_API_KEY, or LLM_MOCK=1 for a dry-run)
 ```
 
 ---
