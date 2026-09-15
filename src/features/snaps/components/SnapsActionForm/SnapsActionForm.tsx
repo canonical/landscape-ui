@@ -8,17 +8,16 @@ import classNames from "classnames";
 import SnapInstalledItem from "./components/SnapInstalledItem";
 import SnapAvailableItem from "./components/SnapAvailableItem/SnapAvailableItem";
 
-interface PackagesActionFormProps {
-  readonly instanceIds: number[];
+interface SnapsActionFormProps {
+  readonly selectedInstances: number[];
   readonly action: SnapAction;
 }
 
-const PackagesActionForm: FC<PackagesActionFormProps> = ({
-  instanceIds,
+const SnapsActionForm: FC<SnapsActionFormProps> = ({
+  selectedInstances,
   action,
 }) => {
   const [selectedItems, setSelectedItems] = useState<SelectedSnaps[]>([]);
-
 
   const getHeaderVerb = () => {
     switch (action) {
@@ -37,62 +36,62 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
 
   return (
     <>
-    <div className={classes.container}>
-      <SnapDropdownSearch
-        instanceIds={instanceIds}
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
-        action={action}
-      />
+      <div className={classes.container}>
+        <SnapDropdownSearch
+          instanceIds={selectedInstances}
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
+          action={action}
+        />
 
-      <div
-        className={classNames(
-          "p-text--small-caps u-no-padding",
-          classes.header,
+        <div
+          className={classNames(
+            "p-text--small-caps u-no-padding",
+            classes.header,
+          )}
+        >{`Snaps to ${getHeaderVerb()}`}</div>
+
+        {selectedItems.length ? (
+          <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">
+            {selectedItems.map((selectedSnap, index) => {
+              const handleDelete = () => {
+                setSelectedItems(selectedItems.toSpliced(index, 1));
+              };
+
+              if (action === "changeChannel") {
+                return (
+                  <SnapChangeChannelItem
+                    key={`${selectedSnap.snap.id}${index}`}
+                    selectedSnap={selectedSnap}
+                    onDelete={handleDelete}
+                    instanceIds={selectedInstances}
+                    onItemsUpdate={() => {
+                      // Update selected snaps
+                    }}
+                  />
+                );
+              }
+              if (action === "install") {
+                return (
+                  <SnapAvailableItem
+                    key={`${selectedSnap.snap.id}${index}`}
+                    selectedSnap={selectedSnap}
+                    onDelete={handleDelete}
+                  />
+                );
+              }
+              return (
+                <SnapInstalledItem
+                  key={`${selectedSnap.snap.id}${index}`}
+                  selectedSnap={selectedSnap}
+                  onDelete={handleDelete}
+                />
+              );
+            })}
+          </ul>
+        ) : (
+          <div>No snaps have been added yet.</div>
         )}
-      >{`Packages to ${getHeaderVerb()}`}</div>
-
-      {selectedItems.length ? (
-        <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">
-          {selectedItems.map((selectedSnap, index) => {
-            const handleDelete = () => {
-              setSelectedItems(selectedItems.toSpliced(index, 1));
-            };
-
-            if (action === "changeChannel") {
-              return (
-                <SnapChangeChannelItem
-                  key={`${selectedSnap.snap.id}${index}`}
-                  selectedSnap={selectedSnap}
-                  onDelete={handleDelete}
-                  instanceIds={instanceIds}
-                  onItemsUpdate={() => {
-                    // Update selected snaps
-                  }}
-                />
-              );
-            }
-            if (action === "install") {
-              return (
-                <SnapAvailableItem
-                  key={`${selectedSnap.snap.id}${index}`}
-                  selectedSnap={selectedSnap}
-                  onDelete={handleDelete}
-                />
-              );
-            }
-            return (
-              <SnapInstalledItem
-                key={`${selectedSnap.snap.id}${index}`}
-                selectedSnap={selectedSnap}
-                onDelete={handleDelete}
-              />
-            );
-          })}
-        </ul>
-      ) : (
-        <div>No packages have been added yet.</div>
-      )}
       </div>
 
       <SidePanelFormButtons
@@ -107,4 +106,4 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
   );
 };
 
-export default PackagesActionForm;
+export default SnapsActionForm;

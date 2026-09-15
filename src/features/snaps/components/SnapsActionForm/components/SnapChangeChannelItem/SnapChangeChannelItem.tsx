@@ -40,11 +40,7 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
           </div>
           <div className="u-text--muted p-text--small u-no-margin">
             Installed on{" "}
-            {pluralize(
-              selectedSnap.computers.count,
-              ["instance"],
-              "exact",
-            )}
+            {pluralize(selectedSnap.computers.count, ["instance"], "exact")}
           </div>
         </div>
         <Button
