@@ -11,7 +11,7 @@ import { useAuthHandle } from "@/features/auth";
 import { useAlertsSummary } from "@/features/alert-notifications";
 import useDebug from "@/hooks/useDebug";
 import { ROUTES } from "@/libs/routes";
-import { APP_COMMIT, APP_VERSION, TSV_EXPORTS_ENABLED } from "@/constants";
+import { TSV_EXPORTS_ENABLED } from "@/constants";
 
 const UserInfo: FC = () => {
   const { user, logout } = useAuth();
@@ -221,9 +221,6 @@ const UserInfo: FC = () => {
           </ActionButton>
         </li>
       </ul>
-      <span className={classes.versionInfo}>
-        v{APP_VERSION} ({APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"})
-      </span>
     </div>
   );
 };
