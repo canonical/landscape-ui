@@ -9,7 +9,15 @@ import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import userEvent from "@testing-library/user-event";
 import { screen, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  assert,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import InstancesPage from "./InstancesPage";
 
 describe("InstancesPage", () => {
@@ -40,16 +48,22 @@ describe("InstancesPage", () => {
 
     await expectLoadingState();
 
-    await user.hover(
-      screen.getByRole("button", {
-        name: "New instance registration information",
-      }),
-    );
+    const trigger = screen.getByRole("button", {
+      name: /New instance registration information/,
+    });
 
-    const tooltip = screen.getByRole("tooltip");
-    expect(tooltip).toHaveTextContent(/Account name: \S+/);
+    await user.hover(trigger);
+
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+    const messageId = trigger.getAttribute("aria-controls");
+    assert(messageId);
+    const message = document.getElementById(messageId);
+    assert(message);
+
+    expect(message).toHaveTextContent(/Account name: \S+/);
     expect(
-      within(tooltip).getByRole("link", {
+      within(message).getByRole("link", {
         name: "Learn how to register new instances to your Landscape organization (opens a new tab to Landscape documentation)",
       }),
     ).toHaveAttribute("href", MANAGE_INSTANCES_DOCUMENTATION_URL);

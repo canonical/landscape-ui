@@ -27,6 +27,11 @@ interface InteractiveTooltipProps {
  * end of the document, which places it after every other focusable element on
  * the page and closes the tooltip before focus can reach it.
  *
+ * The message carries no `tooltip` role: the ARIA tooltip pattern is for
+ * non-interactive supplemental text, so a focusable link inside one may be
+ * flattened or ignored by assistive technology. The trigger exposes the
+ * message as a disclosure instead.
+ *
  * Prefer the Vanilla `Tooltip` for plain text messages.
  */
 const InteractiveTooltip: FC<InteractiveTooltipProps> = ({
@@ -46,7 +51,9 @@ const InteractiveTooltip: FC<InteractiveTooltipProps> = ({
     <span
       className={classNames(
         // Bottom-left is Vanilla's default and has no modifier class.
-        position === "btm-left" ? "p-tooltip" : `p-tooltip--${position}`,
+        position === "btm-left"
+          ? "p-tooltip"
+          : `p-tooltip p-tooltip--${position}`,
         classes.tooltip,
         className,
       )}
@@ -74,9 +81,14 @@ const InteractiveTooltip: FC<InteractiveTooltipProps> = ({
         setIsOpen(false);
       }}
       onKeyDown={(event) => {
-        if (event.key !== "Escape") {
+        if (event.key !== "Escape" || !isOpen) {
           return;
         }
+
+        // Dismissing the tooltip must not reach document-level Escape
+        // listeners, such as the one in useExpandableRow that collapses
+        // expanded table rows.
+        event.stopPropagation();
 
         // Focus first: moving focus back to the trigger fires the wrapper's
         // focus handler, which would otherwise reopen the tooltip.
@@ -89,13 +101,13 @@ const InteractiveTooltip: FC<InteractiveTooltipProps> = ({
         ref={triggerRef}
         className={classNames(classes.trigger, triggerClassName)}
         aria-label={label}
-        aria-describedby={isOpen ? messageId : undefined}
+        aria-expanded={isOpen}
+        aria-controls={isOpen ? messageId : undefined}
       >
         {children}
       </button>
       {isOpen && (
         <span
-          role="tooltip"
           id={messageId}
           className={classNames(
             "p-tooltip__message",

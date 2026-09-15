@@ -98,7 +98,7 @@ const InstancesPage: FC = () => {
         helperContent={
           <InteractiveTooltip
             className={classes.instancesPageHelperContent}
-            label="New instance registration information"
+            label={`New instance registration information, documentation link available. Account name: ${currentAccount.name}`}
             message={
               <>
                 Account name: {currentAccount.name}
