@@ -11,4 +11,7 @@ export type {
   AvailableSnap,
   AvailableSnapInfo,
   InstalledSnap,
+  SnapAction,
+  SnapActionParams,
+  InstalledSnapWithCount,
 } from "./types";

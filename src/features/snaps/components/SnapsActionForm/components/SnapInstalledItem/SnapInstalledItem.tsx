@@ -10,10 +10,7 @@ interface SnapItemProps {
   readonly onDelete: () => void;
 }
 
-const SnapItem: FC<SnapItemProps> = ({
-  onDelete,
-  selectedSnap,
-}) => {
+const SnapItem: FC<SnapItemProps> = ({ onDelete, selectedSnap }) => {
   return (
     <li
       className={classNames("u-no-margin--bottom", classes.selectedContainer)}
