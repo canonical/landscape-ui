@@ -1,7 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import PackageDropdownSearchItem from "./PackageDropdownSearchItem";
+import PackageDropdownSearchItem from "./SnapAvailableItem";
 import { ICONS } from "@canonical/react-components";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
