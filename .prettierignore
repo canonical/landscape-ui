@@ -2,3 +2,4 @@ node_modules
 dist
 dist-ssr
 src/**/*.module.scss.d.ts
+src/tests/contract-coverage/eval-loop/fixtures/malformed-report.json
