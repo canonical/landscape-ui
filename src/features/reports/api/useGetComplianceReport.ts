@@ -21,7 +21,7 @@ export const useGetComplianceReport = (
   // The API requires the "query" field to be present, even as an empty
   // string (e.g. a true "select all" report with no filter), so it must
   // never be stripped from the request params.
-  const resolvedParams = { query: "", ...params };
+  const resolvedParams = { ...params, query: params.query ?? "" };
 
   const {
     data: response,
