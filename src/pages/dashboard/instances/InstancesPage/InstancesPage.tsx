@@ -5,7 +5,6 @@ import SidePanel from "@/components/layout/SidePanel";
 import {
   DETAILED_UPGRADES_VIEW_ENABLED,
   MANAGE_INSTANCES_DOCUMENTATION_URL,
-  REPORT_VIEW_ENABLED,
   TSV_EXPORTS_ENABLED,
 } from "@/constants";
 import {
@@ -15,6 +14,7 @@ import {
 } from "@/features/instances";
 import { getExportTitle } from "@/features/exports";
 import { setSelectedInstanceIds } from "@/features/instances";
+import useAuth from "@/hooks/useAuth";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
@@ -41,11 +41,13 @@ const ReportView = lazy(async () => {
 });
 
 const InstancesPage: FC = () => {
+  const { isFeatureEnabled } = useAuth();
+  const isReportViewEnabled = isFeatureEnabled("instance-reports");
   const { currentAccount } = useAuthAccounts();
 
   useSetDynamicFilterValidation("sidePath", [
     ...(TSV_EXPORTS_ENABLED ? ["export"] : []),
-    ...(REPORT_VIEW_ENABLED ? ["report"] : []),
+    ...(isReportViewEnabled ? ["report"] : []),
   ]);
   const {
     currentPage,
@@ -208,7 +210,7 @@ const InstancesPage: FC = () => {
           )}
         </SidePanel>
       )}
-      {REPORT_VIEW_ENABLED && (
+      {isReportViewEnabled && (
         <SidePanel
           isOpen={sidePath[0] === "report"}
           onClose={popSidePathUntilClear}

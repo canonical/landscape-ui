@@ -20,6 +20,7 @@ export default function useAlertsSummary() {
   return {
     alertsSummary: alerts,
     alertsSummaryCount: alerts.length,
+    hasAlerts: alerts.length > 0,
     isGettingAlertsSummary: isPending,
   };
 }
