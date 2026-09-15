@@ -6,11 +6,7 @@ import type { FC } from "react";
 import { useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 import SnapBulkSearchList from "../SnapBulkSearchList";
-import {
-  DEBOUNCE_DELAY,
-  MAX_SELECTED_SNAPS,
-  QUERY_LIMIT,
-} from "./constants";
+import { DEBOUNCE_DELAY, MAX_SELECTED_SNAPS, QUERY_LIMIT } from "./constants";
 import classes from "./SnapBulkSearch.module.scss";
 import type { SelectedSnaps, SnapAction } from "../../../../types";
 
@@ -96,66 +92,66 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
   };
 
   return (
-      <Downshift
-        onSelect={handleSelectItem}
-        itemToString={(item) => (item ? item.name : "")}
-        isOpen={isOpen}
-        onOuterClick={close}
-      >
-        {(downshiftOptions) => (
-          <div className="p-autocomplete">
-            <SearchBox
-              {...downshiftOptions.getInputProps()}
-              placeholder={`Search ${mapActionToSearch(action)} snaps`}
-              className="u-no-margin--bottom"
-              shouldRefocusAfterReset
-              externallyControlled
-              autocomplete="off"
-              value={inputValue}
-              onChange={handleSearchBoxChange}
-              onClear={clearSearchBox}
-              onClick={open}
-              disabled={isOverLimit}
-            />
-            {isOverLimit && (
-              <span className="p-form-help-text">
-                You can only {getWarningVerb()} a maximum of{" "}
-                {pluralize(MAX_SELECTED_SNAPS, ["snap"], "exact")} at once.
-              </span>
-            )}
+    <Downshift
+      onSelect={handleSelectItem}
+      itemToString={(item) => (item ? item.name : "")}
+      isOpen={isOpen}
+      onOuterClick={close}
+    >
+      {(downshiftOptions) => (
+        <div className="p-autocomplete">
+          <SearchBox
+            {...downshiftOptions.getInputProps()}
+            placeholder={`Search ${mapActionToSearch(action)} snaps`}
+            className="u-no-margin--bottom"
+            shouldRefocusAfterReset
+            externallyControlled
+            autocomplete="off"
+            value={inputValue}
+            onChange={handleSearchBoxChange}
+            onClear={clearSearchBox}
+            onClick={open}
+            disabled={isOverLimit}
+          />
+          {isOverLimit && (
+            <span className="p-form-help-text">
+              You can only {getWarningVerb()} a maximum of{" "}
+              {pluralize(MAX_SELECTED_SNAPS, ["snap"], "exact")} at once.
+            </span>
+          )}
 
-            {isOpen && (
-              <div
-                className={classNames(
-                  "p-card--highlighted",
-                  "u-no-margin",
-                  "u-no-padding",
-                  classes.suggestionsContainer,
-                )}
-                {...downshiftOptions.getMenuProps()}
-              >
-                <div className={classes.topRow}>
-                  <Switch
-                    label="Exact match"
-                    onChange={toggleExact}
-                    checked={exact}
-                  />
-
-                  <span>{downshiftOptions.selectedItem?.publisher}</span>
-                </div>
-
-                <SnapBulkSearchList
-                  downshiftOptions={downshiftOptions}
-                  exact={exact}
-                  queryResult={snapsQueryResult}
-                  search={search}
-                  selectedSnaps={selectedItems.map(([item]) => item)}
+          {isOpen && (
+            <div
+              className={classNames(
+                "p-card--highlighted",
+                "u-no-margin",
+                "u-no-padding",
+                classes.suggestionsContainer,
+              )}
+              {...downshiftOptions.getMenuProps()}
+            >
+              <div className={classes.topRow}>
+                <Switch
+                  label="Exact match"
+                  onChange={toggleExact}
+                  checked={exact}
                 />
+
+                <span>{downshiftOptions.selectedItem?.publisher}</span>
               </div>
-            )}
-          </div>
-        )}
-      </Downshift>
+
+              <SnapBulkSearchList
+                downshiftOptions={downshiftOptions}
+                exact={exact}
+                queryResult={snapsQueryResult}
+                search={search}
+                selectedSnaps={selectedItems.map(([item]) => item)}
+              />
+            </div>
+          )}
+        </div>
+      )}
+    </Downshift>
   );
 };
 

@@ -10,6 +10,6 @@ export type {
   AvailableSnapInfo,
   InstalledSnap,
   SelectedSnaps,
+  SnapAction,
+  InstalledSnapWithCount,
 } from "./Snap";
-
-export type { SnapAction } from "./SnapAtBulk";
