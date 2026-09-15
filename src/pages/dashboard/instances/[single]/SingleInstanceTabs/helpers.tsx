@@ -42,10 +42,7 @@ const getTabLabel = ({
     return (
       <>
         <span>{label}</span>
-        <Badge
-          value={packageCount}
-          criticality="information"
-        />
+        <Badge value={packageCount} criticality="information" />
       </>
     );
   }
@@ -63,10 +60,7 @@ const getTabLabel = ({
     return (
       <>
         <span>{label}</span>
-        <Badge
-          value={kernelCount}
-          criticality="information"
-        />
+        <Badge value={kernelCount} criticality="information" />
       </>
     );
   }
