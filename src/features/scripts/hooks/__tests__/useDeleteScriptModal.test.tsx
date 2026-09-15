@@ -72,7 +72,13 @@ describe("useDeleteScriptModal", () => {
     renderWithProviders(<DeleteModalConsumer script={scriptWithNoProfiles} />);
 
     expect(screen.getByTestId("body")).toHaveTextContent(
+      /Redacting this script will/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(
       /permanently remove its contents from Landscape/i,
+    );
+    expect(screen.getByTestId("body")).toHaveTextContent(
+      /the script name cannot be reused/i,
     );
     expect(screen.getByTestId("body")).toHaveTextContent(
       /record of the script/i,
