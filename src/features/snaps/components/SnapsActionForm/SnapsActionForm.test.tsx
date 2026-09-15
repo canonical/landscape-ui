@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import PackagesActionForm from "./PackagesActionForm";
+import PackagesActionForm from "./SnapsActionForm";
 import { packages } from "@/tests/mocks/packages";
 
 const instanceId = 1;

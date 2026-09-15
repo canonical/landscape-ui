@@ -5,7 +5,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import PackageDropdownSearch from "./PackageDropdownSearch";
+import PackageDropdownSearch from "./SnapBulkSearch";
 
 const instanceId = 1;
 const instancePageUrl = ROUTES.instances.details.single(instanceId);
