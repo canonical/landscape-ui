@@ -1,13 +1,27 @@
 .formSection {
   >div {
     column-gap: 0;
-    grid-template-columns: 21.875rem 42.25rem 21.875rem;
+    grid-template-columns:
+      repeat(2, 10.9375rem) repeat(4, 10.5625rem) repeat(2, 10.9375rem);
+  }
+
+  >div>div:first-child {
+    grid-column: 1 / span 2;
+  }
+
+  >div>div:nth-child(2) {
+    grid-column: 3 / span 4;
   }
 
   @container (max-width: 85.9375rem) {
     >div {
       row-gap: 0.5rem;
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    >div>div:first-child,
+    >div>div:nth-child(2) {
+      grid-column: auto;
     }
   }
 
