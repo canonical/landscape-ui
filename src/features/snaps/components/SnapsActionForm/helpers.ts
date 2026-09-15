@@ -1,8 +1,7 @@
-import type { ActionConfig } from "../../api";
-import type { PackageAction } from "../../types";
+import type { SnapAction } from "../../types";
 
 export const getActionConfig = (
-  action: PackageAction,
+  action: SnapAction,
   package_ids: number[],
 ): ActionConfig => {
   switch (action) {
@@ -15,7 +14,7 @@ export const getActionConfig = (
         },
       };
 
-    case "uninstall":
+    case "remove":
       return {
         remove_config: {
           by_ids: {
@@ -38,9 +37,9 @@ export const getActionConfig = (
         },
       };
 
-    case "changeVersion":
+    case "changeChannel":
       return {
-        change_version_config: { version_changes: [] },
+        change_channel_config: { version_changes: [] },
       };
   }
 };
