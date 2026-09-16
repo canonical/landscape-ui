@@ -43,9 +43,14 @@ const MOUNT_PREFIXES = ["/debarchive"];
 /** True when `url` matches the canonical route `pattern` (or a mounted variant). */
 export function matchesPattern(url: string, pattern: string): boolean {
   const regex = patternToRegExp(pattern);
-  return [url, ...MOUNT_PREFIXES.map((prefix) => `${prefix}${url}`)].some(
-    (candidate) => regex.test(candidate),
-  );
+  const candidates = [
+    url,
+    ...MOUNT_PREFIXES.map((prefix) => `${prefix}${url}`),
+  ];
+  if (url === "/v1" || url.startsWith("/v1/")) {
+    candidates.push(`/debarchive/v1beta1${url.slice(3)}`);
+  }
+  return candidates.some((candidate) => regex.test(candidate));
 }
 
 /** Load and validate the MSW contract coverage report. Throws on any failure. */
@@ -74,7 +79,7 @@ function listSpecFiles(specDir: string): string[] {
   return fs
     .readdirSync(specDir, { recursive: true })
     .map((entry) => entry.toString())
-    .filter((entry) => entry.endsWith(".spec.ts"))
+    .filter((entry) => entry.endsWith(".ts") && !entry.endsWith(".d.ts"))
     .map((entry) => path.join(specDir, entry))
     .sort();
 }
@@ -231,7 +236,7 @@ function parseArgs(argv: string[]): CliOptions {
     report: REPORT_PATH,
     specDir: path.resolve(
       import.meta.dirname,
-      "../../../../e2e/docker-stack/api",
+      "../../../../e2e/docker-stack",
     ),
     out: path.join(import.meta.dirname, "out", "gaps.json"),
   };
