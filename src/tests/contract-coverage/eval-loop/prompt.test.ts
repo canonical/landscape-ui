@@ -76,7 +76,7 @@ describe("buildSuggestionPrompt", () => {
     }).toThrow(/no gaps to prompt on/);
   });
 
-  it("throws when the user message would exceed the size guard", () => {
+  it("truncates oversized contract payloads so the prompt fits", () => {
     const fatGaps = [
       gap("POST /api/v2/blob", 1, [
         {
@@ -85,8 +85,54 @@ describe("buildSuggestionPrompt", () => {
         },
       ]),
     ];
+    const { user } = buildSuggestionPrompt(fatGaps, EXEMPLAR);
+
+    expect(user.length).toBeLessThanOrEqual(12_000);
+    expect(user).toContain("POST /api/v2/blob");
+    expect(user).not.toContain("x".repeat(OVERSIZE_BLOB_LENGTH));
+  });
+
+  it("summarizes contracts to one exemplar per status", () => {
+    const multiStatus = gap("POST /api/v2/mirrors", 1, [
+      { status: 201, requestPayload: { a: 1 }, responsePayload: { ok: true } },
+      { status: 201, requestPayload: { a: 2 }, responsePayload: { ok: true } },
+      { status: 400, requestPayload: { a: 3 }, responsePayload: { error: "bad" } },
+    ]);
+    const { user } = buildSuggestionPrompt([multiStatus], EXEMPLAR);
+
+    const contractsMatch = user.match(/"status": 201/g);
+    expect(contractsMatch).toHaveLength(1);
+    expect(user).toContain('"status": 400');
+  });
+
+  it("drops lowest-ranked gaps when the prompt still exceeds the size guard", () => {
+    const hugeExemplar = "x".repeat(11_000);
+    const gaps = Array.from({ length: 3 }, (_, index) =>
+      gap(`POST /api/v2/route${index + 1}`, index + 1, [
+        {
+          status: 200,
+          requestPayload: { data: "value" },
+          responsePayload: { ok: true },
+        },
+      ]),
+    );
+    const { user } = buildSuggestionPrompt(gaps, hugeExemplar);
+
+    expect(user.length).toBeLessThanOrEqual(12_000);
+    expect(user).toContain("POST /api/v2/route1");
+    expect(user).toContain("POST /api/v2/route2");
+    expect(user).not.toContain("POST /api/v2/route3");
+  });
+
+  it("throws only when no gap can fit within the size guard", () => {
+    const hugeExemplar = "x".repeat(12_000);
+    const gaps = [
+      gap("POST /api/v2/blob", 1, [
+        { status: 200, requestPayload: { x: "y" } },
+      ]),
+    ];
     expect(() => {
-      buildSuggestionPrompt(fatGaps, EXEMPLAR);
+      buildSuggestionPrompt(gaps, hugeExemplar);
     }).toThrow(/prompt too large/);
   });
 

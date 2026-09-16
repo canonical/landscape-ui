@@ -138,4 +138,25 @@ describe("run", () => {
       .filter((file) => /^\d{2}-.+\.md$/.test(file) && !file.startsWith("00-"));
     expect(suggestionFiles).toHaveLength(0);
   });
+
+  it("prompt too large: writes raw fallback artifact and returns llm-failure", async () => {
+    const hugeExemplarPath = path.join(tmpDirs[tmpDirs.length - 1] ?? os.tmpdir(), "huge-exemplar.spec.ts");
+    fs.writeFileSync(hugeExemplarPath, "x".repeat(12_000), "utf-8");
+    const opts = {
+      ...options(),
+      exemplarPath: hugeExemplarPath,
+    };
+    const result = await run(opts);
+
+    expect(result.status).toBe("llm-failure");
+    expect(result.suggestionsWritten).toHaveLength(0);
+    expect(result.rawFallbackPath).toBeDefined();
+    expect(fs.existsSync(result.rawFallbackPath ?? "")).toBe(true);
+    expect(fs.existsSync(path.join(opts.outDir, "gaps.json"))).toBe(true);
+    const fallbackContent = fs.readFileSync(
+      result.rawFallbackPath ?? "",
+      "utf-8",
+    );
+    expect(fallbackContent).toContain("prompt too large");
+  });
 });

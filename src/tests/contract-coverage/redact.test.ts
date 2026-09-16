@@ -36,6 +36,30 @@ describe("redactSensitiveFields", () => {
     });
   });
 
+  it("redacts AWS, access-key, and recovery-key credential families", () => {
+    const input = {
+      awsAccessKeyId: "AKIAIOSFODNN7EXAMPLE",
+      awsSecretAccessKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+      access_key: "access-key-2",
+      secret_key: "secret-key-2",
+      access_key_id: "access-key-id",
+      signature: "signature-value",
+      fde_recovery_key: "RECOVERY-KEY-VALUE",
+      recoveryKey: "recovery-key-value-2",
+    };
+
+    expect(redactSensitiveFields(input)).toEqual({
+      awsAccessKeyId: "***REDACTED***",
+      awsSecretAccessKey: "***REDACTED***",
+      access_key: "***REDACTED***",
+      secret_key: "***REDACTED***",
+      access_key_id: "***REDACTED***",
+      signature: "***REDACTED***",
+      fde_recovery_key: "***REDACTED***",
+      recoveryKey: "***REDACTED***",
+    });
+  });
+
   it("redacts nested sensitive fields recursively", () => {
     const input = {
       displayName: "My Target",
