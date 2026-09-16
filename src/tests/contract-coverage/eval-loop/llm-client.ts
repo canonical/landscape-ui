@@ -1,7 +1,7 @@
 /**
  * Zero-dependency LLM client for the eval loop. One OpenAI-compatible client
- * shape covers GitHub Models today and OpenRouter/Gemini later — switching
- * providers is a base-URL/key configuration change, never a code change.
+ * shape covers OpenRouter by default and other compatible providers through
+ * configuration — switching providers never requires a code change.
  * The API key is read only inside createLlmClientFromEnv and never logged.
  */
 
@@ -36,7 +36,7 @@ interface ClientOptions {
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 const DEFAULT_BACKOFF_MS = 2_000;
-const DEFAULT_MAX_TOKENS = 4096;
+const DEFAULT_MAX_TOKENS = 16384;
 const HTTP_TOO_MANY_REQUESTS = 429;
 const HTTP_SERVER_ERROR_MIN = 500;
 const HTTP_SERVER_ERROR_MAX = 600;
@@ -102,6 +102,7 @@ export function createOpenAiCompatibleClient(
             { role: "user", content: req.user },
           ],
           temperature: 0,
+          response_format: { type: "json_object" },
           max_tokens: req.maxTokens ?? DEFAULT_MAX_TOKENS,
         }),
         signal: AbortSignal.timeout(timeoutMs),
