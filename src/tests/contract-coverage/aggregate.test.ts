@@ -137,6 +137,38 @@ describe("buildReport", () => {
     expect(getReport.routes["GET /v1/things"]?.contracts).toBeUndefined();
   });
 
+  it("redacts sensitive fields in contract payloads", () => {
+    const source = stubSource("s", [route("POST /v1/things", "openapi")]);
+    const report = buildReport(
+      [
+        observation(
+          "POST",
+          "/v1/things",
+          HTTP_OK,
+          {
+            username: "admin",
+            password: "secret",
+            nested: { apiKey: "key" },
+          },
+          { token: "abc", data: { id: 1 } },
+        ),
+      ],
+      [source],
+      [],
+    );
+
+    const contract = report.routes["POST /v1/things"]?.contracts?.[0];
+    expect(contract?.requestPayload).toEqual({
+      username: "admin",
+      password: "***REDACTED***",
+      nested: { apiKey: "***REDACTED***" },
+    });
+    expect(contract?.responsePayload).toEqual({
+      token: "***REDACTED***",
+      data: { id: 1 },
+    });
+  });
+
   it("reports declared routes with zero traffic as unexercised", () => {
     const source = stubSource("s", [
       route("GET /v1/hit", "openapi"),
