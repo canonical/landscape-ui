@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { redactSensitiveFields } from "./redact";
 
+const NON_REDACTED_NUM = 42;
+
 describe("redactSensitiveFields", () => {
   it("passes through primitives unchanged", () => {
     expect(redactSensitiveFields("hello")).toBe("hello");
-    expect(redactSensitiveFields(42)).toBe(42);
+    expect(redactSensitiveFields(NON_REDACTED_NUM)).toBe(NON_REDACTED_NUM);
     expect(redactSensitiveFields(true)).toBe(true);
     expect(redactSensitiveFields(null)).toBe(null);
     expect(redactSensitiveFields(undefined)).toBe(undefined);
