@@ -63,11 +63,31 @@ const MOCK_LLM_RESPONSE = JSON.stringify({
   ],
 });
 
+function writeRawFallback(
+  outDir: string,
+  title: string,
+  model: string,
+  body: string,
+): string {
+  const suggestionsDir = path.join(outDir, "suggestions");
+  fs.mkdirSync(suggestionsDir, { recursive: true });
+  const rawFallbackPath = path.join(suggestionsDir, RAW_FALLBACK_NAME);
+  const fence = "`".repeat(
+    Math.max(3, ...(body.match(/`+/g) ?? []).map((m) => m.length + 1)),
+  );
+  fs.writeFileSync(
+    rawFallbackPath,
+    `# ${title}\n\nModel: ${model}\n\n${fence}\n${body}\n${fence}\n`,
+    "utf-8",
+  );
+  return rawFallbackPath;
+}
+
 export async function run(options: RunOptions): Promise<RunResult> {
   const report = loadReport(options.reportPath);
   const extraction = extractSpecCoverage(options.specDir);
   const gaps = computeGaps(report, extraction.calls);
-writeGapsFile(
+  writeGapsFile(
     buildGapsFile(report, extraction, gaps),
     path.join(options.outDir, "gaps.json"),
   );
@@ -91,30 +111,44 @@ writeGapsFile(
     .split("\n")
     .slice(0, EXEMPLAR_MAX_LINES)
     .join("\n");
-  const prompt = buildSuggestionPrompt(gaps, exemplar);
+
+  let prompt: ReturnType<typeof buildSuggestionPrompt>;
+  try {
+    prompt = buildSuggestionPrompt(gaps, exemplar);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const rawFallbackPath = writeRawFallback(
+      options.outDir,
+      "Prompt too large",
+      "n/a",
+      message,
+    );
+    return {
+      status: "llm-failure",
+      outDir: options.outDir,
+      gapsFound: gaps.length,
+      suggestionsWritten: [],
+      rawFallbackPath,
+    };
+  }
+
   const completion = await client.complete(prompt);
 
-const parsed = parseSuggestions(completion.text);
-  const eligibleRoutes = new Set(gaps.slice(0, 5).map(({ routeId }) => routeId));
+  const parsed = parseSuggestions(completion.text);
+  const eligibleRoutes = new Set(
+    gaps.slice(0, 5).map(({ routeId }) => routeId),
+  );
   if (
     !parsed ||
     parsed.suggestions.some(({ route }) => !eligibleRoutes.has(route)) ||
     new Set(parsed.suggestions.map(({ route }) => route)).size !==
       parsed.suggestions.length
   ) {
-    const suggestionsDir = path.join(options.outDir, "suggestions");
-    fs.mkdirSync(suggestionsDir, { recursive: true });
-    const rawFallbackPath = path.join(suggestionsDir, RAW_FALLBACK_NAME);
-    const fence = "`".repeat(
-      Math.max(
-        3,
-        ...(completion.text.match(/`+/g) ?? []).map((m) => m.length + 1),
-      ),
-    );
-    fs.writeFileSync(
-      rawFallbackPath,
-      `# Unparseable LLM response\n\nModel: ${completion.model}\n\n${fence}\n${completion.text}\n${fence}\n`,
-      "utf-8",
+    const rawFallbackPath = writeRawFallback(
+      options.outDir,
+      "Unparseable LLM response",
+      completion.model,
+      completion.text,
     );
     return {
       status: "llm-failure",
