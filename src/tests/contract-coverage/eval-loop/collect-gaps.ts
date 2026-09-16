@@ -31,7 +31,7 @@ const HTTP_METHODS = new Set([
   "fetch",
 ]);
 
-const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH"]);
+const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
 /**
  * Backend services reachable through the Vite dev proxy under a mount prefix
