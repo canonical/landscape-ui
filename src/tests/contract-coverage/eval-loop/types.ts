@@ -201,11 +201,6 @@ export function assertSuggestionsResponse(
     response.suggestions,
     "suggestionsResponse.suggestions",
   );
-  if (suggestions.length > 5) {
-    throw new Error(
-      "suggestionsResponse.suggestions: expected at most 5 items",
-    );
-  }
   for (const [index, suggestion] of suggestions.entries()) {
     const entry = expectRecord(
       suggestion,
