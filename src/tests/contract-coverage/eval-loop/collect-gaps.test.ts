@@ -2,7 +2,9 @@ import fs from "fs";
 import path from "path";
 import { describe, expect, it } from "vitest";
 import {
+  buildGapsFile,
   computeGaps,
+  computeOrphans,
   extractSpecCoverage,
   loadReport,
   matchesPattern,
@@ -21,8 +23,8 @@ const fixtureReport = (): CoverageReport =>
 describe("loadReport", () => {
   it("parses a valid report file", () => {
     const report = loadReport(path.join(FIXTURES, "report.fixture.json"));
-    expect(report.summary.routesExercised).toBe(3);
-    expect(Object.keys(report.routes)).toHaveLength(3);
+    expect(report.summary.routesExercised).toBe(4);
+    expect(Object.keys(report.routes)).toHaveLength(4);
   });
 
   it("throws with guidance when the file is missing", () => {
@@ -137,18 +139,81 @@ describe("computeGaps", () => {
   });
 });
 
+describe("computeOrphans", () => {
+  it("returns empty when every extracted call matches an exercised route", () => {
+    const { calls } = extractSpecCoverage(SPEC_DIR);
+    expect(computeOrphans(fixtureReport(), calls)).toHaveLength(0);
+  });
+
+  it("returns calls that match no exercised route", () => {
+    const report = fixtureReport();
+    const reportWithoutComputers: CoverageReport = {
+      ...report,
+      routes: Object.fromEntries(
+        Object.entries(report.routes).filter(
+          ([routeId]) => routeId !== "GET /api/v2/computers",
+        ),
+      ),
+    };
+    const { calls } = extractSpecCoverage(SPEC_DIR);
+    const orphans = computeOrphans(reportWithoutComputers, calls);
+
+    expect(orphans).toHaveLength(1);
+    expect(orphans[0]?.method).toBe("GET");
+    expect(orphans[0]?.urlPattern).toBe("/api/v2/computers");
+    expect(orphans[0]?.rank).toBe(1);
+  });
+
+  it("ranks deterministically by method, file, then line", () => {
+    const emptyReport: CoverageReport = { ...fixtureReport(), routes: {} };
+    const orphans = computeOrphans(emptyReport, [
+      { method: "POST", urlPattern: "/b", file: "b.spec.ts", line: 2 },
+      { method: "GET", urlPattern: "/a", file: "a.spec.ts", line: 1 },
+      { method: "POST", urlPattern: "/b", file: "b.spec.ts", line: 1 },
+    ]);
+
+    expect(orphans.map((o) => `${o.method} ${o.urlPattern} ${o.line}`)).toEqual(
+      ["GET /a 1", "POST /b 1", "POST /b 2"],
+    );
+    expect(orphans.map((o) => o.rank)).toEqual([1, 2, 3]);
+  });
+});
+
+describe("buildGapsFile", () => {
+  it("includes orphans and stats", () => {
+    const { calls } = extractSpecCoverage(SPEC_DIR);
+    const gaps = computeGaps(fixtureReport(), calls);
+    const orphans = computeOrphans(fixtureReport(), calls);
+    const gapsFile = buildGapsFile(
+      fixtureReport(),
+      { calls, warnings: [] },
+      gaps,
+      orphans,
+    );
+
+    expect(gapsFile.stats.orphansFound).toBe(orphans.length);
+    expect(gapsFile.orphans).toEqual(orphans);
+    expect(() => {
+      assertGapsFile(gapsFile);
+    }).not.toThrow();
+  });
+});
+
 describe("assertGapsFile", () => {
   it("accepts a well-formed gaps file", () => {
     const { calls } = extractSpecCoverage(SPEC_DIR);
     const gaps = computeGaps(fixtureReport(), calls);
+    const orphans = computeOrphans(fixtureReport(), calls);
     const gapsFile = {
       generatedAt: new Date().toISOString(),
       stats: {
-        routesExercised: 3,
+        routesExercised: 4,
         specCallsExtracted: calls.length,
         gapsFound: gaps.length,
+        orphansFound: orphans.length,
       },
       gaps,
+      orphans,
       unexercisedInfo: fixtureReport().unexercised,
       extractionWarnings: [],
     };

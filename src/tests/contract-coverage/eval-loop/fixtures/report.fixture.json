@@ -1,12 +1,12 @@
 {
   "generatedAt": "2026-07-31T00:00:00.000Z",
   "summary": {
-    "totalInteractionsLogged": 75,
-    "routesExercised": 3,
-    "routesDeclared": 4,
+    "totalInteractionsLogged": 85,
+    "routesExercised": 4,
+    "routesDeclared": 5,
     "byBackend": {
       "v1": { "declared": 0, "exercised": 0 },
-      "v2": { "declared": 3, "exercised": 2 },
+      "v2": { "declared": 4, "exercised": 3 },
       "go": { "declared": 1, "exercised": 1 },
       "unknown": { "declared": 0, "exercised": 0 }
     }
@@ -19,6 +19,14 @@
       "source": "msw",
       "totalHits": 20,
       "statuses": { "200": 20 }
+    },
+    "GET /api/v2/computers/{id}": {
+      "method": "GET",
+      "pattern": "/api/v2/computers/{id}",
+      "backend": "v2",
+      "source": "msw",
+      "totalHits": 10,
+      "statuses": { "200": 10 }
     },
     "POST /api/v2/mirrors": {
       "method": "POST",
