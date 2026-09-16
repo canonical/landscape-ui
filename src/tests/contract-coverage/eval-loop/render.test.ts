@@ -156,6 +156,40 @@ describe("renderSuggestions", () => {
     expect(content).toContain("GET /api/v2/nonexistent");
     expect(content).toMatch(/unknown|n\/a/i);
   });
+
+  it("escapes untrusted LLM fields so they cannot inject Markdown", () => {
+    const outDir = tmpDir();
+    const malicious: SuggestionsResponse = {
+      suggestions: [
+        {
+          route: "POST /api/v2/mirrors",
+          title: "## Injected heading",
+          rationale: "[link](https://evil.example)\n\n---\n\n**bold**",
+          spec: 'const ok = "safe";',
+          notes: "- [ ] hijacked checklist\n1. ordered item\n> blockquote",
+        },
+      ],
+    };
+    const written = renderSuggestions(malicious, gaps, outDir);
+    const content = fs.readFileSync(written[0] ?? "", "utf-8");
+
+    // Title heading should be the only real heading; LLM heading is escaped text
+    expect(content).not.toMatch(/^## Injected heading$/m);
+    expect(content).toContain("\\#\\# Injected heading\n\n");
+    // Link syntax should be escaped
+    expect(content).not.toContain("[link](https://evil.example)");
+    expect(content).toMatch(`\\[link\\]\\(https://evil.example\\)`);
+    // Horizontal rule and emphasis should be escaped
+    expect(content).not.toMatch(/^\s*---\s*$/m);
+    expect(content).toContain("\\*\\*bold\\*\\*");
+    // Raw block separators and list markers should be escaped
+    expect(content).not.toMatch(/^\s*[-*] \[ \] hijacked checklist/m);
+    expect(content).not.toMatch(/^\s*\d+\./m);
+    expect(content).not.toMatch(/^\s*>/m);
+    expect(content).toContain("hijacked checklist");
+    expect(content).toContain("ordered item");
+    expect(content).toContain("blockquote");
+  });
 });
 
 describe("renderStepSummary", () => {

@@ -17,6 +17,7 @@ import {
   renderSuggestions,
 } from "./render";
 import { REPORT_PATH } from "../paths";
+import type { GapEntry } from "./types";
 
 /**
  * Orchestrates the eval loop: deterministic collection first (gaps.json is
@@ -31,6 +32,8 @@ export interface RunOptions {
   exemplarPath: string;
   client?: LlmClient;
   env?: Partial<Record<string, string>>;
+  /** When true, build a mock LLM response from the computed gaps. */
+  mockFromGaps?: boolean;
 }
 
 export interface RunResult {
@@ -44,24 +47,16 @@ export interface RunResult {
 const EXEMPLAR_MAX_LINES = 200;
 const RAW_FALLBACK_NAME = "00-raw-llm-output.md";
 
-const MOCK_LLM_RESPONSE = JSON.stringify({
-  suggestions: [
-    {
-      route: "POST /api/v2/mirrors",
-      title: "Cover mirror creation (mock)",
-      rationale: "Mock suggestion for dry-runs.",
-      spec: "// mock spec",
-      notes: "Generated with LLM_MOCK=1 — not a real proposal.",
-    },
-    {
-      route: "GET /debarchive/v1beta1/mirrors/{mirrorId}",
-      title: "Cover mirror fetch (mock)",
-      rationale: "Mock suggestion for dry-runs.",
-      spec: "// mock spec",
-      notes: "Generated with LLM_MOCK=1 — not a real proposal.",
-    },
-  ],
-});
+function buildMockResponseFromGaps(gaps: GapEntry[]): string {
+  const suggestions = gaps.slice(0, 5).map(({ routeId }) => ({
+    route: routeId,
+    title: `Cover ${routeId} (mock)`,
+    rationale: "Mock suggestion for dry-runs.",
+    spec: "// mock spec",
+    notes: "Generated with LLM_MOCK=1 — not a real proposal.",
+  }));
+  return JSON.stringify({ suggestions });
+}
 
 function writeRawFallback(
   outDir: string,
@@ -105,7 +100,10 @@ export async function run(options: RunOptions): Promise<RunResult> {
     };
   }
 
-  const client = options.client ?? createLlmClientFromEnv(options.env);
+  const client =
+    options.mockFromGaps && !options.client
+      ? createMockClient(buildMockResponseFromGaps(gaps))
+      : (options.client ?? createLlmClientFromEnv(options.env));
   const exemplar = fs
     .readFileSync(options.exemplarPath, "utf-8")
     .split("\n")
@@ -203,11 +201,8 @@ function parseArgs(argv: string[]): CliOptions {
 async function main(): Promise<void> {
   try {
     const options = parseArgs(process.argv.slice(2));
-    const client =
-      process.env.LLM_MOCK === "1"
-        ? createMockClient(MOCK_LLM_RESPONSE)
-        : undefined;
-    const result = await run({ ...options, client });
+    const mockFromGaps = process.env.LLM_MOCK === "1";
+    const result = await run({ ...options, mockFromGaps });
     if (result.status === "no-gaps") {
       console.warn("[+] No gaps — nothing to evaluate");
       return;

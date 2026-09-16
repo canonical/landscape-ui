@@ -11,6 +11,28 @@ import { assertSuggestionsResponse } from "./types";
 const MAX_SUGGESTIONS = 5;
 const SLUG_MAX_LENGTH = 60;
 
+/** Escape Markdown-active characters so untrusted text renders as plain text. */
+function escapeMarkdown(value: string): string {
+  return value
+    .replace(/\\/g, "\\\\")
+    .replace(/\[/g, "\\[")
+    .replace(/\]/g, "\\]")
+    .replace(/\(/g, "\\(")
+    .replace(/\)/g, "\\)")
+    .replace(/</g, "\\<")
+    .replace(/>/g, "\\>")
+    .replace(/`/g, "\\`")
+    .replace(/\*/g, "\\*")
+    .replace(/_/g, "\\_")
+    .replace(/#/g, "\\#")
+    .replace(/\|/g, "\\|")
+    .replace(/(^|\n)\s*(#{1,6})\s+/g, "$1\\$2 ")
+    .replace(/(^|\n)\s*([-+*]|\d+\.)\s+(\[.\])?\s*/g, "$1\\$2 $3")
+    .replace(/(^|\n)\s*(>{1,})\s*/g, "$1\\$2 ")
+    .replace(/^(\s*)-{3,}/gm, "$1\\-\\-\\-")
+    .replace(/^(\s*)[-*]/gm, "$1\\$&");
+}
+
 export function slugifyRoute(route: string): string {
   return route
     .toLowerCase()
@@ -18,7 +40,6 @@ export function slugifyRoute(route: string): string {
     .replace(/^-+|-+$/g, "")
     .slice(0, SLUG_MAX_LENGTH);
 }
-
 /** Parse the LLM's strict-JSON response. Returns null on any failure. */
 export function parseSuggestions(raw: string): SuggestionsResponse | null {
   const fenced = /^```(?:json)?\s*\n([\s\S]*?)\n```\s*$/.exec(raw.trim());
@@ -61,7 +82,7 @@ function renderSuggestionMarkdown(
 ): string {
   const metadata = metadataFor(suggestion, gaps);
   const lines = [
-    `# ${suggestion.title}`,
+    `# ${escapeMarkdown(suggestion.title)}`,
     "",
     "| Field | Value |",
     "| --- | --- |",
@@ -72,7 +93,7 @@ function renderSuggestionMarkdown(
     "",
     "## Why this matters",
     "",
-    suggestion.rationale,
+    escapeMarkdown(suggestion.rationale),
     "",
     "## Proposed spec",
     "",
@@ -93,7 +114,7 @@ function renderSuggestionMarkdown(
     "- [ ] See the suite README (`e2e/docker-stack/README.md`) for conventions",
   ];
   if (suggestion.notes) {
-    lines.push(`- [ ] Notes: ${suggestion.notes}`);
+    lines.push(`- [ ] Notes: ${escapeMarkdown(suggestion.notes)}`);
   }
   lines.push("");
   return lines.join("\n");
