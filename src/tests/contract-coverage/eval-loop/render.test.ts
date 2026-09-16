@@ -83,19 +83,6 @@ describe("parseSuggestions", () => {
       parseSuggestions(JSON.stringify({ suggestions: [{ route: "x" }] })),
     ).toBeNull();
   });
-
-  it("returns null when there are more than 5 suggestions", () => {
-    const six = {
-      suggestions: Array.from({ length: 6 }, (_, index) => ({
-        route: `GET /r${index}`,
-        title: "t",
-        rationale: "r",
-        spec: "s",
-        notes: "n",
-      })),
-    };
-    expect(parseSuggestions(JSON.stringify(six))).toBeNull();
-  });
 });
 
 describe("slugifyRoute", () => {

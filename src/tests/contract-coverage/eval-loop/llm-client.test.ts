@@ -4,6 +4,7 @@ import {
   createMockClient,
   createOpenAiCompatibleClient,
 } from "./llm-client";
+import { DEFAULT_MAX_TOKENS } from "./llm-client";
 
 const okResponse = (body: unknown): Response =>
   new Response(JSON.stringify(body), { status: 200 });
@@ -54,7 +55,7 @@ describe("createOpenAiCompatibleClient.complete", () => {
     };
     expect(body.model).toBe("test-model");
     expect(body.temperature).toBe(0);
-    expect(body.max_tokens).toBe(16384);
+    expect(body.max_tokens).toBe(DEFAULT_MAX_TOKENS);
     expect(body.messages).toEqual([
       { role: "system", content: "be terse" },
       { role: "user", content: "say hi" },

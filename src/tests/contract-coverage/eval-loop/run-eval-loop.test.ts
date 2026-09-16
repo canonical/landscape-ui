@@ -17,6 +17,13 @@ const COVERED_SPEC_DIR = path.join(
   "docker-stack",
   "api",
 );
+const ORPHAN_SPEC_DIR = path.join(
+  FIXTURES,
+  "repo-orphans",
+  "e2e",
+  "docker-stack",
+  "api",
+);
 const EXEMPLAR = path.join(
   FIXTURES,
   "repo",
@@ -101,9 +108,41 @@ describe("run", () => {
 
     expect(result.status).toBe("no-gaps");
     expect(result.gapsFound).toBe(0);
+    expect(result.orphansFound).toBe(0);
     expect(result.suggestionsWritten).toHaveLength(0);
     expect(called).toBe(false);
     expect(fs.existsSync(path.join(result.outDir, "suggestions"))).toBe(false);
+  });
+
+  it("orphans: writes gaps.json but stops before calling the client", async () => {
+    let called = false;
+    const client = {
+      complete: () => {
+        called = true;
+        return Promise.resolve({ text: "", model: "mock" });
+      },
+    };
+    const opts = { ...options(client), specDir: ORPHAN_SPEC_DIR };
+    const result = await run(opts);
+
+    expect(result.status).toBe("orphans");
+    expect(result.orphansFound).toBe(1);
+    expect(result.suggestionsWritten).toHaveLength(0);
+    expect(called).toBe(false);
+    expect(fs.existsSync(path.join(result.outDir, "gaps.json"))).toBe(true);
+    const gapsFile = JSON.parse(
+      fs.readFileSync(path.join(result.outDir, "gaps.json"), "utf-8"),
+    ) as unknown;
+    expect(() => {
+      assertGapsFile(gapsFile);
+    }).not.toThrow();
+    expect(
+      (gapsFile as { orphans: { urlPattern: string }[] }).orphans,
+    ).toHaveLength(1);
+    expect(
+      (gapsFile as { orphans: { urlPattern: string }[] }).orphans[0]
+        ?.urlPattern,
+    ).toBe("/api/v2/orphan-route");
   });
 
   it("LLM failure: gaps.json survives, error propagates", async () => {

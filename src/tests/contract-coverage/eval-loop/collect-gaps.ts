@@ -4,7 +4,7 @@ import ts from "typescript";
 import { fileURLToPath } from "url";
 import { patternToRegExp } from "../matcher";
 import { REPORT_PATH } from "../paths";
-import type { CoverageReport, GapEntry, GapsFile } from "./types";
+import type { CoverageReport, GapEntry, GapsFile, OrphanEntry } from "./types";
 import { assertCoverageReport, assertGapsFile } from "./types";
 
 /** One HTTP call extracted from a Playwright API-contract spec. */
@@ -201,10 +201,46 @@ export function computeGaps(
   return gaps.map((gap, index) => ({ ...gap, rank: index + 1 }));
 }
 
+/**
+ * Orphan = extracted spec call that matches no exercised route. Unlike a gap,
+ * an orphan means the matcher, the route pin, or the spec is wrong, so it is
+ * always treated as an error.
+ */
+export function computeOrphans(
+  report: CoverageReport,
+  calls: ExtractedCall[],
+): OrphanEntry[] {
+  const routes = Object.values(report.routes);
+  const orphans: OrphanEntry[] = [];
+  for (const call of calls) {
+    const matched = routes.some(
+      (metric) =>
+        call.method === metric.method.toUpperCase() &&
+        matchesPattern(call.urlPattern, metric.pattern),
+    );
+    if (!matched) {
+      orphans.push({
+        method: call.method,
+        urlPattern: call.urlPattern,
+        file: call.file,
+        line: call.line,
+        rank: 0,
+      });
+    }
+  }
+  orphans.sort((a, b) => {
+    if (a.method !== b.method) return a.method.localeCompare(b.method);
+    if (a.file !== b.file) return a.file.localeCompare(b.file);
+    return a.line - b.line;
+  });
+  return orphans.map((orphan, index) => ({ ...orphan, rank: index + 1 }));
+}
+
 export function buildGapsFile(
   report: CoverageReport,
   extraction: ExtractionResult,
   gaps: GapEntry[],
+  orphans: OrphanEntry[],
 ): GapsFile {
   return {
     generatedAt: new Date().toISOString(),
@@ -212,8 +248,10 @@ export function buildGapsFile(
       routesExercised: Object.keys(report.routes).length,
       specCallsExtracted: extraction.calls.length,
       gapsFound: gaps.length,
+      orphansFound: orphans.length,
     },
     gaps,
+    orphans,
     unexercisedInfo: report.unexercised,
     extractionWarnings: extraction.warnings,
   };
@@ -234,10 +272,7 @@ interface CliOptions {
 function parseArgs(argv: string[]): CliOptions {
   const options: CliOptions = {
     report: REPORT_PATH,
-    specDir: path.resolve(
-      import.meta.dirname,
-      "../../../../e2e/docker-stack",
-    ),
+    specDir: path.resolve(import.meta.dirname, "../../../../e2e/docker-stack"),
     out: path.join(import.meta.dirname, "out", "gaps.json"),
   };
   for (let index = 0; index < argv.length; index += 2) {
@@ -260,12 +295,28 @@ function main(): void {
     const report = loadReport(options.report);
     const extraction = extractSpecCoverage(options.specDir);
     const gaps = computeGaps(report, extraction.calls);
-    writeGapsFile(buildGapsFile(report, extraction, gaps), options.out);
+    const orphans = computeOrphans(report, extraction.calls);
+    writeGapsFile(
+      buildGapsFile(report, extraction, gaps, orphans),
+      options.out,
+    );
     console.warn(`[+] Gap report written to: ${options.out}`);
     console.warn(
       `    ${Object.keys(report.routes).length} exercised routes, ` +
         `${extraction.calls.length} spec calls extracted, ${gaps.length} gaps`,
     );
+    if (orphans.length > 0) {
+      console.error(
+        `[-] ${orphans.length} extracted spec call(s) match no exercised route (orphans). ` +
+          "This indicates a matcher bug, stale route pin, or spec error.",
+      );
+      for (const orphan of orphans) {
+        console.error(
+          `    ${orphan.method} ${orphan.urlPattern} (${orphan.file}:${orphan.line})`,
+        );
+      }
+      process.exit(1);
+    }
     for (const warning of extraction.warnings) {
       console.warn(`[!] ${warning}`);
     }

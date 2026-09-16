@@ -51,14 +51,33 @@ export interface GapEntry {
   rank: number;
 }
 
+/**
+ * Statically extracted spec call that does not match any exercised route in
+ * the report. This is always a bug in the matcher, the route pin, or the spec.
+ */
+export interface OrphanEntry {
+  method: string;
+  /** Concrete path, or pattern with {param} for template-literal spans. */
+  urlPattern: string;
+  file: string;
+  line: number;
+  rank: number;
+}
+
 export interface GapsFile {
   generatedAt: string;
   stats: {
     routesExercised: number;
     specCallsExtracted: number;
     gapsFound: number;
+    orphansFound: number;
   };
   gaps: GapEntry[];
+  /**
+   * Spec calls that match no exercised route. Surfaced as an error because
+   * they hide either a matcher bug or stale route metadata.
+   */
+  orphans: OrphanEntry[];
   /** report.unexercised verbatim — informational only, NEVER sent to the LLM. */
   unexercisedInfo: CoverageReport["unexercised"];
   extractionWarnings: string[];
@@ -176,6 +195,7 @@ export function assertGapsFile(value: unknown): asserts value is GapsFile {
   expectNumber(stats.routesExercised, "gapsFile.stats.routesExercised");
   expectNumber(stats.specCallsExtracted, "gapsFile.stats.specCallsExtracted");
   expectNumber(stats.gapsFound, "gapsFile.stats.gapsFound");
+  expectNumber(stats.orphansFound, "gapsFile.stats.orphansFound");
   for (const [index, gap] of expectArray(
     file.gaps,
     "gapsFile.gaps",
@@ -188,6 +208,17 @@ export function assertGapsFile(value: unknown): asserts value is GapsFile {
     expectNumber(entry.totalHits, `gapsFile.gaps[${index}].totalHits`);
     expectStatuses(entry.statuses, `gapsFile.gaps[${index}].statuses`);
     expectNumber(entry.rank, `gapsFile.gaps[${index}].rank`);
+  }
+  for (const [index, orphan] of expectArray(
+    file.orphans,
+    "gapsFile.orphans",
+  ).entries()) {
+    const entry = expectRecord(orphan, `gapsFile.orphans[${index}]`);
+    expectString(entry.method, `gapsFile.orphans[${index}].method`);
+    expectString(entry.urlPattern, `gapsFile.orphans[${index}].urlPattern`);
+    expectString(entry.file, `gapsFile.orphans[${index}].file`);
+    expectNumber(entry.line, `gapsFile.orphans[${index}].line`);
+    expectNumber(entry.rank, `gapsFile.orphans[${index}].rank`);
   }
   expectArray(file.unexercisedInfo, "gapsFile.unexercisedInfo");
   expectArray(file.extractionWarnings, "gapsFile.extractionWarnings");

@@ -5,6 +5,9 @@ test.describe("fully-covered fixture suite", () => {
     const computers = await request.get("/api/v2/computers");
     expect(computers.ok()).toBeTruthy();
 
+    const computer = await request.get("/api/v2/computers/1");
+    expect(computer.ok()).toBeTruthy();
+
     const mirror = await request.post("/api/v2/mirrors", {
       data: { name: "m" },
     });

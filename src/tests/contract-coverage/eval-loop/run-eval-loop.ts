@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import {
   buildGapsFile,
   computeGaps,
+  computeOrphans,
   extractSpecCoverage,
   loadReport,
   writeGapsFile,
@@ -37,9 +38,10 @@ export interface RunOptions {
 }
 
 export interface RunResult {
-  status: "ok" | "no-gaps" | "llm-failure";
+  status: "ok" | "no-gaps" | "llm-failure" | "orphans";
   outDir: string;
   gapsFound: number;
+  orphansFound: number;
   suggestionsWritten: string[];
   rawFallbackPath?: string;
 }
@@ -82,8 +84,9 @@ export async function run(options: RunOptions): Promise<RunResult> {
   const report = loadReport(options.reportPath);
   const extraction = extractSpecCoverage(options.specDir);
   const gaps = computeGaps(report, extraction.calls);
+  const orphans = computeOrphans(report, extraction.calls);
   writeGapsFile(
-    buildGapsFile(report, extraction, gaps),
+    buildGapsFile(report, extraction, gaps, orphans),
     path.join(options.outDir, "gaps.json"),
   );
   fs.rmSync(path.join(options.outDir, "suggestions"), {
@@ -91,11 +94,22 @@ export async function run(options: RunOptions): Promise<RunResult> {
     force: true,
   });
 
+  if (orphans.length > 0) {
+    return {
+      status: "orphans",
+      outDir: options.outDir,
+      gapsFound: gaps.length,
+      orphansFound: orphans.length,
+      suggestionsWritten: [],
+    };
+  }
+
   if (gaps.length === 0) {
     return {
       status: "no-gaps",
       outDir: options.outDir,
       gapsFound: 0,
+      orphansFound: 0,
       suggestionsWritten: [],
     };
   }
@@ -125,6 +139,7 @@ export async function run(options: RunOptions): Promise<RunResult> {
       status: "llm-failure",
       outDir: options.outDir,
       gapsFound: gaps.length,
+      orphansFound: orphans.length,
       suggestionsWritten: [],
       rawFallbackPath,
     };
@@ -152,6 +167,7 @@ export async function run(options: RunOptions): Promise<RunResult> {
       status: "llm-failure",
       outDir: options.outDir,
       gapsFound: gaps.length,
+      orphansFound: orphans.length,
       suggestionsWritten: [],
       rawFallbackPath,
     };
@@ -163,6 +179,7 @@ export async function run(options: RunOptions): Promise<RunResult> {
     status: "ok",
     outDir: options.outDir,
     gapsFound: gaps.length,
+    orphansFound: orphans.length,
     suggestionsWritten: written,
   };
 }
@@ -206,6 +223,13 @@ async function main(): Promise<void> {
     if (result.status === "no-gaps") {
       console.warn("[+] No gaps — nothing to evaluate");
       return;
+    }
+    if (result.status === "orphans") {
+      console.error(
+        `[-] ${result.orphansFound} extracted spec call(s) match no exercised route (orphans). ` +
+          "Fix the matcher, route pin, or spec before running suggestions.",
+      );
+      process.exit(1);
     }
     if (result.status === "llm-failure") {
       console.error(
