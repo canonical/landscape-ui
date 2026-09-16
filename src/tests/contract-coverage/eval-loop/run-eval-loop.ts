@@ -67,10 +67,14 @@ export async function run(options: RunOptions): Promise<RunResult> {
   const report = loadReport(options.reportPath);
   const extraction = extractSpecCoverage(options.specDir);
   const gaps = computeGaps(report, extraction.calls);
-  writeGapsFile(
+writeGapsFile(
     buildGapsFile(report, extraction, gaps),
     path.join(options.outDir, "gaps.json"),
   );
+  fs.rmSync(path.join(options.outDir, "suggestions"), {
+    recursive: true,
+    force: true,
+  });
 
   if (gaps.length === 0) {
     return {
@@ -90,8 +94,14 @@ export async function run(options: RunOptions): Promise<RunResult> {
   const prompt = buildSuggestionPrompt(gaps, exemplar);
   const completion = await client.complete(prompt);
 
-  const parsed = parseSuggestions(completion.text);
-  if (!parsed) {
+const parsed = parseSuggestions(completion.text);
+  const eligibleRoutes = new Set(gaps.slice(0, 5).map(({ routeId }) => routeId));
+  if (
+    !parsed ||
+    parsed.suggestions.some(({ route }) => !eligibleRoutes.has(route)) ||
+    new Set(parsed.suggestions.map(({ route }) => route)).size !==
+      parsed.suggestions.length
+  ) {
     const suggestionsDir = path.join(options.outDir, "suggestions");
     fs.mkdirSync(suggestionsDir, { recursive: true });
     const rawFallbackPath = path.join(suggestionsDir, RAW_FALLBACK_NAME);
