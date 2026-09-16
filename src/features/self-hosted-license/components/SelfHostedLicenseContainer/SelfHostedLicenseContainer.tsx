@@ -20,7 +20,7 @@ const SelfHostedLicenseContainer: FC = () => {
         present on the system where the software will be installed.
         <br />
         <br />
-        Your license file contains information that uniquely indentifies your
+        Your license file contains information that uniquely identifies your
         account and the number of seats you are entitled to, as well as the
         expiration date of your license.
       </p>
@@ -56,7 +56,7 @@ const SelfHostedLicenseContainer: FC = () => {
       <RegenerateLicenseButton />
 
       <p className={classes.paragraph5}>
-        It's recommended that you protect this file by making it readable only
+        It&apos;s recommended that you protect this file by making it readable only
         by the root and Landscape users:
       </p>
 
