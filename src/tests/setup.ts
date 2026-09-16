@@ -5,6 +5,7 @@ import fs from "fs";
 import { afterAll, afterEach, beforeAll, expect } from "vitest";
 import { setEndpointStatus } from "./controllers/controller";
 import { MANIFEST_PATH, REGISTRY_PATH } from "./contract-coverage/paths";
+import { redactSensitiveFields } from "./contract-coverage/redact";
 import {
   mockRangeBoundingClientRect,
   resetScreenSize,
@@ -60,8 +61,12 @@ function truncateForLog(payload: unknown): unknown {
 
 async function logInteraction(request: Request, response: Response) {
   try {
-    const requestPayload = truncateForLog(await extractPayload(request));
-    const responsePayload = truncateForLog(await extractPayload(response));
+    const requestPayload = truncateForLog(
+      redactSensitiveFields(await extractPayload(request)),
+    );
+    const responsePayload = truncateForLog(
+      redactSensitiveFields(await extractPayload(response)),
+    );
 
     const logEntry = {
       timestamp: new Date().toISOString(),
