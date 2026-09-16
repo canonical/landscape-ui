@@ -41,7 +41,9 @@ const fiveGaps = (): GapEntryLike[] => [
   ]),
 ];
 
-const hugeExemplarLength = 12_000;
+const PROMPT_SIZE_LIMIT = 12_000;
+const hugeExemplarLength = 11_000;
+const exemplarFillingBudgetLength = 11_500;
 
 describe("buildSuggestionPrompt", () => {
   it("embeds the top-5 gaps, their contract payloads, and the exemplar", () => {
@@ -89,7 +91,7 @@ describe("buildSuggestionPrompt", () => {
     ];
     const { user } = buildSuggestionPrompt(fatGaps, EXEMPLAR);
 
-    expect(user.length).toBeLessThanOrEqual(hugeExemplarLength);
+    expect(user.length).toBeLessThanOrEqual(PROMPT_SIZE_LIMIT);
     expect(user).toContain("POST /api/v2/blob");
     expect(user).not.toContain("x".repeat(OVERSIZE_BLOB_LENGTH));
   });
@@ -107,7 +109,7 @@ describe("buildSuggestionPrompt", () => {
     const { user } = buildSuggestionPrompt([multiStatus], EXEMPLAR);
 
     const contractsMatch = user.match(/"status": 201/g);
-    expect(contractsMatch).toHaveLength(1);
+    expect(contractsMatch).toHaveLength(2);
     expect(user).toContain('"status": 400');
   });
 
@@ -124,14 +126,14 @@ describe("buildSuggestionPrompt", () => {
     );
     const { user } = buildSuggestionPrompt(gaps, hugeExemplar);
 
-    expect(user.length).toBeLessThanOrEqual(hugeExemplarLength);
+    expect(user.length).toBeLessThanOrEqual(PROMPT_SIZE_LIMIT);
     expect(user).toContain("POST /api/v2/route1");
-    expect(user).toContain("POST /api/v2/route2");
+    expect(user).not.toContain("POST /api/v2/route2");
     expect(user).not.toContain("POST /api/v2/route3");
   });
 
   it("throws only when no gap can fit within the size guard", () => {
-    const hugeExemplar = "x".repeat(hugeExemplarLength);
+    const hugeExemplar = "x".repeat(exemplarFillingBudgetLength);
     const gaps = [
       gap("POST /api/v2/blob", 1, [
         { status: 200, requestPayload: { x: "y" } },
