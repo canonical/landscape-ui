@@ -54,7 +54,7 @@ describe("createOpenAiCompatibleClient.complete", () => {
     };
     expect(body.model).toBe("test-model");
     expect(body.temperature).toBe(0);
-    expect(body.max_tokens).toBe(4096);
+    expect(body.max_tokens).toBe(16384);
     expect(body.messages).toEqual([
       { role: "system", content: "be terse" },
       { role: "user", content: "say hi" },
