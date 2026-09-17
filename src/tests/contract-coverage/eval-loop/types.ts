@@ -242,6 +242,11 @@ export function assertSuggestionsResponse(
         entry[field],
         `suggestionsResponse.suggestions[${index}].${field}`,
       );
+      if (field !== "notes" && (entry[field] as string).trim().length === 0) {
+        throw new Error(
+          `suggestionsResponse.suggestions[${index}].${field}: expected a non-empty string`,
+        );
+      }
     }
   }
 }
