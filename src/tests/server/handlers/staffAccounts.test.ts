@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { API_URL } from "@/constants";
-import { setStaffGlobalRoles } from "./staffAccounts";
+import { setCallerAccounts, setStaffGlobalRoles } from "./staffAccounts";
 
 // Contract tests for the staff (super admin) MSW handlers. These pin the
 // mocks to the real V2 API's behavior — status codes, error envelopes and
@@ -448,6 +448,19 @@ describe("POST /switch-account", () => {
     expect(await unknown.json()).toEqual(unknownAccountBody);
 
     const nonMember = await switchTo("acme");
+    expect(nonMember.status).toBe(BAD_REQUEST);
+    expect(await nonMember.json()).toEqual(unknownAccountBody);
+  });
+
+  it("honours a narrowed caller membership rather than the fixture union", async () => {
+    setCallerAccounts(["second-account"]);
+
+    const member = await switchTo("second-account");
+    expect(member.status).toBe(OK);
+
+    // `onward` is in the `accountsDefault` fixture but not in this caller's
+    // membership, so it must still get the non-disclosing 400.
+    const nonMember = await switchTo("onward");
     expect(nonMember.status).toBe(BAD_REQUEST);
     expect(await nonMember.json()).toEqual(unknownAccountBody);
   });

@@ -33,10 +33,20 @@ const STAFF_ACCOUNT_PAGE_MAX_LIMIT = 100;
  */
 export const staffState = {
   globalRoles: [] as string[],
+  /**
+   * The caller's account membership for `POST switch-account`. `null` keeps the
+   * default union of the member-account fixtures; tests that need to exercise
+   * the non-member path narrow it with `setCallerAccounts`.
+   */
+  callerAccounts: null as string[] | null,
 };
 
 export const setStaffGlobalRoles = (roles: string[]): void => {
   staffState.globalRoles = roles;
+};
+
+export const setCallerAccounts = (accounts: string[] | null): void => {
+  staffState.callerAccounts = accounts;
 };
 
 let staffAccounts = createStaffAccounts();
@@ -44,6 +54,7 @@ let wslFeatureLimits: Record<string, WslFeatureLimits> = {};
 
 export const resetStaffState = (): void => {
   staffState.globalRoles = [];
+  staffState.callerAccounts = null;
   staffAccounts = createStaffAccounts();
   wslFeatureLimits = {};
 };

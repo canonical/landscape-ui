@@ -111,8 +111,9 @@ export default [
 
       // The mock caller is a member of the accounts in both member-account
       // mocks (`authUser.accounts` and `accountsDefault` — different tests
-      // build their auth state from either).
-      const memberAccountNames = [
+      // build their auth state from either). Tests that need to exercise the
+      // non-member path narrow this with `setCallerAccounts`.
+      const memberAccountNames = staffState.callerAccounts ?? [
         ...authUser.accounts.map(({ name }) => name),
         ...accountsDefault.map(({ name }) => name),
       ];
@@ -296,6 +297,7 @@ export default [
     if (code === "attach-code") {
       return HttpResponse.json({
         ...authResponse,
+        global_roles: [...staffState.globalRoles],
         attach_code: "QWER12",
       });
     }
@@ -330,6 +332,8 @@ export default [
       token: "new-oidc-token",
       return_to: null,
       attach_code: null,
+      // Present but empty: a brand new OIDC user is never Canonical staff.
+      global_roles: [],
     };
 
     /**
@@ -404,6 +408,8 @@ export default [
       token: "new-user-token",
       return_to: null,
       attach_code: null,
+      // Present but empty: a brand new Ubuntu One user is never Canonical staff.
+      global_roles: [],
     };
 
     /**
