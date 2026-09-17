@@ -264,6 +264,11 @@ describe("PATCH /accounts/:name", () => {
       { salesforce_account_key: 1001 },
       { type: "string_type", loc: ["salesforce_account_key"] },
     ],
+    [
+      "a non-string subdomain",
+      { subdomain: 123 },
+      { type: "string_type", loc: ["subdomain"] },
+    ],
   ])(
     "rejects %s with a 400 validation envelope rather than throwing",
     async (_, body, expected) => {
@@ -358,6 +363,31 @@ describe("WSL feature limits", () => {
     const body = await response.json();
     expect(body.error).toBe("PydanticValidationError");
     expect(body.detail).toHaveLength(2);
+  });
+
+  it("POST rejects a non-integer limit instead of storing it", async () => {
+    setStaffGlobalRoles(["AccountManager"]);
+
+    const response = await send(
+      "POST",
+      "accounts/acme/wsl-feature-limits",
+      {
+        max_windows_host_machines: "many",
+        max_wsl_child_instances_per_host: 10,
+        max_wsl_child_instance_profiles: 100,
+      },
+      AUTH_HEADERS,
+    );
+
+    expect(response.status).toBe(BAD_REQUEST);
+    const body = await response.json();
+    expect(body.error).toBe("PydanticValidationError");
+    expect(body.detail).toContainEqual(
+      expect.objectContaining({
+        type: "int_parsing",
+        loc: ["max_windows_host_machines"],
+      }),
+    );
   });
 
   it("POST is write-tier only and persists the new limits", async () => {

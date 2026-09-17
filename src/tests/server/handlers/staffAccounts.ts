@@ -246,16 +246,23 @@ const accountPatchErrors = (body: AccountPatchBody): PydanticErrorDetail[] => {
     });
   }
 
-  if (
-    typeof body.subdomain === "string" &&
-    (body.subdomain.length > SUBDOMAIN_MAX_LENGTH ||
-      !SUBDOMAIN_PATTERN.test(body.subdomain))
-  ) {
-    detail.push({
-      type: "string_pattern_mismatch",
-      loc: ["subdomain"],
-      msg: `String should match pattern '${SUBDOMAIN_PATTERN.source}'`,
-    });
+  if (body.subdomain !== undefined && body.subdomain !== null) {
+    if (typeof body.subdomain !== "string") {
+      detail.push({
+        type: "string_type",
+        loc: ["subdomain"],
+        msg: "Input should be a valid string",
+      });
+    } else if (
+      body.subdomain.length > SUBDOMAIN_MAX_LENGTH ||
+      !SUBDOMAIN_PATTERN.test(body.subdomain)
+    ) {
+      detail.push({
+        type: "string_pattern_mismatch",
+        loc: ["subdomain"],
+        msg: `String should match pattern '${SUBDOMAIN_PATTERN.source}'`,
+      });
+    }
   }
 
   if (body.max_people_count !== undefined) {
@@ -289,6 +296,26 @@ const accountPatchErrors = (body: AccountPatchBody): PydanticErrorDetail[] => {
 
   return detail;
 };
+
+const WSL_LIMIT_FIELDS = [
+  "max_windows_host_machines",
+  "max_wsl_child_instances_per_host",
+  "max_wsl_child_instance_profiles",
+] as const;
+
+/**
+ * Body validation for `POST accounts/:name/wsl-feature-limits`. Only the
+ * integer type is asserted for present fields — the server's bounds for these
+ * are not mirrored here, so no range is invented.
+ */
+const wslLimitErrors = (
+  body: Partial<WslFeatureLimits>,
+): PydanticErrorDetail[] =>
+  WSL_LIMIT_FIELDS.flatMap((field) =>
+    body[field] === undefined
+      ? [{ type: "missing", loc: [field], msg: "Field required" }]
+      : rangeErrors(field, body[field], {}),
+  );
 
 export default [
   http.get(`${API_URL}accounts`, ({ request }) => {
@@ -449,19 +476,7 @@ export default [
 
       const body = await request.json();
 
-      const detail: PydanticErrorDetail[] = (
-        [
-          "max_windows_host_machines",
-          "max_wsl_child_instances_per_host",
-          "max_wsl_child_instance_profiles",
-        ] as const
-      )
-        .filter((field) => body[field] === undefined)
-        .map((field) => ({
-          type: "missing",
-          loc: [field],
-          msg: "Field required",
-        }));
+      const detail = wslLimitErrors(body);
 
       if (detail.length) {
         return validationErrorResponse(detail);
