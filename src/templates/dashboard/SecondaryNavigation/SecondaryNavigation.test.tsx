@@ -1,4 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
+import { EnvContext, type EnvContextState } from "@/context/env";
 import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import SecondaryNavigation from "./SecondaryNavigation";
@@ -6,6 +7,15 @@ import { ACCOUNT_SETTINGS } from "./constants";
 import { PATHS, ROUTES } from "@/libs/routes";
 import { useMediaQuery } from "usehooks-ts";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+
+const resolvedEnvState: EnvContextState = {
+  envLoading: false,
+  isSaas: true,
+  isSelfHosted: false,
+  packageVersion: "",
+  revision: "",
+  displayDisaStigBanner: false,
+};
 
 // Mock useMediaQuery to simulate large screen
 vi.mock("usehooks-ts", async () => {
@@ -23,6 +33,14 @@ describe("SecondaryNavigation", () => {
         title={ACCOUNT_SETTINGS.label}
         items={ACCOUNT_SETTINGS.items}
       />,
+      undefined,
+      undefined,
+      undefined,
+      ({ children }) => (
+        <EnvContext.Provider value={resolvedEnvState}>
+          {children}
+        </EnvContext.Provider>
+      ),
     );
 
     expect(
