@@ -1,3 +1,4 @@
+import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
@@ -9,12 +10,13 @@ interface SelfHostedLicenseResponse {
 
 export const useGetSelfHostedLicense = () => {
   const authFetch = useFetch();
+  const { currentAccount } = useAuthAccounts();
 
   const { data: response, isPending } = useQuery<
     AxiosResponse<SelfHostedLicenseResponse>,
     AxiosError<ApiError>
   >({
-    queryKey: ["selfHostedLicense"],
+    queryKey: ["selfHostedLicense", currentAccount.name],
     queryFn: async () => authFetch.get("self-hosted/license-url"),
   });
 

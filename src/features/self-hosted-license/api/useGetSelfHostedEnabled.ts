@@ -1,3 +1,4 @@
+import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
@@ -9,13 +10,14 @@ interface SelfHostedEnabledResponse {
 
 export const useGetSelfHostedEnabled = (enabled: boolean) => {
   const authFetch = useFetch();
+  const { currentAccount } = useAuthAccounts();
 
   const {
     data: response,
     isPending,
     isError,
   } = useQuery<AxiosResponse<SelfHostedEnabledResponse>, AxiosError<ApiError>>({
-    queryKey: ["selfHostedEnabled"],
+    queryKey: ["selfHostedEnabled", currentAccount.name],
     queryFn: async () => authFetch.get("self-hosted/status"),
     enabled,
   });
