@@ -47,8 +47,8 @@ const SelfHostedLicenseContainer: FC = () => {
       <RegenerateLicenseButton />
 
       <p className={classes.paragraph5}>
-        It&apos;s recommended that you protect this license file by making it readable
-        only by the root and Landscape users:
+        It&apos;s recommended that you protect this license file by making it
+        readable only by the root and Landscape users:
       </p>
 
       <CopyableCodeSnippet

@@ -16,7 +16,8 @@ export const getFilteredByEnvItems = ({
   return items
     .filter(
       ({ env, requiresSelfHostedLicense }) =>
-        ((!isSaas && env !== "saas") || (!isSelfHosted && env !== "selfHosted")) &&
+        ((!isSaas && env !== "saas") ||
+          (!isSelfHosted && env !== "selfHosted")) &&
         (!requiresSelfHostedLicense || isSelfHostedLicenseEnabled),
     )
     .map((item) =>

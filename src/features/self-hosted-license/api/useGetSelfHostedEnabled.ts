@@ -10,10 +10,11 @@ interface SelfHostedEnabledResponse {
 export const useGetSelfHostedEnabled = (enabled: boolean) => {
   const authFetch = useFetch();
 
-  const { data: response, isPending, isError } = useQuery<
-    AxiosResponse<SelfHostedEnabledResponse>,
-    AxiosError<ApiError>
-  >({
+  const {
+    data: response,
+    isPending,
+    isError,
+  } = useQuery<AxiosResponse<SelfHostedEnabledResponse>, AxiosError<ApiError>>({
     queryKey: ["selfHostedEnabled"],
     queryFn: async () => authFetch.get("self-hosted/status"),
     enabled,

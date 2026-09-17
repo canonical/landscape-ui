@@ -100,7 +100,9 @@ describe("DashboardRoutes", () => {
     expect(employeesRoute.props.element.type).toBe(FeatureGuard);
     expect(identityProvidersRoute.props.element.type).toBe(FeatureGuard);
     expect(wslProfilesRoute.props.element.type).toBe(FeatureGuard);
-    expect(selfHostedLicenseRoute.props.element.type).toBe(SelfHostedLicenseGuard);
+    expect(selfHostedLicenseRoute.props.element.type).toBe(
+      SelfHostedLicenseGuard,
+    );
 
     if (TSV_EXPORTS_ENABLED) {
       assert(exportsRoute?.props.element);

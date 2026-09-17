@@ -8,16 +8,13 @@ describe("SelfHostedLicensePage", () => {
     renderWithProviders(<SelfHostedLicensePage />);
 
     expect(
-      screen.getByRole("heading", { name: "Self hosted license" }),
+      screen.getByRole("heading", { name: "Legacy license file" }),
     ).toBeInTheDocument();
 
     expect(
       screen.getByRole("link", {
-        name: "Learn more about self hosted landscape",
+        name: "Learn more about Landscape licensing",
       }),
-    ).toHaveAttribute(
-      "href",
-      expect.stringContaining("/self-hosted-landscape/"),
-    );
+    ).toHaveAttribute("href", expect.stringContaining("/licenses/"));
   });
 });

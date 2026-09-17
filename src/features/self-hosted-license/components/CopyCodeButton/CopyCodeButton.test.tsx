@@ -29,6 +29,8 @@ describe("CopyCodeButton", () => {
 
     await user.click(screen.getByRole("button", { name: "Copy code" }));
 
-    expect(screen.getByRole("button", { name: "Copy code" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Copy code" }),
+    ).toBeInTheDocument();
   });
 });

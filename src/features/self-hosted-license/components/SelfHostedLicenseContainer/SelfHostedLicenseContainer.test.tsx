@@ -43,11 +43,13 @@ ${selfHostedLicense.license_url}`,
       ).not.toHaveAttribute("aria-disabled");
     });
 
-    await user.click(screen.getByRole("button", { name: "Regenerate token" }));
+    await user.click(
+      screen.getByRole("button", { name: "Regenerate private token" }),
+    );
 
     expect(
       await screen.findByText(
-        "You have successfully regenerated your APT credentials",
+        "Private token and license download URL regenerated",
       ),
     ).toBeInTheDocument();
 

@@ -17,8 +17,7 @@ const RegenerateLicenseButton: FC = () => {
 
       notify.success({
         title: "Private token and license download URL regenerated",
-        message:
-          "The previous download URL no longer works.",
+        message: "The previous download URL no longer works.",
       });
     } catch (error) {
       debug(error);

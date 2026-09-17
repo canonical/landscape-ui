@@ -1,6 +1,6 @@
 .codeBlock {
-  position: relative;
   max-width: 42.25rem;
+  position: relative;
 }
 
 .codeBlock :global(.p-code-snippet__block) {
@@ -9,10 +9,10 @@
 
 .copyButton {
   position: absolute;
-  top: 50%;
   right: clamp(0.25rem, 1vw, 0.75rem);
-  z-index: 1;
+  top: 50%;
   transform: translateY(-50%);
+  z-index: 1;
 }
 
 .multiline {

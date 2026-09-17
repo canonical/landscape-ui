@@ -14,7 +14,9 @@ describe("LicenseCurlCommand", () => {
     renderWithProviders(<LicenseCurlCommand isLoading={false} />);
 
     expect(
-      screen.getByText("Unable to get the curl command to download the license file."),
+      screen.getByText(
+        "Unable to get the curl command to download the license file.",
+      ),
     ).toBeInTheDocument();
   });
 

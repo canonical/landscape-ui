@@ -41,7 +41,7 @@ describe("SelfHostedLicenseGuard", () => {
     renderWithRoutes(envState);
 
     expect(
-      await screen.findByRole("heading", { name: "Self hosted license" }),
+      await screen.findByRole("heading", { name: "Legacy license file" }),
     ).toBeInTheDocument();
   });
 
@@ -59,7 +59,7 @@ describe("SelfHostedLicenseGuard", () => {
       screen.getByText("This feature is not available in SaaS mode."),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("heading", { name: "Self hosted license" }),
+      screen.queryByRole("heading", { name: "Legacy license file" }),
     ).not.toBeInTheDocument();
   });
 
