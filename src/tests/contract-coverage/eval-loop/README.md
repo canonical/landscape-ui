@@ -82,3 +82,8 @@ Requires the `LLM_API_KEY` repo secret (OpenRouter key). Optional repo vars `LLM
 - **"malformed report"** — a previous run was interrupted. Re-run `pnpm coverage:full`.
 - **LLM step failed but you want the gap list** — it's already on disk: `out/gaps.json` is written before any LLM call, and CI uploads it even when the suggestion step fails.
 - **"Set LLM_API_KEY"** — export your OpenRouter key, or use `LLM_MOCK=1` for a dry-run.
+
+## Known limitations & follow-ups
+
+- This eval-loop implementation lives entires on the frontend `landscape-ui` repo. A more complete version would run from `landscape-packaging` to
+- **Template-literal URL spans are treated as single-segment parameters.** Each `${...}` in a spec URL becomes a `{param}` placeholder, which `patternToRegExp` matches as one path segment (`[^/:]+`). Specs that interpolate multi-segment resource names (for example `/v1/${createdRepoName}` where the variable contains `locals/my-repo`) are not statically matchable and may be reported as gaps or orphans. Prefer literal path prefixes such as `/v1/locals/${name}` where possible. A future change will either support multi-segment spans via an explicit annotation or require an analyzable URL form and emit a warning.

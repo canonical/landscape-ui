@@ -29,18 +29,31 @@ configure({ asyncUtilTimeout: 5000 });
 // --- MSW Interaction Recorder Config ---
 
 /**
- * Safely extracts and parses payloads from cloned network streams
+ * Safely extracts and parses payloads from cloned network streams. Parses
+ * JSON and form-encoded bodies into objects so downstream redaction can key
+ * off field names; other bodies are returned as raw strings.
  */
-async function extractPayload(streamOwner: Request | Response) {
+async function extractPayload(
+  streamOwner: Request | Response,
+): Promise<unknown> {
   if (!streamOwner.body) return null;
   try {
     const clone = streamOwner.clone();
     const text = await clone.text();
-    try {
-      return JSON.parse(text);
-    } catch {
-      return text || null;
+    if (!text) return null;
+
+    const contentType = streamOwner.headers.get("content-type") ?? "";
+    if (contentType.includes("application/json")) {
+      try {
+        return JSON.parse(text);
+      } catch {
+        return text;
+      }
     }
+    if (contentType.includes("application/x-www-form-urlencoded")) {
+      return Object.fromEntries(new URLSearchParams(text).entries());
+    }
+    return text;
   } catch {
     return null; // Fallback if streams are unreadable or locked
   }
