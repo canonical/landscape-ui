@@ -47,8 +47,12 @@ const exemplarFillingBudgetLength = 11_500;
 
 describe("buildSuggestionPrompt", () => {
   it("embeds the top-5 gaps, their contract payloads, and the exemplar", () => {
-    const { system, user } = buildSuggestionPrompt(fiveGaps(), EXEMPLAR);
+    const { system, user, includedRoutes } = buildSuggestionPrompt(
+      fiveGaps(),
+      EXEMPLAR,
+    );
 
+    expect(includedRoutes).toEqual(fiveGaps().map(({ routeId }) => routeId));
     for (const { routeId } of fiveGaps()) {
       expect(user).toContain(routeId);
     }
@@ -124,12 +128,13 @@ describe("buildSuggestionPrompt", () => {
         },
       ]),
     );
-    const { user } = buildSuggestionPrompt(gaps, hugeExemplar);
+    const { user, includedRoutes } = buildSuggestionPrompt(gaps, hugeExemplar);
 
     expect(user.length).toBeLessThanOrEqual(PROMPT_SIZE_LIMIT);
     expect(user).toContain("POST /api/v2/route1");
     expect(user).not.toContain("POST /api/v2/route2");
     expect(user).not.toContain("POST /api/v2/route3");
+    expect(includedRoutes).toEqual(["POST /api/v2/route1"]);
   });
 
   it("throws only when no gap can fit within the size guard", () => {
