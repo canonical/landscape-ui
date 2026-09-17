@@ -128,10 +128,7 @@ export default [
         return unknownAccountResponse();
       }
 
-      if (
-        !isStaff &&
-        reauthenticationRequiredAccounts.includes(account_name)
-      ) {
+      if (!isStaff && reauthenticationRequiredAccounts.includes(account_name)) {
         return HttpResponse.json(
           {
             error: "ApiRequestError",

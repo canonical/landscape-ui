@@ -63,9 +63,13 @@ describe("GET /accounts", () => {
     expect(response.status).toBe(OK);
     const { count, results } = await response.json();
     expect(count).toBe(5);
-    expect(results.map(({ account }: { account: string }) => account)).toEqual(
-      ["acme", "globex", "initech", "second-account", "test-account"],
-    );
+    expect(results.map(({ account }: { account: string }) => account)).toEqual([
+      "acme",
+      "globex",
+      "initech",
+      "second-account",
+      "test-account",
+    ]);
     expect(results[0]).toEqual({
       account: "acme",
       company: "ACME Corp",
@@ -110,9 +114,10 @@ describe("GET /accounts", () => {
 
     const { count, results } = await response.json();
     expect(count).toBe(5);
-    expect(results.map(({ account }: { account: string }) => account)).toEqual(
-      ["initech", "second-account"],
-    );
+    expect(results.map(({ account }: { account: string }) => account)).toEqual([
+      "initech",
+      "second-account",
+    ]);
   });
 
   it.each([["limit=0"], ["limit=101"], ["offset=-1"], ["limit=abc"]])(
@@ -247,6 +252,31 @@ describe("PATCH /accounts/:name", () => {
     expect(response.status).toBe(BAD_REQUEST);
     expect((await response.json()).error).toBe("PydanticValidationError");
   });
+
+  it.each([
+    [
+      "a non-array enabled_features",
+      { enabled_features: 4 },
+      { type: "list_type", loc: ["enabled_features"] },
+    ],
+    [
+      "a non-string salesforce_account_key",
+      { salesforce_account_key: 1001 },
+      { type: "string_type", loc: ["salesforce_account_key"] },
+    ],
+  ])(
+    "rejects %s with a 400 validation envelope rather than throwing",
+    async (_, body, expected) => {
+      setStaffGlobalRoles(["AccountManager"]);
+
+      const response = await send("PATCH", "accounts/acme", body, AUTH_HEADERS);
+
+      expect(response.status).toBe(BAD_REQUEST);
+      const payload = await response.json();
+      expect(payload.error).toBe("PydanticValidationError");
+      expect(payload.detail).toContainEqual(expect.objectContaining(expected));
+    },
+  );
 
   it("rejects a malformed Salesforce key with the server's message", async () => {
     setStaffGlobalRoles(["AccountManager"]);

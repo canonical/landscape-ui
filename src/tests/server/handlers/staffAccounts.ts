@@ -48,9 +48,7 @@ export const resetStaffState = (): void => {
   wslFeatureLimits = {};
 };
 
-export const getStaffAccountByName = (
-  name: string,
-): StaffAccount | undefined =>
+export const getStaffAccountByName = (name: string): StaffAccount | undefined =>
   staffAccounts.find(({ account }) => account === name);
 
 // `ViewAllAccounts` is granted to SupportProvider and inherited by
@@ -220,6 +218,78 @@ interface AccountPatchBody {
   salesforce_account_key?: string | null;
 }
 
+/**
+ * Body validation for `PATCH accounts/:name`, mirroring the pydantic model that
+ * runs before the handler. Field types are checked as well as values, so a
+ * malformed body yields a 400 envelope instead of throwing inside the handler.
+ */
+const accountPatchErrors = (body: AccountPatchBody): PydanticErrorDetail[] => {
+  const detail: PydanticErrorDetail[] = [];
+
+  if (Array.isArray(body.enabled_features)) {
+    const knownFeatureKeys = features.map(({ database_key }) => database_key);
+
+    body.enabled_features.forEach((key, index) => {
+      if (!knownFeatureKeys.includes(key)) {
+        detail.push({
+          type: "value_error",
+          loc: ["enabled_features", index],
+          msg: `Value error, ${key} not in known FeatureFlag IDs.`,
+        });
+      }
+    });
+  } else if (body.enabled_features !== undefined) {
+    detail.push({
+      type: "list_type",
+      loc: ["enabled_features"],
+      msg: "Input should be a valid list",
+    });
+  }
+
+  if (
+    typeof body.subdomain === "string" &&
+    (body.subdomain.length > SUBDOMAIN_MAX_LENGTH ||
+      !SUBDOMAIN_PATTERN.test(body.subdomain))
+  ) {
+    detail.push({
+      type: "string_pattern_mismatch",
+      loc: ["subdomain"],
+      msg: `String should match pattern '${SUBDOMAIN_PATTERN.source}'`,
+    });
+  }
+
+  if (body.max_people_count !== undefined) {
+    detail.push(
+      ...rangeErrors("max_people_count", body.max_people_count, {
+        ge: 1,
+        le: 100,
+      }),
+    );
+  }
+
+  if (body.max_attachment_size !== undefined) {
+    detail.push(
+      ...rangeErrors("max_attachment_size", body.max_attachment_size, {
+        ge: 0,
+      }),
+    );
+  }
+
+  if (
+    body.salesforce_account_key !== undefined &&
+    body.salesforce_account_key !== null &&
+    typeof body.salesforce_account_key !== "string"
+  ) {
+    detail.push({
+      type: "string_type",
+      loc: ["salesforce_account_key"],
+      msg: "Input should be a valid string",
+    });
+  }
+
+  return detail;
+};
+
 export default [
   http.get(`${API_URL}accounts`, ({ request }) => {
     if (!request.headers.get("Authorization")) {
@@ -290,51 +360,7 @@ export default [
       }
 
       const body = await request.json();
-      const knownFeatureKeys = features.map(
-        ({ database_key }) => database_key,
-      );
-      const detail: PydanticErrorDetail[] = [];
-
-      if (body.enabled_features !== undefined) {
-        body.enabled_features.forEach((key, index) => {
-          if (!knownFeatureKeys.includes(key)) {
-            detail.push({
-              type: "value_error",
-              loc: ["enabled_features", index],
-              msg: `Value error, ${key} not in known FeatureFlag IDs.`,
-            });
-          }
-        });
-      }
-
-      if (
-        typeof body.subdomain === "string" &&
-        (body.subdomain.length > SUBDOMAIN_MAX_LENGTH ||
-          !SUBDOMAIN_PATTERN.test(body.subdomain))
-      ) {
-        detail.push({
-          type: "string_pattern_mismatch",
-          loc: ["subdomain"],
-          msg: `String should match pattern '${SUBDOMAIN_PATTERN.source}'`,
-        });
-      }
-
-      if (body.max_people_count !== undefined) {
-        detail.push(
-          ...rangeErrors("max_people_count", body.max_people_count, {
-            ge: 1,
-            le: 100,
-          }),
-        );
-      }
-
-      if (body.max_attachment_size !== undefined) {
-        detail.push(
-          ...rangeErrors("max_attachment_size", body.max_attachment_size, {
-            ge: 0,
-          }),
-        );
-      }
+      const detail = accountPatchErrors(body);
 
       if (detail.length) {
         return validationErrorResponse(detail);
@@ -350,10 +376,7 @@ export default [
         return accountNotFoundResponse();
       }
 
-      if (
-        body.salesforce_account_key !== undefined &&
-        body.salesforce_account_key !== null
-      ) {
+      if (typeof body.salesforce_account_key === "string") {
         if (!isValidSalesforceAccountKey(body.salesforce_account_key)) {
           return apiRequestErrorResponse(SALESFORCE_ACCOUNT_KEY_ERROR);
         }
@@ -365,6 +388,8 @@ export default [
         );
 
         if (holder) {
+          // The trailing space is in the server string too, not a typo here
+          // — see `SalesforceKeyAlreadyInUseError` in `ui/salesforce/key.py`.
           return apiRequestErrorResponse(
             `Salesforce account key is already used by account ${holder.company} (${holder.account}) `,
           );

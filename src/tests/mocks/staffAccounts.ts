@@ -78,7 +78,9 @@ export const createStaffAccounts = (): StaffAccount[] => [
     computers: 41,
     creation_time: "2024-01-01T00:00:00Z",
     last_login_time: "2026-07-01T09:30:00Z",
-    administrators: [{ name: "Jane Doe", email: "jane@acme.com", openid: null }],
+    administrators: [
+      { name: "Jane Doe", email: "jane@acme.com", openid: null },
+    ],
     licenses: [
       { expires: "2027-01-01T00:00:00Z", seats: 50, type: "UbuntuPro" },
     ],
