@@ -109,7 +109,7 @@ export default [
   }),
 
   http.post<never, SnapActionParams>(`${API_URL}snaps`, async ({ request }) => {
-    if (shouldApplyEndpointStatus("snaps/action")) {
+    if (shouldApplyEndpointStatus("snaps")) {
       const endpointStatus = getEndpointStatus();
 
       if (endpointStatus.status === "error") {
