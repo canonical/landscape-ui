@@ -7,6 +7,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, beforeEach } from "vitest";
 import type { InstalledSnap } from "../../types";
 import RefreshSnapForm from "./RefreshSnapForm";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 
 const defaultInstalledSnaps: InstalledSnap[] = [installedSnaps[0]];
 const multipleInstalledSnaps: InstalledSnap[] = [...installedSnaps];
@@ -106,7 +107,9 @@ describe("RefreshSnapForm", () => {
 
       await userEvent.click(screen.getByRole("button", { name: /refresh/i }));
 
-      expect(await screen.findByText(/error response/i)).toBeInTheDocument();
+      expect(
+        await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+      ).toBeInTheDocument();
     });
   });
 });
