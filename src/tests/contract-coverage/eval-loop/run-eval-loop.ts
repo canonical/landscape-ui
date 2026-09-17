@@ -235,9 +235,8 @@ async function main(): Promise<void> {
       );
       process.exit(1);
     }
-    if (result.status === "llm-failure") {
       console.error(
-        `[-] LLM response was not valid suggestion JSON; raw output saved to ${result.rawFallbackPath}`,
+        `[-] LLM suggestion generation failed; details saved to ${result.rawFallbackPath}`,
       );
       process.exit(1);
     }
