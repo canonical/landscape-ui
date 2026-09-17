@@ -19,7 +19,7 @@ import {
   generatePaginatedResponse,
   shouldApplyEndpointStatus,
 } from "./_helpers";
-import { createEndpointStatusNetworkError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 const SNAP_ACTION_VERBS: Record<SnapAction, string> = {
   install: "Install",
@@ -83,7 +83,7 @@ export default [
       const endpointStatus = getEndpointStatus();
 
       if (endpointStatus.status === "error") {
-        throw createEndpointStatusNetworkError();
+        throw createEndpointStatusError();
       }
 
       if (endpointStatus.status === "loading") {
@@ -109,11 +109,11 @@ export default [
   }),
 
   http.post<never, SnapActionParams>(`${API_URL}snaps`, async ({ request }) => {
-    if (shouldApplyEndpointStatus("snaps")) {
+    if (shouldApplyEndpointStatus("snaps/action")) {
       const endpointStatus = getEndpointStatus();
 
       if (endpointStatus.status === "error") {
-        throw createEndpointStatusNetworkError();
+        throw createEndpointStatusError();
       }
 
       if (endpointStatus.status === "loading") {
@@ -143,7 +143,7 @@ export default [
         shouldApplyEndpointStatus("computers/:computerId/snaps/installed") &&
         endpointStatus.status === "error"
       ) {
-        throw createEndpointStatusNetworkError();
+        throw createEndpointStatusError();
       }
 
       return HttpResponse.json(
