@@ -11,18 +11,9 @@ const SelfHostedLicenseContainer: FC = () => {
   const { downloadUrl, isGettingSelfHostedLicense } = useGetSelfHostedLicense();
 
   return (
-    <FormSection
-      title="Setting up the license file"
-      className={classes.formSection}
-    >
+    <FormSection title="License file" className={classes.formSection}>
       <p className={classes.paragraph1}>
-        In order to run Self-hosted Landscape, a license file needs to be
-        present on the system where the software will be installed.
-        <br />
-        <br />
-        Your license file contains information that uniquely identifies your
-        account and the number of seats you are entitled to, as well as the
-        expiration date of your license.
+        Download the legacy <code>license.txt</code> file for this account.
       </p>
 
       <DownloadLicenseButton
@@ -40,8 +31,6 @@ const SelfHostedLicenseContainer: FC = () => {
       <p className={classes.paragraph3}>
         If you have the <span className={classes.curl}>curl</span> package
         installed, you can perform the two steps above with a single command.
-        Access is controlled by a private token which uniquely identifies
-        download requests from your account:
       </p>
 
       <LicenseCurlCommand
@@ -50,14 +39,16 @@ const SelfHostedLicenseContainer: FC = () => {
       />
 
       <p className={classes.paragraph4}>
-        If your credentials have been compromised, you can regenerate them:
+        The license download URL contains a private token. If the token has been
+        exposed, regenerate it. Regenerating the token invalidates the previous
+        download URL.
       </p>
 
       <RegenerateLicenseButton />
 
       <p className={classes.paragraph5}>
-        It&apos;s recommended that you protect this file by making it readable only
-        by the root and Landscape users:
+        It&apos;s recommended that you protect this license file by making it readable
+        only by the root and Landscape users:
       </p>
 
       <CopyableCodeSnippet
