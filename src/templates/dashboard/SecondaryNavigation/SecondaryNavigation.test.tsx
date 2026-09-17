@@ -92,7 +92,7 @@ describe("SecondaryNavigation", () => {
     );
 
     expect(
-      screen.queryByRole("link", { name: "Self hosted license" }),
+      screen.queryByRole("link", { name: "Legacy license file" }),
     ).not.toBeInTheDocument();
   });
 
