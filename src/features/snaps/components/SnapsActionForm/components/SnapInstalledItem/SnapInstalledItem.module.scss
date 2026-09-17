@@ -2,11 +2,18 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .selectedContainer {
-  align-items: start;
   background: $colors--theme--background-alt;
+  margin-top: $spv--small;
+  padding: $spv--small $sph--large $spv--large;
+}
+
+.titleRow {
+  align-items: center;
   display: flex;
   gap: $sph--small;
   justify-content: space-between;
-  margin-top: $spv--small;
-  padding: $spv--small $sph--large;
+}
+
+.deleteButton {
+  padding: $spv--small 0;
 }

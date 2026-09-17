@@ -1,41 +1,48 @@
 import { type FC } from "react";
-import type { SelectedSnaps } from "../../../../types";
-import classes from "./SnapItem.module.scss";
+import type { InstalledSnapWithCount } from "../../../../types";
+import classes from "./SnapInstalledItem.module.scss";
 import classNames from "classnames";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import { pluralize } from "@/utils/_helpers";
 
-interface SnapItemProps {
-  readonly selectedSnap: SelectedSnaps;
+interface SnapInstalledItemProps {
+  readonly selectedSnap: InstalledSnapWithCount;
   readonly onDelete: () => void;
+  readonly isUnhold: boolean;
+  readonly selectedInstances: number;
 }
 
-const SnapItem: FC<SnapItemProps> = ({ onDelete, selectedSnap }) => {
+const SnapInstalledItem: FC<SnapInstalledItemProps> = ({
+  onDelete,
+  selectedSnap,
+  isUnhold,
+  selectedInstances,
+}) => {
+  const scope = isUnhold ? "Held" : "Installed";
+
   return (
     <li
       className={classNames("u-no-margin--bottom", classes.selectedContainer)}
       key={selectedSnap.snap.id}
     >
-      <div>
-        <div className="font-monospace">
-          {selectedSnap.snap.name} {selectedSnap.channel}
-        </div>
-        <div className="u-text--muted p-text--small u-no-margin">
-          Available on{" "}
-          {pluralize(selectedSnap.computers.count, ["instance"], "exact")}
-        </div>
+      <div className={classes.titleRow}>
+        <strong>{selectedSnap.snap.name}</strong>
+        <Button
+          type="button"
+          appearance="link"
+          className={classes.deleteButton}
+          aria-label={`Delete ${selectedSnap.snap.name}`}
+          onClick={onDelete}
+        >
+          <Icon name={ICONS.delete} />
+        </Button>
       </div>
-      <Button
-        type="button"
-        appearance="link"
-        className="u-no-margin--bottom u-no-padding--top"
-        aria-label={`Delete ${selectedSnap.snap.name}`}
-        onClick={onDelete}
-      >
-        <Icon name={ICONS.delete} />
-      </Button>
+      <div className="u-text--muted u-no-margin">
+        {scope} on {selectedSnap.computerCount} of{" "}
+        {pluralize(selectedInstances, ["instance"], "exact")}
+      </div>
     </li>
   );
 };
 
-export default SnapItem;
+export default SnapInstalledItem;
