@@ -65,12 +65,14 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
       case "install":
         return "install";
       case "remove":
-        return "remove";
+        return "uninstall";
       case "hold":
         return "hold";
       case "unhold":
         return "unhold";
-      default:
+      case "refresh":
+        return "refresh";
+      case "changeChannel":
         return "change channels on";
     }
   };

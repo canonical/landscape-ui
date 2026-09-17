@@ -1,146 +1,101 @@
-import type { Package, SearchPackagesResponse } from "@/features/packages";
-import { packages } from "@/tests/mocks/packages";
+import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
-import type {
-  InfiniteData,
-  UseInfiniteQueryResult,
-} from "@tanstack/react-query";
 import { screen } from "@testing-library/react";
-import { AxiosHeaders, type AxiosResponse } from "axios";
 import type { ControllerStateAndHelpers } from "downshift";
 import type { ComponentProps } from "react";
-import { describe, expect, it } from "vitest";
-import PackageDropdownSearchList from "./SnapBulkSearchList";
-import classes from "./SnapDropdownSearchList.module.scss";
+import { describe, expect, it, vi } from "vitest";
+import type { InstalledSnapWithCount } from "../../../../types";
+import SnapBulkSearchList from "./SnapBulkSearchList";
 
-type QueryResultType = UseInfiniteQueryResult<
-  InfiniteData<AxiosResponse<SearchPackagesResponse>>
-> & { isError: false };
+type QueryResult = ComponentProps<typeof SnapBulkSearchList>["queryResult"];
 
-const mockDownshift = {
+const snaps = installedSnaps.slice(0, 3);
+const [firstSnap, secondSnap, thirdSnap] = installedSnaps;
+
+const downshiftOptions = {
   highlightedIndex: -1,
-  getItemProps: vi.fn(),
-} as unknown as ControllerStateAndHelpers<Package>;
+  getItemProps: vi.fn().mockReturnValue({}),
+} as unknown as ControllerStateAndHelpers<InstalledSnapWithCount>;
 
-const mockQueryResult = {
-  data: {
-    pages: [
-      {
-        data: {
-          count: packages.length,
-          next: null,
-          prev: null,
-          packages: packages,
+const buildQueryResult = (
+  results: InstalledSnapWithCount[] = installedSnaps,
+  overrides: Partial<QueryResult> = {},
+): QueryResult =>
+  ({
+    isPending: false,
+    isFetchingNextPage: false,
+    hasNextPage: false,
+    fetchNextPage: vi.fn(),
+    data: {
+      pageParams: [0],
+      pages: [
+        {
+          data: {
+            results,
+            count: results.length,
+            prev: null,
+            next: null,
+          },
         },
-        status: 200,
-        statusText: "OK",
-        headers: {},
-        config: { headers: new AxiosHeaders() },
-      },
-    ],
-    pageParams: [],
-  },
-  isPending: false,
-  hasNextPage: false,
-  isFetchingNextPage: false,
-  fetchNextPage: vi.fn(),
-} as unknown as QueryResultType;
+      ],
+    },
+    ...overrides,
+  }) as unknown as QueryResult;
 
-const [selectedPackage] = packages;
+const renderList = (
+  props: Partial<ComponentProps<typeof SnapBulkSearchList>> = {},
+) =>
+  renderWithProviders(
+    <SnapBulkSearchList
+      downshiftOptions={downshiftOptions}
+      queryResult={buildQueryResult()}
+      search=""
+      selectedSnaps={[]}
+      {...props}
+    />,
+  );
 
-const props = {
-  downshiftOptions: mockDownshift,
-  queryResult: mockQueryResult,
-  selectedPackages: [selectedPackage],
-  exact: false,
-  search: "",
-} as const satisfies ComponentProps<typeof PackageDropdownSearchList>;
+describe("SnapBulkSearchList", () => {
+  it("renders list of snaps when query is completed", () => {
+    renderList();
 
-describe("PackageDropdownSearchList", () => {
-  it("renders list of packages when query is completed", async () => {
-    renderWithProviders(<PackageDropdownSearchList {...props} />);
-
-    for (const pkg of packages) {
-      screen.getByText(`${pkg.name} ${pkg.version}`);
+    for (const item of snaps) {
+      expect(screen.getByText(item.snap.name)).toBeInTheDocument();
     }
   });
 
-  it("renders selected packages disabled in dropdown", () => {
-    renderWithProviders(<PackageDropdownSearchList {...props} />);
+  it("hides selected snaps disabled from dropdown", () => {
+    renderList({ selectedSnaps: [firstSnap] });
 
-    const listItem = screen
-      .getByText(`${selectedPackage.name} ${selectedPackage.version}`)
-      .closest("li");
-    expect(listItem).toHaveClass(classes.disabled);
-  });
+    expect(screen.queryByText(firstSnap.snap.name)).not.toBeInTheDocument();
 
-  it("renders nothing when exact is true and search is empty", () => {
-    renderWithProviders(
-      <PackageDropdownSearchList {...props} exact={true} search="" />,
-    );
-
-    expect(screen.queryByRole("list")).not.toBeInTheDocument();
+    expect(screen.getByText(secondSnap.snap.name)).toBeInTheDocument();
+    expect(screen.getByText(thirdSnap.snap.name)).toBeInTheDocument();
   });
 
   it("renders bold text for searched term", () => {
-    const search = selectedPackage.name.substring(7);
+    renderList({
+      search: firstSnap.snap.name,
+      queryResult: buildQueryResult([firstSnap]),
+    });
 
-    renderWithProviders(
-      <PackageDropdownSearchList {...props} search={search} />,
-    );
-
-    const searchResult = screen.getByText(search);
-    expect(searchResult).toHaveStyle("font-weight: bolder;");
-    expect(searchResult.closest("div")?.textContent).toEqual(
-      `${selectedPackage.name} ${selectedPackage.version}`,
-    );
+    expect(screen.getByRole("strong")).toHaveTextContent(firstSnap.snap.name);
   });
 
-  it("renders empty message for exact search", async () => {
-    props.queryResult.data = {
-      pages: [],
-      pageParams: [],
-    };
+  it("renders empty message", () => {
+    renderList({ queryResult: buildQueryResult([]) });
 
-    renderWithProviders(
-      <PackageDropdownSearchList
-        {...props}
-        exact={true}
-        search="nonexistentpackage"
-      />,
-    );
-
-    const errorText = await screen.findByText(/Package not found/i);
-    expect(errorText).toBeInTheDocument();
-  });
-
-  it("renders empty message for non-exact search", async () => {
-    props.queryResult.data = {
-      pages: [],
-      pageParams: [],
-    };
-
-    renderWithProviders(
-      <PackageDropdownSearchList
-        {...props}
-        exact={false}
-        search="nonexistentpackage"
-      />,
-    );
-
-    const errorText = await screen.findByText(/No packages found/i);
-    expect(errorText).toBeInTheDocument();
+    expect(screen.getByText("No snaps found.")).toBeInTheDocument();
   });
 
   it("renders loading when query is pending", () => {
-    const queryResultPending = {
-      ...mockQueryResult,
-      isPending: true,
-    } as QueryResultType;
+    renderList({
+      queryResult: buildQueryResult(snaps, {
+        isPending: true,
+        data: undefined,
+      }),
+    });
 
-    renderWithProviders(
-      <PackageDropdownSearchList {...props} queryResult={queryResultPending} />,
-    );
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
 });
