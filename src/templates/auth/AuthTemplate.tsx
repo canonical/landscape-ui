@@ -14,7 +14,7 @@ interface AuthTemplateProps {
 const AuthTemplate: FC<AuthTemplateProps> = ({ title, children }) => {
   return (
     <div className={classNames("surface", classes.root)}>
-      <Row className="p-strip page-row">
+      <Row className="p-strip">
         <Col emptyLarge={4} size={6}>
           <div className={classNames("grid", classes.cardGrid)}>
             <Card className={classes.card}>
