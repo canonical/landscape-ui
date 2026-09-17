@@ -202,7 +202,16 @@ export function computeOrphans(
   report: CoverageReport,
   calls: ExtractedCall[],
 ): OrphanEntry[] {
-  const routes = Object.values(report.routes);
+  const routes = [
+    ...Object.values(report.routes),
+    ...report.unexercised.map(({ id }) => {
+      const separator = id.indexOf(" ");
+      return {
+        method: id.slice(0, separator),
+        pattern: id.slice(separator + 1),
+      };
+    }),
+  ];
   const orphans: OrphanEntry[] = [];
   for (const call of calls) {
     const matched = routes.some(
