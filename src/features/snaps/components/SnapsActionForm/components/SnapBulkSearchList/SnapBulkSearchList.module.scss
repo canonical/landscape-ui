@@ -6,15 +6,10 @@
   display: flex;
   gap: $sph--large;
   justify-content: space-between;
-  padding: $sph--small $spv--large;
-
-  &.disabled {
-    color: $colors--theme--text-muted;
-    cursor: not-allowed;
-  }
+  padding: $spv--small $sph--large;
 }
 
-.computerCount {
+.publisher {
   flex-shrink: 0;
 }
 

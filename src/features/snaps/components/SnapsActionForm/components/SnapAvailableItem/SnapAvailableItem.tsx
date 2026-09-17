@@ -1,12 +1,12 @@
 import { type FC } from "react";
-import type { SelectedSnaps } from "../../../../types";
+import type { InstalledSnapWithCount } from "../../../../types";
 import classes from "./SnapAvailableItem.module.scss";
 import classNames from "classnames";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import { pluralize } from "@/utils/_helpers";
 
 interface SnapAvailableItemProps {
-  readonly selectedSnap: SelectedSnaps;
+  readonly selectedSnap: InstalledSnapWithCount;
   readonly onDelete: () => void;
 }
 
@@ -21,11 +21,11 @@ const SnapAvailableItem: FC<SnapAvailableItemProps> = ({
     >
       <div>
         <div className="font-monospace">
-          {selectedSnap.snap.name} {selectedSnap.channel}
+          {selectedSnap.snap.name} {selectedSnap.tracking_channel}
         </div>
-        <div className="u-text--muted p-text--small u-no-margin">
+        <div className="u-text--muted u-no-margin">
           Available on{" "}
-          {pluralize(selectedSnap.computers.count, ["instance"], "exact")}
+          {pluralize(selectedSnap.computerCount, ["instance"], "exact")}
         </div>
       </div>
       <Button
