@@ -76,6 +76,12 @@ function listSpecFiles(specDir: string): string[] {
     .sort();
 }
 
+/**
+ * Convert a template-literal URL into a canonical pattern. Each `${...}` span
+ * becomes a single-segment `{param}` because patternToRegExp compiles that to
+ * `[^/:]+`. Specs should prefer literal path prefixes where possible;
+ * multi-segment spans require a future matcher enhancement.
+ */
 function templateToPattern(expression: ts.TemplateExpression): string {
   let pattern = expression.head.text;
   for (const span of expression.templateSpans) {
@@ -100,11 +106,13 @@ export function extractSpecCoverage(specDir: string): ExtractionResult {
       true,
     );
 
+    const fileRef = path.relative(specDir, file);
+
     const locationOf = (node: ts.Node): string => {
       const { line } = sourceFile.getLineAndCharacterOfPosition(
         node.getStart(sourceFile),
       );
-      return `${path.basename(file)}:${line + 1}`;
+      return `${fileRef}:${line + 1}`;
     };
 
     const visit = (node: ts.Node): void => {
@@ -131,14 +139,14 @@ export function extractSpecCoverage(specDir: string): ExtractionResult {
           calls.push({
             method,
             urlPattern: firstArg.text,
-            file: path.basename(file),
+            file: fileRef,
             line,
           });
         } else if (ts.isTemplateExpression(firstArg)) {
           calls.push({
             method,
             urlPattern: templateToPattern(firstArg),
-            file: path.basename(file),
+            file: fileRef,
             line,
           });
         } else {
