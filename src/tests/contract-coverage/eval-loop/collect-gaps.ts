@@ -21,15 +21,7 @@ export interface ExtractionResult {
   warnings: string[];
 }
 
-const HTTP_METHODS = new Set([
-  "get",
-  "post",
-  "put",
-  "patch",
-  "delete",
-  "head",
-  "fetch",
-]);
+const HTTP_METHODS = new Set(["get", "post", "put", "patch", "delete", "head"]);
 
 const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
