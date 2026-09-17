@@ -1,114 +1,120 @@
-import { ROUTES } from "@/libs/routes";
-import { packages as availablePackages } from "@/tests/mocks/packages";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
+import type { SnapAction } from "../../../../types";
+import { ErrorBoundary } from "@sentry/react";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
+import assert from "assert";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import PackageDropdownSearch from "./SnapBulkSearch";
+import SnapBulkSearch from "./SnapBulkSearch";
+import { MAX_SELECTED_SNAPS } from "./constants";
 
-const instanceId = 1;
-const instancePageUrl = ROUTES.instances.details.single(instanceId);
-const instancePath = `${ROUTES.instances.root()}/:instanceId`;
+const [, , searchedSnap] = installedSnaps;
+assert(searchedSnap, "Need at least 3 mock snaps to exist");
 
-const props: ComponentProps<typeof PackageDropdownSearch> = {
+const props: ComponentProps<typeof SnapBulkSearch> = {
+  instanceIds: [1],
   selectedItems: [],
   setSelectedItems: vi.fn(),
-  action: "install",
-  instanceIds: [instanceId],
+  action: "remove",
 };
 
-describe("PackageDropdownSearch", () => {
+describe("SnapBulkSearch", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
-    renderWithProviders(
-      <PackageDropdownSearch {...props} />,
-      undefined,
-      instancePageUrl,
-      instancePath,
-    );
+    vi.clearAllMocks();
   });
 
-  it("renders package dropdown search component", () => {
+  it("shows snaps matching the search term", async () => {
+    renderWithProviders(<SnapBulkSearch {...props} />);
+
     const searchBox = screen.getByRole("searchbox");
-    expect(searchBox).toBeInTheDocument();
+    await user.click(searchBox);
+    await user.type(searchBox, searchedSnap.snap.name);
+
+    expect(await screen.findByText(searchedSnap.snap.name)).toBeInTheDocument();
   });
 
-  describe("Search functionality", () => {
-    it("shows matching packages after searching", async () => {
-      const searchBox = screen.getByRole("searchbox");
-      assert(availablePackages[0]);
-      await user.type(searchBox, availablePackages[0].name);
+  it("adds snap to selection when clicked", async () => {
+    renderWithProviders(<SnapBulkSearch {...props} />);
 
-      const matchingPackage = await screen.findByText(
-        availablePackages[0].name,
-      );
-      expect(matchingPackage).toBeInTheDocument();
+    const searchBox = screen.getByRole("searchbox");
+    await user.click(searchBox);
+    await user.type(searchBox, searchedSnap.snap.name);
+
+    const suggestion = await screen.findByRole("option", {
+      name: `${searchedSnap.snap.name} ${searchedSnap.snap.publisher.username}`,
     });
+    await user.click(suggestion);
+
+    expect(props.setSelectedItems).toHaveBeenCalledWith([searchedSnap]);
   });
 
-  describe("Package selection", () => {
-    it("adds package to selected items when clicked", async () => {
-      assert(availablePackages[0]);
-      const searchBox = screen.getByRole("searchbox");
-      await user.type(searchBox, availablePackages[0].name);
+  it("clears search after selecting a package", async () => {
+    renderWithProviders(<SnapBulkSearch {...props} />);
 
-      const packageItem = await screen.findByText(availablePackages[0].name);
-      await user.click(packageItem);
+    const searchBox = screen.getByRole("searchbox");
+    await user.click(searchBox);
+    await user.type(searchBox, searchedSnap.snap.name);
 
-      expect(props.setSelectedItems).toHaveBeenCalled();
+    const suggestion = await screen.findByRole("option", {
+      name: `${searchedSnap.snap.name} ${searchedSnap.snap.publisher.username}`,
     });
+    await user.click(suggestion);
 
-    it("clears search box after selecting a package", async () => {
-      assert(availablePackages[0]);
-      const searchBox = screen.getByRole("searchbox");
-      await user.type(searchBox, availablePackages[0].name);
-
-      const packageItem = await screen.findByText(availablePackages[0].name);
-      await user.click(packageItem);
-
-      expect(searchBox).toHaveValue("");
-    });
+    expect(searchBox).toHaveValue("");
   });
 
-  describe("Clear search functionality", () => {
-    it("clears search input when clear button is clicked", async () => {
-      const searchBox = screen.getByRole("searchbox");
-      await user.type(searchBox, "test");
-      expect(searchBox).toHaveValue("test");
+  it("clears search input when clear button is clicked", async () => {
+    renderWithProviders(<SnapBulkSearch {...props} />);
 
-      const clearButton = screen.getByRole("button", {
-        name: /clear search field/i,
-      });
-      await user.click(clearButton);
+    const searchBox = screen.getByRole("searchbox");
+    await user.type(searchBox, "test");
+    expect(searchBox).toHaveValue("test");
 
-      expect(searchBox).toHaveValue("");
+    const clearButton = screen.getByRole("button", {
+      name: /clear search field/i,
     });
+    await user.click(clearButton);
+
+    expect(searchBox).toHaveValue("");
   });
 
-  describe("Selected packages display", () => {
-    it("removes package when delete button is clicked", async () => {
-      const [selectedPackage] = availablePackages;
-      assert(selectedPackage);
-      renderWithProviders(
-        <PackageDropdownSearch
-          {...props}
-          selectedItems={[[selectedPackage, []]]}
-        />,
-        undefined,
-        instancePageUrl,
-        instancePath,
-      );
+  it("throws error if snaps query fails", async () => {
+    setEndpointStatus({ path: "/snaps", status: "error" });
 
-      const deleteButton = screen.getByRole("button", {
-        name: /delete/i,
-      });
+    renderWithProviders(
+      <ErrorBoundary fallback={<p>Something went wrong</p>}>
+        <SnapBulkSearch {...props} />
+      </ErrorBoundary>,
+    );
 
-      assert(deleteButton);
-      await user.click(deleteButton);
+    expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
+  });
 
-      expect(props.setSelectedItems).toHaveBeenCalled();
-    });
+  it.each([
+    { action: "install", verb: "install" },
+    { action: "remove", verb: "uninstall" },
+    { action: "hold", verb: "hold" },
+    { action: "unhold", verb: "unhold" },
+    { action: "refresh", verb: "refresh" },
+    { action: "changeChannel", verb: "change channels on" },
+  ])("shows the correct warning for $action", ({ action, verb }) => {
+    renderWithProviders(
+      <SnapBulkSearch
+        {...props}
+        action={action as SnapAction}
+        selectedItems={installedSnaps.slice(0, MAX_SELECTED_SNAPS)}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        `You can only ${verb} a maximum of ${MAX_SELECTED_SNAPS} snaps at once.`,
+      ),
+    ).toBeInTheDocument();
   });
 });

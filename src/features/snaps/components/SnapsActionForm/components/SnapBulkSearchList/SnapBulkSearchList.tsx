@@ -80,11 +80,7 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
     );
   }
 
-  if (search) {
-    return <div className={classes.empty}>No snaps found.</div>;
-  }
-
-  return;
+  return <div className={classes.empty}>No snaps found.</div>;
 };
 
 export default SnapBulkSearchList;

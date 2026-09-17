@@ -1,38 +1,59 @@
+import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
-import PackageDropdownSearchItem from "./SnapInstalledItem";
 import { ICONS } from "@canonical/react-components";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import SnapInstalledItem from "./SnapInstalledItem";
 
-const props: ComponentProps<typeof PackageDropdownSearchItem> = {
-  selectedPackage: {
-    name: "libthai0",
-    id: 15,
-    computers: {
-      count: 4,
-    },
-    summary: "Thai language support library",
-    version: "0.1.28-1",
-  },
+const [selectedSnap] = installedSnaps;
+
+const props: ComponentProps<typeof SnapInstalledItem> = {
+  selectedSnap,
   onDelete: vi.fn(),
+  isUnhold: false,
+  selectedInstances: 5,
 };
 
-describe("PackageDropdownSearchItem", () => {
+describe("SnapInstalledItem", () => {
   const user = userEvent.setup();
 
-  it("renders package with delete button", async () => {
-    renderWithProviders(<PackageDropdownSearchItem {...props} />);
-
-    expect(screen.getByRole("button")).toHaveIcon(ICONS.delete);
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it("deletes package when delete button is clicked", async () => {
-    renderWithProviders(<PackageDropdownSearchItem {...props} />);
+  it("renders item with delete button", async () => {
+    renderWithProviders(<SnapInstalledItem {...props} />);
+
+    expect(screen.getByText(selectedSnap.snap.name)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        `Installed on ${selectedSnap.computerCount} of ${props.selectedInstances} instances`,
+      ),
+    ).toBeInTheDocument();
+
+    const deleteButton = screen.getByRole("button", {
+      name: `Delete ${selectedSnap.snap.name}`,
+    });
+    expect(deleteButton).toHaveIcon(ICONS.delete);
+  });
+
+  it("deletes item when delete button is clicked", async () => {
+    renderWithProviders(<SnapInstalledItem {...props} />);
 
     const deleteButton = screen.getByRole("button");
     await user.click(deleteButton);
     expect(props.onDelete).toHaveBeenCalled();
+  });
+
+  it("render held count when the action is unhold", async () => {
+    renderWithProviders(<SnapInstalledItem {...props} isUnhold={true} />);
+
+    expect(
+      screen.getByText(
+        `Held on ${selectedSnap.computerCount} of ${props.selectedInstances} instances`,
+      ),
+    ).toBeInTheDocument();
   });
 });
