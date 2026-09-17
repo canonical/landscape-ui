@@ -62,7 +62,8 @@ const PageHeader: FC<PageHeaderProps> = ({
             LinkComponent={BreadcrumbLink}
             items={breadcrumbs.map((breadcrumb) =>
               breadcrumb.current
-                ? { label: breadcrumb.label, current: true, key: "current" }
+                ? // `getItemId` throws for items with neither `url` nor `key`.
+                  { label: breadcrumb.label, current: true, key: "current" }
                 : {
                     label: breadcrumb.label,
                     url: breadcrumb.path,

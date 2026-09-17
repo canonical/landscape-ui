@@ -1,44 +1,21 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
+@import "../../../../styles/partials/pragma-card-table";
 
 .cardGrid {
   --grid-row-gap: 0;
 }
 
 .header {
-  background-color: $colors--theme--background-alt;
-  border-bottom: 1px solid $colors--theme--border-default;
-  padding-bottom: $spv--small !important;
-  padding-top: $spv--small !important;
+  @include pragma-card-table-header;
 }
 
 .card {
-  display: flex;
-  flex-direction: column;
   min-height: 0;
 }
 
 .content {
-  display: flex;
+  @include pragma-card-table-content;
+
   min-height: 0;
-  padding-bottom: 0 !important;
-
-  table {
-    margin-bottom: 0;
-  }
-
-  thead tr {
-    border-bottom-color: $colors--theme--border-default;
-  }
-
-  td,
-  th {
-    &:first-child {
-      padding-left: 0;
-    }
-
-    &:last-child {
-      padding-right: 0;
-    }
-  }
 }

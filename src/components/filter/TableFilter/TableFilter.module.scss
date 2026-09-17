@@ -4,7 +4,6 @@
 .toggle {
   align-items: center;
   display: inline-flex;
-  gap: $sph--small;
   margin-bottom: 0;
   padding-left: $sph--large;
   white-space: nowrap;
@@ -13,8 +12,12 @@
 .badgeContainer {
   align-items: center;
   display: inline-flex;
+  justify-content: flex-end;
   margin-right: -$sph--x-small;
-  text-align: right;
+
+  &:not(.multiple) {
+    width: 2.5 * $sp-unit;
+  }
 
   &.multiple {
     width: $sph--x-large;

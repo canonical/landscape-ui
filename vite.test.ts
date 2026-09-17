@@ -1,11 +1,11 @@
 import { EventEmitter } from "events";
 import fs from "fs";
-import type { ReadStream } from "fs";
+import type { ReadStream, Stats } from "fs";
 import type { IncomingMessage, ServerResponse } from "http";
 import * as path from "path";
 import type { ResolvedConfig, ViteDevServer } from "vite";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createPragmaIconsPlugin, getPragmaIconPath } from "./vite.config";
+import { createPragmaIconsPlugin } from "./vite.config";
 
 type Middleware = (
   request: Pick<IncomingMessage, "url">,
@@ -43,9 +43,24 @@ describe("createPragmaIconsPlugin", () => {
   });
 
   it.each(["/icons/%2e%2e%2fsecret.svg", "/icons/%2Fetc%2Fpasswd", "/icons/%"])(
-    "rejects unsafe decoded icon path %s",
+    "refuses to serve unsafe decoded icon path %s",
     (requestUrl) => {
-      expect(getPragmaIconPath(requestUrl, ["/icons/"])).toBeNull();
+      const createReadStream = vi.spyOn(fs, "createReadStream").mockReturnValue(
+        Object.assign(new EventEmitter(), {
+          pipe: vi.fn(),
+        }) as unknown as ReadStream,
+      );
+      const { middleware } = registerPluginMiddleware();
+      const next = vi.fn();
+
+      middleware(
+        { url: requestUrl },
+        { destroy: vi.fn(), headersSent: false, setHeader: vi.fn() },
+        next,
+      );
+
+      expect(createReadStream).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledOnce();
     },
   );
 
@@ -64,7 +79,10 @@ describe("createPragmaIconsPlugin", () => {
     });
   });
 
-  it("serves application icons before packaged icons", () => {
+  it("serves application icons before packaged icons", async () => {
+    vi.spyOn(fs.promises, "stat").mockResolvedValue({
+      isFile: () => true,
+    } as Stats);
     const iconStream = Object.assign(new EventEmitter(), {
       pipe: vi.fn(),
     }) as unknown as ReadStream;
@@ -79,11 +97,13 @@ describe("createPragmaIconsPlugin", () => {
     };
     const next = vi.fn();
 
-    middleware({ url: "/icons/google.svg" }, response, next);
+    middleware({ url: "/icons/success.svg" }, response, next);
 
-    expect(createReadStream).toHaveBeenCalledWith(
-      path.resolve(import.meta.dirname, "src/assets/icons/google.svg"),
-    );
+    await vi.waitFor(() => {
+      expect(createReadStream).toHaveBeenCalledWith(
+        path.resolve(import.meta.dirname, "src/assets/icons/success.svg"),
+      );
+    });
     expect(response.setHeader).toHaveBeenCalledWith(
       "Content-Type",
       "image/svg+xml",
@@ -92,12 +112,14 @@ describe("createPragmaIconsPlugin", () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it("logs stream failures after response headers are sent", () => {
+  it("logs stream failures after response headers are sent", async () => {
     const streamError = new Error("read failed");
     const iconStream = Object.assign(new EventEmitter(), {
       pipe: vi.fn(),
     }) as unknown as ReadStream;
-    vi.spyOn(fs, "createReadStream").mockReturnValue(iconStream);
+    const createReadStream = vi
+      .spyOn(fs, "createReadStream")
+      .mockReturnValue(iconStream);
     const { middleware, warn } = registerPluginMiddleware();
     const response = {
       destroy: vi.fn(),
@@ -106,6 +128,10 @@ describe("createPragmaIconsPlugin", () => {
     };
 
     middleware({ url: "/icons/status.svg" }, response, vi.fn());
+
+    await vi.waitFor(() => {
+      expect(createReadStream).toHaveBeenCalledOnce();
+    });
     iconStream.emit("error", streamError);
 
     expect(warn).toHaveBeenCalledWith(

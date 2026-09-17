@@ -52,24 +52,16 @@ const getRelativeIconPath = (
   return iconPath;
 };
 
-export const getPragmaIconPath = (
-  requestUrl: string | undefined,
-  iconsRoutes: string[],
-) => {
-  const iconPath = getRelativeIconPath(requestUrl, iconsRoutes);
-
-  return iconPath ? path.join(PRAGMA_ICONS_DIR, iconPath) : null;
-};
-
-const resolveIconFilePath = (iconPath: string, appIconsDir: string) => {
+const resolveIconFilePath = async (iconPath: string, appIconsDir: string) => {
   const candidates = [
     path.join(appIconsDir, iconPath),
     path.join(PRAGMA_ICONS_DIR, iconPath),
   ];
 
+  // Sequential: an application icon must win before Pragma's is looked at.
   for (const candidate of candidates) {
     try {
-      if (fs.statSync(candidate).isFile()) {
+      if ((await fs.promises.stat(candidate)).isFile()) {
         return candidate;
       }
     } catch {
@@ -93,27 +85,29 @@ const servePragmaIcons = (
       return;
     }
 
-    const filePath = resolveIconFilePath(relativeIconPath, getAppIconsDir());
+    resolveIconFilePath(relativeIconPath, getAppIconsDir())
+      .then((filePath) => {
+        if (!filePath) {
+          next();
+          return;
+        }
 
-    if (!filePath) {
-      next();
-      return;
-    }
+        res.setHeader("Content-Type", "image/svg+xml");
+        const iconStream = fs.createReadStream(filePath);
+        iconStream.on("error", (streamError) => {
+          if (res.headersSent) {
+            server.config.logger.warn(
+              `Failed to serve Pragma icon "${filePath}": ${streamError.message}`,
+            );
+            res.destroy(streamError);
+            return;
+          }
 
-    res.setHeader("Content-Type", "image/svg+xml");
-    const iconStream = fs.createReadStream(filePath);
-    iconStream.on("error", (streamError) => {
-      if (res.headersSent) {
-        server.config.logger.warn(
-          `Failed to serve Pragma icon "${filePath}": ${streamError.message}`,
-        );
-        res.destroy(streamError);
-        return;
-      }
-
-      next(streamError);
-    });
-    iconStream.pipe(res);
+          next(streamError);
+        });
+        iconStream.pipe(res);
+      })
+      .catch(next);
   });
 };
 
