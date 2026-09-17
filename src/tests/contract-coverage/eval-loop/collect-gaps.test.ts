@@ -145,7 +145,20 @@ describe("computeOrphans", () => {
     expect(computeOrphans(fixtureReport(), calls)).toHaveLength(0);
   });
 
-  it("returns calls that match no exercised route", () => {
+  it("does not flag calls that cover declared-but-unexercised routes", () => {
+    const report = fixtureReport();
+    const reportWithUnexercised: CoverageReport = {
+      ...report,
+      unexercised: [
+        ...report.unexercised,
+        { id: "GET /api/v2/computers", backend: "v2", source: "msw" },
+      ],
+    };
+    const { calls } = extractSpecCoverage(SPEC_DIR);
+    expect(computeOrphans(reportWithUnexercised, calls)).toHaveLength(0);
+  });
+
+  it("returns calls that match no declared route", () => {
     const report = fixtureReport();
     const reportWithoutComputers: CoverageReport = {
       ...report,
@@ -153,6 +166,9 @@ describe("computeOrphans", () => {
         Object.entries(report.routes).filter(
           ([routeId]) => routeId !== "GET /api/v2/computers",
         ),
+      ),
+      unexercised: report.unexercised.filter(
+        (entry) => entry.id !== "GET /api/v2/computers",
       ),
     };
     const { calls } = extractSpecCoverage(SPEC_DIR);
