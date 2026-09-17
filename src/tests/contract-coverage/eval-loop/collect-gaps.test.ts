@@ -66,6 +66,26 @@ describe("assertCoverageReport", () => {
       assertCoverageReport(broken);
     }).toThrow(/POST \/api\/v2\/mirrors.*totalHits/s);
   });
+
+  it("rejects an unexercised entry with a missing id", () => {
+    const broken = fixtureReport();
+    broken.unexercised = [
+      { backend: "v2", source: "msw" },
+    ] as typeof broken.unexercised;
+    expect(() => {
+      assertCoverageReport(broken);
+    }).toThrow(/report\.unexercised\[0\]\.id/);
+  });
+
+  it("rejects an unexercised entry with an invalid backend", () => {
+    const broken = fixtureReport();
+    broken.unexercised = [
+      { id: "GET /api/v2/tags", backend: "invalid", source: "msw" },
+    ] as unknown as typeof broken.unexercised;
+    expect(() => {
+      assertCoverageReport(broken);
+    }).toThrow(/report\.unexercised\[0\]\.backend/);
+  });
 });
 
 describe("extractSpecCoverage", () => {
