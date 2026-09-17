@@ -73,10 +73,7 @@ function summarizeContracts(
   return summarized;
 }
 
-function gapsToPromptUser(
-  gaps: GapEntryLike[],
-  exemplarSpec: string,
-): string {
+function gapsToPromptUser(gaps: GapEntryLike[], exemplarSpec: string): string {
   const topGaps = [...gaps].sort((a, b) => a.rank - b.rank).slice(0, MAX_GAPS);
 
   return (
@@ -114,9 +111,7 @@ export function buildSuggestionPrompt(
   }
 
   // Further degrade by dropping the lowest-ranked gaps until it fits.
-  const sortedSummarized = [...summarizedGaps].sort(
-    (a, b) => a.rank - b.rank,
-  );
+  const sortedSummarized = [...summarizedGaps].sort((a, b) => a.rank - b.rank);
   for (let count = MAX_GAPS - 1; count >= 1; count--) {
     const reducedUser = gapsToPromptUser(
       sortedSummarized.slice(0, count),
