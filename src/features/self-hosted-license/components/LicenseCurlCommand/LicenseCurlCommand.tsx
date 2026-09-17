@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { CodeSnippet } from "@canonical/react-components";
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 import CopyableCodeSnippet from "../CopyableCodeSnippet";
 
 interface LicenseCurlCommandProps {

@@ -5,12 +5,12 @@ import type { FeatureKey } from "@/types/FeatureKey";
 export const getFilteredByEnvItems = ({
   isSaas,
   isSelfHosted,
-  isSelfHostedLicenseEnabled,
+  isSelfHostedLicenseEnabled = false,
   items,
 }: {
   isSaas: boolean;
   isSelfHosted: boolean;
-  isSelfHostedLicenseEnabled: boolean;
+  isSelfHostedLicenseEnabled?: boolean;
   items: MenuItem[];
 }): MenuItem[] => {
   return items
@@ -27,7 +27,7 @@ export const getFilteredByEnvItems = ({
               items: item.items,
               isSaas,
               isSelfHosted,
-                isSelfHostedLicenseEnabled,
+              isSelfHostedLicenseEnabled,
             }),
           }
         : item,

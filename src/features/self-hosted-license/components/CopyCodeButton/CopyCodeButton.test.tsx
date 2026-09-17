@@ -18,4 +18,17 @@ describe("CopyCodeButton", () => {
     expect(writeText).toHaveBeenCalledWith("copy me");
     expect(screen.getByRole("button", { name: "Copied" })).toBeInTheDocument();
   });
+
+  it("does not show success feedback when the clipboard write fails", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(navigator.clipboard, "writeText").mockRejectedValueOnce(
+      new Error("Clipboard unavailable"),
+    );
+
+    renderWithProviders(<CopyCodeButton value="copy me" />);
+
+    await user.click(screen.getByRole("button", { name: "Copy code" }));
+
+    expect(screen.getByRole("button", { name: "Copy code" })).toBeInTheDocument();
+  });
 });

@@ -2,7 +2,6 @@ import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
 import { useMemo } from "react";
 import { useGetOverLimitUsgProfiles } from "@/features/usg-profiles";
-import { useGetSelfHostedEnabled } from "@/features/self-hosted-license";
 import { IS_DEV_ENV } from "@/constants";
 import { MENU_ITEMS } from "@/templates/dashboard/Navigation/constants";
 import {
@@ -13,8 +12,7 @@ import {
 const INSURANCE_LIMIT = 20;
 
 export function useMenuItems() {
-  const { isSaas, isSelfHosted, envLoading} = useEnv();
-  const { isSelfHostedEnabled } = useGetSelfHostedEnabled(!envLoading && isSaas);
+  const { isSaas, isSelfHosted } = useEnv();
   const { isFeatureEnabled } = useAuth();
   const { hasOverLimitUsgProfiles, overLimitUsgProfilesCount } =
     useGetOverLimitUsgProfiles(
@@ -35,7 +33,6 @@ export function useMenuItems() {
     const filteredByEnvItems = getFilteredByEnvItems({
       isSaas,
       isSelfHosted,
-      isSelfHostedLicenseEnabled: isSelfHostedEnabled,
       items: MENU_ITEMS,
     });
 

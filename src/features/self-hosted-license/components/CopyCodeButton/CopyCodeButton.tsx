@@ -23,7 +23,13 @@ const CopyCodeButton: FC<CopyCodeButtonProps> = ({ value, className }) => {
 
   const handleCopy = async () => {
     try {
-      await copy(value);
+      const didCopy = await copy(value);
+
+      if (!didCopy) {
+        setCopied(false);
+        return;
+      }
+
       setCopied(true);
       window.clearTimeout(copiedTimeoutRef.current);
       copiedTimeoutRef.current = window.setTimeout(() => {
