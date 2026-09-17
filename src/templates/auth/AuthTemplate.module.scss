@@ -15,12 +15,12 @@
 }
 
 .card {
+  background-color: $colors--theme--background-default;
   border: 0;
   margin-left: auto;
   margin-right: auto;
   padding: 0;
   width: 500px;
-  background-color: $colors--theme--background-default;
 }
 
 .inner {
