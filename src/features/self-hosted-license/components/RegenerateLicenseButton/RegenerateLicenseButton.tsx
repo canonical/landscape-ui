@@ -16,9 +16,9 @@ const RegenerateLicenseButton: FC = () => {
       await regenerateSelfHostedLicense();
 
       notify.success({
-        title: "You have successfully regenerated your APT credentials",
+        title: "Private token and license download URL regenerated",
         message:
-          "The curl command and license URL above now use the new token. The previous token no longer works.",
+          "The previous download URL no longer works.",
       });
     } catch (error) {
       debug(error);
@@ -34,7 +34,7 @@ const RegenerateLicenseButton: FC = () => {
       className={classes.regenerateButton}
     >
       <i className="p-icon--change-version" />
-      <span>Regenerate token</span>
+      <span>Regenerate private token</span>
     </Button>
   );
 };
