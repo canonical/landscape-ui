@@ -308,7 +308,7 @@ function main(): void {
     );
     if (orphans.length > 0) {
       console.error(
-        `[-] ${orphans.length} extracted spec call(s) match no exercised route (orphans). ` +
+        `[-] ${orphans.length} extracted spec call(s) match no declared route (orphans). ` +
           "This indicates a matcher bug, stale route pin, or spec error.",
       );
       for (const orphan of orphans) {

@@ -18,6 +18,8 @@ export interface GapEntryLike {
 export interface SuggestionPrompt {
   system: string;
   user: string;
+  /** Route IDs actually included in the prompt after ranking and degradation. */
+  includedRoutes: string[];
 }
 
 const MAX_GAPS = 5;
@@ -86,6 +88,13 @@ function gapsToPromptUser(gaps: GapEntryLike[], exemplarSpec: string): string {
   );
 }
 
+function includedRoutesFrom(gaps: GapEntryLike[]): string[] {
+  return [...gaps]
+    .sort((a, b) => a.rank - b.rank)
+    .slice(0, MAX_GAPS)
+    .map(({ routeId }) => routeId);
+}
+
 export function buildSuggestionPrompt(
   gaps: GapEntryLike[],
   exemplarSpec: string,
@@ -97,7 +106,11 @@ export function buildSuggestionPrompt(
   // Try full payloads first.
   const fullUser = gapsToPromptUser(gaps, exemplarSpec);
   if (fullUser.length <= MAX_USER_CHARS) {
-    return { system: SYSTEM, user: fullUser };
+    return {
+      system: SYSTEM,
+      user: fullUser,
+      includedRoutes: includedRoutesFrom(gaps),
+    };
   }
 
   // Degrade by summarizing contract payloads to one exemplar per status.
@@ -107,18 +120,24 @@ export function buildSuggestionPrompt(
   }));
   const summarizedUser = gapsToPromptUser(summarizedGaps, exemplarSpec);
   if (summarizedUser.length <= MAX_USER_CHARS) {
-    return { system: SYSTEM, user: summarizedUser };
+    return {
+      system: SYSTEM,
+      user: summarizedUser,
+      includedRoutes: includedRoutesFrom(summarizedGaps),
+    };
   }
 
   // Further degrade by dropping the lowest-ranked gaps until it fits.
   const sortedSummarized = [...summarizedGaps].sort((a, b) => a.rank - b.rank);
   for (let count = MAX_GAPS - 1; count >= 1; count--) {
-    const reducedUser = gapsToPromptUser(
-      sortedSummarized.slice(0, count),
-      exemplarSpec,
-    );
+    const reducedGaps = sortedSummarized.slice(0, count);
+    const reducedUser = gapsToPromptUser(reducedGaps, exemplarSpec);
     if (reducedUser.length <= MAX_USER_CHARS) {
-      return { system: SYSTEM, user: reducedUser };
+      return {
+        system: SYSTEM,
+        user: reducedUser,
+        includedRoutes: includedRoutesFrom(reducedGaps),
+      };
     }
   }
 

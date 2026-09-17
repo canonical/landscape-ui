@@ -60,6 +60,12 @@ function buildMockResponseFromGaps(gaps: GapEntry[]): string {
   return JSON.stringify({ suggestions });
 }
 
+function areSameRoutes(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false;
+  const setB = new Set(b);
+  return a.every((route) => setB.has(route)) && setB.size === b.length;
+}
+
 function writeRawFallback(
   outDir: string,
   title: string,
@@ -148,14 +154,11 @@ export async function run(options: RunOptions): Promise<RunResult> {
   const completion = await client.complete(prompt);
 
   const parsed = parseSuggestions(completion.text);
-  const eligibleRoutes = new Set(
-    gaps.slice(0, 5).map(({ routeId }) => routeId),
-  );
+  const parsedRoutes = parsed?.suggestions.map(({ route }) => route);
   if (
     !parsed ||
-    parsed.suggestions.some(({ route }) => !eligibleRoutes.has(route)) ||
-    new Set(parsed.suggestions.map(({ route }) => route)).size !==
-      parsed.suggestions.length
+    !parsedRoutes ||
+    !areSameRoutes(parsedRoutes, prompt.includedRoutes)
   ) {
     const rawFallbackPath = writeRawFallback(
       options.outDir,
@@ -230,11 +233,12 @@ async function main(): Promise<void> {
     }
     if (result.status === "orphans") {
       console.error(
-        `[-] ${result.orphansFound} extracted spec call(s) match no exercised route (orphans). ` +
+        `[-] ${result.orphansFound} extracted spec call(s) match no declared route (orphans). ` +
           "Fix the matcher, route pin, or spec before running suggestions.",
       );
       process.exit(1);
     }
+    if (result.status === "llm-failure") {
       console.error(
         `[-] LLM suggestion generation failed; details saved to ${result.rawFallbackPath}`,
       );

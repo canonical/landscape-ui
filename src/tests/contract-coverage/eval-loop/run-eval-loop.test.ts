@@ -214,4 +214,46 @@ describe("run", () => {
     expect(result.suggestionsWritten).toHaveLength(2);
     expect(fs.existsSync(path.join(opts.outDir, "gaps.json"))).toBe(true);
   });
+
+  it("rejects an empty suggestions array", async () => {
+    const emptyClient = createMockClient('{"suggestions":[]}');
+    const opts = options(emptyClient);
+    const result = await run(opts);
+
+    expect(result.status).toBe("llm-failure");
+    expect(result.suggestionsWritten).toHaveLength(0);
+  });
+
+  it("rejects a partial subset of prompted routes", async () => {
+    const partialResponse = {
+      suggestions: mockResponse.suggestions.slice(0, 1),
+    };
+    const partialClient = createMockClient(JSON.stringify(partialResponse));
+    const opts = options(partialClient);
+    const result = await run(opts);
+
+    expect(result.status).toBe("llm-failure");
+    expect(result.suggestionsWritten).toHaveLength(0);
+  });
+
+  it("rejects suggestions that include an extra route", async () => {
+    const extraResponse = {
+      suggestions: [
+        ...mockResponse.suggestions,
+        {
+          route: "GET /api/v2/extra",
+          title: "Extra",
+          rationale: "Not in prompt.",
+          spec: "// spec",
+          notes: "",
+        },
+      ],
+    };
+    const extraClient = createMockClient(JSON.stringify(extraResponse));
+    const opts = options(extraClient);
+    const result = await run(opts);
+
+    expect(result.status).toBe("llm-failure");
+    expect(result.suggestionsWritten).toHaveLength(0);
+  });
 });
