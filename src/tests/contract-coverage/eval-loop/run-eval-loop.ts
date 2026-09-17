@@ -193,10 +193,14 @@ interface CliOptions {
 
 function parseArgs(argv: string[]): CliOptions {
   const evalLoopDir = import.meta.dirname;
-  const apiDir = path.resolve(evalLoopDir, "../../../../e2e/docker-stack/api");
+  const dockerStackDir = path.resolve(
+    evalLoopDir,
+    "../../../../e2e/docker-stack",
+  );
+  const apiDir = path.join(dockerStackDir, "api");
   const options: CliOptions = {
     reportPath: REPORT_PATH,
-    specDir: apiDir,
+    specDir: dockerStackDir,
     outDir: path.join(evalLoopDir, "out"),
     exemplarPath: path.join(apiDir, "local-repositories.spec.ts"),
   };
