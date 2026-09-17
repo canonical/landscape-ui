@@ -11,18 +11,18 @@ const SelfHostedLicensePage: FC = () => {
   return (
     <PageMain>
       <PageHeader
-        title="Self hosted license"
+        title="Legacy license file"
         className={classes.header}
         helperContent={
           <p className={`${classes.description} p-text--small u-text--muted`}>
-            Self-hosted Landscape is the standalone version of Landscape that
-            you can install on-premises or in a public cloud.{" "}
+            This page is for self-hosted Landscape deployments that use the
+            legacy <code>license.txt</code> licensing method.{" "}
             <Link
               href={SELF_HOSTED_LANDSCAPE_DOCUMENTATION_URL}
               target="_blank"
               rel="nofollow noopener noreferrer"
             >
-              Learn more about self hosted landscape
+              Learn more about Landscape licensing
             </Link>
           </p>
         }
