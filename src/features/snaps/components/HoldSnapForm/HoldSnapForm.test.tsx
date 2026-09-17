@@ -14,6 +14,7 @@ import { http, HttpResponse } from "msw";
 import { describe, expect, it, beforeEach } from "vitest";
 import type { InstalledSnap, SnapActionParams } from "../../types";
 import HoldSnapForm from "./HoldSnapForm";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 
 const unheldSnap =
   installedSnaps.find((snap) => snap.held_until === null) ?? installedSnaps[0];
@@ -180,7 +181,9 @@ describe("HoldSnapForm", () => {
 
       await userEvent.click(screen.getByRole("button", { name: /hold/i }));
 
-      expect(await screen.findByText(/error response/i)).toBeInTheDocument();
+      expect(
+        await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+      ).toBeInTheDocument();
     });
   });
 });
