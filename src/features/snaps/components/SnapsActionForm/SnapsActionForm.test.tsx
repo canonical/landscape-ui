@@ -82,7 +82,6 @@ describe("SnapsActionForm", () => {
   });
 
   it("shows error notification", async () => {
-    setEndpointStatus({ path: "snaps/action", status: "error" });
     renderWithProviders(
       <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
     );
@@ -94,6 +93,8 @@ describe("SnapsActionForm", () => {
         name: `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`,
       }),
     );
+
+    setEndpointStatus({ path: "snaps", status: "error" });
 
     await user.click(screen.getByRole("button", { name: "Install 1 snap" }));
 
