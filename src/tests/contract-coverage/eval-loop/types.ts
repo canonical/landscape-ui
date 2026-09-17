@@ -165,6 +165,17 @@ function expectRouteMetrics(value: unknown, routeId: string): void {
   }
 }
 
+function expectRouteEntry(
+  value: unknown,
+  path: string,
+): { id: string; backend: Backend; source: string } {
+  const entry = expectRecord(value, path);
+  expectString(entry.id, `${path}.id`);
+  expectBackend(entry.backend, `${path}.backend`);
+  expectString(entry.source, `${path}.source`);
+  return entry as { id: string; backend: Backend; source: string };
+}
+
 export function assertCoverageReport(
   value: unknown,
 ): asserts value is CoverageReport {
@@ -182,7 +193,12 @@ export function assertCoverageReport(
   for (const [routeId, route] of Object.entries(routes)) {
     expectRouteMetrics(route, routeId);
   }
-  expectArray(report.unexercised, "report.unexercised");
+  for (const [index, entry] of expectArray(
+    report.unexercised,
+    "report.unexercised",
+  ).entries()) {
+    expectRouteEntry(entry, `report.unexercised[${index}]`);
+  }
   expectArray(report.drift, "report.drift");
   expectArray(report.migration, "report.migration");
   expectArray(report.warnings, "report.warnings");
