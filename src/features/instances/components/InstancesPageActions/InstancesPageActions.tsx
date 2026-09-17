@@ -199,7 +199,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleSnapInstall = () => {
     setSidePanelContent(
-      "Install snap",
+      "Install snaps",
       <Suspense fallback={<LoadingState />}>
         <SnapsActionForm
           selectedInstances={selectedInstances.map(({ id }) => id)}
@@ -211,7 +211,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleSnapUninstall = () => {
     setSidePanelContent(
-      "Uninstall snap",
+      "Uninstall snaps",
       <Suspense fallback={<LoadingState />}>
         <SnapsActionForm
           selectedInstances={selectedInstances.map(({ id }) => id)}
@@ -223,7 +223,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleSnapRefresh = () => {
     setSidePanelContent(
-      "Refresh snap",
+      "Refresh snaps",
       <Suspense fallback={<LoadingState />}>
         <SnapsActionForm
           selectedInstances={selectedInstances.map(({ id }) => id)}
@@ -235,7 +235,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleSnapHold = () => {
     setSidePanelContent(
-      "Hold snap",
+      "Hold snaps",
       <Suspense fallback={<LoadingState />}>
         <SnapsActionForm
           selectedInstances={selectedInstances.map(({ id }) => id)}
@@ -247,7 +247,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleSnapUnhold = () => {
     setSidePanelContent(
-      "Unhold snap",
+      "Unhold snaps",
       <Suspense fallback={<LoadingState />}>
         <SnapsActionForm
           selectedInstances={selectedInstances.map(({ id }) => id)}

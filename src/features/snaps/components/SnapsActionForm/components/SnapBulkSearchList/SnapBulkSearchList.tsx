@@ -9,29 +9,27 @@ import classNames from "classnames";
 import type { ControllerStateAndHelpers } from "downshift";
 import type { FC } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
-import classes from "./SnapDropdownSearchList.module.scss";
-import { pluralize } from "@/utils/_helpers";
+import classes from "./SnapBulkSearchList.module.scss";
 import TooltipCell from "@/components/layout/TooltipCell";
-import type { SelectedSnaps } from "../../../../types";
+import type { InstalledSnapWithCount } from "../../../../types";
+import type { SearchSnapsResponse } from "../../../../api/useGetBulkInstalledSnaps";
 
 interface SnapBulkSearchListProps {
-  readonly downshiftOptions: ControllerStateAndHelpers<SelectedSnaps>;
-  readonly exact: boolean;
+  readonly downshiftOptions: ControllerStateAndHelpers<InstalledSnapWithCount>;
   readonly queryResult: UseInfiniteQueryResult<
     InfiniteData<AxiosResponse<SearchSnapsResponse>>
   > & { isError: false };
   readonly search: string;
-  readonly selectedSnaps: SelectedSnaps[];
+  readonly selectedSnaps: InstalledSnapWithCount[];
 }
 
 const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
   downshiftOptions,
-  exact,
   queryResult,
   search,
   selectedSnaps,
 }) => {
-  const { ref: loadingStateRef } = useIntersectionObserver({
+  const { ref: loadingRef } = useIntersectionObserver({
     onChange: (isIntersecting) => {
       if (isIntersecting && !queryResult.isFetchingNextPage) {
         queryResult.fetchNextPage();
@@ -39,61 +37,45 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
     },
   });
 
-  if (exact && !search) {
-    return;
-  }
-
   if (queryResult.isPending) {
     return <LoadingState />;
   }
 
-  const results = queryResult.data.pages.flatMap((page) => page.data.snaps);
+  const results = queryResult.data.pages.flatMap((page) => page.data.results);
+  const filteredResults = results.filter(
+    (item) => !selectedSnaps.some(({ snap }) => item.snap.id === snap.id),
+  );
 
-  if (results.length) {
+  if (filteredResults.length) {
     return (
       <>
-        <ul
-          className={classNames(
-            "p-list u-no-margin p-autocomplete__suggestions",
-          )}
-        >
-          {results.map((item: SelectedSnaps, index: number) => {
-            const disabled = selectedSnaps.some(({ id }) => item.id === id);
-
-            const props = disabled
-              ? {}
-              : downshiftOptions.getItemProps({ item, index });
-
-            return (
+        <ul className="p-list u-no-margin p-autocomplete__suggestions">
+          {filteredResults.map(
+            (item: InstalledSnapWithCount, index: number) => (
               <li
                 className={classNames("p-list__item", classes.listItem, {
                   [classes.highlighted]:
                     downshiftOptions.highlightedIndex === index,
-                  [classes.disabled]: disabled,
                 })}
-                key={`${item.name}-${item.channel}`}
-                {...props}
+                key={item.snap.name}
+                {...downshiftOptions.getItemProps({ item, index })}
               >
-                <div className="u-truncate font-monospace">
+                <div className="u-truncate">
                   <TooltipCell
-                    message={`${item.name} ${item.channel}`}
-                    position="top-center"
+                    message={`${item.snap.name} ${item.tracking_channel}`}
                   >
-                    <BoldSubstring text={item.name} substring={search} />{" "}
-                    {item.channel}
+                    <BoldSubstring text={item.snap.name} substring={search} />
                   </TooltipCell>
                 </div>
-                <div
-                  className={classNames("u-text--muted", classes.computerCount)}
-                >
-                  {pluralize(item.computers.count, ["instance"], "exact")}
+                <div className={classNames("u-text--muted", classes.publisher)}>
+                  {item.snap.publisher["display-name"] ??
+                    item.snap.publisher.username}
                 </div>
               </li>
-            );
-          })}
+            ),
+          )}
         </ul>
-
-        {queryResult.hasNextPage && <LoadingState ref={loadingStateRef} />}
+        {queryResult.hasNextPage && <LoadingState ref={loadingRef} dense />}
       </>
     );
   }

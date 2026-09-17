@@ -1,19 +1,20 @@
 import { pluralize } from "@/utils/_helpers";
-import { SearchBox, Switch } from "@canonical/react-components";
+import { SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
 import type { FC } from "react";
 import { useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 import SnapBulkSearchList from "../SnapBulkSearchList";
-import { DEBOUNCE_DELAY, MAX_SELECTED_SNAPS, QUERY_LIMIT } from "./constants";
+import { DEBOUNCE_DELAY, MAX_SELECTED_SNAPS } from "./constants";
 import classes from "./SnapBulkSearch.module.scss";
-import type { SelectedSnaps, SnapAction } from "../../../../types";
+import type { InstalledSnapWithCount, SnapAction } from "../../../../types";
+import { useGetBulkInstalledSnaps } from "../../../../api";
 
 interface SnapBulkSearchProps {
   readonly instanceIds: number[];
-  readonly selectedItems: SelectedSnaps[];
-  readonly setSelectedItems: (snaps: SelectedSnaps[]) => void;
+  readonly selectedItems: InstalledSnapWithCount[];
+  readonly setSelectedItems: (snaps: InstalledSnapWithCount[]) => void;
   readonly action: SnapAction;
 }
 
@@ -25,31 +26,14 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
 }) => {
   const [search, setSearch] = useDebounceValue("", DEBOUNCE_DELAY);
   const [inputValue, setInputValue] = useState<string>("");
-  const { value: exact, toggle: toggleExact } = useBoolean();
-
   const { value: isOpen, setFalse: close, setTrue: open } = useBoolean();
 
-  const queryParams: SearchSnapsRequest = {
-    computer_query: instanceIds.map((id) => `id:${id}`).join(" OR "),
-    limit: QUERY_LIMIT,
-    ...mapActionToQueryParams(action),
-  };
-
-  if (exact) {
-    queryParams.names = [search];
-  } else {
-    queryParams.text = search.trim() || undefined;
-  }
-
-  const snapsQueryResult = useSearchSnaps(queryParams, {
-    enabled: !(exact && !search),
+  const snapsQueryResult = useGetBulkInstalledSnaps({
+    computer_ids: instanceIds,
+    search: search.trim() || undefined,
   });
 
-  const {
-    data: snapsResponse,
-    isPending: isPendingSnaps,
-    error: snapsError,
-  } = snapsQueryResult;
+  const { error: snapsError } = snapsQueryResult;
 
   if (snapsError) {
     throw snapsError;
@@ -64,12 +48,12 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
     handleSearchBoxChange("");
   };
 
-  const handleSelectItem = (item: Snap | null) => {
+  const handleSelectItem = (item: InstalledSnapWithCount | null) => {
     if (!item) {
       return;
     }
 
-    setSelectedItems([...selectedItems, [item, []]]);
+    setSelectedItems([...selectedItems, item]);
     clearSearchBox();
     close();
   };
@@ -91,10 +75,12 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
     }
   };
 
+  const searchScope = action == "install" ? "available" : "installed";
+
   return (
     <Downshift
       onSelect={handleSelectItem}
-      itemToString={(item) => (item ? item.name : "")}
+      itemToString={(item) => (item ? item.snap.name : "")}
       isOpen={isOpen}
       onOuterClick={close}
     >
@@ -102,7 +88,7 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
         <div className="p-autocomplete">
           <SearchBox
             {...downshiftOptions.getInputProps()}
-            placeholder={`Search ${mapActionToSearch(action)} snaps`}
+            placeholder={`Search ${searchScope} snaps`}
             className="u-no-margin--bottom"
             shouldRefocusAfterReset
             externallyControlled
@@ -130,22 +116,11 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
               )}
               {...downshiftOptions.getMenuProps()}
             >
-              <div className={classes.topRow}>
-                <Switch
-                  label="Exact match"
-                  onChange={toggleExact}
-                  checked={exact}
-                />
-
-                <span>{downshiftOptions.selectedItem?.publisher}</span>
-              </div>
-
               <SnapBulkSearchList
                 downshiftOptions={downshiftOptions}
-                exact={exact}
                 queryResult={snapsQueryResult}
                 search={search}
-                selectedSnaps={selectedItems.map(([item]) => item)}
+                selectedSnaps={selectedItems}
               />
             </div>
           )}
