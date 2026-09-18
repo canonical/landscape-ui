@@ -242,7 +242,7 @@ describe("InstancesPageActions", () => {
     });
 
     it("'Run script' menu item should be disabled if script feature is disabled", async () => {
-      renderPageActions({ selectedInstances: [{ ...windowsInstance }] });
+      renderPageActions({ selectedInstances: [windowsInstance] });
 
       await userEvent.click(
         screen.getByRole("button", { name: MENU_LABELS[0] }),
@@ -283,6 +283,14 @@ describe("InstancesPageActions", () => {
       expect(
         screen.queryByRole("button", { name: /attach token/i }),
       ).not.toBeInTheDocument();
+    });
+
+    it("'Snap management' group should be disabled if snaps feature is disabled", async () => {
+      renderPageActions({ selectedInstances: [windowsInstance] });
+
+      expect(
+        screen.getByRole("button", { name: MENU_LABELS[3] }),
+      ).toHaveAttribute("aria-disabled", "true");
     });
   });
 

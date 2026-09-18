@@ -49,7 +49,7 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
   if (filteredResults.length) {
     return (
       <>
-        <ul className="p-list u-no-margin p-autocomplete__suggestions">
+        <ul className="p-list u-no-margin">
           {filteredResults.map(
             (item: InstalledSnapWithCount, index: number) => (
               <li
@@ -57,7 +57,7 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
                   [classes.highlighted]:
                     downshiftOptions.highlightedIndex === index,
                 })}
-                key={item.snap.name}
+                key={item.snap.id}
                 {...downshiftOptions.getItemProps({ item, index })}
               >
                 <div className="u-truncate">
