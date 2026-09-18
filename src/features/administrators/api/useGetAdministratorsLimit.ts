@@ -31,6 +31,6 @@ export const useGetAdministratorsLimit = (
   return {
     administratorsLimit: data?.data.max_people_count ?? 0,
     isGettingAdministratorsLimit: isPending,
-    isAdministratorsError: isError,
+    isAdministratorsLimitError: isError,
   };
 };

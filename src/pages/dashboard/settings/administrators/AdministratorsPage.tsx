@@ -13,7 +13,6 @@ import {
 } from "@/features/administrators";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 
 const AdministratorsPage: FC = () => {
@@ -36,7 +35,7 @@ const AdministratorsPage: FC = () => {
   const {
     administratorsLimit,
     isGettingAdministratorsLimit,
-    isAdministratorsError,
+    isAdministratorsLimitError,
   } = useGetAdministratorsLimit();
 
   const administrators = administratorsData?.data ?? [];
@@ -46,21 +45,17 @@ const AdministratorsPage: FC = () => {
     isGettingAdministratorsLimit ||
     isGettingAdministrators ||
     isGettingInvitations;
-  const isAdminInfoError = isAdministratorsError || isInvitationsError;
+
+  const isAdminInfoError = isAdministratorsLimitError || isInvitationsError;
 
   const totalAdminsAndInvites = administrators.length + invitationsCount;
   const isAdminLimitReached = totalAdminsAndInvites >= administratorsLimit;
 
   const handleInviteAdministrator = () => {
-    if (isAdminLimitReached || isAdminInfoError) {
+    if (isGettingAdminInfo || isAdminLimitReached || isAdminInfoError) {
       openModal();
     } else {
-      setSidePanelContent(
-        "Invite administrator",
-        <Suspense fallback={<LoadingState />}>
-          <InviteAdministratorForm />
-        </Suspense>,
-      );
+      setSidePanelContent("Invite administrator", <InviteAdministratorForm />);
     }
   };
 
@@ -102,12 +97,10 @@ const AdministratorsPage: FC = () => {
         </>
       )}
       {isModalOpen && (
-        <Suspense fallback={<LoadingState centerOnScreen />}>
-          <AdministratorLimitModal
-            close={closeModal}
-            isAdminInfoError={isAdminInfoError}
-          />
-        </Suspense>
+        <AdministratorLimitModal
+          close={closeModal}
+          isAdminInfoError={isAdminInfoError}
+        />
       )}
     </PageMain>
   );
