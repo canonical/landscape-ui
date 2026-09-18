@@ -1,12 +1,10 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import LocalRepositoriesList from "./LocalRepositoriesList";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { getAllByRole, screen } from "@testing-library/react";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import userEvent from "@testing-library/user-event";
-
-vi.mock("@/hooks/useAuth");
 
 describe("LocalRepositoriesList", () => {
   const user = userEvent.setup();
