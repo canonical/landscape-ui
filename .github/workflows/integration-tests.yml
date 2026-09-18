@@ -72,7 +72,7 @@ jobs:
 
       # Single source of truth for downstream checkout/submodule auth. Uses the App
       # installation token on normal runs; on Dependabot runs (where the App token
-      # is empty) it falls back to LANDSCAPE_PACKAGER_PAT, a classic PAT whose `repo`
+      # is empty) it falls back to LANDSCAPE_PACKAGER_PAT, a fine-grained PAT whose `repo`
       # scope covers all four repos this job reads (landscape-packaging, landscape-go,
       # landscape-server, landscape-proto). Fails loudly if neither is available.
       - name: Resolve packaging token
@@ -145,16 +145,26 @@ jobs:
       # Git picks the longest matching insteadOf prefix, so the PAT rewrite below
       # takes precedence over the general App-token rewrite set earlier.
       #
+      # Dependabot runs cannot read LANDSCAPE_PROTO_TOKEN (Actions store, empty there),
+      # so fall back to the resolved packaging token — the classic PAT's repo scope
+      # already covers landscape-proto. Normal runs still prefer LANDSCAPE_PROTO_TOKEN.
+      #
       # Migration to App install: add "landscape-proto" to the repositories list in
       # the Generate App Token step above, then remove the PAT rewrite line here.
       - name: Vendor landscape-go dependencies
         env:
           PROTO_TOKEN: ${{ secrets.LANDSCAPE_PROTO_TOKEN }}
+          PKG_TOKEN: ${{ steps.pkg_token.outputs.token }}
         run: |
+          token="${PROTO_TOKEN:-$PKG_TOKEN}"
+          if [ -z "$token" ]; then
+            echo "::error::No credential available for landscape-proto (neither LANDSCAPE_PROTO_TOKEN nor packaging token)"
+            exit 1
+          fi
           git config --global \
-            url."https://x-access-token:${PROTO_TOKEN}@github.com/canonical/landscape-proto".insteadOf \
+            url."https://x-access-token:${token}@github.com/canonical/landscape-proto".insteadOf \
             "https://github.com/canonical/landscape-proto"
-          trap 'git config --global --unset-all url."https://x-access-token:${PROTO_TOKEN}@github.com/canonical/landscape-proto".insteadOf || true' EXIT
+          trap 'git config --global --unset-all url."https://x-access-token:${token}@github.com/canonical/landscape-proto".insteadOf || true' EXIT
           cd .landscape-packaging/landscape-go
           GOPRIVATE="github.com/canonical/*" go mod vendor
           echo "Vendored $(find vendor -name '*.go' | wc -l) Go source files"
