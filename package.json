@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@canonical/ds-assets": "0.34.0",
-    "@canonical/landscape-openapi": "0.0.80",
+    "@canonical/landscape-openapi": "0.0.83",
     "@canonical/react-components": "4.9.0",
     "@canonical/react-ds-global": "0.34.0",
     "@canonical/react-ds-global-form": "0.34.0",
