@@ -124,8 +124,8 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
   if (script.status !== "REDACTED") {
     destructiveActions.push({
       icon: "delete",
-      label: "Delete",
-      "aria-label": `Delete ${script.title} script`,
+      label: "Redact",
+      "aria-label": `Redact ${script.title} script`,
       onClick: openDeleteModal,
       disabled: !is_redactable,
     });
@@ -141,7 +141,7 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
 
       <TextConfirmationModal
         isOpen={deleteModalOpen}
-        confirmationText={`delete ${script.title}`}
+        confirmationText={`redact ${script.title}`}
         title={deleteModalTitle}
         confirmButtonLabel={deleteModalButtonLabel}
         confirmButtonAppearance="negative"
