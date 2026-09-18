@@ -54,14 +54,45 @@ jobs:
       # Mints a short-lived installation token (≤1 h) scoped to the Canonical repos
       # this job needs. Requires LANDSCAPE_PACKAGER_APP_ID (var) and
       # LANDSCAPE_PACKAGER_PRIVATE_KEY (secret) to be set on this repo.
+      #
+      # Skipped on Dependabot-triggered runs: GitHub exposes only the isolated
+      # Dependabot secrets store to those runs, so vars/secrets referenced here
+      # resolve to empty strings and create-github-app-token would fail. The
+      # "Resolve packaging token" step below falls back to LANDSCAPE_PACKAGER_PAT
+      # (a classic PAT in the Dependabot secrets store) for that case.
       - name: Generate App Token
         id: get_token
+        if: github.actor != 'dependabot[bot]'
         uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
         with:
           app-id: ${{ vars.LANDSCAPE_PACKAGER_APP_ID }}
           private-key: ${{ secrets.LANDSCAPE_PACKAGER_PRIVATE_KEY }}
           owner: canonical
           repositories: "landscape-packaging,landscape-go,landscape-server"
+
+      # Single source of truth for downstream checkout/submodule auth. Uses the App
+      # installation token on normal runs; on Dependabot runs (where the App token
+      # is empty) it falls back to LANDSCAPE_PACKAGER_PAT, a classic PAT whose `repo`
+      # scope covers all four repos this job reads (landscape-packaging, landscape-go,
+      # landscape-server, landscape-proto). Fails loudly if neither is available.
+      - name: Resolve packaging token
+        id: pkg_token
+        env:
+          APP_TOKEN: ${{ steps.get_token.outputs.token }}
+          PAT: ${{ secrets.LANDSCAPE_PACKAGER_PAT }}
+        run: |
+          if [ -n "$APP_TOKEN" ]; then
+            echo "::add-mask::$APP_TOKEN"
+            echo "token=$APP_TOKEN" >> "$GITHUB_OUTPUT"
+            echo "Using App installation token"
+          elif [ -n "$PAT" ]; then
+            echo "::add-mask::$PAT"
+            echo "token=$PAT" >> "$GITHUB_OUTPUT"
+            echo "Using LANDSCAPE_PACKAGER_PAT fallback"
+          else
+            echo "::error::No packaging token available (neither App token nor PAT)"
+            exit 1
+          fi
 
       # Checks out top-level only — submodule auth is handled below via url.insteadOf.
       # actions/checkout only injects HTTPS credentials; landscape-packaging submodules
@@ -71,7 +102,7 @@ jobs:
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: canonical/landscape-packaging
-          token: ${{ steps.get_token.outputs.token }}
+          token: ${{ steps.pkg_token.outputs.token }}
           ref: ${{ inputs.packaging_ref || 'main' }}
           submodules: false
           persist-credentials: false
@@ -82,7 +113,7 @@ jobs:
       # into the shell command string.
       - name: Rewrite SSH submodule URLs to authenticated HTTPS
         env:
-          TOKEN: ${{ steps.get_token.outputs.token }}
+          TOKEN: ${{ steps.pkg_token.outputs.token }}
         run: |
           git config --global \
             url."https://x-access-token:${TOKEN}@github.com/".insteadOf \
@@ -93,7 +124,7 @@ jobs:
       - name: Initialise landscape-packaging submodules
         working-directory: .landscape-packaging
         env:
-          TOKEN: ${{ steps.get_token.outputs.token }}
+          TOKEN: ${{ steps.pkg_token.outputs.token }}
         run: |
           trap 'git config --global --unset-all url."https://x-access-token:${TOKEN}@github.com/".insteadOf || true' EXIT
           git submodule update --init --recursive
