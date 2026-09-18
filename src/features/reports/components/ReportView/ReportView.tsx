@@ -2,6 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import {
   CONTACT_SUPPORT_TEAM_MESSAGE,
   DISPLAY_DATE_TIME_FORMAT,
+  TSV_EXPORTS_ENABLED,
 } from "@/constants";
 import {
   getSelectedInstanceIds,
@@ -325,16 +326,20 @@ const ReportView: FC<ReportViewProps> = ({
             Select at least one instance to view a report.
           </Notification>
         )}
-        <div className="p-segmented-control">
-          <Button
-            type="button"
-            appearance="secondary"
-            className="p-segmented-control__button"
-            onClick={handleExport}
-          >
-            <span>Export as TSV</span>
-          </Button>
-        </div>
+        {TSV_EXPORTS_ENABLED && (
+          <section className={classes.section}>
+            <div className="p-segmented-control">
+              <Button
+                type="button"
+                appearance="secondary"
+                className="p-segmented-control__button"
+                onClick={handleExport}
+              >
+                <span>Export as TSV</span>
+              </Button>
+            </div>
+          </section>
+        )}
         {selectionChanged && (
           <Notification
             severity="information"
