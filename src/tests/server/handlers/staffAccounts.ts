@@ -234,7 +234,21 @@ interface AccountPatchBody {
  * runs before the handler. Field types are checked as well as values, so a
  * malformed body yields a 400 envelope instead of throwing inside the handler.
  */
+/** Pydantic's rejection of a JSON body that is not an object (`null`, a number, ...). */
+const NON_OBJECT_BODY_ERROR: PydanticErrorDetail = {
+  type: "model_attributes_type",
+  loc: ["body"],
+  msg: "Input should be a valid dictionary or object to extract fields from",
+};
+
+const isJsonObject = (body: unknown): body is Record<string, unknown> =>
+  typeof body === "object" && body !== null && !Array.isArray(body);
+
 const accountPatchErrors = (body: AccountPatchBody): PydanticErrorDetail[] => {
+  if (!isJsonObject(body)) {
+    return [NON_OBJECT_BODY_ERROR];
+  }
+
   const detail: PydanticErrorDetail[] = [];
 
   if (Array.isArray(body.enabled_features)) {
@@ -321,12 +335,17 @@ const WSL_LIMIT_FIELDS = [
  */
 const wslLimitErrors = (
   body: Partial<WslFeatureLimits>,
-): PydanticErrorDetail[] =>
-  WSL_LIMIT_FIELDS.flatMap((field) =>
+): PydanticErrorDetail[] => {
+  if (!isJsonObject(body)) {
+    return [NON_OBJECT_BODY_ERROR];
+  }
+
+  return WSL_LIMIT_FIELDS.flatMap((field) =>
     body[field] === undefined
       ? [{ type: "missing", loc: [field], msg: "Field required" }]
       : rangeErrors(field, body[field], {}),
   );
+};
 
 export default [
   http.get(`${API_URL}accounts`, ({ request }) => {

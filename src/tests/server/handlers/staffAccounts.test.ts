@@ -269,6 +269,8 @@ describe("PATCH /accounts/:name", () => {
       { subdomain: 123 },
       { type: "string_type", loc: ["subdomain"] },
     ],
+    ["a null body", null, { type: "model_attributes_type", loc: ["body"] }],
+    ["an array body", [], { type: "model_attributes_type", loc: ["body"] }],
   ])(
     "rejects %s with a 400 validation envelope rather than throwing",
     async (_, body, expected) => {
@@ -363,6 +365,24 @@ describe("WSL feature limits", () => {
     const body = await response.json();
     expect(body.error).toBe("PydanticValidationError");
     expect(body.detail).toHaveLength(2);
+  });
+
+  it("POST rejects a null body with a 400 validation envelope rather than throwing", async () => {
+    setStaffGlobalRoles(["AccountManager"]);
+
+    const response = await send(
+      "POST",
+      "accounts/acme/wsl-feature-limits",
+      null,
+      AUTH_HEADERS,
+    );
+
+    expect(response.status).toBe(BAD_REQUEST);
+    const body = await response.json();
+    expect(body.error).toBe("PydanticValidationError");
+    expect(body.detail).toContainEqual(
+      expect.objectContaining({ type: "model_attributes_type", loc: ["body"] }),
+    );
   });
 
   it("POST rejects a non-integer limit instead of storing it", async () => {

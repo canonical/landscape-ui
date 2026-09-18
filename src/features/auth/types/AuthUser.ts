@@ -10,6 +10,8 @@ export interface AuthUser {
   accounts: Account[];
   current_account: string;
   email: string;
+  /** Staff (super admin) roles, e.g. `SupportProvider`; empty for regular users. */
+  global_roles: string[];
   has_password: boolean;
   name: string;
   token: string;
