@@ -1,1 +1,0 @@
-export { getIconRootPath } from "./getIconRootPath";
