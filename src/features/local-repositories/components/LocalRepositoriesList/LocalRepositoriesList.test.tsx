@@ -1,7 +1,5 @@
-import type { AuthContextProps } from "@/context/auth";
-import useAuth from "@/hooks/useAuth";
 import { renderWithProviders } from "@/tests/render";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import LocalRepositoriesList from "./LocalRepositoriesList";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { getAllByRole, screen } from "@testing-library/react";
@@ -10,24 +8,8 @@ import userEvent from "@testing-library/user-event";
 
 vi.mock("@/hooks/useAuth");
 
-const authContextValues: AuthContextProps = {
-  logout: vi.fn(),
-  authorized: true,
-  authLoading: false,
-  setUser: vi.fn(),
-  user: null,
-  redirectToExternalUrl: vi.fn(),
-  safeRedirect: vi.fn(),
-  isFeatureEnabled: () => true,
-  hasAccounts: true,
-};
-
 describe("LocalRepositoriesList", () => {
   const user = userEvent.setup();
-
-  beforeEach(() => {
-    vi.mocked(useAuth).mockReturnValue(authContextValues);
-  });
 
   it("renders table with column headers and pagination", () => {
     renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
@@ -52,22 +34,6 @@ describe("LocalRepositoriesList", () => {
     ).toBeInTheDocument();
 
     expect(screen.getByText(/showing.*of/i)).toBeInTheDocument();
-  });
-
-  it("hides the Last import column when the feature flag is disabled", () => {
-    vi.mocked(useAuth).mockReturnValue({
-      ...authContextValues,
-      isFeatureEnabled: () => false,
-    });
-
-    renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
-
-    expect(
-      screen.getByRole("columnheader", { name: "Packages" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("columnheader", { name: "Last import" }),
-    ).not.toBeInTheDocument();
   });
 
   it("renders repositories as buttons", () => {
