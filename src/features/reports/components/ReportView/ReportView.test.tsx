@@ -14,6 +14,17 @@ import ReportView from "./ReportView";
 
 vi.mock("@/hooks/usePageParams");
 
+let isTsvExportsEnabled = false;
+vi.mock("@/constants", async (importOriginal) => {
+  const actual = await importOriginal<object>();
+  return {
+    ...actual,
+    get TSV_EXPORTS_ENABLED() {
+      return isTsvExportsEnabled;
+    },
+  };
+});
+
 const instanceIds = [1, 2, 3];
 // Ids not present in the report fixture, used to prove the report ignores the
 // raw selection when deriving buckets.
@@ -26,6 +37,7 @@ const ALL_SELECTED_STORE_ID_B = 1000;
 
 describe("ReportView", () => {
   beforeEach(() => {
+    isTsvExportsEnabled = false;
     setSelectedInstanceIds(instanceIds);
     (usePageParams as Mock).mockReturnValue({
       closeSidePanel: vi.fn(),
@@ -253,7 +265,7 @@ describe("ReportView", () => {
     let capturedQuery: string | null = null;
     server.use(
       http.get(`${API_URL}computers/compliance-report`, ({ request }) => {
-        const searchParams = new URL(request.url).searchParams;
+        const { searchParams } = new URL(request.url);
         hasQueryParam = searchParams.has("query");
         capturedQuery = searchParams.get("query");
         return HttpResponse.json(complianceReport);
@@ -513,7 +525,19 @@ describe("ReportView", () => {
     ).toBeInTheDocument();
   });
 
+  it("does not show the Export as TSV button when the feature is disabled", async () => {
+    renderWithProviders(
+      <ReportView selectedInstanceIds={instanceIds} isAllSelected={false} />,
+    );
+
+    await screen.findByText("Security upgrades");
+    expect(
+      screen.queryByRole("button", { name: "Export as TSV" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("opens the export panel when Export as TSV is clicked", async () => {
+    isTsvExportsEnabled = true;
     const mockCreateSidePathPusher = vi.fn(() => vi.fn());
     (usePageParams as Mock).mockReturnValue({
       closeSidePanel: vi.fn(),
