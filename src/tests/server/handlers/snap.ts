@@ -19,6 +19,7 @@ import {
   shouldApplyEndpointStatus,
 } from "./_helpers";
 import { createEndpointStatusError } from "./_constants";
+import { capitalize, pluralize } from "@/utils/_helpers";
 
 export default [
   http.get(
@@ -111,11 +112,12 @@ export default [
       }
     }
 
-    const { action } = await request.json();
+    const { action, computer_ids } = await request.json();
+    const computers = pluralize(computer_ids.length, ["computer"], "exact");
 
     return HttpResponse.json({
       ...successfulSnapInstallResponse,
-      summary: `${action} ${action === "change channel" ? "of" : ""} snaps on computer`,
+      summary: `${capitalize(action)} snaps on ${computers}`,
     });
   }),
 
