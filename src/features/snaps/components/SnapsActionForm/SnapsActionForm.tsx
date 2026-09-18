@@ -49,7 +49,9 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     ? "snaps"
     : pluralize(selectedSnaps.length, ["snap"], "exact");
 
-  const submitText = `${capitalize(action)} ${isChangeChannel ? "" : snapsText}`;
+  const submitText = isChangeChannel
+    ? `${capitalize(action)}`
+    : `${capitalize(action)} ${snapsText}`;
 
   const onSubmit = async () => {
     if (hasNoSelectedSnaps) {
