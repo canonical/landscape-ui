@@ -21,9 +21,9 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
 }) => {
   const location = useLocation();
   const { isSaas, isSelfHosted, envLoading } = useEnv();
-  const { isSelfHostedEnabled } = useGetSelfHostedEnabled(
-    !envLoading && isSaas,
-  );
+  const shouldGetSelfHostedEnabled = !envLoading && isSaas;
+  const { isGettingSelfHostedEnabled, isSelfHostedEnabled } =
+    useGetSelfHostedEnabled(shouldGetSelfHostedEnabled);
 
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
   const filteredItems = getFilteredByEnvItems({
@@ -51,6 +51,7 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
         )}
       >
         <nav
+          aria-busy={shouldGetSelfHostedEnabled && isGettingSelfHostedEnabled}
           className={classNames(
             "u-padding-top--medium is-dark",
             classes.secondaryNavigation__drawer,

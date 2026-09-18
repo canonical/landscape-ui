@@ -5,7 +5,13 @@ import type { FC } from "react";
 import { useRegenerateSelfHostedLicense } from "../../api/useRegenerateSelfHostedLicense";
 import classes from "./RegenerateLicenseButton.module.scss";
 
-const RegenerateLicenseButton: FC = () => {
+interface RegenerateLicenseButtonProps {
+  readonly disabled: boolean;
+}
+
+const RegenerateLicenseButton: FC<RegenerateLicenseButtonProps> = ({
+  disabled,
+}) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { regenerateSelfHostedLicense, isRegeneratingSelfHostedLicense } =
@@ -28,7 +34,7 @@ const RegenerateLicenseButton: FC = () => {
     <Button
       type="button"
       hasIcon
-      disabled={isRegeneratingSelfHostedLicense}
+      disabled={disabled || isRegeneratingSelfHostedLicense}
       onClick={handleRegenerate}
       className={classes.regenerateButton}
     >

@@ -1,12 +1,21 @@
 import { renderWithProviders } from "@/tests/render";
 import { EnvContext, type EnvContextState } from "@/context/env";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import SecondaryNavigation from "./SecondaryNavigation";
 import { ACCOUNT_SETTINGS } from "./constants";
 import { PATHS, ROUTES } from "@/libs/routes";
 import { useMediaQuery } from "usehooks-ts";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { AuthContext } from "@/context/auth";
+import AccountsProvider from "@/context/accounts";
+import { authUser } from "@/tests/mocks/auth";
+import server from "@/tests/server";
+import { API_URL } from "@/constants";
+import { http, HttpResponse } from "msw";
+import type { ReactNode } from "react";
+import { useState } from "react";
 
 const resolvedEnvState: EnvContextState = {
   envLoading: false,
@@ -29,18 +38,12 @@ vi.mock("usehooks-ts", async () => {
 describe("SecondaryNavigation", () => {
   it("renders correctly", async () => {
     renderWithProviders(
-      <SecondaryNavigation
-        title={ACCOUNT_SETTINGS.label}
-        items={ACCOUNT_SETTINGS.items}
-      />,
-      undefined,
-      undefined,
-      undefined,
-      ({ children }) => (
-        <EnvContext.Provider value={resolvedEnvState}>
-          {children}
-        </EnvContext.Provider>
-      ),
+      <EnvContext.Provider value={resolvedEnvState}>
+        <SecondaryNavigation
+          title={ACCOUNT_SETTINGS.label}
+          items={ACCOUNT_SETTINGS.items}
+        />
+      </EnvContext.Provider>,
     );
 
     expect(
@@ -103,15 +106,111 @@ describe("SecondaryNavigation", () => {
     });
 
     renderWithProviders(
-      <SecondaryNavigation
-        title={ACCOUNT_SETTINGS.label}
-        items={ACCOUNT_SETTINGS.items}
-      />,
+      <EnvContext.Provider value={resolvedEnvState}>
+        <SecondaryNavigation
+          title={ACCOUNT_SETTINGS.label}
+          items={ACCOUNT_SETTINGS.items}
+        />
+      </EnvContext.Provider>,
     );
 
+    await waitFor(() => {
+      expect(screen.getByRole("navigation")).toHaveAttribute(
+        "aria-busy",
+        "false",
+      );
+    });
     expect(
       screen.queryByRole("link", { name: "Legacy license file" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("rechecks entitlement after switching accounts", async () => {
+    const [firstAccount, secondAccount] = authUser.accounts;
+    assert(firstAccount);
+    assert(secondAccount);
+    let requestIndex = 0;
+    server.use(
+      http.get(`${API_URL}self-hosted/status`, () =>
+        HttpResponse.json({ enabled: requestIndex++ === 0 }),
+      ),
+    );
+    const user = userEvent.setup();
+
+    const AccountSwitchHarness = ({
+      children,
+    }: {
+      readonly children: ReactNode;
+    }) => {
+      const [currentAccount, setCurrentAccount] = useState(firstAccount.name);
+
+      return (
+        <AuthContext.Provider
+          value={{
+            authLoading: false,
+            authorized: true,
+            hasAccounts: true,
+            isFeatureEnabled: () => true,
+            logout: vi.fn(),
+            redirectToExternalUrl: vi.fn(),
+            safeRedirect: vi.fn(),
+            setUser: vi.fn(),
+            user: { ...authUser, current_account: currentAccount },
+          }}
+        >
+          <AccountsProvider>
+            <button
+              type="button"
+              onClick={() => {
+                setCurrentAccount((accountName) =>
+                  accountName === firstAccount.name
+                    ? secondAccount.name
+                    : firstAccount.name,
+                );
+              }}
+            >
+              Switch account
+            </button>
+            {children}
+          </AccountsProvider>
+        </AuthContext.Provider>
+      );
+    };
+
+    renderWithProviders(
+      <EnvContext.Provider value={resolvedEnvState}>
+        <AccountSwitchHarness>
+          <SecondaryNavigation
+            title={ACCOUNT_SETTINGS.label}
+            items={ACCOUNT_SETTINGS.items}
+          />
+        </AccountSwitchHarness>
+      </EnvContext.Provider>,
+    );
+
+    expect(
+      await screen.findByRole("link", { name: "Legacy license file" }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Switch account" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("navigation")).toHaveAttribute(
+        "aria-busy",
+        "false",
+      );
+    });
+    expect(
+      screen.queryByRole("link", { name: "Legacy license file" }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Switch account" }));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("link", { name: "Legacy license file" }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it("renders children when provided", () => {

@@ -3,6 +3,7 @@ import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
+import { getSelfHostedLicenseQueryKey } from "./useGetSelfHostedLicense";
 
 interface RegenerateSelfHostedLicenseResponse {
   license_url: string;
@@ -12,19 +13,20 @@ export const useRegenerateSelfHostedLicense = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
   const { currentAccount } = useAuthAccounts();
+  const queryKey = getSelfHostedLicenseQueryKey(currentAccount.name);
 
   const { isPending, mutateAsync } = useMutation<
     AxiosResponse<RegenerateSelfHostedLicenseResponse>,
     AxiosError<ApiError>
   >({
     mutationKey: ["selfHostedLicense", "regenerate", currentAccount.name],
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey });
+    },
     mutationFn: async () =>
       authFetch.post("self-hosted/license-url:regenerate", {}),
     onSuccess: (response) => {
-      queryClient.setQueryData(
-        ["selfHostedLicense", currentAccount.name],
-        response,
-      );
+      queryClient.setQueryData(queryKey, response);
     },
   });
 

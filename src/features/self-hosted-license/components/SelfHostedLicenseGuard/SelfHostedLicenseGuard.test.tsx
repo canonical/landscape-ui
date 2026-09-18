@@ -75,7 +75,7 @@ describe("SelfHostedLicenseGuard", () => {
       screen.getByText("This feature is not available in Self Hosted mode."),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("heading", { name: "Self hosted license" }),
+      screen.queryByRole("heading", { name: "Legacy license file" }),
     ).not.toBeInTheDocument();
   });
 });

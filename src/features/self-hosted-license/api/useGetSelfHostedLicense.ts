@@ -8,20 +8,25 @@ interface SelfHostedLicenseResponse {
   license_url: string;
 }
 
+export const getSelfHostedLicenseQueryKey = (accountName: string) =>
+  ["selfHostedLicense", accountName] as const;
+
 export const useGetSelfHostedLicense = () => {
   const authFetch = useFetch();
   const { currentAccount } = useAuthAccounts();
 
-  const { data: response, isPending } = useQuery<
-    AxiosResponse<SelfHostedLicenseResponse>,
-    AxiosError<ApiError>
-  >({
-    queryKey: ["selfHostedLicense", currentAccount.name],
+  const {
+    data: response,
+    error,
+    isPending,
+  } = useQuery<AxiosResponse<SelfHostedLicenseResponse>, AxiosError<ApiError>>({
+    queryKey: getSelfHostedLicenseQueryKey(currentAccount.name),
     queryFn: async () => authFetch.get("self-hosted/license-url"),
   });
 
   return {
     downloadUrl: response?.data.license_url,
+    selfHostedLicenseError: error,
     isGettingSelfHostedLicense: isPending,
   };
 };

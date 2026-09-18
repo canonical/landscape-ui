@@ -1,5 +1,6 @@
 import FormSection from "@/components/form/FormSection";
-import type { FC } from "react";
+import useNotify from "@/hooks/useNotify";
+import { useEffect, useEffectEvent, type FC } from "react";
 import { useGetSelfHostedLicense } from "../../api/useGetSelfHostedLicense";
 import CopyableCodeSnippet from "../CopyableCodeSnippet";
 import DownloadLicenseButton from "../DownloadLicenseButton";
@@ -7,7 +8,22 @@ import RegenerateLicenseButton from "../RegenerateLicenseButton";
 import classes from "./SelfHostedLicenseContainer.module.scss";
 
 const SelfHostedLicenseContainer: FC = () => {
-  const { downloadUrl, isGettingSelfHostedLicense } = useGetSelfHostedLicense();
+  const { downloadUrl, isGettingSelfHostedLicense, selfHostedLicenseError } =
+    useGetSelfHostedLicense();
+  const { notify } = useNotify();
+  const showLicenseError = useEffectEvent((error: unknown) => {
+    notify.error({
+      title: "Unable to get the license download URL",
+      message: "The license download URL could not be loaded.",
+      error,
+    });
+  });
+
+  useEffect(() => {
+    if (selfHostedLicenseError) {
+      showLicenseError(selfHostedLicenseError);
+    }
+  }, [selfHostedLicenseError]);
 
   return (
     <FormSection title="License file" className={classes.formSection}>
@@ -33,7 +49,7 @@ const SelfHostedLicenseContainer: FC = () => {
         token invalidates the previous download URL.
       </p>
 
-      <RegenerateLicenseButton />
+      <RegenerateLicenseButton disabled={!downloadUrl} />
     </FormSection>
   );
 };

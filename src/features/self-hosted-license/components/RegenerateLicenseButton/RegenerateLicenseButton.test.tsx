@@ -11,7 +11,7 @@ describe("RegenerateLicenseButton", () => {
   it("regenerates the license and shows a success notification", async () => {
     const user = userEvent.setup();
 
-    renderWithProviders(<RegenerateLicenseButton />);
+    renderWithProviders(<RegenerateLicenseButton disabled={false} />);
 
     await user.click(
       screen.getByRole("button", { name: "Regenerate private token" }),
@@ -37,7 +37,7 @@ describe("RegenerateLicenseButton", () => {
     );
     const user = userEvent.setup();
 
-    renderWithProviders(<RegenerateLicenseButton />);
+    renderWithProviders(<RegenerateLicenseButton disabled={false} />);
 
     await user.click(
       screen.getByRole("button", { name: "Regenerate private token" }),
