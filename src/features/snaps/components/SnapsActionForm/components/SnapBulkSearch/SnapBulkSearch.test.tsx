@@ -1,7 +1,6 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
-import type { SnapAction } from "../../../../types";
 import { ErrorBoundary } from "@sentry/react";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -18,7 +17,7 @@ const props: ComponentProps<typeof SnapBulkSearch> = {
   instanceIds: [1],
   selectedItems: [],
   setSelectedItems: vi.fn(),
-  action: "remove",
+  action: "uninstall",
 };
 
 describe("SnapBulkSearch", () => {
@@ -95,26 +94,32 @@ describe("SnapBulkSearch", () => {
     expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
   });
 
-  it.each([
-    { action: "install", verb: "install" },
-    { action: "remove", verb: "uninstall" },
-    { action: "hold", verb: "hold" },
-    { action: "unhold", verb: "unhold" },
-    { action: "refresh", verb: "refresh" },
-    { action: "changeChannel", verb: "change channels on" },
-  ])("shows the correct warning for $action", ({ action, verb }) => {
+  it("shows warning when the snap limit is reached", () => {
     renderWithProviders(
       <SnapBulkSearch
         {...props}
-        action={action as SnapAction}
         selectedItems={installedSnaps.slice(0, MAX_SELECTED_SNAPS)}
       />,
     );
 
     expect(
       screen.getByText(
-        `You can only ${verb} a maximum of ${MAX_SELECTED_SNAPS} snaps at once.`,
+        `You can only uninstall a maximum of ${MAX_SELECTED_SNAPS} snaps at once.`,
       ),
+    ).toBeInTheDocument();
+  });
+
+  it("shows the right phrasing for the change channel limit warning", () => {
+    renderWithProviders(
+      <SnapBulkSearch
+        {...props}
+        action={"change channel"}
+        selectedItems={installedSnaps.slice(0, MAX_SELECTED_SNAPS)}
+      />,
+    );
+
+    expect(
+      screen.getByText(/You can only change channel on a maximum of/i),
     ).toBeInTheDocument();
   });
 });

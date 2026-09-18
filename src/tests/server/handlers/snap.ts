@@ -2,7 +2,6 @@ import { API_URL } from "@/constants";
 import type {
   GetSnapsParams,
   InstalledSnap,
-  SnapAction,
   SnapActionParams,
 } from "@/features/snaps";
 import { getEndpointStatus } from "@/tests/controllers/controller";
@@ -20,15 +19,6 @@ import {
   shouldApplyEndpointStatus,
 } from "./_helpers";
 import { createEndpointStatusError } from "./_constants";
-
-const SNAP_ACTION_VERBS: Record<SnapAction, string> = {
-  install: "Install",
-  remove: "Remove",
-  refresh: "Refresh",
-  hold: "Hold",
-  unhold: "Unhold",
-  changeChannel: "Change channel of",
-};
 
 export default [
   http.get(
@@ -125,7 +115,7 @@ export default [
 
     return HttpResponse.json({
       ...successfulSnapInstallResponse,
-      summary: `${SNAP_ACTION_VERBS[action as SnapAction]} snaps on computer`,
+      summary: `${action} ${action === "change channel" ? "of" : ""} snaps on computer`,
     });
   }),
 

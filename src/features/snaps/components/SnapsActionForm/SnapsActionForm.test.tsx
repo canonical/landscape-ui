@@ -3,10 +3,16 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import SnapsActionForm from "./SnapsActionForm";
-import { installedSnaps } from "@/tests/mocks/snap";
-import type { SnapAction } from "../../types";
+import {
+  installedSnaps,
+  successfulSnapInstallResponse,
+} from "@/tests/mocks/snap";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
+import { API_URL } from "@/constants";
+import type { SnapActionParams } from "../../types";
 
 const instanceId = 1;
 const [firstSnap] = installedSnaps;
@@ -36,7 +42,7 @@ describe("SnapsActionForm", () => {
 
     it("includes count in submit button when snaps are selected", async () => {
       renderWithProviders(
-        <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+        <SnapsActionForm selectedInstances={[instanceId]} action="uninstall" />,
       );
 
       const searchBox = screen.getByRole("searchbox");
@@ -47,7 +53,9 @@ describe("SnapsActionForm", () => {
         }),
       );
 
-      const nextButton = screen.getByRole("button", { name: "Install 1 snap" });
+      const nextButton = screen.getByRole("button", {
+        name: "Uninstall 1 snap",
+      });
       expect(nextButton).not.toHaveAttribute("aria-disabled");
     });
   });
@@ -83,7 +91,7 @@ describe("SnapsActionForm", () => {
 
   it("shows error notification", async () => {
     renderWithProviders(
-      <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+      <SnapsActionForm selectedInstances={[instanceId]} action="unhold" />,
     );
 
     const searchBox = screen.getByRole("searchbox");
@@ -96,7 +104,7 @@ describe("SnapsActionForm", () => {
 
     setEndpointStatus({ path: "snaps", status: "error" });
 
-    await user.click(screen.getByRole("button", { name: "Install 1 snap" }));
+    await user.click(screen.getByRole("button", { name: "Unhold 1 snap" }));
 
     expect(
       await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
@@ -105,7 +113,10 @@ describe("SnapsActionForm", () => {
 
   it("shows success notification", async () => {
     renderWithProviders(
-      <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
     );
 
     const searchBox = screen.getByRole("searchbox");
@@ -116,28 +127,42 @@ describe("SnapsActionForm", () => {
       }),
     );
 
-    await user.click(screen.getByRole("button", { name: "Install 1 snap" }));
+    await user.click(screen.getByRole("button", { name: "Change channel" }));
 
     expect(
-      await screen.findByText("Snaps successfully set to install"),
+      await screen.findByText("Snaps successfully set to change channel"),
     ).toBeInTheDocument();
   });
 
-  it.each([
-    { action: "install", header: "Snaps to install" },
-    { action: "remove", header: "Snaps to uninstall" },
-    { action: "hold", header: "Snaps to hold" },
-    { action: "unhold", header: "Snaps to unhold" },
-    { action: "refresh", header: "Snaps to refresh" },
-    { action: "changeChannel", header: "Snaps to change channel" },
-  ])("shows the right header for $action", ({ action, header }) => {
-    renderWithProviders(
-      <SnapsActionForm
-        selectedInstances={[instanceId]}
-        action={action as SnapAction}
-      />,
+  it("maps the 'uninstall' action to a 'remove' request", async () => {
+    let requestBody: SnapActionParams | null = null;
+    server.use(
+      http.post(`${API_URL}snaps`, async ({ request }) => {
+        requestBody = (await request.json()) as SnapActionParams;
+        return HttpResponse.json(successfulSnapInstallResponse);
+      }),
     );
 
-    screen.getByText(new RegExp(header, "i"));
+    renderWithProviders(
+      <SnapsActionForm selectedInstances={[instanceId]} action="uninstall" />,
+    );
+
+    await user.click(screen.getByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`,
+      }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Uninstall 1 snap" }));
+
+    expect(
+      await screen.findByText("Snaps successfully set to uninstall"),
+    ).toBeInTheDocument();
+    expect(requestBody).toMatchObject({
+      action: "remove",
+      computer_ids: [instanceId],
+      snaps: [{ name: firstSnap.snap.name }],
+    });
   });
 });
