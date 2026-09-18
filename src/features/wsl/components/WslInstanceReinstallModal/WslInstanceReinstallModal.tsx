@@ -75,7 +75,7 @@ const WslInstanceReinstallModal: FC<WslInstanceReinstallModalProps> = ({
       confirmationText={`reinstall ${title}`}
       onConfirm={reinstall}
     >
-      <p>
+      <p className="u-margin--bottom">
         {pluralize(instances.length, [
           "This will uninstall this instance and create a new one with the same name that is compliant with its profiles.",
           "This will uninstall the selected instances and create new ones with the same names that are compliant with their profiles.",

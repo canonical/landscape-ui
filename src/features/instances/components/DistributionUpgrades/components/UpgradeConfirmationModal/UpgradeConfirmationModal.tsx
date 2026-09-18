@@ -26,7 +26,7 @@ const UpgradeConfirmationModal: FC<UpgradeConfirmationModalProps> = ({
       confirmButtonLoading={isCreating}
       renderInPortal
     >
-      <p>
+      <p className="u-margin--bottom">
         A reboot is required to complete this action. There is a risk that the{" "}
         {pluralize(eligibleCount, ["instance"])} will not be able to contact
         Landscape.

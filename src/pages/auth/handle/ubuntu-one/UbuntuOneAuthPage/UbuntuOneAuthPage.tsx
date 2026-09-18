@@ -82,7 +82,7 @@ const UbuntuOneAuthPage: FC = () => {
         </div>
       ) : (
         <div>
-          <p>{CONTACT_SUPPORT_TEAM_MESSAGE}</p>
+          <p className="u-margin--bottom">{CONTACT_SUPPORT_TEAM_MESSAGE}</p>
           <Link to={ROUTES.auth.login()} className="p-button">
             Back to login
           </Link>

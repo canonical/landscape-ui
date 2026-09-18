@@ -1,9 +1,27 @@
+import { API_URL } from "@/constants";
 import { PATHS } from "@/libs/routes";
+import {
+  availableSnapInfo,
+  successfulSnapInstallResponse,
+} from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import { describe, expect } from "vitest";
+import type { SnapActionParams } from "../../types";
 import InstallSnaps from "./InstallSnaps";
+
+const classicSnapInfo = availableSnapInfo.find((snap) =>
+  snap["channel-map"].some((channel) => channel.confinement === "classic"),
+);
+assert(classicSnapInfo);
+
+const classicChannelMap = classicSnapInfo["channel-map"].find(
+  (channel) => channel.confinement === "classic",
+);
+assert(classicChannelMap);
 
 describe("InstallSnaps", () => {
   beforeEach(async () => {
@@ -134,5 +152,47 @@ describe("InstallSnaps", () => {
     await userEvent.click(installButton);
 
     expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
+  });
+
+  it("sends the selected release and classic flag nested in args", async () => {
+    let requestBody: SnapActionParams | null = null;
+
+    server.use(
+      http.post(`${API_URL}snaps`, async ({ request }) => {
+        requestBody = (await request.json()) as SnapActionParams;
+        return HttpResponse.json(successfulSnapInstallResponse);
+      }),
+    );
+
+    const searchBox = screen.getByRole("searchbox");
+    await userEvent.type(searchBox, classicSnapInfo.name);
+    await userEvent.click(await screen.findByText(classicSnapInfo.name));
+
+    const releaseSelect = await screen.findByLabelText(/release/i);
+    await userEvent.selectOptions(
+      releaseSelect,
+      `${classicChannelMap.channel.name} - ${classicChannelMap.channel.architecture}`,
+    );
+    await userEvent.click(screen.getByRole("button", { name: /add/i }));
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /install snaps/i }),
+    );
+
+    expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
+    expect(requestBody).toEqual({
+      action: "install",
+      computer_ids: [1],
+      snaps: [
+        {
+          name: classicSnapInfo.name,
+          args: {
+            channel: classicChannelMap.channel.name,
+            revision: classicChannelMap.revision.toString(),
+            classic: true,
+          },
+        },
+      ],
+    });
   });
 });

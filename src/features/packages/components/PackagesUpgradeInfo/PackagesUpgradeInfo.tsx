@@ -49,7 +49,7 @@ const PackagesUpgradeInfo: FC<PackagesUpgradeInfoProps> = ({
         )}
       </ul>
       {noUpgradePackageCount > 0 && (
-        <p>
+        <p className="u-margin--bottom">
           <span>No upgrades needed for </span>
           <PluralizeWithBoldCount
             count={noUpgradePackageCount}

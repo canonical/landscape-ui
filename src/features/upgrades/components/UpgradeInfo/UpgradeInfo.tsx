@@ -55,7 +55,7 @@ const UpgradeInfo: FC<UpgradeInfoProps> = ({ instances }) => {
         )}
       </ul>
       {notAffectedInstancesCount > 0 && (
-        <p>
+        <p className="u-margin--bottom">
           <span>No upgrades needed for </span>
           <PluralizeWithBoldCount
             count={notAffectedInstancesCount}

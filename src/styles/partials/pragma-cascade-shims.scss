@@ -1,0 +1,55 @@
+// Temporary shims for Pragma's unlayered cascade.
+// Compatibility target: `@canonical/styles` 0.34.0. Re-audit before upgrading.
+// `@canonical/styles` declares `@layer normalize, ds.reset, ds.modifiers,
+// ds.components` but never assigns any of its imports to those layers, so
+// everything it ships is unlayered. Since it loads after Vanilla in `main.tsx`,
+// its bundled `normalize.css` wins every specificity tie against Vanilla's bare
+// element selectors.
+
+// Each rule below restores the pre-Pragma value. Repeating the type selector
+// with `:is()` lifts specificity above normalize without overriding component
+// classes. `:not(:where([hidden]))` keeps hidden elements out without adding
+// specificity.
+
+// DELETE THIS FILE once `@canonical/styles` imports normalize with
+// `layer(normalize)`. That one upstream change makes every rule here redundant.
+
+// Not covered here: typography spacing (`p`, `h1`-`h6`). Pragma removes those
+// element margins by design, so explicit spacing is permanent, not a shim.
+
+// normalize `html { line-height: 1.15 }` overrides Vanilla's 1.5rem baseline,
+// which inherits app-wide. Literal value: Vanilla derives this through a
+// settings map rather than exposing a variable.
+html:is(html):not(:where([hidden])) {
+  line-height: 1.5rem;
+}
+
+// normalize restores browser-default presentation after Vanilla's base rules.
+// These values are intentionally not taken from Pragma typography: bare legacy
+// elements keep their current appearance until their components are migrated.
+code:is(code):not(:where([hidden])),
+kbd:is(kbd):not(:where([hidden])),
+pre:is(pre):not(:where([hidden])),
+samp:is(samp):not(:where([hidden])) {
+  font-family: unquote($font-monospace);
+}
+
+b:is(b):not(:where([hidden])),
+strong:is(strong):not(:where([hidden])) {
+  font-weight: $font-weight-bold;
+}
+
+small:is(small):not(:where([hidden])) {
+  font-size: #{map-get($settings-text-small, font-size)}rem;
+}
+
+select:is(select):not(:where([hidden])),
+textarea:is(textarea):not(:where([hidden])) {
+  font-family: unquote($font-base-family);
+  line-height: map-get($settings-text-default, line-height);
+  margin-bottom: $input-margin-bottom;
+}
+
+fieldset:is(fieldset):not(:where([hidden])) {
+  padding: calc($spv--large - $input-border-thickness);
+}

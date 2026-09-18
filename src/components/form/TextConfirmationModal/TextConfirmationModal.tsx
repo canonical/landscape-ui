@@ -68,7 +68,7 @@ const TextConfirmationModal: FC<TextConfirmationModalProps> = ({
       >
         {children}
 
-        <p>
+        <p className="u-margin--bottom">
           Type{" "}
           <span className={classes.confirmationText}>{confirmationText}</span>{" "}
           to confirm.

@@ -169,7 +169,7 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
           onConfirm={setAsDefault}
           close={closeSetAsDefaultModal}
         >
-          <p>
+          <p className="u-margin--bottom">
             Are you sure you want to set {wslInstance.name} as default instance?
           </p>
         </ConfirmationModal>

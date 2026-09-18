@@ -66,7 +66,7 @@ const USGProfileAuditPassRate: FC<USGProfileAuditPassRateProps> = ({
           {passing > 0 ? (
             <Link
               to={ROUTES.instances.root({
-                query: `usg-profile:${profile.id}:pass`,
+                query: `profile:usg:${profile.id}:pass`,
               })}
             >
               <span>{passing} passed</span>
@@ -78,7 +78,7 @@ const USGProfileAuditPassRate: FC<USGProfileAuditPassRateProps> = ({
         {failing > 0 ? (
           <Link
             to={ROUTES.instances.root({
-              query: `usg-profile:${profile.id}:fail`,
+              query: `profile:usg:${profile.id}:fail`,
             })}
           >
             <span>{failing} failed</span>

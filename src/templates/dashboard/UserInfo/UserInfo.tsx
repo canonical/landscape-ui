@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { useState } from "react";
 import useAuth from "@/hooks/useAuth";
-import { ActionButton, Badge, Button, Icon } from "@canonical/react-components";
+import { ActionButton, Button, Icon } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
 import { Link, useLocation } from "react-router";
@@ -31,7 +31,7 @@ const UserInfo: FC = () => {
     items: ACCOUNT_SETTINGS.items,
   });
   const { handleLogoutQuery } = useAuthHandle();
-  const { alertsSummaryCount } = useAlertsSummary();
+  const { hasAlerts } = useAlertsSummary();
   const debug = useDebug();
 
   const [expandedAccountSettings, setExpandedAccountSettings] = useState(false);
@@ -202,11 +202,11 @@ const UserInfo: FC = () => {
             >
               Alerts
             </span>
-            {alertsSummaryCount > 0 && (
-              <Badge
-                className={classes.badge}
-                value={alertsSummaryCount}
-                isNegative
+            {hasAlerts && (
+              <Icon
+                className={classes.alerts}
+                name="security-upgrades"
+                aria-label="There are unresolved alerts"
               />
             )}
           </Link>

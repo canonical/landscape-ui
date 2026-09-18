@@ -122,9 +122,11 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
       {...props}
       renderInPortal
     >
-      <p>Adding tags could trigger irreversible changes to your instances.</p>
+      <p className="u-margin--bottom">
+        Adding tags could trigger irreversible changes to your instances.
+      </p>
 
-      <p>
+      <p className="u-margin--bottom">
         Adding{" "}
         {pluralize(tags.length, [
           `the ${tags[0]} tag`,
@@ -140,7 +142,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
         following profiles.
       </p>
 
-      <p>
+      <p className="u-margin--bottom">
         Some instances might not be associated with certain profiles due to
         restrictions.
       </p>

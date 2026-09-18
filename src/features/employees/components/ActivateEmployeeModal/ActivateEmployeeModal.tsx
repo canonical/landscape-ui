@@ -45,7 +45,7 @@ const ActivateEmployeeModal: FC<ActivateEmployeeModalProps> = ({
       confirmButtonLoading={isPending}
       renderInPortal
     >
-      <p>
+      <p className="u-margin--bottom">
         This will allow {employee.name} to log in to Landscape and register new
         instances with their account.
       </p>

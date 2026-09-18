@@ -1,5 +1,6 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import useDebug from "@/hooks/useDebug";
+import usePageParams from "@/hooks/usePageParams";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import { useGetInstances } from "@/features/instances";
@@ -21,15 +22,16 @@ const AccessGroupDeleteModal: FC<AccessGroupDeleteModalProps> = ({
   parentAccessGroupTitle,
 }) => {
   const debug = useDebug();
+  const { closeSidePanel } = usePageParams();
   const { notify } = useNotify();
   const { removeAccessGroupQuery } = useRoles();
   const { mutateAsync: remove, isPending: isRemoving } = removeAccessGroupQuery;
 
   const tryRemove = async () => {
     try {
-      await remove({
-        name: accessGroup.name,
-      });
+      await remove({ name: accessGroup.name });
+
+      closeSidePanel();
 
       notify.success({
         title: `You have successfully deleted the "${accessGroup.title}" access group.`,
@@ -64,9 +66,10 @@ const AccessGroupDeleteModal: FC<AccessGroupDeleteModalProps> = ({
       confirmButtonLoading={isRemoving}
       onConfirm={tryRemove}
       close={close}
+      renderInPortal
     >
       {instancesCount > 0 ? (
-        <p>
+        <p className="u-margin--bottom">
           &quot;{accessGroup.title}&quot; is associated with{" "}
           {instancesCountText}. Deleting &quot;{accessGroup.title}&quot; will
           move {itOrThem} to the parent access group, &quot;
@@ -75,13 +78,13 @@ const AccessGroupDeleteModal: FC<AccessGroupDeleteModalProps> = ({
           {thisOrTheseInstances}.
         </p>
       ) : (
-        <p>
+        <p className="u-margin--bottom">
           Profiles may be associated with &quot;{accessGroup.title}&quot;.
           Deleting &quot;{accessGroup.title}&quot; will move any associated
           profiles to its parent group, &quot;{parentAccessGroupTitle}&quot;.
         </p>
       )}
-      <p>
+      <p className="u-margin--bottom">
         This action is <strong>irreversible</strong>.
       </p>
     </TextConfirmationModal>

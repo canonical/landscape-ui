@@ -44,7 +44,7 @@ const RemoveSavedSearchButton: FC<RemoveSavedSearchButtonProps> = ({
       confirmationModalProps={{
         title: "Remove saved search",
         children: (
-          <p>
+          <p className="u-margin--bottom">
             This will remove the saved search &quot;{savedSearch.title}
             &quot;.
           </p>

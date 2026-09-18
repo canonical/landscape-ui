@@ -89,9 +89,13 @@ const OTPInput: FC<OTPInputProps> = ({
 
   return (
     <fieldset
-      className={classNames("p-form__group p-form-validation", {
-        "is-error": error,
-      })}
+      className={classNames(
+        "p-form__group p-form-validation",
+        classes.fieldset,
+        {
+          "is-error": error,
+        },
+      )}
       role="group"
       aria-labelledby="otp-label"
     >

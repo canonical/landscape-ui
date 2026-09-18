@@ -67,7 +67,7 @@ const UsnPackagesRemoveButton: FC<UsnPackagesRemoveButtonProps> = ({
       confirmationModalProps={{
         title: "Uninstall USN packages",
         children: (
-          <p>
+          <p className="u-margin--bottom">
             This will uninstall packages affected by &quot;{usn}&quot; security
             issue from the &quot;{instanceTitle}&quot; instance.
           </p>

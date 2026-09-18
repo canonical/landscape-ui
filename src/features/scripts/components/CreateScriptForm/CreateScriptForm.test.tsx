@@ -21,7 +21,7 @@ describe("CreateScriptForm", () => {
     ).toBeInTheDocument();
 
     expect(screen.getByText("Access group")).toBeInTheDocument();
-    expect(screen.getByText(/list of attachments/i)).toBeInTheDocument();
+    expect(screen.getByText(/list of attachments/i).tagName).toBe("STRONG");
     expect(screen.getByText(/add script/i)).toBeInTheDocument();
   });
 
@@ -131,6 +131,32 @@ describe("CreateScriptForm", () => {
 
     expect(
       await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
+  });
+
+  it("Updates server script title exists error to a more detailed message", async () => {
+    setEndpointStatus({
+      status: "error",
+      path: "CreateScript",
+      response: {
+        error: "DuplicateScript",
+      },
+    });
+
+    const user = userEvent.setup();
+    renderWithProviders(<CreateScriptForm />);
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Title" }),
+      "Existing script",
+    );
+    await user.type(screen.getByTestId("mock-monaco"), "echo run");
+    await user.click(screen.getByRole("button", { name: "Add script" }));
+
+    expect(
+      await screen.findByText(
+        "This script title is unavailable. It is either already in use or was previously archived or redacted. Script titles cannot be reused.",
+      ),
     ).toBeInTheDocument();
   });
 

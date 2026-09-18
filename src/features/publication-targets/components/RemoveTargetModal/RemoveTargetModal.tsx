@@ -68,7 +68,7 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
     >
       {hasPublications && (
         <>
-          <p>
+          <p className="u-margin--bottom">
             This publication target is currently being used by the following
             publications:
           </p>
@@ -79,7 +79,7 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
           />
         </>
       )}
-      <p>
+      <p className="u-margin--bottom">
         Removing this publication target will cause publications to no longer be
         able to publish to it. <b>This action is irreversible</b>.
       </p>

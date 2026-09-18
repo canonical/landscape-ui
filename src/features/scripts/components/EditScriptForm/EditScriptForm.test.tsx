@@ -32,7 +32,7 @@ describe("EditScriptForm", () => {
 
     expect(screen.getByText(/title/i)).toBeInTheDocument();
     expect(screen.getByText(/code/i)).toBeInTheDocument();
-    expect(screen.getByText(/list of attachments/i)).toBeInTheDocument();
+    expect(screen.getByText(/list of attachments/i).tagName).toBe("STRONG");
     expect(screen.getByText(/submit new version/i)).toBeInTheDocument();
   });
 

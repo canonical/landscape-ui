@@ -123,7 +123,7 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
           }}
           renderInPortal
         >
-          <p>
+          <p className="u-margin--bottom">
             All future script runs will be done using the latest version of the
             code.
           </p>

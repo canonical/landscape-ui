@@ -158,7 +158,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
               confirmationModalProps={{
                 title: "Approve pending instances",
                 children: (
-                  <p>
+                  <p className="u-margin--bottom">
                     This will approve{" "}
                     {pluralize(
                       instanceIds.length,
@@ -188,7 +188,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
               confirmationModalProps={{
                 title: "Reject pending instances",
                 children: (
-                  <p>
+                  <p className="u-margin--bottom">
                     This will reject{" "}
                     {pluralize(
                       instanceIds.length,

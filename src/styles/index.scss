@@ -14,3 +14,6 @@
 @import "partials/modal";
 @import "partials/table";
 @import "partials/elevation";
+
+/* Temporary — delete when Pragma layers its normalize import */
+@import "partials/pragma-cascade-shims";

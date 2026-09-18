@@ -40,16 +40,7 @@ const PageHeader: FC<PageHeaderProps> = ({
   }, []);
 
   return (
-    <div
-      ref={headerRef}
-      className={classNames(
-        "p-panel__header",
-        {
-          "u-no-padding--right": helperContent !== undefined,
-        },
-        className,
-      )}
-    >
+    <div ref={headerRef} className={classNames("p-panel__header", className)}>
       {breadcrumbs && breadcrumbs.length > 0 && (
         <div className={classes.breadcrumbs}>
           <nav className="p-breadcrumbs" aria-label="Breadcrumbs">

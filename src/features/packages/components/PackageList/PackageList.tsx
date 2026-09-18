@@ -152,7 +152,9 @@ const PackageList: FC<PackageListProps> = ({
             <Tooltip
               message={
                 <div>
-                  <p className="u-no-padding--top">Ubuntu Pro is required</p>
+                  <p className="u-no-padding--top u-margin--bottom">
+                    Ubuntu Pro is required
+                  </p>
                   <Link
                     to={ROUTES.instances.details.fromParams({
                       instanceId,

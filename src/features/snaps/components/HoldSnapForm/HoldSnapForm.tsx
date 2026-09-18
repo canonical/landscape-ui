@@ -60,7 +60,7 @@ const HoldSnapForm: FC<HoldSnapFormProps> = ({ installedSnaps }) => {
           action: "hold",
           snaps: installedSnaps.map((snap) => ({
             name: snap.snap.name,
-            time: holdTime,
+            args: { time: holdTime },
           })),
           deliver_after: deliverAfter,
           deliver_after_window: !values.randomize_delivery
@@ -90,13 +90,13 @@ const HoldSnapForm: FC<HoldSnapFormProps> = ({ installedSnaps }) => {
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       {hasOneItem(installedSnaps) ? (
-        <p>
+        <p className="u-margin--bottom">
           This will pause automatic updates for {installedSnaps[0].snap.name},
           and it will maintain its current version.
         </p>
       ) : (
         <>
-          <p>
+          <p className="u-margin--bottom">
             Holding a snap will pause automatic updates for that particular
             snap.
           </p>

@@ -34,7 +34,7 @@ const EditScriptConfirmationModal: FC<EditScriptConfirmationModalProps> = ({
 
     if (associatedScriptProfiles.length === 0) {
       return (
-        <p>
+        <p className="u-margin--bottom">
           All future script runs will be done using the latest version of the
           code.
         </p>
@@ -43,7 +43,7 @@ const EditScriptConfirmationModal: FC<EditScriptConfirmationModalProps> = ({
 
     return (
       <>
-        <p>
+        <p className="u-margin--bottom">
           All future script runs will be done using the latest version of the
           code. Submitting these changes will affect the following profiles:
         </p>

@@ -3,7 +3,7 @@ import type { AxiosResponse } from "axios";
 import axios from "axios";
 import { useParams, useSearchParams } from "react-router";
 import { API_URL } from "@/constants";
-import type { InvitationSummary } from "@/types/Invitation";
+import type { InvitationSummary } from "@/features/administrators";
 
 const publicFetch = axios.create({ baseURL: API_URL });
 

@@ -55,7 +55,7 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
       confirmButtonDisabled={isPublishingPublication}
       onConfirm={handleRepublishPublication}
     >
-      <p>
+      <p className="u-margin--bottom">
         Republishing will update the contents of this publication with the
         latest state of its source mirror.
       </p>

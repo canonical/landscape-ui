@@ -23,26 +23,13 @@ export const getInitialValues = (
   return { ...INITIAL_VALUES, release: channelOptions[0]?.value ?? "" };
 };
 
-export const getChannelName = (
+export const getSelectedChannel = (
   snapInfo: AvailableSnapInfo | null,
   releaseValue: string,
-): string | undefined => {
+): AvailableSnapInfo["channel-map"][number] | undefined => {
   return snapInfo?.["channel-map"].find(
     (channel) =>
       `${channel.channel.name} - ${channel.channel.architecture}` ===
       releaseValue,
-  )?.channel.name;
-};
-
-export const getChannelRevision = (
-  snapInfo: AvailableSnapInfo | null,
-  releaseValue: string,
-): string | undefined => {
-  return snapInfo?.["channel-map"]
-    .find(
-      (channel) =>
-        `${channel.channel.name} - ${channel.channel.architecture}` ===
-        releaseValue,
-    )
-    ?.revision.toString();
+  );
 };

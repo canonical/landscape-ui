@@ -109,7 +109,7 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
               confirmationModalProps={{
                 title: `${action} API credentials for ${account.title}`,
                 children: (
-                  <p>
+                  <p className="u-margin--bottom">
                     {action === "Regenerate"
                       ? `${action.slice(0, -1)}ing your API credentials will make your previously used credentials obsolete and deauthenticate any clients using them. `
                       : ""}

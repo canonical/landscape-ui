@@ -214,7 +214,7 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
 
   return (
     <>
-      <p>
+      <p className="u-margin--bottom">
         Adding tags will associate the instance with the profiles that tag is
         linked to. This may change configurations on your instance.
       </p>

@@ -64,7 +64,7 @@ const WindowsInstanceMakeCompliantModal: FC<
       onConfirm={makeCompliant}
       renderInPortal
     >
-      <p>This will:</p>
+      <p className="u-margin--bottom">This will:</p>
       <ol>
         <li>
           Remove all child instances that haven’t been created by Landscape

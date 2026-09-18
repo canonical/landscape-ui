@@ -133,7 +133,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
         confirmationText={`sanitize ${instance.title}`}
         renderInPortal
       >
-        <p>
+        <p className="u-margin--bottom">
           Sanitization will permanently delete the encryption keys for{" "}
           {instance.title}, making its data completely irrecoverable. This
           action cannot be undone. Please confirm your wish to proceed.

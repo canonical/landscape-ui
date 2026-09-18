@@ -69,7 +69,7 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
       confirmButtonLoading={isSyncingMirror}
       renderInPortal
     >
-      <p>
+      <p className="u-margin--bottom">
         By updating this mirror you will synchronize the local copy of that
         repository with the remote source.
       </p>

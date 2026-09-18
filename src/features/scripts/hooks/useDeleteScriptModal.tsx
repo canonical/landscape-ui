@@ -44,8 +44,8 @@ export const useDeleteScriptModal = ({
       });
 
       notify.success({
-        message: `"${script.title}" script removed successfully`,
-        title: "Script removed",
+        message: `"${script.title}" redacted successfully`,
+        title: "Script redacted",
       });
     } catch (error) {
       debug(error);
@@ -55,20 +55,31 @@ export const useDeleteScriptModal = ({
   };
 
   const commonModalFields = {
-    deleteModalTitle: `Delete ${script.title}`,
+    deleteModalTitle: `Redact ${script.title}`,
     isRemoving,
     onConfirmDelete: handleScriptDelete,
   };
 
+  const redactionWarning = (
+    <>
+      Redacting this script will{" "}
+      <strong>permanently remove its contents from Landscape.</strong> However,
+      a record of the script, including who redacted it and when, will be
+      retained in the database. As a result,{" "}
+      <strong>the script name cannot be reused.</strong>
+    </>
+  );
+
   if (script.script_profiles.length === 0) {
     return {
       ...commonModalFields,
-      deleteModalButtonLabel: "Delete",
+      deleteModalButtonLabel: "Redact",
       deleteModalBody: (
-        <p>
-          Deleting the script will remove the contents from Landscape.
+        <p className="u-margin--bottom">
+          {redactionWarning}
           <br />
-          This action is <b>irreversible</b>.
+          <br />
+          This action is <strong>irreversible</strong>.
         </p>
       ),
     };
@@ -76,22 +87,27 @@ export const useDeleteScriptModal = ({
 
   return {
     ...commonModalFields,
-    deleteModalButtonLabel: "Delete both script and profiles",
+    deleteModalButtonLabel: "Redact script and archive profiles",
     deleteModalBody: (
       <>
-        <p>
-          Deleting the script will remove the contents from Landscape. The
-          script is associated with the following profiles:
+        <p className="u-margin--bottom">
+          {redactionWarning}
+          <br />
+          <br />
+          The script is also associated with the following profiles:
         </p>
         <ul>
           {script.script_profiles.map((profile) => (
             <li key={profile.id}>{profile.title}</li>
           ))}
         </ul>
-        <p>
-          If you delete the script, the script and its profiles won’t be able to
-          run in the future. <br />
-          This action is <b>irreversible</b>.
+        <p className="u-margin--bottom">
+          Redacting the script will archive its associated profiles, and their
+          names cannot be reused. Neither the script nor its profiles will be
+          able to run again.
+          <br />
+          <br />
+          This action is <strong>irreversible</strong>.
         </p>
       </>
     ),
