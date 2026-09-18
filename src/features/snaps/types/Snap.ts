@@ -52,3 +52,15 @@ export interface SelectedSnaps extends AvailableSnap {
   revision: string;
   confinement: string;
 }
+
+export type SnapAction =
+  "install" | "uninstall" | "refresh" | "hold" | "unhold" | "change channel";
+
+export type ConfirmableSnapAction = Exclude<
+  SnapAction,
+  "change channel" | "unhold"
+>;
+
+export interface InstalledSnapWithCount extends InstalledSnap {
+  computerCount: number;
+}

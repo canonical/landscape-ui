@@ -1,0 +1,22 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.listItem {
+  cursor: pointer;
+  display: flex;
+  gap: $sph--large;
+  justify-content: space-between;
+  padding: $spv--small $sph--large;
+}
+
+.publisher {
+  flex-shrink: 0;
+}
+
+.highlighted {
+  background-color: $colors--theme--background-alt;
+}
+
+.empty {
+  padding: 1rem;
+}

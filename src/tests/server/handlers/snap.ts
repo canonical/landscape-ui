@@ -1,5 +1,9 @@
 import { API_URL } from "@/constants";
-import type { GetSnapsParams, InstalledSnap } from "@/features/snaps";
+import type {
+  GetSnapsParams,
+  InstalledSnap,
+  SnapActionParams,
+} from "@/features/snaps";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   availableSnapInfo,
@@ -8,13 +12,14 @@ import {
   successfulSnapInstallResponse,
 } from "@/tests/mocks/snap";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import {
   generateFilteredResponse,
   generatePaginatedResponse,
   shouldApplyEndpointStatus,
 } from "./_helpers";
-import { createEndpointStatusNetworkError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
+import { capitalize, pluralize } from "@/utils/_helpers";
 
 export default [
   http.get(
@@ -63,20 +68,57 @@ export default [
       );
     },
   ),
-  http.post(`${API_URL}snaps`, async () => {
-    const endpointStatus = getEndpointStatus();
-    if (endpointStatus.status === "error") {
-      return HttpResponse.json(
-        {
-          error: "InternalServerError",
-          message: "Error response",
-        },
-        {
-          status: 500,
-        },
-      );
+
+  http.get(`${API_URL}snaps/installed`, async ({ request }) => {
+    if (shouldApplyEndpointStatus("snaps")) {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      if (endpointStatus.status === "loading") {
+        await delay("infinite");
+      }
     }
-    return HttpResponse.json(successfulSnapInstallResponse);
+
+    const DEFAULT_PAGE_SIZE = 20;
+    const url = new URL(request.url);
+    const search = url.searchParams.get("search") ?? "";
+    const offset = Number(url.searchParams.get("offset")) || 0;
+    const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
+
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: installedSnaps,
+        limit,
+        offset,
+        search,
+        searchFields: ["snap.name"],
+      }),
+    );
+  }),
+
+  http.post<never, SnapActionParams>(`${API_URL}snaps`, async ({ request }) => {
+    if (shouldApplyEndpointStatus("snaps")) {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      if (endpointStatus.status === "loading") {
+        await delay("infinite");
+      }
+    }
+
+    const { action, computer_ids } = await request.json();
+    const computers = pluralize(computer_ids.length, ["computer"], "exact");
+
+    return HttpResponse.json({
+      ...successfulSnapInstallResponse,
+      summary: `${capitalize(action)} snaps on ${computers}`,
+    });
   }),
 
   http.get<never, GetSnapsParams, ApiPaginatedResponse<InstalledSnap>>(
@@ -93,7 +135,7 @@ export default [
         shouldApplyEndpointStatus("computers/:computerId/snaps/installed") &&
         endpointStatus.status === "error"
       ) {
-        throw createEndpointStatusNetworkError();
+        throw createEndpointStatusError();
       }
 
       return HttpResponse.json(
