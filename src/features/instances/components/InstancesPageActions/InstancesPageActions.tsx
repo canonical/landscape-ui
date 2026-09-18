@@ -215,7 +215,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       <Suspense fallback={<LoadingState />}>
         <SnapsActionForm
           selectedInstances={selectedInstances.map(({ id }) => id)}
-          action="remove"
+          action="uninstall"
         />
       </Suspense>,
     );
@@ -263,7 +263,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       <Suspense fallback={<LoadingState />}>
         <SnapsActionForm
           selectedInstances={selectedInstances.map(({ id }) => id)}
-          action="changeChannel"
+          action="change channel"
         />
       </Suspense>,
     );
@@ -551,7 +551,12 @@ const InstancesPageActions = memo(function InstancesPageActions({
             position="right"
             toggleLabel="Snap management"
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={!hasSelectedInstances}
+            toggleDisabled={
+              !hasSelectedInstances ||
+              selectedInstances.every(
+                (instance) => !getFeatures(instance).snaps,
+              )
+            }
             hasToggleIcon
           />,
         ]}

@@ -1,7 +1,6 @@
 import { type FC } from "react";
 import type { InstalledSnapWithCount } from "../../../../types";
 import classes from "./SnapInstalledItem.module.scss";
-import classNames from "classnames";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import { pluralize } from "@/utils/_helpers";
 
@@ -21,10 +20,7 @@ const SnapInstalledItem: FC<SnapInstalledItemProps> = ({
   const scope = isUnhold ? "Held" : "Installed";
 
   return (
-    <li
-      className={classNames("u-no-margin--bottom", classes.selectedContainer)}
-      key={selectedSnap.snap.id}
-    >
+    <li className={classes.selectedContainer}>
       <div className={classes.titleRow}>
         <strong>{selectedSnap.snap.name}</strong>
         <Button
@@ -37,10 +33,10 @@ const SnapInstalledItem: FC<SnapInstalledItemProps> = ({
           <Icon name={ICONS.delete} />
         </Button>
       </div>
-      <div className="u-text--muted u-no-margin">
+      <span className="u-text--muted">
         {scope} on {selectedSnap.computerCount} of{" "}
         {pluralize(selectedInstances, ["instance"], "exact")}
-      </div>
+      </span>
     </li>
   );
 };

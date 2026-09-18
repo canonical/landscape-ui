@@ -6,6 +6,8 @@
 }
 
 .header {
+  border-top: 1px solid $colors--theme--border-default;
   margin-bottom: $spv--x-large;
   margin-top: $spv--x-large;
+  padding-top: $spv--small;
 }

@@ -1,7 +1,6 @@
 import { type FC } from "react";
 import type { InstalledSnapWithCount } from "../../../../types";
 import classes from "./SnapAvailableItem.module.scss";
-import classNames from "classnames";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import { pluralize } from "@/utils/_helpers";
 
@@ -15,10 +14,7 @@ const SnapAvailableItem: FC<SnapAvailableItemProps> = ({
   selectedSnap,
 }) => {
   return (
-    <li
-      className={classNames("u-no-margin--bottom", classes.selectedContainer)}
-      key={selectedSnap.snap.id}
-    >
+    <li className={classes.selectedContainer}>
       <div>
         <div className="font-monospace">
           {selectedSnap.snap.name} {selectedSnap.tracking_channel}
