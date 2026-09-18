@@ -17,21 +17,22 @@ export const useRegenerateSelfHostedLicense = () => {
 
   const { isPending, mutateAsync } = useMutation<
     AxiosResponse<RegenerateSelfHostedLicenseResponse>,
-    AxiosError<ApiError>
+    AxiosError<ApiError>,
+    ReturnType<typeof getSelfHostedLicenseQueryKey>
   >({
     mutationKey: ["selfHostedLicense", "regenerate", currentAccount.name],
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey });
+    onMutate: async (queryKeyAtMutationStart) => {
+      await queryClient.cancelQueries({ queryKey: queryKeyAtMutationStart });
     },
     mutationFn: async () =>
       authFetch.post("self-hosted/license-url:regenerate", {}),
-    onSuccess: (response) => {
-      queryClient.setQueryData(queryKey, response);
+    onSuccess: (response, queryKeyAtMutationStart) => {
+      queryClient.setQueryData(queryKeyAtMutationStart, response);
     },
   });
 
   return {
-    regenerateSelfHostedLicense: mutateAsync,
+    regenerateSelfHostedLicense: () => mutateAsync(queryKey),
     isRegeneratingSelfHostedLicense: isPending,
   };
 };

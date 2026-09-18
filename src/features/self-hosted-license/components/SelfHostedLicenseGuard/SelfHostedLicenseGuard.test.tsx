@@ -1,9 +1,12 @@
 import { EnvContext, type EnvContextState } from "@/context/env";
+import { API_URL } from "@/constants";
 import EnvError from "@/pages/EnvError";
 import SelfHostedLicensePage from "@/pages/dashboard/account/self-hosted-license";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { screen } from "@testing-library/react";
+import { http, HttpResponse } from "msw";
 import { Route, Routes } from "react-router";
 import { describe, expect, it } from "vitest";
 import SelfHostedLicenseGuard from "./SelfHostedLicenseGuard";
@@ -77,5 +80,24 @@ describe("SelfHostedLicenseGuard", () => {
     expect(
       screen.queryByRole("heading", { name: "Legacy license file" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("renders the page with an error notification when checking entitlement fails", async () => {
+    server.use(
+      http.get(
+        `${API_URL}self-hosted/status`,
+        () => new HttpResponse(null, { status: 500 }),
+      ),
+    );
+
+    renderWithRoutes(envState);
+
+    expect(
+      await screen.findByText("Unable to check license access"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Environment Error")).not.toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Legacy license file" }),
+    ).toBeInTheDocument();
   });
 });

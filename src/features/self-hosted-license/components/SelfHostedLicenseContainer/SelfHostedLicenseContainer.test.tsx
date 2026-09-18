@@ -140,7 +140,7 @@ describe("SelfHostedLicenseContainer", () => {
     });
   });
 
-  it("fetches the license URL for the newly selected account", async () => {
+  it("does not apply a regeneration response to a newly selected account", async () => {
     const [firstAccount, secondAccount] = authUser.accounts;
     assert(firstAccount);
     assert(secondAccount);
@@ -151,9 +151,20 @@ describe("SelfHostedLicenseContainer", () => {
     const accountLicenseUrls = [
       "https://first-account.example.com/license.txt",
       "https://second-account.example.com/license.txt",
-      "https://first-account.example.com/refetched-license.txt",
     ];
     let requestIndex = 0;
+    let releaseRegeneration: (() => void) | undefined;
+    const regenerationStarted = new Promise<void>((resolveStarted) => {
+      server.use(
+        http.post(`${API_URL}self-hosted/license-url:regenerate`, async () => {
+          resolveStarted();
+          await new Promise<void>((resolveRegeneration) => {
+            releaseRegeneration = resolveRegeneration;
+          });
+          return HttpResponse.json(regeneratedSelfHostedLicense);
+        }),
+      );
+    });
     server.use(
       http.get(`${API_URL}self-hosted/license-url`, () =>
         HttpResponse.json({
@@ -222,6 +233,10 @@ describe("SelfHostedLicenseContainer", () => {
       "noopener,noreferrer",
     );
 
+    await user.click(
+      screen.getByRole("button", { name: "Regenerate private token" }),
+    );
+    await regenerationStarted;
     await user.click(screen.getByRole("button", { name: "Switch account" }));
     await waitFor(() => {
       expect(
@@ -238,18 +253,20 @@ describe("SelfHostedLicenseContainer", () => {
       "noopener,noreferrer",
     );
 
-    await user.click(screen.getByRole("button", { name: "Switch account" }));
-    await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Download license file" }),
-      ).not.toHaveAttribute("aria-disabled");
+    await act(async () => {
+      releaseRegeneration?.();
     });
+    expect(
+      await screen.findByText(
+        "Private token and license download URL regenerated",
+      ),
+    ).toBeInTheDocument();
     await user.click(
       screen.getByRole("button", { name: "Download license file" }),
     );
 
     expect(windowOpenSpy).toHaveBeenLastCalledWith(
-      accountLicenseUrls[2],
+      accountLicenseUrls[1],
       "_blank",
       "noopener,noreferrer",
     );
