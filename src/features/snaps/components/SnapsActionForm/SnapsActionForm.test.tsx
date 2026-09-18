@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import SnapsActionForm from "./SnapsActionForm";
@@ -130,6 +130,11 @@ describe("SnapsActionForm", () => {
     await user.click(screen.getByRole("option", { name: snapTitle }));
 
     await user.click(screen.getByRole("button", { name: "Uninstall 1 snap" }));
+
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Uninstall 1 snap" }),
+    );
 
     expect(
       await screen.findByText("Snaps successfully set to uninstall"),

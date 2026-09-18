@@ -58,6 +58,11 @@ export type SnapAction =
 
 export type SnapStatus = "installed" | "held" | "available";
 
+export type ConfirmableSnapAction = Exclude<
+  SnapAction,
+  "change channel" | "unhold"
+>;
+
 export interface InstalledSnapWithCount extends InstalledSnap {
   computerCount: number;
 }
