@@ -1,4 +1,6 @@
-import { Card, Icon } from "@canonical/react-components";
+import { Icon } from "@canonical/react-components";
+import { Card } from "@canonical/react-ds-global";
+import classNames from "classnames";
 import type { FC, ReactNode } from "react";
 import classes from "./Flow.module.scss";
 
@@ -20,19 +22,18 @@ const Flow: FC<FlowProps> = ({ cards }) => {
       <div className={classes.line} />
 
       {cards.map((card, key) => (
-        <div key={key}>
-          <Card className={"u-no-margin--bottom"}>
-            <div>
+        <div key={key} className={classNames("grid", classes.cardGrid)}>
+          <Card>
+            <Card.Content>
               <div className={classes.header}>
                 <Icon name={card.iconName} />
-
-                <p className="u-no-margin--bottom u-no-padding--top">
+                <span>
                   <strong>{card.header}</strong>
-                </p>
+                </span>
               </div>
 
               <div className={classes.body}>
-                <p className="u-no-margin--bottom u-no-padding--top">
+                <p className="u-no-padding--top">
                   <small className={classes.description}>
                     {card.description}
                   </small>
@@ -42,7 +43,7 @@ const Flow: FC<FlowProps> = ({ cards }) => {
                   <div className={classes.children}>{card.children}</div>
                 )}
               </div>
-            </div>
+            </Card.Content>
           </Card>
 
           <div className={classes.line} />
