@@ -1,10 +1,14 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import CopyCodeButton from "./CopyCodeButton";
 
 describe("CopyCodeButton", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("copies the provided value and shows feedback", async () => {
     const user = userEvent.setup();
     const writeText = vi

@@ -130,9 +130,10 @@ describe("SecondaryNavigation", () => {
     assert(firstAccount);
     assert(secondAccount);
     let requestIndex = 0;
+    const entitlementByRequest = [true, false, true];
     server.use(
       http.get(`${API_URL}self-hosted/status`, () =>
-        HttpResponse.json({ enabled: requestIndex++ === 0 }),
+        HttpResponse.json({ enabled: entitlementByRequest[requestIndex++] }),
       ),
     );
     const user = userEvent.setup();
@@ -207,10 +208,11 @@ describe("SecondaryNavigation", () => {
     await user.click(screen.getByRole("button", { name: "Switch account" }));
 
     await waitFor(() => {
-      expect(
-        screen.queryByRole("link", { name: "Legacy license file" }),
-      ).not.toBeInTheDocument();
+      expect(requestIndex).toBe(3);
     });
+    expect(
+      screen.getByRole("link", { name: "Legacy license file" }),
+    ).toBeInTheDocument();
   });
 
   it("renders children when provided", () => {

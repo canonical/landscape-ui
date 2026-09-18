@@ -13,10 +13,14 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import type { ReactNode } from "react";
 import { useState } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import SelfHostedLicenseContainer from "./SelfHostedLicenseContainer";
 
 describe("SelfHostedLicenseContainer", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("propagates the fetched license URL to the download button", async () => {
     const user = userEvent.setup();
     const windowOpenSpy = vi
