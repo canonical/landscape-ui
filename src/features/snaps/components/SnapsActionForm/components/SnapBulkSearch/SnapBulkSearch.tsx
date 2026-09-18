@@ -59,25 +59,8 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
   };
 
   const isOverLimit = selectedItems.length >= MAX_SELECTED_SNAPS;
-
-  const getWarningVerb = () => {
-    switch (action) {
-      case "install":
-        return "install";
-      case "remove":
-        return "uninstall";
-      case "hold":
-        return "hold";
-      case "unhold":
-        return "unhold";
-      case "refresh":
-        return "refresh";
-      case "changeChannel":
-        return "change channels on";
-    }
-  };
-
-  const searchScope = action == "install" ? "available" : "installed";
+  const searchScope = action === "install" ? "available" : "installed";
+  const preposition = action === "change channel" ? " on" : "";
 
   return (
     <Downshift
@@ -87,7 +70,7 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
       onOuterClick={close}
     >
       {(downshiftOptions) => (
-        <div className="p-autocomplete">
+        <div>
           <SearchBox
             {...downshiftOptions.getInputProps()}
             placeholder={`Search ${searchScope} snaps`}
@@ -103,7 +86,8 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
           />
           {isOverLimit && (
             <span className="p-form-help-text">
-              You can only {getWarningVerb()} a maximum of{" "}
+              You can only {action}
+              {preposition} a maximum of{" "}
               {pluralize(MAX_SELECTED_SNAPS, ["snap"], "exact")} at once.
             </span>
           )}

@@ -2,10 +2,10 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { type FC, useState } from "react";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import type { SnapAction, InstalledSnapWithCount } from "../../types";
-import SnapDropdownSearch from "./components/SnapBulkSearch";
-import SnapChangeChannelItem from "./components/SnapChangeChannelItem";
 import classes from "./SnapsActionForm.module.scss";
 import classNames from "classnames";
+import SnapBulkSearch from "./components/SnapBulkSearch";
+import SnapChangeChannelItem from "./components/SnapChangeChannelItem";
 import SnapInstalledItem from "./components/SnapInstalledItem";
 import SnapAvailableItem from "./components/SnapAvailableItem";
 import { useSnapAction } from "../../api";
@@ -22,7 +22,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   selectedInstances,
   action,
 }) => {
-  const [selectedItems, setSelectedItems] = useState<InstalledSnapWithCount[]>(
+  const [selectedSnaps, setSelectedSnaps] = useState<InstalledSnapWithCount[]>(
     [],
   );
 
@@ -31,38 +31,25 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const { closeSidePanel } = useSidePanel();
   const { snapAction, isSnapActionPending } = useSnapAction();
 
-  const mapActionToVerbs = () => {
+  const getRequestAction = () => {
     switch (action) {
-      case "install":
-        return "install";
-      case "remove":
-        return "uninstall";
-      case "hold":
-        return "hold";
-      case "unhold":
-        return "unhold";
-      case "refresh":
+      case "uninstall":
+        return "remove";
+      case "change channel":
         return "refresh";
-      case "changeChannel":
-        return "change channel";
+      default:
+        return action;
     }
   };
 
-  const verb = mapActionToVerbs();
-  const capitalizedVerb = capitalize(verb);
-  const hasNoSelectedSnaps = selectedItems.length === 0;
+  const hasNoSelectedSnaps = selectedSnaps.length === 0;
+  const isChangeChannel = action === "change channel";
 
-  const getSubmitText = () => {
-    if (action === "changeChannel") {
-      return capitalizedVerb;
-    }
+  const snapsText = hasNoSelectedSnaps
+    ? "snaps"
+    : pluralize(selectedSnaps.length, ["snap"], "exact");
 
-    if (hasNoSelectedSnaps) {
-      return `${capitalizedVerb} snaps`;
-    }
-
-    return `${capitalizedVerb} ${pluralize(selectedItems.length, ["snap"], "exact")}`;
-  };
+  const submitText = `${capitalize(action)} ${isChangeChannel ? "" : snapsText}`;
 
   const onSubmit = async () => {
     if (hasNoSelectedSnaps) {
@@ -71,15 +58,15 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
     try {
       await snapAction({
-        action: action,
+        action: getRequestAction(),
         computer_ids: selectedInstances,
-        snaps: selectedItems.map((item) => ({ name: item.snap.name })),
+        snaps: selectedSnaps.map((item) => ({ name: item.snap.name })),
       });
 
       closeSidePanel();
 
       notify.success({
-        title: `Snaps successfully set to ${verb}`,
+        title: `Snaps successfully set to ${action}`,
         message: `You can track the progress in the Activities page.`,
       });
     } catch (error) {
@@ -90,36 +77,33 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   return (
     <>
       <div className={classes.container}>
-        <SnapDropdownSearch
+        <SnapBulkSearch
           instanceIds={selectedInstances}
-          selectedItems={selectedItems}
-          setSelectedItems={setSelectedItems}
+          selectedItems={selectedSnaps}
+          setSelectedItems={setSelectedSnaps}
           action={action}
         />
 
-        <div
-          className={classNames(
-            "p-text--small-caps u-no-padding",
-            classes.header,
-          )}
-        >
-          Snaps to {verb}
+        <div className={classNames("p-text--small-caps", classes.header)}>
+          Snaps to {action}
         </div>
 
         {hasNoSelectedSnaps ? (
           <div>No snaps have been added yet.</div>
         ) : (
-          <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">
-            {selectedItems.map((selectedSnap, index) => {
+          <ul className="p-list u-no-margin--bottom">
+            {selectedSnaps.map((item) => {
               const handleDelete = () => {
-                setSelectedItems(selectedItems.toSpliced(index, 1));
+                setSelectedSnaps((snaps) =>
+                  snaps.filter(({ snap }) => snap.id !== item.snap.id),
+                );
               };
 
-              if (action === "changeChannel") {
+              if (isChangeChannel) {
                 return (
                   <SnapChangeChannelItem
-                    key={`${selectedSnap.snap.id}${index}`}
-                    selectedSnap={selectedSnap}
+                    key={item.snap.id}
+                    selectedSnap={item}
                     onDelete={handleDelete}
                     instanceIds={selectedInstances}
                     onItemsUpdate={() => {
@@ -131,16 +115,16 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
               if (action === "install") {
                 return (
                   <SnapAvailableItem
-                    key={`${selectedSnap.snap.id}${index}`}
-                    selectedSnap={selectedSnap}
+                    key={item.snap.id}
+                    selectedSnap={item}
                     onDelete={handleDelete}
                   />
                 );
               }
               return (
                 <SnapInstalledItem
-                  key={`${selectedSnap.snap.id}${index}`}
-                  selectedSnap={selectedSnap}
+                  key={item.snap.id}
+                  selectedSnap={item}
                   onDelete={handleDelete}
                   isUnhold={action === "unhold"}
                   selectedInstances={selectedInstances.length}
@@ -152,7 +136,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       </div>
 
       <SidePanelFormButtons
-        submitButtonText={getSubmitText()}
+        submitButtonText={submitText}
         submitButtonAppearance="positive"
         submitButtonLoading={isSnapActionPending}
         onSubmit={onSubmit}
