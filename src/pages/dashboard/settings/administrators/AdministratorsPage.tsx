@@ -52,12 +52,16 @@ const AdministratorsPage: FC = () => {
   const isAdminLimitReached = totalAdminsAndInvites >= administratorsLimit;
 
   const handleInviteAdministrator = () => {
-    if (isGettingAdminInfo || isAdminLimitReached || isAdminInfoError) {
+    if (isAdminLimitReached || isAdminInfoError) {
       openModal();
     } else {
       setSidePanelContent("Invite administrator", <InviteAdministratorForm />);
     }
   };
+
+  if (isGettingAdminInfo) {
+    return <LoadingState />;
+  }
 
   return (
     <PageMain>
@@ -78,24 +82,19 @@ const AdministratorsPage: FC = () => {
             : undefined
         }
       />
-      {isGettingAdminInfo ? (
-        <LoadingState />
-      ) : (
-        <>
-          <AdministratorsLimit
-            adminAndInviteCount={totalAdminsAndInvites}
-            administratorsLimit={administratorsLimit}
-            isAdminInfoError={isAdminInfoError}
-          />
-          <PageContent hasTable>
-            <AdministratorsTabs
-              administrators={administrators}
-              invitationsCount={invitationsCount}
-              handleInvite={handleInviteAdministrator}
-            />
-          </PageContent>
-        </>
-      )}
+      <AdministratorsLimit
+        adminAndInviteCount={totalAdminsAndInvites}
+        administratorsLimit={administratorsLimit}
+        isAdminInfoError={isAdminInfoError}
+      />
+      <PageContent hasTable>
+        <AdministratorsTabs
+          administrators={administrators}
+          invitationsCount={invitationsCount}
+          handleInvite={handleInviteAdministrator}
+        />
+      </PageContent>
+
       {isModalOpen && (
         <AdministratorLimitModal
           close={closeModal}
