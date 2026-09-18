@@ -43,13 +43,23 @@ A single workflow, **Integration Tests** (`.github/workflows/integration-tests.y
 
 ## Credentials
 
-| Secret / Variable                        | Type                | Purpose                                                                 |
-| ---------------------------------------- | ------------------- | ----------------------------------------------------------------------- |
-| `vars.LANDSCAPE_PACKAGER_APP_ID`         | Repository variable | GitHub App ID                                                           |
-| `secrets.LANDSCAPE_PACKAGER_PRIVATE_KEY` | Secret              | GitHub App private key (PEM)                                            |
-| `secrets.LANDSCAPE_PROTO_TOKEN`          | Secret              | Fine-grained PAT — `Contents: Read` on `canonical/landscape-proto` only |
+| Secret / Variable                        | Type                | Purpose                                                                          |
+| ---------------------------------------- | ------------------- | -------------------------------------------------------------------------------- |
+| `vars.LANDSCAPE_PACKAGER_APP_ID`         | Repository variable | GitHub App ID                                                                    |
+| `secrets.LANDSCAPE_PACKAGER_PRIVATE_KEY` | Secret              | GitHub App private key (PEM)                                                     |
+| `secrets.LANDSCAPE_PROTO_TOKEN`          | Secret              | Fine-grained PAT — `Contents: Read` on `canonical/landscape-proto` only          |
+| `secrets.LANDSCAPE_PACKAGER_PAT`         | Dependabot secret   | Fine-grained PAT — `Contents: Read` — Dependabot-run fallback for all four repos |
 
 The GitHub App must be installed on `canonical/landscape-packaging`, `canonical/landscape-go`, and `canonical/landscape-server`.
+
+> **Dependabot runs:** GitHub exposes only the isolated Dependabot secrets store to
+> Dependabot-triggered runs, so the App credentials and `LANDSCAPE_PROTO_TOKEN` (both in the
+> Actions store) resolve to empty and the App-token step is skipped. `LANDSCAPE_PACKAGER_PAT`,
+> a fine-grained PAT stored in the **Dependabot** secrets store is used instead. Its scope covers all four repos this job reads
+> (`landscape-packaging`, `landscape-go`, `landscape-server`, `landscape-proto`), so it also
+> serves as the `landscape-proto` fallback in the vendor step. Broad scope is an accepted
+> tradeoff: a fine-grained PAT can only target repos its creator administers, which does not
+> cover the three sibling repos. The App install on `landscape-proto` (below) is the long-term fix.
 
 > **`LANDSCAPE_PROTO_TOKEN` migration path:** `landscape-proto` is not yet covered by the App
 > installation. A fine-grained PAT is used as a temporary workaround. Once the App is
