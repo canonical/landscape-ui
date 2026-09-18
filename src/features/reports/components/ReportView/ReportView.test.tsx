@@ -14,6 +14,17 @@ import ReportView from "./ReportView";
 
 vi.mock("@/hooks/usePageParams");
 
+let isTsvExportsEnabled = false;
+vi.mock("@/constants", async (importOriginal) => {
+  const actual = await importOriginal<object>();
+  return {
+    ...actual,
+    get TSV_EXPORTS_ENABLED() {
+      return isTsvExportsEnabled;
+    },
+  };
+});
+
 const instanceIds = [1, 2, 3];
 // Ids not present in the report fixture, used to prove the report ignores the
 // raw selection when deriving buckets.
@@ -26,6 +37,7 @@ const ALL_SELECTED_STORE_ID_B = 1000;
 
 describe("ReportView", () => {
   beforeEach(() => {
+    isTsvExportsEnabled = false;
     setSelectedInstanceIds(instanceIds);
     (usePageParams as Mock).mockReturnValue({
       closeSidePanel: vi.fn(),
@@ -146,7 +158,7 @@ describe("ReportView", () => {
 
   it("renders no over-60-days arc when nothing is outstanding", async () => {
     server.use(
-      http.get(`${API_URL}computers/report`, () =>
+      http.get(`${API_URL}computers/compliance-report`, () =>
         HttpResponse.json({
           ...complianceReport,
           usn_pending_over_60_days: { count: 0, computer_ids: [] },
@@ -163,7 +175,7 @@ describe("ReportView", () => {
   });
 
   it("shows an error notification when the report cannot be fetched", async () => {
-    setEndpointStatus({ status: "error", path: "computers/report" });
+    setEndpointStatus({ status: "error", path: "computers/compliance-report" });
 
     renderWithProviders(
       <ReportView selectedInstanceIds={instanceIds} isAllSelected={false} />,
@@ -175,6 +187,17 @@ describe("ReportView", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByText("Error")).toBeInTheDocument();
+  });
+
+  it("can still be closed when the report fails to load", async () => {
+    setEndpointStatus({ status: "error", path: "computers/compliance-report" });
+
+    renderWithProviders(
+      <ReportView selectedInstanceIds={instanceIds} isAllSelected={false} />,
+    );
+
+    await screen.findByText("Error");
+    expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
   });
 
   it("shows when the report was generated", async () => {
@@ -211,7 +234,7 @@ describe("ReportView", () => {
   it("uses allSelectedQuery when all results are selected", async () => {
     let capturedQuery: string | null = null;
     server.use(
-      http.get(`${API_URL}computers/report`, ({ request }) => {
+      http.get(`${API_URL}computers/compliance-report`, ({ request }) => {
         capturedQuery = new URL(request.url).searchParams.get("query");
         return HttpResponse.json(complianceReport);
       }),
@@ -235,6 +258,28 @@ describe("ReportView", () => {
     await screen.findByText("Security upgrades");
 
     expect(capturedQuery).toBe("tag:prod");
+  });
+
+  it("sends an empty query when all unfiltered results are selected", async () => {
+    let hasQueryParam = false;
+    let capturedQuery: string | null = null;
+    server.use(
+      http.get(`${API_URL}computers/compliance-report`, ({ request }) => {
+        const { searchParams } = new URL(request.url);
+        hasQueryParam = searchParams.has("query");
+        capturedQuery = searchParams.get("query");
+        return HttpResponse.json(complianceReport);
+      }),
+    );
+
+    renderWithProviders(
+      <ReportView selectedInstanceIds={undefined} isAllSelected />,
+    );
+
+    await screen.findByText("Security upgrades");
+
+    expect(hasQueryParam).toBe(true);
+    expect(capturedQuery).toBe("");
   });
 
   it("uses report total in header when all results are selected", async () => {
@@ -309,16 +354,18 @@ describe("ReportView", () => {
     // 30–60 days has no dedicated server bucket; the disjoint set is derived
     // client-side. Give the bucket a member so it renders a link.
     server.use(
-      http.get(`${API_URL}computers/report`, () =>
+      http.get(`${API_URL}computers/compliance-report`, () =>
         HttpResponse.json({
           ...complianceReport,
-          usn_fixed_in: {
-            ...complianceReport.usn_fixed_in,
-            "60": {
-              count: 9,
-              computer_ids: [1, 2, 3, 4, 5, 6, 7, 8, THIRTY_SIXTY_ID],
-            },
-          },
+          usn_fixed_in: complianceReport.usn_fixed_in.map((bucket) =>
+            bucket.days === 60
+              ? {
+                  ...bucket,
+                  count: 9,
+                  computer_ids: [1, 2, 3, 4, 5, 6, 7, 8, THIRTY_SIXTY_ID],
+                }
+              : bucket,
+          ),
         }),
       ),
     );
@@ -407,7 +454,90 @@ describe("ReportView", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("warns instead of auto-refetching when switching from a subset to select-all", async () => {
+    const user = userEvent.setup();
+    let requestCount = 0;
+    server.use(
+      http.get(`${API_URL}computers/compliance-report`, () => {
+        requestCount += 1;
+        return HttpResponse.json(complianceReport);
+      }),
+    );
+
+    const { rerender } = renderWithProviders(
+      <ReportView selectedInstanceIds={instanceIds} isAllSelected={false} />,
+    );
+    await screen.findByText("Security upgrades");
+    expect(requestCount).toBe(1);
+
+    rerender(<ReportView isAllSelected allSelectedQuery="tag:prod" />);
+
+    expect(screen.getByText("Selection has changed")).toBeInTheDocument();
+    // The report stays frozen on the original subset; switching modes must
+    // not silently trigger a refetch.
+    expect(
+      screen.getByText(`Report for ${instanceIds.length} instances`),
+    ).toBeInTheDocument();
+    expect(requestCount).toBe(1);
+
+    await user.click(screen.getByRole("button", { name: "Regenerate report" }));
+
+    expect(requestCount).toBe(2);
+    expect(screen.queryByText("Selection has changed")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(`Report for ${complianceReport.total} instances`),
+    ).toBeInTheDocument();
+  });
+
+  it("warns when switching from select-all back to a subset", async () => {
+    act(() => {
+      setSelectedInstanceIds([1, 2]);
+    });
+
+    const { rerender } = renderWithProviders(
+      <ReportView isAllSelected allSelectedQuery="tag:prod" />,
+    );
+    await screen.findByText("Security upgrades");
+
+    rerender(<ReportView selectedInstanceIds={[1, 2]} isAllSelected={false} />);
+
+    expect(screen.getByText("Selection has changed")).toBeInTheDocument();
+    // Still shows the frozen all-selected report until regenerated.
+    expect(
+      screen.getByText(`Report for ${complianceReport.total} instances`),
+    ).toBeInTheDocument();
+  });
+
+  it("offers a regenerate action when switching to select-all even if the selection store is empty", async () => {
+    act(() => {
+      setSelectedInstanceIds([]);
+    });
+
+    const { rerender } = renderWithProviders(
+      <ReportView selectedInstanceIds={instanceIds} isAllSelected={false} />,
+    );
+    await screen.findByText("Security upgrades");
+
+    rerender(<ReportView isAllSelected allSelectedQuery="tag:prod" />);
+
+    expect(
+      screen.getByRole("button", { name: "Regenerate report" }),
+    ).toBeInTheDocument();
+  });
+
+  it("does not show the Export as TSV button when the feature is disabled", async () => {
+    renderWithProviders(
+      <ReportView selectedInstanceIds={instanceIds} isAllSelected={false} />,
+    );
+
+    await screen.findByText("Security upgrades");
+    expect(
+      screen.queryByRole("button", { name: "Export as TSV" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("opens the export panel when Export as TSV is clicked", async () => {
+    isTsvExportsEnabled = true;
     const mockCreateSidePathPusher = vi.fn(() => vi.fn());
     (usePageParams as Mock).mockReturnValue({
       closeSidePanel: vi.fn(),
