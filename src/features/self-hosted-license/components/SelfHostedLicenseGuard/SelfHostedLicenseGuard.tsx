@@ -22,6 +22,7 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
   const { notify } = useNotify();
   const navigate = useNavigate();
   const shouldRender = isSaas && isSelfHostedEnabled;
+
   const showEntitlementError = useEffectEvent((error: unknown) => {
     notify.error({
       title: "Unable to obtain legacy license entitlement",
@@ -45,7 +46,10 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
     ) {
       return;
     }
-    navigate(ROUTES.errors.envError(), { replace: true });
+
+    if (!isSaas) {
+      navigate(ROUTES.errors.envError(), { replace: true });
+    }
   }, [
     envLoading,
     isGettingSelfHostedEnabled,
@@ -53,6 +57,7 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
     selfHostedEnabledError,
     selfHostedEnabledQuery,
     shouldRender,
+    isSaas,
   ]);
 
   if (envLoading || (selfHostedEnabledQuery && isGettingSelfHostedEnabled)) {

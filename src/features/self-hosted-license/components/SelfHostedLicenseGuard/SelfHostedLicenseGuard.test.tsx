@@ -48,7 +48,7 @@ describe("SelfHostedLicenseGuard", () => {
     ).toBeInTheDocument();
   });
 
-  it("redirects when the SaaS account is not self-hosted enabled", async () => {
+  it("renders nothing when the SaaS account is not entitled", async () => {
     setEndpointStatus({
       status: "variant",
       path: "self-hosted/status",
@@ -57,13 +57,10 @@ describe("SelfHostedLicenseGuard", () => {
 
     renderWithRoutes(envState);
 
-    expect(await screen.findByText("Environment Error")).toBeInTheDocument();
-    expect(
-      screen.getByText("This feature is not available in SaaS mode."),
-    ).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Legacy license file" }),
     ).not.toBeInTheDocument();
+    expect(screen.queryByText("Environment Error")).not.toBeInTheDocument();
   });
 
   it("redirects when the server is self-hosted", async () => {
