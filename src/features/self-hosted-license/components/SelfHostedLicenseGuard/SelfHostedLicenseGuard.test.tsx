@@ -82,7 +82,7 @@ describe("SelfHostedLicenseGuard", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders the page with an error notification when checking entitlement fails", async () => {
+  it("blocks the page with an error notification when checking entitlement fails", async () => {
     server.use(
       http.get(
         `${API_URL}self-hosted/status`,
@@ -97,7 +97,7 @@ describe("SelfHostedLicenseGuard", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText("Environment Error")).not.toBeInTheDocument();
     expect(
-      await screen.findByRole("heading", { name: "Legacy license file" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("heading", { name: "Legacy license file" }),
+    ).not.toBeInTheDocument();
   });
 });

@@ -98,6 +98,22 @@ describe("SecondaryNavigation", () => {
     vi.mocked(useMediaQuery).mockImplementation(() => true);
   });
 
+  it("does not check entitlement for navigation without gated items", () => {
+    renderWithProviders(
+      <EnvContext.Provider value={resolvedEnvState}>
+        <SecondaryNavigation
+          title="Repositories"
+          items={[{ label: "Repositories", path: "/repositories" }]}
+        />
+      </EnvContext.Provider>,
+    );
+
+    expect(screen.getByRole("navigation")).toHaveAttribute(
+      "aria-busy",
+      "false",
+    );
+  });
+
   it("hides the self-hosted license item when the account is not entitled", async () => {
     setEndpointStatus({
       status: "variant",

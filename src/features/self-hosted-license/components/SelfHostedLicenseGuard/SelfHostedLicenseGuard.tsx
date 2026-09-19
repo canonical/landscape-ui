@@ -21,8 +21,7 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
   } = useGetSelfHostedEnabled(selfHostedEnabledQuery);
   const { notify } = useNotify();
   const navigate = useNavigate();
-  const shouldRender =
-    isSaas && (isSelfHostedEnabled || !!selfHostedEnabledError);
+  const shouldRender = isSaas && isSelfHostedEnabled;
   const showEntitlementError = useEffectEvent((error: unknown) => {
     notify.error({
       title: "Unable to check legacy license entitlement",
@@ -58,6 +57,10 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
 
   if (envLoading || (selfHostedEnabledQuery && isGettingSelfHostedEnabled)) {
     return <LoadingState />;
+  }
+
+  if (selfHostedEnabledError) {
+    return null;
   }
 
   return shouldRender ? <>{children}</> : <Redirecting />;

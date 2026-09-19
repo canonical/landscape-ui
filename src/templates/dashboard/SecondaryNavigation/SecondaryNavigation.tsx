@@ -14,6 +14,9 @@ interface SecondaryNavigationProps {
   readonly children?: ReactNode;
 }
 
+const hasSelfHostedLicenseItem = (items: MenuItem[]): boolean =>
+  items.some((item) => item.requiresSelfHostedLicense);
+
 export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
   title,
   items,
@@ -21,11 +24,12 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
 }) => {
   const location = useLocation();
   const { isSaas, isSelfHosted, envLoading } = useEnv();
-  const shouldGetSelfHostedEnabled = !envLoading && isSaas;
+  const isLargeScreen = useMediaQuery("(min-width: 620px)");
+  const shouldGetSelfHostedEnabled =
+    isLargeScreen && !envLoading && isSaas && hasSelfHostedLicenseItem(items);
   const { isGettingSelfHostedEnabled, isSelfHostedEnabled } =
     useGetSelfHostedEnabled(shouldGetSelfHostedEnabled);
 
-  const isLargeScreen = useMediaQuery("(min-width: 620px)");
   const filteredItems = getFilteredByEnvItems({
     isSaas,
     isSelfHosted,
