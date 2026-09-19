@@ -24,7 +24,7 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
   const shouldRender = isSaas && isSelfHostedEnabled;
   const showEntitlementError = useEffectEvent((error: unknown) => {
     notify.error({
-      title: "Unable to check legacy license entitlement",
+      title: "Unable to obtain legacy license entitlement",
       message: "The account's legacy license entitlement could not be checked.",
       error,
     });
