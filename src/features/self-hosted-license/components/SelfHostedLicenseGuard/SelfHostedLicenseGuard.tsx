@@ -49,7 +49,10 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
 
     if (!isSaas) {
       navigate(ROUTES.errors.envError(), { replace: true });
+      return;
     }
+
+    navigate(ROUTES.account.general(), { replace: true });
   }, [
     envLoading,
     isGettingSelfHostedEnabled,
