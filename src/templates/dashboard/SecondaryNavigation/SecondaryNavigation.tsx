@@ -4,6 +4,9 @@ import classes from "./SecondaryNavigation.module.scss";
 import { useMediaQuery } from "usehooks-ts";
 import type { FC, ReactNode } from "react";
 import type { MenuItem } from "../Navigation/types";
+import useEnv from "@/hooks/useEnv";
+import { getFilteredByEnvItems } from "../Navigation/helpers";
+import { useGetSelfHostedEnabled } from "@/features/self-hosted-license";
 
 interface SecondaryNavigationProps {
   readonly title: ReactNode;
@@ -11,14 +14,28 @@ interface SecondaryNavigationProps {
   readonly children?: ReactNode;
 }
 
+const hasSelfHostedLicenseItem = (items: MenuItem[]): boolean =>
+  items.some((item) => item.requiresSelfHostedLicense);
+
 export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
   title,
   items,
   children,
 }) => {
   const location = useLocation();
-
+  const { isSaas, isSelfHosted, envLoading } = useEnv();
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
+  const shouldGetSelfHostedEnabled =
+    isLargeScreen && !envLoading && isSaas && hasSelfHostedLicenseItem(items);
+  const { isGettingSelfHostedEnabled, isSelfHostedEnabled } =
+    useGetSelfHostedEnabled(shouldGetSelfHostedEnabled);
+
+  const filteredItems = getFilteredByEnvItems({
+    isSaas,
+    isSelfHosted,
+    isSelfHostedLicenseEnabled: isSelfHostedEnabled,
+    items,
+  });
 
   if (!isLargeScreen) {
     return null;
@@ -38,6 +55,7 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
         )}
       >
         <nav
+          aria-busy={shouldGetSelfHostedEnabled && isGettingSelfHostedEnabled}
           className={classNames(
             "u-padding-top--medium is-dark",
             classes.secondaryNavigation__drawer,
@@ -54,7 +72,7 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
             {title}
           </h2>
           <ul className="p-side-navigation__list">
-            {items.map((item) => {
+            {filteredItems.map((item) => {
               const isActive = matchPath(item.path, location.pathname);
               return (
                 <li key={item.path}>
@@ -63,7 +81,7 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
                     className={classNames(
                       "p-side-navigation__link",
                       classes.secondaryNavigation__link,
-                      { [classes.isActive]: isActive },
+                      isActive && classes.isActive,
                     )}
                     to={item.path}
                   >

@@ -12,11 +12,24 @@ import { useAlertsSummary } from "@/features/alert-notifications";
 import useDebug from "@/hooks/useDebug";
 import { ROUTES } from "@/libs/routes";
 import { APP_COMMIT, APP_VERSION, TSV_EXPORTS_ENABLED } from "@/constants";
+import useEnv from "@/hooks/useEnv";
+import { useGetSelfHostedEnabled } from "@/features/self-hosted-license";
+import { getFilteredByEnvItems } from "../Navigation/helpers";
 
 const UserInfo: FC = () => {
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
+  const { envLoading, isSaas, isSelfHosted } = useEnv();
+  const shouldGetSelfHostedEnabled = isSmallerScreen && !envLoading && isSaas;
+  const { isGettingSelfHostedEnabled, isSelfHostedEnabled } =
+    useGetSelfHostedEnabled(shouldGetSelfHostedEnabled);
+  const accountSettingsItems = getFilteredByEnvItems({
+    isSaas,
+    isSelfHosted,
+    isSelfHostedLicenseEnabled: isSelfHostedEnabled,
+    items: ACCOUNT_SETTINGS.items,
+  });
   const { handleLogoutQuery } = useAuthHandle();
   const { hasAlerts } = useAlertsSummary();
   const debug = useDebug();
@@ -77,10 +90,14 @@ const UserInfo: FC = () => {
                 </span>
               </Button>
               <ul
+                aria-label="Account settings"
+                aria-busy={
+                  shouldGetSelfHostedEnabled && isGettingSelfHostedEnabled
+                }
                 className="p-side-navigation__list"
                 aria-expanded={expandedAccountSettings}
               >
-                {ACCOUNT_SETTINGS.items?.map((accountSettingItem) => (
+                {accountSettingsItems.map((accountSettingItem) => (
                   <li key={accountSettingItem.path}>
                     <Link
                       className={classNames(

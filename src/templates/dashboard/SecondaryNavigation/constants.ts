@@ -17,5 +17,10 @@ export const ACCOUNT_SETTINGS = {
       label: "API credentials",
       path: ROUTES.account.apiCredentials(),
     },
+    {
+      label: "Legacy license file",
+      path: ROUTES.account.selfHostedLicense(),
+      requiresSelfHostedLicense: true,
+    },
   ] as const,
 } satisfies MenuItem;
