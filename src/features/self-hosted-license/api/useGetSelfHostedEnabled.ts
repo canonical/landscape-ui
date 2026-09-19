@@ -15,7 +15,7 @@ export const useGetSelfHostedEnabled = (enabled: boolean) => {
   const {
     data: response,
     error,
-    isPending,
+    isFetching,
   } = useQuery<AxiosResponse<SelfHostedEnabledResponse>, AxiosError<ApiError>>({
     queryKey: ["selfHostedEnabled", currentAccount.name],
     queryFn: async () => authFetch.get("self-hosted/status"),
@@ -23,7 +23,7 @@ export const useGetSelfHostedEnabled = (enabled: boolean) => {
   });
 
   return {
-    isGettingSelfHostedEnabled: isPending,
+    isGettingSelfHostedEnabled: isFetching,
     isSelfHostedEnabled: response?.data.enabled ?? false,
     selfHostedEnabledError: error,
   };
