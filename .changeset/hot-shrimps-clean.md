@@ -2,4 +2,4 @@
 "landscape-ui": minor
 ---
 
-created a self-hosted license page to achieve parity with the old UI.
+Added a legacy license page (self-hosted licensing), bringing it in line with the legacy UI.
