@@ -58,18 +58,27 @@ describe("SecondaryNavigation", () => {
     );
   });
 
-  it("can set an active item", () => {
+  it("can set an active item", async () => {
     assert(ACCOUNT_SETTINGS.items);
 
     renderWithProviders(
-      <SecondaryNavigation
-        title={ACCOUNT_SETTINGS.label}
-        items={ACCOUNT_SETTINGS.items}
-      />,
+      <EnvContext.Provider value={resolvedEnvState}>
+        <SecondaryNavigation
+          title={ACCOUNT_SETTINGS.label}
+          items={ACCOUNT_SETTINGS.items}
+        />
+      </EnvContext.Provider>,
       {},
       ROUTES.account.general(),
       `/${PATHS.account.root}/${PATHS.account.general}`,
     );
+
+    await waitFor(() => {
+      expect(screen.getByRole("navigation")).toHaveAttribute(
+        "aria-busy",
+        "false",
+      );
+    });
 
     const activeLink = screen.getByRole("link", {
       name: ACCOUNT_SETTINGS.items[0].label,

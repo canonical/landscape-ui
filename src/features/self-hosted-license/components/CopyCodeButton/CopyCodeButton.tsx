@@ -1,4 +1,5 @@
 import { Button, Icon } from "@canonical/react-components";
+import useDebug from "@/hooks/useDebug";
 import type { FC } from "react";
 import { useEffect, useRef, useState } from "react";
 import { useCopyToClipboard } from "usehooks-ts";
@@ -12,6 +13,7 @@ interface CopyCodeButtonProps {
 
 const CopyCodeButton: FC<CopyCodeButtonProps> = ({ value, className }) => {
   const [, copy] = useCopyToClipboard();
+  const debug = useDebug();
   const [copied, setCopied] = useState(false);
   const copiedTimeoutRef = useRef<number | undefined>(undefined);
 
@@ -26,6 +28,7 @@ const CopyCodeButton: FC<CopyCodeButtonProps> = ({ value, className }) => {
       const didCopy = await copy(value);
 
       if (!didCopy) {
+        debug(new Error("Failed to copy to clipboard"));
         setCopied(false);
         return;
       }
@@ -35,7 +38,8 @@ const CopyCodeButton: FC<CopyCodeButtonProps> = ({ value, className }) => {
       copiedTimeoutRef.current = window.setTimeout(() => {
         setCopied(false);
       }, COPIED_FEEDBACK_TIMEOUT);
-    } catch {
+    } catch (error) {
+      debug(error);
       setCopied(false);
     }
   };

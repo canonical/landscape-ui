@@ -36,5 +36,8 @@ describe("CopyCodeButton", () => {
     expect(
       screen.getByRole("button", { name: "Copy code" }),
     ).toBeInTheDocument();
+    expect(
+      await screen.findByText("Failed to copy code to clipboard"),
+    ).toBeInTheDocument();
   });
 });
