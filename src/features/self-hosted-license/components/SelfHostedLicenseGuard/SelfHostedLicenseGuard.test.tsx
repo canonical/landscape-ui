@@ -1,12 +1,11 @@
 import { EnvContext, type EnvContextState } from "@/context/env";
-import { API_URL } from "@/constants";
 import EnvError from "@/pages/EnvError";
 import SelfHostedLicensePage from "@/pages/dashboard/account/self-hosted-license";
+import { ROUTES } from "@/libs/routes";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
-import server from "@/tests/server";
-import { screen } from "@testing-library/react";
-import { http, HttpResponse } from "msw";
+import { screen, waitFor } from "@testing-library/react";
 import { Route, Routes } from "react-router";
 import { describe, expect, it } from "vitest";
 import SelfHostedLicenseGuard from "./SelfHostedLicenseGuard";
@@ -34,6 +33,7 @@ const renderWithRoutes = (value: EnvContextState) =>
         />
         <Route path="/env-error" element={<EnvError />} />
       </Routes>
+      <LocationDisplay />
     </EnvContext.Provider>,
     undefined,
     "/",
@@ -61,6 +61,9 @@ describe("SelfHostedLicenseGuard", () => {
       screen.queryByRole("heading", { name: "Legacy license file" }),
     ).not.toBeInTheDocument();
     expect(screen.queryByText("Environment Error")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(getLocationDisplay()).toHaveTextContent(ROUTES.account.general());
+    });
   });
 
   it("redirects when the server is self-hosted", async () => {
@@ -80,12 +83,7 @@ describe("SelfHostedLicenseGuard", () => {
   });
 
   it("blocks the page with an error notification when checking entitlement fails", async () => {
-    server.use(
-      http.get(
-        `${API_URL}self-hosted/status`,
-        () => new HttpResponse(null, { status: 500 }),
-      ),
-    );
+    setEndpointStatus({ status: "error", path: "self-hosted/status" });
 
     renderWithRoutes(envState);
 

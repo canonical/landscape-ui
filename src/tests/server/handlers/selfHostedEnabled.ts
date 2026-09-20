@@ -12,15 +12,12 @@ export default [
     if (shouldApplyEndpointStatus("self-hosted/status")) {
       const endpointStatus = getEndpointStatus("self-hosted/status");
 
+      if (endpointStatus.status === "error") {
+        return new HttpResponse(null, { status: 500 });
+      }
+
       if (endpointStatus.status === "variant") {
-        if (
-          typeof endpointStatus.response === "object" &&
-          endpointStatus.response !== null &&
-          "enabled" in endpointStatus.response &&
-          typeof endpointStatus.response.enabled === "boolean"
-        ) {
-          return HttpResponse.json(endpointStatus.response);
-        }
+        return HttpResponse.json(endpointStatus.response);
       }
     }
 
