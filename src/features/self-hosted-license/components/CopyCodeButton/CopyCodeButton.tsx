@@ -28,7 +28,7 @@ const CopyCodeButton: FC<CopyCodeButtonProps> = ({ value, className }) => {
       const didCopy = await copy(value);
 
       if (!didCopy) {
-        debug(new Error("Failed to copy to clipboard"));
+        debug(new Error("Failed to copy code to clipboard"));
         setCopied(false);
         return;
       }
