@@ -18,7 +18,7 @@ import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import useNotify from "@/hooks/useNotify";
 import { useBoolean } from "usehooks-ts";
-import LoadingState from "@/components/layout/SidePanel/LoadingState";
+import LoadingState from "@/components/layout/LoadingState";
 
 const ConfirmSnapActionModal = lazy(
   () => import("./components/ConfirmSnapActionModal"),
@@ -91,10 +91,16 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     }
   };
 
+  const buttonAppearance = action === "uninstall" ? "negative" : "positive";
+
   return (
     <>
       <div className={classes.container}>
-        {hasNotification(action) && <SnapNotification action={action} />}
+        {hasNotification(action) && (
+          <Suspense fallback={<LoadingState />}>
+            <SnapNotification action={action} />
+          </Suspense>
+        )}
         <SnapBulkSearch
           instanceIds={selectedInstances}
           selectedItems={selectedSnaps}
@@ -155,7 +161,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
       <SidePanelFormButtons
         submitButtonText={submitText}
-        submitButtonAppearance="positive"
+        submitButtonAppearance={buttonAppearance}
         submitButtonLoading={isSnapActionPending}
         onSubmit={checkSubmit}
       />
@@ -168,6 +174,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
             instancesCount={selectedInstances.length}
             onClose={closeModal}
             onConfirm={onSubmit}
+            isSubmitting={isSnapActionPending}
           />
         </Suspense>
       )}
