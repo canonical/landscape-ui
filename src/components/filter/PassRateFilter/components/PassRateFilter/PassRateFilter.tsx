@@ -16,9 +16,7 @@ const PassRateFilter = () => {
         <>
           <span>Pass rate</span>
           <span className={tableFilterClasses.badgeContainer}>
-            {badgeValue > 0 && (
-              <Badge value={badgeValue} className={tableFilterClasses.badge} />
-            )}
+            {badgeValue > 0 && <Badge value={badgeValue} />}
           </span>
         </>
       }

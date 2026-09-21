@@ -44,10 +44,7 @@ const ActivitiesDateFilter: FC<ActivitiesDateFilterProps> = ({
           <span>{label}</span>
           <span className={tableFilterClasses.badgeContainer}>
             {fromDate || toDate ? (
-              <Badge
-                value={fromDate && toDate ? 2 : 1}
-                className={tableFilterClasses.badge}
-              />
+              <Badge value={fromDate && toDate ? 2 : 1} />
             ) : null}
           </span>
         </>

@@ -2,4 +2,5 @@
 "landscape-ui": patch
 ---
 
-Migrate badges, cards, and breadcrumbs to Pragma components
+Update badges to the new Pragma design system appearance, and migrate cards
+and breadcrumbs to Pragma components.

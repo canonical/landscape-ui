@@ -110,12 +110,7 @@ const TableFilterMultiple: FC<MultipleFilterProps> = ({
             [commonClasses.multiple]: options.length > 9,
           })}
         >
-          {selectedItems.length > 0 && (
-            <Badge
-              value={selectedItems.length}
-              className={commonClasses.badge}
-            />
-          )}
+          {selectedItems.length > 0 && <Badge value={selectedItems.length} />}
         </span>
       )}
     </>
