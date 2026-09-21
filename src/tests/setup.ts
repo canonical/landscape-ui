@@ -14,6 +14,7 @@ import "./matcher";
 import server from "./server";
 import { resetPublicationTargets } from "./server/handlers/publicationTargets";
 import { resetMirrors } from "./server/handlers/mirrors";
+import { resetStaffState } from "./server/handlers/staffAccounts";
 import { RequestHandler } from "msw";
 
 expect.extend(matchers);
@@ -214,6 +215,7 @@ afterAll(async () => {
 afterEach(() => {
   resetPublicationTargets();
   resetMirrors();
+  resetStaffState();
   setEndpointStatus("default");
   server.resetHandlers();
   cleanup();
