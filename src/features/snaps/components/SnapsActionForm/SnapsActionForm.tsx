@@ -1,6 +1,10 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { type FC, lazy, Suspense, useState } from "react";
-import { getRequestAction, isConfirmableAction } from "./helpers";
+import {
+  getRequestAction,
+  isConfirmableAction,
+  hasNotification,
+} from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import type { SnapAction, InstalledSnapWithCount } from "../../types";
 import classes from "./SnapsActionForm.module.scss";
@@ -19,6 +23,7 @@ import LoadingState from "@/components/layout/SidePanel/LoadingState";
 const ConfirmSnapActionModal = lazy(
   () => import("./components/ConfirmSnapActionModal"),
 );
+const SnapNotification = lazy(() => import("./components/SnapNotification"));
 
 interface SnapsActionFormProps {
   readonly selectedInstances: number[];
@@ -81,15 +86,15 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
     if (needsConfirmation) {
       openModal();
-      return;
+    } else {
+      onSubmit();
     }
-
-    onSubmit();
   };
 
   return (
     <>
       <div className={classes.container}>
+        {hasNotification(action) && <SnapNotification action={action} />}
         <SnapBulkSearch
           instanceIds={selectedInstances}
           selectedItems={selectedSnaps}
