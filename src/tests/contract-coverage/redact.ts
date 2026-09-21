@@ -1,5 +1,5 @@
 const SENSITIVE_KEY_PATTERN =
-  /password|secret|token|apikey|api_key|authorization|privatekey|private_key|credential|accesskey|access_key|secretkey|secret_key|fde_recovery_key|recoverykey|invitation_?id|secure_?id|gpgkey/i;
+  /password|secret|token|apikey|api_key|authorization|privatekey|private_key|credential|accesskey|access_key|secretkey|secret_key|fde_recovery_key|recoverykey|invitation_?id|secure_?id|gpg_?key/i;
 
 const REDACTED_VALUE = "***REDACTED***";
 
