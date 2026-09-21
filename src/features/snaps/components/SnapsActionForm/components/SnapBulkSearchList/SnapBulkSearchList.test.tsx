@@ -15,6 +15,7 @@ const [firstSnap, secondSnap, thirdSnap] = installedSnaps;
 const downshiftOptions = {
   highlightedIndex: -1,
   getItemProps: vi.fn().mockReturnValue({}),
+  getMenuProps: vi.fn().mockReturnValue({}),
 } as unknown as ControllerStateAndHelpers<InstalledSnapWithCount>;
 
 const buildQueryResult = (

@@ -1,13 +1,11 @@
 import { pluralize } from "@/utils/_helpers";
 import { SearchBox } from "@canonical/react-components";
-import classNames from "classnames";
 import Downshift from "downshift";
 import type { FC } from "react";
 import { useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 import SnapBulkSearchList from "../SnapBulkSearchList";
 import { DEBOUNCE_DELAY, MAX_SELECTED_SNAPS } from "./constants";
-import classes from "./SnapBulkSearch.module.scss";
 import type { InstalledSnapWithCount, SnapAction } from "../../../../types";
 import { useGetBulkInstalledSnaps } from "../../../../api";
 
@@ -26,7 +24,11 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
 }) => {
   const [search, setSearch] = useDebounceValue("", DEBOUNCE_DELAY);
   const [inputValue, setInputValue] = useState<string>("");
-  const { value: isOpen, setFalse: close, setTrue: open } = useBoolean();
+  const {
+    value: isDropdownOpen,
+    setFalse: closeDropdown,
+    setTrue: openDropdown,
+  } = useBoolean();
 
   const snapsQueryResult = useGetBulkInstalledSnaps({
     computer_ids: instanceIds,
@@ -55,24 +57,32 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
 
     setSelectedItems([...selectedItems, item]);
     clearSearchBox();
-    close();
+    closeDropdown();
+  };
+
+  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Escape") {
+      closeDropdown();
+    } else if (!isDropdownOpen && event.key === "Enter") {
+      openDropdown();
+    }
   };
 
   const isOverLimit = selectedItems.length >= MAX_SELECTED_SNAPS;
   const searchScope = action === "install" ? "available" : "installed";
-  const preposition = action === "change channel" ? " on" : "";
+  const preposition = action === "change channel" ? "s on" : "";
 
   return (
     <Downshift
       onSelect={handleSelectItem}
-      itemToString={(item) => (item ? item.snap.name : "")}
-      isOpen={isOpen}
-      onOuterClick={close}
+      itemToString={(item) => item?.snap.name ?? ""}
+      isOpen={isDropdownOpen}
+      onOuterClick={closeDropdown}
     >
       {(downshiftOptions) => (
         <div>
           <SearchBox
-            {...downshiftOptions.getInputProps()}
+            {...downshiftOptions.getInputProps({ onKeyDown })}
             placeholder={`Search ${searchScope} snaps`}
             className="u-no-margin--bottom"
             shouldRefocusAfterReset
@@ -81,7 +91,9 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
             value={inputValue}
             onChange={handleSearchBoxChange}
             onClear={clearSearchBox}
-            onClick={open}
+            onClick={openDropdown}
+            onFocus={openDropdown}
+            onBlur={closeDropdown}
             disabled={isOverLimit}
           />
           {isOverLimit && (
@@ -92,23 +104,13 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
             </span>
           )}
 
-          {isOpen && (
-            <div
-              className={classNames(
-                "p-card--highlighted",
-                "u-no-margin",
-                "u-no-padding",
-                classes.suggestionsContainer,
-              )}
-              {...downshiftOptions.getMenuProps()}
-            >
-              <SnapBulkSearchList
-                downshiftOptions={downshiftOptions}
-                queryResult={snapsQueryResult}
-                search={search}
-                selectedSnaps={selectedItems}
-              />
-            </div>
+          {isDropdownOpen && (
+            <SnapBulkSearchList
+              downshiftOptions={downshiftOptions}
+              queryResult={snapsQueryResult}
+              search={search}
+              selectedSnaps={selectedItems}
+            />
           )}
         </div>
       )}
