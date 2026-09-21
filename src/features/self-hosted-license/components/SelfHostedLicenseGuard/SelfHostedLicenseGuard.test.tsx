@@ -5,7 +5,7 @@ import { ROUTES } from "@/libs/routes";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { Route, Routes } from "react-router";
 import { describe, expect, it } from "vitest";
 import SelfHostedLicenseGuard from "./SelfHostedLicenseGuard";
@@ -32,6 +32,7 @@ const renderWithRoutes = (value: EnvContextState) =>
           }
         />
         <Route path="/env-error" element={<EnvError />} />
+        <Route path="/account/general" element={<p>Account general</p>} />
       </Routes>
       <LocationDisplay />
     </EnvContext.Provider>,
@@ -48,7 +49,7 @@ describe("SelfHostedLicenseGuard", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders nothing when the SaaS account is not entitled", async () => {
+  it("redirects to account general when the SaaS account is not entitled", async () => {
     setEndpointStatus({
       status: "variant",
       path: "self-hosted/status",
@@ -61,9 +62,8 @@ describe("SelfHostedLicenseGuard", () => {
       screen.queryByRole("heading", { name: "Legacy license file" }),
     ).not.toBeInTheDocument();
     expect(screen.queryByText("Environment Error")).not.toBeInTheDocument();
-    await waitFor(() => {
-      expect(getLocationDisplay()).toHaveTextContent(ROUTES.account.general());
-    });
+    expect(await screen.findByText("Account general")).toBeInTheDocument();
+    expect(getLocationDisplay()).toHaveTextContent(ROUTES.account.general());
   });
 
   it("redirects when the server is self-hosted", async () => {
@@ -82,17 +82,16 @@ describe("SelfHostedLicenseGuard", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("blocks the page with an error notification when checking entitlement fails", async () => {
+  it("redirects to account general when checking entitlement fails", async () => {
     setEndpointStatus({ status: "error", path: "self-hosted/status" });
 
     renderWithRoutes(envState);
 
-    expect(
-      await screen.findByText("Unable to obtain legacy license entitlement"),
-    ).toBeInTheDocument();
     expect(screen.queryByText("Environment Error")).not.toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Legacy license file" }),
     ).not.toBeInTheDocument();
+    expect(await screen.findByText("Account general")).toBeInTheDocument();
+    expect(getLocationDisplay()).toHaveTextContent(ROUTES.account.general());
   });
 });

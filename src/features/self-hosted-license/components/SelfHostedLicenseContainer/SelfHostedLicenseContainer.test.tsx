@@ -6,6 +6,7 @@ import {
 import { API_URL } from "@/constants";
 import { AuthContext } from "@/context/auth";
 import AccountsProvider from "@/context/accounts";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { authUser } from "@/tests/mocks/auth";
 import server from "@/tests/server";
 import { act, screen, waitFor } from "@testing-library/react";
@@ -82,20 +83,22 @@ describe("SelfHostedLicenseContainer", () => {
   });
 
   it("shows an error notification and keeps download and regenerate disabled", async () => {
-    server.use(
-      http.get(
-        `${API_URL}self-hosted/license-url`,
-        () => new HttpResponse(null, { status: 500 }),
-      ),
-    );
+    setEndpointStatus({
+      status: "error",
+      path: "self-hosted/license-url",
+      response: {
+        error: "ApiRequestError",
+        message: "Account not enabled for self-hosted Landscape",
+        detail: null,
+      },
+    });
 
     renderWithProviders(<SelfHostedLicenseContainer />);
 
     expect(
-      await screen.findByText("Unable to get the license download URL"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("The license download URL could not be loaded."),
+      await screen.findByText(
+        "Account not enabled for self-hosted Landscape",
+      ),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Download license file" }),

@@ -1,5 +1,5 @@
 import FormSection from "@/components/form/FormSection";
-import useNotify from "@/hooks/useNotify";
+import useDebug from "@/hooks/useDebug";
 import { useEffect, useEffectEvent, type FC } from "react";
 import { useGetSelfHostedLicense } from "../../api/useGetSelfHostedLicense";
 import CopyableCodeSnippet from "../CopyableCodeSnippet";
@@ -10,13 +10,9 @@ import classes from "./SelfHostedLicenseContainer.module.scss";
 const SelfHostedLicenseContainer: FC = () => {
   const { downloadUrl, isGettingSelfHostedLicense, selfHostedLicenseError } =
     useGetSelfHostedLicense();
-  const { notify } = useNotify();
+  const debug = useDebug();
   const showLicenseError = useEffectEvent((error: unknown) => {
-    notify.error({
-      title: "Unable to get the license download URL",
-      message: "The license download URL could not be loaded.",
-      error,
-    });
+    debug(error);
   });
 
   useEffect(() => {

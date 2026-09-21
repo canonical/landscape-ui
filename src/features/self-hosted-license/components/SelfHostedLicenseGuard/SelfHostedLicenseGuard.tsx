@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import Redirecting from "@/components/layout/Redirecting";
+import useDebug from "@/hooks/useDebug";
 import useEnv from "@/hooks/useEnv";
-import useNotify from "@/hooks/useNotify";
 import { ROUTES } from "@/libs/routes";
 import { useEffect, useEffectEvent, type FC, type ReactNode } from "react";
 import { useNavigate } from "react-router";
@@ -19,16 +19,12 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
     isSelfHostedEnabled,
     selfHostedEnabledError,
   } = useGetSelfHostedEnabled(selfHostedEnabledQuery);
-  const { notify } = useNotify();
+  const debug = useDebug();
   const navigate = useNavigate();
   const shouldRender = isSaas && isSelfHostedEnabled;
 
   const showEntitlementError = useEffectEvent((error: unknown) => {
-    notify.error({
-      title: "Unable to obtain legacy license entitlement",
-      message: "The account's legacy license entitlement could not be checked.",
-      error,
-    });
+    debug(error);
   });
 
   useEffect(() => {
@@ -41,7 +37,6 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
     if (
       envLoading ||
       (selfHostedEnabledQuery && isGettingSelfHostedEnabled) ||
-      selfHostedEnabledError ||
       shouldRender
     ) {
       return;
@@ -68,7 +63,7 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
   }
 
   if (selfHostedEnabledError) {
-    return null;
+    return <Redirecting />;
   }
 
   return shouldRender ? <>{children}</> : <Redirecting />;
