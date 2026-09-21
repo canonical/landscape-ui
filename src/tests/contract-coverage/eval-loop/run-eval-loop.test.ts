@@ -204,8 +204,9 @@ describe("run", () => {
   });
 
   it("LLM_MOCK=1 succeeds by deriving suggestions from the computed gaps", async () => {
-    const opts = {
+const opts = {
       ...options(),
+      client: undefined,
       mockFromGaps: true,
     };
     const result = await run(opts);
