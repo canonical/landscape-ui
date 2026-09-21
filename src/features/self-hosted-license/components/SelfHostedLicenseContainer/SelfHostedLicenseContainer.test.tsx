@@ -96,9 +96,7 @@ describe("SelfHostedLicenseContainer", () => {
     renderWithProviders(<SelfHostedLicenseContainer />);
 
     expect(
-      await screen.findByText(
-        "Account not enabled for self-hosted Landscape",
-      ),
+      await screen.findByText("Account not enabled for self-hosted Landscape"),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Download license file" }),
