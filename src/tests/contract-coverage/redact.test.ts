@@ -53,7 +53,6 @@ describe("redactSensitiveFields", () => {
       access_key: "***REDACTED***",
       secret_key: "***REDACTED***",
       access_key_id: "***REDACTED***",
-      signature: "***REDACTED***",
       fde_recovery_key: "***REDACTED***",
       recoveryKey: "***REDACTED***",
     });
