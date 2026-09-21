@@ -22,7 +22,7 @@ describe("SnapsActionForm", () => {
   const user = userEvent.setup();
 
   describe("Form rendering", () => {
-    it("renders form with searchbox, text, and buttons", () => {
+    it("renders form with searchbox, text, and buttons", async () => {
       renderWithProviders(
         <SnapsActionForm selectedInstances={[instanceId]} action="unhold" />,
       );
