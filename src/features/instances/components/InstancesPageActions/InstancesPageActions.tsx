@@ -511,7 +511,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             position="right"
             toggleLabel="Operations"
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={!hasSelectedInstances}
+            toggleDisabled={!hasInstancesToExport}
             hasToggleIcon
           />,
           <ContextualMenu
