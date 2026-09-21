@@ -51,9 +51,10 @@ describe("SnapsActionForm", () => {
       await user.click(screen.getByRole("searchbox"));
       await user.click(screen.getByRole("option", { name: snapTitle }));
 
-      expect(
-        screen.getByRole("button", { name: "Install 1 snap" }),
-      ).toBeInTheDocument();
+      const submitButton = screen.getByRole("button", {
+        name: "Install 1 snap",
+      });
+      expect(submitButton).toHaveClass("p-button--negative");
     });
   });
 
