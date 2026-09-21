@@ -13,6 +13,7 @@ interface ConfirmSnapActionModalProps {
   readonly instancesCount: number;
   readonly onClose: () => void;
   readonly onConfirm: () => void;
+  readonly isSubmitting: boolean;
 }
 
 const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
@@ -21,6 +22,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   instancesCount,
   onClose,
   onConfirm,
+  isSubmitting,
 }) => {
   const snapsText = `${capitalize(actionVerb)} ${pluralize(snaps.length, ["snap"], "exact")}`;
 
@@ -58,6 +60,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
       confirmButtonAppearance={buttonColor}
       cancelButtonProps={{ appearance: "base" }}
       onConfirm={onConfirm}
+      confirmButtonLoading={isSubmitting}
       renderInPortal
     >
       <p className={classes.summary}>
