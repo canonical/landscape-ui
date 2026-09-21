@@ -62,8 +62,13 @@ function buildMockResponseFromGaps(gaps: GapEntry[]): string {
 
 function areSameRoutes(a: string[], b: string[]): boolean {
   if (a.length !== b.length) return false;
+  const setA = new Set(a);
   const setB = new Set(b);
-  return a.every((route) => setB.has(route)) && setB.size === b.length;
+  // Guard against duplicates on either side: with matching lengths, a
+  // duplicate on one side implies a missing route on the other, so a
+  // straight `.every()` membership check alone would falsely accept it.
+  if (setA.size !== a.length || setB.size !== b.length) return false;
+  return a.every((route) => setB.has(route));
 }
 
 function writeRawFallback(

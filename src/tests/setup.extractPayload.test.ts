@@ -1,34 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { extractPayload } from "./setup";
 
 describe("extractPayload", () => {
-  // The real function is a private helper in setup.ts; mirror its behavior
-  // here so content-type-aware parsing is covered without exporting it.
-  const extractPayload = async (
-    streamOwner: Request | Response,
-  ): Promise<unknown> => {
-    if (!streamOwner.body) return null;
-    try {
-      const clone = streamOwner.clone();
-      const text = await clone.text();
-      if (!text) return null;
-
-      const contentType = streamOwner.headers.get("content-type") ?? "";
-      if (contentType.includes("application/json")) {
-        try {
-          return JSON.parse(text);
-        } catch {
-          return text;
-        }
-      }
-      if (contentType.includes("application/x-www-form-urlencoded")) {
-        return Object.fromEntries(new URLSearchParams(text).entries());
-      }
-      return text;
-    } catch {
-      return null;
-    }
-  };
-
   it("returns null for an empty body", async () => {
     const request = new Request("https://example.com/api", { method: "GET" });
     await expect(extractPayload(request)).resolves.toBeNull();
