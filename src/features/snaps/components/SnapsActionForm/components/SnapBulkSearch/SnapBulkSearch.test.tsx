@@ -5,13 +5,11 @@ import { ErrorBoundary } from "@sentry/react";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import assert from "assert";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SnapBulkSearch from "./SnapBulkSearch";
 import { MAX_SELECTED_SNAPS } from "./constants";
 
-const [, , searchedSnap] = installedSnaps;
-assert(searchedSnap, "Need at least 3 mock snaps to exist");
+const [firstSnap, , , , , , , , , , searchedSnap] = installedSnaps;
 
 const props: ComponentProps<typeof SnapBulkSearch> = {
   instanceIds: [1],
@@ -40,16 +38,14 @@ describe("SnapBulkSearch", () => {
   it("adds snap to selection when clicked", async () => {
     renderWithProviders(<SnapBulkSearch {...props} />);
 
-    const searchBox = screen.getByRole("searchbox");
-    await user.click(searchBox);
-    await user.type(searchBox, searchedSnap.snap.name);
+    await user.click(screen.getByRole("searchbox"));
 
     const suggestion = await screen.findByRole("option", {
-      name: `${searchedSnap.snap.name} ${searchedSnap.snap.publisher.username}`,
+      name: `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`,
     });
     await user.click(suggestion);
 
-    expect(props.setSelectedItems).toHaveBeenCalledWith([searchedSnap]);
+    expect(props.setSelectedItems).toHaveBeenCalledWith([firstSnap]);
   });
 
   it("clears search after selecting a package", async () => {
@@ -119,7 +115,50 @@ describe("SnapBulkSearch", () => {
     );
 
     expect(
-      screen.getByText(/You can only change channel on a maximum of/i),
+      screen.getByText(/You can only change channels on a maximum of/i),
     ).toBeInTheDocument();
+  });
+
+  it("searches available snaps when the action is install", () => {
+    renderWithProviders(<SnapBulkSearch {...props} action="install" />);
+
+    expect(
+      screen.getByPlaceholderText("Search available snaps"),
+    ).toBeInTheDocument();
+  });
+
+  it("searches installed snaps for non-install actions", () => {
+    renderWithProviders(<SnapBulkSearch {...props} />);
+
+    expect(
+      screen.getByPlaceholderText("Search installed snaps"),
+    ).toBeInTheDocument();
+  });
+
+  it("closes the dropdown when Escape is pressed", async () => {
+    renderWithProviders(<SnapBulkSearch {...props} />);
+
+    await user.click(screen.getByRole("searchbox"));
+
+    expect(await screen.findByText(firstSnap.snap.name)).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+
+    expect(screen.queryByText(firstSnap.snap.name)).not.toBeInTheDocument();
+  });
+
+  it("reopens the closed dropdown when Enter is pressed", async () => {
+    renderWithProviders(<SnapBulkSearch {...props} />);
+
+    await user.click(screen.getByRole("searchbox"));
+
+    expect(await screen.findByText(firstSnap.snap.name)).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByText(firstSnap.snap.name)).not.toBeInTheDocument();
+
+    await user.keyboard("{Enter}");
+
+    expect(await screen.findByText(firstSnap.snap.name)).toBeInTheDocument();
   });
 });

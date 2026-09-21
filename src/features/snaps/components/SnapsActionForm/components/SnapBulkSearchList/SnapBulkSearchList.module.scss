@@ -20,3 +20,10 @@
 .empty {
   padding: 1rem;
 }
+
+.suggestionsContainer {
+  max-height: 15rem;
+  position: absolute;
+  width: 100%;
+  z-index: var(--z-dropdown);
+}

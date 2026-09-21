@@ -49,11 +49,19 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
   if (filteredResults.length) {
     return (
       <>
-        <ul className="p-list u-no-margin">
+        <ul
+          className={classNames(
+            "p-card--highlighted",
+            "u-no-margin",
+            "u-no-padding",
+            classes.suggestionsContainer,
+          )}
+          {...downshiftOptions.getMenuProps()}
+        >
           {filteredResults.map(
             (item: InstalledSnapWithCount, index: number) => (
               <li
-                className={classNames("p-list__item", classes.listItem, {
+                className={classNames(classes.listItem, {
                   [classes.highlighted]:
                     downshiftOptions.highlightedIndex === index,
                 })}
