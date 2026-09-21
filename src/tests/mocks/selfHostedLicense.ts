@@ -5,5 +5,5 @@ export const selfHostedLicense = {
 
 export const regeneratedSelfHostedLicense = {
   license_url:
-    "https://account:private-token@landscape.example.com/license.txt",
+    "https://account:regenerated-private-token@landscape.example.com/license.txt",
 };

@@ -62,6 +62,16 @@ describe("SelfHostedLicenseContainer", () => {
     });
 
     await user.click(
+      screen.getByRole("button", { name: "Download license file" }),
+    );
+
+    expect(windowOpenSpy).toHaveBeenLastCalledWith(
+      selfHostedLicense.license_url,
+      "_blank",
+      "noopener,noreferrer",
+    );
+
+    await user.click(
       screen.getByRole("button", { name: "Regenerate private token" }),
     );
 
@@ -75,7 +85,7 @@ describe("SelfHostedLicenseContainer", () => {
       screen.getByRole("button", { name: "Download license file" }),
     );
 
-    expect(windowOpenSpy).toHaveBeenCalledWith(
+    expect(windowOpenSpy).toHaveBeenLastCalledWith(
       regeneratedSelfHostedLicense.license_url,
       "_blank",
       "noopener,noreferrer",
