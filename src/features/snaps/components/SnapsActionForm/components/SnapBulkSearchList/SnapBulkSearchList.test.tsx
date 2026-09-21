@@ -33,7 +33,7 @@ const buildQueryResult = (
           data: {
             results,
             count: results.length,
-            prev: null,
+            previous: null,
             next: null,
           },
         },

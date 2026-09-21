@@ -17,7 +17,7 @@ interface SearchSnapsRequest {
 export interface SearchSnapsResponse {
   results: InstalledSnapWithCount[];
   count: number;
-  prev: string | null;
+  previous: string | null;
   next: string | null;
 }
 
