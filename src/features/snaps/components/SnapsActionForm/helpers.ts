@@ -15,3 +15,6 @@ export const isConfirmableAction = (
   action: SnapAction,
 ): action is ConfirmableSnapAction =>
   action !== "unhold" && action !== "change channel";
+
+export const hasNotification = (action: SnapAction) =>
+  action === "hold" || action === "install";
