@@ -63,6 +63,8 @@ export type ConfirmableSnapAction = Exclude<
   "change channel" | "unhold"
 >;
 
+export type ActionWithNotification = Extract<SnapAction, "install" | "hold">;
+
 export interface InstalledSnapWithCount extends InstalledSnap {
   computerCount: number;
 }

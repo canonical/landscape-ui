@@ -1,8 +1,9 @@
 import type { FC } from "react";
 import { Notification } from "@canonical/react-components";
+import type { ActionWithNotification } from "../../../../types";
 
 interface SnapNotificationProps {
-  readonly action: "hold" | "install";
+  readonly action: ActionWithNotification;
 }
 
 const SnapNotification: FC<SnapNotificationProps> = ({ action }) => {

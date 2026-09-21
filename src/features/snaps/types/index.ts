@@ -9,6 +9,7 @@ export type {
   AvailableSnap,
   AvailableSnapInfo,
   ConfirmableSnapAction,
+  ActionWithNotification,
   InstalledSnap,
   SelectedSnaps,
   SnapStatus,
