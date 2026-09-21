@@ -14,6 +14,7 @@ const props: ComponentProps<typeof ConfirmSnapActionModal> = {
   instancesCount: 3,
   onClose: vi.fn(),
   onConfirm: vi.fn(),
+  isSubmitting: false,
 };
 
 describe("ConfirmSnapActionModal", () => {
@@ -108,5 +109,31 @@ describe("ConfirmSnapActionModal", () => {
     await user.click(screen.getByRole("button", { name: "Cancel" }));
 
     expect(props.onClose).toHaveBeenCalledOnce();
+  });
+
+  it("renders the install warning text", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal {...props} actionVerb="install" />,
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Install 2 snaps on 3 instances" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/may have access to your files and system/i),
+    ).toBeInTheDocument();
+  });
+
+  it("shows the confirm button in a loading state while submitting", () => {
+    renderWithProviders(<ConfirmSnapActionModal {...props} isSubmitting />);
+
+    const confirmButton = screen.getByRole("button", {
+      name: "Waiting for action to complete",
+    });
+    expect(confirmButton).toHaveAttribute("aria-disabled", "true");
+    expect(confirmButton).toHaveIcon("spinner");
+    expect(
+      screen.queryByRole("button", { name: "Refresh 2 snaps" }),
+    ).not.toBeInTheDocument();
   });
 });
