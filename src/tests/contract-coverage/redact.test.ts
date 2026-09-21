@@ -58,6 +58,21 @@ describe("redactSensitiveFields", () => {
     });
   });
 
+  it("redacts gpgKey fields, including the nested armor block", () => {
+    const input = {
+      displayName: "My Mirror",
+      gpgKey: {
+        armor:
+          "-----BEGIN PGP PRIVATE KEY BLOCK-----\n...\n-----END PGP PRIVATE KEY BLOCK-----",
+      },
+    };
+
+    expect(redactSensitiveFields(input)).toEqual({
+      displayName: "My Mirror",
+      gpgKey: "***REDACTED***",
+    });
+  });
+
   it("redacts nested sensitive fields recursively", () => {
     const input = {
       displayName: "My Target",

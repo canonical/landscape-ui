@@ -204,7 +204,7 @@ describe("run", () => {
   });
 
   it("LLM_MOCK=1 succeeds by deriving suggestions from the computed gaps", async () => {
-const opts = {
+    const opts = {
       ...options(),
       client: undefined,
       mockFromGaps: true,
@@ -231,6 +231,19 @@ const opts = {
     };
     const partialClient = createMockClient(JSON.stringify(partialResponse));
     const opts = options(partialClient);
+    const result = await run(opts);
+
+    expect(result.status).toBe("llm-failure");
+    expect(result.suggestionsWritten).toHaveLength(0);
+  });
+
+  it("rejects a duplicated route that replaces a distinct prompted route", async () => {
+    const [duplicateRoute] = mockResponse.suggestions;
+    const duplicateResponse = {
+      suggestions: [duplicateRoute, duplicateRoute],
+    };
+    const duplicateClient = createMockClient(JSON.stringify(duplicateResponse));
+    const opts = options(duplicateClient);
     const result = await run(opts);
 
     expect(result.status).toBe("llm-failure");

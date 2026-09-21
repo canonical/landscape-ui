@@ -33,7 +33,7 @@ configure({ asyncUtilTimeout: 5000 });
  * JSON and form-encoded bodies into objects so downstream redaction can key
  * off field names; other bodies are returned as raw strings.
  */
-async function extractPayload(
+export async function extractPayload(
   streamOwner: Request | Response,
 ): Promise<unknown> {
   if (!streamOwner.body) return null;

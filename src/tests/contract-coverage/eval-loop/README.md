@@ -85,5 +85,5 @@ Requires the `LLM_API_KEY` repo secret (OpenRouter key). Optional repo vars `LLM
 
 ## Known limitations & follow-ups
 
-- This eval-loop implementation lives entires on the frontend `landscape-ui` repo. A more complete version would run from `landscape-packaging` to
+- This eval-loop implementation lives entirely on the frontend `landscape-ui` repo. A more complete version would run from `landscape-packaging` to compare against the Go backend's declared routes directly, rather than approximating them from the OpenAPI/mirrors-config pins checked into this repo.
 - **Template-literal URL spans are treated as single-segment parameters.** Each `${...}` in a spec URL becomes a `{param}` placeholder, which `patternToRegExp` matches as one path segment (`[^/:]+`). Specs that interpolate multi-segment resource names (for example `/v1/${createdRepoName}` where the variable contains `locals/my-repo`) are not statically matchable and may be reported as gaps or orphans. Prefer literal path prefixes such as `/v1/locals/${name}` where possible. A future change will either support multi-segment spans via an explicit annotation or require an analyzable URL form and emit a warning.
