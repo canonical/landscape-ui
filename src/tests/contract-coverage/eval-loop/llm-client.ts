@@ -89,24 +89,27 @@ export function createOpenAiCompatibleClient(
 
   const attempt = async (req: CompletionRequest): Promise<Response> => {
     try {
-      return await fetchImpl(`${baseUrl}/chat/completions`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
+      return await fetchImpl(
+        `${baseUrl.replace(/\/+$/, "")}/chat/completions`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: "system", content: req.system },
+              { role: "user", content: req.user },
+            ],
+            temperature: 0,
+            response_format: { type: "json_object" },
+            max_tokens: req.maxTokens ?? DEFAULT_MAX_TOKENS,
+          }),
+          signal: AbortSignal.timeout(timeoutMs),
         },
-        body: JSON.stringify({
-          model,
-          messages: [
-            { role: "system", content: req.system },
-            { role: "user", content: req.user },
-          ],
-          temperature: 0,
-          response_format: { type: "json_object" },
-          max_tokens: req.maxTokens ?? DEFAULT_MAX_TOKENS,
-        }),
-        signal: AbortSignal.timeout(timeoutMs),
-      });
+      );
     } catch (error) {
       if (isTimeoutError(error)) {
         throw new Error(`LLM request timed out after ${timeoutMs}ms`);
