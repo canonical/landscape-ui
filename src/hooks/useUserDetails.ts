@@ -20,7 +20,7 @@ interface GenerateApiCredentialsParams {
 }
 
 interface EditUserDetailsParams {
-  email: string;
+  email?: string;
   name: string;
   timezone: string;
 }

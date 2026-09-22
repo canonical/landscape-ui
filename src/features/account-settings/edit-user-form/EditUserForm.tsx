@@ -54,7 +54,9 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
       email: user.email,
       defaultOrganisation:
         user.accounts.find((acc) => acc.name === user.preferred_account)
-          ?.name ?? "",
+          ?.name ??
+        user.accounts[0]?.name ??
+        "",
     },
     validationSchema: Yup.object().shape({
       name: Yup.string().required("This field is required"),
@@ -73,8 +75,8 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
       try {
         await editUserMutation({
           name: values.name,
-          email: values.email,
           timezone: values.timezone,
+          ...(emails.length > 1 ? { email: values.email } : {}),
         });
         await mutateSetPreferredAccount({
           preferred_account: values.defaultOrganisation,
