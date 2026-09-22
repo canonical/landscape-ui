@@ -396,7 +396,7 @@ The repo uses six workflows. Copilot must follow these triggers, job orders, and
 
 ### Integration Tests (`.github/workflows/integration-tests.yml`)
 
-**Trigger:** PR → `main` and push → `main` (both `paths-ignore` docs/markdown-only changes); nightly cron `0 2 * * *`; `workflow_dispatch` with a `packaging_ref` input  
+**Trigger:** PR → `main` and push → `main` — both `paths-ignore` `docs/**`, `feature-plans/**`, `debian/**` and `**.md`; nightly cron `0 2 * * *`; `workflow_dispatch` with a `packaging_ref` input  
 **Job:** **integration-tests** (Ubuntu hosted, 45-minute timeout), skipped for fork PRs. Checks out `landscape-packaging` with a GitHub App token, vendors `landscape-go`, starts the backend stack with Docker Compose, waits for schema migrations / debarchive seeding / appserver readiness, then runs three Playwright configs from `e2e/docker-stack/`: API contract, self-hosted, SaaS — uploading a report per config.  
 **Rule:** Third-party actions here are SHA-pinned. Keep them pinned; do not relax them to floating tags.
 
