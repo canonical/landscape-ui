@@ -1,6 +1,7 @@
 # Landscape UI
 
-[![Tests](https://github.com/canonical/landscape-ui/actions/workflows/run-tests.yml/badge.svg)](https://github.com/canonical/landscape-ui/actions/workflows/run-tests.yml)
+[![Validate](https://github.com/canonical/landscape-ui/actions/workflows/validate.yml/badge.svg)](https://github.com/canonical/landscape-ui/actions/workflows/validate.yml)
+[![Integration Tests](https://github.com/canonical/landscape-ui/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/canonical/landscape-ui/actions/workflows/integration-tests.yml)
 
 The modern web interface for Canonical's Landscape, built with React and TypeScript.
 
