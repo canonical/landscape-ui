@@ -2,7 +2,7 @@ import { pluralize } from "@/utils/_helpers";
 import { SearchBox } from "@canonical/react-components";
 import Downshift from "downshift";
 import type { FC } from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 import SnapBulkSearchList from "../SnapBulkSearchList";
 import { DEBOUNCE_DELAY, MAX_SELECTED_SNAPS } from "./constants";
@@ -30,10 +30,31 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
     setTrue: openDropdown,
   } = useBoolean();
 
-  const snapsQueryResult = useGetBulkInstalledSnaps({
-    computer_ids: instanceIds,
-    search: search.trim() || undefined,
-  });
+  const scrollFromKeyboard = useRef(false);
+
+  const getSearchScope = () => {
+    switch (action) {
+      case "install":
+        return "available";
+      case "unhold":
+        return "held";
+      default:
+        return "installed";
+    }
+  };
+  const searchScope = getSearchScope();
+
+  const snapsQueryResult = useGetBulkInstalledSnaps(
+    {
+      computer_ids: instanceIds,
+      search: search.trim() || undefined,
+      status: searchScope,
+    },
+    // isDropdownOpen stops re-sending all cached requests on submission
+    // staleTime stops refetching every time the dropdown is reopened
+    // gcTime ensures it does refetch when a new form is opened
+    { enabled: isDropdownOpen, gcTime: 0, staleTime: Infinity },
+  );
 
   const { error: snapsError } = snapsQueryResult;
 
@@ -65,11 +86,12 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
       closeDropdown();
     } else if (!isDropdownOpen && event.key === "Enter") {
       openDropdown();
+    } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+      scrollFromKeyboard.current = true;
     }
   };
 
   const isOverLimit = selectedItems.length >= MAX_SELECTED_SNAPS;
-  const searchScope = action === "install" ? "available" : "installed";
   const preposition = action === "change channel" ? "s on" : "";
 
   return (
@@ -78,6 +100,13 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
       itemToString={(item) => item?.snap.name ?? ""}
       isOpen={isDropdownOpen}
       onOuterClick={closeDropdown}
+      scrollIntoView={(node) => {
+        // Needed to avoid auto-scrolling up when the next page loads
+        if (scrollFromKeyboard.current) {
+          node?.scrollIntoView({ block: "nearest" });
+          scrollFromKeyboard.current = false;
+        }
+      }}
     >
       {(downshiftOptions) => (
         <div>
