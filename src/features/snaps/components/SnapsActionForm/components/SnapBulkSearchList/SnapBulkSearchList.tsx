@@ -37,8 +37,14 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
     },
   });
 
+  const stylingClass = `p-card--highlighted ${classes.suggestionsContainer}`;
+
   if (queryResult.isPending) {
-    return <LoadingState />;
+    return (
+      <div className={classNames(stylingClass, "u-align--center")}>
+        <LoadingState inline />
+      </div>
+    );
   }
 
   const results = queryResult.data.pages.flatMap((page) => page.data.results);
@@ -48,47 +54,38 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
 
   if (filteredResults.length) {
     return (
-      <>
-        <ul
-          className={classNames(
-            "p-card--highlighted",
-            "u-no-margin",
-            "u-no-padding",
-            classes.suggestionsContainer,
-          )}
-          {...downshiftOptions.getMenuProps()}
-        >
-          {filteredResults.map(
-            (item: InstalledSnapWithCount, index: number) => (
-              <li
-                className={classNames(classes.listItem, {
-                  [classes.highlighted]:
-                    downshiftOptions.highlightedIndex === index,
-                })}
-                key={item.snap.id}
-                {...downshiftOptions.getItemProps({ item, index })}
+      <ul
+        className={classNames(stylingClass, "u-no-margin", "u-no-padding")}
+        {...downshiftOptions.getMenuProps()}
+      >
+        {filteredResults.map((item: InstalledSnapWithCount, index: number) => (
+          <li
+            className={classNames(classes.listItem, {
+              [classes.highlighted]:
+                downshiftOptions.highlightedIndex === index,
+            })}
+            key={item.snap.id}
+            {...downshiftOptions.getItemProps({ item, index })}
+          >
+            <div className="u-truncate">
+              <TooltipCell
+                message={`${item.snap.name} ${item.tracking_channel}`}
               >
-                <div className="u-truncate">
-                  <TooltipCell
-                    message={`${item.snap.name} ${item.tracking_channel}`}
-                  >
-                    <BoldSubstring text={item.snap.name} substring={search} />
-                  </TooltipCell>
-                </div>
-                <div className={classNames("u-text--muted", classes.publisher)}>
-                  {item.snap.publisher["display-name"] ??
-                    item.snap.publisher.username}
-                </div>
-              </li>
-            ),
-          )}
-        </ul>
+                <BoldSubstring text={item.snap.name} substring={search} />
+              </TooltipCell>
+            </div>
+            <div className={classNames("u-text--muted", classes.publisher)}>
+              {item.snap.publisher["display-name"] ??
+                item.snap.publisher.username}
+            </div>
+          </li>
+        ))}
         {queryResult.hasNextPage && <LoadingState ref={loadingRef} dense />}
-      </>
+      </ul>
     );
   }
 
-  return <div className={classes.empty}>No snaps found.</div>;
+  return <div className={stylingClass}>No snaps found.</div>;
 };
 
 export default SnapBulkSearchList;

@@ -9,7 +9,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import SnapBulkSearch from "./SnapBulkSearch";
 import { MAX_SELECTED_SNAPS } from "./constants";
 
-const [firstSnap, , , , , , , , , , searchedSnap] = installedSnaps;
+const [firstSnap, secondSnap, , , , , , , , , searchedSnap] = installedSnaps;
 
 const props: ComponentProps<typeof SnapBulkSearch> = {
   instanceIds: [1],
@@ -87,6 +87,8 @@ describe("SnapBulkSearch", () => {
       </ErrorBoundary>,
     );
 
+    await user.click(screen.getByRole("searchbox"));
+
     expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
   });
 
@@ -127,11 +129,11 @@ describe("SnapBulkSearch", () => {
     ).toBeInTheDocument();
   });
 
-  it("searches installed snaps for non-install actions", () => {
-    renderWithProviders(<SnapBulkSearch {...props} />);
+  it("searches held snaps when the action is unhold", () => {
+    renderWithProviders(<SnapBulkSearch {...props} action="unhold" />);
 
     expect(
-      screen.getByPlaceholderText("Search installed snaps"),
+      screen.getByPlaceholderText("Search held snaps"),
     ).toBeInTheDocument();
   });
 
@@ -160,5 +162,25 @@ describe("SnapBulkSearch", () => {
     await user.keyboard("{Enter}");
 
     expect(await screen.findByText(firstSnap.snap.name)).toBeInTheDocument();
+  });
+
+  it("scrolls the dropdown when using arrow keys", async () => {
+    renderWithProviders(<SnapBulkSearch {...props} />);
+
+    await user.click(screen.getByRole("searchbox"));
+
+    const firstSnapElement = await screen.findByRole("option", {
+      name: `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`,
+    });
+    const secondSnapElement = await screen.findByRole("option", {
+      name: `${secondSnap.snap.name} ${secondSnap.snap.publisher.username}`,
+    });
+
+    await user.keyboard("{ArrowDown}");
+    await user.keyboard("{ArrowDown}");
+    expect(secondSnapElement).toHaveAttribute("aria-selected", "true");
+
+    await user.keyboard("{ArrowUp}");
+    expect(firstSnapElement).toHaveAttribute("aria-selected", "true");
   });
 });
