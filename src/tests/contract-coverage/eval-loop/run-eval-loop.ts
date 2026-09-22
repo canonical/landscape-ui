@@ -18,7 +18,6 @@ import {
   renderSuggestions,
 } from "./render";
 import { REPORT_PATH } from "../paths";
-import type { GapEntry } from "./types";
 
 /**
  * Orchestrates the eval loop: deterministic collection first (gaps.json is
@@ -29,6 +28,8 @@ import type { GapEntry } from "./types";
 export interface RunOptions {
   reportPath: string;
   specDir: string;
+  /** Relative roots inside specDir to scan for spec calls. Defaults to ["api", "helpers"]. */
+  scanRoots?: string[];
   outDir: string;
   exemplarPath: string;
   client?: LlmClient;
@@ -49,8 +50,8 @@ export interface RunResult {
 const EXEMPLAR_MAX_LINES = 200;
 const RAW_FALLBACK_NAME = "00-raw-llm-output.md";
 
-function buildMockResponseFromGaps(gaps: GapEntry[]): string {
-  const suggestions = gaps.slice(0, 5).map(({ routeId }) => ({
+function buildMockResponseFromRoutes(routes: string[]): string {
+  const suggestions = routes.map((routeId) => ({
     route: routeId,
     title: `Cover ${routeId} (mock)`,
     rationale: "Mock suggestion for dry-runs.",
@@ -93,7 +94,7 @@ function writeRawFallback(
 
 export async function run(options: RunOptions): Promise<RunResult> {
   const report = loadReport(options.reportPath);
-  const extraction = extractSpecCoverage(options.specDir);
+  const extraction = extractSpecCoverage(options.specDir, options.scanRoots);
   const gaps = computeGaps(report, extraction.calls);
   const orphans = computeOrphans(report, extraction.calls);
   writeGapsFile(
@@ -125,10 +126,6 @@ export async function run(options: RunOptions): Promise<RunResult> {
     };
   }
 
-  const client =
-    options.mockFromGaps && !options.client
-      ? createMockClient(buildMockResponseFromGaps(gaps))
-      : (options.client ?? createLlmClientFromEnv(options.env));
   const exemplar = fs
     .readFileSync(options.exemplarPath, "utf-8")
     .split("\n")
@@ -155,6 +152,11 @@ export async function run(options: RunOptions): Promise<RunResult> {
       rawFallbackPath,
     };
   }
+
+  const client =
+    options.mockFromGaps && !options.client
+      ? createMockClient(buildMockResponseFromRoutes(prompt.includedRoutes))
+      : (options.client ?? createLlmClientFromEnv(options.env));
 
   const completion = await client.complete(prompt);
 
@@ -195,6 +197,7 @@ export async function run(options: RunOptions): Promise<RunResult> {
 interface CliOptions {
   reportPath: string;
   specDir: string;
+  scanRoots: string[];
   outDir: string;
   exemplarPath: string;
 }
@@ -209,6 +212,7 @@ function parseArgs(argv: string[]): CliOptions {
   const options: CliOptions = {
     reportPath: REPORT_PATH,
     specDir: dockerStackDir,
+    scanRoots: ["api", "helpers"],
     outDir: path.join(evalLoopDir, "out"),
     exemplarPath: path.join(apiDir, "local-repositories.spec.ts"),
   };
@@ -220,6 +224,8 @@ function parseArgs(argv: string[]): CliOptions {
     }
     if (flag === "--report") options.reportPath = value;
     else if (flag === "--spec-dir") options.specDir = value;
+    else if (flag === "--scan-roots")
+      options.scanRoots = value.split(",").map((s) => s.trim());
     else if (flag === "--out-dir") options.outDir = value;
     else if (flag === "--exemplar") options.exemplarPath = value;
     else throw new Error(`Unknown flag: ${flag}`);

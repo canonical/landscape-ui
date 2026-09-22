@@ -1,5 +1,8 @@
+// Excludes "has_"/"no_" (and camelCase "has"/"no") prefixes so boolean
+// presence flags like `has_password` or `hasToken` survive redaction,
+// while suffix matches like `AccessToken` are still caught.
 const SENSITIVE_KEY_PATTERN =
-  /password|secret|token|apikey|api_key|authorization|privatekey|private_key|credential|accesskey|access_key|secretkey|secret_key|fde_recovery_key|recoverykey|invitation_?id|secure_?id|gpg_?key/i;
+  /(?<!has_)(?<!has)(?<!no_)(?<!no)(password|secret|token|apikey|api_key|authorization|privatekey|private_key|credential|accesskey|access_key|secretkey|secret_key|fde_recovery_key|recoverykey|invitation_?id|secure_?id|gpg_?key)/i;
 
 const REDACTED_VALUE = "***REDACTED***";
 

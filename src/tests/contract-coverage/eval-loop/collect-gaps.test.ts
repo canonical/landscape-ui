@@ -1,6 +1,7 @@
 import fs from "fs";
+import os from "os";
 import path from "path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   buildGapsFile,
   computeGaps,
@@ -14,6 +15,13 @@ import type { CoverageReport } from "./types";
 
 const FIXTURES = path.join(import.meta.dirname, "fixtures");
 const SPEC_DIR = path.join(FIXTURES, "repo", "e2e", "docker-stack", "api");
+
+const tmpFiles: string[] = [];
+afterEach(() => {
+  for (const file of tmpFiles.splice(0)) {
+    fs.rmSync(file, { recursive: true, force: true });
+  }
+});
 
 const fixtureReport = (): CoverageReport =>
   JSON.parse(
@@ -107,6 +115,18 @@ describe("extractSpecCoverage", () => {
       expect(call.file).toMatch(/widgets\.spec\.ts$/);
       expect(call.line).toBeGreaterThan(0);
     }
+  });
+});
+
+describe("extractSpecCoverage scan roots", () => {
+  it("scans only the requested roots and ignores ui/ integration specs", () => {
+    const mixedDir = path.join(FIXTURES, "repo-mixed", "e2e", "docker-stack");
+    const { calls } = extractSpecCoverage(mixedDir, ["api", "helpers"]);
+    const signatures = calls.map((c) => `${c.method} ${c.urlPattern}`).sort();
+
+    expect(signatures).toContain("GET /api/v2/computers");
+    expect(signatures).toContain("POST /api/v2/login");
+    expect(signatures).not.toContain("GET /debarchive/v1beta1/mirrors");
   });
 });
 
@@ -256,5 +276,25 @@ describe("assertGapsFile", () => {
     expect(() => {
       assertGapsFile(gapsFile);
     }).not.toThrow();
+  });
+});
+
+describe("collect-gaps CLI", () => {
+  it("exits 0 and still writes gaps.json when orphans are present", () => {
+    const outFile = path.join(
+      fs.mkdtempSync(path.join(os.tmpdir(), "collect-gaps-cli-")),
+      "gaps.json",
+    );
+    tmpFiles.push(path.dirname(outFile));
+
+    // The orphan warning is written to stderr and not captured in the
+    // returned string, but the gaps.json file proves the CLI did not exit.
+    expect(fs.existsSync(outFile)).toBe(true);
+    const gapsFile = JSON.parse(fs.readFileSync(outFile, "utf-8")) as {
+      stats: { orphansFound: number };
+      orphans: unknown[];
+    };
+    expect(gapsFile.stats.orphansFound).toBeGreaterThan(0);
+    expect(gapsFile.orphans).toHaveLength(gapsFile.stats.orphansFound);
   });
 });

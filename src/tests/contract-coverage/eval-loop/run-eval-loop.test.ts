@@ -68,6 +68,7 @@ const mockResponse: SuggestionsResponse = {
 const options = (client = createMockClient(JSON.stringify(mockResponse))) => ({
   reportPath: REPORT,
   specDir: SPEC_DIR,
+  scanRoots: undefined,
   outDir: outDir(),
   exemplarPath: EXEMPLAR,
   client,
@@ -205,7 +206,7 @@ describe("run", () => {
 
   it("LLM_MOCK=1 succeeds by deriving suggestions from the computed gaps", async () => {
     const opts = {
-      ...options(),
+      ...options(undefined),
       client: undefined,
       mockFromGaps: true,
     };
@@ -213,6 +214,26 @@ describe("run", () => {
 
     expect(result.status).toBe("ok");
     expect(result.suggestionsWritten).toHaveLength(2);
+    expect(fs.existsSync(path.join(opts.outDir, "gaps.json"))).toBe(true);
+  });
+
+  it("LLM_MOCK=1 succeeds even when the prompt degrades the gap list", async () => {
+    const hugeExemplarPath = path.join(
+      tmpDirs[tmpDirs.length - 1] ?? os.tmpdir(),
+      "huge-exemplar.spec.ts",
+    );
+    const hugeExemplarLength = 11_000;
+    fs.writeFileSync(hugeExemplarPath, "x".repeat(hugeExemplarLength), "utf-8");
+    const opts = {
+      ...options(undefined),
+      client: undefined,
+      exemplarPath: hugeExemplarPath,
+      mockFromGaps: true,
+    };
+    const result = await run(opts);
+
+    expect(result.status).toBe("ok");
+    expect(result.suggestionsWritten.length).toBeGreaterThan(0);
     expect(fs.existsSync(path.join(opts.outDir, "gaps.json"))).toBe(true);
   });
 
