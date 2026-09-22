@@ -1,7 +1,7 @@
 import TableFilter from "@/components/filter/TableFilter";
 import tableFilterClasses from "@/components/filter/TableFilter/TableFilter.module.scss";
 import usePageParams from "@/hooks/usePageParams";
-import { Badge } from "@canonical/react-components";
+import { Badge } from "@canonical/react-ds-global";
 import PassRateFilterBase from "../PassRateFilterBase";
 
 const PassRateFilter = () => {
@@ -16,9 +16,7 @@ const PassRateFilter = () => {
         <>
           <span>Pass rate</span>
           <span className={tableFilterClasses.badgeContainer}>
-            {badgeValue > 0 && (
-              <Badge value={badgeValue} className={tableFilterClasses.badge} />
-            )}
+            {badgeValue > 0 && <Badge value={badgeValue} />}
           </span>
         </>
       }

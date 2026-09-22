@@ -20,7 +20,7 @@ const normalizeRootPath = (rootPath = "/") => {
     : `${absoluteRootPath}/`;
 };
 
-export const getPragmaIconPath = (
+const getRelativeIconPath = (
   requestUrl: string | undefined,
   iconsRoutes: string[],
 ) => {
@@ -49,42 +49,65 @@ export const getPragmaIconPath = (
     return null;
   }
 
-  return path.join(PRAGMA_ICONS_DIR, iconPath);
+  return iconPath;
+};
+
+const resolveIconFilePath = async (iconPath: string, appIconsDir: string) => {
+  const candidates = [
+    path.join(appIconsDir, iconPath),
+    path.join(PRAGMA_ICONS_DIR, iconPath),
+  ];
+
+  // Sequential: an application icon must win before Pragma's is looked at.
+  for (const candidate of candidates) {
+    try {
+      if ((await fs.promises.stat(candidate)).isFile()) {
+        return candidate;
+      }
+    } catch {
+      // try next candidate
+    }
+  }
+
+  return null;
 };
 
 const servePragmaIcons = (
   server: ViteDevServer | PreviewServer,
   iconsRoutes: string[],
+  getAppIconsDir: () => string,
 ) => {
   server.middlewares.use((req, res, next) => {
-    const filePath = getPragmaIconPath(req.url, iconsRoutes);
+    const relativeIconPath = getRelativeIconPath(req.url, iconsRoutes);
 
-    if (!filePath) {
+    if (!relativeIconPath) {
       next();
       return;
     }
 
-    fs.stat(filePath, (error, stats) => {
-      if (error || !stats.isFile()) {
-        next();
-        return;
-      }
-
-      res.setHeader("Content-Type", "image/svg+xml");
-      const iconStream = fs.createReadStream(filePath);
-      iconStream.on("error", (streamError) => {
-        if (res.headersSent) {
-          server.config.logger.warn(
-            `Failed to serve Pragma icon "${filePath}": ${streamError.message}`,
-          );
-          res.destroy(streamError);
+    resolveIconFilePath(relativeIconPath, getAppIconsDir())
+      .then((filePath) => {
+        if (!filePath) {
+          next();
           return;
         }
 
-        next(streamError);
-      });
-      iconStream.pipe(res);
-    });
+        res.setHeader("Content-Type", "image/svg+xml");
+        const iconStream = fs.createReadStream(filePath);
+        iconStream.on("error", (streamError) => {
+          if (res.headersSent) {
+            server.config.logger.warn(
+              `Failed to serve Pragma icon "${filePath}": ${streamError.message}`,
+            );
+            res.destroy(streamError);
+            return;
+          }
+
+          next(streamError);
+        });
+        iconStream.pipe(res);
+      })
+      .catch(next);
   });
 };
 
@@ -93,6 +116,7 @@ export const createPragmaIconsPlugin = (rootPath = "/"): Plugin => {
   let outDir = "dist";
   const iconsRoute = `${normalizeRootPath(rootPath)}icons/`;
   const iconsRoutes = [...new Set([PRAGMA_ICONS_ROUTE, iconsRoute])];
+  const getAppIconsDir = () => path.resolve(root, "src/assets/icons");
 
   return {
     name: "serve-pragma-icons",
@@ -101,10 +125,10 @@ export const createPragmaIconsPlugin = (rootPath = "/"): Plugin => {
       ({ outDir } = config.build);
     },
     configureServer(server) {
-      servePragmaIcons(server, iconsRoutes);
+      servePragmaIcons(server, iconsRoutes, getAppIconsDir);
     },
     configurePreviewServer(server) {
-      servePragmaIcons(server, iconsRoutes);
+      servePragmaIcons(server, iconsRoutes, getAppIconsDir);
     },
     generateBundle(_options, bundle) {
       if (iconsRoute === PRAGMA_ICONS_ROUTE) {
@@ -125,10 +149,19 @@ export const createPragmaIconsPlugin = (rootPath = "/"): Plugin => {
       });
     },
     writeBundle() {
-      fs.cpSync(PRAGMA_ICONS_DIR, path.resolve(root, outDir, "icons"), {
+      const outputIconsDir = path.resolve(root, outDir, "icons");
+      fs.cpSync(PRAGMA_ICONS_DIR, outputIconsDir, {
         recursive: true,
         force: true,
       });
+
+      const appIconsDir = getAppIconsDir();
+      if (fs.existsSync(appIconsDir)) {
+        fs.cpSync(appIconsDir, outputIconsDir, {
+          recursive: true,
+          force: true,
+        });
+      }
     },
   };
 };
@@ -199,7 +232,8 @@ export default defineConfig(({ mode }) => {
                   env.VITE_DEBARCHIVE_PROXY_TARGET || "http://localhost:8000",
                 changeOrigin: true,
                 secure: false,
-                rewrite: (path) => path.replace(/^\/debarchive/, ""),
+                rewrite: (requestPath) =>
+                  requestPath.replace(/^\/debarchive/, ""),
               },
               [debArchivePath]: {
                 target:
