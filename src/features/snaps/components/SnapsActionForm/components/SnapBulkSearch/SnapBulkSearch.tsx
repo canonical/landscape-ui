@@ -97,11 +97,13 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
             disabled={isOverLimit}
           />
           {isOverLimit && (
-            <span className="p-form-help-text">
-              You can only {action}
-              {preposition} a maximum of{" "}
-              {pluralize(MAX_SELECTED_SNAPS, ["snap"], "exact")} at once.
-            </span>
+            <div className="is-caution">
+              <span className="p-form-validation__message">
+                You can only {action}
+                {preposition} a maximum of{" "}
+                {pluralize(MAX_SELECTED_SNAPS, ["snap"], "exact")} at once.
+              </span>
+            </div>
           )}
 
           {isDropdownOpen && (
