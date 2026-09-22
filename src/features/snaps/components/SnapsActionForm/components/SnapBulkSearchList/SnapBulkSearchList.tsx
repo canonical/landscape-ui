@@ -80,7 +80,11 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
             </div>
           </li>
         ))}
-        {queryResult.hasNextPage && <LoadingState ref={loadingRef} dense />}
+        {queryResult.hasNextPage && (
+          <li role="presentation">
+            <LoadingState ref={loadingRef} dense />
+          </li>
+        )}
       </ul>
     );
   }
