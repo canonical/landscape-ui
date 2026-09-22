@@ -56,10 +56,8 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
     { enabled: isDropdownOpen, gcTime: 0, staleTime: Infinity },
   );
 
-  const { error: snapsError } = snapsQueryResult;
-
-  if (snapsError) {
-    throw snapsError;
+  if (snapsQueryResult.isError) {
+    throw snapsQueryResult.error;
   }
 
   const handleSearchBoxChange = (value: string) => {

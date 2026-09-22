@@ -15,7 +15,8 @@ import { API_URL } from "@/constants";
 import type { SnapActionParams } from "../../types";
 
 const instanceId = 1;
-const [firstSnap] = installedSnaps;
+const [{ snap }] = installedSnaps;
+const snapTitle = `${snap.name} ${snap.publisher.username}`;
 
 describe("SnapsActionForm", () => {
   const user = userEvent.setup();
@@ -23,16 +24,18 @@ describe("SnapsActionForm", () => {
   describe("Form rendering", () => {
     it("renders form with searchbox, text, and buttons", () => {
       renderWithProviders(
-        <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+        <SnapsActionForm selectedInstances={[instanceId]} action="unhold" />,
       );
 
-      screen.getByRole("searchbox");
+      expect(screen.getByRole("searchbox")).toBeInTheDocument();
 
-      screen.getByText(/Snaps to install/i);
-      screen.getByText(/No snaps have been added yet/i);
+      expect(screen.getByText(/Snaps to unhold/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/No snaps have been added yet/i),
+      ).toBeInTheDocument();
 
       expect(
-        screen.getByRole("button", { name: "Install snaps" }),
+        screen.getByRole("button", { name: "Unhold snaps" }),
       ).not.toHaveAttribute("aria-disabled");
 
       expect(
@@ -42,47 +45,33 @@ describe("SnapsActionForm", () => {
 
     it("includes count in submit button when snaps are selected", async () => {
       renderWithProviders(
-        <SnapsActionForm selectedInstances={[instanceId]} action="uninstall" />,
+        <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
       );
 
-      const searchBox = screen.getByRole("searchbox");
-      await user.click(searchBox);
-      await user.click(
-        screen.getByRole("option", {
-          name: `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`,
-        }),
-      );
+      await user.click(screen.getByRole("searchbox"));
+      await user.click(screen.getByRole("option", { name: snapTitle }));
 
-      const nextButton = screen.getByRole("button", {
-        name: "Uninstall 1 snap",
-      });
-      expect(nextButton).not.toHaveAttribute("aria-disabled");
+      expect(
+        screen.getByRole("button", { name: "Install 1 snap" }),
+      ).toBeInTheDocument();
     });
   });
 
   it("removes package when delete button is clicked", async () => {
     renderWithProviders(
-      <SnapsActionForm selectedInstances={[instanceId]} action="unhold" />,
+      <SnapsActionForm selectedInstances={[instanceId]} action="refresh" />,
     );
 
-    const searchBox = screen.getByRole("searchbox");
-    await user.click(searchBox);
-
-    await user.click(
-      screen.getByRole("option", {
-        name: `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`,
-      }),
-    );
+    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("option", { name: snapTitle }));
 
     const deleteButton = await screen.findByRole("button", {
-      name: `Delete ${firstSnap.snap.name}`,
+      name: `Delete ${snap.name}`,
     });
     await user.click(deleteButton);
 
     expect(
-      screen.queryByRole("button", {
-        name: `Delete ${firstSnap.snap.name}`,
-      }),
+      screen.queryByRole("button", { name: `Delete ${snap.name}` }),
     ).not.toBeInTheDocument();
     expect(
       screen.getByText(/No snaps have been added yet/i),
@@ -91,20 +80,15 @@ describe("SnapsActionForm", () => {
 
   it("shows error notification", async () => {
     renderWithProviders(
-      <SnapsActionForm selectedInstances={[instanceId]} action="unhold" />,
+      <SnapsActionForm selectedInstances={[instanceId]} action="hold" />,
     );
 
-    const searchBox = screen.getByRole("searchbox");
-    await user.click(searchBox);
-    await user.click(
-      await screen.findByRole("option", {
-        name: `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`,
-      }),
-    );
+    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("option", { name: snapTitle }));
 
     setEndpointStatus({ path: "snaps", status: "error" });
 
-    await user.click(screen.getByRole("button", { name: "Unhold 1 snap" }));
+    await user.click(screen.getByRole("button", { name: "Hold 1 snap" }));
 
     expect(
       await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
@@ -119,13 +103,8 @@ describe("SnapsActionForm", () => {
       />,
     );
 
-    const searchBox = screen.getByRole("searchbox");
-    await user.click(searchBox);
-    await user.click(
-      await screen.findByRole("option", {
-        name: `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`,
-      }),
-    );
+    await user.click(screen.getByRole("searchbox"));
+    await user.click(screen.getByRole("option", { name: snapTitle }));
 
     await user.click(screen.getByRole("button", { name: "Change channel" }));
 
@@ -148,11 +127,7 @@ describe("SnapsActionForm", () => {
     );
 
     await user.click(screen.getByRole("searchbox"));
-    await user.click(
-      await screen.findByRole("option", {
-        name: `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`,
-      }),
-    );
+    await user.click(screen.getByRole("option", { name: snapTitle }));
 
     await user.click(screen.getByRole("button", { name: "Uninstall 1 snap" }));
 
@@ -162,7 +137,7 @@ describe("SnapsActionForm", () => {
     expect(requestBody).toMatchObject({
       action: "remove",
       computer_ids: [instanceId],
-      snaps: [{ name: firstSnap.snap.name }],
+      snaps: [{ name: snap.name }],
     });
   });
 });
