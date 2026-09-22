@@ -164,6 +164,9 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
         submitButtonAppearance={buttonAppearance}
         submitButtonLoading={isSnapActionPending}
         onSubmit={checkSubmit}
+        formError={
+          hasNoSelectedSnaps && "You must add at least one snap to continue."
+        }
       />
 
       {needsConfirmation && isModalOpen && (

@@ -1,6 +1,7 @@
 import useSidePanel from "@/hooks/useSidePanel";
 import { ActionButton, Button, Icon } from "@canonical/react-components";
 import type { FC, ReactElement, ReactNode, SyntheticEvent } from "react";
+import { useState } from "react";
 import classes from "./SidePanelFormButtons.module.scss";
 
 interface SidePanelFormButtonsProps {
@@ -15,6 +16,8 @@ interface SidePanelFormButtonsProps {
     event: SyntheticEvent,
   ) => Promise<void> | void;
   readonly cancelButtonDisabled?: boolean;
+  readonly formError?: ReactNode;
+  readonly formWarning?: ReactNode;
   readonly hasActionButtons?: boolean;
   readonly hasBackButton?: boolean;
   readonly onBackButtonPress?: () => void;
@@ -37,56 +40,80 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
   onSubmit,
   submitButtonAppearance = "positive",
   cancelButtonDisabled = false,
+  formError,
+  formWarning,
 }): ReactElement<Element> => {
   const { closeSidePanel } = useSidePanel();
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+
+  const handleSubmit = (event: SyntheticEvent) => {
+    setHasAttemptedSubmit(true);
+    return onSubmit?.(event);
+  };
+
   return (
-    <div className={classes.buttons}>
-      {hasBackButton && (
-        <Button
-          hasIcon
-          className="u-no-margin--bottom"
-          appearance="base"
-          type="button"
-          onClick={onBackButtonPress}
-        >
-          <Icon name="chevron-left" />
-          <span>Back</span>
-        </Button>
-      )}
-      {hasActionButtons && (
-        <div className={classes.actionButtons}>
-          <Button
-            className="u-no-margin--bottom"
-            type="button"
-            appearance="base"
-            onClick={onCancel ?? closeSidePanel}
-            disabled={cancelButtonDisabled}
-          >
-            Cancel
-          </Button>
-          {secondaryActionButtonTitle && secondaryActionButtonSubmit && (
-            <Button
-              type="button"
-              className="u-no-margin--bottom"
-              onClick={secondaryActionButtonSubmit}
-              disabled={secondaryActionButtonDisabled}
-            >
-              <>{secondaryActionButtonTitle}</>
-            </Button>
-          )}
-          <ActionButton
-            className="u-no-margin--bottom"
-            type={onSubmit ? "button" : "submit"}
-            onClick={onSubmit}
-            appearance={submitButtonAppearance}
-            disabled={submitButtonDisabled || submitButtonLoading}
-            aria-label={submitButtonAriaLabel}
-            loading={submitButtonLoading}
-          >
-            {submitButtonText}
-          </ActionButton>
+    <div className={classes.footer}>
+      {formError && hasAttemptedSubmit ? (
+        <div className={classes.formValidation} role="alert">
+          <Icon name="error" />
+          <span className="u-text--negative">{formError}</span>
         </div>
+      ) : (
+        formWarning && (
+          <div className={classes.formValidation} role="alert">
+            <Icon name="warning" />
+            <span className="u-text--caution">{formWarning}</span>
+          </div>
+        )
       )}
+      <div className={classes.buttons}>
+        {hasBackButton && (
+          <Button
+            hasIcon
+            className="u-no-margin--bottom"
+            appearance="base"
+            type="button"
+            onClick={onBackButtonPress}
+          >
+            <Icon name="chevron-left" />
+            <span>Back</span>
+          </Button>
+        )}
+        {hasActionButtons && (
+          <div className={classes.actionButtons}>
+            <Button
+              className="u-no-margin--bottom"
+              type="button"
+              appearance="base"
+              onClick={onCancel ?? closeSidePanel}
+              disabled={cancelButtonDisabled}
+            >
+              Cancel
+            </Button>
+            {secondaryActionButtonTitle && secondaryActionButtonSubmit && (
+              <Button
+                type="button"
+                className="u-no-margin--bottom"
+                onClick={secondaryActionButtonSubmit}
+                disabled={secondaryActionButtonDisabled}
+              >
+                <>{secondaryActionButtonTitle}</>
+              </Button>
+            )}
+            <ActionButton
+              className="u-no-margin--bottom"
+              type={onSubmit ? "button" : "submit"}
+              onClick={handleSubmit}
+              appearance={submitButtonAppearance}
+              disabled={submitButtonDisabled || submitButtonLoading}
+              aria-label={submitButtonAriaLabel}
+              loading={submitButtonLoading}
+            >
+              {submitButtonText}
+            </ActionButton>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
