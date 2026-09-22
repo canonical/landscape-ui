@@ -1,3 +1,4 @@
+import { execFileSync } from "child_process";
 import fs from "fs";
 import os from "os";
 import path from "path";
@@ -287,8 +288,27 @@ describe("collect-gaps CLI", () => {
     );
     tmpFiles.push(path.dirname(outFile));
 
+    const tsxBin = path.join(
+      import.meta.dirname,
+      "../../../../node_modules/.bin/tsx",
+    );
+    const script = path.join(import.meta.dirname, "collect-gaps.ts");
+    const orphanSpecDir = path.join(FIXTURES, "repo-orphans", "e2e", "docker-stack");
+
     // The orphan warning is written to stderr and not captured in the
     // returned string, but the gaps.json file proves the CLI did not exit.
+    execFileSync(tsxBin, [
+      script,
+      "--report",
+      path.join(FIXTURES, "report.fixture.json"),
+      "--spec-dir",
+      orphanSpecDir,
+      "--scan-roots",
+      "api",
+      "--out",
+      outFile,
+    ]);
+
     expect(fs.existsSync(outFile)).toBe(true);
     const gapsFile = JSON.parse(fs.readFileSync(outFile, "utf-8")) as {
       stats: { orphansFound: number };
