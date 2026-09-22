@@ -137,6 +137,22 @@ describe("redactSensitiveFields", () => {
     expect(redactSensitiveFields(input)).toEqual(input);
   });
 
+  it("does not redact boolean flag fields with password/token/etc. as a prefix", () => {
+    const input = {
+      has_password: true,
+      hasToken: false,
+      password: "secret",
+      token: "abc123",
+    };
+
+    expect(redactSensitiveFields(input)).toEqual({
+      has_password: true,
+      hasToken: false,
+      password: "***REDACTED***",
+      token: "***REDACTED***",
+    });
+  });
+
   it("returns a deep copy so the original is not mutated", () => {
     const input = {
       nested: {
