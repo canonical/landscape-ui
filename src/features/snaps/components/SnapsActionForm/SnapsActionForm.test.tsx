@@ -58,6 +58,20 @@ describe("SnapsActionForm", () => {
     });
   });
 
+  it("shows a form error when submitting without selecting a snap", async () => {
+    renderWithProviders(
+      <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+    );
+
+    await user.click(
+      await screen.findByRole("button", { name: "Install snaps" }),
+    );
+
+    expect(
+      await screen.findByText("You must add at least one snap to continue."),
+    ).toBeInTheDocument();
+  });
+
   it("removes package when delete button is clicked", async () => {
     renderWithProviders(
       <SnapsActionForm selectedInstances={[instanceId]} action="refresh" />,
