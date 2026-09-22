@@ -25,7 +25,7 @@ const SnapInstalledItem: FC<SnapInstalledItemProps> = ({
         <strong>{selectedSnap.snap.name}</strong>
         <Button
           type="button"
-          appearance="link"
+          appearance="base"
           className={classes.deleteButton}
           aria-label={`Delete ${selectedSnap.snap.name}`}
           onClick={onDelete}
