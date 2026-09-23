@@ -1,49 +1,9 @@
-// Mock data for the staff (super admin) endpoints, mirroring the server's
-// response models: the account detail (`SuperadminAccountResponse`, i.e. the
-// `Account.get_state()` fields plus the two account limits), its slim list
-// projection, and the `GET people` search results. Accounts, people and
-// invitations describe one deployment, so memberships, administrators and
-// invitation targets agree across endpoints.
+// Mock data for the staff (super admin) endpoints, typed with the
+// `super-admin` feature's API types. Accounts, people and invitations describe
+// one deployment, so memberships, administrators and invitation targets agree
+// across endpoints.
 
-export interface StaffAccountAdministrator {
-  name: string;
-  email: string;
-  openid: string | null;
-}
-
-export interface StaffAccountLicense {
-  expires: string | null;
-  seats: number;
-  type: string;
-}
-
-export interface StaffAccountListItem {
-  account: string;
-  company: string;
-  subdomain: string | null;
-  disabled: boolean;
-  computers: number;
-  creation_time: string;
-  salesforce_account_key: string | null;
-  enabled_features: number[];
-  lds_enabled: boolean;
-}
-
-export interface StaffAccount extends StaffAccountListItem {
-  /** `null` unless the account is disabled. */
-  disabled_reason: string | null;
-  last_login_time: string | null;
-  administrators: StaffAccountAdministrator[];
-  licenses: StaffAccountLicense[];
-  max_people_count: number;
-  max_attachment_size: number;
-}
-
-export interface WslFeatureLimits {
-  max_windows_host_machines: number;
-  max_wsl_child_instances_per_host: number;
-  max_wsl_child_instance_profiles: number;
-}
+import type { StaffAccount, WslFeatureLimits } from "@/features/super-admin";
 
 /**
  * Every account in the mock deployment, sorted by name like the server's
@@ -205,45 +165,8 @@ export const defaultWslFeatureLimits: WslFeatureLimits = {
 //
 // Person and invitation timestamps are naive UTC with microseconds and no
 // `Z`: unlike the account endpoints, the people search serializes the raw
-// `timestamp` columns instead of going through `format_datetime`.
-
-export interface StaffPersonAccount {
-  account: string;
-  company: string;
-  salesforce_account_key: string | null;
-}
-
-export interface StaffPendingInvitation {
-  account: string;
-  company: string;
-  creation_time: string;
-}
-
-export interface StaffPersonResult {
-  type: "person";
-  id: number;
-  name: string;
-  email: string;
-  /** The SSO identity; `null` when the person never completed an SSO login. */
-  identity: string | null;
-  last_login_time: string | null;
-  accounts: StaffPersonAccount[];
-  /** Invitations addressed to this person's email, in any account. */
-  pending_invitations: StaffPendingInvitation[];
-}
-
-export interface StaffInvitationResult {
-  type: "invitation";
-  id: number;
-  name: string;
-  email: string;
-  account: string;
-  company: string;
-  salesforce_key: string | null;
-  creation_time: string;
-}
-
-export type StaffPeopleResult = StaffPersonResult | StaffInvitationResult;
+// `timestamp` columns instead of going through `format_datetime`. The results
+// are built from these rows by the handler, as the server's query does.
 
 /** A `person` row, with the names of the accounts it belongs to. */
 export interface StaffPersonRow {
