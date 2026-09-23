@@ -2,7 +2,11 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { type FC, lazy, Suspense, useState } from "react";
 import { getRequestAction, hasNotification } from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
-import type { SnapAction, InstalledSnapWithCount } from "../../types";
+import type {
+  SnapAction,
+  InstalledSnapWithCount,
+  SnapChangeMode,
+} from "../../types";
 import classes from "./SnapsActionForm.module.scss";
 import classNames from "classnames";
 import SnapBulkSearch from "./components/SnapBulkSearch";
@@ -33,6 +37,9 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const [selectedSnaps, setSelectedSnaps] = useState<InstalledSnapWithCount[]>(
     [],
   );
+  const [snapChangeConfigs, setSnapChangeConfigs] = useState<
+    Record<string, { mode: SnapChangeMode; value: string }>
+  >({});
   const {
     value: isModalOpen,
     setTrue: openModal,
@@ -60,7 +67,22 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       await snapAction({
         action: getRequestAction(action),
         computer_ids: selectedInstances,
-        snaps: selectedSnaps.map((item) => ({ name: item.snap.name })),
+        snaps: selectedSnaps.map((item) => {
+          if (!isChangeChannel) {
+            return { name: item.snap.name };
+          }
+
+          const config = snapChangeConfigs[item.snap.id];
+          const args =
+            config?.mode === "revision"
+              ? { revision: config.value }
+              : { channel: config?.value };
+
+          return {
+            name: item.snap.name,
+            args,
+          };
+        }),
       });
 
       closeSidePanel();
@@ -75,12 +97,55 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     }
   };
 
-  const checkSubmit = () => {
+  const hasMissingChangeValue =
+    isChangeChannel &&
+    selectedSnaps.some((item) => !snapChangeConfigs[item.snap.id]?.value);
+
+  const getValidationError = () => {
     if (hasNoSelectedSnaps) {
-      return;
+      return "Select a snap to continue";
     }
 
-    openModal();
+    if (hasMissingChangeValue) {
+      return "Select a channel or revision for each snap to continue";
+    }
+
+    return null;
+  };
+
+  const checkSubmit = () => {
+    if (!getValidationError()) {
+      if (needsConfirmation) {
+        openModal();
+      } else {
+        onSubmit();
+      }
+    }
+  };
+
+  const handleSnapValueChange = (
+    snapId: string,
+    value: string,
+    mode: SnapChangeMode,
+  ) => {
+    setSnapChangeConfigs((prev) => ({
+      ...prev,
+      [snapId]: { mode, value },
+    }));
+  };
+
+  const handleSnapModeChange = (snapId: string, mode: SnapChangeMode) => {
+    setSnapChangeConfigs((prev) => ({
+      ...prev,
+      [snapId]: { mode, value: "" },
+    }));
+  };
+
+  const handleDeleteSnap = (snapId: string) => {
+    setSelectedSnaps((snaps) => snaps.filter(({ snap }) => snap.id !== snapId));
+    setSnapChangeConfigs((prev) =>
+      Object.fromEntries(Object.entries(prev).filter(([id]) => id !== snapId)),
+    );
   };
 
   const buttonAppearance = action === "uninstall" ? "negative" : "positive";
@@ -110,20 +175,28 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           <ul className="p-list u-no-margin--bottom">
             {selectedSnaps.map((item) => {
               const handleDelete = () => {
-                setSelectedSnaps((snaps) =>
-                  snaps.filter(({ snap }) => snap.id !== item.snap.id),
-                );
+                handleDeleteSnap(item.snap.id);
               };
 
               if (isChangeChannel) {
+                const config = snapChangeConfigs[item.snap.id] ?? {
+                  mode: "channel",
+                  value: "",
+                };
+
                 return (
                   <SnapChangeChannelItem
                     key={item.snap.id}
                     selectedSnap={item}
                     onDelete={handleDelete}
                     instanceIds={selectedInstances}
-                    onItemsUpdate={() => {
-                      // Update selected snaps
+                    mode={config.mode}
+                    value={config.value}
+                    onChange={(value) => {
+                      handleSnapValueChange(item.snap.id, value, config.mode);
+                    }}
+                    onModeChange={(mode) => {
+                      handleSnapModeChange(item.snap.id, mode);
                     }}
                   />
                 );
@@ -156,9 +229,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
         submitButtonAppearance={buttonAppearance}
         submitButtonLoading={isSnapActionPending}
         onSubmit={checkSubmit}
-        formError={
-          hasNoSelectedSnaps && "You must add at least one snap to continue."
-        }
+        formError={getValidationError()}
       />
 
       {isModalOpen && (
