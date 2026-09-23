@@ -61,9 +61,12 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
     validationSchema: Yup.object().shape({
       name: Yup.string().required("This field is required"),
       timezone: Yup.string().required("This field is required"),
-      email: Yup.string()
-        .email("Please provide a valid email address")
-        .required("This field is required"),
+      email:
+        emails.length > 1
+          ? Yup.string()
+              .email("Please provide a valid email address")
+              .required("This field is required")
+          : Yup.string(),
       defaultOrganisation: Yup.string()
         .required("This field is required")
         .oneOf(
