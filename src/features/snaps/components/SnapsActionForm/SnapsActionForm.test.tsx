@@ -223,7 +223,7 @@ describe("SnapsActionForm", () => {
 
     expect(
       await screen.findByText(
-        "Select a channel or revision for each snap to continue",
+        "Select a channel or revision for this snap to continue",
       ),
     ).toBeInTheDocument();
   });
