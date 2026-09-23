@@ -4,6 +4,7 @@ export {
   default as SnapChannelRevisionFields,
   MODE_OPTIONS,
   getChannelOptions,
+  getChannelName,
 } from "./components/SnapChannelRevisionFields";
 export {
   useGetInstalledSnaps,
