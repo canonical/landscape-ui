@@ -71,10 +71,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `Snaps successfully set to ${action}`,
+        title: `Snaps successfully queued to ${action}`,
         message: `You can track the progress in the Activities page.`,
       });
     } catch (error) {
+      closeModal();
       debug(error);
     }
   };
