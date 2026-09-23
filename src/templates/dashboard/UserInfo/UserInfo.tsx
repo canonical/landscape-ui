@@ -13,7 +13,7 @@ import useDebug from "@/hooks/useDebug";
 import { ROUTES } from "@/libs/routes";
 import { APP_COMMIT, APP_VERSION, TSV_EXPORTS_ENABLED } from "@/constants";
 import useEnv from "@/hooks/useEnv";
-import { useGetSelfHostedEnabled } from "@/features/self-hosted-license";
+import { useSelfHostedLicense } from "@/context/selfHostedLicense";
 import { getFilteredByEnvItems } from "../Navigation/helpers";
 
 const UserInfo: FC = () => {
@@ -21,9 +21,8 @@ const UserInfo: FC = () => {
   const { pathname } = useLocation();
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
   const { envLoading, isSaas, isSelfHosted } = useEnv();
-  const shouldGetSelfHostedEnabled = isSmallerScreen && !envLoading && isSaas;
   const { isGettingSelfHostedEnabled, isSelfHostedEnabled } =
-    useGetSelfHostedEnabled(shouldGetSelfHostedEnabled);
+    useSelfHostedLicense(!envLoading && isSaas);
   const accountSettingsItems = getFilteredByEnvItems({
     isSaas,
     isSelfHosted,
@@ -91,9 +90,7 @@ const UserInfo: FC = () => {
               </Button>
               <ul
                 aria-label="Account settings"
-                aria-busy={
-                  shouldGetSelfHostedEnabled && isGettingSelfHostedEnabled
-                }
+                aria-busy={!envLoading && isSaas && isGettingSelfHostedEnabled}
                 className="p-side-navigation__list"
                 aria-expanded={expandedAccountSettings}
               >

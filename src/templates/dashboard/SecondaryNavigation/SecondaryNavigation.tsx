@@ -6,7 +6,7 @@ import type { FC, ReactNode } from "react";
 import type { MenuItem } from "../Navigation/types";
 import useEnv from "@/hooks/useEnv";
 import { getFilteredByEnvItems } from "../Navigation/helpers";
-import { useGetSelfHostedEnabled } from "@/features/self-hosted-license";
+import { useSelfHostedLicense } from "@/context/selfHostedLicense";
 
 interface SecondaryNavigationProps {
   readonly title: ReactNode;
@@ -26,9 +26,9 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
   const { isSaas, isSelfHosted, envLoading } = useEnv();
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
   const shouldGetSelfHostedEnabled =
-    isLargeScreen && !envLoading && isSaas && hasSelfHostedLicenseItem(items);
+    !envLoading && isSaas && hasSelfHostedLicenseItem(items);
   const { isGettingSelfHostedEnabled, isSelfHostedEnabled } =
-    useGetSelfHostedEnabled(shouldGetSelfHostedEnabled);
+    useSelfHostedLicense(shouldGetSelfHostedEnabled);
 
   const filteredItems = getFilteredByEnvItems({
     isSaas,
