@@ -24,14 +24,17 @@ export const getChannelOptions = (
     channelsByLabel.set(label, channel.name);
   }
 
-  return [...channelsByLabel.entries()]
     .sort(([a], [b]) => {
-      const riskIndexA = RISK_ORDER.indexOf(a);
-      const riskIndexB = RISK_ORDER.indexOf(b);
+      const riskA = a.slice(a.lastIndexOf("/") + 1);
+      const riskB = b.slice(b.lastIndexOf("/") + 1);
+      const riskIndexA = RISK_ORDER.indexOf(riskA);
+      const riskIndexB = RISK_ORDER.indexOf(riskB);
 
-      if (riskIndexA === -1 || riskIndexB === -1) {
+      if (riskIndexA === -1 && riskIndexB === -1) {
         return a.localeCompare(b);
       }
+      if (riskIndexA === -1) return 1;
+      if (riskIndexB === -1) return -1;
 
       return riskIndexA - riskIndexB;
     })
