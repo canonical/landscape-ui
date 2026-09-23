@@ -5,7 +5,7 @@
   background-color: $colors--theme--background-default;
   border-top: 1px solid $colors--theme--border-default;
   bottom: 0;
-  margin-bottom: -3 * $sp-unit;
+  margin-bottom: -$spv--x-large;
   margin-top: $spv--x-large;
   position: sticky;
   z-index: var(--z-sticky);
