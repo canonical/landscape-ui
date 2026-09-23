@@ -1,4 +1,4 @@
-import { Button } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./DownloadLicenseButton.module.scss";
 
@@ -26,7 +26,7 @@ const DownloadLicenseButton: FC<DownloadLicenseButtonProps> = ({
       type="button"
       className={classes.downloadLicenseButton}
     >
-      <i className="p-icon--begin-downloading" />
+      <Icon name="begin-downloading" light/>
       <span>Download license file</span>
     </Button>
   );
