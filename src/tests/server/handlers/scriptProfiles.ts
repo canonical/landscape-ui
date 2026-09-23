@@ -145,8 +145,8 @@ export default [
         const { error } =
           (endpointStatus.response as
             | {
-              error?: string;
-            }
+                error?: string;
+              }
             | undefined) ?? {};
 
         throw createEndpointStatusError({
