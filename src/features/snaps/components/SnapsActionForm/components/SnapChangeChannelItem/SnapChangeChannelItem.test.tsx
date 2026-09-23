@@ -118,7 +118,10 @@ describe("SnapChangeChannelItem", () => {
     });
 
     await waitFor(() => {
-      expect(props.onChange).toHaveBeenCalledWith("latest/stable");
+      expect(props.onChange).toHaveBeenCalledWith(
+        "latest/stable amd64",
+        "latest/stable",
+      );
     });
   });
 
@@ -135,9 +138,12 @@ describe("SnapChangeChannelItem", () => {
       expect(within(channelSelect).getAllByRole("option")).toHaveLength(4);
     });
 
-    await user.selectOptions(channelSelect, "latest/candidate");
+    await user.selectOptions(channelSelect, "latest/candidate amd64");
 
-    expect(onChange).toHaveBeenCalledWith("latest/candidate");
+    expect(onChange).toHaveBeenCalledWith(
+      "latest/candidate amd64",
+      "latest/candidate",
+    );
   });
 
   it("calls onChange when a revision is entered", async () => {
@@ -152,7 +158,7 @@ describe("SnapChangeChannelItem", () => {
     await user.click(revisionInput);
     await user.keyboard("123");
     await user.tab();
-    expect(onChange).toHaveBeenLastCalledWith("123");
+    expect(onChange).toHaveBeenLastCalledWith("123", undefined);
   });
 
   it("disables the channel dropdown when the snap has no available channels", async () => {
