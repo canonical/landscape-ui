@@ -47,6 +47,10 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
       return;
     }
 
+    if (selfHostedEnabledError) {
+      return;
+    }
+
     navigate(ROUTES.account.general(), { replace: true });
   }, [
     envLoading,
@@ -63,7 +67,7 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
   }
 
   if (selfHostedEnabledError) {
-    return <Redirecting />;
+    return null;
   }
 
   return shouldRender ? <>{children}</> : <Redirecting />;
