@@ -5,7 +5,11 @@ import { Button, Icon, ICONS } from "@canonical/react-components";
 import { pluralize } from "@/utils/_helpers";
 import type { InstalledSnapWithCount, SnapChangeMode } from "../../../../types";
 import { useGetSnapInfo } from "../../../../api";
-import { SnapChannelRevisionFields, getChannelOptions } from "@/features/snaps";
+import {
+  SnapChannelRevisionFields,
+  getChannelOptions,
+  getChannelName,
+} from "@/features/snaps";
 
 interface SnapChangeChannelItemProps {
   readonly instanceIds: number[];
@@ -14,7 +18,7 @@ interface SnapChangeChannelItemProps {
   readonly mode: SnapChangeMode;
   readonly value: string;
   readonly hasAttemptedSubmit?: boolean;
-  readonly onChange: (value: string) => void;
+  readonly onChange: (value: string, channel?: string) => void;
   readonly onModeChange: (mode: SnapChangeMode) => void;
 }
 
@@ -73,7 +77,13 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
         modeLabel="Change to"
         error={error}
         isLoading={isSnapInfoLoading}
-        onChange={onChange}
+        onChange={(newValue) => {
+          const channel =
+            mode === "channel"
+              ? getChannelName(snapInfo?.["channel-map"], newValue)
+              : undefined;
+          onChange(newValue, channel);
+        }}
         onModeChange={onModeChange}
       />
     </li>

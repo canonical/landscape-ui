@@ -8,7 +8,14 @@ export const MODE_OPTIONS: SelectOption[] = [
 const RISK_ORDER = ["stable", "candidate", "beta", "edge"];
 
 export const getChannelOptions = (
-  channelMap?: { channel: { track: string; risk: string; name: string } }[],
+  channelMap?: {
+    channel: {
+      track: string;
+      risk: string;
+      name: string;
+      architecture: string;
+    };
+  }[],
 ): SelectOption[] => {
   if (!channelMap) {
     return [];
@@ -26,7 +33,16 @@ export const getChannelOptions = (
       return riskIndexA - riskIndexB;
     })
     .map(({ channel }) => ({
-      label: channel.name,
-      value: channel.name,
+      label: `${channel.name} ${channel.architecture}`,
+      value: `${channel.name} ${channel.architecture}`,
     }));
 };
+
+// Composite option values pack name + architecture; resolve back to the real channel name for API requests.
+export const getChannelName = (
+  channelMap: { channel: { name: string; architecture: string } }[] | undefined,
+  value: string,
+): string | undefined =>
+  channelMap?.find(
+    ({ channel }) => `${channel.name} ${channel.architecture}` === value,
+  )?.channel.name;
