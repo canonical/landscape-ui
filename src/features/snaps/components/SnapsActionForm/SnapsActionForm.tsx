@@ -42,7 +42,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     [],
   );
   const [snapChangeConfigs, setSnapChangeConfigs] = useState<
-    Record<string, { mode: SnapChangeMode; value: string }>
+    Record<string, { mode: SnapChangeMode; value: string; channel?: string }>
   >({});
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const {
@@ -82,7 +82,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           const args =
             config?.mode === "revision"
               ? { revision: config.value }
-              : { channel: config?.value };
+              : { channel: config?.channel ?? config?.value };
 
           return {
             name: item.snap.name,
@@ -130,10 +130,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     snapId: string,
     value: string,
     mode: SnapChangeMode,
+    channel?: string,
   ) => {
     setSnapChangeConfigs((prev) => ({
       ...prev,
-      [snapId]: { mode, value },
+      [snapId]: { mode, value, channel },
     }));
   };
 
@@ -196,8 +197,13 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                     mode={config.mode}
                     value={config.value}
                     hasAttemptedSubmit={hasAttemptedSubmit}
-                    onChange={(value) => {
-                      handleSnapValueChange(item.snap.id, value, config.mode);
+                    onChange={(value, channel) => {
+                      handleSnapValueChange(
+                        item.snap.id,
+                        value,
+                        config.mode,
+                        channel,
+                      );
                     }}
                     onModeChange={(mode) => {
                       handleSnapModeChange(item.snap.id, mode);
