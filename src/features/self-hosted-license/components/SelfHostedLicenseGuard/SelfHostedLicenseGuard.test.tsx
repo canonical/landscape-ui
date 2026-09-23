@@ -5,7 +5,7 @@ import { ROUTES } from "@/libs/routes";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { Route, Routes } from "react-router";
 import { describe, expect, it } from "vitest";
 import SelfHostedLicenseGuard from "./SelfHostedLicenseGuard";
@@ -82,7 +82,7 @@ describe("SelfHostedLicenseGuard", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("redirects to account general when checking entitlement fails", async () => {
+  it("renders a blank page when checking entitlement fails", async () => {
     setEndpointStatus({ status: "error", path: "self-hosted/status" });
 
     renderWithRoutes(envState);
@@ -91,7 +91,10 @@ describe("SelfHostedLicenseGuard", () => {
     expect(
       screen.queryByRole("heading", { name: "Legacy license file" }),
     ).not.toBeInTheDocument();
-    expect(await screen.findByText("Account general")).toBeInTheDocument();
-    expect(getLocationDisplay()).toHaveTextContent(ROUTES.account.general());
+    await screen.findByTestId("notification-close-button");
+    await waitFor(() => {
+      expect(screen.queryByText("Account general")).not.toBeInTheDocument();
+    });
+    expect(getLocationDisplay()).toHaveTextContent("/");
   });
 });
