@@ -38,6 +38,17 @@ export function renderHookWithProviders() {
   };
 }
 
+/** A `renderHook` wrapper with the full app providers, for hooks that call the API. */
+export function renderHookWithAppProviders() {
+  return function Wrapper({ children }: { readonly children: ReactNode }) {
+    return (
+      <MemoryRouter>
+        <AppProviders>{children}</AppProviders>
+      </MemoryRouter>
+    );
+  };
+}
+
 export const renderWithProviders = (
   ui: ReactNode,
   options?: RenderOptions,
