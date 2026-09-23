@@ -299,7 +299,7 @@ describe("SnapsActionForm", () => {
       ).not.toBeDisabled();
     });
 
-    const modeSelect = screen.getByLabelText("Change to");
+    const modeSelect = screen.getByLabelText("Snap channel or revision");
     await user.selectOptions(modeSelect, "revision");
 
     const revisionInput = screen.getByRole("textbox", {
