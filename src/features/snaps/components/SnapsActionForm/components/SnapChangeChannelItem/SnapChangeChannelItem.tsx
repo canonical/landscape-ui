@@ -47,9 +47,9 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
     <li className={classes.selectedContainer}>
       <div className={classes.topRow}>
         <div>
-          <div className="font-monospace">
+          <strong>
             {selectedSnap.snap.name} {selectedSnap.tracking_channel}
-          </div>
+          </strong>
           <div className="u-text--muted u-no-margin">
             Installed on{" "}
             {pluralize(selectedSnap.computerCount, ["instance"], "exact")}
@@ -70,6 +70,7 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
         value={value}
         channelOptions={channelOptions}
         snapName={selectedSnap.snap.name}
+        modeLabel="Change to"
         error={error}
         isLoading={isSnapInfoLoading}
         onChange={onChange}

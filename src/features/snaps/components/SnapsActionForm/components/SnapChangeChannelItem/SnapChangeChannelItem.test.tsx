@@ -29,7 +29,7 @@ describe("SnapChangeChannelItem", () => {
   it("renders the snap name, current channel, delete button, and Change to label", async () => {
     renderWithProviders(<SnapChangeChannelItem {...props} />);
 
-    await screen.findByLabelText("Change to");
+    await screen.findByLabelText("Snap channel or revision");
 
     expect(
       screen.getByText(
@@ -41,7 +41,10 @@ describe("SnapChangeChannelItem", () => {
         `Installed on ${snapWithChannels.computerCount} instances`,
       ),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText("Change to")).toBeInTheDocument();
+    expect(screen.getByText("Change to")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Snap channel or revision"),
+    ).toBeInTheDocument();
 
     const deleteButton = screen.getByRole("button", {
       name: `Delete ${snapWithChannels.snap.name}`,
@@ -52,7 +55,7 @@ describe("SnapChangeChannelItem", () => {
   it("renders a mode dropdown with Channel and Revision options defaulting to Channel", async () => {
     renderWithProviders(<SnapChangeChannelItem {...props} />);
 
-    const modeSelect = await screen.findByLabelText("Change to");
+    const modeSelect = await screen.findByLabelText("Snap channel or revision");
     const options = within(modeSelect).getAllByRole("option");
 
     expect(options).toHaveLength(2);
@@ -69,7 +72,7 @@ describe("SnapChangeChannelItem", () => {
       <SnapChangeChannelItem {...props} onModeChange={onModeChange} />,
     );
 
-    const modeSelect = await screen.findByLabelText("Change to");
+    const modeSelect = await screen.findByLabelText("Snap channel or revision");
     await user.selectOptions(modeSelect, "revision");
 
     expect(onModeChange).toHaveBeenCalledWith("revision");
@@ -169,7 +172,7 @@ describe("SnapChangeChannelItem", () => {
   it("calls onDelete when the delete button is clicked", async () => {
     renderWithProviders(<SnapChangeChannelItem {...props} />);
 
-    await screen.findByLabelText("Change to");
+    await screen.findByLabelText("Snap channel or revision");
 
     await user.click(
       screen.getByRole("button", {
