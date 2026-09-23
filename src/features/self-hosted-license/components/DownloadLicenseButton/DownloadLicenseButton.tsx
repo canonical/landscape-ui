@@ -26,7 +26,7 @@ const DownloadLicenseButton: FC<DownloadLicenseButtonProps> = ({
       type="button"
       className={classes.downloadLicenseButton}
     >
-      <Icon name="begin-downloading" light/>
+      <Icon name="begin-downloading" light />
       <span>Download license file</span>
     </Button>
   );
