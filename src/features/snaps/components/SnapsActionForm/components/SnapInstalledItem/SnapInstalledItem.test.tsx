@@ -13,7 +13,7 @@ const props: ComponentProps<typeof SnapInstalledItem> = {
   selectedSnap,
   onDelete: vi.fn(),
   isUnhold: false,
-  selectedInstances: 5,
+  instancesCount: 5,
 };
 
 describe("SnapInstalledItem", () => {
@@ -29,7 +29,7 @@ describe("SnapInstalledItem", () => {
     expect(screen.getByText(selectedSnap.snap.name)).toBeInTheDocument();
     expect(
       screen.getByText(
-        `Installed on ${selectedSnap.computerCount} of ${props.selectedInstances} instances`,
+        `Installed on ${selectedSnap.computerCount} of ${props.instancesCount} instances`,
       ),
     ).toBeInTheDocument();
 
@@ -52,7 +52,7 @@ describe("SnapInstalledItem", () => {
 
     expect(
       screen.getByText(
-        `Held on ${selectedSnap.computerCount} of ${props.selectedInstances} instances`,
+        `Held on ${selectedSnap.computerCount} of ${props.instancesCount} instances`,
       ),
     ).toBeInTheDocument();
   });
