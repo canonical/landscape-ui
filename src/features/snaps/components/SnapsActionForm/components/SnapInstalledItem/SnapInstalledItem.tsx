@@ -8,14 +8,14 @@ interface SnapInstalledItemProps {
   readonly selectedSnap: InstalledSnapWithCount;
   readonly onDelete: () => void;
   readonly isUnhold: boolean;
-  readonly selectedInstances: number;
+  readonly instancesCount: number;
 }
 
 const SnapInstalledItem: FC<SnapInstalledItemProps> = ({
   onDelete,
   selectedSnap,
   isUnhold,
-  selectedInstances,
+  instancesCount,
 }) => {
   const scope = isUnhold ? "Held" : "Installed";
 
@@ -35,7 +35,7 @@ const SnapInstalledItem: FC<SnapInstalledItemProps> = ({
       </div>
       <span className="u-text--muted">
         {scope} on {selectedSnap.computerCount} of{" "}
-        {pluralize(selectedInstances, ["instance"], "exact")}
+        {pluralize(instancesCount, ["instance"], "exact")}
       </span>
     </li>
   );
