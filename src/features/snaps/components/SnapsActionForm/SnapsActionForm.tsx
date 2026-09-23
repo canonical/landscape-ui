@@ -129,7 +129,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                   selectedSnap={item}
                   onDelete={handleDelete}
                   isUnhold={action === "unhold"}
-                  selectedInstances={selectedInstances.length}
+                  instancesCount={selectedInstances.length}
                 />
               );
             })}
