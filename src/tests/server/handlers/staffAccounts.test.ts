@@ -7,11 +7,12 @@ import { setCallerAccounts, setStaffGlobalRoles } from "./staffAccounts";
 // check ordering — since API e2e tests will run the same flows against the
 // real backend and any divergence will surface there.
 
+// Sent like the app sends it. The staff handlers ignore it (see the handler
+// module's header comment); `GET /me` uses it to pick the mock user.
 const AUTH_HEADERS = { Authorization: "Bearer test-account-token" };
 
 const OK = 200;
 const BAD_REQUEST = 400;
-const UNAUTHORIZED = 401;
 const FORBIDDEN = 403;
 const NOT_FOUND = 404;
 
@@ -34,14 +35,12 @@ const send = async (
   });
 
 describe("GET /accounts", () => {
-  it("returns 401 with the JWT error envelope without an auth header", async () => {
+  it("serves a request without an Authorization header, as the test providers send none", async () => {
+    setStaffGlobalRoles(["SupportProvider"]);
+
     const response = await get("accounts");
 
-    expect(response.status).toBe(UNAUTHORIZED);
-    expect(await response.json()).toEqual({
-      error: "AuthTokenMissing",
-      message: "No JWT found in either Authorization Header or cookies.",
-    });
+    expect(response.status).toBe(OK);
   });
 
   it("returns 403 for a non-staff caller", async () => {

@@ -24,10 +24,15 @@ import {
 // run the same flows against the real backend and divergent mocks surface as
 // e2e failures there.
 //
-// Check ordering mirrors the server's decorator chain: 401 (JWT) → 400
-// query/body validation (pydantic runs before the handler) → 403 (global
-// permission, checked BEFORE the account lookup so account existence is never
-// disclosed to unauthorized callers) → 404 → handler-level 400.
+// Check ordering mirrors the server's decorator chain: 400 query/body
+// validation (pydantic runs before the handler) → 403 (global permission,
+// checked BEFORE the account lookup so account existence is never disclosed
+// to unauthorized callers) → 404 → handler-level 400.
+//
+// The server's 401 for a request without a JWT is deliberately not mirrored:
+// tests render through the real fetch providers, which have no auth token and
+// send no `Authorization` header, so a header check would reject every request
+// (and the 401 interceptor would log the test user out).
 
 const STAFF_PAGE_DEFAULT_LIMIT = 25;
 const STAFF_PAGE_MAX_LIMIT = 100;
@@ -81,16 +86,6 @@ export const hasCreateAccount = (): boolean =>
   staffState.globalRoles.includes("AccountManager");
 
 // --- Error envelopes, verbatim from the server ---
-
-/** `login_required` for a request carrying no JWT at all (`JwtNotFound`). */
-const authTokenMissingResponse = () =>
-  HttpResponse.json(
-    {
-      error: "AuthTokenMissing",
-      message: "No JWT found in either Authorization Header or cookies.",
-    },
-    { status: 401 },
-  );
 
 /** `UnauthorizedAccess`, raised by `check_person_global_permission`. */
 const unauthorizedAccessResponse = () =>
@@ -582,10 +577,6 @@ const toInvitationResult = (
 
 export default [
   http.get(`${API_URL}accounts`, ({ request }) => {
-    if (!request.headers.get("Authorization")) {
-      return authTokenMissingResponse();
-    }
-
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
     const { limit, offset } = getPageParams(searchParams);
@@ -610,34 +601,23 @@ export default [
     });
   }),
 
-  http.get<{ name: string }>(
-    `${API_URL}accounts/:name`,
-    ({ request, params }) => {
-      if (!request.headers.get("Authorization")) {
-        return authTokenMissingResponse();
-      }
+  http.get<{ name: string }>(`${API_URL}accounts/:name`, ({ params }) => {
+    if (!hasViewAllAccounts()) {
+      return unauthorizedAccessResponse();
+    }
 
-      if (!hasViewAllAccounts()) {
-        return unauthorizedAccessResponse();
-      }
+    const account = getStaffAccountByName(params.name);
 
-      const account = getStaffAccountByName(params.name);
+    if (!account) {
+      return notFoundResponse();
+    }
 
-      if (!account) {
-        return notFoundResponse();
-      }
-
-      return HttpResponse.json(account);
-    },
-  ),
+    return HttpResponse.json(account);
+  }),
 
   http.patch<{ name: string }, AccountPatchBody>(
     `${API_URL}accounts/:name`,
     async ({ request, params }) => {
-      if (!request.headers.get("Authorization")) {
-        return authTokenMissingResponse();
-      }
-
       const body = await request.json();
       const detail = accountPatchErrors(body);
 
@@ -693,11 +673,7 @@ export default [
 
   http.get<{ name: string }>(
     `${API_URL}accounts/:name/wsl-feature-limits`,
-    ({ request, params }) => {
-      if (!request.headers.get("Authorization")) {
-        return authTokenMissingResponse();
-      }
-
+    ({ params }) => {
       if (!hasViewAllAccounts()) {
         return unauthorizedAccessResponse();
       }
@@ -713,10 +689,6 @@ export default [
   http.post<{ name: string }, Partial<WslFeatureLimits>>(
     `${API_URL}accounts/:name/wsl-feature-limits`,
     async ({ request, params }) => {
-      if (!request.headers.get("Authorization")) {
-        return authTokenMissingResponse();
-      }
-
       const body = await request.json();
 
       const detail = wslLimitErrors(body);
@@ -741,10 +713,6 @@ export default [
   ),
 
   http.get(`${API_URL}people`, ({ request }) => {
-    if (!request.headers.get("Authorization")) {
-      return authTokenMissingResponse();
-    }
-
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
     const type = searchParams.get("type");
