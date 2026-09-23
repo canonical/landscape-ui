@@ -1,35 +1,40 @@
 import type { FC } from "react";
+import { useMemo } from "react";
 import classes from "./SnapChangeChannelItem.module.scss";
-import type { MultiSelectItem } from "@canonical/react-components";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import { pluralize } from "@/utils/_helpers";
-// import MultiSelectField from "@/components/form/MultiSelectField";
-// import { useTheme } from "@/context/theme";
-// import classNames from "classnames";
-import type { InstalledSnapWithCount } from "../../../../types";
+import type { InstalledSnapWithCount, SnapChangeMode } from "../../../../types";
+import { useGetSnapInfo } from "../../../../api";
+import { SnapChannelRevisionFields, getChannelOptions } from "@/features/snaps";
 
 interface SnapChangeChannelItemProps {
   readonly instanceIds: number[];
   readonly selectedSnap: InstalledSnapWithCount;
   readonly onDelete: () => void;
-  readonly onItemsUpdate: (items: MultiSelectItem[]) => void;
+  readonly mode: SnapChangeMode;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
+  readonly onModeChange: (mode: SnapChangeMode) => void;
 }
 
 const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
-  // instanceIds,
+  instanceIds,
   selectedSnap,
   onDelete,
-  // onItemsUpdate,
+  mode,
+  value,
+  onChange,
+  onModeChange,
 }) => {
-  // const { isDarkMode } = useTheme();
+  const { snapInfo, isSnapInfoLoading } = useGetSnapInfo({
+    instance_id: instanceIds[0] ?? 0,
+    name: selectedSnap.snap.name,
+  });
 
-  // const queryParams: SearchSnapsRequest = {
-  //   computer_query: instanceIds.map((id) => `id:${id}`).join(" OR "),
-  //   names: [selectedSnap.snap.name],
-  //   ...mapActionToQueryParams("install"),
-  // };
-
-  // const { items, dropdownHeader } = useMultiSelectSnaps(queryParams);
+  const channelOptions = useMemo(
+    () => getChannelOptions(snapInfo?.["channel-map"]),
+    [snapInfo],
+  );
 
   return (
     <li className={classes.selectedContainer}>
@@ -53,18 +58,15 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
           <Icon name={ICONS.delete} />
         </Button>
       </div>
-      {/* <MultiSelectField
-        className={classNames(classes.multiSelect, { "is-paper": !isDarkMode })}
-        items={items}
-        dropdownHeader={dropdownHeader}
-        showDropdownFooter={false}
-        variant="condensed"
-        placeholder="Version"
-        onItemsUpdate={onItemsUpdate}
-        selectedItems={selectedSnap.selectedVersions.map(
-          (id) => items.find((item) => item.value === id) as MultiSelectItem,
-        )}
-      /> */}
+      <SnapChannelRevisionFields
+        mode={mode}
+        value={value}
+        channelOptions={channelOptions}
+        snapName={selectedSnap.snap.name}
+        isLoading={isSnapInfoLoading}
+        onChange={onChange}
+        onModeChange={onModeChange}
+      />
     </li>
   );
 };
