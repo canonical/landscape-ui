@@ -13,6 +13,7 @@ interface SnapChangeChannelItemProps {
   readonly onDelete: () => void;
   readonly mode: SnapChangeMode;
   readonly value: string;
+  readonly hasAttemptedSubmit?: boolean;
   readonly onChange: (value: string) => void;
   readonly onModeChange: (mode: SnapChangeMode) => void;
 }
@@ -23,6 +24,7 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
   onDelete,
   mode,
   value,
+  hasAttemptedSubmit = false,
   onChange,
   onModeChange,
 }) => {
@@ -35,6 +37,11 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
     () => getChannelOptions(snapInfo?.["channel-map"]),
     [snapInfo],
   );
+
+  const error =
+    hasAttemptedSubmit && !value
+      ? "Select a channel or revision for this snap to continue"
+      : undefined;
 
   return (
     <li className={classes.selectedContainer}>
@@ -63,6 +70,7 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
         value={value}
         channelOptions={channelOptions}
         snapName={selectedSnap.snap.name}
+        error={error}
         isLoading={isSnapInfoLoading}
         onChange={onChange}
         onModeChange={onModeChange}

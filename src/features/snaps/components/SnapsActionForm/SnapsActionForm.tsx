@@ -44,6 +44,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const [snapChangeConfigs, setSnapChangeConfigs] = useState<
     Record<string, { mode: SnapChangeMode; value: string }>
   >({});
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const {
     value: isModalOpen,
     setTrue: openModal,
@@ -111,15 +112,12 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       return "Select a snap to continue";
     }
 
-    if (hasMissingChangeValue) {
-      return "Select a channel or revision for each snap to continue";
-    }
-
     return null;
   };
 
   const checkSubmit = () => {
-    if (!getValidationError()) {
+    setHasAttemptedSubmit(true);
+    if (!getValidationError() && !hasMissingChangeValue) {
       if (needsConfirmation) {
         openModal();
       } else {
@@ -197,6 +195,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                     instanceIds={selectedInstances}
                     mode={config.mode}
                     value={config.value}
+                    hasAttemptedSubmit={hasAttemptedSubmit}
                     onChange={(value) => {
                       handleSnapValueChange(item.snap.id, value, config.mode);
                     }}

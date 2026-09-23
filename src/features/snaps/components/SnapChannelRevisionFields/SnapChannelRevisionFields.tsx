@@ -10,6 +10,7 @@ interface SnapChannelRevisionFieldsProps {
   readonly value: string;
   readonly channelOptions: SelectOption[];
   readonly snapName: string;
+  readonly error?: string;
   readonly isLoading?: boolean;
   readonly onChange: (value: string) => void;
   readonly onModeChange: (mode: SnapChangeMode) => void;
@@ -20,6 +21,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   value,
   channelOptions,
   snapName,
+  error,
   isLoading = false,
   onChange,
   onModeChange,
@@ -34,8 +36,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   return (
     <div className={classes.fieldsRow}>
       <Select
-        label={<span className="u-text--muted p-text--small">Change to</span>}
-        aria-label="Change to"
+        aria-label="Snap channel or revision"
         value={mode}
         options={MODE_OPTIONS}
         onChange={(event) => {
@@ -44,10 +45,10 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
       />
       {mode === "channel" ? (
         <Select
-          label={<span className="u-text--muted p-text--small">Channel</span>}
           aria-label={`Channel for ${snapName}`}
           disabled={isLoading || channelOptions.length === 0}
           value={value}
+          error={error}
           options={
             channelOptions.length > 0
               ? channelOptions
@@ -60,9 +61,9 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
       ) : (
         <Input
           type="text"
-          label={<span className="u-text--muted p-text--small">Revision</span>}
           aria-label={`Revision for ${snapName}`}
           defaultValue={value}
+          error={error}
           onBlur={(event) => {
             onChange(event.currentTarget.value);
           }}
