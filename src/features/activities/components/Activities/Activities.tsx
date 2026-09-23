@@ -80,8 +80,8 @@ const Activities: FC<ActivitiesProps> = ({
       setSelectedActivities(
         selectedActivities.includes(activity)
           ? selectedActivities.filter(
-            (selectedActivity) => selectedActivity !== activity,
-          )
+              (selectedActivity) => selectedActivity !== activity,
+            )
           : [...selectedActivities, activity],
       );
     },
