@@ -243,14 +243,24 @@ const rangeErrors = (
   return [];
 };
 
+// The integer strings the server's pydantic (2.4) accepts in a query: an
+// optional sign, then digits with single underscores between them, or digits
+// followed by `.` and only zeros. No surrounding whitespace, no hex or
+// exponents, unlike `Number()`.
+const QUERY_INTEGER_PATTERN = /^[+-]?(\d+(_\d+)*|\d+\.0*)$/;
+
+/** The integer in a query parameter, or `NaN` when pydantic would reject it. */
+const parseQueryInteger = (value: string): number =>
+  QUERY_INTEGER_PATTERN.test(value) ? Number(value.replaceAll("_", "")) : NaN;
+
 /** The `limit` and `offset` query parameters, with the server's defaults. */
 const getPageParams = (searchParams: URLSearchParams) => {
   const limit = searchParams.get("limit");
   const offset = searchParams.get("offset");
 
   return {
-    limit: limit === null ? STAFF_PAGE_DEFAULT_LIMIT : Number(limit),
-    offset: offset === null ? 0 : Number(offset),
+    limit: limit === null ? STAFF_PAGE_DEFAULT_LIMIT : parseQueryInteger(limit),
+    offset: offset === null ? 0 : parseQueryInteger(offset),
   };
 };
 

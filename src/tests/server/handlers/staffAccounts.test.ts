@@ -120,11 +120,26 @@ describe("GET /accounts", () => {
     ]);
   });
 
+  it("accepts the integer forms the server's pydantic does", async () => {
+    setStaffGlobalRoles(["SupportProvider"]);
+
+    const response = await get("accounts?limit=2.0&offset=1.", AUTH_HEADERS);
+
+    expect(response.status).toBe(OK);
+    const { results } = await response.json();
+    expect(results.map(({ account }: { account: string }) => account)).toEqual([
+      "globex",
+      "initech",
+    ]);
+  });
+
   it.each([
     ["limit=0", { type: "greater_than", loc: ["limit"] }],
     ["limit=101", { type: "less_than_equal", loc: ["limit"] }],
     ["offset=-1", { type: "greater_than_equal", loc: ["offset"] }],
     ["limit=abc", { type: "int_parsing", loc: ["limit"] }],
+    ["limit=0x10", { type: "int_parsing", loc: ["limit"] }],
+    ["offset=", { type: "int_parsing", loc: ["offset"] }],
   ])(
     "rejects %s with a 400 validation envelope, before the staff check",
     async (params, expected) => {
