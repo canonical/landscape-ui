@@ -1,10 +1,21 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+@import "../../../../styles/partials/pragma-card-table";
+
+.cardGrid {
+  --grid-row-gap: 0;
+}
+
+.header {
+  @include pragma-card-table-header;
+}
+
 .card {
-  display: flex;
-  flex-direction: column;
   min-height: 0;
 }
 
 .content {
-  display: flex;
+  @include pragma-card-table-content;
+
   min-height: 0;
 }
