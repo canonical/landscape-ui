@@ -215,8 +215,10 @@ export function computeGaps(
 
 /**
  * Orphan = extracted spec call that matches no exercised route. Unlike a gap,
- * an orphan means the matcher, the route pin, or the spec is wrong, so it is
- * always treated as an error.
+ * an orphan means the matcher, the route pin, or the spec is likely wrong —
+ * but it is surfaced as a warning, not a hard failure, since it usually
+ * reflects a matcher limitation (e.g. multi-segment template literals)
+ * rather than something that should block gap/suggestion collection.
  */
 export function computeOrphans(
   report: CoverageReport,

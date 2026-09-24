@@ -115,22 +115,59 @@ describe("run", () => {
     expect(fs.existsSync(path.join(result.outDir, "suggestions"))).toBe(false);
   });
 
-  it("orphans: writes gaps.json but stops before calling the client", async () => {
+  it("orphans: logs a warning but still calls the client and writes suggestions", async () => {
+    // ORPHAN_SPEC_DIR's one spec call matches none of the report's 4 routes,
+    // so all 4 come back as gaps. The mock response below covers all 4 so
+    // the route-set validation in run() passes regardless of the orphan.
+    const orphanMockResponse: SuggestionsResponse = {
+      suggestions: [
+        {
+          route: "POST /api/v2/mirrors",
+          title: "Cover mirror creation",
+          rationale: "Mutating route, highest hits.",
+          spec: "// spec 1",
+          notes: "",
+        },
+        {
+          route: "GET /debarchive/v1beta1/mirrors/{mirrorId}",
+          title: "Cover mirror fetch",
+          rationale: "Go route, second highest hits.",
+          spec: "// spec 2",
+          notes: "",
+        },
+        {
+          route: "GET /api/v2/computers",
+          title: "Cover computer listing",
+          rationale: "High hits.",
+          spec: "// spec 3",
+          notes: "",
+        },
+        {
+          route: "GET /api/v2/computers/{id}",
+          title: "Cover single computer fetch",
+          rationale: "Lower hits.",
+          spec: "// spec 4",
+          notes: "",
+        },
+      ],
+    };
     let called = false;
-    const client = {
-      complete: () => {
+    const client = createMockClient(JSON.stringify(orphanMockResponse));
+    const trackedClient = {
+      complete: (prompt: Parameters<typeof client.complete>[0]) => {
         called = true;
-        return Promise.resolve({ text: "", model: "mock" });
+        return client.complete(prompt);
       },
     };
-    const opts = { ...options(client), specDir: ORPHAN_SPEC_DIR };
+    const opts = { ...options(trackedClient), specDir: ORPHAN_SPEC_DIR };
     const result = await run(opts);
 
-    expect(result.status).toBe("orphans");
+    expect(result.status).toBe("ok");
     expect(result.orphansFound).toBe(1);
-    expect(result.suggestionsWritten).toHaveLength(0);
-    expect(called).toBe(false);
-    expect(fs.existsSync(path.join(result.outDir, "gaps.json"))).toBe(true);
+    expect(result.gapsFound).toBe(4);
+    expect(result.suggestionsWritten).toHaveLength(4);
+    expect(called).toBe(true);
+
     const gapsFile = JSON.parse(
       fs.readFileSync(path.join(result.outDir, "gaps.json"), "utf-8"),
     ) as unknown;
