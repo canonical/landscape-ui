@@ -58,11 +58,6 @@ export type SnapAction =
 
 export type SnapStatus = "installed" | "held" | "available";
 
-export type ConfirmableSnapAction = Exclude<
-  SnapAction,
-  "change channel" | "unhold"
->;
-
 export type ActionWithNotification = Extract<SnapAction, "install" | "hold">;
 
 export interface InstalledSnapWithCount extends InstalledSnap {

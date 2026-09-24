@@ -15,6 +15,7 @@ const props: ComponentProps<typeof ConfirmSnapActionModal> = {
   onClose: vi.fn(),
   onConfirm: vi.fn(),
   isSubmitting: false,
+  submitText: "Act on 2 snaps",
 };
 
 describe("ConfirmSnapActionModal", () => {
@@ -44,7 +45,7 @@ describe("ConfirmSnapActionModal", () => {
 
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Refresh 2 snaps" }),
+      screen.getByRole("button", { name: props.submitText }),
     ).toBeInTheDocument();
   });
 
@@ -54,11 +55,12 @@ describe("ConfirmSnapActionModal", () => {
         {...props}
         snaps={[firstSnap]}
         instancesCount={1}
+        actionVerb="unhold"
       />,
     );
 
     expect(
-      screen.getByRole("heading", { name: "Refresh 1 snap on 1 instance" }),
+      screen.getByRole("heading", { name: "Unhold 1 snap on 1 instance" }),
     ).toBeInTheDocument();
   });
 
@@ -72,9 +74,9 @@ describe("ConfirmSnapActionModal", () => {
         name: "Uninstall 2 snaps from 3 instances",
       }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Uninstall 2 snaps" }),
-    ).toHaveClass("p-button--negative");
+    expect(screen.getByRole("button", { name: props.submitText })).toHaveClass(
+      "p-button--negative",
+    );
     expect(
       screen.getByText(/will be queued to uninstall/i),
     ).toBeInTheDocument();
@@ -98,7 +100,7 @@ describe("ConfirmSnapActionModal", () => {
   it("calls onConfirm when the confirm button is clicked", async () => {
     renderWithProviders(<ConfirmSnapActionModal {...props} />);
 
-    await user.click(screen.getByRole("button", { name: "Refresh 2 snaps" }));
+    await user.click(screen.getByRole("button", { name: props.submitText }));
 
     expect(props.onConfirm).toHaveBeenCalledOnce();
   });
@@ -133,7 +135,7 @@ describe("ConfirmSnapActionModal", () => {
     expect(confirmButton).toHaveAttribute("aria-disabled", "true");
     expect(confirmButton).toHaveIcon("spinner");
     expect(
-      screen.queryByRole("button", { name: "Refresh 2 snaps" }),
+      screen.queryByRole("button", { name: props.submitText }),
     ).not.toBeInTheDocument();
   });
 });

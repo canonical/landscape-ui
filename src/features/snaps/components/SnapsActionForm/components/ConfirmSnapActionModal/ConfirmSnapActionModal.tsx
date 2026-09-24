@@ -1,19 +1,17 @@
-import type {
-  ConfirmableSnapAction,
-  InstalledSnapWithCount,
-} from "../../../../types";
+import type { SnapAction, InstalledSnapWithCount } from "../../../../types";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./ConfirmSnapActionModal.module.scss";
 
 interface ConfirmSnapActionModalProps {
-  readonly actionVerb: ConfirmableSnapAction;
+  readonly actionVerb: SnapAction;
   readonly snaps: InstalledSnapWithCount[];
   readonly instancesCount: number;
   readonly onClose: () => void;
   readonly onConfirm: () => void;
   readonly isSubmitting: boolean;
+  readonly submitText: string;
 }
 
 const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
@@ -23,14 +21,20 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   onClose,
   onConfirm,
   isSubmitting,
+  submitText,
 }) => {
-  const snapsText = `${capitalize(actionVerb)} ${pluralize(snaps.length, ["snap"], "exact")}`;
-
   const getTitle = () => {
+    const snapsText = pluralize(snaps.length, ["snap"], "exact");
     const instancesText = pluralize(instancesCount, ["instance"], "exact");
-    const actionPreposition = actionVerb === "uninstall" ? "from" : "on";
 
-    return `${snapsText} ${actionPreposition} ${instancesText}`;
+    switch (actionVerb) {
+      case "change channel":
+        return `Change channel of ${snapsText} on ${instancesText}`;
+      case "uninstall":
+        return `Uninstall ${snapsText} from ${instancesText}`;
+      default:
+        return `${capitalize(actionVerb)} ${snapsText} on ${instancesText}`;
+    }
   };
 
   const getWarningText = () => {
@@ -47,6 +51,10 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
         return "Landscape will hold all refreshes from the moment the client executes the activity. If the snap was already held, Landscape will replace the existing hold with an indefinite one.";
       case "install":
         return "By installing these, you acknowledge that these snaps may have access to your files and system. Only install snaps in classic confinement if you trust the publisher.";
+      case "unhold":
+        return "Each refresh will now update the snap to the latest revision on the current channel.";
+      case "change channel":
+        return "Changing the channel will update the snap to the latest revision on the new channel.";
     }
   };
 
@@ -56,7 +64,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     <ConfirmationModal
       close={onClose}
       title={getTitle()}
-      confirmButtonLabel={snapsText}
+      confirmButtonLabel={submitText}
       confirmButtonAppearance={buttonColor}
       cancelButtonProps={{ appearance: "base" }}
       onConfirm={onConfirm}
