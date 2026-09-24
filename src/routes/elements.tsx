@@ -134,3 +134,16 @@ export const ApiCredentials = Loadable(
 export const ExportsPage = Loadable(
   lazy(() => import("@/pages/dashboard/account/exports")),
 );
+
+export const SuperAdminPage = Loadable(
+  lazy(() => import("@/pages/super-admin/SuperAdminPage")),
+);
+export const SuperAdminAccountsPage = Loadable(
+  lazy(() => import("@/pages/super-admin/accounts/AccountsPage")),
+);
+export const SuperAdminAccountDetailPage = Loadable(
+  lazy(() => import("@/pages/super-admin/accounts/AccountDetailPage")),
+);
+export const SuperAdminPeoplePage = Loadable(
+  lazy(() => import("@/pages/super-admin/people/PeoplePage")),
+);

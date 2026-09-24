@@ -14,8 +14,8 @@ import { ROUTES } from "@/libs/routes";
 import { APP_COMMIT, APP_VERSION, TSV_EXPORTS_ENABLED } from "@/constants";
 
 const UserInfo: FC = () => {
-  const { user, logout } = useAuth();
-  const { pathname } = useLocation();
+  const { user, logout, isSuperAdmin } = useAuth();
+  const { pathname, search } = useLocation();
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
   const { handleLogoutQuery } = useAuthHandle();
   const { hasAlerts } = useAlertsSummary();
@@ -194,6 +194,31 @@ const UserInfo: FC = () => {
             )}
           </Link>
         </li>
+        {isSuperAdmin && (
+          <li className="p-side-navigation__item">
+            <Link
+              className={classNames("p-side-navigation__link", classes.link)}
+              to={ROUTES.superAdmin.root()}
+              state={{ returnTo: `${pathname}${search}` }}
+            >
+              <Icon
+                name="security"
+                className={classNames(
+                  "is-light p-side-navigation__icon",
+                  classes.icon,
+                )}
+              />
+              <span
+                className={classNames(
+                  "p-side-navigation__label",
+                  classes.label,
+                )}
+              >
+                Super admin
+              </span>
+            </Link>
+          </li>
+        )}
         <li className="p-side-navigation__item">
           <ActionButton
             type="button"

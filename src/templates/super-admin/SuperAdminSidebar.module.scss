@@ -1,0 +1,7 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+/* Lines the heading up with the labels, which sit at the app's link padding
+   rather than Vanilla's icon offset. */
+.heading {
+  padding-left: 4.5 * $sp-unit !important;
+}
