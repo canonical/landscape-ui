@@ -80,8 +80,8 @@ const Activities: FC<ActivitiesProps> = ({
       setSelectedActivities(
         selectedActivities.includes(activity)
           ? selectedActivities.filter(
-              (selectedActivity) => selectedActivity !== activity,
-            )
+            (selectedActivity) => selectedActivity !== activity,
+          )
           : [...selectedActivities, activity],
       );
     },
@@ -140,7 +140,7 @@ const Activities: FC<ActivitiesProps> = ({
                 appearance="link"
                 className="u-no-margin--bottom u-no-padding--top u-align-text--left"
                 onClick={() => {
-                  handleActivityDetailsOpen(row.original);
+                  handleActivityDetailsOpen(row.original, { hideInstanceField: instanceId !== undefined });
                 }}
               >
                 {row.original.summary}
