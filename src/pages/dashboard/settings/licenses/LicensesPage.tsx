@@ -8,26 +8,35 @@ import { ROUTES } from "@/libs/routes";
 import { Link as ExternalLink } from "@canonical/react-components";
 import type { FC } from "react";
 import { Link as Link } from "react-router";
-import classes from "./LicensesPage.module.scss";
 
 const LicensesPage: FC = () => {
   const { licenses, isGettingLicenses } = useGetLicenses();
 
-  if (isGettingLicenses) {
-    return <LoadingState />;
-  }
+  const content = !licenses.length ? (
+    <EmptyState
+      title="No licenses found"
+      icon="connected"
+      body="Your organization has no licenses."
+      link={{
+        href: "https://ubuntu.com/pro",
+        text: "Add license",
+      }}
+    />
+  ) : (
+    <LicensesList licenses={licenses} />
+  );
 
   return (
     <PageMain>
       <PageHeader
         title="Licenses"
         subtitle={
-          <div className={classes.subtitle}>
-            <span>Keep track of your active licenses.</span>
+          <span>
+            Keep track of your active licenses.{" "}
             <Link to={ROUTES.instances.root({ query: "license-id:none" })}>
               View instances without a Landscape license.
             </Link>
-          </div>
+          </span>
         }
         actions={
           licenses.length
@@ -45,21 +54,11 @@ const LicensesPage: FC = () => {
             : undefined
         }
       />
-      <PageContent hasTable>
-        {!licenses.length ? (
-          <EmptyState
-            title="No licenses found"
-            icon="connected"
-            body="Your organization has no licenses."
-            link={{
-              href: "https://ubuntu.com/pro",
-              text: "Add license",
-            }}
-          />
-        ) : (
-          <LicensesList licenses={licenses} />
-        )}
-      </PageContent>
+      {isGettingLicenses ? (
+        <LoadingState />
+      ) : (
+        <PageContent hasTable>{content}</PageContent>
+      )}
     </PageMain>
   );
 };

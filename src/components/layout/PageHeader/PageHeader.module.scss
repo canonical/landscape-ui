@@ -20,5 +20,11 @@
 
 .subtitle {
   color: $colors--theme--text-muted;
-  padding-bottom: $sph--small;
+  max-width: calc(100% - 10rem);
+  padding-bottom: $spv--small;
+
+  @media (width <= 619px) {
+    max-width: 100%;
+    padding-top: $spv--small;
+  }
 }
