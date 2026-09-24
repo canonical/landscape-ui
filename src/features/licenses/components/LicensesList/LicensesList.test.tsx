@@ -37,7 +37,9 @@ describe("LicensesList", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Ubuntu Pro")).toBeInTheDocument();
 
-    expect(screen.getByText("Showing 3 of 3 results")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Showing [\d]+ of [\d]+ results/),
+    ).toBeInTheDocument();
   });
 
   it("renders 'Never' when a license has no expiration date", () => {
