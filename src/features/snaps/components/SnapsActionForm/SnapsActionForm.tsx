@@ -109,7 +109,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
   const getValidationError = () => {
     if (hasNoSelectedSnaps) {
-      return "Select a snap to continue";
+      return "You must add at least one snap to continue";
     }
 
     return null;
