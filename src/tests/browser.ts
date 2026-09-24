@@ -40,8 +40,18 @@ const isAuthState = (body: unknown): body is AuthUser =>
   "current_account" in body &&
   typeof (body as AuthUser).token === "string";
 
+const hasToken = (body: unknown): body is { token: string } =>
+  typeof body === "object" &&
+  body !== null &&
+  typeof (body as { token?: unknown }).token === "string";
+
 /** Remembers auth state issued by the mocks; forgets it on logout. */
 const rememberSession = async (request: Request, response: Response) => {
+  // A rejected request changes nothing, in the app or here.
+  if (!response.ok) {
+    return;
+  }
+
   const path = new URL(request.url).pathname;
 
   if (path.endsWith("logout")) {
@@ -58,14 +68,18 @@ const rememberSession = async (request: Request, response: Response) => {
 
   if (isAuthState(body)) {
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(body));
-  } else if (path.endsWith("switch-account") && session) {
+  } else if (path.endsWith("switch-account") && session && hasToken(body)) {
     const { account_name } = (await request.clone().json()) as {
       account_name: string;
     };
 
     sessionStorage.setItem(
       SESSION_KEY,
-      JSON.stringify({ ...session, current_account: account_name }),
+      JSON.stringify({
+        ...session,
+        current_account: account_name,
+        token: body.token,
+      }),
     );
   }
 };
