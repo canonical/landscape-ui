@@ -128,6 +128,11 @@ describe("SnapsActionForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Change channel" }));
 
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Change channel" }),
+    );
+
     expect(
       await screen.findByText("Snaps successfully queued to change channel"),
     ).toBeInTheDocument();
