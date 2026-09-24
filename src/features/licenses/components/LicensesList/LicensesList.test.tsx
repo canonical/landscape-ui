@@ -10,7 +10,7 @@ import date from "@/libs/date";
 const [unusedLicensed, licenseWithNoExpiration] = licenses;
 
 describe("LicensesList", () => {
-  it("renders column headers", () => {
+  it("renders column headers and pagination", () => {
     renderWithProviders(<LicensesList licenses={licenses} />);
 
     expect(
@@ -36,6 +36,8 @@ describe("LicensesList", () => {
       screen.getByRole("columnheader", { name: "License type" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Ubuntu Pro")).toBeInTheDocument();
+
+    expect(screen.getByText("Showing 3 of 3 results")).toBeInTheDocument();
   });
 
   it("renders 'Never' when a license has no expiration date", () => {

@@ -1,4 +1,5 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import usePageParams from "@/hooks/usePageParams";
 import { DISPLAY_DATE_FORMAT } from "@/constants";
 import date from "@/libs/date";
 import type { FC } from "react";
@@ -8,12 +9,20 @@ import type { License } from "../../types";
 import { ROUTES } from "@/libs/routes";
 import { Link } from "react-router";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { TablePagination } from "@/components/layout/TablePagination";
 
 interface LicensesListProps {
   readonly licenses: License[];
 }
 
 const LicensesList: FC<LicensesListProps> = ({ licenses }) => {
+  const { currentPage, pageSize } = usePageParams();
+
+  const pagedLicenses = useMemo(
+    () => licenses.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [licenses, currentPage, pageSize],
+  );
+
   const columns = useMemo<Column<License>[]>(
     () => [
       {
@@ -51,12 +60,19 @@ const LicensesList: FC<LicensesListProps> = ({ licenses }) => {
   );
 
   return (
-    <ResponsiveTable
-      columns={columns}
-      data={licenses}
-      emptyMsg="No licenses found."
-      minWidth={550}
-    />
+    <>
+      <ResponsiveTable
+        columns={columns}
+        data={pagedLicenses}
+        emptyMsg="No licenses found."
+        minWidth={550}
+      />
+      <TablePagination
+        totalItems={licenses.length}
+        currentItemCount={pagedLicenses.length}
+        pageSizeLabel="Licenses per page"
+      />
+    </>
   );
 };
 
