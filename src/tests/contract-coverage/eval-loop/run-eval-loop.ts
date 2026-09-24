@@ -126,7 +126,7 @@ export async function run(options: RunOptions): Promise<RunResult> {
       status: "no-gaps",
       outDir: options.outDir,
       gapsFound: 0,
-      orphansFound: 0,
+      orphansFound: orphans.length,
       suggestionsWritten: [],
     };
   }
