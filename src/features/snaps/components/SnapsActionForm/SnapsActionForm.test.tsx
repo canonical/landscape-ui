@@ -71,7 +71,7 @@ describe("SnapsActionForm", () => {
     );
 
     expect(
-      await screen.findByText("Select a snap to continue"),
+      await screen.findByText("You must add at least one snap to continue"),
     ).toBeInTheDocument();
   });
 
@@ -130,7 +130,7 @@ describe("SnapsActionForm", () => {
     await user.click(screen.getByRole("button", { name: "Install snaps" }));
 
     expect(
-      await screen.findByText("Select a snap to continue"),
+      await screen.findByText("You must add at least one snap to continue"),
     ).toBeInTheDocument();
   });
 

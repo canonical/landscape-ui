@@ -5,6 +5,7 @@ import type { SelectOption } from "@/types/SelectOption";
 import type { SnapChangeMode } from "../../types";
 import classes from "./SnapChannelRevisionFields.module.scss";
 import { MODE_OPTIONS } from "./helpers";
+import { useTheme } from "@/context/theme";
 
 interface SnapChannelRevisionFieldsProps {
   readonly mode: SnapChangeMode;
@@ -37,10 +38,12 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelOptions, mode, value]);
 
+  const { isDarkMode } = useTheme();
+
   return (
     <>
       {modeLabel && <div>{modeLabel}</div>}
-      <div className={classes.fieldsRow}>
+      <div className={`${classes.fieldsRow} ${!isDarkMode ? "is-paper" : ""}`}>
         <Select
           aria-label="Snap channel or revision"
           value={mode}
