@@ -293,7 +293,12 @@ describe("collect-gaps CLI", () => {
       "../../../../node_modules/.bin/tsx",
     );
     const script = path.join(import.meta.dirname, "collect-gaps.ts");
-    const orphanSpecDir = path.join(FIXTURES, "repo-orphans", "e2e", "docker-stack");
+    const orphanSpecDir = path.join(
+      FIXTURES,
+      "repo-orphans",
+      "e2e",
+      "docker-stack",
+    );
 
     // The orphan warning is written to stderr and not captured in the
     // returned string, but the gaps.json file proves the CLI did not exit.
