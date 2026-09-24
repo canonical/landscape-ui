@@ -1,10 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { type FC, lazy, Suspense, useState } from "react";
-import {
-  getRequestAction,
-  isConfirmableAction,
-  hasNotification,
-} from "./helpers";
+import { getRequestAction, hasNotification } from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import type { SnapAction, InstalledSnapWithCount } from "../../types";
 import classes from "./SnapsActionForm.module.scss";
@@ -50,7 +46,6 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
   const hasNoSelectedSnaps = selectedSnaps.length === 0;
   const isChangeChannel = action === "change channel";
-  const needsConfirmation = isConfirmableAction(action);
 
   const snapsText = hasNoSelectedSnaps
     ? "snaps"
@@ -85,11 +80,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       return;
     }
 
-    if (needsConfirmation) {
-      openModal();
-    } else {
-      onSubmit();
-    }
+    openModal();
   };
 
   const buttonAppearance = action === "uninstall" ? "negative" : "positive";
@@ -170,7 +161,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
         }
       />
 
-      {needsConfirmation && isModalOpen && (
+      {isModalOpen && (
         <Suspense fallback={<LoadingState />}>
           <ConfirmSnapActionModal
             actionVerb={action}
@@ -179,6 +170,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
             onClose={closeModal}
             onConfirm={onSubmit}
             isSubmitting={isSnapActionPending}
+            submitText={submitText}
           />
         </Suspense>
       )}

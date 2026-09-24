@@ -1,8 +1,4 @@
-import type {
-  SnapAction,
-  ConfirmableSnapAction,
-  ActionWithNotification,
-} from "../../types";
+import type { SnapAction, ActionWithNotification } from "../../types";
 
 export const getRequestAction = (action: SnapAction) => {
   switch (action) {
@@ -14,11 +10,6 @@ export const getRequestAction = (action: SnapAction) => {
       return action;
   }
 };
-
-export const isConfirmableAction = (
-  action: SnapAction,
-): action is ConfirmableSnapAction =>
-  action !== "unhold" && action !== "change channel";
 
 export const hasNotification = (
   action: SnapAction,
