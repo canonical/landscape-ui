@@ -153,6 +153,22 @@ describe("redactSensitiveFields", () => {
     });
   });
 
+  it("redacts a real secret even when the key has a has_/no_ prefix", () => {
+    const input = {
+      hasToken: "eyJhbGciOiJIUzI1NiJ9.jwt-value",
+      has_password: "not-a-boolean-secret",
+      no_password: "another-secret",
+      has_secret: false,
+    };
+
+    expect(redactSensitiveFields(input)).toEqual({
+      hasToken: "***REDACTED***",
+      has_password: "***REDACTED***",
+      no_password: "***REDACTED***",
+      has_secret: false,
+    });
+  });
+
   it("returns a deep copy so the original is not mutated", () => {
     const input = {
       nested: {

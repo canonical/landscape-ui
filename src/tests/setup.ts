@@ -28,6 +28,12 @@ configure({ asyncUtilTimeout: 5000 });
 
 // --- MSW Interaction Recorder Config ---
 
+// Matches "application/json" as well as structured +json suffixes such as
+// "application/problem+json" or "application/vnd.api+json", but not
+// unrelated types that merely contain the substring "json" (e.g. a
+// hypothetical "application/jsonlines").
+const JSON_CONTENT_TYPE_PATTERN = /\/(?:[\w.-]+\+)?json\b/i;
+
 /**
  * Safely extracts and parses payloads from cloned network streams. Parses
  * JSON and form-encoded bodies into objects so downstream redaction can key
@@ -43,7 +49,7 @@ export async function extractPayload(
     if (!text) return null;
 
     const contentType = streamOwner.headers.get("content-type") ?? "";
-    if (contentType.includes("application/json")) {
+    if (JSON_CONTENT_TYPE_PATTERN.test(contentType)) {
       try {
         return JSON.parse(text);
       } catch {
