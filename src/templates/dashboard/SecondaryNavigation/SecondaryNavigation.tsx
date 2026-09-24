@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import LoadingState from "@/components/layout/LoadingState";
 import { Link, matchPath, useLocation } from "react-router";
 import classes from "./SecondaryNavigation.module.scss";
 import { useMediaQuery } from "usehooks-ts";
@@ -25,10 +26,17 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
   const location = useLocation();
   const { isSaas, isSelfHosted, envLoading } = useEnv();
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
+  const {
+    isGettingSelfHostedEnabled,
+    isSelfHostedEnabled,
+    selfHostedEnabledError,
+  } = useSelfHostedLicense();
   const shouldGetSelfHostedEnabled =
     !envLoading && isSaas && hasSelfHostedLicenseItem(items);
-  const { isGettingSelfHostedEnabled, isSelfHostedEnabled } =
-    useSelfHostedLicense(shouldGetSelfHostedEnabled);
+  const isEntitlementLoading =
+    shouldGetSelfHostedEnabled &&
+    isGettingSelfHostedEnabled &&
+    !selfHostedEnabledError;
 
   const filteredItems = getFilteredByEnvItems({
     isSaas,
@@ -55,7 +63,7 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
         )}
       >
         <nav
-          aria-busy={shouldGetSelfHostedEnabled && isGettingSelfHostedEnabled}
+          aria-busy={isEntitlementLoading}
           className={classNames(
             "u-padding-top--medium is-dark",
             classes.secondaryNavigation__drawer,
@@ -72,26 +80,32 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
             {title}
           </h2>
           <ul className="p-side-navigation__list">
-            {filteredItems.map((item) => {
-              const isActive = matchPath(item.path, location.pathname);
-              return (
-                <li key={item.path}>
-                  <Link
-                    aria-current={isActive ? "page" : undefined}
-                    className={classNames(
-                      "p-side-navigation__link",
-                      classes.secondaryNavigation__link,
-                      isActive && classes.isActive,
-                    )}
-                    to={item.path}
-                  >
-                    <span className={classes.secondaryNavigation__label}>
-                      {item.label}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
+            {isEntitlementLoading ? (
+              <li>
+                <LoadingState />
+              </li>
+            ) : (
+              filteredItems.map((item) => {
+                const isActive = matchPath(item.path, location.pathname);
+                return (
+                  <li key={item.path}>
+                    <Link
+                      aria-current={isActive ? "page" : undefined}
+                      className={classNames(
+                        "p-side-navigation__link",
+                        classes.secondaryNavigation__link,
+                        isActive && classes.isActive,
+                      )}
+                      to={item.path}
+                    >
+                      <span className={classes.secondaryNavigation__label}>
+                        {item.label}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })
+            )}
           </ul>
         </nav>
         {children && <div className={classes.footer}>{children}</div>}

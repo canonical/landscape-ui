@@ -22,7 +22,7 @@ const UserInfo: FC = () => {
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
   const { envLoading, isSaas, isSelfHosted } = useEnv();
   const { isGettingSelfHostedEnabled, isSelfHostedEnabled } =
-    useSelfHostedLicense(!envLoading && isSaas);
+    useSelfHostedLicense();
   const accountSettingsItems = getFilteredByEnvItems({
     isSaas,
     isSelfHosted,

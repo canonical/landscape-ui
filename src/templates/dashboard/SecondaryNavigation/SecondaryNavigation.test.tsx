@@ -16,6 +16,7 @@ import { API_URL } from "@/constants";
 import { http, HttpResponse } from "msw";
 import type { ReactNode } from "react";
 import { useState } from "react";
+import SelfHostedLicenseProvider from "@/context/selfHostedLicense";
 
 const resolvedEnvState: EnvContextState = {
   envLoading: false,
@@ -39,10 +40,12 @@ describe("SecondaryNavigation", () => {
   it("renders correctly", async () => {
     renderWithProviders(
       <EnvContext.Provider value={resolvedEnvState}>
-        <SecondaryNavigation
-          title={ACCOUNT_SETTINGS.label}
-          items={ACCOUNT_SETTINGS.items}
-        />
+        <SelfHostedLicenseProvider>
+          <SecondaryNavigation
+            title={ACCOUNT_SETTINGS.label}
+            items={ACCOUNT_SETTINGS.items}
+          />
+        </SelfHostedLicenseProvider>
       </EnvContext.Provider>,
     );
 
@@ -197,7 +200,7 @@ describe("SecondaryNavigation", () => {
             >
               Switch account
             </button>
-            {children}
+            <SelfHostedLicenseProvider>{children}</SelfHostedLicenseProvider>
           </AccountsProvider>
         </AuthContext.Provider>
       );

@@ -1,6 +1,10 @@
 import type { FC } from "react";
 import { useState } from "react";
 import classNames from "classnames";
+import LoadingState from "@/components/layout/LoadingState";
+import useEnv from "@/hooks/useEnv";
+import { useSelfHostedLicense } from "@/context/selfHostedLicense";
+import { useMediaQuery } from "usehooks-ts";
 import Navigation from "./Navigation";
 import DesktopHeader from "./DesktopHeader";
 import MobileHeader from "./MobileHeader";
@@ -11,6 +15,15 @@ import LandscapeActions from "@/templates/dashboard/LandscapeActions";
 
 const Sidebar: FC = () => {
   const [menuClosed, setMenuClosed] = useState(true);
+  const isSmallerScreen = useMediaQuery("(max-width: 619px)");
+  const { envLoading, isSaas } = useEnv();
+  const { isGettingSelfHostedEnabled, selfHostedEnabledError } =
+    useSelfHostedLicense();
+  const isEntitlementLoading =
+    !envLoading &&
+    isSaas &&
+    isGettingSelfHostedEnabled &&
+    !selfHostedEnabledError;
 
   return (
     <>
@@ -35,14 +48,20 @@ const Sidebar: FC = () => {
                 }}
               />
 
-              <div className={classes.navigation}>
-                <OrganisationSwitch />
-                <Navigation />
-              </div>
-              <div className={classes.footer}>
-                <LandscapeActions />
-                <UserInfo />
-              </div>
+              {isSmallerScreen && isEntitlementLoading ? (
+                <LoadingState />
+              ) : (
+                <>
+                  <div className={classes.navigation}>
+                    <OrganisationSwitch />
+                    <Navigation />
+                  </div>
+                  <div className={classes.footer}>
+                    <LandscapeActions />
+                    <UserInfo />
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

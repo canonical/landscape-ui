@@ -1,7 +1,6 @@
 import type { FC, ReactNode } from "react";
 import { createContext, useContext } from "react";
 import type { ApiError } from "@/types/api/ApiError";
-import LoadingState from "@/components/layout/LoadingState";
 import useEnv from "@/hooks/useEnv";
 import { useGetSelfHostedEnabled } from "@/features/self-hosted-license";
 import type { AxiosError } from "axios";
@@ -10,14 +9,12 @@ interface SelfHostedLicenseContextProps {
   isGettingSelfHostedEnabled: boolean;
   isSelfHostedEnabled: boolean;
   selfHostedEnabledError: AxiosError<ApiError> | null;
-  isProvided: boolean;
 }
 
 const initialState: SelfHostedLicenseContextProps = {
   isGettingSelfHostedEnabled: false,
   isSelfHostedEnabled: false,
   selfHostedEnabledError: null,
-  isProvided: false,
 };
 
 export const SelfHostedLicenseContext =
@@ -34,31 +31,13 @@ const SelfHostedLicenseProvider: FC<SelfHostedLicenseProviderProps> = ({
   const shouldQuery = !envLoading && isSaas;
   const selfHostedLicense = useGetSelfHostedEnabled(shouldQuery);
 
-  if (
-    envLoading ||
-    (shouldQuery &&
-      selfHostedLicense.isGettingSelfHostedEnabled &&
-      !selfHostedLicense.selfHostedEnabledError)
-  ) {
-    return <LoadingState />;
-  }
-
   return (
-    <SelfHostedLicenseContext.Provider
-      value={{ ...selfHostedLicense, isProvided: true }}
-    >
+    <SelfHostedLicenseContext.Provider value={selfHostedLicense}>
       {children}
     </SelfHostedLicenseContext.Provider>
   );
 };
 
-export const useSelfHostedLicense = (enabled: boolean) => {
-  const context = useContext(SelfHostedLicenseContext);
-  const localSelfHostedLicense = useGetSelfHostedEnabled(
-    enabled && !context.isProvided,
-  );
-
-  return context.isProvided ? context : localSelfHostedLicense;
-};
+export const useSelfHostedLicense = () => useContext(SelfHostedLicenseContext);
 
 export default SelfHostedLicenseProvider;

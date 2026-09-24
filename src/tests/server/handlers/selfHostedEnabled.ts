@@ -1,6 +1,7 @@
 import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { shouldApplyEndpointStatus } from "./_helpers";
+import { createEndpointStatusError } from "./_constants";
 import { http, HttpResponse } from "msw";
 
 export const selfHostedEnabledState = {
@@ -13,7 +14,7 @@ export default [
       const endpointStatus = getEndpointStatus("self-hosted/status");
 
       if (endpointStatus.status === "error") {
-        return new HttpResponse(null, { status: 500 });
+        return createEndpointStatusError();
       }
 
       if (endpointStatus.status === "variant") {

@@ -4,6 +4,7 @@ import { useEffect, useEffectEvent, type FC } from "react";
 import { useGetSelfHostedLicense } from "../../api/useGetSelfHostedLicense";
 import CopyableCodeSnippet from "../CopyableCodeSnippet";
 import DownloadLicenseButton from "../DownloadLicenseButton";
+import LicenseCurlCommand from "../LicenseCurlCommand";
 import RegenerateLicenseButton from "../RegenerateLicenseButton";
 import classes from "./SelfHostedLicenseContainer.module.scss";
 
@@ -40,9 +41,20 @@ const SelfHostedLicenseContainer: FC = () => {
       <CopyableCodeSnippet value="/etc/landscape/license.txt" />
 
       <p className={classes.paragraph3}>
-        The download license button directs to a URL that contains a private
-        token. If the token has been exposed, regenerate it. Regenerating the
-        token invalidates the previous download URL.
+        You can also perform the two steps above with a single command. Note
+        that you'll need <span className={classes.curl}>curl</span> installed on
+        the instance:
+      </p>
+
+      <LicenseCurlCommand
+        downloadUrl={downloadUrl}
+        isLoading={isGettingSelfHostedLicense}
+      />
+
+      <p className={classes.paragraph4}>
+        The download license button and curl command utilize a download URL that
+        contains a private token. If the token has been exposed, regenerate it.
+        Regenerating the token invalidates the previous download URL.
       </p>
 
       <RegenerateLicenseButton disabled={!downloadUrl} />

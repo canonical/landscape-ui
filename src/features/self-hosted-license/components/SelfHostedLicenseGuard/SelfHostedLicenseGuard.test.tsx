@@ -8,6 +8,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import { Route, Routes } from "react-router";
 import { describe, expect, it } from "vitest";
+import SelfHostedLicenseProvider from "@/context/selfHostedLicense";
 import SelfHostedLicenseGuard from "./SelfHostedLicenseGuard";
 
 const envState: EnvContextState = {
@@ -22,18 +23,20 @@ const envState: EnvContextState = {
 const renderWithRoutes = (value: EnvContextState) =>
   renderWithProviders(
     <EnvContext.Provider value={value}>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <SelfHostedLicenseGuard>
-              <SelfHostedLicensePage />
-            </SelfHostedLicenseGuard>
-          }
-        />
-        <Route path="/env-error" element={<EnvError />} />
-        <Route path="/account/general" element={<p>Account general</p>} />
-      </Routes>
+      <SelfHostedLicenseProvider>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <SelfHostedLicenseGuard>
+                <SelfHostedLicensePage />
+              </SelfHostedLicenseGuard>
+            }
+          />
+          <Route path="/env-error" element={<EnvError />} />
+          <Route path="/account/general" element={<p>Account general</p>} />
+        </Routes>
+      </SelfHostedLicenseProvider>
       <LocationDisplay />
     </EnvContext.Provider>,
     undefined,
