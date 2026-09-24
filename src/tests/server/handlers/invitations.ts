@@ -6,6 +6,7 @@ import {
   generatePaginatedResponse,
   shouldApplyEndpointStatus,
 } from "./_helpers";
+import { createEndpointStatusError } from "./_constants";
 import { invitations, invitationsSummary } from "@/tests/mocks/invitations";
 
 export const invitationState = {
@@ -14,16 +15,22 @@ export const invitationState = {
 
 export default [
   http.get<never, never>(`${API_URL}invitations`, () => {
-    const { status } = getEndpointStatus();
+    if (shouldApplyEndpointStatus("invitations")) {
+      const { status } = getEndpointStatus("invitations");
 
-    if (status === "empty") {
-      return HttpResponse.json(
-        generatePaginatedResponse({
-          data: [],
-          limit: 20,
-          offset: 0,
-        }),
-      );
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      if (status === "empty") {
+        return HttpResponse.json(
+          generatePaginatedResponse({
+            data: [],
+            limit: 20,
+            offset: 0,
+          }),
+        );
+      }
     }
 
     return HttpResponse.json(

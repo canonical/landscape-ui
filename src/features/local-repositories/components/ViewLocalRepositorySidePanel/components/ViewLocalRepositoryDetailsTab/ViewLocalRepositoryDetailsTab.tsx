@@ -13,7 +13,6 @@ import {
 } from "@/features/operations";
 import date from "@/libs/date";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import useAuth from "@/hooks/useAuth";
 
 interface ViewLocalRepositoryDetailsTabProps {
   readonly repository: Local;
@@ -24,7 +23,6 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
   repository,
   operationMetadata,
 }) => {
-  const { isFeatureEnabled } = useAuth();
   const { publications, isGettingPublications } = useGetPublicationsBySource(
     repository.name,
   );
@@ -46,18 +44,16 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
             }
           />
 
-          {isFeatureEnabled("local-repository-last-import") && (
-            <InfoGrid.Item
-              label="Last import"
-              value={
-                repository.lastImportTime
-                  ? date(repository.lastImportTime).format(
-                      DISPLAY_DATE_TIME_FORMAT,
-                    )
-                  : null
-              }
-            />
-          )}
+          <InfoGrid.Item
+            label="Last import"
+            value={
+              repository.lastImportTime
+                ? date(repository.lastImportTime).format(
+                    DISPLAY_DATE_TIME_FORMAT,
+                  )
+                : null
+            }
+          />
 
           <InfoGrid.Item label="Description" large value={repository.comment} />
 
