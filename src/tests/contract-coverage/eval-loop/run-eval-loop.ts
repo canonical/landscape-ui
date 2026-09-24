@@ -39,7 +39,7 @@ export interface RunOptions {
 }
 
 export interface RunResult {
-  status: "ok" | "no-gaps" | "llm-failure" | "orphans";
+  status: "ok" | "no-gaps" | "llm-failure";
   outDir: string;
   gapsFound: number;
   orphansFound: number;
@@ -107,13 +107,18 @@ export async function run(options: RunOptions): Promise<RunResult> {
   });
 
   if (orphans.length > 0) {
-    return {
-      status: "orphans",
-      outDir: options.outDir,
-      gapsFound: gaps.length,
-      orphansFound: orphans.length,
-      suggestionsWritten: [],
-    };
+    // Orphans indicate a matcher/spec limitation (e.g. multi-segment
+    // template-literal spans), not a hard failure — log and carry on so the
+    // scheduled run still reaches the LLM and produces suggestions.
+    console.warn(
+      `[-] ${orphans.length} extracted spec call(s) match no declared route (orphans). ` +
+        "This usually indicates a matcher limitation (e.g. multi-segment template literals) rather than a hard failure; see gaps.json for details.",
+    );
+    for (const orphan of orphans) {
+      console.warn(
+        `    ${orphan.method} ${orphan.urlPattern} (${orphan.file}:${orphan.line})`,
+      );
+    }
   }
 
   if (gaps.length === 0) {
@@ -241,13 +246,6 @@ async function main(): Promise<void> {
     if (result.status === "no-gaps") {
       console.warn("[+] No gaps — nothing to evaluate");
       return;
-    }
-    if (result.status === "orphans") {
-      console.error(
-        `[-] ${result.orphansFound} extracted spec call(s) match no declared route (orphans). ` +
-          "Fix the matcher, route pin, or spec before running suggestions.",
-      );
-      process.exit(1);
     }
     if (result.status === "llm-failure") {
       console.error(

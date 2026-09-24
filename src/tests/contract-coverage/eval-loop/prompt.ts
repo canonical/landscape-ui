@@ -42,7 +42,13 @@ function truncatePayload(payload: unknown): unknown {
   if (serialized.length <= MAX_PAYLOAD_CHARS) {
     return payload;
   }
-  return { __truncated: true, originalChars: serialized.length };
+  // Keep a prefix instead of just a marker — the model still needs the
+  // field names/types to write meaningful assertions.
+  return {
+    __truncated: true,
+    preview: serialized.slice(0, MAX_PAYLOAD_CHARS),
+    originalChars: serialized.length,
+  };
 }
 
 interface ContractShape {
