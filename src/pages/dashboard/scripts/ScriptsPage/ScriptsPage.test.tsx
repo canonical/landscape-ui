@@ -19,6 +19,8 @@ const mockAuth: AuthContextProps = {
   safeRedirect: vi.fn(),
   isFeatureEnabled: vi.fn().mockReturnValue(false),
   hasAccounts: true,
+  isSuperAdmin: false,
+  canManageAccounts: false,
 };
 
 describe("ScriptsPage", () => {

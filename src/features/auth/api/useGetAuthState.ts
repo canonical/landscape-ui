@@ -32,7 +32,11 @@ export function useGetAuthState({ enabled = true }: UseAuthStateOptions = {}) {
     }
 
     if ("current_account" in response && response.attach_code === null) {
-      return response as AuthUser;
+      return {
+        ...response,
+        // Absent from servers that predate the field (BE rollout skew).
+        global_roles: response.global_roles ?? [],
+      } as AuthUser;
     }
 
     return null;

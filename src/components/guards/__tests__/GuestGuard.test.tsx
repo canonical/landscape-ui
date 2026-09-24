@@ -21,6 +21,8 @@ const authProps: AuthContextProps = {
   safeRedirect: vi.fn(),
   isFeatureEnabled: vi.fn(),
   hasAccounts: true,
+  isSuperAdmin: false,
+  canManageAccounts: false,
 };
 
 const mockSearchParams = (params: Record<string, string> = {}) => {
