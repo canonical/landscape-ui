@@ -70,6 +70,22 @@ describe("UserInfo", () => {
     });
   });
 
+  it("shows the Super admin entry to Canonical staff only", () => {
+    renderWithProviders(<UserInfo />);
+
+    expect(
+      screen.queryByRole("link", { name: "Super admin" }),
+    ).not.toBeInTheDocument();
+
+    vi.mocked(useAuth).mockReturnValue({ ...mockAuth, isSuperAdmin: true });
+    renderWithProviders(<UserInfo />);
+
+    expect(screen.getByRole("link", { name: "Super admin" })).toHaveAttribute(
+      "href",
+      ROUTES.superAdmin.root(),
+    );
+  });
+
   it("renders Sign out button that can be clicked", async () => {
     renderWithProviders(<UserInfo />);
 
