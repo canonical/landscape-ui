@@ -80,8 +80,8 @@ const Activities: FC<ActivitiesProps> = ({
       setSelectedActivities(
         selectedActivities.includes(activity)
           ? selectedActivities.filter(
-              (selectedActivity) => selectedActivity !== activity,
-            )
+            (selectedActivity) => selectedActivity !== activity,
+          )
           : [...selectedActivities, activity],
       );
     },
@@ -151,6 +151,7 @@ const Activities: FC<ActivitiesProps> = ({
         {
           accessor: "activity_status",
           Header: "Status",
+          className: "medium-cell",
           Cell: ({
             row: {
               original: { activity_status },
@@ -167,6 +168,7 @@ const Activities: FC<ActivitiesProps> = ({
         {
           accessor: "computer_id",
           Header: "Instance",
+          className: "small-cell",
           Cell: ({ row }: CellProps<ActivityCommon>) =>
             row.original.computer_id ? (
               <Link
@@ -191,8 +193,26 @@ const Activities: FC<ActivitiesProps> = ({
           ),
         },
         {
+          accessor: "completion_time",
+          Header: "Completed at",
+          className: "large-cell",
+          Cell: ({ row }: CellProps<ActivityCommon>) => (
+
+            row.original.completion_time ? (
+              <span className="font-monospace">
+                {date(row.original.completion_time).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
+              </span>
+            ) : (
+              <NoData />
+            )
+          ),
+        },
+        {
           accessor: "creator.name",
           Header: "Creator",
+          className: "medium-cell",
           Cell: ({ row }: CellProps<ActivityCommon>) => (
             <>{row.original.creator?.name ?? <NoData />}</>
           ),
