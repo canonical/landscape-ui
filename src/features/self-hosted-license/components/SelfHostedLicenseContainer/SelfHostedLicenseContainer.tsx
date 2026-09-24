@@ -42,8 +42,8 @@ const SelfHostedLicenseContainer: FC = () => {
 
       <p className={classes.paragraph3}>
         You can also perform the two steps above with a single command. Note
-        that you'll need <span className={classes.curl}>curl</span> installed on
-        the instance:
+        that you&apos;ll need <span className={classes.curl}>curl</span>{" "}
+        installed on the instance:
       </p>
 
       <LicenseCurlCommand

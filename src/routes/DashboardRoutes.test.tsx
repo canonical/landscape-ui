@@ -61,7 +61,7 @@ describe("DashboardRoutes", () => {
     expect(paths).toContain(PATHS.account.apiCredentials);
     expect(paths).toContain(PATHS.repositories.mirrors);
     expect(paths).toContain(PATHS.settings.employees);
-    expect(paths).toContain(PATHS.account.selfHostedLicense);
+    expect(paths).toContain(PATHS.account.legacyLicenseFile);
   });
 
   it("uses the appropriate guards (self-hosted, feature, self-hosted license) for guarded paths", () => {
@@ -82,8 +82,8 @@ describe("DashboardRoutes", () => {
       (route) => route.props.path === PATHS.exports.root,
     );
 
-    const selfHostedLicenseRoute = allRoutes.find(
-      (route) => route.props.path === PATHS.account.selfHostedLicense,
+    const legacyLicenseFileRoute = allRoutes.find(
+      (route) => route.props.path === PATHS.account.legacyLicenseFile,
     );
 
     const wslProfilesRoute = allRoutes.find(
@@ -94,13 +94,13 @@ describe("DashboardRoutes", () => {
     assert(employeesRoute?.props.element);
     assert(identityProvidersRoute?.props.element);
     assert(wslProfilesRoute?.props.element);
-    assert(selfHostedLicenseRoute?.props.element);
+    assert(legacyLicenseFileRoute?.props.element);
 
     expect(mirrorsRoute.props.element.type).toBe(SelfHostedGuard);
     expect(employeesRoute.props.element.type).toBe(FeatureGuard);
     expect(identityProvidersRoute.props.element.type).toBe(FeatureGuard);
     expect(wslProfilesRoute.props.element.type).toBe(FeatureGuard);
-    expect(selfHostedLicenseRoute.props.element.type).toBe(
+    expect(legacyLicenseFileRoute.props.element.type).toBe(
       SelfHostedLicenseGuard,
     );
 

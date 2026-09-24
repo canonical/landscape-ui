@@ -214,7 +214,7 @@ export const DashboardRoutes = (
           element={<Pages.ApiCredentials />}
         />
         <Route
-          path={PATHS.account.selfHostedLicense}
+          path={PATHS.account.legacyLicenseFile}
           element={
             <SelfHostedLicenseGuard>
               <Pages.SelfHostedLicensePage />

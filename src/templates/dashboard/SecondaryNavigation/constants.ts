@@ -19,7 +19,7 @@ export const ACCOUNT_SETTINGS = {
     },
     {
       label: "Legacy license file",
-      path: ROUTES.account.selfHostedLicense(),
+      path: ROUTES.account.legacyLicenseFile(),
       requiresSelfHostedLicense: true,
     },
   ] as const,
