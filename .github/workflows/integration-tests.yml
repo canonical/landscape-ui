@@ -62,7 +62,7 @@ jobs:
       # (a fine-grained PAT with Contents: Read access in the Dependabot secrets store) for that case.
       - name: Generate App Token
         id: get_token
-        if: github.actor != 'dependabot[bot]'
+        if: github.event.pull_request.user.login != 'dependabot[bot]'
         uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
         with:
           app-id: ${{ vars.LANDSCAPE_PACKAGER_APP_ID }}

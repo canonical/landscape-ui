@@ -56,8 +56,8 @@ The GitHub App must be installed on `canonical/landscape-packaging`, `canonical/
 > Dependabot-triggered runs, so the App credentials and `LANDSCAPE_PROTO_TOKEN` (both in the
 > Actions store) resolve to empty and the App-token step is skipped. `LANDSCAPE_PACKAGER_PAT`,
 > a fine-grained PAT stored in the **Dependabot** secrets store is used instead. Its scope covers all four repos this job reads
-> (`landscape-packaging`, `landscape-go`, `landscape-server`, `landscape-proto`), so it also
-> This broader repository selection is an accepted temporary tradeoff for Dependabot; once the App
+> (`landscape-packaging`, `landscape-go`, `landscape-server`, `landscape-proto`), so it makes `LANDSCAPE_PROTO_TOKEN` unnecessary for dependabot.
+> This dependency on the PAT is an accepted temporary tradeoff for Dependabot; once the App
 > is installed on `landscape-proto`, the separate `LANDSCAPE_PROTO_TOKEN` workaround can be removed.
 
 > **`LANDSCAPE_PROTO_TOKEN` migration path:** `landscape-proto` is not yet covered by the App
