@@ -20,6 +20,8 @@
 
 .subtitle {
   color: $colors--theme--text-muted;
+
+  /* Leave space so the text doesn't extend under the header action */
   max-width: calc(100% - 10rem);
   padding-bottom: $spv--small;
 

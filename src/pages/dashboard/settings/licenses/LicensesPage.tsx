@@ -7,7 +7,7 @@ import { LicensesList, useGetLicenses } from "@/features/licenses";
 import { ROUTES } from "@/libs/routes";
 import { Link as ExternalLink } from "@canonical/react-components";
 import type { FC } from "react";
-import { Link as Link } from "react-router";
+import { Link } from "react-router";
 
 const LicensesPage: FC = () => {
   const { licenses, isGettingLicenses } = useGetLicenses();
