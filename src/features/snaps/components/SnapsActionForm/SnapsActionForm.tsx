@@ -113,11 +113,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const checkSubmit = () => {
     setHasAttemptedSubmit(true);
     if (!getValidationError() && !hasMissingChangeValue) {
-      if (needsConfirmation) {
-        openModal();
-      } else {
-        onSubmit();
-      }
+      openModal();
     }
   };
 
