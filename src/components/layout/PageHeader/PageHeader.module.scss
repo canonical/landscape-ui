@@ -9,3 +9,24 @@
 .visualTitle {
   flex-shrink: 0;
 }
+
+.header {
+  flex-direction: column;
+}
+
+.contentRow {
+  display: flex;
+}
+
+.subtitle {
+  color: $colors--theme--text-muted;
+
+  /* Leave space so the text doesn't extend under the header action */
+  max-width: calc(100% - 10rem);
+  padding-bottom: $spv--small;
+
+  @media (width <= 619px) {
+    max-width: 100%;
+    padding-top: $spv--small;
+  }
+}
