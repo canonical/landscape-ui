@@ -17,10 +17,22 @@ import { HOMEPAGE_PATH } from "@/constants";
 
 const AUTH_QUERY_KEY = ["authUser"];
 
+// The global roles behind super admin mode. Any other global role (e.g.
+// `Operator`) grants nothing in the UI and is ignored.
+const SUPPORT_PROVIDER = "SupportProvider";
+const ACCOUNT_MANAGER = "AccountManager";
+
 export interface AuthContextProps {
   authLoading: boolean;
   authorized: boolean;
   hasAccounts: boolean;
+  /**
+   * Whether the user is Canonical staff, who can use super admin mode.
+   * Always false on self-hosted, where staff cannot log in.
+   */
+  isSuperAdmin: boolean;
+  /** Whether the user can edit any account in super admin mode. */
+  canManageAccounts: boolean;
   logout: () => void;
   redirectToExternalUrl: (url: string, options?: { replace: boolean }) => void;
   safeRedirect: (
@@ -36,6 +48,8 @@ const initialState: AuthContextProps = {
   authLoading: false,
   authorized: false,
   hasAccounts: false,
+  isSuperAdmin: false,
+  canManageAccounts: false,
   logout: () => undefined,
   redirectToExternalUrl: () => undefined,
   safeRedirect: () => undefined,
@@ -66,6 +80,11 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const { isFeatureEnabled, isFeaturesLoading } = useFeatures(
     user?.email ?? null,
   );
+
+  const globalRoles = user?.global_roles ?? [];
+  const canManageAccounts = globalRoles.includes(ACCOUNT_MANAGER);
+  const isSuperAdmin =
+    canManageAccounts || globalRoles.includes(SUPPORT_PROVIDER);
 
   const handleLogout = useCallback(() => {
     queryClient.setQueryData(AUTH_QUERY_KEY, null);
@@ -128,6 +147,8 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         authLoading: isAuthLoading || isFeaturesLoading,
         authorized: null !== user,
         hasAccounts: !!user?.accounts.length,
+        isSuperAdmin,
+        canManageAccounts,
         logout: handleLogout,
         redirectToExternalUrl: handleExternalRedirect,
         safeRedirect: handleSafeRedirect,

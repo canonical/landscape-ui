@@ -25,6 +25,8 @@ const baseAuth: AuthContextProps = {
   safeRedirect: vi.fn(),
   isFeatureEnabled: () => true,
   hasAccounts: true,
+  isSuperAdmin: false,
+  canManageAccounts: false,
 };
 
 describe("UbuntuProHeader", () => {
