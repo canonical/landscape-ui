@@ -59,7 +59,7 @@ jobs:
       # Dependabot secrets store to those runs, so vars/secrets referenced here
       # resolve to empty strings and create-github-app-token would fail. The
       # "Resolve packaging token" step below falls back to LANDSCAPE_PACKAGER_PAT
-      # (a classic PAT in the Dependabot secrets store) for that case.
+      # (a fine-grained PAT with Contents: Read access in the Dependabot secrets store) for that case.
       - name: Generate App Token
         id: get_token
         if: github.actor != 'dependabot[bot]'
