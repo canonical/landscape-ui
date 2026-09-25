@@ -259,11 +259,11 @@ describe("SnapsActionForm", () => {
       ).not.toBeDisabled();
     });
 
-await user.click(screen.getByRole("button", { name: "Change channel" }));
-const modal = await screen.findByRole("dialog");
-await user.click(
-  within(modal).getByRole("button", { name: "Change channel" }),
-)
+    await user.click(screen.getByRole("button", { name: "Change channel" }));
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Change channel" }),
+    );
 
     expect(
       await screen.findByText("Snaps successfully queued to change channel"),
@@ -316,7 +316,7 @@ await user.click(
     });
     await user.type(revisionInput, "123");
 
-await user.click(screen.getByRole("button", { name: "Change channel" }));
+    await user.click(screen.getByRole("button", { name: "Change channel" }));
     const modal = await screen.findByRole("dialog");
     await user.click(
       within(modal).getByRole("button", { name: "Change channel" }),
