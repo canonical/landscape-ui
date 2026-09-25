@@ -57,9 +57,8 @@ The GitHub App must be installed on `canonical/landscape-packaging`, `canonical/
 > Actions store) resolve to empty and the App-token step is skipped. `LANDSCAPE_PACKAGER_PAT`,
 > a fine-grained PAT stored in the **Dependabot** secrets store is used instead. Its scope covers all four repos this job reads
 > (`landscape-packaging`, `landscape-go`, `landscape-server`, `landscape-proto`), so it also
-> serves as the `landscape-proto` fallback in the vendor step. Broad scope is an accepted
-> tradeoff: a fine-grained PAT can only target repos its creator administers, which does not
-> cover the three sibling repos. The App install on `landscape-proto` (below) is the long-term fix.
+> This broader repository selection is an accepted temporary tradeoff for Dependabot; once the App
+> is installed on `landscape-proto`, the separate `LANDSCAPE_PROTO_TOKEN` workaround can be removed.
 
 > **`LANDSCAPE_PROTO_TOKEN` migration path:** `landscape-proto` is not yet covered by the App
 > installation. A fine-grained PAT is used as a temporary workaround. Once the App is
