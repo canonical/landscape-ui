@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { useEffect } from "react";
-import { Input, Select } from "@canonical/react-components";
+import { Input, Notification, Select } from "@canonical/react-components";
 import type { SelectOption } from "@/types/SelectOption";
 import type { SnapChangeMode } from "../../types";
 import classes from "./SnapChannelRevisionFields.module.scss";
@@ -79,6 +79,14 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
           />
         )}
       </div>
+      {mode === "revision" && (
+        <Notification
+          severity="information"
+          title="Choosing revision will install the channel that has that revision published, but will continue tracking the current channel."
+        >
+          <a href="docs-link">Learn more</a>
+        </Notification>
+      )}
     </>
   );
 };
