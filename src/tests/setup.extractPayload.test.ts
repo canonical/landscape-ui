@@ -16,13 +16,28 @@ describe("extractPayload", () => {
     await expect(extractPayload(request)).resolves.toEqual({ name: "test" });
   });
 
-  it("returns invalid JSON as a string", async () => {
+  it("replaces unparseable JSON with a non-sensitive sentinel instead of the raw body", async () => {
     const request = new Request("https://example.com/api", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: "not-json",
     });
-    await expect(extractPayload(request)).resolves.toBe("not-json");
+    await expect(extractPayload(request)).resolves.toEqual({
+      __unparseable: true,
+      contentType: "application/json",
+    });
+  });
+
+  it("does not leak a secret embedded in a truncated/malformed JSON body", async () => {
+    // redactSensitiveFields() only walks object keys, so a raw string here
+    // (the old behavior) would persist the secret verbatim.
+    const request = new Request("https://example.com/api", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: '{"password":"super-secret-value"', // truncated mid-stream
+    });
+    const result = await extractPayload(request);
+    expect(JSON.stringify(result)).not.toContain("super-secret-value");
   });
 
   it("parses form-encoded bodies into an object", async () => {

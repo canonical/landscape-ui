@@ -53,7 +53,11 @@ export async function extractPayload(
       try {
         return JSON.parse(text);
       } catch {
-        return text;
+        // redactSensitiveFields() only walks object keys, so returning the
+        // raw text here would persist an unredacted secret from a
+        // truncated/malformed body (e.g. `{"password":"secret"` cut
+        // mid-stream) — use a non-sensitive sentinel instead.
+        return { __unparseable: true, contentType };
       }
     }
     if (contentType.includes("application/x-www-form-urlencoded")) {
