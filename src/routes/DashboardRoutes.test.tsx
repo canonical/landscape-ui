@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { FeatureGuard } from "@/components/guards/FeatureGuard";
 import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
+import { SelfHostedLicenseGuard } from "@/features/self-hosted-license";
 import { TSV_EXPORTS_ENABLED } from "@/constants";
 import { PATHS } from "@/libs/routes";
 import { DashboardRoutes } from "./DashboardRoutes";
@@ -60,9 +61,10 @@ describe("DashboardRoutes", () => {
     expect(paths).toContain(PATHS.account.apiCredentials);
     expect(paths).toContain(PATHS.repositories.mirrors);
     expect(paths).toContain(PATHS.settings.employees);
+    expect(paths).toContain(PATHS.account.legacyLicenseFile);
   });
 
-  it("uses self-hosted and feature guards for guarded paths", () => {
+  it("uses the appropriate guards (self-hosted, feature, self-hosted license) for guarded paths", () => {
     const allRoutes = flattenRoutes(
       DashboardRoutes as ReactElement<RouteLikeProps>,
     );
@@ -80,6 +82,10 @@ describe("DashboardRoutes", () => {
       (route) => route.props.path === PATHS.exports.root,
     );
 
+    const legacyLicenseFileRoute = allRoutes.find(
+      (route) => route.props.path === PATHS.account.legacyLicenseFile,
+    );
+
     const wslProfilesRoute = allRoutes.find(
       (route) => route.props.path === PATHS.profiles.wsl,
     );
@@ -88,11 +94,15 @@ describe("DashboardRoutes", () => {
     assert(employeesRoute?.props.element);
     assert(identityProvidersRoute?.props.element);
     assert(wslProfilesRoute?.props.element);
+    assert(legacyLicenseFileRoute?.props.element);
 
     expect(mirrorsRoute.props.element.type).toBe(SelfHostedGuard);
     expect(employeesRoute.props.element.type).toBe(FeatureGuard);
     expect(identityProvidersRoute.props.element.type).toBe(FeatureGuard);
     expect(wslProfilesRoute.props.element.type).toBe(FeatureGuard);
+    expect(legacyLicenseFileRoute.props.element.type).toBe(
+      SelfHostedLicenseGuard,
+    );
 
     if (TSV_EXPORTS_ENABLED) {
       assert(exportsRoute?.props.element);

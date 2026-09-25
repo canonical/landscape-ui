@@ -1,0 +1,63 @@
+.formSection {
+  > div {
+    column-gap: 0;
+    grid-template-columns: repeat(2, 10.9375rem) repeat(4, 10.5625rem) repeat(
+        2,
+        10.9375rem
+      );
+  }
+
+  > div > div:first-child {
+    grid-column: 1 / span 2;
+  }
+
+  > div > div:nth-child(2) {
+    grid-column: 3 / span 4;
+  }
+
+  @container (max-width: 85.9375rem) {
+    > div {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 0.5rem;
+    }
+
+    > div > div:first-child,
+    > div > div:nth-child(2) {
+      grid-column: auto;
+    }
+  }
+
+  p,
+  :global(.p-code-snippet) {
+    max-width: 42.25rem;
+    width: 100%;
+  }
+
+  :global(.p-code-snippet) {
+    margin: 0.5rem 0;
+  }
+}
+
+.paragraph1 {
+  margin-bottom: 1rem;
+}
+
+.paragraph2 {
+  margin: 0;
+  padding-top: 0;
+}
+
+.paragraph3 {
+  margin: 0;
+  padding-top: 0;
+}
+
+.paragraph4 {
+  margin: 0;
+  margin-top: 2rem;
+  padding-top: 0;
+}
+
+.curl {
+  color: var(--color-palette-aubergine-590, #923d83);
+}

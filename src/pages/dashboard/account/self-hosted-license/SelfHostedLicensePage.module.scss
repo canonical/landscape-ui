@@ -1,0 +1,25 @@
+.header {
+  flex-direction: column;
+
+  :global(.p-panel__title) {
+    padding-bottom: 0.25rem;
+  }
+}
+
+.description {
+  margin: 0;
+  max-width: 600px;
+  min-width: 215px;
+}
+
+.rule {
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.content {
+  box-sizing: border-box;
+  max-width: 86rem;
+  min-width: 300px;
+  width: 100%;
+}

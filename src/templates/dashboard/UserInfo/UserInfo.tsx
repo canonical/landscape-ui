@@ -12,11 +12,32 @@ import { useAlertsSummary } from "@/features/alert-notifications";
 import useDebug from "@/hooks/useDebug";
 import { ROUTES } from "@/libs/routes";
 import { APP_COMMIT, APP_VERSION, TSV_EXPORTS_ENABLED } from "@/constants";
+import useEnv from "@/hooks/useEnv";
+import { useSelfHostedLicense } from "@/context/selfHostedLicense";
+import { getFilteredByEnvItems } from "../Navigation/helpers";
+import LoadingState from "@/components/layout/LoadingState";
 
 const UserInfo: FC = () => {
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
+  const { isSaas, isSelfHosted } = useEnv();
+  const {
+    isGettingSelfHostedEnabled,
+    isSelfHostedEnabled,
+    isEntitlementQueryEnabled,
+    selfHostedEnabledError,
+  } = useSelfHostedLicense();
+  const isEntitlementLoading =
+    isEntitlementQueryEnabled &&
+    isGettingSelfHostedEnabled &&
+    !selfHostedEnabledError;
+  const accountSettingsItems = getFilteredByEnvItems({
+    isSaas,
+    isSelfHosted,
+    isSelfHostedLicenseEnabled: isSelfHostedEnabled,
+    items: ACCOUNT_SETTINGS.items,
+  });
   const { handleLogoutQuery } = useAuthHandle();
   const { hasAlerts } = useAlertsSummary();
   const debug = useDebug();
@@ -77,34 +98,49 @@ const UserInfo: FC = () => {
                 </span>
               </Button>
               <ul
+                aria-label="Account settings"
+                aria-busy={isEntitlementLoading}
                 className="p-side-navigation__list"
                 aria-expanded={expandedAccountSettings}
               >
-                {ACCOUNT_SETTINGS.items?.map((accountSettingItem) => (
-                  <li key={accountSettingItem.path}>
-                    <Link
+                {isEntitlementLoading ? (
+                  <li>
+                    <span
                       className={classNames(
                         "p-side-navigation__link",
                         classes.link,
                       )}
-                      to={accountSettingItem.path}
-                      aria-current={
-                        pathname === accountSettingItem.path
-                          ? "page"
-                          : undefined
-                      }
                     >
-                      <span
-                        className={classNames(
-                          "p-side-navigation__label",
-                          classes.label,
-                        )}
-                      >
-                        {accountSettingItem.label}
-                      </span>
-                    </Link>
+                      <LoadingState inline />
+                    </span>
                   </li>
-                ))}
+                ) : (
+                  accountSettingsItems.map((accountSettingItem) => (
+                    <li key={accountSettingItem.path}>
+                      <Link
+                        className={classNames(
+                          "p-side-navigation__link",
+                          classes.link,
+                        )}
+                        to={accountSettingItem.path}
+                        aria-current={
+                          pathname === accountSettingItem.path
+                            ? "page"
+                            : undefined
+                        }
+                      >
+                        <span
+                          className={classNames(
+                            "p-side-navigation__label",
+                            classes.label,
+                          )}
+                        >
+                          {accountSettingItem.label}
+                        </span>
+                      </Link>
+                    </li>
+                  ))
+                )}
               </ul>
             </>
           )}

@@ -12,6 +12,7 @@ import { ROUTES } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import type * as AlertNotifications from "@/features/alert-notifications";
 import { useAlertsSummary } from "@/features/alert-notifications";
+import { EnvContext, type EnvContextState } from "@/context/env";
 
 vi.mock("@/hooks/useAuth");
 vi.mock("@/features/alert-notifications");
@@ -42,6 +43,15 @@ const { useAlertsSummary: realUseAlertsSummary } = await vi.importActual<
 >("@/features/alert-notifications");
 
 const labels = ["Unknown user", "Alerts", "Sign out"];
+
+const resolvedEnvState: EnvContextState = {
+  envLoading: false,
+  isSaas: true,
+  isSelfHosted: false,
+  packageVersion: "",
+  revision: "",
+  displayDisaStigBanner: false,
+};
 
 describe("UserInfo", () => {
   beforeEach(() => {
@@ -226,6 +236,29 @@ describe("UserInfo", () => {
       await waitFor(() => {
         expect(btn).toHaveAttribute("aria-expanded", "true");
       });
+    });
+
+    it("hides the legacy license link when the account is not entitled", async () => {
+      setEndpointStatus({
+        status: "variant",
+        path: "self-hosted/status",
+        response: { enabled: false },
+      });
+
+      renderWithProviders(
+        <EnvContext.Provider value={resolvedEnvState}>
+          <UserInfo />
+        </EnvContext.Provider>,
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("list", { name: "Account settings" }),
+        ).toHaveAttribute("aria-busy", "false");
+      });
+      expect(
+        screen.queryByRole("link", { name: "Legacy license file" }),
+      ).not.toBeInTheDocument();
     });
   });
 });
