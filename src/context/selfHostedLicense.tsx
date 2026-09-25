@@ -9,12 +9,14 @@ interface SelfHostedLicenseContextProps {
   isGettingSelfHostedEnabled: boolean;
   isSelfHostedEnabled: boolean;
   selfHostedEnabledError: AxiosError<ApiError> | null;
+  isEntitlementQueryEnabled: boolean;
 }
 
 const initialState: SelfHostedLicenseContextProps = {
   isGettingSelfHostedEnabled: false,
   isSelfHostedEnabled: false,
   selfHostedEnabledError: null,
+  isEntitlementQueryEnabled: false,
 };
 
 export const SelfHostedLicenseContext =
@@ -32,7 +34,9 @@ const SelfHostedLicenseProvider: FC<SelfHostedLicenseProviderProps> = ({
   const selfHostedLicense = useGetSelfHostedEnabled(shouldQuery);
 
   return (
-    <SelfHostedLicenseContext.Provider value={selfHostedLicense}>
+    <SelfHostedLicenseContext.Provider
+      value={{ ...selfHostedLicense, isEntitlementQueryEnabled: shouldQuery }}
+    >
       {children}
     </SelfHostedLicenseContext.Provider>
   );

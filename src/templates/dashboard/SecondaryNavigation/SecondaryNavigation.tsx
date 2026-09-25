@@ -24,15 +24,16 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
   children,
 }) => {
   const location = useLocation();
-  const { isSaas, isSelfHosted, envLoading } = useEnv();
+  const { isSaas, isSelfHosted } = useEnv();
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
   const {
     isGettingSelfHostedEnabled,
     isSelfHostedEnabled,
     selfHostedEnabledError,
+    isEntitlementQueryEnabled,
   } = useSelfHostedLicense();
   const shouldGetSelfHostedEnabled =
-    !envLoading && isSaas && hasSelfHostedLicenseItem(items);
+    isEntitlementQueryEnabled && hasSelfHostedLicenseItem(items);
   const isEntitlementLoading =
     shouldGetSelfHostedEnabled &&
     isGettingSelfHostedEnabled &&

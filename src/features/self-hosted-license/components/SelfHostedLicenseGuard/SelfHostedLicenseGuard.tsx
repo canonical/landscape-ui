@@ -17,8 +17,8 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
     isGettingSelfHostedEnabled,
     isSelfHostedEnabled,
     selfHostedEnabledError,
+    isEntitlementQueryEnabled: selfHostedEnabledQuery,
   } = useSelfHostedLicense();
-  const selfHostedEnabledQuery = !envLoading && isSaas;
   const debug = useDebug();
   const navigate = useNavigate();
   const shouldRender = isSaas && isSelfHostedEnabled && !selfHostedEnabledError;
