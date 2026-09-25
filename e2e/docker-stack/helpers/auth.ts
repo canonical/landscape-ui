@@ -17,9 +17,8 @@ export async function getAuthToken(
   });
   expect(res.ok(), `POST /api/v2/login failed: ${res.status()}`).toBe(true);
   const body = (await res.json()) as AuthUser;
-  expect(
-    typeof body.token,
-    "POST /api/v2/login did not return a token",
-  ).toBe("string");
+  expect(typeof body.token, "POST /api/v2/login did not return a token").toBe(
+    "string",
+  );
   return body.token;
 }

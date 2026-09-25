@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { structuralSignature } from "./matcher";
 import type { MigrationMapEntry } from "./migration-map";
+import { redactSensitiveFields } from "./redact";
 import type {
   Backend,
   ContractSource,
@@ -143,8 +144,8 @@ export function buildReport(
           status: observation.status,
           requestHash,
           responseHash,
-          requestPayload: observation.requestPayload,
-          responsePayload: observation.responsePayload,
+          requestPayload: redactSensitiveFields(observation.requestPayload),
+          responsePayload: redactSensitiveFields(observation.responsePayload),
         });
       }
     }

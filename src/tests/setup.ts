@@ -5,6 +5,7 @@ import fs from "fs";
 import { afterAll, afterEach, beforeAll, expect } from "vitest";
 import { setEndpointStatus } from "./controllers/controller";
 import { MANIFEST_PATH, REGISTRY_PATH } from "./contract-coverage/paths";
+import { redactSensitiveFields } from "./contract-coverage/redact";
 import {
   mockRangeBoundingClientRect,
   resetScreenSize,
@@ -27,19 +28,53 @@ configure({ asyncUtilTimeout: 5000 });
 
 // --- MSW Interaction Recorder Config ---
 
+// Matches "application/json" as well as structured +json suffixes such as
+// "application/problem+json" or "application/vnd.api+json", but not
+// unrelated types that merely contain the substring "json" (e.g. a
+// hypothetical "application/jsonlines").
+const JSON_CONTENT_TYPE_PATTERN = /\/(?:[\w.-]+\+)?json\b/i;
+
 /**
- * Safely extracts and parses payloads from cloned network streams
+ * Safely extracts and parses payloads from cloned network streams. Parses
+ * JSON and form-encoded bodies into objects so downstream redaction can key
+ * off field names; other bodies are returned as raw strings.
  */
-async function extractPayload(streamOwner: Request | Response) {
+export async function extractPayload(
+  streamOwner: Request | Response,
+): Promise<unknown> {
   if (!streamOwner.body) return null;
   try {
     const clone = streamOwner.clone();
     const text = await clone.text();
-    try {
-      return JSON.parse(text);
-    } catch {
-      return text || null;
+    if (!text) return null;
+
+    const contentType = streamOwner.headers.get("content-type") ?? "";
+    if (JSON_CONTENT_TYPE_PATTERN.test(contentType)) {
+      try {
+        return JSON.parse(text);
+      } catch {
+        // redactSensitiveFields() only walks object keys, so returning the
+        // raw text here would persist an unredacted secret from a
+        // truncated/malformed body (e.g. `{"password":"secret"` cut
+        // mid-stream) — use a non-sensitive sentinel instead.
+        return { __unparseable: true, contentType };
+      }
     }
+    if (contentType.includes("application/x-www-form-urlencoded")) {
+      const params = new URLSearchParams(text);
+      const result: Record<string, string | string[]> = {};
+      // Object.fromEntries(params.entries()) would silently keep only the
+      // last value for a repeated key, losing array-valued fields — collect
+      // every value per key instead, and only unwrap to a scalar when the
+      // key appeared once.
+      for (const key of new Set(params.keys())) {
+        const values = params.getAll(key);
+        const [firstValue = ""] = values;
+        result[key] = values.length > 1 ? values : firstValue;
+      }
+      return result;
+    }
+    return text;
   } catch {
     return null; // Fallback if streams are unreadable or locked
   }
@@ -60,8 +95,12 @@ function truncateForLog(payload: unknown): unknown {
 
 async function logInteraction(request: Request, response: Response) {
   try {
-    const requestPayload = truncateForLog(await extractPayload(request));
-    const responsePayload = truncateForLog(await extractPayload(response));
+    const requestPayload = truncateForLog(
+      redactSensitiveFields(await extractPayload(request)),
+    );
+    const responsePayload = truncateForLog(
+      redactSensitiveFields(await extractPayload(response)),
+    );
 
     const logEntry = {
       timestamp: new Date().toISOString(),
