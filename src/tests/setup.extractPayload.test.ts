@@ -37,6 +37,18 @@ describe("extractPayload", () => {
     });
   });
 
+  it("preserves all values for repeated form-encoded keys as an array", async () => {
+    const request = new Request("https://example.com/api", {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: "series=focal&series=jammy&name=my-mirror",
+    });
+    await expect(extractPayload(request)).resolves.toEqual({
+      series: ["focal", "jammy"],
+      name: "my-mirror",
+    });
+  });
+
   it("returns plain text bodies unchanged", async () => {
     const response = new Response("plain text", {
       headers: { "content-type": "text/plain" },

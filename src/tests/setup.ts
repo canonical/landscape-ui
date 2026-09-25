@@ -57,7 +57,18 @@ export async function extractPayload(
       }
     }
     if (contentType.includes("application/x-www-form-urlencoded")) {
-      return Object.fromEntries(new URLSearchParams(text).entries());
+      const params = new URLSearchParams(text);
+      const result: Record<string, string | string[]> = {};
+      // Object.fromEntries(params.entries()) would silently keep only the
+      // last value for a repeated key, losing array-valued fields — collect
+      // every value per key instead, and only unwrap to a scalar when the
+      // key appeared once.
+      for (const key of new Set(params.keys())) {
+        const values = params.getAll(key);
+        const [firstValue = ""] = values;
+        result[key] = values.length > 1 ? values : firstValue;
+      }
+      return result;
     }
     return text;
   } catch {
