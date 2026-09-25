@@ -1,0 +1,25 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.selectedContainer {
+  background-color: $colors--theme--background-alt;
+  margin-bottom: 0;
+  margin-top: $spv--small;
+  padding: $spv--small $sph--large $spv--large;
+
+  :global(.is-dark) & {
+    background-color: $colors--theme--background-default;
+  }
+}
+
+.titleRow {
+  align-items: center;
+  display: flex;
+  gap: $sph--small;
+  justify-content: space-between;
+}
+
+.deleteButton {
+  margin-bottom: 0;
+  padding: $spv--x-small $sph--small;
+}
