@@ -146,8 +146,8 @@ jobs:
       # takes precedence over the general App-token rewrite set earlier.
       #
       # Dependabot runs cannot read LANDSCAPE_PROTO_TOKEN (Actions store, empty there),
-      # so fall back to the resolved packaging token — the classic PAT's repo scope
-      # already covers landscape-proto. Normal runs still prefer LANDSCAPE_PROTO_TOKEN.
+      # so the resolved packaging token's Contents: read access already covers landscape-proto.
+      # Normal runs still prefer LANDSCAPE_PROTO_TOKEN.
       #
       # Migration to App install: add "landscape-proto" to the repositories list in
       # the Generate App Token step above, then remove the PAT rewrite line here.
