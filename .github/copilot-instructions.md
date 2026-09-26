@@ -378,76 +378,61 @@ This pattern ensures hooks are tested in realistic component contexts with all r
 
 ## CI/CD Workflows (Authoritative)
 
-The repo uses multiple workflows. Copilot must follow these triggers, job orders, and tool versions.
+The repo uses six workflows. Copilot must follow these triggers, job orders, and tool versions.
 
-### Lint & Format (`.github/workflows/lint.yml`)
+### Validate (`.github/workflows/validate.yml`)
 
-**Trigger:** PR → `dev`  
-**Jobs:**
+**Trigger:** PR → `main`, `release/**`, `point/**`; merge queue (`merge_group`)  
+**Jobs** (independent — no `needs` chain):
 
-- **ESLint:** Diff-only TS/TSX (added/modified).
-- **Prettier:** Diff-only JS/TS/TSX/JSON/MD/HTML.
-- **Stylelint:** Diff-only SCSS.  
-  **Common:**
-- Node `24`, pnpm `10`, `pnpm install --frozen-lockfile`.
-- Skip job if no matching changed files.
+- **ESLint:** `pnpm eslint --cache`.
+- **Prettier:** `pnpm prettier --check src`.
+- **Stylelint:** `pnpm stylelint "src/**/*.module.scss"`.
+- **Playwright** (self-hosted runner, Playwright container): matrix for `saas` + `self-hosted`; each builds with `pnpm run build:e2e` → installs browsers → runs matching Playwright project (untagged "common" tests run in both) → uploads `playwright-report-<target>`.
+- **Vitest** (self-hosted): `pnpm exec vitest run --coverage` → uploads `vitest-report` from `reports/`.
+- **Changeset:** fails the PR unless it _adds_ a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it.  
+  **Env (examples):** `VITE_API_URL`, `VITE_API_URL_OLD`, `VITE_ROOT_PATH`, `VITE_SELF_HOSTED_ENV=true/false`, `VITE_MSW_ENABLED=true/false`.  
+  **Constraints:** keep memory flag `NODE_OPTIONS='--max_old_space_size=4096'` on the Vitest job.
 
-### Tests + TICS on PRs (`.github/workflows/run-tests-and-tics.yml`)
+### Integration Tests (`.github/workflows/integration-tests.yml`)
 
-**Trigger:** PR → `dev`  
-**Jobs:**
+**Trigger:** PR → `main` and push → `main` — both `paths-ignore` `docs/**`, `feature-plans/**`, `debian/**` and `**.md`; nightly cron `0 2 * * *`; `workflow_dispatch` with a `packaging_ref` input  
+**Job:** **integration-tests** (Ubuntu hosted, 45-minute timeout), skipped for fork PRs. Checks out `landscape-packaging` with a GitHub App token, vendors `landscape-go`, starts the backend stack with Docker Compose, waits for schema migrations / debarchive seeding / appserver readiness, then runs three Playwright configs from `e2e/docker-stack/`: API contract, self-hosted, SaaS — uploading a report per config.  
+**Rule:** Third-party actions here are SHA-pinned. Keep them pinned; do not relax them to floating tags.
 
-- **e2e-tests** (self-hosted runner, Playwright container): matrix for `saas` + `self-hosted`; each builds → installs browsers → runs matching Playwright project (untagged "common" tests run in both) → uploads report.
-- **unit-tests** (self-hosted): `vitest run --coverage` → upload coverage artifact to `reports/`.
-- **tics-report** (Ubuntu hosted): downloads `vitest-report` → runs TICS action with `installTics: true`.  
-  **Env (examples):** `VITE_API_URL`, `VITE_API_URL_OLD`, `VITE_ROOT_PATH=/`, `VITE_SELF_HOSTED_ENV=true/false`, `VITE_MSW_ENABLED=true/false`.  
-  **Constraints:** keep memory flag `NODE_OPTIONS='--max_old_space_size=4096'`.
-
-### Tests on Push (`.github/workflows/run-tests.yml`)
-
-**Trigger:** push → `dev`  
-**Jobs:**
-
-- **eslint-check:** `pnpm run lint`.
-- **e2e-tests:** needs eslint; same matrix pattern as PR e2e.
-- **unit-tests:** needs eslint; same pattern as PR unit tests; uploads `coverage-report`.
-
-### PPA Build Commit (`.github/workflows/ppa-build.yml`)
-
-**Trigger:** push → `dev` **or** successful `Release` workflow (`workflow_run`)  
-**Jobs:**
-
-- **build:** checks out `dev` (or `main` when from `workflow_run`), builds with env:
-  - `VITE_API_URL=/api/v2/`, `VITE_API_URL_OLD=/api/`, `VITE_ROOT_PATH=/new_dashboard/`
-  - archives `dist` as artifact.
-- **commit:** checks out destination branch (`ppa-build-dev` or `ppa-build`) → replaces tree with built `dist/` → auto-commits.  
-  **Rule:** Do not change branch selection logic or artifact dance.
-
-### Release (`.github/workflows/release.yml`)
+### Changeset Version (`.github/workflows/changeset-version.yml`)
 
 **Trigger:** push → `main`  
-**Job:** **semantic-release** with `GITHUB_TOKEN` and full history (`fetch-depth: 0`).  
-**Rule:** Only `main` publishes tags and releases. Do not introduce prerelease steps elsewhere.
+**Job:** **version** — maintains the "Version Packages" PR via `changesets/action@v1` with `scripts/manual-version-update.cjs`. No build, no tag, no publish.  
+**Rule:** `main` is the integration trunk and CHANGELOG baseline, not a publish target. Do not add build or `ppa-build-*` steps here.
 
-### Security Scan & SBOM (`.github/workflows/security.yml`)
+### Release and PPA Build (`.github/workflows/release-and-build.yml`)
 
-**Triggers:** manual, weekly cron, PRs touching `Dockerfile` or this workflow  
+**Trigger:** push → `release/**` or `point/**`; `workflow_dispatch` (guarded to those same refs)  
 **Jobs:**
 
-- **build-image:** builds and pushes OCI image to GHCR, saves as `image.tar` artifact.
-- **scan-and-report** (self-hosted): runs Canonical secscan client on `image.tar`.
-  - Exit code handling: `0` = clean; `100–199` = CVEs found → fail; other non-zero = scan failure → fail.
-  - On failure: open GitHub issue with scan output.
-- **generate-and-submit-sbom:** Trivy SBOM (`spdx-json`) and submit to GitHub Dependency Graph; upload artifact.  
-  **Rule:** Preserve exit-code semantics and issue creation logic.
+- **process-release:** computes the version via `scripts/calculate-version.cjs`, derives the per-branch `ppa-build-*` destination, resolves stable promotion (highest `release/YY.MM` on origin, or the `STABLE_RELEASE_BRANCH` override), and sets `should_build=false` when `v<version>` is already tagged. When building: version bump → production build → force-publish `dist/` to the destination branch → tag `v<version>` → mirror to `ppa-build-stable` if promoted.
+- **build-deb:** needs `process-release`; builds the unsigned `.deb` from the `dist` artifact and uploads it.  
+  **Rule:** Do not change branch selection, the `should_build` tag guard, or the tag-after-deploy ordering.
 
-### Full TICS (Manual) (`.github/workflows/tics-full.yml`)
+### Vulnerability Scan (`.github/workflows/security.yaml`)
 
-**Trigger:** workflow_dispatch  
+**Triggers:** `workflow_dispatch`; push → `release/**` (ignoring `security/sbom/**`)  
 **Jobs:**
 
-- **unit-tests:** same as PR unit tests; uploads `vitest-report`.
-- **tics-report:** self-hosted TIOBE runner with `mode: qserver`.
+- **build-image:** builds the OCI image and uploads it as the `image-tar` artifact.
+- **scan-and-report** (self-hosted): runs `canonical-secscan-client` against `image.tar` with SSDLC metadata; the scanner's exit code becomes the job's exit code.
+- **generate-and-commit-sbom:** Trivy SBOM (`spdx-json`) → artifact, and on a `release/**` push commits it to `security/sbom/release.spdx.json`.  
+  **Rule:** Preserve exit-code propagation and the SBOM commit race protection.
+
+### Full TICS (`.github/workflows/tics-full.yml`)
+
+**Trigger:** `workflow_dispatch`; monthly cron `0 3 1 * *`  
+**Jobs:**
+
+- **unit-tests:** same shape as the Validate Vitest job; uploads `vitest-report`.
+- **tics-report:** needs `unit-tests`; self-hosted TIOBE runner with `mode: qserver`, `installTics: true`, a per-run `tmpdir`, and a repository-wide `concurrency` group.  
+  **Rule:** Keep `pnpm run tcm:run` before the TICS step — it needs the generated CSS module declarations.
 
 ---
 
@@ -456,18 +441,19 @@ The repo uses multiple workflows. Copilot must follow these triggers, job orders
 - **Node:** `24`
 - **pnpm:** `10`
 - **Install:** `pnpm install --frozen-lockfile` only
-- **Build:** `pnpm run build` before Playwright runs
-- **Playwright:** install browsers with `pnpm exec playwright install --with-deps` inside the container job
+- **Build:** `pnpm run build:e2e` before the Validate Playwright run; `pnpm run build` for release builds
+- **Playwright:** install browsers with `pnpm exec playwright install --with-deps` inside the job that runs them
 - **Caching:** use `actions/setup-node@v4` cache `"pnpm"`
-- **Artifacts:** preserve report paths as defined (`playwright-report`, `reports/`, `dist`)
+- **Artifacts:** preserve report names and paths as defined (`playwright-report-<target>`, `vitest-report` ← `reports/`, `dist`, `image-tar`)
 
 ### Copilot MUST NOT
 
 - Suggest `npm`/`yarn` commands or change Node/pnpm versions.
-- Bypass diff-filter logic in `lint.yml`.
-- Move Playwright browser install outside the e2e job.
-- Change branch logic in PPA build or release triggers.
+- Add a build or publish step to `changeset-version.yml` — `main` does not ship.
+- Move Playwright browser install outside the job that runs the tests.
+- Change branch selection or the `should_build` tag guard in `release-and-build.yml`.
 - Alter TICS exit-code handling or security scan failure behavior.
+- Unpin the SHA-pinned actions in `integration-tests.yml`.
 
 ## Update Policy
 
