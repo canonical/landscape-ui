@@ -1,7 +1,9 @@
-// Mock data for the staff (super admin) account endpoints, mirroring the
-// server's `get_staff_account_page` / `get_staff_account_detail` shapes: the
-// detail is `Account.get_state()` (including its always-null legacy fields)
-// plus the two account limits, and the list is a slim projection of it.
+// Mock data for the staff (super admin) endpoints, mirroring the server's
+// response models: the account detail (`SuperadminAccountResponse`, i.e. the
+// `Account.get_state()` fields plus the two account limits), its slim list
+// projection, and the `GET people` search results. Accounts, people and
+// invitations describe one deployment, so memberships, administrators and
+// invitation targets agree across endpoints.
 
 export interface StaffAccountAdministrator {
   name: string;
@@ -10,7 +12,7 @@ export interface StaffAccountAdministrator {
 }
 
 export interface StaffAccountLicense {
-  expires: string;
+  expires: string | null;
   seats: number;
   type: string;
 }
@@ -28,16 +30,11 @@ export interface StaffAccountListItem {
 }
 
 export interface StaffAccount extends StaffAccountListItem {
-  creator: null;
-  company_size: null;
-  daytime_phone: null;
-  country: null;
-  region: null;
-  mailing_list_optin: null;
-  administrators: StaffAccountAdministrator[];
+  /** `null` unless the account is disabled. */
+  disabled_reason: string | null;
   last_login_time: string | null;
+  administrators: StaffAccountAdministrator[];
   licenses: StaffAccountLicense[];
-  disabled_reason?: string;
   max_people_count: number;
   max_attachment_size: number;
 }
@@ -48,38 +45,35 @@ export interface WslFeatureLimits {
   max_wsl_child_instance_profiles: number;
 }
 
-const legacyNullFields = {
-  creator: null,
-  company_size: null,
-  daytime_phone: null,
-  country: null,
-  region: null,
-  mailing_list_optin: null,
-} as const;
-
 /**
  * Every account in the mock deployment, sorted by name like the server's
  * list query. Includes the two accounts the mock auth user is a member of
  * (`test-account`, `second-account` — see `mocks/auth.ts`) plus non-member
  * accounts covering the staff-only states: a disabled account, an account
- * with a Salesforce key, and an account whose login policy requires
- * re-authentication (see `reauthenticationRequiredAccounts`).
+ * with a Salesforce key, an account whose login policy requires
+ * re-authentication (see `reauthenticationRequiredAccounts`), and the stray
+ * free account a customer signed up for next to their Salesforce-linked one
+ * (`jane-free-1`, see `staffPeople`).
  *
  * A factory rather than a constant: handlers mutate their copy (PATCH), so
  * each test run starts from a fresh deep copy.
  */
 export const createStaffAccounts = (): StaffAccount[] => [
   {
-    ...legacyNullFields,
     account: "acme",
     company: "ACME Corp",
     subdomain: "acme",
     disabled: false,
+    disabled_reason: null,
     computers: 41,
     creation_time: "2024-01-01T00:00:00Z",
     last_login_time: "2026-07-01T09:30:00Z",
     administrators: [
-      { name: "Jane Doe", email: "jane@acme.com", openid: null },
+      {
+        name: "Jane Doe",
+        email: "jane@acme.com",
+        openid: "https://login.ubuntu.com/+id/abc123",
+      },
     ],
     licenses: [
       { expires: "2027-01-01T00:00:00Z", seats: 50, type: "UbuntuPro" },
@@ -91,11 +85,11 @@ export const createStaffAccounts = (): StaffAccount[] => [
     max_attachment_size: 1048576,
   },
   {
-    ...legacyNullFields,
     account: "globex",
     company: "Globex Corporation",
     subdomain: null,
     disabled: false,
+    disabled_reason: null,
     computers: 7,
     creation_time: "2025-03-15T12:00:00Z",
     last_login_time: "2026-08-20T16:45:00Z",
@@ -110,7 +104,6 @@ export const createStaffAccounts = (): StaffAccount[] => [
     max_attachment_size: 1048576,
   },
   {
-    ...legacyNullFields,
     account: "initech",
     company: "Initech",
     subdomain: null,
@@ -130,11 +123,34 @@ export const createStaffAccounts = (): StaffAccount[] => [
     max_attachment_size: 1048576,
   },
   {
-    ...legacyNullFields,
+    account: "jane-free-1",
+    company: "Jane's free account",
+    subdomain: "janedoe",
+    disabled: false,
+    disabled_reason: null,
+    computers: 1,
+    creation_time: "2026-08-30T15:02:10Z",
+    last_login_time: "2026-09-01T08:12:44Z",
+    administrators: [
+      {
+        name: "Jane Doe",
+        email: "jane@acme.com",
+        openid: "https://login.ubuntu.com/+id/abc123",
+      },
+    ],
+    licenses: [],
+    lds_enabled: false,
+    salesforce_account_key: null,
+    enabled_features: [],
+    max_people_count: 10,
+    max_attachment_size: 1048576,
+  },
+  {
     account: "second-account",
     company: "Second Account",
     subdomain: null,
     disabled: false,
+    disabled_reason: null,
     computers: 3,
     creation_time: "2025-01-10T10:00:00Z",
     last_login_time: "2026-09-01T11:00:00Z",
@@ -149,11 +165,11 @@ export const createStaffAccounts = (): StaffAccount[] => [
     max_attachment_size: 1048576,
   },
   {
-    ...legacyNullFields,
     account: "test-account",
     company: "Test Account",
     subdomain: null,
     disabled: false,
+    disabled_reason: null,
     computers: 12,
     creation_time: "2024-11-05T09:00:00Z",
     last_login_time: "2026-09-08T07:15:00Z",
@@ -184,3 +200,158 @@ export const defaultWslFeatureLimits: WslFeatureLimits = {
   max_wsl_child_instances_per_host: 10,
   max_wsl_child_instance_profiles: 100,
 };
+
+// --- People search (`GET people`) ---
+//
+// Person and invitation timestamps are naive UTC with microseconds and no
+// `Z`: unlike the account endpoints, the people search serializes the raw
+// `timestamp` columns instead of going through `format_datetime`.
+
+export interface StaffPersonAccount {
+  account: string;
+  company: string;
+  salesforce_account_key: string | null;
+}
+
+export interface StaffPendingInvitation {
+  account: string;
+  company: string;
+  creation_time: string;
+}
+
+export interface StaffPersonResult {
+  type: "person";
+  id: number;
+  name: string;
+  email: string;
+  /** The SSO identity; `null` when the person never completed an SSO login. */
+  identity: string | null;
+  last_login_time: string | null;
+  accounts: StaffPersonAccount[];
+  /** Invitations addressed to this person's email, in any account. */
+  pending_invitations: StaffPendingInvitation[];
+}
+
+export interface StaffInvitationResult {
+  type: "invitation";
+  id: number;
+  name: string;
+  email: string;
+  account: string;
+  company: string;
+  salesforce_key: string | null;
+  creation_time: string;
+}
+
+export type StaffPeopleResult = StaffPersonResult | StaffInvitationResult;
+
+/** A `person` row, with the names of the accounts it belongs to. */
+export interface StaffPersonRow {
+  id: number;
+  name: string;
+  email: string;
+  identity: string | null;
+  last_login_time: string | null;
+  accounts: string[];
+}
+
+/** An `account_invitation` row; `account` names the target account. */
+export interface StaffInvitationRow {
+  id: number;
+  name: string;
+  email: string;
+  account: string;
+  salesforce_key: string | null;
+  creation_time: string;
+}
+
+/**
+ * Every person in the mock deployment, covering the support cases the people
+ * search exists for: Jane Doe belongs to her Salesforce-linked account and to
+ * a stray free one, has a duplicate record (same email, no SSO identity, no
+ * account), and Milton Waddams is orphaned (no account left). Test User is the
+ * mock caller (`mocks/auth.ts`).
+ */
+export const staffPeople: StaffPersonRow[] = [
+  {
+    id: 4821,
+    name: "Jane Doe",
+    email: "jane@acme.com",
+    identity: "https://login.ubuntu.com/+id/abc123",
+    last_login_time: "2026-09-01T08:12:44.512934",
+    accounts: ["acme", "jane-free-1"],
+  },
+  {
+    id: 5107,
+    name: "Jane Doe",
+    email: "jane@acme.com",
+    identity: null,
+    last_login_time: null,
+    accounts: [],
+  },
+  {
+    id: 1203,
+    name: "Hank Scorpio",
+    email: "hank@globex.com",
+    identity: null,
+    last_login_time: "2026-08-20T16:45:00.103872",
+    accounts: ["globex"],
+  },
+  {
+    id: 877,
+    name: "Bill Lumbergh",
+    email: "bill@initech.com",
+    identity: null,
+    last_login_time: null,
+    accounts: ["initech"],
+  },
+  {
+    id: 902,
+    name: "Milton Waddams",
+    email: "milton@initech.com",
+    identity: "https://login.ubuntu.com/+id/mw0042",
+    last_login_time: "2025-11-14T17:03:21.448210",
+    accounts: [],
+  },
+  {
+    id: 1001,
+    name: "Test User",
+    email: "example@mail.com",
+    identity: null,
+    last_login_time: "2026-09-08T07:15:00.261437",
+    accounts: ["second-account", "test-account"],
+  },
+];
+
+/**
+ * Every pending invitation in the mock deployment: one to a mistyped address
+ * that never became a person, one to Jane Doe's address in different case
+ * (listed under both of her records), and one carrying a Salesforce key, which
+ * the search matches exactly.
+ */
+export const staffInvitations: StaffInvitationRow[] = [
+  {
+    id: 913,
+    name: "Jane Doe",
+    email: "jane.doe@acme.com",
+    account: "acme",
+    salesforce_key: null,
+    creation_time: "2026-08-30T15:00:00.284113",
+  },
+  {
+    id: 914,
+    name: "Jane Doe",
+    email: "Jane@acme.com",
+    account: "globex",
+    salesforce_key: null,
+    creation_time: "2026-09-10T09:30:12.771020",
+  },
+  {
+    id: 920,
+    name: "Peter Gibbons",
+    email: "peter@initech.com",
+    account: "initech",
+    salesforce_key: "1-001P3T3RG1BB0N5",
+    creation_time: "2026-06-02T13:45:09.930551",
+  },
+];
