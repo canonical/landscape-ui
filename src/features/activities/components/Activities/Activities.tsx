@@ -172,7 +172,7 @@ const Activities: FC<ActivitiesProps> = ({
               <Link
                 to={ROUTES.instances.details.single(row.original.computer_id)}
               >
-                ID: {row.original.computer_id}
+                {row.original.computer_title}
               </Link>
             ) : (
               <NoData />
