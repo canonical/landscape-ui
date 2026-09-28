@@ -61,9 +61,7 @@ export async function extractPayload(
       }
     }
     if (
-      /^\s*application\/x-www-form-urlencoded(?:\s*;.*)?\s*$/i.test(
-        contentType,
-      )
+      /^\s*application\/x-www-form-urlencoded(?:\s*;.*)?\s*$/i.test(contentType)
     ) {
       const params = new URLSearchParams(text);
       const result: Record<string, string | string[]> = {};
