@@ -146,9 +146,11 @@ describe("Activities", () => {
       await user.click(activityButton);
 
       const sidePanel = await screen.findByRole("complementary");
-      expect(within(sidePanel).getByRole("heading", {
-        name: activities[0].summary,
-      })).toBeInTheDocument();
+      expect(
+        within(sidePanel).getByRole("heading", {
+          name: activities[0].summary,
+        }),
+      ).toBeInTheDocument();
       expect(within(sidePanel).queryByText("Instance")).not.toBeInTheDocument();
     });
   });
