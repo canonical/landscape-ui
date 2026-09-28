@@ -169,6 +169,50 @@ describe("redactSensitiveFields", () => {
     });
   });
 
+  it("strips embedded credentials from a URL value under a non-sensitive key", () => {
+    // Matches the AddMirrorForm ubuntu-pro flow: the bearer token is embedded
+    // as URL userinfo in `archiveRoot`, a key that doesn't match
+    // SENSITIVE_KEY_PATTERN, so only value-level sanitization catches it.
+    const input = {
+      archiveRoot: "https://bearer:SECRETTOKEN@esm.ubuntu.com/apps/ubuntu",
+    };
+
+    const result = redactSensitiveFields(input) as typeof input;
+
+    expect(result.archiveRoot).toBe("https://esm.ubuntu.com/apps/ubuntu");
+    expect(JSON.stringify(result)).not.toContain("SECRETTOKEN");
+  });
+
+  it("scrubs sensitive query parameters in URL values while preserving others", () => {
+    const input = {
+      webhookUrl: "https://example.com/hook?api_key=SECRET123&channel=alerts",
+    };
+
+    const result = redactSensitiveFields(input) as typeof input;
+    const resultUrl = new URL(result.webhookUrl);
+
+    expect(resultUrl.searchParams.get("api_key")).toBe("***REDACTED***");
+    expect(resultUrl.searchParams.get("channel")).toBe("alerts");
+  });
+
+  it("leaves URL values without embedded credentials or sensitive params unchanged", () => {
+    const input = { archiveRoot: "https://esm.ubuntu.com/apps/ubuntu" };
+
+    expect(redactSensitiveFields(input)).toEqual(input);
+  });
+
+  it("leaves non-URL string values with an @ symbol unchanged", () => {
+    const input = { note: "contact us at support@example.com for help" };
+
+    expect(redactSensitiveFields(input)).toEqual(input);
+  });
+
+  it("sanitizes a bare top-level URL string payload", () => {
+    expect(redactSensitiveFields("https://bearer:SECRETTOKEN@host/path")).toBe(
+      "https://host/path",
+    );
+  });
+
   it("returns a deep copy so the original is not mutated", () => {
     const input = {
       nested: {
