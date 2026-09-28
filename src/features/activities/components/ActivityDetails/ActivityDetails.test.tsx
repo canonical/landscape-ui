@@ -38,6 +38,17 @@ describe("ActivityDetails", () => {
     }
   });
 
+  it("renders the activity creator", async () => {
+    const [activity] = activities;
+
+    renderWithProviders(<ActivityDetails activityId={activity.id} />);
+
+    await expectLoadingState();
+
+    expect(screen.getByText("Creator")).toBeInTheDocument();
+    expect(screen.getByText(activity.creator.name)).toBeInTheDocument();
+  });
+
   it("renders output when result_text is present", async () => {
     const activity = activities.find((a) => a.result_text !== null);
     assert(activity);
