@@ -138,7 +138,7 @@ jobs:
           VITE_APP_COMMIT: ${{ github.sha }}
           VITE_API_URL: /api/v2/
           VITE_API_URL_OLD: /api/
-          VITE_ROOT_PATH: /new_dashboard/
+          VITE_ROOT_PATH: /portal/
 
       - name: Upload dist artifact
         if: steps.calver.outputs.should_build == 'true'

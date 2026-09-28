@@ -418,7 +418,7 @@ The repo uses multiple workflows. Copilot must follow these triggers, job orders
 **Jobs:**
 
 - **build:** checks out `dev` (or `main` when from `workflow_run`), builds with env:
-  - `VITE_API_URL=/api/v2/`, `VITE_API_URL_OLD=/api/`, `VITE_ROOT_PATH=/new_dashboard/`
+  - `VITE_API_URL=/api/v2/`, `VITE_API_URL_OLD=/api/`, `VITE_ROOT_PATH=/portal/`
   - archives `dist` as artifact.
 - **commit:** checks out destination branch (`ppa-build-dev` or `ppa-build`) → replaces tree with built `dist/` → auto-commits.  
   **Rule:** Do not change branch selection logic or artifact dance.
