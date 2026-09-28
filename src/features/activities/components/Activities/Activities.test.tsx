@@ -5,7 +5,7 @@ import {
   INVALID_ACTIVITY_SEARCH_QUERY,
 } from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -36,6 +36,19 @@ describe("Activities", () => {
       ];
       const table = screen.getByRole("table");
       expect(table).toHaveTexts(columnHeaders);
+    });
+
+    it("should render the computer title for each activity", () => {
+      renderWithProviders(<Activities {...defaultProps} />);
+
+      const table = screen.getByRole("table");
+      const computerTitles = within(table)
+        .getAllByRole("link")
+        .map((link) => link.textContent);
+
+      expect(computerTitles).toEqual(
+        activities.map((activity) => activity.computer_title),
+      );
     });
   });
 
