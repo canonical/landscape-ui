@@ -87,13 +87,9 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
           <span className={classes.marginRight} id={labelId}>
             {ongoing}
           </span>
-          {isTableCell ? (
-            <span className="u-text--muted" aria-live="off">
-              {progressPercent}%
-            </span>
-          ) : (
-            <ProgressBar progress={progressPercent} labelledBy={labelId} />
-          )}
+          <span className="u-text--muted" aria-live="off">
+            {progressPercent}%
+          </span>
         </div>
       </>
     );
