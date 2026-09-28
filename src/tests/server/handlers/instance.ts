@@ -204,9 +204,9 @@ export default [
 
       const currentRelease = instance?.distribution_info
         ? {
-          name: instance.distribution_info.description,
-          version: instance.distribution_info.release,
-        }
+            name: instance.distribution_info.description,
+            version: instance.distribution_info.release,
+          }
         : null;
 
       const mockedIneligibleReasonById: Record<
