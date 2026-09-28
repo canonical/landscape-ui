@@ -2,9 +2,12 @@ import { expectLoadingState } from "@/tests/helpers";
 import { activities } from "@/tests/mocks/activity";
 import { instances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import ActivityDetails from "./ActivityDetails";
+import { Activity } from "../../types";
+import { Creator } from "@/types/Creator";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 describe("ActivityDetails", () => {
   it("renders activity details with all information", async () => {
@@ -38,15 +41,47 @@ describe("ActivityDetails", () => {
     }
   });
 
-  it("renders the activity creator", async () => {
-    const [activity] = activities;
+  it("renders the activity creator when present", async () => {
+    const activity = activities.find(
+      (activity): activity is typeof activity & { creator: Creator } =>
+        activity.creator !== null,
+    );
+
+    assert(activity);
 
     renderWithProviders(<ActivityDetails activityId={activity.id} />);
 
     await expectLoadingState();
 
-    expect(screen.getByText("Creator")).toBeInTheDocument();
-    expect(screen.getByText(activity.creator.name)).toBeInTheDocument();
+    const creatorLabel = screen.getByText("Creator");
+    expect(creatorLabel).toBeInTheDocument();
+
+    const creatorContainer = creatorLabel.parentElement;
+    assert(creatorContainer);
+
+    expect(
+      within(creatorContainer).getByText(activity.creator.name),
+    ).toBeInTheDocument();
+  });
+
+  it("renders no-data text when activity creator is not present", async () => {
+    const activity = activities.find((activity) => activity.creator === null);
+
+    assert(activity);
+
+    renderWithProviders(<ActivityDetails activityId={activity.id} />);
+
+    await expectLoadingState();
+
+    const creatorLabel = screen.getByText("Creator");
+    expect(creatorLabel).toBeInTheDocument();
+
+    const creatorContainer = creatorLabel.parentElement;
+    assert(creatorContainer);
+
+    expect(
+      within(creatorContainer).getByText(NO_DATA_TEXT),
+    ).toBeInTheDocument();
   });
 
   it("renders output when result_text is present", async () => {
