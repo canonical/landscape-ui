@@ -76,7 +76,11 @@ export async function extractPayload(
       }
       return result;
     }
-    return text;
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text;
+    }
   } catch {
     return null; // Fallback if streams are unreadable or locked
   }
