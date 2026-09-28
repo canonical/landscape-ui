@@ -64,4 +64,26 @@ describe("PageHeader", () => {
 
     expect(screen.getByText(buttonTitle)).toBeInTheDocument();
   });
+
+  it("renders helper content", () => {
+    const props = {
+      title: "Page Header Title",
+      helperContent: <span>Helper content</span>,
+    };
+
+    render(<PageHeader {...props} />);
+
+    expect(screen.getByText("Helper content")).toBeInTheDocument();
+  });
+
+  it("renders subtitle", () => {
+    const props = {
+      title: "Page Header Title",
+      subtitle: <span>Page Header Subtitle</span>,
+    };
+
+    render(<PageHeader {...props} />);
+
+    expect(screen.getByText("Page Header Subtitle")).toBeInTheDocument();
+  });
 });
