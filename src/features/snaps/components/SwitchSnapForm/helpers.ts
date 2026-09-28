@@ -1,5 +1,8 @@
 import type { SelectOption } from "@/types/SelectOption";
-import { getChannelMapEntry, getChannelOptions as getSharedChannelOptions } from "../../helpers";
+import {
+  getChannelMapEntry,
+  getChannelOptions as getSharedChannelOptions,
+} from "../../helpers";
 import type { AvailableSnapInfo } from "../../types";
 import { INITIAL_VALUES } from "./constants";
 import type { SwitchFormValues } from "./types";
