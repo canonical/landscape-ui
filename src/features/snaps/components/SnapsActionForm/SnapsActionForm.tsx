@@ -143,14 +143,23 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     );
   };
 
+  const hasRevisionNotification =
+    isChangeChannel &&
+    Object.values(snapChangeConfigs).some(
+      (config) => config.mode === "revision",
+    );
+
   const buttonAppearance = action === "uninstall" ? "negative" : "positive";
 
   return (
     <>
       <div className={classes.container}>
-        {hasNotification(action) && (
+        {(hasNotification(action) || hasRevisionNotification) && (
           <Suspense fallback={<LoadingState />}>
-            <SnapNotification action={action} />
+            <SnapNotification
+              action={action}
+              snapChangeConfigs={snapChangeConfigs}
+            />
           </Suspense>
         )}
         <SnapBulkSearch
