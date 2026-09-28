@@ -80,8 +80,8 @@ const Activities: FC<ActivitiesProps> = ({
       setSelectedActivities(
         selectedActivities.includes(activity)
           ? selectedActivities.filter(
-              (selectedActivity) => selectedActivity !== activity,
-            )
+            (selectedActivity) => selectedActivity !== activity,
+          )
           : [...selectedActivities, activity],
       );
     },
@@ -151,6 +151,7 @@ const Activities: FC<ActivitiesProps> = ({
         {
           accessor: "activity_status",
           Header: "Status",
+          className: "medium-cell",
           Cell: ({
             row: {
               original: { activity_status },
@@ -167,6 +168,7 @@ const Activities: FC<ActivitiesProps> = ({
         {
           accessor: "computer_id",
           Header: "Instance",
+          className: "large-cell",
           Cell: ({ row }: CellProps<ActivityCommon>) =>
             row.original.computer_id ? (
               <Link
@@ -193,6 +195,7 @@ const Activities: FC<ActivitiesProps> = ({
         {
           accessor: "creator.name",
           Header: "Creator",
+          className: "medium-cell",
           Cell: ({ row }: CellProps<ActivityCommon>) => (
             <>{row.original.creator?.name ?? <NoData />}</>
           ),
@@ -264,7 +267,7 @@ const Activities: FC<ActivitiesProps> = ({
           emptyMsg="No activities found according to your search parameters."
           columns={columns}
           data={activities}
-          minWidth={1150}
+          minWidth={1400}
           subhead={subhead}
         />
       )}
