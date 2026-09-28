@@ -17,6 +17,7 @@ interface PageHeaderProps {
   readonly className?: string;
   readonly visualTitle?: string;
   readonly helperContent?: ReactNode;
+  readonly subtitle?: ReactNode;
 }
 
 const BreadcrumbLink: FC<LinkComponentProps> = ({
@@ -37,6 +38,7 @@ const PageHeader: FC<PageHeaderProps> = ({
   actions,
   breadcrumbs,
   helperContent,
+  subtitle,
 }) => {
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
   const headerRef = useRef<HTMLDivElement>(null);
@@ -54,54 +56,60 @@ const PageHeader: FC<PageHeaderProps> = ({
   }, []);
 
   return (
-    <div ref={headerRef} className={classNames("p-panel__header", className)}>
-      {breadcrumbs && breadcrumbs.length > 0 && (
-        <div className={classes.breadcrumbs}>
-          <Breadcrumbs
-            aria-label="Breadcrumbs"
-            LinkComponent={BreadcrumbLink}
-            items={breadcrumbs.map((breadcrumb) =>
-              breadcrumb.current
-                ? // `getItemId` throws for items with neither `url` nor `key`.
-                  { label: breadcrumb.label, current: true, key: "current" }
-                : {
-                    label: breadcrumb.label,
-                    url: breadcrumb.path,
-                  },
+    <div
+      ref={headerRef}
+      className={classNames("p-panel__header", classes.header, className)}
+    >
+      <div className={classes.contentRow}>
+        {breadcrumbs && breadcrumbs.length > 0 && (
+          <div className={classes.breadcrumbs}>
+            <Breadcrumbs
+              aria-label="Breadcrumbs"
+              LinkComponent={BreadcrumbLink}
+              items={breadcrumbs.map((breadcrumb) =>
+                breadcrumb.current
+                  ? // `getItemId` throws for items with neither `url` nor `key`.
+                    { label: breadcrumb.label, current: true, key: "current" }
+                  : {
+                      label: breadcrumb.label,
+                      url: breadcrumb.path,
+                    },
+              )}
+            />
+          </div>
+        )}
+        {hideTitle ? (
+          <>
+            <h1 className="u-off-screen">{title}</h1>
+            {visualTitle && (
+              <div
+                className={classNames("p-panel__title", classes.visualTitle, {
+                  "u-no-padding--bottom": isSmallerScreen,
+                })}
+              >
+                {visualTitle}
+              </div>
             )}
-          />
-        </div>
-      )}
-      {hideTitle ? (
-        <>
-          <h1 className="u-off-screen">{title}</h1>
-          {visualTitle && (
-            <div
-              className={classNames("p-panel__title", classes.visualTitle, {
-                "u-no-padding--bottom": isSmallerScreen,
+          </>
+        ) : (
+          <>
+            <h1
+              className={classNames("p-panel__title", {
+                "u-no-padding--bottom": isSmallerScreen || !!subtitle,
               })}
             >
-              {visualTitle}
-            </div>
-          )}
-        </>
-      ) : (
-        <>
-          <h1
-            className={classNames("p-panel__title", {
-              "u-no-padding--bottom": isSmallerScreen,
-            })}
-          >
-            {title}
-          </h1>
-          <>{helperContent}</>
-        </>
-      )}
-      {actions && actions.length > 0 && (
-        <div className={classNames("p-panel__controls", classes.controls)}>
-          {actions}
-        </div>
-      )}
+              {title}
+            </h1>
+            <>{helperContent}</>
+          </>
+        )}
+        {actions && actions.length > 0 && (
+          <div className={classNames("p-panel__controls", classes.controls)}>
+            {actions}
+          </div>
+        )}
+      </div>
+      {subtitle && <div className={classes.subtitle}>{subtitle}</div>}
     </div>
   );
 };
