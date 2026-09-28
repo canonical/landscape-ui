@@ -80,8 +80,8 @@ const Activities: FC<ActivitiesProps> = ({
       setSelectedActivities(
         selectedActivities.includes(activity)
           ? selectedActivities.filter(
-            (selectedActivity) => selectedActivity !== activity,
-          )
+              (selectedActivity) => selectedActivity !== activity,
+            )
           : [...selectedActivities, activity],
       );
     },
@@ -196,8 +196,7 @@ const Activities: FC<ActivitiesProps> = ({
           accessor: "completion_time",
           Header: "Completed at",
           className: "large-cell",
-          Cell: ({ row }: CellProps<ActivityCommon>) => (
-
+          Cell: ({ row }: CellProps<ActivityCommon>) =>
             row.original.completion_time ? (
               <span className="font-monospace">
                 {date(row.original.completion_time).format(
@@ -206,8 +205,7 @@ const Activities: FC<ActivitiesProps> = ({
               </span>
             ) : (
               <NoData />
-            )
-          ),
+            ),
         },
         {
           accessor: "creator.name",
