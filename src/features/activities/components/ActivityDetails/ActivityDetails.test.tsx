@@ -5,8 +5,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import ActivityDetails from "./ActivityDetails";
-import { Activity } from "../../types";
-import { Creator } from "@/types/Creator";
+import type { Creator } from "@/types/Creator";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 describe("ActivityDetails", () => {
