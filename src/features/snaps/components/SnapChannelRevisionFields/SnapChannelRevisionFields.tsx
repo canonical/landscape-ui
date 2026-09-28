@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { useEffect } from "react";
-import { Input, Notification, Select } from "@canonical/react-components";
+import { Input, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import type { SelectOption } from "@/types/SelectOption";
 import type { SnapChangeMode } from "../../types";
@@ -44,56 +44,40 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   return (
     <>
       {modeLabel && <div>{modeLabel}</div>}
-      <div
-        className={classNames({
-          [classes.tight]: mode === "revision" && !error,
-        })}
-      >
-        <div
-          className={classNames(classes.fieldsRow, !isDarkMode && "is-paper")}
-        >
+      <div className={classNames(classes.fieldsRow, !isDarkMode && "is-paper")}>
+        <Select
+          aria-label="Snap channel or revision"
+          value={mode}
+          options={MODE_OPTIONS}
+          onChange={(event) => {
+            onModeChange(event.currentTarget.value as SnapChangeMode);
+          }}
+        />
+        {mode === "channel" ? (
           <Select
-            aria-label="Snap channel or revision"
-            value={mode}
-            options={MODE_OPTIONS}
+            aria-label={`Channel for ${snapName}`}
+            disabled={isLoading || channelOptions.length === 0}
+            value={value}
+            error={error}
+            options={
+              channelOptions.length > 0
+                ? channelOptions
+                : [{ label: "No channels available", value: "" }]
+            }
             onChange={(event) => {
-              onModeChange(event.currentTarget.value as SnapChangeMode);
+              onChange(event.currentTarget.value);
             }}
           />
-          {mode === "channel" ? (
-            <Select
-              aria-label={`Channel for ${snapName}`}
-              disabled={isLoading || channelOptions.length === 0}
-              value={value}
-              error={error}
-              options={
-                channelOptions.length > 0
-                  ? channelOptions
-                  : [{ label: "No channels available", value: "" }]
-              }
-              onChange={(event) => {
-                onChange(event.currentTarget.value);
-              }}
-            />
-          ) : (
-            <Input
-              type="text"
-              aria-label={`Revision for ${snapName}`}
-              defaultValue={value}
-              error={error}
-              onBlur={(event) => {
-                onChange(event.currentTarget.value);
-              }}
-            />
-          )}
-        </div>
-        {mode === "revision" && (
-          <Notification
-            severity="information"
-            title="Choosing revision will install the channel that has that revision published, but will continue tracking the current channel."
-          >
-            <a href="docs-link">Learn more</a>
-          </Notification>
+        ) : (
+          <Input
+            type="text"
+            aria-label={`Revision for ${snapName}`}
+            defaultValue={value}
+            error={error}
+            onBlur={(event) => {
+              onChange(event.currentTarget.value);
+            }}
+          />
         )}
       </div>
     </>
