@@ -1,4 +1,6 @@
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ROUTES } from "@/libs/routes";
+import date from "@/libs/date";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import {
   activities,
@@ -36,6 +38,19 @@ describe("Activities", () => {
       ];
       const table = screen.getByRole("table");
       expect(table).toHaveTexts(columnHeaders);
+    });
+
+    it("should render the completion time for each activity", () => {
+      renderWithProviders(<Activities {...defaultProps} />);
+
+      const table = screen.getByRole("table");
+      activities.forEach(({ completion_time }) => {
+        if (completion_time) {
+          expect(table).toHaveTextContent(
+            date(completion_time).format(DISPLAY_DATE_TIME_FORMAT),
+          );
+        }
+      });
     });
   });
 
