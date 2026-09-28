@@ -161,8 +161,9 @@ describe("SwitchSnapForm", () => {
     assert(strictChannel, "No strict release available to switch to.");
     assert(classicChannel, "No classic release available to switch to.");
 
-    const releaseValue = (channel: AvailableSnapInfo["channel-map"][number]) =>
-      `${channel.channel.name} - ${channel.channel.architecture}`;
+    const releaseValue = (
+      channel: AvailableSnapInfo["channel-map"][number],
+    ) => `${channel.channel.name} - ${channel.channel.architecture}`;
 
     it("submits successfully and shows success notification", async () => {
       renderSwitchSnapForm();
