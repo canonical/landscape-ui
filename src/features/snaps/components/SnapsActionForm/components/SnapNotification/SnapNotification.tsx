@@ -35,9 +35,30 @@ const SnapNotification: FC<SnapNotificationProps> = ({ action }) => {
         };
 
   return (
-    <Notification severity="information" title={content.title}>
-      {content.body}
-    </Notification>
+    <>
+      {hasNotification(action) && actionContent[action]}
+      {hasRevision && (
+        <Notification
+          severity="information"
+          actions={[
+            {
+              label: "Visit Snapd documentation",
+              onClick: () => {
+                window.open(
+                  "https://snapcraft.io/docs/reference/development/snapd-rest-api/#/Asynchronous/manageSnapByName",
+                  "_blank",
+                  "noopener,noreferrer",
+                );
+              },
+            },
+          ]}
+        >
+          Specifying a revision doesn&apos;t change the tracked channel, so
+          future updates may replace it with that channel&apos;s latest
+          revision.
+        </Notification>
+      )}
+    </>
   );
 };
 

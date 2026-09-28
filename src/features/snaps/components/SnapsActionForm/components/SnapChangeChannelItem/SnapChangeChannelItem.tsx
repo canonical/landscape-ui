@@ -5,11 +5,12 @@ import { Button, Icon, ICONS } from "@canonical/react-components";
 import { pluralize } from "@/utils/_helpers";
 import type { InstalledSnapWithCount, SnapChangeMode } from "../../../../types";
 import { useGetSnapInfo } from "../../../../api";
-import {
-  SnapChannelRevisionFields,
+import { isValidRevision } from "../../../../helpers";
+import SnapChannelRevisionFields, {
   getChannelOptions,
   getChannelName,
-} from "@/features/snaps";
+  getChannelConfinement,
+} from "../../../SnapChannelRevisionFields";
 
 interface SnapChangeChannelItemProps {
   readonly instanceIds: number[];
@@ -18,7 +19,11 @@ interface SnapChangeChannelItemProps {
   readonly mode: SnapChangeMode;
   readonly value: string;
   readonly hasAttemptedSubmit?: boolean;
-  readonly onChange: (value: string, channel?: string) => void;
+  readonly onChange: (
+    value: string,
+    channel?: string,
+    confinement?: string,
+  ) => void;
   readonly onModeChange: (mode: SnapChangeMode) => void;
 }
 
@@ -42,10 +47,20 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
     [snapInfo],
   );
 
-  const error =
-    hasAttemptedSubmit && !value
-      ? "Select a channel or revision for this snap to continue"
-      : undefined;
+  const getError = () => {
+    if (!hasAttemptedSubmit) {
+      return undefined;
+    }
+    if (!value) {
+      return "Select a channel or revision for this snap to continue";
+    }
+    if (mode === "revision" && !isValidRevision(value)) {
+      return "Revision must be a positive whole number";
+    }
+    return undefined;
+  };
+
+  const error = getError();
 
   return (
     <li className={classes.selectedContainer}>
@@ -78,11 +93,17 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
         error={error}
         isLoading={isSnapInfoLoading}
         onChange={(newValue) => {
-          const channel =
-            mode === "channel"
-              ? getChannelName(snapInfo?.["channel-map"], newValue)
-              : undefined;
-          onChange(newValue, channel);
+          if (mode !== "channel") {
+            onChange(newValue);
+            return;
+          }
+
+          const channelMap = snapInfo?.["channel-map"];
+          onChange(
+            newValue,
+            getChannelName(channelMap, newValue),
+            getChannelConfinement(channelMap, newValue),
+          );
         }}
         onModeChange={onModeChange}
       />

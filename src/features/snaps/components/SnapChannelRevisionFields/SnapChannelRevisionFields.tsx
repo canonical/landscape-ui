@@ -70,7 +70,9 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
           />
         ) : (
           <Input
-            type="text"
+            type="number"
+            min={1}
+            step={1}
             aria-label={`Revision for ${snapName}`}
             defaultValue={value}
             error={error}
