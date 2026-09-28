@@ -180,7 +180,7 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
                 job.status === "processing" ? (
                   <ProgressBar
                     progress={job.progress}
-                    secondsRemaining={job.estimated_seconds_remaining ?? null}
+                    secondsRemaining={job.estimated_seconds_remaining}
                     label={`${job.name} export progress`}
                     fullWidth
                   />

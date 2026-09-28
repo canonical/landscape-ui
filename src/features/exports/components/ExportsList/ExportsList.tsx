@@ -62,7 +62,7 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
             return (
               <ProgressBar
                 progress={job.progress}
-                secondsRemaining={job.estimated_seconds_remaining ?? null}
+                secondsRemaining={job.estimated_seconds_remaining}
                 label={`${job.name} export progress`}
                 loading
               />
