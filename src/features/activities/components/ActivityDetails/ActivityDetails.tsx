@@ -17,7 +17,10 @@ interface ActivityDetailsProps {
   readonly hideInstanceField?: boolean;
 }
 
-const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId, hideInstanceField }) => {
+const ActivityDetails: FC<ActivityDetailsProps> = ({
+  activityId,
+  hideInstanceField,
+}) => {
   const { activity, isGettingActivity, activityError } = useGetSingleActivity({
     activityId,
   });
