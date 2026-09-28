@@ -99,11 +99,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
           />
         )}
 
-        <InfoGrid.Item
-          label="Creator"
-          large
-          value={activity.creator?.name}
-        />
+        <InfoGrid.Item label="Creator" large value={activity.creator?.name} />
       </InfoGrid>
 
       {activity.result_text && (
