@@ -4,7 +4,6 @@ import classes from "./OperationStatusContent.module.scss";
 import ViewLogsButton from "../ViewLogsButton";
 import { getOperationTypeTexts } from "./helpers";
 import { Icon, ICONS } from "@canonical/react-components";
-import ProgressBar from "@/components/ui/ProgressBar";
 import LoadingState from "@/components/layout/LoadingState";
 
 interface OperationStatusContentProps {
