@@ -44,12 +44,13 @@ describe("Activities", () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
       const table = screen.getByRole("table");
+      expect(table).toHaveTextContent("Completed at");
       activities.forEach(({ completion_time }) => {
-        if (completion_time) {
-          expect(table).toHaveTextContent(
-            date(completion_time).format(DISPLAY_DATE_TIME_FORMAT),
-          );
-        }
+        expect(table).toHaveTextContent(
+          completion_time
+            ? date(completion_time).format(DISPLAY_DATE_TIME_FORMAT)
+            : "---",
+        );
       });
     });
   });
