@@ -3,6 +3,7 @@ import type { Activity } from "@/features/activities";
 import type { ExportJob } from "@/features/exports";
 import type {
   DistributionUpgradeTarget,
+  GenerateRecoveryKeyParams,
   RemoveInstancesParams,
   SanitizeInstanceParams,
 } from "@/features/instances";
@@ -203,9 +204,9 @@ export default [
 
       const currentRelease = instance?.distribution_info
         ? {
-            name: instance.distribution_info.description,
-            version: instance.distribution_info.release,
-          }
+          name: instance.distribution_info.description,
+          version: instance.distribution_info.release,
+        }
         : null;
 
       const mockedIneligibleReasonById: Record<
@@ -531,7 +532,7 @@ export default [
     },
   ),
 
-  http.post(
+  http.post<{ computerId: string }, GenerateRecoveryKeyParams, Activity>(
     `${API_URL}computers/:computerId/recovery-key:generate`,
     async ({ params }) => {
       const computerId = Number(params.computerId);
@@ -547,6 +548,7 @@ export default [
           name: "John Smith",
         },
         computer_id: computerId,
+        computer_title: `Computer ${computerId}`,
         parent_id: null,
         result_code: null,
         result_text: null,

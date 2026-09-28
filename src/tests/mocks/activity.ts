@@ -407,7 +407,7 @@ export const activityTypes = [
   "GenerateFDERecoveryKeyRequest",
 ] as const;
 
-export const getMockRecoveryKeyActivity = (computerId: number) => ({
+export const getMockRecoveryKeyActivity = (computerId: number): Activity => ({
   activity_status: "undelivered",
   approval_time: null,
   completion_time: null,
@@ -418,6 +418,7 @@ export const getMockRecoveryKeyActivity = (computerId: number) => ({
     name: "John Smith",
   },
   computer_id: computerId,
+  computer_title: `Computer ${computerId}`,
   deliver_delay_window: 0,
   id: 115,
   parent_id: null,
