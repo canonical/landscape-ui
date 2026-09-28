@@ -1,5 +1,5 @@
 const SENSITIVE_KEY_PATTERN =
-  /(password|secret|token|apikey|api_key|authorization|privatekey|private_key|credential|accesskey|access_key|secretkey|secret_key|fde_recovery_key|recoverykey|invitation_?id|secure_?id|gpg_?key)/i;
+  /(password|secret|token|apikey|api_key|authorization|privatekey|private_key|credential|accesskey|access_key|secretkey|secret_key|fde_recovery_key|recoverykey|invitation_?id|secure_?id|license_?url|gpg_?key)/i;
 
 // "has_"/"no_" (and camelCase "has"/"no") immediately before a sensitive
 // token name a boolean presence flag, e.g. `has_password`, `hasToken`.
