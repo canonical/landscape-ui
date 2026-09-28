@@ -424,4 +424,58 @@ describe("SnapsActionForm", () => {
       snaps: [{ name: secondSnap.snap.name, args: { revision: "123" } }],
     });
   });
+
+  it("shows revision-specific copy in the confirmation modal when mode is revision", async () => {
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: secondSnapOptionTitle,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("combobox", {
+          name: `Channel for ${secondSnap.snap.name}`,
+        }),
+      ).not.toBeDisabled();
+    });
+
+    const modeSelect = screen.getByLabelText("Snap channel or revision");
+    await user.selectOptions(modeSelect, "revision");
+
+    const revisionInput = screen.getByRole("spinbutton", {
+      name: `Revision for ${secondSnap.snap.name}`,
+    });
+    await user.type(revisionInput, "123");
+
+    await user.click(screen.getByRole("button", { name: "Change channel" }));
+    const modal = await screen.findByRole("dialog");
+
+    expect(
+      within(modal).getByRole("heading", {
+        name: "Change revision of 1 snap on 1 instance",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(modal).getByText(
+        "The following snaps have been selected to change revision:",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(modal).getByText(
+        /will not change the snap's tracked channel/i,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(modal).queryByText(/latest revision on the new channel/i),
+    ).not.toBeInTheDocument();
+  });
 });
