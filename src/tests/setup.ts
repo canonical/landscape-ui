@@ -60,7 +60,11 @@ export async function extractPayload(
         return { __unparseable: true, contentType };
       }
     }
-    if (contentType.includes("application/x-www-form-urlencoded")) {
+    if (
+      /^\s*application\/x-www-form-urlencoded(?:\s*;.*)?\s*$/i.test(
+        contentType,
+      )
+    ) {
       const params = new URLSearchParams(text);
       const result: Record<string, string | string[]> = {};
       // Object.fromEntries(params.entries()) would silently keep only the
