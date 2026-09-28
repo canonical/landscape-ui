@@ -1,9 +1,24 @@
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { Notification } from "@canonical/react-components";
+import type {
+  ActionWithNotification,
+  SnapAction,
+  SnapChangeMode,
+} from "../../../../types";
+import { useBoolean } from "usehooks-ts";
+import { hasNotification } from "../../helpers";
+import { useBoolean } from "usehooks-ts";
+
+interface SnapChangeConfig {
+  mode: SnapChangeMode;
+  value: string;
+  channel?: string;
+}
 import type { ActionWithNotification } from "../../../../types";
 
 interface SnapNotificationProps {
-  readonly action: ActionWithNotification;
+  readonly action: SnapAction;
+  readonly snapChangeConfigs?: Record<string, SnapChangeConfig>;
 }
 
 const SnapNotification: FC<SnapNotificationProps> = ({ action }) => {

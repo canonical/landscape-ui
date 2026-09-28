@@ -9,10 +9,3 @@
     min-width: 0;
   }
 }
-
-.tight {
-  :global(.p-form-validation__input),
-  :global(.p-notification--information) {
-    margin-bottom: $sph--x-small;
-  }
-}
