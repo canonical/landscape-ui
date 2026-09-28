@@ -38,16 +38,18 @@ describe("Activities", () => {
       expect(table).toHaveTexts(columnHeaders);
     });
 
-    it("should render the computer title for each activity", () => {
+    it("should render each computer title linked to its instance", () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
       const table = screen.getByRole("table");
-      const computerTitles = within(table)
-        .getAllByRole("link")
-        .map((link) => link.textContent);
+      const instanceLinks = within(table).getAllByRole("link");
 
-      expect(computerTitles).toEqual(
+      expect(instanceLinks.map((link) => link.textContent)).toEqual(
         activities.map((activity) => activity.computer_title),
+      );
+      expect(instanceLinks[0]).toHaveAttribute(
+        "href",
+        ROUTES.instances.details.single(activities[0].computer_id),
       );
     });
   });
