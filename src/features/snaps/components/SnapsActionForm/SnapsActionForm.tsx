@@ -172,11 +172,17 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     );
   };
 
-  const hasRevisionNotification =
-    isChangeChannel &&
-    Object.values(snapChangeConfigs).some(
-      (config) => config.mode === "revision",
-    );
+  const changeModes = isChangeChannel
+    ? Array.from(
+        new Set(
+          selectedSnaps.map(
+            (item) => snapChangeConfigs[item.snap.id]?.mode ?? "channel",
+          ),
+        ),
+      )
+    : [];
+
+  const hasRevisionNotification = changeModes.includes("revision");
 
   const buttonAppearance = action === "uninstall" ? "negative" : "positive";
 
@@ -280,6 +286,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           <ConfirmSnapActionModal
             actionVerb={action}
             snaps={selectedSnaps}
+            changeModes={changeModes}
             instancesCount={selectedInstances.length}
             onClose={closeModal}
             onConfirm={onSubmit}
