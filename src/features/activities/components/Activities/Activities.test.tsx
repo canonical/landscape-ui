@@ -1,3 +1,4 @@
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ROUTES } from "@/libs/routes";
 import date from "@/libs/date";
@@ -7,7 +8,7 @@ import {
   INVALID_ACTIVITY_SEARCH_QUERY,
 } from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -34,6 +35,7 @@ describe("Activities", () => {
         "Status",
         "Instance",
         "Created at",
+        "Completed at",
         "Creator",
       ];
       const table = screen.getByRole("table");
@@ -44,12 +46,19 @@ describe("Activities", () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
       const table = screen.getByRole("table");
-      expect(table).toHaveTextContent("Completed at");
-      activities.forEach(({ completion_time }) => {
-        expect(table).toHaveTextContent(
+      const headerCells = within(table).getAllByRole("columnheader");
+      const completionTimeColumnIndex = headerCells.findIndex((cell) =>
+        cell.textContent?.includes("Completed at"),
+      );
+      const [, ...rows] = within(table).getAllByRole("row");
+
+      activities.forEach(({ completion_time }, index) => {
+        assert(rows[index], "Row should exist for the activity");
+        const cells = within(rows[index]).getAllByRole("cell");
+        expect(cells[completionTimeColumnIndex]).toHaveTextContent(
           completion_time
             ? date(completion_time).format(DISPLAY_DATE_TIME_FORMAT)
-            : "---",
+            : NO_DATA_TEXT,
         );
       });
     });
