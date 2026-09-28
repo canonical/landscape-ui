@@ -14,6 +14,4 @@ export const getRequestAction = (action: SnapAction) => {
 export const hasNotification = (
   action: SnapAction,
 ): action is ActionWithNotification =>
-  // TODO: add filtering for multiple architectures notification on install / change,
-  //  depending on how we decide to support that with the API
-  action === "hold" || action === "install" || action === "change channel";
+  action === "hold" || action === "install";
