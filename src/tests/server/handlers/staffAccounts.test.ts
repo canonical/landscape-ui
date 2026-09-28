@@ -22,6 +22,10 @@ const UNKNOWN_FEATURE_KEY = 99;
 const get = async (path: string, headers: Record<string, string> = {}) =>
   fetch(`${API_URL}${path}`, { headers });
 
+/** The relative page link the `@paginated` decorator builds for `path` with the given query. */
+const pageLink = (path: string, query: string) =>
+  `${new URL(`${API_URL}${path}`, "http://localhost").pathname}?${query}`;
+
 const send = async (
   method: string,
   path: string,
@@ -107,49 +111,90 @@ describe("GET /accounts", () => {
     );
   });
 
-  it("paginates with limit and offset, counting all matches", async () => {
+  it("paginates with limit and offset, counting all matches and linking the neighbouring pages", async () => {
     setStaffGlobalRoles(["SupportProvider"]);
 
     const response = await get("accounts?limit=2&offset=2", AUTH_HEADERS);
 
-    const { count, results } = await response.json();
+    const { count, next, previous, results } = await response.json();
     expect(count).toBe(6);
+    expect(results.map(({ account }: { account: string }) => account)).toEqual([
+      "initech",
+      "jane-free-1",
+    ]);
+    expect(next).toBe(pageLink("accounts", "limit=2&offset=4"));
+    expect(previous).toBe(pageLink("accounts", "limit=2&offset=0"));
+  });
+
+  it("accepts the integer forms Python's int() does", async () => {
+    setStaffGlobalRoles(["SupportProvider"]);
+
+    const response = await get("accounts?limit=%2B2&offset=0_2", AUTH_HEADERS);
+
+    expect(response.status).toBe(OK);
+    const { results } = await response.json();
     expect(results.map(({ account }: { account: string }) => account)).toEqual([
       "initech",
       "jane-free-1",
     ]);
   });
 
-  it("accepts the integer forms the server's pydantic does", async () => {
+  it("has no page links without a limit, and ignores an offset on its own", async () => {
     setStaffGlobalRoles(["SupportProvider"]);
 
-    const response = await get("accounts?limit=2.0&offset=1.", AUTH_HEADERS);
+    const response = await get("accounts?offset=2", AUTH_HEADERS);
 
-    expect(response.status).toBe(OK);
-    const { results } = await response.json();
-    expect(results.map(({ account }: { account: string }) => account)).toEqual([
-      "globex",
-      "initech",
-    ]);
+    const { count, next, previous, results } = await response.json();
+    expect(count).toBe(6);
+    expect(results).toHaveLength(6);
+    expect(next).toBeNull();
+    expect(previous).toBeNull();
   });
 
+  it.each([["limit=abc"], ["limit=2.0"], ["limit=0x10"], ["limit="]])(
+    "ignores %s like the decorator does, falling back to the default page",
+    async (params) => {
+      setStaffGlobalRoles(["SupportProvider"]);
+
+      const response = await get(`accounts?${params}`, AUTH_HEADERS);
+
+      expect(response.status).toBe(OK);
+      const { next, results } = await response.json();
+      expect(results).toHaveLength(6);
+      expect(next).toBeNull();
+    },
+  );
+
   it.each([
-    ["limit=0", { type: "greater_than", loc: ["limit"] }],
-    ["limit=101", { type: "less_than_equal", loc: ["limit"] }],
-    ["offset=-1", { type: "greater_than_equal", loc: ["offset"] }],
-    ["limit=abc", { type: "int_parsing", loc: ["limit"] }],
-    ["limit=0x10", { type: "int_parsing", loc: ["limit"] }],
-    ["offset=", { type: "int_parsing", loc: ["offset"] }],
+    ["limit=-1", "limit must be non-negative"],
+    ["limit=2&offset=-1", "offset must be non-negative"],
   ])(
-    "rejects %s with a 400 validation envelope, before the staff check",
-    async (params, expected) => {
+    "rejects %s with the decorator's 400, before the staff check",
+    async (params, message) => {
       const response = await get(`accounts?${params}`, AUTH_HEADERS);
 
       expect(response.status).toBe(BAD_REQUEST);
-      const body = await response.json();
-      expect(body.error).toBe("PydanticValidationError");
-      expect(body.message).toBe("invalid query/body arguments");
-      expect(body.detail).toContainEqual(expect.objectContaining(expected));
+      expect(await response.json()).toEqual({
+        error: "ValidationError",
+        message,
+      });
+    },
+  );
+
+  it.each([["limit=0"], ["limit=101"]])(
+    "rejects %s with a 400 only after the staff check",
+    async (params) => {
+      const nonStaff = await get(`accounts?${params}`, AUTH_HEADERS);
+      expect(nonStaff.status).toBe(FORBIDDEN);
+
+      setStaffGlobalRoles(["SupportProvider"]);
+      const staff = await get(`accounts?${params}`, AUTH_HEADERS);
+
+      expect(staff.status).toBe(BAD_REQUEST);
+      expect(await staff.json()).toEqual({
+        error: "ValidationError",
+        message: "limit must be between 1 and 100",
+      });
     },
   );
 });
@@ -544,21 +589,6 @@ describe("GET /people", () => {
       "search=jane&type=account",
       { type: "literal_error", loc: ["type"] },
     ],
-    [
-      "limit=0",
-      "search=jane&limit=0",
-      { type: "greater_than", loc: ["limit"] },
-    ],
-    [
-      "limit=101",
-      "search=jane&limit=101",
-      { type: "less_than_equal", loc: ["limit"] },
-    ],
-    [
-      "offset=-1",
-      "search=jane&offset=-1",
-      { type: "greater_than_equal", loc: ["offset"] },
-    ],
   ])(
     "rejects %s with a 400 validation envelope, before the staff check",
     async (_, params, expected) => {
@@ -570,6 +600,43 @@ describe("GET /people", () => {
       expect(body.detail).toContainEqual(expect.objectContaining(expected));
     },
   );
+
+  it("rejects a negative offset with the decorator's 400, before the search validation and the staff check", async () => {
+    const response = await searchPeople("search=ja&limit=1&offset=-1");
+
+    expect(response.status).toBe(BAD_REQUEST);
+    expect(await response.json()).toEqual({
+      error: "ValidationError",
+      message: "offset must be non-negative",
+    });
+  });
+
+  it("rejects a limit above the maximum only after the staff check", async () => {
+    expect((await searchPeople("search=jane&limit=101")).status).toBe(
+      FORBIDDEN,
+    );
+
+    setStaffGlobalRoles(["SupportProvider"]);
+    const response = await searchPeople("search=jane&limit=101");
+
+    expect(response.status).toBe(BAD_REQUEST);
+    expect((await response.json()).message).toBe(
+      "limit must be between 1 and 100",
+    );
+  });
+
+  it("links the neighbouring pages, keeping the search in the query", async () => {
+    setStaffGlobalRoles(["SupportProvider"]);
+
+    const { count, next, previous, results } = await (
+      await searchPeople("search=jane&limit=1&offset=1")
+    ).json();
+
+    expect(count).toBe(4);
+    expect(results).toHaveLength(1);
+    expect(next).toBe(pageLink("people", "search=jane&limit=1&offset=2"));
+    expect(previous).toBe(pageLink("people", "search=jane&limit=1&offset=0"));
+  });
 
   it("lists people and invitations together, ordered by name, then type, then id", async () => {
     setStaffGlobalRoles(["SupportProvider"]);

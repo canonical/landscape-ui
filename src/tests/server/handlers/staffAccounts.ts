@@ -247,34 +247,104 @@ const rangeErrors = (
 // optional sign, then digits with single underscores between them, or digits
 // followed by `.` and only zeros. No surrounding whitespace, no hex or
 // exponents, unlike `Number()`.
-const QUERY_INTEGER_PATTERN = /^[+-]?(\d+(_\d+)*|\d+\.0*)$/;
+/** What Python's `int()` accepts, which is how `@paginated` reads its parameters. */
+const REQUEST_INT_PATTERN = /^\s*[+-]?\d+(_\d+)*\s*$/;
 
-/** The integer in a query parameter, or `NaN` when pydantic would reject it. */
-const parseQueryInteger = (value: string): number =>
-  QUERY_INTEGER_PATTERN.test(value) ? Number(value.replaceAll("_", "")) : NaN;
+/**
+ * `_parse_int_request_arg` (`api/helpers.py`): the last value of a repeated
+ * parameter that parses as an integer, or `null`.
+ */
+const parseRequestInt = (values: string[]): number | null => {
+  for (const value of [...values].reverse()) {
+    if (REQUEST_INT_PATTERN.test(value)) {
+      return Number(value.trim().replaceAll("_", ""));
+    }
+  }
 
-/** The `limit` and `offset` query parameters, with the server's defaults. */
-const getPageParams = (searchParams: URLSearchParams) => {
-  const limit = searchParams.get("limit");
-  const offset = searchParams.get("offset");
+  return null;
+};
+
+interface PageParams {
+  /** `null` when `limit` was not given: the handler uses its default page size and no links are built. */
+  limit: number | null;
+  offset: number;
+}
+
+/**
+ * `limit` and `offset` as the `@paginated` decorator hands them to the
+ * handler: an unparseable value is ignored, and `offset` only applies
+ * together with `limit`.
+ */
+const getPageParams = (searchParams: URLSearchParams): PageParams => {
+  const limit = parseRequestInt(searchParams.getAll("limit"));
 
   return {
-    limit: limit === null ? STAFF_PAGE_DEFAULT_LIMIT : parseQueryInteger(limit),
-    offset: offset === null ? 0 : parseQueryInteger(offset),
+    limit,
+    offset:
+      limit === null
+        ? 0
+        : (parseRequestInt(searchParams.getAll("offset")) ?? 0),
   };
 };
 
-/** Validation of `limit: PositiveInt` (at most 100) and `offset: NonNegativeInt`. */
-const pageErrors = ({
-  limit,
-  offset,
-}: {
-  limit: number;
-  offset: number;
-}): PydanticErrorDetail[] => [
-  ...rangeErrors("limit", limit, { gt: 0, le: STAFF_PAGE_MAX_LIMIT }),
-  ...rangeErrors("offset", offset, { ge: 0 }),
-];
+/** The `@paginated` decorator's own 400, which is not a pydantic envelope. */
+const paginationErrorResponse = (message: string) =>
+  HttpResponse.json({ error: "ValidationError", message }, { status: 400 });
+
+/** The decorator's non-negative check. It runs before the handler, so before the staff check. */
+const pageParamsRejection = ({ limit, offset }: PageParams) => {
+  if (limit !== null && limit < 0) {
+    return paginationErrorResponse("limit must be non-negative");
+  }
+
+  if (limit !== null && offset < 0) {
+    return paginationErrorResponse("offset must be non-negative");
+  }
+
+  return undefined;
+};
+
+/** The handler's page size bound, checked after the staff check. */
+const pageSizeRejection = (limit: number | null) =>
+  limit !== null && (limit < 1 || limit > STAFF_PAGE_MAX_LIMIT)
+    ? paginationErrorResponse(
+        `limit must be between 1 and ${STAFF_PAGE_MAX_LIMIT}`,
+      )
+    : undefined;
+
+/** `_build_paginated_url` with `UrlType.Relative`: the path plus the query, `limit` and `offset` replaced. */
+const pageUrl = (request: Request, limit: number, offset: number): string => {
+  const { pathname, searchParams } = new URL(request.url);
+  const params = new URLSearchParams();
+
+  for (const [key, value] of searchParams) {
+    params.set(key, value);
+  }
+
+  params.set("limit", String(limit));
+  params.set("offset", String(offset));
+
+  return `${pathname}?${params.toString()}`;
+};
+
+/** `build_next_url` and `build_previous_url` for the decorator's `limit` and `offset`. */
+const pageLinks = (
+  request: Request,
+  { limit, offset }: PageParams,
+  count: number,
+): { next: string | null; previous: string | null } => {
+  if (limit === null || count === 0) {
+    return { next: null, previous: null };
+  }
+
+  const nextOffset = Math.max(0, offset + limit);
+  const previousOffset = Math.max(0, Math.min(count - limit, offset - limit));
+
+  return {
+    next: nextOffset >= count ? null : pageUrl(request, limit, nextOffset),
+    previous: offset <= 0 ? null : pageUrl(request, limit, previousOffset),
+  };
+};
 
 interface AccountPatchBody {
   enabled_features?: number[];
@@ -589,25 +659,33 @@ export default [
   http.get(`${API_URL}accounts`, ({ request }) => {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
-    const { limit, offset } = getPageParams(searchParams);
+    const page = getPageParams(searchParams);
 
-    const detail = pageErrors({ limit, offset });
+    const pageRejection = pageParamsRejection(page);
 
-    if (detail.length) {
-      return validationErrorResponse(detail);
+    if (pageRejection) {
+      return pageRejection;
     }
 
     if (!hasViewAllAccounts()) {
       return unauthorizedAccessResponse();
     }
 
+    const sizeRejection = pageSizeRejection(page.limit);
+
+    if (sizeRejection) {
+      return sizeRejection;
+    }
+
     const matching = search
       ? staffAccounts.filter((account) => matchesSearch(account, search))
       : staffAccounts;
+    const limit = page.limit ?? STAFF_PAGE_DEFAULT_LIMIT;
 
     return HttpResponse.json({
       count: matching.length,
-      results: matching.slice(offset, offset + limit).map(toListItem),
+      ...pageLinks(request, page, matching.length),
+      results: matching.slice(page.offset, page.offset + limit).map(toListItem),
     });
   }),
 
@@ -726,12 +804,15 @@ export default [
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
     const type = searchParams.get("type");
-    const { limit, offset } = getPageParams(searchParams);
+    const page = getPageParams(searchParams);
 
-    const detail = [
-      ...peopleQueryErrors(search, type),
-      ...pageErrors({ limit, offset }),
-    ];
+    const pageRejection = pageParamsRejection(page);
+
+    if (pageRejection) {
+      return pageRejection;
+    }
+
+    const detail = peopleQueryErrors(search, type);
 
     // A missing `search` is already in `detail`; the null check narrows it.
     if (search === null || detail.length) {
@@ -740,6 +821,12 @@ export default [
 
     if (!hasViewAllAccounts()) {
       return unauthorizedAccessResponse();
+    }
+
+    const sizeRejection = pageSizeRejection(page.limit);
+
+    if (sizeRejection) {
+      return sizeRejection;
     }
 
     const invitations = getJoinedInvitations();
@@ -777,9 +864,12 @@ export default [
       ),
     );
 
+    const limit = page.limit ?? STAFF_PAGE_DEFAULT_LIMIT;
+
     return HttpResponse.json({
       count: results.length,
-      results: results.slice(offset, offset + limit),
+      ...pageLinks(request, page, results.length),
+      results: results.slice(page.offset, page.offset + limit),
     });
   }),
 ];
