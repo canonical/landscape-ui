@@ -9,8 +9,11 @@ import SuperAdminTemplate from "@/templates/super-admin";
 /** The normal-view path the "Super admin" entry was clicked on, if any. */
 const getReturnTo = (state: unknown): string => {
   const returnTo =
-    typeof state === "object" && state !== null && "returnTo" in state
-      ? getSameOriginPath(String(state.returnTo))
+    typeof state === "object" &&
+    state !== null &&
+    "returnTo" in state &&
+    typeof state.returnTo === "string"
+      ? getSameOriginPath(state.returnTo)
       : null;
 
   return returnTo && !returnTo.startsWith(ROUTES.superAdmin.root())

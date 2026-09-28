@@ -2,15 +2,13 @@ import type { FC } from "react";
 import { useState } from "react";
 import classNames from "classnames";
 import { Link, useLocation } from "react-router";
-import { ActionButton, Icon } from "@canonical/react-components";
-import useAuth from "@/hooks/useAuth";
-import useDebug from "@/hooks/useDebug";
-import { useAuthHandle } from "@/features/auth";
+import { Icon } from "@canonical/react-components";
 import { ROUTES } from "@/libs/routes";
 import DesktopHeader from "@/templates/dashboard/DesktopHeader";
 import MobileHeader from "@/templates/dashboard/MobileHeader";
 import NavigationRoute from "@/templates/dashboard/Navigation/components/NavigationRoute";
 import sidebarClasses from "@/templates/dashboard/Sidebar.module.scss";
+import { LogoutButton } from "@/templates/dashboard/UserInfo";
 import footerClasses from "@/templates/dashboard/UserInfo/UserInfo.module.scss";
 import classes from "./SuperAdminSidebar.module.scss";
 
@@ -22,24 +20,6 @@ interface SuperAdminSidebarProps {
 const SuperAdminSidebar: FC<SuperAdminSidebarProps> = ({ returnTo }) => {
   const [menuClosed, setMenuClosed] = useState(true);
   const { pathname } = useLocation();
-  const { logout } = useAuth();
-  const { handleLogoutQuery } = useAuthHandle();
-  const debug = useDebug();
-
-  const {
-    mutateAsync: deleteSessionCookies,
-    isPending: isDeletingSessionCookies,
-  } = handleLogoutQuery;
-
-  const handleLogout = async () => {
-    try {
-      await deleteSessionCookies();
-
-      logout();
-    } catch (error) {
-      debug(error);
-    }
-  };
 
   return (
     <>
@@ -73,7 +53,7 @@ const SuperAdminSidebar: FC<SuperAdminSidebarProps> = ({ returnTo }) => {
                 <nav aria-label="Super admin">
                   <h3
                     className={classNames(
-                      "p-side-navigation__heading p-heading--5 u-no-margin--bottom",
+                      "p-side-navigation__heading p-text--small p-text--small-caps u-no-margin--bottom",
                       classes.heading,
                     )}
                   >
@@ -140,33 +120,7 @@ const SuperAdminSidebar: FC<SuperAdminSidebarProps> = ({ returnTo }) => {
                       </Link>
                     </li>
                     <li className="p-side-navigation__item">
-                      <ActionButton
-                        type="button"
-                        appearance="base"
-                        className={classNames(
-                          "u-no-margin--bottom",
-                          footerClasses.link,
-                          footerClasses.button,
-                        )}
-                        onClick={handleLogout}
-                        loading={isDeletingSessionCookies}
-                      >
-                        <Icon
-                          name="logout"
-                          className={classNames(
-                            "is-light p-side-navigation__icon",
-                            footerClasses.icon,
-                          )}
-                        />
-                        <span
-                          className={classNames(
-                            "p-side-navigation__label",
-                            footerClasses.label,
-                          )}
-                        >
-                          Sign out
-                        </span>
-                      </ActionButton>
+                      <LogoutButton />
                     </li>
                   </ul>
                 </div>

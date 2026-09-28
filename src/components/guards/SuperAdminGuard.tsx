@@ -8,7 +8,12 @@ interface Props {
   readonly children: ReactNode;
 }
 
-/** Renders `children` for Canonical staff only; everyone else goes to `/`. */
+/**
+ * Renders `children` for Canonical staff only; everyone else goes to `/`.
+ *
+ * Checks the role, not the session: nest it inside `AuthGuard`, which is what
+ * sends unauthenticated users to the login page.
+ */
 export const SuperAdminGuard: FC<Props> = ({ children }) => {
   const { authLoading, isSuperAdmin } = useAuth();
 

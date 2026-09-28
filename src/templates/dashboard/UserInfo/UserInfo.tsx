@@ -1,42 +1,24 @@
 import type { FC } from "react";
 import { useState } from "react";
 import useAuth from "@/hooks/useAuth";
-import { ActionButton, Button, Icon } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
 import { Link, useLocation } from "react-router";
 import { useMediaQuery } from "usehooks-ts";
 import { ACCOUNT_SETTINGS } from "../SecondaryNavigation/constants";
-import { useAuthHandle } from "@/features/auth";
 import { useAlertsSummary } from "@/features/alert-notifications";
-import useDebug from "@/hooks/useDebug";
 import { ROUTES } from "@/libs/routes";
 import { APP_COMMIT, APP_VERSION, TSV_EXPORTS_ENABLED } from "@/constants";
+import LogoutButton from "./LogoutButton";
 
 const UserInfo: FC = () => {
-  const { user, logout, isSuperAdmin } = useAuth();
+  const { user, isSuperAdmin } = useAuth();
   const { pathname, search } = useLocation();
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
-  const { handleLogoutQuery } = useAuthHandle();
   const { hasAlerts } = useAlertsSummary();
-  const debug = useDebug();
 
   const [expandedAccountSettings, setExpandedAccountSettings] = useState(false);
-
-  const {
-    mutateAsync: deleteSessionCookies,
-    isPending: isDeletingSessionCookies,
-  } = handleLogoutQuery;
-
-  const handleLogout = async () => {
-    try {
-      await deleteSessionCookies();
-
-      logout();
-    } catch (error) {
-      debug(error);
-    }
-  };
 
   return (
     <div
@@ -220,30 +202,7 @@ const UserInfo: FC = () => {
           </li>
         )}
         <li className="p-side-navigation__item">
-          <ActionButton
-            type="button"
-            appearance="base"
-            className={classNames(
-              "u-no-margin--bottom",
-              classes.link,
-              classes.button,
-            )}
-            onClick={handleLogout}
-            loading={isDeletingSessionCookies}
-          >
-            <Icon
-              name="logout"
-              className={classNames(
-                "is-light p-side-navigation__icon",
-                classes.icon,
-              )}
-            />
-            <span
-              className={classNames("p-side-navigation__label", classes.label)}
-            >
-              Sign out
-            </span>
-          </ActionButton>
+          <LogoutButton />
         </li>
       </ul>
       <span className={classes.versionInfo}>
