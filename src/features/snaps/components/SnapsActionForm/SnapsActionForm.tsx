@@ -1,6 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { type FC, lazy, Suspense, useState } from "react";
 import { getRequestAction, hasNotification } from "./helpers";
+import { isValidRevision } from "../../helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import type {
   SnapAction,
@@ -38,7 +39,15 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     [],
   );
   const [snapChangeConfigs, setSnapChangeConfigs] = useState<
-    Record<string, { mode: SnapChangeMode; value: string; channel?: string }>
+    Record<
+      string,
+      {
+        mode: SnapChangeMode;
+        value: string;
+        channel?: string;
+        confinement?: string;
+      }
+    >
   >({});
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const {
@@ -77,7 +86,10 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           const args =
             config?.mode === "revision"
               ? { revision: config.value }
-              : { channel: config?.channel ?? config?.value };
+              : {
+                  channel: config?.channel,
+                  classic: config?.confinement === "classic",
+                };
 
           return {
             name: item.snap.name,
@@ -102,6 +114,18 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     isChangeChannel &&
     selectedSnaps.some((item) => !snapChangeConfigs[item.snap.id]?.value);
 
+  const hasInvalidRevisionValue =
+    isChangeChannel &&
+    selectedSnaps.some((item) => {
+      const config = snapChangeConfigs[item.snap.id];
+
+      return (
+        config?.mode === "revision" &&
+        !!config.value &&
+        !isValidRevision(config.value)
+      );
+    });
+
   const getValidationError = () => {
     if (hasNoSelectedSnaps) {
       return "You must add at least one snap to continue";
@@ -112,7 +136,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
   const checkSubmit = () => {
     setHasAttemptedSubmit(true);
-    if (!getValidationError() && !hasMissingChangeValue) {
+    if (
+      !getValidationError() &&
+      !hasMissingChangeValue &&
+      !hasInvalidRevisionValue
+    ) {
       openModal();
     }
   };
@@ -122,10 +150,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     value: string,
     mode: SnapChangeMode,
     channel?: string,
+    confinement?: string,
   ) => {
     setSnapChangeConfigs((prev) => ({
       ...prev,
-      [snapId]: { mode, value, channel },
+      [snapId]: { mode, value, channel, confinement },
     }));
   };
 
@@ -197,12 +226,13 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                       mode={config.mode}
                       value={config.value}
                       hasAttemptedSubmit={hasAttemptedSubmit}
-                      onChange={(value, channel) => {
+                      onChange={(value, channel, confinement) => {
                         handleSnapValueChange(
                           item.snap.id,
                           value,
                           config.mode,
                           channel,
+                          confinement,
                         );
                       }}
                       onModeChange={(mode) => {

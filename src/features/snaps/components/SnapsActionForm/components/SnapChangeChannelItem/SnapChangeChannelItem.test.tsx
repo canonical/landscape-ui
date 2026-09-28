@@ -100,7 +100,7 @@ describe("SnapChangeChannelItem", () => {
       ).not.toBeInTheDocument();
     });
 
-    const revisionInput = screen.getByRole("textbox", {
+    const revisionInput = screen.getByRole("spinbutton", {
       name: `Revision for ${snapWithChannels.snap.name}`,
     });
     expect(revisionInput).toBeInTheDocument();
@@ -121,6 +121,7 @@ describe("SnapChangeChannelItem", () => {
       expect(props.onChange).toHaveBeenCalledWith(
         "latest/stable amd64",
         "latest/stable",
+        "strict",
       );
     });
   });
@@ -143,6 +144,7 @@ describe("SnapChangeChannelItem", () => {
     expect(onChange).toHaveBeenCalledWith(
       "latest/candidate amd64",
       "latest/candidate",
+      "strict",
     );
   });
 
@@ -152,13 +154,30 @@ describe("SnapChangeChannelItem", () => {
       <SnapChangeChannelItem {...props} mode="revision" onChange={onChange} />,
     );
 
-    const revisionInput = await screen.findByRole("textbox", {
+    const revisionInput = await screen.findByRole("spinbutton", {
       name: `Revision for ${snapWithChannels.snap.name}`,
     });
     await user.click(revisionInput);
     await user.keyboard("123");
     await user.tab();
-    expect(onChange).toHaveBeenLastCalledWith("123", undefined);
+    expect(onChange).toHaveBeenLastCalledWith("123");
+  });
+
+  it("shows an error for a non-positive-integer revision after submit is attempted", async () => {
+    renderWithProviders(
+      <SnapChangeChannelItem
+        {...props}
+        mode="revision"
+        value="0"
+        hasAttemptedSubmit
+      />,
+    );
+
+    await screen.findByLabelText("Snap channel or revision");
+
+    expect(
+      screen.getByText("Revision must be a positive whole number"),
+    ).toBeInTheDocument();
   });
 
   it("disables the channel dropdown when the snap has no available channels", async () => {

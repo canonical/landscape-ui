@@ -12,7 +12,11 @@ import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { assert, describe, expect, it, beforeEach } from "vitest";
-import type { InstalledSnap, SnapActionParams } from "../../types";
+import type {
+  AvailableSnapInfo,
+  InstalledSnap,
+  SnapActionParams,
+} from "../../types";
 import SwitchSnapForm from "./SwitchSnapForm";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 
@@ -157,8 +161,9 @@ describe("SwitchSnapForm", () => {
     assert(strictChannel, "No strict release available to switch to.");
     assert(classicChannel, "No classic release available to switch to.");
 
-    const releaseValue = (channel: typeof strictChannel) =>
-      `${channel.channel.name} - ${channel.channel.architecture}`;
+    const releaseValue = (
+      channel: AvailableSnapInfo["channel-map"][number],
+    ) => `${channel.channel.name} - ${channel.channel.architecture}`;
 
     it("submits successfully and shows success notification", async () => {
       renderSwitchSnapForm();
