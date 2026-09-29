@@ -54,8 +54,7 @@ describe("ActivityDetails", () => {
 
   it("renders the activity creator when present", async () => {
     const activity = activities.find(
-      (activity): activity is typeof activity & { creator: Creator } =>
-        activity.creator !== null,
+      (a): a is typeof a & { creator: Creator } => a.creator !== null,
     );
 
     assert(activity);
@@ -76,7 +75,7 @@ describe("ActivityDetails", () => {
   });
 
   it("renders no-data text when activity creator is not present", async () => {
-    const activity = activities.find((activity) => activity.creator === null);
+    const activity = activities.find(({ creator }) => creator === null);
 
     assert(activity);
 
