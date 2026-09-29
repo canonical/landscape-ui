@@ -15,6 +15,7 @@ import features from "./features";
 import instance from "./instance";
 import invitations from "./invitations";
 import kernel from "./kernel";
+import licenses from "./licenses";
 import mirrors from "./mirrors";
 import localRepository from "./localRepository";
 import oidcIssuers from "./oidcIssuers";
@@ -32,6 +33,8 @@ import repository from "./repository";
 import repositoryProfiles from "./repositoryProfiles";
 import roles from "./roles";
 import scriptProfiles from "./scriptProfiles";
+import selfHostedLicense from "./selfHostedLicense";
+import selfHostedEnabled from "./selfHostedEnabled";
 import usgProfiles from "./usgProfiles";
 import snap from "./snap";
 import staffAccounts from "./staffAccounts";
@@ -62,6 +65,7 @@ export default [
   ...instance,
   ...invitations,
   ...kernel,
+  ...licenses,
   ...mirrors,
   ...localRepository,
   ...operations,
@@ -84,6 +88,8 @@ export default [
   ...snap,
   ...staffAccounts,
   ...standaloneAccount,
+  ...selfHostedLicense,
+  ...selfHostedEnabled,
   ...tag,
   ...ubuntuPro,
   ...upgradeProfile,

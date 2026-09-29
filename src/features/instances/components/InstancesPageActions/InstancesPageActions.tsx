@@ -354,7 +354,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             ),
             onClick: handleReportView,
             hasIcon: true,
-            disabled: !hasSelectedInstances,
+            disabled: !hasInstancesToExport,
           },
         ]
       : []),
