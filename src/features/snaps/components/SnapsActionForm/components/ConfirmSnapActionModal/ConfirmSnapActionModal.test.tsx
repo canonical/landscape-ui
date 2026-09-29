@@ -133,7 +133,9 @@ describe("ConfirmSnapActionModal", () => {
       ),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/will update the snap to the latest revision on the new channel/i),
+      screen.getByText(
+        /will update the snap to the latest revision on the new channel/i,
+      ),
     ).toBeInTheDocument();
   });
 

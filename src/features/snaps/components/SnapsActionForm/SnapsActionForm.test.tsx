@@ -470,9 +470,7 @@ describe("SnapsActionForm", () => {
       ),
     ).toBeInTheDocument();
     expect(
-      within(modal).getByText(
-        /will not change the snap's tracked channel/i,
-      ),
+      within(modal).getByText(/will not change the snap's tracked channel/i),
     ).toBeInTheDocument();
     expect(
       within(modal).queryByText(/latest revision on the new channel/i),
