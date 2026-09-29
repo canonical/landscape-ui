@@ -9,6 +9,10 @@ import useEnv from "@/hooks/useEnv";
 import type { EnvContextState } from "@/context/env";
 import { standaloneAccountState } from "@/tests/server/handlers/standaloneAccount";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
+import { pamLoginMethods, ubuntuOneOnlyLoginMethods } from "@/tests/mocks/loginMethods";
+import userEvent from "@testing-library/user-event";
+import { Route, Routes } from "react-router";
+import { AccountCreationAlternative } from "@/features/account-creation";
 
 vi.mock("@/hooks/useEnv");
 
@@ -93,8 +97,89 @@ describe("LoginPage", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows loading state when self-hosted and no standalone account exists", async () => {
+  it("redirects to account creation on initial login when Ubuntu One is enabled", async () => {
     standaloneAccountState.exists = false;
+    setEndpointStatus({
+      status: "variant",
+      path: "login/methods",
+      response: ubuntuOneOnlyLoginMethods,
+    });
+    vi.mocked(useEnv).mockReturnValue({
+      ...envCommon,
+      isSelfHosted: true,
+      isSaas: false,
+      displayDisaStigBanner: false,
+    });
+
+    renderWithProviders(
+      <>
+        <LoginPage />
+        <LocationDisplay />
+      </>,
+    );
+
+    await waitFor(() => {
+      expect(getLocationDisplay()).toHaveTextContent("create-account");
+    });
+  });
+
+  it("shows login methods when federated login is explicitly requested", async () => {
+    standaloneAccountState.exists = false;
+    setEndpointStatus({
+      status: "variant",
+      path: "login/methods",
+      response: ubuntuOneOnlyLoginMethods,
+    });
+    vi.mocked(useEnv).mockReturnValue({
+      ...envCommon,
+      isSelfHosted: true,
+      isSaas: false,
+      displayDisaStigBanner: false,
+    });
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/create-account"
+          element={
+            <AccountCreationAlternative
+              oidcEnabled={false}
+              ubuntuOneEnabled
+            />
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <>
+              <LoginPage />
+              <LocationDisplay />
+            </>
+          }
+        />
+      </Routes>,
+      {},
+      "/create-account",
+    );
+
+    await userEvent.click(
+      screen.getByRole("link", { name: "Sign in with Ubuntu One instead" }),
+    );
+
+    expect(screen.getByText("Sign in to Landscape")).toBeInTheDocument();
+    expect(getLocationDisplay()).toHaveTextContent("/login");
+    expect(
+      screen.getByRole("button", { name: /sign in with ubuntu one/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("redirects to account creation when no standalone account exists and only PAM is enabled", async () => {
+    standaloneAccountState.exists = false;
+    setEndpointStatus({
+      status: "variant",
+      path: "login/methods",
+      response: pamLoginMethods,
+    });
     vi.mocked(useEnv).mockReturnValue({
       ...envCommon,
       isSelfHosted: true,
