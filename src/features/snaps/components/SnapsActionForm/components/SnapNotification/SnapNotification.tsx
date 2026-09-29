@@ -15,6 +15,7 @@ const SnapNotification: FC<SnapNotificationProps> = ({ action }) => {
       ? {
           title: "Landscape holds snaps indefinitely",
           body: "Due to Landscape’s asynchronous delivery of activities, the snaps held will be held indefinitely from the moment the client executes the activity.",
+          onDismiss: undefined,
         }
       : {
           title: "Instances of multiple architectures selected",
