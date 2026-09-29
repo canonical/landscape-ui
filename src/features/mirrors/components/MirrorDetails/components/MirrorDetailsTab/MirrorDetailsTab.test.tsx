@@ -91,7 +91,7 @@ describe("MirrorDetails", () => {
   });
 
   it("displays preserve signatures status", async () => {
-    const mirrorWithPreserveSignatures = mirrors.find(
+    const mirrorWithPreserveSignatures = typedMirrors.find(
       ({ preserveSignatures }) => preserveSignatures,
     );
 
@@ -159,7 +159,7 @@ describe("MirrorDetails", () => {
   });
 
   it("renders mirror details for a mirror with preserve signatures disabled", async () => {
-    const mirrorWithoutPreserveSignatures = mirrors.find(
+    const mirrorWithoutPreserveSignatures = typedMirrors.find(
       ({ preserveSignatures }) => !preserveSignatures,
     );
 

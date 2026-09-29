@@ -22,7 +22,7 @@ interface MirrorDetailsTabProps {
 
 const MirrorDetailsTab: FC<MirrorDetailsTabProps> = ({ mirror, operation }) => {
   const { publications, isGettingPublications } = useGetPublicationsBySource(
-    mirror.name ?? "",
+    mirror.name,
   );
 
   return (
