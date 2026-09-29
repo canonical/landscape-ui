@@ -25,7 +25,7 @@ export const useEditStaffAccountWslLimits = () => {
       ),
     onSuccess: async (_, { name }) =>
       queryClient.invalidateQueries({
-        queryKey: ["staffAccounts", name, "wslLimits"],
+        queryKey: ["staffAccountWslLimits", name],
       }),
   });
 

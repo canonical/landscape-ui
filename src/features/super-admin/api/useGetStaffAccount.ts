@@ -14,10 +14,12 @@ export const useGetStaffAccount = (
 ) => {
   const authFetch = useFetch();
 
-  const { data: response, isLoading } = useQuery<
-    AxiosResponse<StaffAccount>,
-    AxiosError<ApiError>
-  >({
+  const {
+    data: response,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<AxiosResponse<StaffAccount>, AxiosError<ApiError>>({
     queryKey: ["staffAccounts", name],
     queryFn: async () => authFetch.get(`accounts/${encodeURIComponent(name)}`),
     ...options,
@@ -25,6 +27,8 @@ export const useGetStaffAccount = (
 
   return {
     staffAccount: response?.data ?? null,
+    staffAccountError: error,
     isGettingStaffAccount: isLoading,
+    isStaffAccountError: isError,
   };
 };

@@ -14,11 +14,13 @@ export const useGetStaffAccountWslLimits = (
 ) => {
   const authFetch = useFetch();
 
-  const { data: response, isLoading } = useQuery<
-    AxiosResponse<WslFeatureLimits>,
-    AxiosError<ApiError>
-  >({
-    queryKey: ["staffAccounts", name, "wslLimits"],
+  const {
+    data: response,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<AxiosResponse<WslFeatureLimits>, AxiosError<ApiError>>({
+    queryKey: ["staffAccountWslLimits", name],
     queryFn: async () =>
       authFetch.get(`accounts/${encodeURIComponent(name)}/wsl-feature-limits`),
     ...options,
@@ -26,6 +28,8 @@ export const useGetStaffAccountWslLimits = (
 
   return {
     wslLimits: response?.data ?? null,
+    wslLimitsError: error,
     isGettingWslLimits: isLoading,
+    isWslLimitsError: isError,
   };
 };

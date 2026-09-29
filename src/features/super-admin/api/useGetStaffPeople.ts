@@ -29,7 +29,12 @@ export const useGetStaffPeople = (
 ) => {
   const authFetch = useFetch();
 
-  const { data: response, isLoading } = useQuery<
+  const {
+    data: response,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<
     AxiosResponse<ApiPaginatedResponse<StaffPeopleResult>>,
     AxiosError<ApiError>
   >({
@@ -42,6 +47,8 @@ export const useGetStaffPeople = (
   return {
     staffPeople: response?.data.results ?? [],
     staffPeopleCount: response?.data.count ?? 0,
+    staffPeopleError: error,
     isGettingStaffPeople: isLoading,
+    isStaffPeopleError: isError,
   };
 };

@@ -26,7 +26,12 @@ export const useGetStaffAccounts = (
 
   const queryParams = { ...params, search: params.search || undefined };
 
-  const { data: response, isLoading } = useQuery<
+  const {
+    data: response,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<
     AxiosResponse<ApiPaginatedResponse<StaffAccountListItem>>,
     AxiosError<ApiError>
   >({
@@ -38,6 +43,8 @@ export const useGetStaffAccounts = (
   return {
     staffAccounts: response?.data.results ?? [],
     staffAccountsCount: response?.data.count ?? 0,
+    staffAccountsError: error,
     isGettingStaffAccounts: isLoading,
+    isStaffAccountsError: isError,
   };
 };
