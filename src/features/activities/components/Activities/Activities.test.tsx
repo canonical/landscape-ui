@@ -1,4 +1,7 @@
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ROUTES } from "@/libs/routes";
+import date from "@/libs/date";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import {
   activities,
@@ -32,6 +35,7 @@ describe("Activities", () => {
         "Status",
         "Instance",
         "Created at",
+        "Completed at",
         "Creator",
       ];
       const table = screen.getByRole("table");
@@ -51,6 +55,27 @@ describe("Activities", () => {
         "href",
         ROUTES.instances.details.single(activities[0].computer_id),
       );
+    });
+
+    it("should render the completion time for each activity", () => {
+      renderWithProviders(<Activities {...defaultProps} />);
+
+      const table = screen.getByRole("table");
+      const headerCells = within(table).getAllByRole("columnheader");
+      const completionTimeColumnIndex = headerCells.findIndex((cell) =>
+        cell.textContent?.includes("Completed at"),
+      );
+      const [, ...rows] = within(table).getAllByRole("row");
+
+      activities.forEach(({ completion_time }, index) => {
+        assert(rows[index], "Row should exist for the activity");
+        const cells = within(rows[index]).getAllByRole("cell");
+        expect(cells[completionTimeColumnIndex]).toHaveTextContent(
+          completion_time
+            ? date(completion_time).format(DISPLAY_DATE_TIME_FORMAT)
+            : NO_DATA_TEXT,
+        );
+      });
     });
   });
 

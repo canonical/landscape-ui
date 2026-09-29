@@ -193,6 +193,21 @@ const Activities: FC<ActivitiesProps> = ({
           ),
         },
         {
+          accessor: "completion_time",
+          Header: "Completed at",
+          className: "large-cell",
+          Cell: ({ row }: CellProps<ActivityCommon>) =>
+            row.original.completion_time ? (
+              <span className="font-monospace">
+                {date(row.original.completion_time).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
+              </span>
+            ) : (
+              <NoData />
+            ),
+        },
+        {
           accessor: "creator.name",
           Header: "Creator",
           className: "medium-cell",
