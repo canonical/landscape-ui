@@ -38,6 +38,18 @@ describe("ActivityDetails", () => {
     }
   });
 
+  it("hides the instance field when hideInstanceField is true", async () => {
+    const [activity] = activities;
+
+    renderWithProviders(
+      <ActivityDetails activityId={activity.id} hideInstanceField />,
+    );
+
+    await expectLoadingState();
+
+    expect(screen.queryByText("Instance")).not.toBeInTheDocument();
+  });
+
   it("renders output when result_text is present", async () => {
     const activity = activities.find((a) => a.result_text !== null);
     assert(activity);
