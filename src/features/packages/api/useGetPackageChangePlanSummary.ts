@@ -1,12 +1,19 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { PackageChangePlanSummaryItem } from "../types/PackageChangePlanSummaryItem";
 import type { ApiError } from "@/types/api/ApiError";
 import useFetch from "@/hooks/useFetch";
+import type { PackageChangePlanItem } from "../types";
 
 export interface GetPackageChangePlanSummaryResponse {
-  summary_items: PackageChangePlanSummaryItem[];
+  actions: {
+    action: PackageChangePlanItem;
+    computer_count: number;
+  }[];
+  exclusions: {
+    package_name: string;
+    computer_count: number;
+  }[];
 }
 
 export default function useGetPackageChangePlanSummary(

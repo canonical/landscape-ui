@@ -12,9 +12,14 @@ export interface ByNames {
   package_names?: string[];
 }
 
+export interface ByCategory {
+  category: "all" | "all_security";
+  excluded_package_ids?: number[];
+}
+
 export interface VersionChange {
-  current_package_id?: number;
-  new_package_id?: number;
+  from_package_id: number;
+  to_package_id: number;
 }
 
 export type InstallConfig =
@@ -37,12 +42,16 @@ export type HoldConfig = ByIds;
 
 export type UnholdConfig = ByIds;
 
-export interface UpgradeConfig {
-  select_by_ids: ByIds;
-}
+export type UpgradeConfig =
+  | {
+      select_by_ids: ByIds;
+    }
+  | {
+      select_by_category: ByCategory;
+    };
 
 export interface ChangeVersionConfig {
-  version_changes?: VersionChange[];
+  version_changes: VersionChange[];
 }
 
 export type ActionConfig =

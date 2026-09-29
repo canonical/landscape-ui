@@ -1,12 +1,22 @@
 export type PackageChangePlanState =
-  "created" | "executing" | "completed" | "failed";
+  | "pending"
+  | "generating"
+  | "ready"
+  | "executing"
+  | "executed"
+  | "failed"
+  | "expired";
 
-export type PackageChangePlanAction = "install" | "remove" | "hold" | "unhold";
+export type PackageChangePlanAction =
+  "install" | "remove" | "hold" | "unhold" | "upgrade" | "change_version";
 
 export interface PackageChangePlan {
   id: number;
-  state: PackageChangePlanState;
   action: PackageChangePlanAction;
+  state: PackageChangePlanState;
   created_at: string;
-  item_count: number;
+  expires_at: string | null;
+  item_count: number | null;
+  executed_at: string | null;
+  activity_id: number | null;
 }
