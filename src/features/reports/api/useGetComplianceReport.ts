@@ -18,10 +18,10 @@ export const useGetComplianceReport = (
 ) => {
   const authFetch = useFetch();
 
-  const resolvedParams = {
-    ...params,
-    query: params.query || undefined,
-  };
+  // The API requires the "query" field to be present, even as an empty
+  // string (e.g. a true "select all" report with no filter), so it must
+  // never be stripped from the request params.
+  const resolvedParams = { ...params, query: params.query ?? "" };
 
   const {
     data: response,
@@ -30,7 +30,7 @@ export const useGetComplianceReport = (
   } = useQuery<AxiosResponse<ComplianceReport>, AxiosError<ApiError>>({
     queryKey: ["complianceReport", resolvedParams],
     queryFn: async () =>
-      authFetch.get("computers/report", { params: resolvedParams }),
+      authFetch.get("computers/compliance-report", { params: resolvedParams }),
     ...options,
   });
 
