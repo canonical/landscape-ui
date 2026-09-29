@@ -7,7 +7,6 @@ import type {
 } from "../../../../types";
 import { useBoolean } from "usehooks-ts";
 import { hasNotification } from "../../helpers";
-import { useBoolean } from "usehooks-ts";
 
 interface SnapChangeConfig {
   mode: SnapChangeMode;
