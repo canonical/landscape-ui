@@ -66,7 +66,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
       title={getTitle()}
       confirmButtonLabel={submitText}
       confirmButtonAppearance={buttonColor}
-      cancelButtonProps={{ appearance: "base" }}
+      cancelButtonProps={{ appearance: "base", disabled: isSubmitting }}
       onConfirm={onConfirm}
       confirmButtonLoading={isSubmitting}
       renderInPortal
