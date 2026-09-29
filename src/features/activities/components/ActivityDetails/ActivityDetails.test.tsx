@@ -40,6 +40,18 @@ describe("ActivityDetails", () => {
     }
   });
 
+  it("hides the instance field when hideInstanceField is true", async () => {
+    const [activity] = activities;
+
+    renderWithProviders(
+      <ActivityDetails activityId={activity.id} hideInstanceField />,
+    );
+
+    await expectLoadingState();
+
+    expect(screen.queryByText("Instance")).not.toBeInTheDocument();
+  });
+
   it("renders the activity creator when present", async () => {
     const activity = activities.find(
       (activity): activity is typeof activity & { creator: Creator } =>
