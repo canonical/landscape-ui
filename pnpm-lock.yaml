@@ -12,8 +12,8 @@ importers:
         specifier: 0.34.0
         version: 0.34.0
       '@canonical/landscape-openapi':
-        specifier: 0.0.80
-        version: 0.0.80(axios@1.19.0)
+        specifier: 0.0.83
+        version: 0.0.83(axios@1.19.0)
       '@canonical/react-components':
         specifier: 4.9.0
         version: 4.9.0(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(formik@2.4.9(@types/react@19.2.18)(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(vanilla-framework@4.56.0(sass@1.102.0))
@@ -280,8 +280,8 @@ packages:
   '@canonical/ds-types@0.34.0':
     resolution: {integrity: sha512-5OH9USnXvzyXHCDTy4EREAhnqCQ3MijU+ufeXqzC4SIcCnnGVvOQISJBP9az4MJHKAE5qQIN3GC2oBzByCipSA==}
 
-  '@canonical/landscape-openapi@0.0.80':
-    resolution: {integrity: sha512-iKxGyb92Ii8eKTbETi/sa6K1o8rZQLhS2jXLs1lRMcrJ2Kud7zfOPlZd0PUtQo7ehsIkFifuql97zQomCS+HXA==}
+  '@canonical/landscape-openapi@0.0.83':
+    resolution: {integrity: sha512-vtpLJRRMaDaQl5JU/lFanmMQJBKZ1IUWichsoRiXcG583lOi8p2XXtN/W9Byux8si0qKxQdEGXxCA58c88KrXw==}
     peerDependencies:
       axios: ^1.0.0
 
@@ -4864,7 +4864,7 @@ snapshots:
 
   '@canonical/ds-types@0.34.0': {}
 
-  '@canonical/landscape-openapi@0.0.80(axios@1.19.0)':
+  '@canonical/landscape-openapi@0.0.83(axios@1.19.0)':
     dependencies:
       axios: 1.19.0
 
