@@ -1,15 +1,23 @@
 import { screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { AuthContextProps } from "@/context/auth";
 import type { EnvContextState } from "@/context/env";
 import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
 import { authUser } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
+import { HOMEPAGE_PATH } from "@/constants";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import AccountCreationPage from "./AccountCreationPage";
 
 vi.mock("@/hooks/useAuth");
 vi.mock("@/hooks/useEnv");
+const navigateMock = vi.hoisted(() => vi.fn());
+
+vi.mock("react-router", async () => ({
+  ...(await vi.importActual("react-router")),
+  useNavigate: () => navigateMock,
+}));
 
 const mockAuth: AuthContextProps = {
   logout: vi.fn(),
@@ -33,6 +41,10 @@ const mockEnv: EnvContextState = {
 };
 
 describe("AccountCreationPage", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("shows loading state while authLoading", () => {
     vi.mocked(useAuth).mockReturnValue({ ...mockAuth, authLoading: true });
     vi.mocked(useEnv).mockReturnValue(mockEnv);
@@ -52,6 +64,11 @@ describe("AccountCreationPage", () => {
   });
 
   it("shows AccountCreationSelfHostedForm when isSelfHosted is true", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "standalone-account",
+      response: { exists: false },
+    });
     vi.mocked(useAuth).mockReturnValue({ ...mockAuth, authorized: false });
     vi.mocked(useEnv).mockReturnValue({ ...mockEnv, isSelfHosted: true });
 
@@ -80,5 +97,39 @@ describe("AccountCreationPage", () => {
     renderWithProviders(<AccountCreationPage />);
 
     expect(screen.getByRole("status")).toBeInTheDocument();
+  });
+
+  it("redirects a user with accounts to the homepage", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "standalone-account",
+      response: { exists: false },
+    });
+    vi.mocked(useAuth).mockReturnValue({ ...mockAuth, hasAccounts: true });
+    vi.mocked(useEnv).mockReturnValue({ ...mockEnv, isSelfHosted: true });
+
+    renderWithProviders(<AccountCreationPage />);
+
+    await vi.waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith(HOMEPAGE_PATH, {
+        replace: true,
+      });
+    });
+  });
+
+  it("redirects to login when the self-hosted account already exists", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "standalone-account",
+      response: { exists: true },
+    });
+    vi.mocked(useAuth).mockReturnValue({ ...mockAuth, authorized: false });
+    vi.mocked(useEnv).mockReturnValue({ ...mockEnv, isSelfHosted: true });
+
+    renderWithProviders(<AccountCreationPage />);
+
+    await vi.waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith("/login", { replace: true });
+    });
   });
 });

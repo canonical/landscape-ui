@@ -39,7 +39,6 @@ const AccountCreationPage: FC = () => {
       navigate(HOMEPAGE_PATH, { replace: true });
       return;
     }
-
   }, [
     authorized,
     authLoading,
