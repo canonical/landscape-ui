@@ -1,15 +1,17 @@
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
-import { features } from "@/tests/mocks/features";
 import type {
   StaffAccount,
   StaffAccountListItem,
   StaffInvitationResult,
-  StaffInvitationRow,
   StaffPeopleResult,
   StaffPersonResult,
-  StaffPersonRow,
   WslFeatureLimits,
+} from "@/features/super-admin";
+import { features } from "@/tests/mocks/features";
+import type {
+  StaffInvitationRow,
+  StaffPersonRow,
 } from "@/tests/mocks/staffAccounts";
 import {
   createStaffAccounts,
