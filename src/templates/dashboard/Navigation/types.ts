@@ -6,6 +6,7 @@ export interface MenuItem {
   label: string;
   path: string;
   env?: Environment;
+  requiresSelfHostedLicense?: boolean;
   icon?: string;
   items?: MenuItem[];
   requiresFeature?: FeatureKey;
