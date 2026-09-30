@@ -115,6 +115,10 @@ describe("LoginForm", () => {
       await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
     });
 
+    it("labels the identifier field as PAM identity", () => {
+      expect(screen.getByLabelText("PAM identity")).toBeInTheDocument();
+    });
+
     it("should sign in with identity field instead of email", async () => {
       expect(loginSpy).toHaveBeenCalledWith({
         identity: "john",

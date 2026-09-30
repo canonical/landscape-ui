@@ -107,7 +107,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
     <Form onSubmit={formik.handleSubmit}>
       <Input
         type="text"
-        label={isIdentityAvailable ? "Identity" : "Email"}
+        label={isIdentityAvailable ? "PAM identity" : "Email"}
         error={getFormikError(formik, "identifier")}
         {...formik.getFieldProps("identifier")}
         data-testid="identifier"
@@ -115,7 +115,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
 
       <PasswordToggle
         id="password"
-        label="Password"
+        label={isIdentityAvailable ? "PAM password" : "Password"}
         error={getFormikError(formik, "password")}
         {...formik.getFieldProps("password")}
         data-testid="password"
