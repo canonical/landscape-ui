@@ -5,11 +5,12 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { WslFeatureLimits } from "../types";
 
+/** Gets the WSL feature limits of the account named `name`; idle while `name` is empty. */
 export const useGetStaffAccountWslLimits = (
   name: string,
   options: Omit<
     UseQueryOptions<AxiosResponse<WslFeatureLimits>, AxiosError<ApiError>>,
-    "queryKey" | "queryFn"
+    "queryKey" | "queryFn" | "enabled"
   > = {},
 ) => {
   const authFetch = useFetch();
@@ -23,6 +24,7 @@ export const useGetStaffAccountWslLimits = (
     queryKey: ["staffAccountWslLimits", name],
     queryFn: async () =>
       authFetch.get(`accounts/${encodeURIComponent(name)}/wsl-feature-limits`),
+    enabled: !!name,
     ...options,
   });
 

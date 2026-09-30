@@ -5,11 +5,12 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { StaffAccount } from "../types";
 
+/** Gets the account named `name`; idle while `name` is empty. */
 export const useGetStaffAccount = (
   name: string,
   options: Omit<
     UseQueryOptions<AxiosResponse<StaffAccount>, AxiosError<ApiError>>,
-    "queryKey" | "queryFn"
+    "queryKey" | "queryFn" | "enabled"
   > = {},
 ) => {
   const authFetch = useFetch();
@@ -22,6 +23,7 @@ export const useGetStaffAccount = (
   } = useQuery<AxiosResponse<StaffAccount>, AxiosError<ApiError>>({
     queryKey: ["staffAccounts", name],
     queryFn: async () => authFetch.get(`accounts/${encodeURIComponent(name)}`),
+    enabled: !!name,
     ...options,
   });
 

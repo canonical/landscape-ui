@@ -13,7 +13,7 @@ export const useEditStaffAccountWslLimits = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
-  const { mutateAsync, isPending } = useMutation<
+  const { mutateAsync, isPending, error } = useMutation<
     AxiosResponse<WslFeatureLimits>,
     AxiosError<ApiError>,
     EditStaffAccountWslLimitsParams
@@ -32,5 +32,6 @@ export const useEditStaffAccountWslLimits = () => {
   return {
     editWslLimits: mutateAsync,
     isEditingWslLimits: isPending,
+    editWslLimitsError: error,
   };
 };

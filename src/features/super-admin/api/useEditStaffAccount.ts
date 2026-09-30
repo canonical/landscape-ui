@@ -21,7 +21,7 @@ export const useEditStaffAccount = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
-  const { mutateAsync, isPending } = useMutation<
+  const { mutateAsync, isPending, error } = useMutation<
     AxiosResponse<StaffAccount>,
     AxiosError<ApiError>,
     EditStaffAccountParams
@@ -39,5 +39,6 @@ export const useEditStaffAccount = () => {
   return {
     editStaffAccount: mutateAsync,
     isEditingStaffAccount: isPending,
+    editStaffAccountError: error,
   };
 };
