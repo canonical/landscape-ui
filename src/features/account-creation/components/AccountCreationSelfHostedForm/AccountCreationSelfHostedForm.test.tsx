@@ -1,13 +1,14 @@
-import { HOMEPAGE_PATH } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { noneLoginMethods, pamLoginMethods } from "@/tests/mocks/loginMethods";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AccountCreationSelfHostedForm from "./AccountCreationSelfHostedForm";
 
-const setUserMock = vi.fn();
 const navigateMock = vi.fn();
+const authMock = vi.hoisted(() => ({
+  setUser: vi.fn(),
+}));
 
 vi.mock("react-router", async () => ({
   ...(await vi.importActual("react-router")),
@@ -15,88 +16,68 @@ vi.mock("react-router", async () => ({
 }));
 
 vi.mock("@/hooks/useAuth", () => ({
-  default: () => ({ setUser: setUserMock }),
+  default: () => authMock,
 }));
 
 describe("AccountCreationSelfHostedForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    setEndpointStatus({
-      status: "variant",
-      path: "standalone-account",
-      response: { exists: false },
-    });
   });
 
   afterEach(() => {
     setEndpointStatus("default");
   });
 
-  it("renders the form correctly", () => {
+  it("selects the PAM form when PAM authentication is enabled", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "login/methods",
+      response: pamLoginMethods,
+    });
+
     renderWithProviders(<AccountCreationSelfHostedForm />);
 
     expect(
-      screen.getByText("Create a new Landscape account"),
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText("Full name")).toBeInTheDocument();
-    expect(screen.getByLabelText("Email address")).toBeInTheDocument();
-    expect(screen.getByLabelText("Password")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Create account" }),
+      await screen.findByRole("heading", {
+        name: "Create a new Landscape account with PAM",
+      }),
     ).toBeInTheDocument();
   });
 
-  it("correctly disables button based on form validity", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<AccountCreationSelfHostedForm />);
-
-    const submitButton = screen.getByRole("button", { name: "Create account" });
-    expect(submitButton).toHaveAttribute("aria-disabled", "true");
-
-    await user.type(screen.getByLabelText("Full name"), "John Doe");
-    await user.type(
-      screen.getByLabelText("Email address"),
-      "john.doe@example.com",
-    );
-    await user.type(screen.getByLabelText("Password"), "Password1234");
-
-    expect(submitButton).not.toHaveAttribute("aria-disabled");
-    expect(submitButton).toBeEnabled();
-  });
-
-  it("shows validation error for invalid email", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<AccountCreationSelfHostedForm />);
-
-    await user.type(screen.getByLabelText("Email address"), "invalid-email");
-
-    await user.tab();
-
-    expect(
-      await screen.findByText("Invalid email address"),
-    ).toBeInTheDocument();
-  });
-
-  it("submits the form calls create and login", async () => {
-    const user = userEvent.setup();
+  it("redirects to login when only a federated method (Ubuntu one and/or OIDC) is enabled", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "login/methods",
+      response: {
+        ...noneLoginMethods,
+        ubuntu_one: { available: true, enabled: true },
+      },
+    });
 
     renderWithProviders(<AccountCreationSelfHostedForm />);
-
-    await user.type(screen.getByLabelText("Full name"), "John Doe");
-    await user.type(
-      screen.getByLabelText("Email address"),
-      "john.doe@example.com",
-    );
-    await user.type(screen.getByLabelText("Password"), "Password1234");
-
-    const submitButton = screen.getByRole("button", { name: "Create account" });
-    await user.click(submitButton);
 
     await vi.waitFor(() => {
-      expect(setUserMock).toHaveBeenCalled();
-      expect(navigateMock).toHaveBeenCalledWith(HOMEPAGE_PATH, {
+      expect(navigateMock).toHaveBeenCalledWith("/login", {
         replace: true,
+        state: { allowFederatedLogin: true },
       });
     });
+  });
+
+  it("shows an error when no login methods are configured", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "login/methods",
+      response: noneLoginMethods,
+    });
+
+    renderWithProviders(<AccountCreationSelfHostedForm />);
+
+    expect(
+      await screen.findByText(
+        "No login methods are configured. Ask your system administrator to configure password, PAM, OIDC, or Ubuntu One.",
+      ),
+    ).toBeInTheDocument();
+    expect(navigateMock).not.toHaveBeenCalled();
   });
 });
