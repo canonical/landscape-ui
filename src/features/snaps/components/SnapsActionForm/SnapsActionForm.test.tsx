@@ -57,7 +57,7 @@ describe("SnapsActionForm", () => {
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          /The change channel action will only be applied to instances with compatible architectures/i,
+          /The change channel action will only be applied to instances whose architecture is supported by the selected channel/i,
         ),
       ).toBeInTheDocument();
     });
@@ -325,7 +325,7 @@ describe("SnapsActionForm", () => {
       expect(channelSelect).not.toBeDisabled();
     });
 
-    await user.selectOptions(channelSelect, "latest/edge amd64");
+    await user.selectOptions(channelSelect, "latest/edge");
 
     await user.click(screen.getByRole("button", { name: "Change channel" }));
     const modal = await screen.findByRole("dialog");

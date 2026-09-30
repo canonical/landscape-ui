@@ -64,8 +64,8 @@ const SnapNotification: FC<SnapNotificationProps> = ({
           title="Instance architecture compatibility"
           onDismiss={dismissArchitecture}
         >
-          The {action} action will only be applied to instances with compatible
-          architectures.
+          The {action} action will only be applied to instances whose
+          architecture is supported by the selected channel.
         </Notification>
       )}
       {hasRevision && (
