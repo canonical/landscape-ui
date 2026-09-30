@@ -9,13 +9,7 @@ import type { FC } from "react";
 import * as Yup from "yup";
 import FieldDescription from "@/components/form/FieldDescription";
 import { getFormikError } from "@/utils/formikErrors";
-
-export interface PamUserFormValues {
-  name: string;
-  email: string;
-  identity: string;
-  password: string;
-}
+import type { PamUserFormValues } from "./types";
 
 interface PamUserFormProps {
   readonly onSubmit: (values: PamUserFormValues) => Promise<void> | void;
