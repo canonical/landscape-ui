@@ -6,7 +6,7 @@ import SnapNotification from "./SnapNotification";
 const architectureTitle = "Instance architecture compatibility";
 const architectureBody = (action: string) =>
   new RegExp(
-    `The ${action} action will only be applied to instances with compatible architectures`,
+    `The ${action} action will only be applied to instances whose architecture is supported by the selected channel.`,
   );
 const revisionTitle =
   "Specifying a revision doesn't change the tracked channel, so future updates may replace it with that channel's latest revision.";

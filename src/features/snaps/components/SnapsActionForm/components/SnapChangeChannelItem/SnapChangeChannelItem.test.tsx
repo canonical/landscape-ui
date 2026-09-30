@@ -119,7 +119,7 @@ describe("SnapChangeChannelItem", () => {
 
     await waitFor(() => {
       expect(props.onChange).toHaveBeenCalledWith(
-        "latest/stable amd64",
+        "latest/stable",
         "latest/stable",
         "strict",
       );
@@ -139,10 +139,10 @@ describe("SnapChangeChannelItem", () => {
       expect(within(channelSelect).getAllByRole("option")).toHaveLength(4);
     });
 
-    await user.selectOptions(channelSelect, "latest/candidate amd64");
+    await user.selectOptions(channelSelect, "latest/candidate");
 
     expect(onChange).toHaveBeenCalledWith(
-      "latest/candidate amd64",
+      "latest/candidate",
       "latest/candidate",
       "strict",
     );

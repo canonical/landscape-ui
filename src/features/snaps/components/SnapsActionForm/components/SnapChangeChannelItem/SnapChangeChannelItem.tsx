@@ -8,8 +8,7 @@ import { useGetSnapInfo } from "../../../../api";
 import { isValidRevision } from "../../../../helpers";
 import SnapChannelRevisionFields, {
   getChannelOptions,
-  getChannelName,
-  getChannelConfinement,
+  type ChannelOption,
 } from "../../../SnapChannelRevisionFields";
 
 interface SnapChangeChannelItemProps {
@@ -98,12 +97,10 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
             return;
           }
 
-          const channelMap = snapInfo?.["channel-map"];
-          onChange(
-            newValue,
-            getChannelName(channelMap, newValue),
-            getChannelConfinement(channelMap, newValue),
+          const option = channelOptions.find(
+            (item): item is ChannelOption => item.value === newValue,
           );
+          onChange(newValue, option?.label, option?.confinement);
         }}
         onModeChange={onModeChange}
       />

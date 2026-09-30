@@ -1,27 +1,47 @@
 import type { SelectOption } from "@/types/SelectOption";
-import {
-  getChannelConfinement as getSharedChannelConfinement,
-  getChannelName as getSharedChannelName,
-  getChannelOptions as getSharedChannelOptions,
-} from "../../helpers";
 import type { AvailableSnapInfo } from "../../types";
+
+export interface ChannelOption extends SelectOption {
+  confinement: string;
+}
 
 export const MODE_OPTIONS: SelectOption[] = [
   { label: "Channel", value: "channel" },
   { label: "Revision", value: "revision" },
 ];
 
+const RISK_ORDER = ["stable", "candidate", "beta", "edge"];
+
 export const getChannelOptions = (
   channelMap?: AvailableSnapInfo["channel-map"],
-): SelectOption[] => getSharedChannelOptions(channelMap, { sortBy: "risk" });
+): ChannelOption[] => {
+  if (!channelMap) {
+    return [];
+  }
 
-// Composite option values pack name + architecture; resolve back to the real channel-map entry for API requests.
-export const getChannelName = (
-  channelMap: AvailableSnapInfo["channel-map"] | undefined,
-  value: string,
-): string | undefined => getSharedChannelName(channelMap, value);
+  const channelsByName = new Map<
+    string,
+    AvailableSnapInfo["channel-map"][number]
+  >();
 
-export const getChannelConfinement = (
-  channelMap: AvailableSnapInfo["channel-map"] | undefined,
-  value: string,
-): string | undefined => getSharedChannelConfinement(channelMap, value);
+  for (const entry of channelMap) {
+    channelsByName.set(entry.channel.name, entry);
+  }
+
+  return [...channelsByName.values()]
+    .sort((a, b) => {
+      const riskIndexA = RISK_ORDER.indexOf(a.channel.risk);
+      const riskIndexB = RISK_ORDER.indexOf(b.channel.risk);
+
+      if (riskIndexA === -1 || riskIndexB === -1) {
+        return a.channel.name.localeCompare(b.channel.name);
+      }
+
+      return riskIndexA - riskIndexB;
+    })
+    .map(({ channel, confinement }) => ({
+      label: channel.name,
+      value: channel.name,
+      confinement,
+    }));
+};
