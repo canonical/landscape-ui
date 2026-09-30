@@ -53,6 +53,8 @@ const authContextValues: AuthContextProps = {
   safeRedirect: vi.fn(),
   isFeatureEnabled: vi.fn(() => false),
   hasAccounts: true,
+  isSuperAdmin: false,
+  canManageAccounts: false,
 };
 
 describe("SavedSearchForm", () => {
