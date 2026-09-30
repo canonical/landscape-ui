@@ -24,8 +24,7 @@ interface UserAdditionalGroupActivityChange {
 }
 
 export type UserActivityChange =
-  | UserProfileActivityChange
-  | UserAdditionalGroupActivityChange;
+  UserProfileActivityChange | UserAdditionalGroupActivityChange;
 
 export interface UserActivityEvent {
   activity_id: number;

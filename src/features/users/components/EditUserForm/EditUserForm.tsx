@@ -73,17 +73,15 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
   const getLatestProfileActivityEvent = (field: UserProfileField) =>
     isFetchingUserActivities
       ? undefined
-      : userActivities.find(
-          (event) =>
-            event.changes.some(
-              (change) => change.kind === "profile" && change.field === field,
-            ),
+      : userActivities.find((event) =>
+          event.changes.some(
+            (change) => change.kind === "profile" && change.field === field,
+          ),
         );
   const latestAdditionalGroupActivityEvent = isFetchingUserActivities
     ? undefined
-    : userActivities.find(
-        (event) =>
-          event.changes.some((change) => change.kind === "additional_group"),
+    : userActivities.find((event) =>
+        event.changes.some((change) => change.kind === "additional_group"),
       );
   const latestProfileActivityEvents = {
     name: getLatestProfileActivityEvent("name"),
@@ -152,6 +150,10 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
             label: "View profile changes",
             request: editUser(editUserPayload),
           });
+        }
+        if (!activityRequests.length) {
+          closeSidePanel();
+          return;
         }
         const activities = await Promise.all(
           activityRequests.map(async ({ label, request }) => ({

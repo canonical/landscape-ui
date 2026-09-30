@@ -1,6 +1,11 @@
 import { API_URL } from "@/constants";
+import SidePanelProvider, { SidePanelContext } from "@/context/sidePanel";
+import type { Activity } from "@/features/activities";
 import { PATHS, ROUTES } from "@/libs/routes";
+import ActivitiesPage from "@/pages/dashboard/activities/ActivitiesPage";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { activities } from "@/tests/mocks/activity";
+import { ubuntuInstance } from "@/tests/mocks/instance";
 import { users } from "@/tests/mocks/user";
 import { userGroups } from "@/tests/mocks/userGroup";
 import { renderWithProviders } from "@/tests/render";
@@ -10,7 +15,7 @@ import type { User } from "@/types/User";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { Route, Routes, useLocation } from "react-router";
+import { Route, Routes } from "react-router";
 import EditUserForm from "./EditUserForm";
 
 const routePattern = `/${PATHS.instances.root}/${PATHS.instances.single}`;
@@ -23,25 +28,11 @@ const renderEditUserForm = (user: User = users[0]) =>
     routePattern,
   );
 
-const ActivitiesDestination = () => {
-  const { pathname, search, state } = useLocation();
-
-  return (
-    <>
-      <output data-testid="activity-destination">
-        {pathname}
-        {search}
-      </output>
-      <output data-testid="selected-activity">{JSON.stringify(state)}</output>
-    </>
-  );
-};
-
-const renderEditUserFormWithActivitiesDestination = () =>
+const renderEditUserFormWithActivitiesPage = () =>
   renderWithProviders(
     <Routes>
       <Route path={routePattern} element={<EditUserForm user={users[0]} />} />
-      <Route path={PATHS.activities.root} element={<ActivitiesDestination />} />
+      <Route path={PATHS.activities.root} element={<ActivitiesPage />} />
     </Routes>,
     undefined,
     ROUTES.instances.details.single(1),
@@ -344,71 +335,139 @@ describe("EditUserForm", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("opens the selected activity on the activities page", async () => {
-    server.use(
-      http.get(
-        `${API_URL}computers/:computerId/users/:username/pending-activities`,
-        () =>
-          HttpResponse.json({
-            count: 1,
-            results: [
-              {
-                activity_id: 103,
-                summary: "Editing user(s)",
-                activity_status: "undelivered",
-                creation_time: "2026-08-17T10:00:00Z",
-                completion_time: null,
-                changes: [{ kind: "profile", field: "name" }],
-              },
-            ],
-          }),
-      ),
-    );
+  it("opens the listed child activity with its instance and available actions", async () => {
+    const childActivity: Activity = {
+      ...activities[0],
+      id: 103,
+      parent_id: 102,
+      type: "EditUserRequest",
+      summary: "Edit user user1 (UID 1)",
+      computer_id: ubuntuInstance.id,
+      activity_status: "unapproved",
+      completion_time: null,
+      delivery_time: null,
+      result_text: null,
+      actions: { approvable: true, cancelable: true, reappliable: false },
+    };
+    setEndpointStatus([
+      { status: "variant", path: "activities", response: [childActivity] },
+      { status: "variant", path: "activities/:id", response: childActivity },
+      {
+        status: "variant",
+        path: "computers/:computerId/users/:username/pending-activities",
+        response: {
+          count: 1,
+          results: [
+            {
+              activity_id: childActivity.id,
+              summary: childActivity.summary,
+              activity_status: childActivity.activity_status,
+              creation_time: childActivity.creation_time,
+              completion_time: childActivity.completion_time,
+              changes: [{ kind: "profile", field: "name" }],
+            },
+          ],
+        },
+      },
+    ]);
     const user = userEvent.setup();
-    renderEditUserFormWithActivitiesDestination();
+    renderEditUserFormWithActivitiesPage();
 
     await user.click(
       await screen.findByRole("button", {
-        name: "View activity 103: Queued",
+        name: `View activity ${childActivity.id}: Unapproved`,
       }),
     );
 
-    expect(screen.getByTestId("activity-destination")).toHaveTextContent(
-      ROUTES.activities.root({ query: "id:103" }),
+    const panel = screen.getByRole("complementary");
+    expect(
+      await within(panel).findByRole("link", { name: ubuntuInstance.title }),
+    ).toHaveAttribute(
+      "href",
+      ROUTES.instances.details.fromInstance(ubuntuInstance),
     );
-    expect(screen.getByTestId("selected-activity")).toHaveTextContent(
-      JSON.stringify({
-        activity: { id: 103, summary: "Editing user(s)" },
-      }),
+    expect(panel).toHaveInfoItem("Description", childActivity.summary);
+    expect(
+      within(panel).getByRole("button", { name: "Approve" }),
+    ).toBeEnabled();
+    expect(within(panel).getByRole("button", { name: "Cancel" })).toBeEnabled();
+    expect(
+      within(panel).queryByRole("button", { name: "Redo" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search")).toHaveValue(
+      `id:${childActivity.id}`,
     );
+    const table = await screen.findByRole("table");
+    expect(
+      within(table).getByRole("button", { name: childActivity.summary }),
+    ).toBeInTheDocument();
   });
 
-  it("does not submit an unchanged blank profile", async () => {
-    let requestBody: Record<string, unknown> | undefined;
-    server.use(
-      http.put(`${API_URL}users`, async ({ request }) => {
-        requestBody = (await request.json()) as Record<string, unknown>;
-        return HttpResponse.json({});
-      }),
-    );
-    const user = userEvent.setup();
-    renderEditUserForm({
-      ...users[8],
-      name: undefined,
-      location: undefined,
-      home_phone: undefined,
-      work_phone: undefined,
-    });
+  it.each([
+    { profile: "populated", userToEdit: users[0] },
+    {
+      profile: "blank",
+      userToEdit: {
+        ...users[8],
+        name: undefined,
+        location: undefined,
+        home_phone: undefined,
+        work_phone: undefined,
+      },
+    },
+  ])(
+    "closes the side panel without submitting or reporting an activity for an unchanged $profile profile",
+    async ({ userToEdit }) => {
+      let requestBody: Record<string, unknown> | undefined;
+      server.use(
+        http.put(`${API_URL}users`, async ({ request }) => {
+          requestBody = (await request.json()) as Record<string, unknown>;
+          return HttpResponse.json({});
+        }),
+      );
+      setEndpointStatus({
+        status: "variant",
+        path: "user-groups",
+        response: [],
+      });
+      const user = userEvent.setup();
+      renderWithProviders(
+        <SidePanelProvider>
+          <SidePanelContext.Consumer>
+            {({ setSidePanelContent }) => (
+              <button
+                onClick={() => {
+                  setSidePanelContent(
+                    "Edit user",
+                    <EditUserForm user={userToEdit} />,
+                  );
+                }}
+              >
+                Edit user
+              </button>
+            )}
+          </SidePanelContext.Consumer>
+        </SidePanelProvider>,
+        undefined,
+        ROUTES.instances.details.single(1),
+        routePattern,
+      );
 
-    await user.click(screen.getByRole("button", { name: "Save changes" }));
+      await user.click(screen.getByRole("button", { name: "Edit user" }));
+      await screen.findByRole("option", { name: "daemon" });
+      await user.click(screen.getByRole("button", { name: "Save changes" }));
 
-    await waitFor(() => {
+      await waitFor(() => {
+        expect(screen.queryByRole("form")).not.toBeInTheDocument();
+      });
+      expect(requestBody).toBeUndefined();
       expect(
-        screen.getByRole("button", { name: "Save changes" }),
-      ).toBeEnabled();
-    });
-    expect(requestBody).toBeUndefined();
-  });
+        screen.queryByText(
+          `An activity is queued to edit ${userToEdit.username}.`,
+        ),
+      ).not.toBeInTheDocument();
+    },
+  );
 
   it("only sends changed profile fields in the edit request", async () => {
     let requestBody: Record<string, unknown> | undefined;

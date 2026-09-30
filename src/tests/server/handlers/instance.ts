@@ -458,8 +458,18 @@ export default [
     return HttpResponse.json({ groups: userGroups });
   }),
 
-  http.get(`${API_URL}computers/:computerId/users/:username/pending-activities`, () =>
-    HttpResponse.json({ count: 0, results: [] }),
+  http.get(
+    `${API_URL}computers/:computerId/users/:username/pending-activities`,
+    () => {
+      const { status, response } = getEndpointStatus(
+        "computers/:computerId/users/:username/pending-activities",
+      );
+      if (status === "variant") {
+        return HttpResponse.json(response);
+      }
+
+      return HttpResponse.json({ count: 0, results: [] });
+    },
   ),
 
   http.get<never, never, PendingInstance[]>(API_URL_OLD, ({ request }) => {
