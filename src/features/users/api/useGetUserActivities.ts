@@ -59,7 +59,7 @@ export const useGetUserActivities = (params: GetUserActivitiesParams) => {
     queryKey: ["userActivities", params.computer_id, params.username],
     queryFn: async () =>
       authFetch.get(
-        `computers/${params.computer_id}/users/${params.username}/activities`,
+        `computers/${params.computer_id}/users/${params.username}/pending-activities`,
       ),
   });
 

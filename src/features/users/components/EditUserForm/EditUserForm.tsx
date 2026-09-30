@@ -20,7 +20,7 @@ import {
   useGetUserGroups,
   useRemoveUserFromGroup,
 } from "../../api";
-import type { UserActivityEvent, UserProfileField } from "../../api";
+import type { UserProfileField } from "../../api";
 import { getPendingUserActivityMessage } from "../../constants";
 import { editUserValidationSchema } from "./constants";
 import {
@@ -70,17 +70,11 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
     value: String(group.gid),
   }));
 
-  const isPendingActivity = (event: UserActivityEvent) =>
-    ["undelivered", "delivered", "waiting", "blocked", "scheduled"].includes(
-      event.activity_status,
-    );
-
   const getLatestProfileActivityEvent = (field: UserProfileField) =>
     isFetchingUserActivities
       ? undefined
       : userActivities.find(
           (event) =>
-            isPendingActivity(event) &&
             event.changes.some(
               (change) => change.kind === "profile" && change.field === field,
             ),
@@ -89,7 +83,6 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
     ? undefined
     : userActivities.find(
         (event) =>
-          isPendingActivity(event) &&
           event.changes.some((change) => change.kind === "additional_group"),
       );
   const latestProfileActivityEvents = {

@@ -210,7 +210,7 @@ describe("EditUserForm", () => {
   it("shows the latest pending activity link for each requested field change", async () => {
     server.use(
       http.get(
-        `${API_URL}computers/:computerId/users/:username/activities`,
+        `${API_URL}computers/:computerId/users/:username/pending-activities`,
         () =>
           HttpResponse.json({
             count: 3,
@@ -226,10 +226,10 @@ describe("EditUserForm", () => {
               {
                 activity_id: 102,
                 summary: "Editing user(s)",
-                activity_status: "succeeded",
+                activity_status: "unapproved",
                 creation_time: "2026-08-17T09:00:00Z",
-                completion_time: "2026-08-17T09:01:00Z",
-                changes: [{ kind: "profile", field: "name" }],
+                completion_time: null,
+                changes: [{ kind: "profile", field: "location" }],
               },
               {
                 activity_id: 101,
@@ -258,10 +258,10 @@ describe("EditUserForm", () => {
       }),
     ).toHaveTextContent("Editing user(s): Queued");
     expect(
-      screen.queryByRole("button", {
-        name: "View activity 102: Succeeded",
+      screen.getByRole("button", {
+        name: "View activity 102: Unapproved",
       }),
-    ).not.toBeInTheDocument();
+    ).toHaveTextContent("Editing user(s): Unapproved");
     expect(
       screen.getByRole("button", {
         name: "View activity 101: Queued",
@@ -274,7 +274,7 @@ describe("EditUserForm", () => {
     let requestCount = 0;
     server.use(
       http.get(
-        `${API_URL}computers/:computerId/users/:username/activities`,
+        `${API_URL}computers/:computerId/users/:username/pending-activities`,
         () => {
           requestCount += 1;
           return HttpResponse.json(
@@ -347,7 +347,7 @@ describe("EditUserForm", () => {
   it("opens the selected activity on the activities page", async () => {
     server.use(
       http.get(
-        `${API_URL}computers/:computerId/users/:username/activities`,
+        `${API_URL}computers/:computerId/users/:username/pending-activities`,
         () =>
           HttpResponse.json({
             count: 1,
