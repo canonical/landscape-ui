@@ -4,10 +4,8 @@ import { describe, expect, it } from "vitest";
 import SnapNotification from "./SnapNotification";
 
 const architectureTitle = "Instance architecture compatibility";
-const architectureBody = (action: string) =>
-  new RegExp(
-    `The ${action} action will only be applied to instances whose architecture is supported by the selected channel.`,
-  );
+const architectureBody = (action: string, target: string) =>
+  `The ${action} action will only be applied to instances whose architecture is supported by ${target}.`;
 const revisionTitle =
   "Specifying a revision doesn't change the tracked channel, so future updates may replace it with that channel's latest revision.";
 
@@ -25,11 +23,13 @@ describe("SnapNotification", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders the architecture notification for install", () => {
+  it("renders the architecture notification for install without referring to a channel", () => {
     renderWithProviders(<SnapNotification action="install" />);
 
     expect(screen.getByText(architectureTitle)).toBeInTheDocument();
-    expect(screen.getByText(architectureBody("install"))).toBeInTheDocument();
+    expect(
+      screen.getByText(architectureBody("install", "the snap")),
+    ).toBeInTheDocument();
   });
 
   it("renders the architecture notification for change channel", () => {

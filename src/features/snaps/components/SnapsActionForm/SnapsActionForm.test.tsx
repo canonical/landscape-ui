@@ -58,7 +58,7 @@ describe("SnapsActionForm", () => {
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          /The change channel action will only be applied to instances whose architecture is supported by the selected channel/i,
+          /The change channel action will only be applied to instances whose architecture is supported by the selected channel or revision/i,
         ),
       ).toBeInTheDocument();
     });
