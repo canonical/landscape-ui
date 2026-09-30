@@ -51,6 +51,9 @@ const SnapNotification: FC<SnapNotificationProps> = ({
   const isArchitectureNotification =
     action === "install" || action === "change channel";
 
+  const architectureTarget =
+    action === "install" ? "the snap" : "the selected channel or revision";
+
   if (isArchitectureNotification && isArchitectureDismissed && !hasRevision) {
     return null;
   }
@@ -65,7 +68,7 @@ const SnapNotification: FC<SnapNotificationProps> = ({
           onDismiss={dismissArchitecture}
         >
           The {action} action will only be applied to instances whose
-          architecture is supported by the selected channel.
+          architecture is supported by {architectureTarget}.
         </Notification>
       )}
       {hasRevision && (
