@@ -8,6 +8,7 @@ export interface CreateStandaloneAccountParams {
   email: string;
   name: string;
   password: string;
+  identity?: string;
 }
 
 export const useCreateStandaloneAccount = () => {
