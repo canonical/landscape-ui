@@ -11,3 +11,18 @@ export type {
   StaffPersonResult,
   WslFeatureLimits,
 } from "./types";
+
+export type {
+  EditStaffAccountParams,
+  EditStaffAccountWslLimitsParams,
+  GetStaffAccountsParams,
+  GetStaffPeopleParams,
+} from "./api";
+export {
+  useEditStaffAccount,
+  useEditStaffAccountWslLimits,
+  useGetStaffAccount,
+  useGetStaffAccounts,
+  useGetStaffAccountWslLimits,
+  useGetStaffPeople,
+} from "./api";
