@@ -6,7 +6,6 @@ import type {
   SnapChangeMode,
 } from "../../../../types";
 import { useBoolean } from "usehooks-ts";
-import { hasNotification } from "../../helpers";
 
 interface SnapChangeConfig {
   mode: SnapChangeMode;
@@ -20,22 +19,55 @@ interface SnapNotificationProps {
   readonly snapChangeConfigs?: Record<string, SnapChangeConfig>;
 }
 
-const SnapNotification: FC<SnapNotificationProps> = ({ action }) => {
-  const content =
-    action === "hold"
-      ? {
-          title: "Landscape holds snaps indefinitely",
-          body: "Due to Landscape’s asynchronous delivery of activities, the snaps held will be held indefinitely from the moment the client executes the activity.",
-          onDismiss: undefined,
-        }
-      : {
-          title: undefined,
-          body: "Specifying a revision doesn't change the tracked channel, so future updates may replace it with that channel's latest revision.",
-        };
+const SnapNotification: FC<SnapNotificationProps> = ({
+  action,
+  snapChangeConfigs,
+}) => {
+  const { value: isArchitectureDismissed, setTrue: dismissArchitecture } =
+    useBoolean(false);
+
+  const actionContent: Record<
+    Exclude<ActionWithNotification, "install" | "change channel">,
+    ReactNode
+  > = {
+    hold: (
+      <Notification
+        severity="information"
+        title="Landscape holds snaps indefinitely"
+      >
+        Due to Landscape’s asynchronous delivery of activities, the snaps held
+        will be held indefinitely from the moment the client executes the
+        activity.
+      </Notification>
+    ),
+  };
+
+  const hasRevision =
+    snapChangeConfigs &&
+    Object.values(snapChangeConfigs).some(
+      (config) => config.mode === "revision",
+    );
+
+  const isArchitectureNotification =
+    action === "install" || action === "change channel";
+
+  if (isArchitectureNotification && isArchitectureDismissed && !hasRevision) {
+    return null;
+  }
 
   return (
     <>
-      {hasNotification(action) && actionContent[action]}
+      {action === "hold" && actionContent.hold}
+      {isArchitectureNotification && !isArchitectureDismissed && (
+        <Notification
+          severity="information"
+          title="Instance architecture compatibility"
+          onDismiss={dismissArchitecture}
+        >
+          The {action} action will only be applied to instances with compatible
+          architectures.
+        </Notification>
+      )}
       {hasRevision && (
         <Notification
           severity="information"
