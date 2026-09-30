@@ -158,9 +158,12 @@ const isValidSalesforceAccountKey = (key: string): boolean =>
 
 // --- Subdomain validation (`AccountPatchBody`, `set_account_subdomain`) ---
 
-// A single DNS label, per RFC 1034 section 3.1 (1–63 characters).
+// Dot-separated DNS labels per RFC 1034 section 3.1, as the server's subdomain
+// resolver accepts (e.g. `tenant.saas`). Length bounds match the database column.
+const SUBDOMAIN_MIN_LENGTH = 2;
 const SUBDOMAIN_MAX_LENGTH = 63;
-const SUBDOMAIN_PATTERN = /^[a-z]([a-z0-9-]*[a-z0-9])?$/;
+const SUBDOMAIN_PATTERN =
+  /^[a-z]([a-z0-9-]*[a-z0-9])?(\.[a-z]([a-z0-9-]*[a-z0-9])?)*$/;
 
 const DISALLOWED_SUBDOMAINS = ["landscape", "saas"];
 
@@ -378,12 +381,12 @@ const subdomainErrors = (subdomain: unknown): PydanticErrorDetail[] => {
     ];
   }
 
-  if (!subdomain.length) {
+  if (subdomain.length < SUBDOMAIN_MIN_LENGTH) {
     return [
       {
         type: "string_too_short",
         loc: ["subdomain"],
-        msg: "String should have at least 1 character",
+        msg: `String should have at least ${SUBDOMAIN_MIN_LENGTH} characters`,
       },
     ];
   }

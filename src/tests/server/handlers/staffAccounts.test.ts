@@ -291,6 +291,20 @@ describe("PATCH /accounts/:name", () => {
     expect(persisted.subdomain).toBe("globex");
   });
 
+  it("accepts a dotted subdomain, as the server's resolver supports them", async () => {
+    setStaffGlobalRoles(["AccountManager"]);
+
+    const response = await send(
+      "PATCH",
+      "accounts/globex",
+      { subdomain: "globex.saas" },
+      AUTH_HEADERS,
+    );
+
+    expect(response.status).toBe(OK);
+    expect((await response.json()).subdomain).toBe("globex.saas");
+  });
+
   it("clears the Salesforce key and subdomain with explicit nulls", async () => {
     setStaffGlobalRoles(["AccountManager"]);
 
@@ -309,6 +323,8 @@ describe("PATCH /accounts/:name", () => {
   it.each([
     ["an unknown feature key", { enabled_features: [UNKNOWN_FEATURE_KEY] }],
     ["an invalid subdomain", { subdomain: "-bad-" }],
+    ["a subdomain with an empty label", { subdomain: "globex..saas" }],
+    ["a subdomain with an invalid label", { subdomain: "globex.-saas" }],
     ["max_people_count above 100", { max_people_count: 101 }],
     ["max_people_count below 1", { max_people_count: 0 }],
     ["a negative max_attachment_size", { max_attachment_size: -1 }],
@@ -340,6 +356,11 @@ describe("PATCH /accounts/:name", () => {
     [
       "an empty subdomain",
       { subdomain: "" },
+      { type: "string_too_short", loc: ["subdomain"] },
+    ],
+    [
+      "a one-character subdomain",
+      { subdomain: "a" },
       { type: "string_too_short", loc: ["subdomain"] },
     ],
     [
