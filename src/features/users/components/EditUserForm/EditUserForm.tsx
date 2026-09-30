@@ -1,3 +1,4 @@
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
@@ -39,7 +40,7 @@ interface EditUserFormProps {
 }
 
 const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
-  const { instanceId: urlInstanceId } = useParams<UrlParams>();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
@@ -48,7 +49,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
   const { addUserToGroup } = useAddUserToGroup();
   const { removeUserFromGroup } = useRemoveUserFromGroup();
 
-  const instanceId = Number(urlInstanceId);
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const { groups: groupsData, isLoadingGroups } = useGetGroups({
     computer_id: instanceId,
@@ -113,7 +114,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
       const [primaryGroupName] = getGroupNamesByGids(groupsData, [
         values.primaryGroupValue,
       ]);
-      const usernames = [values.username];
+      const usernames = [user.username];
       try {
         const activityRequests: {
           label: string;
@@ -141,6 +142,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         }
         const editUserPayload = buildEditUserPayload(
           instanceId,
+          user.username,
           values,
           initialValues,
           primaryGroupName,
@@ -163,8 +165,8 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         );
         closeSidePanel();
         notify.success({
-          title: `You queued ${values.username} to be edited.`,
-          message: `An activity is queued to edit ${values.username}.`,
+          title: `You queued ${user.username} to be edited.`,
+          message: `An activity is queued to edit ${user.username}.`,
           actions: activities.map(({ activity, label }) => ({
             label: activities.length === 1 ? "View details" : label,
             onClick: () => {
@@ -208,13 +210,10 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
           </Link>
         </Notification>
       )}
-      <Input
-        type="text"
+      <ReadOnlyField
         label="Username"
-        required
-        autoComplete="new-username"
-        error={getFormikError(formik, "username")}
-        {...formik.getFieldProps("username")}
+        value={user.username}
+        tooltipMessage="You can't change the username of an existing user."
       />
       <Input
         type="text"

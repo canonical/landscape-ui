@@ -9,7 +9,6 @@ export interface GetUsersParams {
   computer_id: number;
   limit?: number;
   offset?: number;
-  query?: string;
 }
 
 export const useGetUsers = (params: GetUsersParams) => {

@@ -1,3 +1,6 @@
+import { API_URL } from "@/constants";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
 import NoData from "@/components/layout/NoData";
 import { PATHS, ROUTES } from "@/libs/routes";
 import "@/tests/matcher";
@@ -46,32 +49,68 @@ describe("user details", () => {
     );
   });
 
-  it("should show correct side panel details for a user", async () => {
-    assert(unlockedUser);
+  it.each([
+    {
+      label: "parent",
+      path: ROUTES.instances.details.single(1),
+      pattern: routePattern,
+      computerId: 1,
+    },
+    {
+      label: "child",
+      path: ROUTES.instances.details.child(1, 2),
+      pattern: `${routePattern}/${PATHS.instances.child}`,
+      computerId: 2,
+    },
+  ])(
+    "shows user details for the $label instance",
+    async ({ path, pattern, computerId }) => {
+      const requestedComputerIds: number[] = [];
+      server.use(
+        http.get(`${API_URL}computers/:computerId/groups`, ({ params }) => {
+          requestedComputerIds.push(Number(params.computerId));
+          return HttpResponse.json({ groups: userGroups });
+        }),
+        http.get(
+          `${API_URL}computers/:computerId/users/:username/groups`,
+          ({ params }) => {
+            requestedComputerIds.push(Number(params.computerId));
+            return HttpResponse.json({ groups: userGroups });
+          },
+        ),
+      );
+      assert(unlockedUser);
 
-    const user = unlockedUser;
-    const { container } = renderUserDetails(user);
+      const user = unlockedUser;
+      const { container } = renderWithProviders(
+        <UserDetails user={user} />,
+        undefined,
+        path,
+        pattern,
+      );
 
-    const primaryGroup =
-      userGroups.find((group) => group.gid === user.primary_gid)?.name ?? "";
+      const primaryGroup =
+        userGroups.find((group) => group.gid === user.primary_gid)?.name ?? "";
 
-    const groupsData = userGroups.map((group) => group.name).join(", ");
-    const loaded = await screen.findByText(primaryGroup);
-    expect(loaded).toBeInTheDocument();
+      const groupsData = userGroups.map((group) => group.name).join(", ");
+      const loaded = await screen.findByText(primaryGroup);
+      expect(loaded).toBeInTheDocument();
 
-    const fieldsToCheck = [
-      { label: "Username", value: user.username },
-      { label: "Name", value: user?.name ?? <NoData /> },
-      { label: "Password", value: MASKED_VALUE },
-      { label: "Primary group", value: primaryGroup ?? <NoData /> },
-      { label: "Additional groups", value: groupsData },
-      { label: "Location", value: user?.location ?? <NoData /> },
-      { label: "Home phone", value: user?.home_phone ?? <NoData /> },
-      { label: "Work phone", value: user?.work_phone ?? <NoData /> },
-    ];
+      const fieldsToCheck = [
+        { label: "Username", value: user.username },
+        { label: "Name", value: user?.name ?? <NoData /> },
+        { label: "Password", value: MASKED_VALUE },
+        { label: "Primary group", value: primaryGroup ?? <NoData /> },
+        { label: "Additional groups", value: groupsData },
+        { label: "Location", value: user?.location ?? <NoData /> },
+        { label: "Home phone", value: user?.home_phone ?? <NoData /> },
+        { label: "Work phone", value: user?.work_phone ?? <NoData /> },
+      ];
 
-    fieldsToCheck.forEach((field) => {
-      expect(container).toHaveInfoItem(field.label, field.value);
-    });
-  });
+      fieldsToCheck.forEach((field) => {
+        expect(container).toHaveInfoItem(field.label, field.value);
+      });
+      expect(requestedComputerIds).toEqual([computerId, computerId]);
+    },
+  );
 });

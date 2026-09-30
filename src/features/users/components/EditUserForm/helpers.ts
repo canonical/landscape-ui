@@ -7,7 +7,6 @@ export const getEditUserInitialValues = (
   initialUserAdditionalGroups: string[],
 ): EditUserFormValues => ({
   name: user.name ?? "",
-  username: user.username,
   password: "",
   confirmPassword: "",
   location: user.location ?? "",
@@ -38,13 +37,14 @@ export const getGroupNamesByGids = (
 
 export const buildEditUserPayload = (
   computerId: number,
+  username: string,
   values: EditUserFormValues,
   initialValues: EditUserFormValues,
   primaryGroupName?: string,
 ): EditUserParams => {
   const payload: EditUserParams = {
     computer_ids: [computerId],
-    username: values.username,
+    username,
   };
 
   if (

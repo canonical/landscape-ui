@@ -68,7 +68,6 @@ describe("EditUserForm", () => {
 
     const form = screen.getByRole("form");
     expect(form).toHaveInputValues([
-      users[0].username,
       users[0].name ?? "",
       users[0].location ?? "",
       users[0].home_phone ?? "",
@@ -128,41 +127,17 @@ describe("EditUserForm", () => {
     renderEditUserForm(userWithoutProfileDetails);
 
     const form = screen.getByRole("form");
-    expect(form).toHaveInputValues([
-      userWithoutProfileDetails.username,
-      "",
-      "",
-      "",
-      "",
-    ]);
+    expect(form).toHaveInputValues(["", "", "", ""]);
   });
 
-  it("can edit user data", async () => {
+  it("shows the username as read-only", () => {
     renderEditUserForm();
 
-    const additionalGroups = screen.getByRole("combobox", {
-      name: "Additional Groups",
-    });
-    await userEvent.click(additionalGroups);
-    await screen.findByRole("checkbox", { name: "daemon", checked: true });
-    await userEvent.click(additionalGroups);
-
     const form = screen.getByRole("form");
-    let username;
-    if (users[0].name === users[0].username) {
-      const inputs = await within(form).findAllByDisplayValue(
-        users[0].username,
-      );
-      [username] = inputs;
-      assert(username !== undefined);
-    } else {
-      username = await within(form).findByDisplayValue(users[0].username);
-    }
-
-    await userEvent.clear(username);
-    await userEvent.type(username, "newusername");
-
-    expect(form).toHaveInputValues(["newusername"]);
+    expect(within(form).getByText(users[0].username)).toBeInTheDocument();
+    expect(
+      within(form).queryByRole("textbox", { name: "Username" }),
+    ).not.toBeInTheDocument();
   });
 
   it("shows validation error when confirm password does not match", async () => {
@@ -469,6 +444,78 @@ describe("EditUserForm", () => {
     },
   );
 
+  it("loads user data and queues profile and group changes for the child instance", async () => {
+    const requestedComputerIds: number[] = [];
+    let profileRequest: Record<string, unknown> | undefined;
+    let groupRequest: Record<string, unknown> | undefined;
+    const binGroup = userGroups.find((group) => group.name === "bin");
+    assert(binGroup);
+    server.use(
+      http.get(`${API_URL}computers/:computerId/groups`, ({ params }) => {
+        requestedComputerIds.push(Number(params.computerId));
+        return HttpResponse.json({ groups: userGroups });
+      }),
+      http.get(
+        `${API_URL}computers/:computerId/users/:username/groups`,
+        ({ params }) => {
+          requestedComputerIds.push(Number(params.computerId));
+          return HttpResponse.json({ groups: [] });
+        },
+      ),
+      http.get(
+        `${API_URL}computers/:computerId/users/:username/pending-activities`,
+        ({ params }) => {
+          requestedComputerIds.push(Number(params.computerId));
+          return HttpResponse.json({ count: 0, results: [] });
+        },
+      ),
+      http.put(`${API_URL}users`, async ({ request }) => {
+        profileRequest = (await request.json()) as Record<string, unknown>;
+        return HttpResponse.json(activities[0]);
+      }),
+      http.post(
+        `${API_URL}computers/:computerId/usergroups/update_bulk`,
+        async ({ params, request }) => {
+          requestedComputerIds.push(Number(params.computerId));
+          groupRequest = (await request.json()) as Record<string, unknown>;
+          return HttpResponse.json(activities[1]);
+        },
+      ),
+    );
+    const user = userEvent.setup();
+    renderWithProviders(
+      <EditUserForm user={users[0]} />,
+      undefined,
+      ROUTES.instances.details.child(1, 2),
+      `${routePattern}/${PATHS.instances.child}`,
+    );
+
+    await screen.findByRole("option", { name: "daemon" });
+    await user.clear(screen.getByLabelText("Name"));
+    await user.type(screen.getByLabelText("Name"), "Updated user");
+    await user.click(
+      screen.getByRole("combobox", { name: "Additional Groups" }),
+    );
+    await user.click(
+      await screen.findByRole("checkbox", { name: binGroup.name }),
+    );
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    await screen.findByText("An activity is queued to edit user1.");
+    expect(profileRequest).toEqual({
+      computer_ids: [2],
+      username: users[0].username,
+      name: "Updated user",
+    });
+    expect(groupRequest).toEqual({
+      computer_id: 2,
+      usernames: [users[0].username],
+      groupnames: [binGroup.name],
+      action: "add",
+    });
+    expect(requestedComputerIds).toEqual([2, 2, 2, 2]);
+  });
+
   it("only sends changed profile fields in the edit request", async () => {
     let requestBody: Record<string, unknown> | undefined;
     server.use(
@@ -490,6 +537,7 @@ describe("EditUserForm", () => {
       expect(requestBody).toBeDefined();
     });
     expect(requestBody).toHaveProperty("location", "new location");
+    expect(requestBody).toHaveProperty("username", users[0].username);
     expect(requestBody).not.toHaveProperty("name");
     expect(requestBody).not.toHaveProperty("primary_groupname");
   });

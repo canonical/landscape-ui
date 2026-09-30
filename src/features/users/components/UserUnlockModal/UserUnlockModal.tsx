@@ -28,8 +28,8 @@ const UserUnlockModal: FC<UserUnlockModalProps> = ({
   selectedUsers,
   handleClearSelection,
 }) => {
-  const { instanceId: urlInstanceId } = useParams<UrlParams>();
-  const instanceId = Number(urlInstanceId);
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
@@ -143,7 +143,7 @@ const UserUnlockModal: FC<UserUnlockModalProps> = ({
         )}
         {!user && unlockedCount > 0 && (
           <>
-            <p>Unlocking users removes their login access.</p>
+            <p>Unlocking users restores their login access.</p>
             You selected{" "}
             <PluralizeWithBoldCount
               count={selectedUsers.length}

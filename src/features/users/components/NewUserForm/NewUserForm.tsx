@@ -17,12 +17,12 @@ import type { NewUserFormValues } from "./types";
 import { useCreateUser, useGetGroups } from "../../api";
 
 const NewUserForm: FC = () => {
-  const { instanceId: urlInstanceId } = useParams<UrlParams>();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { createUser } = useCreateUser();
 
-  const instanceId = Number(urlInstanceId);
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const { groups: groupsData, isLoadingGroups } = useGetGroups({
     computer_id: instanceId,

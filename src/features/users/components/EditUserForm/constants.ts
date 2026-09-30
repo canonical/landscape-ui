@@ -1,7 +1,6 @@
 import * as Yup from "yup";
 
 export const editUserValidationSchema = Yup.object().shape({
-  username: Yup.string().required("This field is required"),
   name: Yup.string(),
   password: Yup.string(),
   confirmPassword: Yup.string().when("password", ([password], schema) => {

@@ -28,8 +28,8 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({
   const [confirmDeleteHomeFolders, setConfirmDeleteHomeFolders] =
     useState(false);
 
-  const { instanceId: urlInstanceId } = useParams<UrlParams>();
-  const instanceId = Number(urlInstanceId);
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();

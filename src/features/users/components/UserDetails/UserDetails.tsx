@@ -15,8 +15,8 @@ interface UserDetailsProps {
 }
 
 const UserDetails: FC<UserDetailsProps> = ({ user }) => {
-  const { instanceId: urlInstanceId } = useParams<UrlParams>();
-  const instanceId = Number(urlInstanceId);
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
   const { closeSidePanel } = useSidePanel();
 
   const { groups: allGroups } = useGetGroups({ computer_id: instanceId });

@@ -1,3 +1,7 @@
+import { API_URL } from "@/constants";
+import { activities } from "@/tests/mocks/activity";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -5,7 +9,7 @@ import { renderWithProviders } from "@/tests/render";
 import { users } from "@/tests/mocks/user";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
-import { ROUTES } from "@/libs/routes";
+import { PATHS, ROUTES } from "@/libs/routes";
 import UserLockModal from "./UserLockModal";
 
 const routePath = "/instances/1/users";
@@ -165,39 +169,61 @@ describe("UserLockModal", () => {
     expect(close).toHaveBeenCalledTimes(1);
   });
 
-  it("submits lock action, shows success notification, and closes the modal", async () => {
-    const close = vi.fn();
-    const handleClearSelection = vi.fn();
+  it.each([
+    { label: "parent", path: routePath, pattern: routePattern, computerId: 1 },
+    {
+      label: "child",
+      path: ROUTES.instances.details.child(1, 2),
+      pattern: `/${PATHS.instances.root}/${PATHS.instances.single}/${PATHS.instances.child}`,
+      computerId: 2,
+    },
+  ])(
+    "submits lock for the $label instance and shows success",
+    async ({ path, pattern, computerId }) => {
+      let requestBody: Record<string, unknown> | undefined;
+      server.use(
+        http.post(`${API_URL}users/lock`, async ({ request }) => {
+          requestBody = (await request.json()) as Record<string, unknown>;
+          return HttpResponse.json(activities[0]);
+        }),
+      );
+      const close = vi.fn();
+      const handleClearSelection = vi.fn();
 
-    renderWithProviders(
-      <UserLockModal
-        close={close}
-        selectedUsers={[users[0]]}
-        handleClearSelection={handleClearSelection}
-      />,
-      undefined,
-      routePath,
-      routePattern,
-    );
+      renderWithProviders(
+        <UserLockModal
+          close={close}
+          selectedUsers={[users[0]]}
+          handleClearSelection={handleClearSelection}
+        />,
+        undefined,
+        path,
+        pattern,
+      );
 
-    await user.click(
-      within(screen.getByRole("dialog")).getByRole("button", {
-        name: "Lock",
-      }),
-    );
+      await user.click(
+        within(screen.getByRole("dialog")).getByRole("button", {
+          name: "Lock",
+        }),
+      );
 
-    expect(
-      await screen.findByText("An activity is queued to lock user1."),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("You queued user1 to be locked."),
-    ).toBeInTheDocument();
-    expect(handleClearSelection).toHaveBeenCalledTimes(1);
-    expect(close).toHaveBeenCalledTimes(1);
-    expect(
-      screen.getByRole("button", { name: "View details" }),
-    ).toBeInTheDocument();
-  });
+      expect(
+        await screen.findByText("An activity is queued to lock user1."),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("You queued user1 to be locked."),
+      ).toBeInTheDocument();
+      expect(requestBody).toEqual({
+        computer_ids: [computerId],
+        usernames: [users[0].username],
+      });
+      expect(handleClearSelection).toHaveBeenCalledTimes(1);
+      expect(close).toHaveBeenCalledTimes(1);
+      expect(
+        screen.getByRole("button", { name: "View details" }),
+      ).toBeInTheDocument();
+    },
+  );
 
   it("handles error during lock submission", async () => {
     setEndpointStatus({ status: "error", path: "lockUser" });
