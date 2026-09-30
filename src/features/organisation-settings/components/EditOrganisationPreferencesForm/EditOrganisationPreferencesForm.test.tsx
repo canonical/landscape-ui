@@ -30,6 +30,8 @@ describe("EditOrganisationPreferencesForm", () => {
       safeRedirect: vi.fn(),
       isFeatureEnabled: vi.fn(),
       hasAccounts: true,
+      isSuperAdmin: false,
+      canManageAccounts: false,
     });
   });
 
@@ -182,6 +184,8 @@ describe("EditOrganisationPreferencesForm", () => {
       safeRedirect: vi.fn(),
       isFeatureEnabled: vi.fn(),
       hasAccounts: true,
+      isSuperAdmin: false,
+      canManageAccounts: false,
     });
 
     renderWithProviders(<EditOrganisationPreferencesForm {...props} />);
@@ -213,6 +217,8 @@ describe("EditOrganisationPreferencesForm", () => {
       safeRedirect: vi.fn(),
       isFeatureEnabled: vi.fn(),
       hasAccounts: true,
+      isSuperAdmin: false,
+      canManageAccounts: false,
     });
 
     renderWithProviders(<EditOrganisationPreferencesForm {...props} />);

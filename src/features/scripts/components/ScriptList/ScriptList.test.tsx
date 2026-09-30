@@ -26,6 +26,8 @@ const authContextValues: AuthContextProps = {
   safeRedirect: vi.fn(),
   isFeatureEnabled: () => true,
   hasAccounts: true,
+  isSuperAdmin: false,
+  canManageAccounts: false,
 };
 
 const authContextValuesWithoutFeatureFlag: AuthContextProps = {
