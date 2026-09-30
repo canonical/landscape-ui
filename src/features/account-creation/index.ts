@@ -2,5 +2,5 @@ export { default as AccountCreationSaaSForm } from "./components/AccountCreation
 export { default as AccountCreationSelfHostedForm } from "./components/AccountCreationSelfHostedForm";
 export { default as AccountCreationAlternative } from "./components/AccountCreationAlternative";
 export { default as PamUserForm } from "./components/AccountCreationSelfHostedForm/components/PamUserForm";
-export type { PamUserFormValues } from "./components/AccountCreationSelfHostedForm/components/PamUserForm";
+export type { PamUserFormValues } from "./components/AccountCreationSelfHostedForm/components/PamUserForm/types";
 export { useGetStandaloneAccount } from "./api";
