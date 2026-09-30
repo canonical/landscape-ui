@@ -15,9 +15,10 @@ import { API_URL } from "@/constants";
 import type { SnapActionParams } from "../../types";
 
 const instanceId = 1;
-const [firstSnap, secondSnap] = installedSnaps;
+const [firstSnap, secondSnap, , , , classicSnap] = installedSnaps;
 const firstSnapOptionTitle = `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`;
 const secondSnapOptionTitle = `${secondSnap.snap.name} ${secondSnap.snap.publisher.username}`;
+const classicSnapOptionTitle = `${classicSnap.snap.name} ${classicSnap.snap.publisher.username}`;
 
 describe("SnapsActionForm", () => {
   const user = userEvent.setup();
@@ -440,6 +441,60 @@ describe("SnapsActionForm", () => {
       action: "refresh",
       computer_ids: [instanceId],
       snaps: [{ name: secondSnap.snap.name, args: { revision: "123" } }],
+    });
+  });
+
+  it("sends classic: true for a classic snap when mode is revision", async () => {
+    let requestBody: SnapActionParams | null = null;
+    server.use(
+      http.post(`${API_URL}snaps`, async ({ request }) => {
+        requestBody = (await request.json()) as SnapActionParams;
+        return HttpResponse.json(successfulSnapInstallResponse);
+      }),
+    );
+
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.type(
+      await screen.findByRole("searchbox"),
+      classicSnap.snap.name,
+    );
+    await user.click(
+      await screen.findByRole("option", { name: classicSnapOptionTitle }),
+    );
+
+    await user.selectOptions(
+      screen.getByLabelText("Snap channel or revision"),
+      "revision",
+    );
+    await user.type(
+      screen.getByRole("spinbutton", {
+        name: `Revision for ${classicSnap.snap.name}`,
+      }),
+      "123",
+    );
+
+    await user.click(screen.getByRole("button", { name: "Change channel" }));
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Change channel" }),
+    );
+
+    expect(
+      await screen.findByText("Snaps successfully queued to change channel"),
+    ).toBeInTheDocument();
+    expect(requestBody).toMatchObject({
+      snaps: [
+        {
+          name: classicSnap.snap.name,
+          args: { revision: "123", classic: true },
+        },
+      ],
     });
   });
 

@@ -25,7 +25,11 @@ export const getChannelOptions = (
   >();
 
   for (const entry of channelMap) {
-    channelsByName.set(entry.channel.name, entry);
+    const existing = channelsByName.get(entry.channel.name);
+    // Target instance architectures are unknown, so a channel that is classic on any architecture must request classic.
+    if (!existing || entry.confinement === "classic") {
+      channelsByName.set(entry.channel.name, entry);
+    }
   }
 
   return [...channelsByName.values()]

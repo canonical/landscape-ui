@@ -85,7 +85,10 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           const config = snapChangeConfigs[item.snap.id];
           const args =
             config?.mode === "revision"
-              ? { revision: config.value }
+              ? {
+                  revision: config.value,
+                  classic: item.confinement === "classic",
+                }
               : {
                   channel: config?.channel,
                   classic: config?.confinement === "classic",
