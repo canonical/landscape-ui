@@ -22,12 +22,12 @@ describe("hasNotification", () => {
   it("returns true for actions with a notification", () => {
     expect(hasNotification("install")).toBe(true);
     expect(hasNotification("hold")).toBe(true);
+    expect(hasNotification("change channel")).toBe(true);
   });
 
   it("returns false for actions without a notification", () => {
     expect(hasNotification("uninstall")).toBe(false);
     expect(hasNotification("refresh")).toBe(false);
     expect(hasNotification("unhold")).toBe(false);
-    expect(hasNotification("change channel")).toBe(false);
   });
 });

@@ -182,14 +182,12 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       )
     : [];
 
-  const hasRevisionNotification = changeModes.includes("revision");
-
   const buttonAppearance = action === "uninstall" ? "negative" : "positive";
 
   return (
     <>
       <div className={classes.container}>
-        {(hasNotification(action) || hasRevisionNotification) && (
+        {hasNotification(action) && (
           <Suspense fallback={<LoadingState />}>
             <SnapNotification
               action={action}

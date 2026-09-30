@@ -14,4 +14,4 @@ export const getRequestAction = (action: SnapAction) => {
 export const hasNotification = (
   action: SnapAction,
 ): action is ActionWithNotification =>
-  action === "hold" || action === "install";
+  action === "hold" || action === "install" || action === "change channel";
