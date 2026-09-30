@@ -5,6 +5,15 @@ import type { AxiosError, AxiosResponse } from "axios";
 
 export interface AcceptInvitationParams {
   invitation_id: string;
+  name?: string;
+  email?: string;
+  identity?: string;
+  password?: string;
+}
+
+export interface AcceptInvitationResponse {
+  account_id: number;
+  account_title: string;
 }
 
 export const useAcceptInvitation = () => {
@@ -12,7 +21,7 @@ export const useAcceptInvitation = () => {
   const queryClient = useQueryClient();
 
   const { isPending, mutateAsync } = useMutation<
-    AxiosResponse<void>,
+    AxiosResponse<AcceptInvitationResponse>,
     AxiosError<ApiError>,
     AcceptInvitationParams
   >({
