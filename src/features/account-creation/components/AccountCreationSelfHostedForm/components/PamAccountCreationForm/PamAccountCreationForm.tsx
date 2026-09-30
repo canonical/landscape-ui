@@ -4,7 +4,7 @@ import type { LoginRequestParams } from "@/features/auth";
 import AuthTemplate from "@/templates/auth/AuthTemplate";
 import AccountCreationAlternative from "../../../AccountCreationAlternative/AccountCreationAlternative";
 import type { CreateStandaloneAccountParams } from "../../../../api";
-import type { PamUserFormValues } from "../PamUserForm";
+import type { PamUserFormValues } from "../PamUserForm/types";
 import PamUserForm from "../PamUserForm";
 
 interface PamAccountCreationFormProps {
