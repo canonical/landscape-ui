@@ -15,7 +15,7 @@ describe("PackagesActionForm", () => {
   describe("Form rendering", () => {
     it("renders form with searchbox and buttons", () => {
       renderWithProviders(
-        <PackagesActionForm instanceIds={[instanceId]} action="install" />,
+        <PackagesActionForm instanceIds={[instanceId]} actionType="install" />,
       );
 
       screen.getByRole("searchbox");
@@ -31,7 +31,7 @@ describe("PackagesActionForm", () => {
 
     it("enables next button when package and version are selected", async () => {
       renderWithProviders(
-        <PackagesActionForm instanceIds={[instanceId]} action="install" />,
+        <PackagesActionForm instanceIds={[instanceId]} actionType="install" />,
       );
 
       const searchBox = screen.getByRole("searchbox");
@@ -44,7 +44,7 @@ describe("PackagesActionForm", () => {
 
   it("allows removing selected packages", async () => {
     renderWithProviders(
-      <PackagesActionForm instanceIds={[instanceId]} action="unhold" />,
+      <PackagesActionForm instanceIds={[instanceId]} actionType="unhold" />,
     );
 
     const searchBox = screen.getByRole("searchbox");

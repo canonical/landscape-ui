@@ -1,29 +1,33 @@
-import type { PackageActionType } from "../../types";
+import type { PackageChangePlanActionType } from "../../types";
 
-export const getActionSubmitButtonText = (action: PackageActionType) => {
-  switch (action) {
+export const getActionSubmitButtonText = (
+  actionType: Exclude<PackageChangePlanActionType, "upgrade">,
+) => {
+  switch (actionType) {
     case "install":
       return "Install";
-    case "uninstall":
+    case "remove":
       return "Uninstall";
     case "hold":
       return "Hold";
     case "unhold":
       return "Unhold";
-    case "changeVersion":
+    case "change_version":
       return "Change version on";
   }
 };
 
-export const getActionSubmitButtonAppearance = (action: PackageActionType) => {
-  switch (action) {
+export const getActionSubmitButtonAppearance = (
+  actionType: Exclude<PackageChangePlanActionType, "upgrade">,
+) => {
+  switch (actionType) {
     case "install":
     case "hold":
     case "unhold":
-    case "changeVersion":
+    case "change_version":
       return "positive";
 
-    case "uninstall":
+    case "remove":
       return "negative";
   }
 };

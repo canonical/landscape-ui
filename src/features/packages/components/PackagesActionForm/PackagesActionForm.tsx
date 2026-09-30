@@ -1,7 +1,10 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useSidePanel from "@/hooks/useSidePanel";
 import { type FC, useState } from "react";
-import type { PackageActionType, PackageWithVersions } from "../../types";
+import type {
+  PackageChangePlanActionType,
+  PackageWithVersions,
+} from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
 import PackagesActionSummary from "../PackagesActionSummary";
 import {
@@ -13,12 +16,12 @@ import { getActionConfig } from "./helpers";
 
 interface PackagesActionFormProps {
   readonly instanceIds: number[];
-  readonly action: PackageActionType;
+  readonly actionType: Exclude<PackageChangePlanActionType, "upgrade">;
 }
 
 const PackagesActionForm: FC<PackagesActionFormProps> = ({
   instanceIds,
-  action,
+  actionType,
 }) => {
   const [selectedPackages, setSelectedPackages] = useState<
     PackageWithVersions[]
@@ -44,7 +47,7 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
             instanceIds={instanceIds}
             selectedItems={selectedPackages}
             setSelectedItems={setSelectedPackages}
-            action={action}
+            actionType={actionType}
           />
           <SidePanelFormButtons
             submitButtonDisabled={!selectedPackages.length}
@@ -57,7 +60,7 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
                 .join(" OR ");
 
               const packageIds = selectedPackages.map(([{ id }]) => id);
-              const config = getActionConfig(action, packageIds);
+              const config = getActionConfig(actionType, packageIds);
 
               const { data } = await createPackageChangePlan({
                 computer_query,
@@ -78,11 +81,11 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
     default:
       return (
         <PackagesActionSummary
-          actionType={action}
+          actionType={actionType}
           instanceIds={instanceIds}
           packageChangePlanId={packageChangePlanId}
           onBackButtonPress={() => {
-            const title = getActionFormTitle(action);
+            const title = getActionFormTitle(actionType);
             setPackageChangePlanId(null);
             setSidePanelTitle(title);
           }}

@@ -3,7 +3,7 @@ import type {
   SearchPackagesRequest,
   SearchPackagesResponse,
 } from "@/features/packages";
-import { mapActionToQueryParams } from "@/features/packages";
+import { mapActionTypeToQueryParams } from "@/features/packages";
 import type { FC } from "react";
 import classes from "./PackageSearchDowngradeItem.module.scss";
 import type { MultiSelectItem } from "@canonical/react-components";
@@ -81,7 +81,7 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
   const queryParams: SearchPackagesRequest = {
     computer_query: instanceIds.map((id) => `id:${id}`).join(" OR "),
     names: [selectedPackage[0].name],
-    ...mapActionToQueryParams("install"),
+    ...mapActionTypeToQueryParams("install"),
   };
 
   const { items, dropdownHeader } = useMultiSelectPackages({

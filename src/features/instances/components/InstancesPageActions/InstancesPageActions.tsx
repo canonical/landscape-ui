@@ -2,8 +2,10 @@ import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 import { REPORT_VIEW_ENABLED, TSV_EXPORTS_ENABLED } from "@/constants";
-import type { PackageActionType } from "@/features/packages";
-import { PackagesActionForm } from "@/features/packages";
+import {
+  type PackageChangePlanActionType,
+  PackagesActionForm,
+} from "@/features/packages";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
@@ -149,13 +151,15 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const openPackagesActionForm = (action: PackageActionType) => {
+  const openPackagesActionForm = (
+    action: Exclude<PackageChangePlanActionType, "upgrade">,
+  ) => {
     setSidePanelContent(
       getActionFormTitle(action),
       <Suspense fallback={<LoadingState />}>
         <PackagesActionForm
           instanceIds={selectedInstances.map(({ id }) => id)}
-          action={action}
+          actionType={action}
         />
       </Suspense>,
     );
@@ -406,7 +410,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         </>
       ),
       onClick: () => {
-        openPackagesActionForm("uninstall");
+        openPackagesActionForm("remove");
       },
       disabled: noInstanceHasPackageFeature,
       hasIcon: true,
@@ -420,7 +424,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       ),
       disabled: noInstanceHasPackageFeature,
       onClick: () => {
-        openPackagesActionForm("changeVersion");
+        openPackagesActionForm("change_version");
       },
       hasIcon: true,
     },

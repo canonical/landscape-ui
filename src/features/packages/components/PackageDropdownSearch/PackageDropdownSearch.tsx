@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 import type {
   Package,
-  PackageActionType,
+  PackageChangePlanActionType,
   PackageWithVersions,
 } from "../../types";
 import PackageDropdownSearchCount from "./components/PackageDropdownSearchCount";
@@ -19,7 +19,10 @@ import {
   QUERY_LIMIT,
 } from "./constants";
 import classes from "./PackageDropdownSearch.module.scss";
-import { mapActionToQueryParams, mapActionToSearch } from "../../helpers";
+import {
+  mapActionTypeToQueryParams,
+  mapActionTypeToSearch,
+} from "../../helpers";
 import PackageSearchDowngradeItem from "./components/PackageSearchDowngradeItem";
 import type { SearchPackagesRequest } from "../../api/useSearchPackages";
 import useSearchPackages from "../../api/useSearchPackages";
@@ -28,14 +31,14 @@ interface PackageDropdownSearchProps {
   readonly instanceIds: number[];
   readonly selectedItems: PackageWithVersions[];
   readonly setSelectedItems: (packages: PackageWithVersions[]) => void;
-  readonly action: PackageActionType;
+  readonly actionType: Exclude<PackageChangePlanActionType, "upgrade">;
 }
 
 const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   instanceIds,
   selectedItems,
   setSelectedItems,
-  action,
+  actionType,
 }) => {
   const [search, setSearch] = useDebounceValue("", DEBOUNCE_DELAY);
   const [inputValue, setInputValue] = useState<string>("");
@@ -46,7 +49,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   const queryParams: SearchPackagesRequest = {
     computer_query: instanceIds.map((id) => `id:${id}`).join(" OR "),
     limit: QUERY_LIMIT,
-    ...mapActionToQueryParams(action),
+    ...mapActionTypeToQueryParams(actionType),
   };
 
   if (exact) {
@@ -91,31 +94,31 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   const isOverLimit = selectedItems.length >= MAX_SELECTED_PACKAGES;
 
   const getWarningVerb = () => {
-    switch (action) {
+    switch (actionType) {
       case "install":
         return "install";
-      case "uninstall":
+      case "remove":
         return "uninstall";
       case "hold":
         return "hold";
       case "unhold":
         return "unhold";
-      case "changeVersion":
+      case "change_version":
         return "change version on";
     }
   };
 
   const getHeaderVerb = () => {
-    switch (action) {
+    switch (actionType) {
       case "install":
         return "install";
-      case "uninstall":
+      case "remove":
         return "uninstall";
       case "hold":
         return "hold";
       case "unhold":
         return "unhold";
-      case "changeVersion":
+      case "change_version":
         return "change version";
     }
   };
@@ -132,7 +135,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
           <div className="p-autocomplete">
             <SearchBox
               {...downshiftOptions.getInputProps()}
-              placeholder={`Search ${mapActionToSearch(action)} packages`}
+              placeholder={`Search ${mapActionTypeToSearch(actionType)} packages`}
               className="u-no-margin--bottom"
               shouldRefocusAfterReset
               externallyControlled
@@ -203,7 +206,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
               setSelectedItems(selectedItems.toSpliced(index, 1));
             };
 
-            return action == "changeVersion" ? (
+            return actionType == "change_version" ? (
               <PackageSearchDowngradeItem
                 key={`${selectedPackage[0].id}${index}`}
                 selectedPackage={selectedPackage}

@@ -1,5 +1,8 @@
 import type { FC } from "react";
-import type { PackageActionType, PackageChangePlanAction } from "../../types";
+import type {
+  PackageChangePlanAction,
+  PackageChangePlanActionType,
+} from "../../types";
 import {
   type GetPackageChangePlanSummaryResponse,
   useDeletePackageChangePlan,
@@ -14,7 +17,7 @@ import { getSelectionLabel, pluralize } from "@/utils/_helpers";
 import LoadingState from "@/components/layout/LoadingState";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import PackagesActionSummaryCount from "./components/PackagesActionSummaryCount";
-import { mapActionToPast } from "../../helpers";
+import { mapActionTypeToPast } from "../../helpers";
 import {
   getActionSubmitButtonAppearance,
   getActionSubmitButtonText,
@@ -24,14 +27,14 @@ import classNames from "classnames";
 import Icon from "@canonical/react-components/dist/components/Icon/Icon";
 
 interface PackagesActionSummaryProps {
-  readonly actionType: PackageActionType;
+  readonly actionType: Exclude<PackageChangePlanActionType, "upgrade">;
   readonly instanceIds: number[];
   readonly packageChangePlanId: number;
   readonly onBackButtonPress: () => void;
 }
 
 const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
-  actionType: action,
+  actionType,
   packageChangePlanId,
   onBackButtonPress,
 }) => {
@@ -44,7 +47,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
     data: summaryResponse,
     error: summaryError,
     isPending: isGettingSummary,
-  } = useGetPackageChangePlanSummary(packageChangePlanId);
+  } = useGetPackageChangePlanSummary<typeof actionType>(packageChangePlanId);
 
   const { mutateAsync: executeChangePlan, isPending: isExecutingChangePlan } =
     useExecutePackageChangePlan();
@@ -59,7 +62,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
   }
 
   const items = summaryResponse.data.actions;
-  const actionPast = mapActionToPast(action);
+  const actionPast = mapActionTypeToPast(actionType);
 
   const submit = async () => {
     try {
@@ -79,8 +82,6 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
                 return `${item.action.package.name} to be ${actionPast}`;
               case "change_version":
                 return `${item.action.to_package.name} to be changed to version ${item.action.to_package.version}`;
-              default:
-                return `the selected package to be ${actionPast}`;
             }
           },
           `packages to be ${actionPast}`,
@@ -96,8 +97,6 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
                 return `${item.action.package.name} will be ${actionPast}`;
               case "change_version":
                 return `${item.action.to_package.name} will be changed to version ${item.action.to_package.version}`;
-              default:
-                return `the selected package will be ${actionPast}`;
             }
           },
           `selected packages will be ${actionPast}`,
@@ -116,7 +115,9 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
     }
   };
 
-  const getPackageName = (action: PackageChangePlanAction) => {
+  const getPackageName = (
+    action: PackageChangePlanAction<typeof actionType>,
+  ) => {
     switch (action.type) {
       case "install":
       case "remove":
@@ -124,7 +125,6 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
       case "unhold":
         return action.package.name;
       case "change_version":
-      case "upgrade":
         return action.to_package.name;
     }
   };
@@ -155,7 +155,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
     closeSidePanel();
   };
 
-  const getKey = (action: PackageChangePlanAction) => {
+  const getKey = (action: PackageChangePlanAction<typeof actionType>) => {
     switch (action.type) {
       case "install":
       case "remove":
@@ -164,13 +164,13 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
         return `${action.type}-${action.package.id}`;
       case "change_version":
         return `${action.type}-${action.from_package.id}-${action.to_package.id}`;
-      case "upgrade":
-        return `${action.type}-${action.to_package.id}`;
     }
   };
 
   const getRow = (
-    item: GetPackageChangePlanSummaryResponse["actions"][number],
+    item: GetPackageChangePlanSummaryResponse<
+      typeof actionType
+    >["actions"][number],
   ) => {
     switch (item.action.type) {
       case "install":
@@ -182,7 +182,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
             <span className="font-monospace">
               {item.action.package.version}
             </span>{" "}
-            will be {mapActionToPast(action)} on{" "}
+            will be {mapActionTypeToPast(actionType)} on{" "}
             <PackagesActionSummaryCount
               count={item.computer_count}
               id={packageChangePlanId}
@@ -200,21 +200,6 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
             <span className="font-monospace">
               {item.action.to_package.version}
             </span>
-            on{" "}
-            <PackagesActionSummaryCount
-              count={item.computer_count}
-              id={packageChangePlanId}
-              action={item.action}
-            />
-          </>
-        );
-      case "upgrade":
-        return (
-          <>
-            Will be upgraded to{" "}
-            <span className="font-monospace">
-              {item.action.to_package.version}
-            </span>{" "}
             on{" "}
             <PackagesActionSummaryCount
               count={item.computer_count}
@@ -248,7 +233,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
               })}
               {!!exclusion?.computer_count && (
                 <div className={classes.row}>
-                  Will not be {mapActionToPast(action)} on{" "}
+                  Will not be {mapActionTypeToPast(actionType)} on{" "}
                   {pluralize(exclusion.computer_count, ["instance"], "exact")}
                 </div>
               )}
@@ -258,12 +243,12 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
       </ul>
       <SidePanelFormButtons
         submitButtonLoading={isExecutingChangePlan}
-        submitButtonText={`${getActionSubmitButtonText(action)} ${pluralize(
+        submitButtonText={`${getActionSubmitButtonText(actionType)} ${pluralize(
           items.length,
           ["package"],
           "exact",
         )}`}
-        submitButtonAppearance={getActionSubmitButtonAppearance(action)}
+        submitButtonAppearance={getActionSubmitButtonAppearance(actionType)}
         onSubmit={submit}
         hasBackButton
         onBackButtonPress={goBack}

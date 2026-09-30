@@ -1,8 +1,8 @@
 import type { ActionConfig } from "../../api";
-import type { PackageActionType } from "../../types";
+import type { PackageChangePlanActionType } from "../../types";
 
 export const getActionConfig = (
-  action: PackageActionType,
+  action: Exclude<PackageChangePlanActionType, "upgrade">,
   package_ids: number[],
 ): ActionConfig => {
   switch (action) {
@@ -15,7 +15,7 @@ export const getActionConfig = (
         },
       };
 
-    case "uninstall":
+    case "remove":
       return {
         remove_config: {
           by_ids: {
@@ -38,7 +38,7 @@ export const getActionConfig = (
         },
       };
 
-    case "changeVersion":
+    case "change_version":
       return {
         change_version_config: { version_changes: [] },
       };

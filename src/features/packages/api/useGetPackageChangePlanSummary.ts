@@ -3,11 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { ApiError } from "@/types/api/ApiError";
 import useFetch from "@/hooks/useFetch";
-import type { PackageChangePlanAction } from "../types";
+import type {
+  PackageChangePlanAction,
+  PackageChangePlanActionType,
+} from "../types";
 
-export interface GetPackageChangePlanSummaryResponse {
+export interface GetPackageChangePlanSummaryResponse<
+  T extends PackageChangePlanActionType,
+> {
   actions: {
-    action: PackageChangePlanAction;
+    action: PackageChangePlanAction<T>;
     computer_count: number;
   }[];
   exclusions: {
@@ -16,11 +21,13 @@ export interface GetPackageChangePlanSummaryResponse {
   }[];
 }
 
-export default function useGetPackageChangePlanSummary(
+export default function useGetPackageChangePlanSummary<
+  T extends PackageChangePlanActionType,
+>(
   id: number,
   options: Omit<
     UseQueryOptions<
-      AxiosResponse<GetPackageChangePlanSummaryResponse>,
+      AxiosResponse<GetPackageChangePlanSummaryResponse<T>>,
       AxiosError<ApiError>
     >,
     "queryKey" | "queryFn"
@@ -29,7 +36,7 @@ export default function useGetPackageChangePlanSummary(
   const authFetch = useFetch();
 
   return useQuery<
-    AxiosResponse<GetPackageChangePlanSummaryResponse>,
+    AxiosResponse<GetPackageChangePlanSummaryResponse<T>>,
     AxiosError<ApiError>
   >({
     queryKey: ["packageChangePlans", id, "summary"],

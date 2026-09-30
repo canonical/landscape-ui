@@ -1,36 +1,34 @@
-export type PackageChangePlanAction =
-  | {
-      type: "install" | "remove" | "hold" | "unhold";
-      package: {
+import type { PackageChangePlanActionType } from "./PackageChangePlan";
+
+export interface PackageChangePlanAction<
+  T extends PackageChangePlanActionType = PackageChangePlanActionType,
+> {
+  type: T;
+  package: T extends "install" | "remove" | "hold" | "unhold"
+    ? {
         id: number;
         name: string;
         version: string;
-      };
-    }
-  | {
-      type: "upgrade";
-      to_package: {
+      }
+    : never;
+  from_package: T extends "change_version"
+    ? {
         id: number;
         name: string;
         version: string;
-      };
-    }
-  | {
-      type: "change_version";
-      from_package: {
+      }
+    : never;
+  to_package: T extends "change_version" | "upgrade"
+    ? {
         id: number;
         name: string;
         version: string;
-      };
-      to_package: {
-        id: number;
-        name: string;
-        version: string;
-      };
-    };
+      }
+    : never;
+}
 
 export interface PackageChangePlanItem extends Record<string, unknown> {
-  action: PackageChangePlanAction;
+  action: PackageChangePlanAction<PackageChangePlanActionType>;
   computer: {
     id: number;
     name: string;

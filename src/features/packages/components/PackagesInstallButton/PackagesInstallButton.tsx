@@ -31,7 +31,7 @@ const PackagesInstallButton: FC<PackagesInstallButtonProps> = ({
       <Suspense fallback={<LoadingState />}>
         <PackagesActionForm
           instanceIds={[parseInt(instanceId)]}
-          action={"install"}
+          actionType={"install"}
         />
       </Suspense>,
     );

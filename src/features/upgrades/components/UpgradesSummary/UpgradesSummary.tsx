@@ -3,8 +3,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import {
-  getApplicableCount,
-  GetPackageChangePlanSummaryResponse,
+  type GetPackageChangePlanSummaryResponse,
   PackagesActionSummaryCount,
   useExecutePackageChangePlan,
   useGetPackageChangePlanSummary,
@@ -43,41 +42,42 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
     data: summaryResponse,
     error: summaryError,
     isPending: isGettingSummary,
-  } = useGetPackageChangePlanSummary(packageChangePlanId);
+  } = useGetPackageChangePlanSummary<"upgrade">(packageChangePlanId);
 
   const { mutateAsync: executeChangePlan, isPending: isExecutingChangePlan } =
     useExecutePackageChangePlan();
 
   const columns = useMemo<
-    Column<GetPackageChangePlanSummaryResponse["actions"][number]>[]
+    Column<GetPackageChangePlanSummaryResponse<"upgrade">["actions"][number]>[]
   >(
     () => [
       {
         Header: "Package",
         Cell: ({
           row: { original: upgrade },
-        }: CellProps<GetPackageChangePlanSummaryResponse["actions"][number]>) =>
-          upgrade.action,
+        }: CellProps<
+          GetPackageChangePlanSummaryResponse<"upgrade">["actions"][number]
+        >) => upgrade.action.to_package.name,
       },
       {
         Header: "Upgrade version",
         Cell: ({
           row: { original: upgrade },
-        }: CellProps<GetPackageChangePlanSummaryResponse["actions"][number]>) =>
-          upgrade.package_version,
+        }: CellProps<
+          GetPackageChangePlanSummaryResponse<"upgrade">["actions"][number]
+        >) => upgrade.action.to_package.version,
       },
       {
         Header: "Affected instances",
         Cell: ({
           row: { original: upgrade },
         }: CellProps<
-          GetPackageChangePlanSummaryResponse["actions"][number]
+          GetPackageChangePlanSummaryResponse<"upgrade">["actions"][number]
         >) => (
           <PackagesActionSummaryCount
-            count={getApplicableCount(upgrade)}
-            actionType="upgrad"
+            count={upgrade.computer_count}
             id={packageChangePlanId}
-            packageChangePlanSummaryItem={upgrade}
+            action={upgrade.action}
           />
         ),
       },
@@ -106,8 +106,8 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${getSelectionLabel(items, (item) => `package ${item.package_name}`, "packages")} to be upgraded.`,
-        message: `${getSelectionLabel(items, (item) => `${item.package_name}`, "selected packages")} will be upgraded and ${pluralize(items.length, ["is", "are"])} queued in Activities.`,
+        title: `You queued ${getSelectionLabel(items, (item) => `${item.action.to_package.name}`, "packages")} to be upgraded.`,
+        message: `${getSelectionLabel(items, (item) => `${item.action.to_package.name}`, "selected packages")} will be upgraded and ${pluralize(items.length, ["is", "are"])} queued in Activities.`,
         actions: [
           {
             label: "Details",

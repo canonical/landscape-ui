@@ -14,7 +14,7 @@ const instancePath = `${ROUTES.instances.root()}/:instanceId`;
 const props: ComponentProps<typeof PackageDropdownSearch> = {
   selectedItems: [],
   setSelectedItems: vi.fn(),
-  action: "install",
+  actionType: "install",
   instanceIds: [instanceId],
 };
 
