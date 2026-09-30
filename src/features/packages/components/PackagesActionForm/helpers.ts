@@ -1,8 +1,8 @@
 import type { ActionConfig } from "../../api";
-import type { PackageAction } from "../../types";
+import type { PackageActionType } from "../../types";
 
 export const getActionConfig = (
-  action: PackageAction,
+  action: PackageActionType,
   package_ids: number[],
 ): ActionConfig => {
   switch (action) {

@@ -7,12 +7,12 @@ export type PackageChangePlanState =
   | "failed"
   | "expired";
 
-export type PackageChangePlanAction =
+export type PackageChangePlanActionType =
   "install" | "remove" | "hold" | "unhold" | "upgrade" | "change_version";
 
 export interface PackageChangePlan {
   id: number;
-  action: PackageChangePlanAction;
+  action: PackageChangePlanActionType;
   state: PackageChangePlanState;
   created_at: string;
   expires_at: string | null;

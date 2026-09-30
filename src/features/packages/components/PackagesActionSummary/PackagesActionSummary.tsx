@@ -1,6 +1,7 @@
 import type { FC } from "react";
-import type { PackageAction } from "../../types";
+import type { PackageActionType, PackageChangePlanAction } from "../../types";
 import {
+  type GetPackageChangePlanSummaryResponse,
   useDeletePackageChangePlan,
   useExecutePackageChangePlan,
   useGetPackageChangePlanSummary,
@@ -17,23 +18,22 @@ import { mapActionToPast } from "../../helpers";
 import {
   getActionSubmitButtonAppearance,
   getActionSubmitButtonText,
-  getApplicableCount,
 } from "./helpers";
 import classes from "./PackagesActionSummary.module.scss";
 import classNames from "classnames";
+import Icon from "@canonical/react-components/dist/components/Icon/Icon";
 
 interface PackagesActionSummaryProps {
-  readonly action: PackageAction;
+  readonly actionType: PackageActionType;
   readonly instanceIds: number[];
   readonly packageChangePlanId: number;
   readonly onBackButtonPress: () => void;
 }
 
 const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
-  action,
+  actionType: action,
   packageChangePlanId,
   onBackButtonPress,
-  instanceIds,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
@@ -58,7 +58,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
     return <LoadingState />;
   }
 
-  const items = summaryResponse.data.summary_items;
+  const items = summaryResponse.data.actions;
   const actionPast = mapActionToPast(action);
 
   const submit = async () => {
@@ -68,8 +68,40 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${getSelectionLabel(items, (item) => `package ${item.package_name}`, "packages")} to be ${actionPast}.`,
-        message: `${getSelectionLabel(items, (item) => `${item.package_name}`, "selected packages")} will be ${actionPast} and ${pluralize(items.length, ["is", "are"])} queued in Activities.`,
+        title: `You queued ${getSelectionLabel(
+          items,
+          (item) => {
+            switch (item.action.type) {
+              case "install":
+              case "remove":
+              case "hold":
+              case "unhold":
+                return `${item.action.package.name} to be ${actionPast}`;
+              case "change_version":
+                return `${item.action.to_package.name} to be changed to version ${item.action.to_package.version}`;
+              default:
+                return `the selected package to be ${actionPast}`;
+            }
+          },
+          `packages to be ${actionPast}`,
+        )}.`,
+        message: `${getSelectionLabel(
+          items,
+          (item) => {
+            switch (item.action.type) {
+              case "install":
+              case "remove":
+              case "hold":
+              case "unhold":
+                return `${item.action.package.name} will be ${actionPast}`;
+              case "change_version":
+                return `${item.action.to_package.name} will be changed to version ${item.action.to_package.version}`;
+              default:
+                return `the selected package will be ${actionPast}`;
+            }
+          },
+          `selected packages will be ${actionPast}`,
+        )} and ${pluralize(items.length, ["is", "are"])} queued in Activities.`,
         actions: [
           {
             label: "Details",
@@ -84,19 +116,34 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
     }
   };
 
-  const packagesByName = items.reduce<
-    Record<string, typeof summaryResponse.data.summary_items>
-  >((acc, item) => {
-    const name = acc[item.package_name];
-
-    if (name) {
-      name.push(item);
-    } else {
-      acc[item.package_name] = [item];
+  const getPackageName = (action: PackageChangePlanAction) => {
+    switch (action.type) {
+      case "install":
+      case "remove":
+      case "hold":
+      case "unhold":
+        return action.package.name;
+      case "change_version":
+      case "upgrade":
+        return action.to_package.name;
     }
+  };
 
-    return acc;
-  }, {});
+  const packagesByName = items.reduce<Record<string, typeof items>>(
+    (acc, item) => {
+      const packageName = getPackageName(item.action);
+      const packageByName = acc[packageName];
+
+      if (packageByName) {
+        packageByName.push(item);
+      } else {
+        acc[packageName] = [item];
+      }
+
+      return acc;
+    },
+    {},
+  );
 
   const goBack = () => {
     deleteChangePlan(packageChangePlanId);
@@ -108,49 +155,106 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
     closeSidePanel();
   };
 
+  const getKey = (action: PackageChangePlanAction) => {
+    switch (action.type) {
+      case "install":
+      case "remove":
+      case "hold":
+      case "unhold":
+        return `${action.type}-${action.package.id}`;
+      case "change_version":
+        return `${action.type}-${action.from_package.id}-${action.to_package.id}`;
+      case "upgrade":
+        return `${action.type}-${action.to_package.id}`;
+    }
+  };
+
+  const getRow = (
+    item: GetPackageChangePlanSummaryResponse["actions"][number],
+  ) => {
+    switch (item.action.type) {
+      case "install":
+      case "remove":
+      case "hold":
+      case "unhold":
+        return (
+          <>
+            <span className="font-monospace">
+              {item.action.package.version}
+            </span>{" "}
+            will be {mapActionToPast(action)} on{" "}
+            <PackagesActionSummaryCount
+              count={item.computer_count}
+              id={packageChangePlanId}
+              action={item.action}
+            />
+          </>
+        );
+      case "change_version":
+        return (
+          <>
+            <span className="font-monospace">
+              {item.action.from_package.version}
+            </span>
+            <Icon name="arrow-right" />
+            <span className="font-monospace">
+              {item.action.to_package.version}
+            </span>
+            on{" "}
+            <PackagesActionSummaryCount
+              count={item.computer_count}
+              id={packageChangePlanId}
+              action={item.action}
+            />
+          </>
+        );
+      case "upgrade":
+        return (
+          <>
+            Will be upgraded to{" "}
+            <span className="font-monospace">
+              {item.action.to_package.version}
+            </span>{" "}
+            on{" "}
+            <PackagesActionSummaryCount
+              count={item.computer_count}
+              id={packageChangePlanId}
+              action={item.action}
+            />
+          </>
+        );
+    }
+  };
+
   return (
     <>
       <ul className={classNames("p-list", "u-no-margin--bottom", classes.list)}>
-        {Object.entries(packagesByName).map(
-          ([packageName, packageVersions]) => {
-            const outOfScope = packageVersions.reduce(
-              (previousValue, packageVersion) => {
-                return previousValue - getApplicableCount(packageVersion);
-              },
-              instanceIds.length,
-            );
+        {Object.entries(packagesByName).map(([packageName, items]) => {
+          const exclusion = summaryResponse.data.exclusions.find(
+            ({ package_name }) => package_name === packageName,
+          );
 
-            return (
-              <li key={packageName}>
-                <div>
-                  <strong className="font-monospace">{packageName}</strong>
-                </div>
-                {packageVersions.map((version) => {
-                  return (
-                    <div key={version.package_id} className={classes.row}>
-                      <span className="font-monospace">
-                        {version.package_version}
-                      </span>{" "}
-                      will be {mapActionToPast(action)} on{" "}
-                      <PackagesActionSummaryCount
-                        count={getApplicableCount(version)}
-                        action={action}
-                        packageChangePlanId={packageChangePlanId}
-                        packageChangePlanSummaryItem={version}
-                      />
-                    </div>
-                  );
-                })}
-                {outOfScope > 0 && (
-                  <div className={classes.row}>
-                    Will not be {mapActionToPast(action)} on{" "}
-                    {pluralize(outOfScope, ["instance"], "exact")}
+          return (
+            <li key={packageName}>
+              <div>
+                <strong className="font-monospace">{packageName}</strong>
+              </div>
+              {items.map((item) => {
+                return (
+                  <div key={getKey(item.action)} className={classes.row}>
+                    {getRow(item)}
                   </div>
-                )}
-              </li>
-            );
-          },
-        )}
+                );
+              })}
+              {!!exclusion?.computer_count && (
+                <div className={classes.row}>
+                  Will not be {mapActionToPast(action)} on{" "}
+                  {pluralize(exclusion.computer_count, ["instance"], "exact")}
+                </div>
+              )}
+            </li>
+          );
+        })}
       </ul>
       <SidePanelFormButtons
         submitButtonLoading={isExecutingChangePlan}

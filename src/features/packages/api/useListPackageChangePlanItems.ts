@@ -4,7 +4,7 @@ import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { PackageChangePlanItem } from "../types/PackageChangePlanItem";
-import type { PackageChangePlanAction } from "../types";
+import type { PackageChangePlanActionType } from "../types";
 
 export interface ListPackageChangePlanItemsRequest {
   id: number;
@@ -24,7 +24,7 @@ export interface ListPackageChangePlanItemsRequest {
 }
 
 export interface ListPackageChangePlanItemsResponse {
-  action: PackageChangePlanAction;
+  action: PackageChangePlanActionType;
   items: PackageChangePlanItem[];
   count: number;
   next: string;

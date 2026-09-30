@@ -1,6 +1,6 @@
-import type { PackageAction } from "./types";
+import type { PackageActionType } from "./types";
 
-export const mapActionToQueryParams = (action: PackageAction) => {
+export const mapActionToQueryParams = (action: PackageActionType) => {
   switch (action) {
     case "install":
       return {
@@ -26,7 +26,7 @@ export const mapActionToQueryParams = (action: PackageAction) => {
   }
 };
 
-export const mapActionToPast = (action: PackageAction) => {
+export const mapActionToPast = (action: PackageActionType) => {
   switch (action) {
     case "install":
       return "installed";
@@ -41,7 +41,7 @@ export const mapActionToPast = (action: PackageAction) => {
   }
 };
 
-export const mapActionToSearch = (action: PackageAction) => {
+export const mapActionToSearch = (action: PackageActionType) => {
   switch (action) {
     case "changeVersion":
     case "hold":
@@ -56,7 +56,7 @@ export const mapActionToSearch = (action: PackageAction) => {
 
 export const mapSummaryToTitle = (
   packageName: string,
-  action: PackageAction,
+  action: PackageActionType,
   summaryVersion?: string,
 ) => {
   if (summaryVersion) {
@@ -71,7 +71,7 @@ export const mapSummaryToTitle = (
   return `Instances that won't ${action} ${packageName}`;
 };
 
-export const getActionFormTitle = (action: PackageAction) => {
+export const getActionFormTitle = (action: PackageActionType) => {
   switch (action) {
     case "install":
       return "Install packages";

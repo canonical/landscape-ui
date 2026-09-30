@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 import { REPORT_VIEW_ENABLED, TSV_EXPORTS_ENABLED } from "@/constants";
-import type { PackageAction } from "@/features/packages";
+import type { PackageActionType } from "@/features/packages";
 import { PackagesActionForm } from "@/features/packages";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
@@ -149,7 +149,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const openPackagesActionForm = (action: PackageAction) => {
+  const openPackagesActionForm = (action: PackageActionType) => {
     setSidePanelContent(
       getActionFormTitle(action),
       <Suspense fallback={<LoadingState />}>

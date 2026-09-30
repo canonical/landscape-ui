@@ -1,17 +1,6 @@
-import type { PackageAction, PackageChangePlanSummaryItem } from "../../types";
+import type { PackageActionType } from "../../types";
 
-export const getApplicableCount = (
-  packageChangePlanSummaryItem: PackageChangePlanSummaryItem,
-): number => {
-  const applicableStateCount =
-    packageChangePlanSummaryItem.package_state_counts.find(
-      (packageStateCount) => packageStateCount.state === "applicable",
-    );
-
-  return applicableStateCount ? applicableStateCount.count : 0;
-};
-
-export const getActionSubmitButtonText = (action: PackageAction) => {
+export const getActionSubmitButtonText = (action: PackageActionType) => {
   switch (action) {
     case "install":
       return "Install";
@@ -26,7 +15,7 @@ export const getActionSubmitButtonText = (action: PackageAction) => {
   }
 };
 
-export const getActionSubmitButtonAppearance = (action: PackageAction) => {
+export const getActionSubmitButtonAppearance = (action: PackageActionType) => {
   switch (action) {
     case "install":
     case "hold":

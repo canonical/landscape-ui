@@ -6,23 +6,26 @@ import type { Column } from "react-table";
 import { type CellProps } from "react-table";
 import type {
   PackageChangePlanItem,
-  PackageChangePlanSummaryItem,
+  PackageChangePlanAction,
 } from "../../../../types";
 import classes from "./PackagesActionSummaryDetails.module.scss";
 import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
-import { useListPackageChangePlanItems } from "@/features/packages";
+import {
+  type ListPackageChangePlanItemsRequest,
+  useListPackageChangePlanItems,
+} from "@/features/packages";
 import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import { useCounter } from "usehooks-ts";
 import LoadingState from "@/components/layout/LoadingState";
 
 interface PackagesActionSummaryDetailsProps {
-  readonly packageChangePlanId: number;
-  readonly packageChangePlanSummaryItem: PackageChangePlanSummaryItem;
+  readonly id: number;
+  readonly action: PackageChangePlanAction;
 }
 
 const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
-  packageChangePlanId,
-  packageChangePlanSummaryItem,
+  id,
+  action,
 }) => {
   const [inputText, setInputText] = useState("");
   const [search, setSearch] = useState("");
@@ -34,17 +37,42 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
     reset: resetPage,
   } = useCounter(DEFAULT_CURRENT_PAGE);
 
+  const query: ListPackageChangePlanItemsRequest = {
+    id,
+    computer_instance_name: search || undefined,
+    limit: DEFAULT_MODAL_PAGE_SIZE,
+    offset: (currentPage - 1) * DEFAULT_MODAL_PAGE_SIZE,
+  };
+
+  switch (action.type) {
+    case "install":
+      query.install = action.package.id;
+      break;
+    case "remove":
+      query.remove = action.package.id;
+      break;
+    case "hold":
+      query.hold = action.package.id;
+      break;
+    case "unhold":
+      query.unhold = action.package.id;
+      break;
+    case "change_version":
+      query.change_version = {
+        from_package_id: action.from_package.id,
+        to_package_id: action.to_package.id,
+      };
+      break;
+    case "upgrade":
+      query.upgrade = action.to_package.id;
+      break;
+  }
+
   const {
     data: itemsResponse,
     error: itemsError,
     isPending: isGettingItems,
-  } = useListPackageChangePlanItems({
-    id: packageChangePlanId,
-    package_ids: [packageChangePlanSummaryItem.package_id],
-    computer_instance_name: search || undefined,
-    limit: DEFAULT_MODAL_PAGE_SIZE,
-    offset: (currentPage - 1) * DEFAULT_MODAL_PAGE_SIZE,
-  });
+  } = useListPackageChangePlanItems(query);
 
   const columns = useMemo<Column<PackageChangePlanItem>[]>(
     () => [

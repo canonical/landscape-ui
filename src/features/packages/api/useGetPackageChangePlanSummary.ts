@@ -3,11 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { ApiError } from "@/types/api/ApiError";
 import useFetch from "@/hooks/useFetch";
-import type { PackageChangePlanItem } from "../types";
+import type { PackageChangePlanAction } from "../types";
 
 export interface GetPackageChangePlanSummaryResponse {
   actions: {
-    action: PackageChangePlanItem;
+    action: PackageChangePlanAction;
     computer_count: number;
   }[];
   exclusions: {

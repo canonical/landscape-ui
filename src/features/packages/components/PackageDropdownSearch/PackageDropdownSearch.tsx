@@ -5,7 +5,11 @@ import Downshift from "downshift";
 import type { FC } from "react";
 import { useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
-import type { Package, PackageAction, PackageWithVersions } from "../../types";
+import type {
+  Package,
+  PackageActionType,
+  PackageWithVersions,
+} from "../../types";
 import PackageDropdownSearchCount from "./components/PackageDropdownSearchCount";
 import PackageDropdownSearchItem from "./components/PackageDropdownSearchItem";
 import PackageDropdownSearchList from "./components/PackageDropdownSearchList";
@@ -24,7 +28,7 @@ interface PackageDropdownSearchProps {
   readonly instanceIds: number[];
   readonly selectedItems: PackageWithVersions[];
   readonly setSelectedItems: (packages: PackageWithVersions[]) => void;
-  readonly action: PackageAction;
+  readonly action: PackageActionType;
 }
 
 const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({

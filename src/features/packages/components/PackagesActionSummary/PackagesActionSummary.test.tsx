@@ -7,7 +7,7 @@ describe("PackagesActionSummary", () => {
   it("should not render if there are no selected Packages", async () => {
     renderWithProviders(
       <PackagesActionSummary
-        action="unhold"
+        actionType="unhold"
         instanceIds={[1, 2, 3]}
         onBackButtonPress={() => undefined}
         packageChangePlanId={1}

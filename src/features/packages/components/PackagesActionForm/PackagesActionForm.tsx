@@ -1,7 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useSidePanel from "@/hooks/useSidePanel";
 import { type FC, useState } from "react";
-import type { PackageAction, PackageWithVersions } from "../../types";
+import type { PackageActionType, PackageWithVersions } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
 import PackagesActionSummary from "../PackagesActionSummary";
 import {
@@ -13,7 +13,7 @@ import { getActionConfig } from "./helpers";
 
 interface PackagesActionFormProps {
   readonly instanceIds: number[];
-  readonly action: PackageAction;
+  readonly action: PackageActionType;
 }
 
 const PackagesActionForm: FC<PackagesActionFormProps> = ({
@@ -78,7 +78,7 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
     default:
       return (
         <PackagesActionSummary
-          action={action}
+          actionType={action}
           instanceIds={instanceIds}
           packageChangePlanId={packageChangePlanId}
           onBackButtonPress={() => {

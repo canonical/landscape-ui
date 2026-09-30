@@ -2,9 +2,9 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
-import type { PackageChangePlanSummaryItem } from "@/features/packages";
 import {
   getApplicableCount,
+  GetPackageChangePlanSummaryResponse,
   PackagesActionSummaryCount,
   useExecutePackageChangePlan,
   useGetPackageChangePlanSummary,
@@ -48,29 +48,35 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
   const { mutateAsync: executeChangePlan, isPending: isExecutingChangePlan } =
     useExecutePackageChangePlan();
 
-  const columns = useMemo<Column<PackageChangePlanSummaryItem>[]>(
+  const columns = useMemo<
+    Column<GetPackageChangePlanSummaryResponse["actions"][number]>[]
+  >(
     () => [
       {
         Header: "Package",
         Cell: ({
           row: { original: upgrade },
-        }: CellProps<PackageChangePlanSummaryItem>) => upgrade.package_name,
+        }: CellProps<GetPackageChangePlanSummaryResponse["actions"][number]>) =>
+          upgrade.action,
       },
       {
         Header: "Upgrade version",
         Cell: ({
           row: { original: upgrade },
-        }: CellProps<PackageChangePlanSummaryItem>) => upgrade.package_version,
+        }: CellProps<GetPackageChangePlanSummaryResponse["actions"][number]>) =>
+          upgrade.package_version,
       },
       {
         Header: "Affected instances",
         Cell: ({
           row: { original: upgrade },
-        }: CellProps<PackageChangePlanSummaryItem>) => (
+        }: CellProps<
+          GetPackageChangePlanSummaryResponse["actions"][number]
+        >) => (
           <PackagesActionSummaryCount
             count={getApplicableCount(upgrade)}
-            action="upgrad"
-            packageChangePlanId={packageChangePlanId}
+            actionType="upgrad"
+            id={packageChangePlanId}
             packageChangePlanSummaryItem={upgrade}
           />
         ),
@@ -87,7 +93,7 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
     return <LoadingState />;
   }
 
-  const items = summaryResponse.data.summary_items;
+  const items = summaryResponse.data.actions;
   const currentItems = items.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize,
