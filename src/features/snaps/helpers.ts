@@ -5,14 +5,6 @@ type ChannelMapEntry = AvailableSnapInfo["channel-map"][number];
 
 const RISK_ORDER = ["stable", "candidate", "beta", "edge"];
 
-interface GetChannelOptionsConfig {
-  readonly separator?: string;
-  readonly sortBy?: "architecture" | "risk";
-}
-
-const sortByArchitecture = (a: ChannelMapEntry, b: ChannelMapEntry): number =>
-  a.channel.architecture.localeCompare(b.channel.architecture);
-
 const sortByRisk = (a: ChannelMapEntry, b: ChannelMapEntry): number => {
   const riskIndexA = RISK_ORDER.indexOf(a.channel.risk);
   const riskIndexB = RISK_ORDER.indexOf(b.channel.risk);
@@ -33,52 +25,52 @@ const sortByRisk = (a: ChannelMapEntry, b: ChannelMapEntry): number => {
   return riskIndexA - riskIndexB;
 };
 
-const getChannelValue = (
-  channel: ChannelMapEntry["channel"],
-  separator: string,
-): string => `${channel.name}${separator}${channel.architecture}`;
-
-// Composite option values pack name + architecture; use getChannelMapEntry
-// (or getChannelName/getChannelConfinement) to resolve back to the real
-// channel-map entry for API requests.
+// Channel options use channel.name only; architecture is excluded because the
+// snapd API request only sends channel/revision/classic, not architecture.
 export const getChannelOptions = (
   channelMap: ChannelMapEntry[] | undefined,
-  { separator = " ", sortBy = "risk" }: GetChannelOptionsConfig = {},
 ): SelectOption[] => {
   if (!channelMap) {
     return [];
   }
 
-  return [...channelMap]
-    .sort(sortBy === "architecture" ? sortByArchitecture : sortByRisk)
-    .map(({ channel }) => ({
-      label: getChannelValue(channel, separator),
-      value: getChannelValue(channel, separator),
-    }));
+  const uniqueByName = new Map<string, ChannelMapEntry>();
+
+  for (const entry of channelMap) {
+    const existing = uniqueByName.get(entry.channel.name);
+    // Target instance architectures are unknown, so a channel that is classic
+    // on any architecture must request classic.
+    if (!existing || entry.confinement === "classic") {
+      uniqueByName.set(entry.channel.name, entry);
+    }
+  }
+
+  return [...uniqueByName.values()].sort(sortByRisk).map(({ channel }) => ({
+    label: channel.name,
+    value: channel.name,
+  }));
 };
 
 export const getChannelMapEntry = (
   channelMap: ChannelMapEntry[] | undefined,
-  value: string,
-  separator = " ",
+  name: string,
 ): ChannelMapEntry | undefined =>
-  channelMap?.find(
-    ({ channel }) => getChannelValue(channel, separator) === value,
-  );
+  channelMap?.find(({ channel }) => channel.name === name);
 
-export const getChannelName = (
-  channelMap: ChannelMapEntry[] | undefined,
-  value: string,
-  separator = " ",
-): string | undefined =>
-  getChannelMapEntry(channelMap, value, separator)?.channel.name;
-
+// Returns the confinement for a channel name. If the channel is published for
+// multiple architectures with differing confinements, classic takes precedence
+// because the target instance architectures are unknown at selection time.
 export const getChannelConfinement = (
   channelMap: ChannelMapEntry[] | undefined,
-  value: string,
-  separator = " ",
-): string | undefined =>
-  getChannelMapEntry(channelMap, value, separator)?.confinement;
+  name: string,
+): string | undefined => {
+  const entries = channelMap?.filter(({ channel }) => channel.name === name);
+  const classicEntry = entries?.find(
+    ({ confinement }) => confinement === "classic",
+  );
+
+  return classicEntry?.confinement ?? entries?.[0]?.confinement;
+};
 
 // Snap revisions are numeric identifiers (ChannelMap.revision is a number),
 // so a manually entered revision must be a positive whole number.

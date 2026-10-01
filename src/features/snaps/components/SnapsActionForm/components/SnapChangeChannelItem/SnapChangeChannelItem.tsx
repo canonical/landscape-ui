@@ -5,10 +5,9 @@ import { Button, Icon, ICONS } from "@canonical/react-components";
 import { pluralize } from "@/utils/_helpers";
 import type { InstalledSnapWithCount, SnapChangeMode } from "../../../../types";
 import { useGetSnapInfo } from "../../../../api";
-import { isValidRevision } from "../../../../helpers";
+import { isValidRevision, getChannelConfinement } from "../../../../helpers";
 import SnapChannelRevisionFields, {
   getChannelOptions,
-  type ChannelOption,
 } from "../../../SnapChannelRevisionFields";
 
 interface SnapChangeChannelItemProps {
@@ -97,10 +96,12 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
             return;
           }
 
-          const option = channelOptions.find(
-            (item): item is ChannelOption => item.value === newValue,
+          const channelMap = snapInfo?.["channel-map"];
+          onChange(
+            newValue,
+            newValue,
+            getChannelConfinement(channelMap, newValue),
           );
-          onChange(newValue, option?.label, option?.confinement);
         }}
         onModeChange={onModeChange}
       />
