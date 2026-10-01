@@ -5,6 +5,7 @@ export const SNAP_ACTION_ACTIVITY: ActivityGroup = {
   type: "ActivityGroup",
   summary: "Install snaps on computer",
   computer_id: 1,
+  computer_title: "Computer 1",
   activity_status: "undelivered",
   completion_time: null,
   creation_time: "2024-04-15T15:22:03Z",
