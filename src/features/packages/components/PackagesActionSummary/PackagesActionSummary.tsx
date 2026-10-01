@@ -24,7 +24,7 @@ import {
 } from "./helpers";
 import classes from "./PackagesActionSummary.module.scss";
 import classNames from "classnames";
-import Icon from "@canonical/react-components/dist/components/Icon/Icon";
+import { Icon } from "@canonical/react-components";
 
 interface PackagesActionSummaryProps {
   readonly actionType: Exclude<PackageChangePlanActionType, "upgrade">;
@@ -195,11 +195,11 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
           <>
             <span className="font-monospace">
               {item.action.from_package.version}
-            </span>
-            <Icon name="arrow-right" />
+            </span>{" "}
+            <Icon name="arrow-right--muted" />{" "}
             <span className="font-monospace">
               {item.action.to_package.version}
-            </span>
+            </span>{" "}
             on{" "}
             <PackagesActionSummaryCount
               count={item.computer_count}
