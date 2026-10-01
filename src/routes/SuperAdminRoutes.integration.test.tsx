@@ -23,6 +23,13 @@ const NormalView: FC = () => (
   </>
 );
 
+const LoginPage: FC = () => (
+  <>
+    <p>Login page</p>
+    <LocationDisplay />
+  </>
+);
+
 const serveMe = (globalRoles: string[]) => {
   server.use(
     http.get(`${API_URL}me`, () =>
@@ -35,6 +42,7 @@ const renderAt = (path: string) =>
   renderWithProviders(
     <Routes>
       {SuperAdminRoutes}
+      <Route path={ROUTES.auth.login()} element={<LoginPage />} />
       <Route path="*" element={<NormalView />} />
     </Routes>,
     undefined,
@@ -86,6 +94,20 @@ describe("super admin routes (integration)", () => {
 
     expect(await screen.findByText("Normal view")).toBeInTheDocument();
     expect(getLocationDisplay()).toHaveTextContent(/^\/$/);
+    expect(
+      screen.queryByRole("navigation", { name: "Super admin" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("sends unauthenticated users to the login page", async () => {
+    server.use(http.get(`${API_URL}me`, () => HttpResponse.json({})));
+
+    renderAt(ROUTES.superAdmin.root());
+
+    expect(await screen.findByText("Login page")).toBeInTheDocument();
+    // Only the path: the test providers' side panel strips the unknown
+    // `redirect-to` param, which the real login page never sees.
+    expect(getLocationDisplay()).toHaveTextContent(/^\/login/);
     expect(
       screen.queryByRole("navigation", { name: "Super admin" }),
     ).not.toBeInTheDocument();

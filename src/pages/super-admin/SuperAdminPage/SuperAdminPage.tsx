@@ -16,9 +16,11 @@ const getReturnTo = (state: unknown): string => {
       ? getSameOriginPath(state.returnTo)
       : null;
 
-  return returnTo && !returnTo.startsWith(ROUTES.superAdmin.root())
-    ? returnTo
-    : ROUTES.root.root();
+  const superAdminRoot = ROUTES.superAdmin.root();
+  const isInsideSuperAdmin =
+    returnTo === superAdminRoot || returnTo?.startsWith(`${superAdminRoot}/`);
+
+  return returnTo && !isInsideSuperAdmin ? returnTo : ROUTES.root.root();
 };
 
 const SuperAdminPage: FC = () => {

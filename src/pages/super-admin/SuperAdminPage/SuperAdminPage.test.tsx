@@ -69,4 +69,10 @@ describe("SuperAdminPage", () => {
 
     expect(await findBackLink()).toHaveAttribute("href", ROUTES.root.root());
   });
+
+  it("keeps an origin that only shares the super admin prefix", async () => {
+    renderEnteringWith({ returnTo: "/super-adminx" });
+
+    expect(await findBackLink()).toHaveAttribute("href", "/super-adminx");
+  });
 });
