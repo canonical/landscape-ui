@@ -14,6 +14,8 @@ import type {
   PackageChangePlanItem,
   Package,
   PackageChangePlanAction,
+  GetPackageChangePlanExclusionItemsRequest,
+  GetPackageChangePlanExclusionItemsResponse,
 } from "@/features/packages";
 import type { GetPackagesParams, PackageOld } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
@@ -379,6 +381,33 @@ export default [
           package_name: name,
           computer_count: computers.count,
         })),
+      });
+    },
+  ),
+
+  http.get<
+    { id: string; package_name: string },
+    GetPackageChangePlanExclusionItemsRequest,
+    GetPackageChangePlanExclusionItemsResponse
+  >(
+    `${API_URL}package-change-plans/:id/exclusions/:package_name`,
+    async ({ params, request }) => {
+      const url = new URL(request.url);
+      const search = url.searchParams.get("computer_instance_name") || "";
+
+      const filteredInstances = instances.filter((instance) =>
+        instance.title.toLowerCase().includes(search.toLowerCase()),
+      );
+
+      const actionType = getPackageChangePlanActionType(params.id);
+
+      return HttpResponse.json<GetPackageChangePlanExclusionItemsResponse>({
+        action: actionType,
+        computers: filteredInstances.map((instance) => ({
+          id: instance.id,
+          name: instance.title,
+        })),
+        package_name: params.package_name,
       });
     },
   ),

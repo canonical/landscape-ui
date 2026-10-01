@@ -4,29 +4,21 @@ import { SearchBox } from "@canonical/react-components";
 import { useMemo, useState, type FC } from "react";
 import type { Column } from "react-table";
 import { type CellProps } from "react-table";
-import type {
-  PackageChangePlanItem,
-  PackageChangePlanAction,
-} from "../../../../types";
-import classes from "./PackagesActionSummaryDetails.module.scss";
+import classes from "./PackagesActionExclusionsDetails.module.scss";
 import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
-import {
-  type ListPackageChangePlanItemsRequest,
-  useListPackageChangePlanItems,
-} from "@/features/packages";
+import { useGetPackageChangePlanExclusionItems } from "@/features/packages";
 import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import { useCounter } from "usehooks-ts";
 import LoadingState from "@/components/layout/LoadingState";
 
-interface PackagesActionSummaryDetailsProps {
+interface PackagesActionExclusionsDetailsProps {
   readonly id: number;
-  readonly action: PackageChangePlanAction;
+  readonly packageName: string;
 }
 
-const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
-  id,
-  action,
-}) => {
+const PackagesActionExclusionsDetails: FC<
+  PackagesActionExclusionsDetailsProps
+> = ({ id, packageName }) => {
   const [inputText, setInputText] = useState("");
   const [search, setSearch] = useState("");
 
@@ -37,51 +29,24 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
     reset: resetPage,
   } = useCounter(DEFAULT_CURRENT_PAGE);
 
-  const query: ListPackageChangePlanItemsRequest = {
-    id,
-    computer_instance_name: search || undefined,
-    limit: DEFAULT_MODAL_PAGE_SIZE,
-    offset: (currentPage - 1) * DEFAULT_MODAL_PAGE_SIZE,
-  };
-
-  switch (action.type) {
-    case "install":
-      query.install = action.package.id;
-      break;
-    case "remove":
-      query.remove = action.package.id;
-      break;
-    case "hold":
-      query.hold = action.package.id;
-      break;
-    case "unhold":
-      query.unhold = action.package.id;
-      break;
-    case "change_version":
-      query.change_version = {
-        from_package_id: action.from_package.id,
-        to_package_id: action.to_package.id,
-      };
-      break;
-    case "upgrade":
-      query.upgrade = action.to_package.id;
-      break;
-  }
-
   const {
     data: itemsResponse,
     error: itemsError,
     isPending: isGettingItems,
-  } = useListPackageChangePlanItems(query);
+  } = useGetPackageChangePlanExclusionItems({
+    id,
+    package_name: packageName,
+    computer_instance_name: search || undefined,
+  });
 
-  const columns = useMemo<Column<PackageChangePlanItem>[]>(
+  const columns = useMemo<Column<{ id: number; name: string }>[]>(
     () => [
       {
         Header: "Instance name",
         Cell: ({
           row: { original: item },
-        }: CellProps<PackageChangePlanItem>) => {
-          return <span>{item.computer.name}</span>;
+        }: CellProps<{ id: number; name: string }>) => {
+          return <span>{item.name}</span>;
         },
       },
     ],
@@ -121,7 +86,10 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
       />
       <ResponsiveTable
         columns={columns}
-        data={itemsResponse.data.items}
+        data={itemsResponse.data.computers.slice(
+          (currentPage - 1) * DEFAULT_MODAL_PAGE_SIZE,
+          currentPage * DEFAULT_MODAL_PAGE_SIZE,
+        )}
         emptyMsg={"No instances found according to your search parameters."}
         minWidth={400}
         className={classes.table}
@@ -131,10 +99,12 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
         current={currentPage}
         onPrev={goToPreviousPage}
         onNext={goToNextPage}
-        max={Math.ceil(itemsResponse.data.count / DEFAULT_MODAL_PAGE_SIZE)}
+        max={Math.ceil(
+          itemsResponse.data.computers.length / DEFAULT_MODAL_PAGE_SIZE,
+        )}
       />
     </>
   );
 };
 
-export default PackagesActionSummaryDetails;
+export default PackagesActionExclusionsDetails;

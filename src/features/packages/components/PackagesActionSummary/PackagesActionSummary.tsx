@@ -25,6 +25,7 @@ import {
 import classes from "./PackagesActionSummary.module.scss";
 import classNames from "classnames";
 import { Icon } from "@canonical/react-components";
+import PackageActionExclusionsCount from "./components/PackagesActionExclusionsCount";
 
 interface PackagesActionSummaryProps {
   readonly actionType: Exclude<PackageChangePlanActionType, "upgrade">;
@@ -234,7 +235,12 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
               {!!exclusion?.computer_count && (
                 <div className={classes.row}>
                   Will not be {mapActionTypeToPast(actionType)} on{" "}
-                  {pluralize(exclusion.computer_count, ["instance"], "exact")}
+                  <PackageActionExclusionsCount
+                    count={exclusion.computer_count}
+                    id={packageChangePlanId}
+                    packageName={exclusion.package_name}
+                    actionType={actionType}
+                  />
                 </div>
               )}
             </li>
