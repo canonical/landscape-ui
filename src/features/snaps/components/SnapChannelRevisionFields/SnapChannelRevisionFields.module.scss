@@ -7,5 +7,10 @@
   > * {
     flex: 1;
     min-width: 0;
+
+    select,
+    input {
+      margin-bottom: 0;
+    }
   }
 }

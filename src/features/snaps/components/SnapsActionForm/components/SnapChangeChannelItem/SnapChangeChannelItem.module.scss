@@ -1,6 +1,11 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
+.deleteButton {
+  margin-bottom: 0;
+  padding: $spv--x-small $sph--small;
+}
+
 .selectedContainer {
   background: $colors--theme--background-alt;
   display: flex;
@@ -8,7 +13,7 @@
   gap: $spv--large;
   justify-content: space-between;
   margin-bottom: $spv--small;
-  padding: $spv--small $sph--large $spv--large;
+  padding: $spv--large;
 
   :global(.is-dark) & {
     background: $colors--theme--background-default;
