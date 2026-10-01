@@ -1,0 +1,86 @@
+import { Button } from '@canonical/react-components';
+import type { FC } from 'react';
+import {
+  PamUserForm,
+  type PamUserFormValues,
+} from '@/features/account-creation';
+import { useInvitation } from '@/features/auth';
+import AuthTemplate from '@/templates/auth/AuthTemplate';
+import useDebug from '@/hooks/useDebug';
+import type { useAcceptInvitation } from '../../api/useAcceptInvitation';
+import InvitationLocalUserForm from '../InvitationLocalUserForm';
+import type { InvitationLocalUserFormValues } from '../InvitationLocalUserForm';
+
+interface InvitationRegistrationFormProps {
+  readonly accountTitle: string;
+  readonly isPamEnabled: boolean;
+  readonly isPasswordEnabled: boolean;
+  readonly isAcceptingInvitation: boolean;
+  readonly acceptInvitation: ReturnType<
+    typeof useAcceptInvitation
+  >['acceptInvitation'];
+  readonly onSignIn: () => void;
+}
+
+const InvitationRegistrationForm: FC<InvitationRegistrationFormProps> = ({
+  accountTitle,
+  isPamEnabled,
+  isPasswordEnabled,
+  isAcceptingInvitation,
+  acceptInvitation,
+  onSignIn,
+}) => {
+  const debug = useDebug();
+  const { invitationId } = useInvitation();
+
+  const handleRegister = async (values: PamUserFormValues) => {
+    try {
+      await acceptInvitation({
+        ...values,
+        invitation_id: invitationId,
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
+
+  const handleLocalRegister = async (values: InvitationLocalUserFormValues) => {
+    try {
+      await acceptInvitation({
+        ...values,
+        invitation_id: invitationId,
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
+
+  return (
+    <AuthTemplate
+      title={
+        isPamEnabled
+          ? `Create a PAM user to join ${accountTitle}`
+          : `Create a user to join ${accountTitle}`
+      }
+    >
+      {isPamEnabled && (
+        <PamUserForm
+          onSubmit={handleRegister}
+          submitButtonText='Create user'
+          submitting={isAcceptingInvitation}
+        />
+      )}
+      {!isPamEnabled && isPasswordEnabled && (
+        <InvitationLocalUserForm
+          onSubmit={handleLocalRegister}
+          submitting={isAcceptingInvitation}
+        />
+      )}
+      <Button type='button' appearance='link' onClick={onSignIn}>
+        Already have an account? Sign in here
+      </Button>
+    </AuthTemplate>
+  );
+};
+
+export default InvitationRegistrationForm;
