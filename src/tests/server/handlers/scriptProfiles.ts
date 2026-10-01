@@ -60,7 +60,7 @@ export default [
     `${API_URL}script-profiles/:profileId`,
     ({ params }) => {
       if (shouldApplyEndpointStatus("script-profiles/:profileId")) {
-        const endpointStatus = getEndpointStatus();
+        const endpointStatus = getEndpointStatus("script-profiles/:profileId");
 
         if (endpointStatus.status === "error") {
           throw createEndpointStatusError();
@@ -111,6 +111,7 @@ export default [
         activity_status: "succeeded",
         completion_time: null,
         computer_id: 0,
+        computer_title: "Computer 0",
         creation_time: "",
         creator: {
           email: "",
@@ -136,9 +137,26 @@ export default [
     );
   }),
 
-  http.post(`${API_URL}script-profiles`, () =>
-    HttpResponse.json(scriptProfiles[0]),
-  ),
+  http.post(`${API_URL}script-profiles`, () => {
+    if (shouldApplyEndpointStatus("script-profiles")) {
+      const endpointStatus = getEndpointStatus("script-profiles");
+
+      if (endpointStatus.status === "error") {
+        const { error } =
+          (endpointStatus.response as
+            | {
+                error?: string;
+              }
+            | undefined) ?? {};
+
+        throw createEndpointStatusError({
+          error,
+        });
+      }
+    }
+
+    return HttpResponse.json(scriptProfiles[0]);
+  }),
 
   http.patch(`${API_URL}script-profiles/:profileId`, () =>
     HttpResponse.json(scriptProfiles[0]),

@@ -2,15 +2,18 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .toggle {
+  align-items: center;
+  display: inline-flex;
   margin-bottom: 0;
   padding-left: $sph--large;
   white-space: nowrap;
 }
 
 .badgeContainer {
-  display: inline-block;
+  align-items: center;
+  display: inline-flex;
+  justify-content: flex-end;
   margin-right: -$sph--x-small;
-  text-align: right;
 
   &:not(.multiple) {
     width: 2.5 * $sp-unit;
@@ -19,10 +22,6 @@
   &.multiple {
     width: $sph--x-large;
   }
-}
-
-.badge {
-  background-color: $colors--theme--text-muted;
 }
 
 .dropdown {

@@ -145,7 +145,9 @@ describe("RepositoryProfileEditForm", () => {
       screen.getByRole("button", { name: `Remove ${firstSource.name}` }),
     );
 
-    expect(screen.queryByText(firstSource.name)).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText(firstSource.name)).not.toBeInTheDocument();
+    });
   });
 
   it("submitting edit-source form replaces the source in the list", async () => {

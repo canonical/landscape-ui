@@ -5,6 +5,7 @@ export const ACCOUNT_PATHS = {
   general: "general",
   alerts: "alerts",
   apiCredentials: "api-credentials",
+  legacyLicenseFile: "legacy-license-file",
   about: "about",
 } as const;
 
@@ -17,5 +18,8 @@ export const ACCOUNT_ROUTES = {
   general: createRoute(buildAccountPath(ACCOUNT_PATHS.general)),
   alerts: createRoute(buildAccountPath(ACCOUNT_PATHS.alerts)),
   apiCredentials: createRoute(buildAccountPath(ACCOUNT_PATHS.apiCredentials)),
+  legacyLicenseFile: createRoute(
+    buildAccountPath(ACCOUNT_PATHS.legacyLicenseFile),
+  ),
   about: createRoute(buildAccountPath(ACCOUNT_PATHS.about)),
 } as const;

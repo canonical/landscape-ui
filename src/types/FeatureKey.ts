@@ -2,7 +2,6 @@ export type FeatureKey =
   | "computer-soft-deletion"
   | "employee-management"
   | "instance-reports"
-  | "local-repository-last-import"
   | "oidc-configuration"
   | "script-profiles"
   | "spa-dashboard"

@@ -18,6 +18,11 @@ export const ACCOUNT_SETTINGS = {
       path: ROUTES.account.apiCredentials(),
     },
     {
+      label: "Legacy license file",
+      path: ROUTES.account.legacyLicenseFile(),
+      requiresSelfHostedLicense: true,
+    },
+    {
       label: "About",
       path: ROUTES.account.about(),
     },
