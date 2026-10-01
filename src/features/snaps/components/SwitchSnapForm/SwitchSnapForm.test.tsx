@@ -1,5 +1,6 @@
 import { API_URL } from "@/constants";
 import { PATHS } from "@/libs/routes";
+import { SNAP_ACTION_ACTIVITY } from "@/tests/mocks/activity";
 import {
   availableSnapInfo,
   installedSnaps,
@@ -171,6 +172,21 @@ describe("SwitchSnapForm", () => {
 
       expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
       expect(await screen.findByText(/to be switched/i)).toBeInTheDocument();
+    });
+
+    it("shows a View details action that opens the activity details side panel", async () => {
+      renderSwitchSnapForm();
+
+      await userEvent.click(screen.getByRole("button", { name: /switch/i }));
+
+      const viewDetailsButton = await screen.findByRole("button", {
+        name: /view details/i,
+      });
+      await userEvent.click(viewDetailsButton);
+
+      expect(
+        await screen.findByText(SNAP_ACTION_ACTIVITY.summary),
+      ).toBeInTheDocument();
     });
 
     it("sends classic: false when switching to a strict release", async () => {
