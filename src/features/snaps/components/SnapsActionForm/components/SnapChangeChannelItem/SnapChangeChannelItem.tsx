@@ -1,6 +1,5 @@
 import type { FC } from "react";
 import { useMemo } from "react";
-import classes from "./SnapChangeChannelItem.module.scss";
 import type { InstalledSnapWithCount, SnapChangeMode } from "../../../../types";
 import { useGetSnapInfo } from "../../../../api";
 import { isValidRevision, getChannelConfinement } from "../../../../helpers";
@@ -61,7 +60,7 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
   const error = getError();
 
   return (
-    <li className={classes.selectedContainer}>
+    <>
       <SnapItemTitleRow name={selectedSnap.snap.name} onDelete={onDelete} />
       <SnapItemSubtitle
         scope="Installed"
@@ -90,7 +89,7 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
         }}
         onModeChange={onModeChange}
       />
-    </li>
+    </>
   );
 };
 
