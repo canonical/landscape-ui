@@ -44,6 +44,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
       <Select
         aria-label={`Snap channel or revision for ${snapName}`}
         options={MODE_OPTIONS}
+        value={mode}
         onChange={(event) => {
           onModeChange(event.currentTarget.value as SnapChangeMode);
         }}
