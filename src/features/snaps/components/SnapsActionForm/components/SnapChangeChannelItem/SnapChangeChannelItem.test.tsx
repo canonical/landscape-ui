@@ -29,7 +29,9 @@ describe("SnapChangeChannelItem", () => {
   it("renders the snap name, current channel, delete button, and Change to label", async () => {
     renderWithProviders(<SnapChangeChannelItem {...props} />);
 
-    await screen.findByLabelText("Snap channel or revision");
+    await screen.findByLabelText(
+      `Snap channel or revision for ${snapWithChannels.snap.name}`,
+    );
 
     expect(screen.getByText(snapWithChannels.snap.name)).toBeInTheDocument();
     expect(
@@ -39,7 +41,9 @@ describe("SnapChangeChannelItem", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Change to")).toBeInTheDocument();
     expect(
-      screen.getByLabelText("Snap channel or revision"),
+      screen.getByLabelText(
+        `Snap channel or revision for ${snapWithChannels.snap.name}`,
+      ),
     ).toBeInTheDocument();
 
     const deleteButton = screen.getByRole("button", {
@@ -51,7 +55,9 @@ describe("SnapChangeChannelItem", () => {
   it("renders a mode dropdown with Channel and Revision options defaulting to Channel", async () => {
     renderWithProviders(<SnapChangeChannelItem {...props} />);
 
-    const modeSelect = await screen.findByLabelText("Snap channel or revision");
+    const modeSelect = await screen.findByLabelText(
+      `Snap channel or revision for ${snapWithChannels.snap.name}`,
+    );
     const options = within(modeSelect).getAllByRole("option");
 
     expect(options).toHaveLength(2);
@@ -68,7 +74,9 @@ describe("SnapChangeChannelItem", () => {
       <SnapChangeChannelItem {...props} onModeChange={onModeChange} />,
     );
 
-    const modeSelect = await screen.findByLabelText("Snap channel or revision");
+    const modeSelect = await screen.findByLabelText(
+      `Snap channel or revision for ${snapWithChannels.snap.name}`,
+    );
     await user.selectOptions(modeSelect, "revision");
 
     expect(onModeChange).toHaveBeenCalledWith("revision");
@@ -169,7 +177,9 @@ describe("SnapChangeChannelItem", () => {
       />,
     );
 
-    await screen.findByLabelText("Snap channel or revision");
+    await screen.findByLabelText(
+      `Snap channel or revision for ${snapWithChannels.snap.name}`,
+    );
 
     expect(
       screen.getByText("Revision must be a positive whole number"),
@@ -193,7 +203,9 @@ describe("SnapChangeChannelItem", () => {
   it("calls onDelete when the delete button is clicked", async () => {
     renderWithProviders(<SnapChangeChannelItem {...props} />);
 
-    await screen.findByLabelText("Snap channel or revision");
+    await screen.findByLabelText(
+      `Snap channel or revision for ${snapWithChannels.snap.name}`,
+    );
 
     await user.click(
       screen.getByRole("button", {

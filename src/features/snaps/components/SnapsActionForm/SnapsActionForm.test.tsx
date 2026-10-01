@@ -395,7 +395,9 @@ describe("SnapsActionForm", () => {
       ).not.toBeDisabled();
     });
 
-    const modeSelect = screen.getByLabelText("Snap channel or revision");
+    const modeSelect = screen.getByLabelText(
+      `Snap channel or revision for ${secondSnap.snap.name}`,
+    );
     await user.selectOptions(modeSelect, "revision");
 
     const revisionInput = screen.getByRole("spinbutton", {
@@ -443,7 +445,9 @@ describe("SnapsActionForm", () => {
       ).not.toBeDisabled();
     });
 
-    const modeSelect = screen.getByLabelText("Snap channel or revision");
+    const modeSelect = screen.getByLabelText(
+      `Snap channel or revision for ${secondSnap.snap.name}`,
+    );
     await user.selectOptions(modeSelect, "revision");
 
     const revisionInput = screen.getByRole("spinbutton", {
@@ -492,7 +496,9 @@ describe("SnapsActionForm", () => {
     );
 
     await user.selectOptions(
-      screen.getByLabelText("Snap channel or revision"),
+      screen.getByLabelText(
+        `Snap channel or revision for ${classicSnap.snap.name}`,
+      ),
       "revision",
     );
     await user.type(
@@ -544,7 +550,9 @@ describe("SnapsActionForm", () => {
       ).not.toBeDisabled();
     });
 
-    const modeSelect = screen.getByLabelText("Snap channel or revision");
+    const modeSelect = screen.getByLabelText(
+      `Snap channel or revision for ${secondSnap.snap.name}`,
+    );
     await user.selectOptions(modeSelect, "revision");
 
     const revisionInput = screen.getByRole("spinbutton", {
