@@ -84,6 +84,8 @@ describe("SingleInstanceContainer", () => {
         return (
           <AuthContext.Provider
             value={{
+              isSuperAdmin: false,
+              canManageAccounts: false,
               authLoading: false,
               authorized: true,
               hasAccounts: true,

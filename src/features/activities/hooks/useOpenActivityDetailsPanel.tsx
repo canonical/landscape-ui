@@ -7,15 +7,22 @@ const ActivityDetails = lazy(
   async () => import("../components/ActivityDetails"),
 );
 
+export interface OpenActivityDetailsPanelOptions {
+  hideInstanceField?: boolean;
+}
+
 const useOpenActivityDetailsPanel = () => {
   const { setSidePanelContent } = useSidePanel();
 
   return useCallback(
-    (activity: ActivityCommon) => {
+    (activity: ActivityCommon, options?: OpenActivityDetailsPanelOptions) => {
       setSidePanelContent(
         activity.summary,
         <Suspense fallback={<LoadingState />}>
-          <ActivityDetails activityId={activity.id} />
+          <ActivityDetails
+            activityId={activity.id}
+            hideInstanceField={options?.hideInstanceField}
+          />
         </Suspense>,
       );
     },

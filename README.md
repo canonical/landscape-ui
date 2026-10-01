@@ -69,10 +69,14 @@ Follow these instructions to set up the project on your local machine for develo
 
 3.  **Configure your environment:**
     Make a copy of the example environment file and rename it to `.env.local`.
+
     ```bash
     cp .env.local.example .env.local
     ```
+
     Now, edit `.env.local` to match your local Landscape setup, providing the necessary API endpoints and credentials.
+
+    With `VITE_MSW_ENABLED=true` the app runs against the mocks in `src/tests/`: sign in with any credentials, and the session survives reloads. To use the app as Canonical staff (super admin mode), run `window.msw.setGlobalRoles(["SupportProvider", "AccountManager"])` in the browser console and reload.
 
 ### Running the Development Server
 

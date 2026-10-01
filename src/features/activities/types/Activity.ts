@@ -23,7 +23,7 @@ export interface ActivityCommon extends Record<string, unknown> {
   computer_id: number;
   computer_title: string;
   creation_time: string;
-  creator: Creator;
+  creator: Creator | null;
   id: number;
   parent_id: number | null;
   result_code: number | null;

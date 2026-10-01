@@ -298,6 +298,32 @@ export const activities = [
     type: "GenerateFDERecoveryKeyRequest",
   },
   RELEASE_UPGRADE_ACTIVITY,
+  {
+    id: 10101,
+    actions: {
+      approvable: true,
+      cancelable: true,
+      reappliable: true,
+    },
+    creation_time: "2024-04-15T15:47:07Z",
+    creator: null,
+    type: "StartChildComputerActivity",
+    summary: "Activity with no creator",
+    result_text: "test\ntest",
+    computer_id: 6,
+    approval_time: null,
+    delivery_time: "2024-04-15T15:47:07Z",
+    deliver_after_time: null,
+    deliver_before_time: null,
+    parent_id: 1008,
+    modification_time: "2024-04-15T15:47:07Z",
+    completion_time: "2024-04-15T15:48:07Z",
+    schedule_before_time: null,
+    schedule_after_time: null,
+    result_code: null,
+    activity_status: "delivered",
+    children: [],
+  },
 ] as const satisfies Activity[];
 
 export const MANY_UNAPPROVED_ACTIVITY_BASE_ID = 2000;

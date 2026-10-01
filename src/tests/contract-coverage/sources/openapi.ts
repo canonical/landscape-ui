@@ -71,7 +71,7 @@ function resolveWildcardParam(
  * Connector for the Go backend's real contract: the OpenAPI document shipped
  * in @canonical/landscape-openapi. `basePath` is the prefix the service is
  * mounted under in the frontend (VITE_API_URL_DEB_ARCHIVE minus the spec's
- * own /v1beta1 prefix).
+ * own /v1 prefix).
  */
 export function createOpenApiSource(
   basePath: string,

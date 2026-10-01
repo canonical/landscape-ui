@@ -176,6 +176,23 @@ describe("Activities", () => {
 
       expect(screen.queryByText("Instance")).not.toBeInTheDocument();
     });
+
+    it("should hide the activity details instance field when opened with an instanceId", async () => {
+      renderWithProviders(<Activities {...defaultProps} instanceId={6} />);
+
+      const activityButton = screen.getByRole("button", {
+        name: activities[0].summary,
+      });
+      await user.click(activityButton);
+
+      const sidePanel = await screen.findByRole("complementary");
+      expect(
+        within(sidePanel).getByRole("heading", {
+          name: activities[0].summary,
+        }),
+      ).toBeInTheDocument();
+      expect(within(sidePanel).queryByText("Instance")).not.toBeInTheDocument();
+    });
   });
 
   describe("useOpenActivityDetails hook", () => {

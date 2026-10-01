@@ -166,7 +166,7 @@ Pragma icon assets come from `@canonical/ds-assets/icons` and are served at `/ic
 `createPragmaIconsPlugin` in `vite.config.ts`; production builds copy the same assets to
 `dist/icons`, and Debian packaging includes that directory in the deployed dashboard files. When
 `VITE_ROOT_PATH` is not `/`, the plugin rewrites CSS icon references to that deployed base path;
-the production dashboard therefore loads them from `/new_dashboard/icons`. Pragma components that
+the production dashboard therefore loads them from `/portal/icons`. Pragma components that
 accept a `rootPath` prop must receive the same base-aware icons path during component migration.
 
 When migrating components, import non-form components from `@canonical/react-ds-global` and form
