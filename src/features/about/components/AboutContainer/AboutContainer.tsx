@@ -40,6 +40,7 @@ const AboutContainer: FC = () => {
         <ul className="p-list">
           <li>
             <Link
+              className={classes.usefulLink}
               href={ROUTES.external.documentation()}
               target="_blank"
               rel="nofollow noopener noreferrer"
@@ -49,6 +50,7 @@ const AboutContainer: FC = () => {
           </li>
           <li>
             <Link
+              className={classes.usefulLink}
               href={ROUTES.external.support()}
               target="_blank"
               rel="nofollow noopener noreferrer"

@@ -20,6 +20,11 @@
   padding-top: 0;
 }
 
+.usefulLink {
+  display: block;
+  padding: 8px 0;
+}
+
 .versionGrid {
   & > div {
     grid-template-columns: repeat(2, minmax(0, 350px));
