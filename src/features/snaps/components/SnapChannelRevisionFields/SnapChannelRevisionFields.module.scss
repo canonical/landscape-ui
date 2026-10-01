@@ -12,5 +12,10 @@
     input {
       margin-bottom: 0;
     }
+
+    :global(.p-form-validation__message) {
+      // cancel Vanilla's own -$sp-unit pull now that the input has no bottom margin to offset
+      margin-top: calc($sp-unit + $spv--x-small);
+    }
   }
 }
