@@ -32,7 +32,8 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
   // const { items, dropdownHeader } = useMultiSelectSnaps(queryParams);
 
   return (
-    <li className={classes.selectedContainer}>
+    <>
+      {/* TODO: Replace this with SnapItemTitleRow and SnapItemSubtitle components */}
       <div className={classes.topRow}>
         <div>
           <div className="font-monospace">
@@ -65,7 +66,7 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
           (id) => items.find((item) => item.value === id) as MultiSelectItem,
         )}
       /> */}
-    </li>
+    </>
   );
 };
 

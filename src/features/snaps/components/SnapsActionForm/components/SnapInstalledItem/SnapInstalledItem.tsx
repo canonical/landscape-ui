@@ -1,8 +1,7 @@
 import { type FC } from "react";
 import type { InstalledSnapWithCount } from "../../../../types";
-import classes from "./SnapInstalledItem.module.scss";
-import { Button, Icon, ICONS } from "@canonical/react-components";
-import { pluralize } from "@/utils/_helpers";
+import SnapItemTitleRow from "../SnapItemTitleRow";
+import SnapItemSubtitle from "../SnapItemSubtitle";
 
 interface SnapInstalledItemProps {
   readonly selectedSnap: InstalledSnapWithCount;
@@ -17,27 +16,15 @@ const SnapInstalledItem: FC<SnapInstalledItemProps> = ({
   isUnhold,
   instancesCount,
 }) => {
-  const scope = isUnhold ? "Held" : "Installed";
-
   return (
-    <li className={classes.selectedContainer}>
-      <div className={classes.titleRow}>
-        <strong>{selectedSnap.snap.name}</strong>
-        <Button
-          type="button"
-          appearance="base"
-          className={classes.deleteButton}
-          aria-label={`Delete ${selectedSnap.snap.name}`}
-          onClick={onDelete}
-        >
-          <Icon name={ICONS.delete} />
-        </Button>
-      </div>
-      <span className="u-text--muted">
-        {scope} on {selectedSnap.computerCount} of{" "}
-        {pluralize(instancesCount, ["instance"], "exact")}
-      </span>
-    </li>
+    <>
+      <SnapItemTitleRow name={selectedSnap.snap.name} onDelete={onDelete} />
+      <SnapItemSubtitle
+        scope={isUnhold ? "Held" : "Installed"}
+        computerCount={selectedSnap.computerCount}
+        instancesCount={instancesCount}
+      />
+    </>
   );
 };
 
