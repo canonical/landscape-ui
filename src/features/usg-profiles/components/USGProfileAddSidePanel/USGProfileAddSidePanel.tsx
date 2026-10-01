@@ -133,7 +133,7 @@ const USGProfileAddSidePanel: FC<USGProfileAddSidePanelProps> = ({
         </small>
       </SidePanel.Header>
       <SidePanel.Content>
-        <p>{steps[step].description}</p>
+        <p className="u-margin--bottom">{steps[step].description}</p>
         {steps[step].content}
         <SidePanelFormButtons
           hasBackButton={step > 0}

@@ -28,7 +28,7 @@ const AttachTokenForm: FC<AttachTokenFormProps> = ({ selectedInstances }) => {
       submitButtonText="Attach token"
       notification={notification}
     >
-      <p>
+      <p className="u-margin--bottom">
         Attach a token from your{" "}
         <a
           href={UBUNTU_PRO_DASHBOARD_URL}
@@ -41,7 +41,7 @@ const AttachTokenForm: FC<AttachTokenFormProps> = ({ selectedInstances }) => {
         compliance tools, and more on your selected instances.
       </p>
       {hasMixedTokens && (
-        <p>
+        <p className="u-margin--bottom">
           You&apos;re attaching a token to{" "}
           {pluralize(selectedInstances.length, ["instance"], "exact")}. If they
           already have a token it will be overriden.

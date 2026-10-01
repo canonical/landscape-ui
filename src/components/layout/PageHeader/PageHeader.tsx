@@ -1,4 +1,8 @@
 import classNames from "classnames";
+import {
+  Breadcrumbs,
+  type LinkComponentProps,
+} from "@canonical/react-ds-global";
 import { type FC, type ReactNode, useLayoutEffect, useRef } from "react";
 import { Link } from "react-router";
 import { useMediaQuery } from "usehooks-ts";
@@ -13,7 +17,18 @@ interface PageHeaderProps {
   readonly className?: string;
   readonly visualTitle?: string;
   readonly helperContent?: ReactNode;
+  readonly subtitle?: ReactNode;
 }
+
+const BreadcrumbLink: FC<LinkComponentProps> = ({
+  href = "",
+  children,
+  ...props
+}) => (
+  <Link to={href} {...props}>
+    {children}
+  </Link>
+);
 
 const PageHeader: FC<PageHeaderProps> = ({
   title,
@@ -23,6 +38,7 @@ const PageHeader: FC<PageHeaderProps> = ({
   actions,
   breadcrumbs,
   helperContent,
+  subtitle,
 }) => {
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
   const headerRef = useRef<HTMLDivElement>(null);
@@ -42,67 +58,58 @@ const PageHeader: FC<PageHeaderProps> = ({
   return (
     <div
       ref={headerRef}
-      className={classNames(
-        "p-panel__header",
-        {
-          "u-no-padding--right": helperContent !== undefined,
-        },
-        className,
-      )}
+      className={classNames("p-panel__header", classes.header, className)}
     >
-      {breadcrumbs && breadcrumbs.length > 0 && (
-        <div className={classes.breadcrumbs}>
-          <nav className="p-breadcrumbs" aria-label="Breadcrumbs">
-            <ol className="p-breadcrumbs__items u-no-margin--bottom">
-              {breadcrumbs.map((breadcrumb, index) =>
-                !breadcrumb.current ? (
-                  <li className="p-breadcrumbs__item" key={index}>
-                    <Link to={breadcrumb.path ?? ""}>{breadcrumb.label}</Link>
-                  </li>
-                ) : (
-                  <li
-                    className="p-breadcrumbs__item"
-                    key={index}
-                    aria-current="page"
-                  >
-                    {breadcrumb.label}
-                  </li>
-                ),
+      <div className={classes.contentRow}>
+        {breadcrumbs && breadcrumbs.length > 0 && (
+          <div className={classes.breadcrumbs}>
+            <Breadcrumbs
+              aria-label="Breadcrumbs"
+              LinkComponent={BreadcrumbLink}
+              items={breadcrumbs.map((breadcrumb) =>
+                breadcrumb.current
+                  ? // `getItemId` throws for items with neither `url` nor `key`.
+                    { label: breadcrumb.label, current: true, key: "current" }
+                  : {
+                      label: breadcrumb.label,
+                      url: breadcrumb.path,
+                    },
               )}
-            </ol>
-          </nav>
-        </div>
-      )}
-      {hideTitle ? (
-        <>
-          <h1 className="u-off-screen">{title}</h1>
-          {visualTitle && (
-            <div
-              className={classNames("p-panel__title", classes.visualTitle, {
-                "u-no-padding--bottom": isSmallerScreen,
+            />
+          </div>
+        )}
+        {hideTitle ? (
+          <>
+            <h1 className="u-off-screen">{title}</h1>
+            {visualTitle && (
+              <div
+                className={classNames("p-panel__title", classes.visualTitle, {
+                  "u-no-padding--bottom": isSmallerScreen,
+                })}
+              >
+                {visualTitle}
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <h1
+              className={classNames("p-panel__title", {
+                "u-no-padding--bottom": isSmallerScreen || !!subtitle,
               })}
             >
-              {visualTitle}
-            </div>
-          )}
-        </>
-      ) : (
-        <>
-          <h1
-            className={classNames("p-panel__title", {
-              "u-no-padding--bottom": isSmallerScreen,
-            })}
-          >
-            {title}
-          </h1>
-          <>{helperContent}</>
-        </>
-      )}
-      {actions && actions.length > 0 && (
-        <div className={classNames("p-panel__controls", classes.controls)}>
-          {actions}
-        </div>
-      )}
+              {title}
+            </h1>
+            <>{helperContent}</>
+          </>
+        )}
+        {actions && actions.length > 0 && (
+          <div className={classNames("p-panel__controls", classes.controls)}>
+            {actions}
+          </div>
+        )}
+      </div>
+      {subtitle && <div className={classes.subtitle}>{subtitle}</div>}
     </div>
   );
 };

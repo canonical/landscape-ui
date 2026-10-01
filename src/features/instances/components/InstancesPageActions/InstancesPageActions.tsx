@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
-import { REPORT_VIEW_ENABLED, TSV_EXPORTS_ENABLED } from "@/constants";
+import { TSV_EXPORTS_ENABLED } from "@/constants";
 import {
   type PackageChangePlanActionType,
   PackagesActionForm,
@@ -96,7 +96,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           (instance) => !getFeatures(instance).scripts,
         ) ? (
           <div className={classes.warning}>
-            <p>
+            <p className="u-margin--bottom">
               You selected{" "}
               {pluralize(selectedInstances.length, ["instance"], "exact")}. This
               script will:
@@ -360,7 +360,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           },
         ]
       : []),
-    ...(REPORT_VIEW_ENABLED
+    ...(isFeatureEnabled("instance-reports")
       ? [
           {
             children: (
@@ -371,7 +371,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             ),
             onClick: handleReportView,
             hasIcon: true,
-            disabled: !hasSelectedInstances,
+            disabled: !hasInstancesToExport,
           },
         ]
       : []),

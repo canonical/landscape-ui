@@ -12,7 +12,7 @@ Landscape UI uses **CalVer** (`YY.MM.Point.Build`) aligned with the Ubuntu relea
 | `release/YY.MM` | Cycle base                             | `YY.MM.0.<count>` / `YY.MM.0.<count>-rc` | `ppa-build-YY.MM` (+ `ppa-build-stable` if currently promoted) |
 | `point/YY.MM.N` | Point release (Nth of the cycle)       | `YY.MM.N.<count>` / `YY.MM.N.<count>-rc` | `ppa-build-YY.MM.N`                                            |
 
-`main` does **not** publish an artifact; it is the integration trunk. The only Changesets work it does is run `changeset-version.yml` on each push to maintain its "Version Packages" PR — merging that PR consumes the accumulated `.changeset/*.md` into the canonical `CHANGELOG.md` and bumps `package.json`. That consumption is what keeps the backlog drained, so a freshly-cut slice inherits only the changesets added since the last baseline rather than the entire history. Merging it is never forced; nothing ships off `main`.
+`main` does **not** publish an artifact; it is the integration trunk. The only Changesets work it does is run `changeset-version.yml` on each push to maintain its "Version Packages" PR — merging that PR would consume the accumulated `.changeset/*.md` into `CHANGELOG.md` and bump `package.json`. In practice this PR is **closed, not merged**, before each cut: its changelog section would be keyed on `main`'s never-shipped `-beta` label, and that heading would be inherited verbatim by every later cut (see §3). Instead, the backlog travels with each cut and is rolled up on the cut branch under its real version. The trade-off is that `main`'s own `CHANGELOG.md` lags behind and consecutive cuts inherit overlapping backlogs — cuts made close together will re-roll entries an earlier cut already published, until a `main`-side consumption is eventually merged.
 
 Everything that ships is pinned by its branch name. `release/YY.MM` is the base of a cycle (point segment `0`). `point/YY.MM.N` is the Nth point release of that cycle, cut from `main`. Both build as a candidate (`-rc`) until promoted to a release — the `-rc` rule is uniform across `release/*` and `point/*`; see §5. The build/publish flow (`release-and-build.yml`) runs only for `release/*` and `point/*`.
 
@@ -76,7 +76,12 @@ git push -u origin release/YY.MM
 
 The first push triggers a build at `YY.MM.0.0-rc` and creates both `ppa-build-YY.MM` and the `vYY.MM.0.0-rc` anchor tag — a freshly cut branch has no anchor yet, so its HEAD is the cut and the counter starts at `0`. Because the new branch is the highest-numbered `release/*` on origin, the same build also publishes to `ppa-build-stable` automatically — but it ships as a candidate (`-rc`) until you promote the cycle by listing it in `RELEASED_BRANCHES` (§5). The previous stable cycle's branch keeps living and keeps publishing to its own `ppa-build-*`; only the `ppa-build-stable` alias moves.
 
-> **Before the first push**, close any open Changesets-bot "Version Packages" PR targeting `main`. The bot stamps the PR title with the branch's version shape _at the time it opened the PR_; if you merge it onto the freshly cut release branch, the resulting commit subject will look like `26.04.0.86-beta` (a `main`-shape version) even though the actual built artifact is `26.04.0.0`. Letting Changesets re-open the PR fresh on each branch avoids the confusion.
+> **Before the first push**, **close — don't merge —** any open Changesets-bot "Version Packages" PR targeting `main`. Two reasons:
+>
+> 1. The bot stamps the PR title with the branch's version shape _at the time it opened the PR_; if you merge it onto the freshly cut release branch, the resulting commit subject will look like `26.04.0.86-beta` (a `main`-shape version) even though the actual built artifact is `26.04.0.0`.
+> 2. Merging it consumes the pending `.changeset/*.md` files into `CHANGELOG.md` under `main`'s never-shipped `-beta` version heading (`scripts/manual-version-update.cjs` keys the section on whatever version the branch that runs it computes). The cut branch inherits that heading verbatim and cannot rewrite it — the changesets are already gone.
+>
+> Closing loses nothing: the changeset files are ordinary committed files on `main`, so the cut inherits them, and the new branch's first build re-opens the Version Packages PR _on that branch_, rolled up under its real version. This rule applies identically to `release/*` and `point/*` cuts.
 
 If for any reason you don't want the new cut to take over `ppa-build-stable` immediately (e.g. you want a few days of soak before promoting), set the `STABLE_RELEASE_BRANCH` Actions variable to the previous cycle's branch before the first push:
 
@@ -108,7 +113,11 @@ git checkout -B point/26.10.2 origin/main
 git push -u origin point/26.10.2
 ```
 
-The first build is `26.10.2.0-rc`, published to `ppa-build-26.10.2`. It is a **candidate** (`-rc`) until you promote it.
+(To cut without touching your working tree: `git push origin origin/main:refs/heads/point/26.10.2`.)
+
+> **Before the first push**, close (never merge) any open "Version Packages" PR targeting `main` — see the warning in §3; it applies to point cuts identically.
+
+The first build is `26.10.2.0-rc`, published to `ppa-build-26.10.2`. It is a **candidate** (`-rc`) until you promote it. The same first build opens a "Version Packages" PR **on the point branch**, rolling the inherited changeset backlog into `CHANGELOG.md` under the branch's real version.
 
 ### Patches
 
@@ -120,7 +129,9 @@ When the candidate is ready, add its branch to the `RELEASED_BRANCHES` Actions v
 
 > Repository Settings → Secrets and variables → Actions → Variables → `RELEASED_BRANCHES = point/26.10.1,point/26.10.2`
 
-The variable governs **both** `point/*` and `release/*` (the cycle base) — listing a branch is what drops its `-rc`. Editing the variable doesn't push a commit, so trigger a build to apply it: either land the next change, or run the workflow manually (Actions → _Release and PPA Build_ → **Run workflow** on the branch). The next build drops the `-rc` suffix (e.g. `26.10.2.3`) and publishes the released artifact to the same `ppa-build-26.10.2`. Branches that aren't listed are always candidates, so nothing ships as a release by accident.
+The variable governs **both** `point/*` and `release/*` (the cycle base) — listing a branch is what drops its `-rc`. Editing the variable doesn't push a commit, so trigger a build to apply it: either land the next change, or run the workflow manually (Actions → _Release and PPA Build_ → **Run workflow** on the branch, or `gh workflow run release-and-build.yml --ref point/26.10.2`). The next build drops the `-rc` suffix (e.g. `26.10.2.3`) and publishes the released artifact to the same `ppa-build-26.10.2`.
+
+Merge the branch's "Version Packages" PR **after** promoting: the PR retitles on every build, so merging it post-promotion records the changelog under the clean released version instead of an `-rc` one. Branches that aren't listed are always candidates, so nothing ships as a release by accident.
 
 To **demote**, remove the branch from the variable. Note this only applies going forward — from the next release-worthy commit, which builds a fresh `…-rc`. It does **not** retroactively re-stamp the already-published build: that version's `v<version>` tag is immutable, so a rebuild at the same commit recomputes a `…-rc` version whose tag already exists and is skipped. (The artifact is byte-identical either way — only the baked-in version label differs.) If you need the cycle/point base to stop being "latest stable" immediately, pin `STABLE_RELEASE_BRANCH` (§1) rather than relying on demotion.
 

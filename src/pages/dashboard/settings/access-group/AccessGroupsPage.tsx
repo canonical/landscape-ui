@@ -1,4 +1,3 @@
-import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
@@ -6,10 +5,9 @@ import SidePanel from "@/components/layout/SidePanel";
 import { AccessGroupContainer } from "@/features/access-groups";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 
 const NewAccessGroupForm = lazy(
   () => import("@/features/access-groups/components/NewAccessGroupForm"),
@@ -19,21 +17,20 @@ const EditAccessGroupSidePanel = lazy(
   () => import("@/features/access-groups/components/EditAccessGroupSidePanel"),
 );
 
+const ViewAccessGroupSidePanel = lazy(
+  async () =>
+    import("@/features/access-groups/components/ViewAccessGroupSidePanel"),
+);
+
 const AccessGroupsPage: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
-  const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
-    usePageParams();
+  const {
+    lastSidePathSegment,
+    sidePath,
+    popSidePathUntilClear,
+    createPageParamsSetter,
+  } = usePageParams();
 
-  const handleAddAccessGroup = () => {
-    setSidePanelContent(
-      "Add access group",
-      <Suspense fallback={<LoadingState />}>
-        <NewAccessGroupForm />
-      </Suspense>,
-    );
-  };
-
-  useSetDynamicFilterValidation("sidePath", ["edit"]);
+  useSetDynamicFilterValidation("sidePath", ["add", "view", "edit"]);
 
   return (
     <PageMain>
@@ -43,7 +40,10 @@ const AccessGroupsPage: FC = () => {
           <Button
             key="add-access-group"
             appearance="positive"
-            onClick={handleAddAccessGroup}
+            onClick={createPageParamsSetter({
+              sidePath: ["add"],
+              name: "",
+            })}
             type="button"
             className="u-no-margin--right"
           >
@@ -59,6 +59,18 @@ const AccessGroupsPage: FC = () => {
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <EditAccessGroupSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <NewAccessGroupForm />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="view">
+            <ViewAccessGroupSidePanel />
           </SidePanel.Suspense>
         )}
       </SidePanel>

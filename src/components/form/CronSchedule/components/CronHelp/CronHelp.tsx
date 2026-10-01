@@ -70,7 +70,7 @@ const CronHelp: FC = () => {
                 />
               </div>
 
-              <p>
+              <p className="u-margin--bottom">
                 &quot;At minute 1 on day-of-month 2 in every month from January
                 through March&quot;
               </p>

@@ -2,7 +2,10 @@ import { API_URL_OLD } from "@/constants";
 import type { GetRolesParams } from "@/hooks/useRoles";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { permissions, roles as roleMocks } from "@/tests/mocks/roles";
-import { isAction } from "@/tests/server/handlers/_helpers";
+import {
+  isAction,
+  shouldApplyEndpointStatus,
+} from "@/tests/server/handlers/_helpers";
 import type { Permission } from "@/types/Permission";
 import type { Role } from "@/types/Role";
 import { http, HttpResponse } from "msw";
@@ -10,14 +13,24 @@ import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, GetRolesParams, Role[]>(API_URL_OLD, ({ request }) => {
-    const { status, path } = getEndpointStatus();
-
     if (!isAction(request, "GetRoles")) {
       return;
     }
 
-    if (status === "empty" && (!path || path === "roles")) {
-      return HttpResponse.json([]);
+    if (shouldApplyEndpointStatus("GetRoles")) {
+      const endpointStatus = getEndpointStatus("GetRoles");
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      if (endpointStatus.status === "empty") {
+        return HttpResponse.json([]);
+      }
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json((endpointStatus.response ?? []) as Role[]);
+      }
     }
 
     return HttpResponse.json(roleMocks);

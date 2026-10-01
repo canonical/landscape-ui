@@ -1,14 +1,27 @@
 import * as Constants from "@/constants";
+import { API_URL, MANAGE_INSTANCES_DOCUMENTATION_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
+import { features } from "@/tests/mocks/features";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import server from "@/tests/server";
+import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import userEvent from "@testing-library/user-event";
+import { screen, within } from "@testing-library/react";
+import { http, HttpResponse } from "msw";
+import {
+  afterEach,
+  assert,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import InstancesPage from "./InstancesPage";
 
 describe("InstancesPage", () => {
   beforeEach(() => {
-    vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(true);
     vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
     setEndpointStatus("default");
   });
@@ -29,6 +42,33 @@ describe("InstancesPage", () => {
     expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
   });
 
+  it("shows the account name and registration documentation link", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<InstancesPage />);
+
+    await expectLoadingState();
+
+    const trigger = screen.getByRole("button", {
+      name: /New instance registration information/,
+    });
+
+    await user.hover(trigger);
+
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+    const messageId = trigger.getAttribute("aria-controls");
+    assert(messageId);
+    const message = document.getElementById(messageId);
+    assert(message);
+
+    expect(message).toHaveTextContent(/Account name: \S+/);
+    expect(
+      within(message).getByRole("link", {
+        name: "Learn how to register new instances to your Landscape organization (opens a new tab to Landscape documentation)",
+      }),
+    ).toHaveAttribute("href", MANAGE_INSTANCES_DOCUMENTATION_URL);
+  });
+
   it("shows empty state when instances endpoint is empty", async () => {
     setEndpointStatus({ status: "empty", path: "computers" });
 
@@ -46,7 +86,21 @@ describe("InstancesPage", () => {
   });
 
   it("does not show the report panel for a stale report side path when feature is disabled", async () => {
-    vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
+    server.use(
+      http.get(`${API_URL}features`, () =>
+        HttpResponse.json(
+          generatePaginatedResponse({
+            data: features.map((feature) =>
+              feature.key === "instance-reports"
+                ? { ...feature, enabled: false }
+                : feature,
+            ),
+            offset: 0,
+            limit: 20,
+          }),
+        ),
+      ),
+    );
 
     renderWithProviders(<InstancesPage />, {}, "/?sidePath=report");
 

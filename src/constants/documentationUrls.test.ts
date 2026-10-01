@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { ADMINISTRATORS_DOCUMENTATION_URL } from "./documentationUrls";
+import {
+  ADMINISTRATORS_DOCUMENTATION_URL,
+  MANAGE_INSTANCES_DOCUMENTATION_URL,
+} from "./documentationUrls";
 
 /*
 These tests are to verify that each exported URL is correctly composed from the shared base path
@@ -19,7 +22,13 @@ describe("documentationUrls", () => {
 
   it("ADMINISTRATORS_DOCUMENTATION_URL points to the correct page", () => {
     expect(ADMINISTRATORS_DOCUMENTATION_URL).toBe(
-      `${BASE_PATH}/administrators`,
+      `${BASE_PATH}/how-to-guides/web-portal/web-portal-24-04-or-later/manage-administrators-and-roles/`,
+    );
+  });
+
+  it("MANAGE_INSTANCES_DOCUMENTATION_URL points to the correct page", () => {
+    expect(MANAGE_INSTANCES_DOCUMENTATION_URL).toBe(
+      `${BASE_PATH}/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/`,
     );
   });
 });

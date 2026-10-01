@@ -4,7 +4,7 @@ import type { FC } from "react";
 const SuccessfulAttachPage: FC = () => {
   return (
     <AuthTemplate title="Sign in successful">
-      <p className="u-text--muted">
+      <p className="u-text--muted u-margin--bottom">
         You can close this tab and go back to the Ubuntu installer.
       </p>
     </AuthTemplate>

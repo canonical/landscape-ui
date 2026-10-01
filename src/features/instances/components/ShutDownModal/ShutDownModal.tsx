@@ -97,7 +97,7 @@ const ShutDownModal: FC<ShutDownModalProps> = ({ instances, close }) => {
           disabled={formik.values.deliverImmediately}
           error={getFormikError(formik, "deliver_after")}
         />
-        <p>This will shut down {title}.</p>
+        <p className="u-margin--bottom">This will shut down {title}.</p>
       </ConfirmationModal>
     </>
   );

@@ -227,7 +227,9 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
         </Notification>
       )}
 
-      <p>Customize the audit by selecting the scope and the timeframe.</p>
+      <p className="u-margin--bottom">
+        Customize the audit by selecting the scope and the timeframe.
+      </p>
 
       <RadioGroup
         label="Audit timeframe"

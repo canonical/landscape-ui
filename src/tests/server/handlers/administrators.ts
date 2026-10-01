@@ -1,9 +1,13 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { administrators } from "@/tests/mocks/administrators";
-import { isAction } from "@/tests/server/handlers/_helpers";
-import type { Administrator } from "@/types/Administrator";
+import {
+  isAction,
+  shouldApplyEndpointStatus,
+} from "@/tests/server/handlers/_helpers";
+import type { Administrator } from "@/features/administrators";
 import { http, HttpResponse } from "msw";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, never, Administrator[]>(API_URL_OLD, ({ request }) => {
@@ -11,10 +15,16 @@ export default [
       return;
     }
 
-    const { path, status } = getEndpointStatus();
+    if (shouldApplyEndpointStatus("GetAdministrators")) {
+      const { status } = getEndpointStatus("GetAdministrators");
 
-    if (path === "GetAdministrators" && status === "empty") {
-      return HttpResponse.json([]);
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      if (status === "empty") {
+        return HttpResponse.json([]);
+      }
     }
 
     return HttpResponse.json(administrators);
@@ -30,5 +40,37 @@ export default [
     }
 
     return new HttpResponse(null, { status: 200 });
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "InviteAdministrator")) {
+      return;
+    }
+
+    if (shouldApplyEndpointStatus("InviteAdministrator")) {
+      const { status } = getEndpointStatus("InviteAdministrator");
+
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
+
+    return new HttpResponse(null, { status: 200 });
+  }),
+
+  http.get(`${API_URL}max-people-count`, () => {
+    if (shouldApplyEndpointStatus("max-people-count")) {
+      const { response, status } = getEndpointStatus("max-people-count");
+
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      if (status === "variant" && response) {
+        return HttpResponse.json(response);
+      }
+    }
+
+    return HttpResponse.json({ max_people_count: 20 });
   }),
 ];

@@ -25,6 +25,12 @@ export default [
       if (endpointStatus.status === "empty") {
         return HttpResponse.json([]);
       }
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json(
+          (endpointStatus.response ?? []) as AccessGroup[],
+        );
+      }
     }
 
     const url = new URL(request.url);
@@ -37,10 +43,26 @@ export default [
   }),
 
   http.get(API_URL_OLD, ({ request }) => {
-    if (
-      !isAction(request, ["ChangeComputersAccessGroup", "RemoveAccessGroup"])
-    ) {
+    if (!isAction(request, "RemoveAccessGroup")) {
       return;
+    }
+
+    const endpointStatus = getEndpointStatus("RemoveAccessGroup");
+    if (endpointStatus.status === "error") {
+      throw createEndpointStatusError();
+    }
+
+    return HttpResponse.json({ success: true });
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "ChangeComputersAccessGroup")) {
+      return;
+    }
+
+    const endpointStatus = getEndpointStatus("ChangeComputersAccessGroup");
+    if (endpointStatus.status === "error") {
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json({ success: true });

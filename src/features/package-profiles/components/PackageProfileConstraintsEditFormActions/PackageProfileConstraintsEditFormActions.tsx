@@ -90,7 +90,7 @@ const PackageProfileConstraintsEditFormActions: FC<
         confirmationModalProps={{
           title: `Remove ${pluralize(selectedIds.length, ["constraint"])}`,
           children: (
-            <p>
+            <p className="u-margin--bottom">
               This will remove{" "}
               {pluralize(selectedIds.length, ["constraint"], "exact")}.
             </p>

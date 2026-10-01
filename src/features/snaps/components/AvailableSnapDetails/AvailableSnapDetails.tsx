@@ -46,6 +46,12 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
 
   const effectiveChannel = selectedChannel ?? CHANNEL_OPTIONS[0]?.value ?? "";
 
+  const effectiveChannelMap = item?.["channel-map"].find(
+    (channel) =>
+      `${channel.channel.name} - ${channel.channel.architecture}` ===
+      effectiveChannel,
+  );
+
   return (
     <li
       className={classNames(
@@ -64,19 +70,9 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
               name: item.name,
               snap: item.snap,
               revision:
-                item["channel-map"]
-                  .find(
-                    (channel) =>
-                      `${channel.channel.name} - ${channel.channel.architecture}` ===
-                      effectiveChannel,
-                  )
-                  ?.revision.toString() ?? "Unknown revision",
-              channel:
-                item["channel-map"].find(
-                  (channel) =>
-                    `${channel.channel.name} - ${channel.channel.architecture}` ===
-                    effectiveChannel,
-                )?.channel.name ?? "Unknown channel",
+                effectiveChannelMap?.revision.toString() ?? "Unknown revision",
+              channel: effectiveChannelMap?.channel.name ?? "Unknown channel",
+              confinement: effectiveChannelMap?.confinement ?? "strict",
             });
           }}
         >
@@ -95,16 +91,12 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
               handleSelectChannel(event.currentTarget.value);
             }}
             help={
-              item["channel-map"].find(
-                (channel) =>
-                  `${channel.channel.name} - ${channel.channel.architecture}` ===
-                  effectiveChannel,
-              )?.confinement === "classic" ? (
+              effectiveChannelMap?.confinement === "classic" ? (
                 <span>
                   <Icon name={ICONS.warning} />
                   This release requires classic permission.{" "}
                   <a
-                    href="https://snapcraft.io/docs"
+                    href="https://snapcraft.io/docs/snap-confinement"
                     target="_blank"
                     rel="nofollow noopener noreferrer"
                   >

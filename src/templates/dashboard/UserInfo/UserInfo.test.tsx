@@ -10,9 +10,21 @@ import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
 import { ROUTES } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { alertsSummary } from "@/tests/mocks/alerts";
+import type * as AlertNotifications from "@/features/alert-notifications";
+import { useAlertsSummary } from "@/features/alert-notifications";
+import { EnvContext, type EnvContextState } from "@/context/env";
 
 vi.mock("@/hooks/useAuth");
+vi.mock("@/features/alert-notifications");
+
+const mockUseAlertsSummary = (hasAlerts: boolean) => {
+  vi.mocked(useAlertsSummary).mockReturnValue({
+    alertsSummary: [],
+    alertsSummaryCount: 0,
+    hasAlerts,
+    isGettingAlertsSummary: false,
+  });
+};
 
 const mockAuth: AuthContextProps = {
   logout: vi.fn(),
@@ -24,15 +36,31 @@ const mockAuth: AuthContextProps = {
   safeRedirect: vi.fn(),
   isFeatureEnabled: vi.fn().mockReturnValue(false),
   hasAccounts: false,
+  isSuperAdmin: false,
+  canManageAccounts: false,
 };
 
+const { useAlertsSummary: realUseAlertsSummary } = await vi.importActual<
+  typeof AlertNotifications
+>("@/features/alert-notifications");
+
 const labels = ["Unknown user", "Alerts", "Sign out"];
+
+const resolvedEnvState: EnvContextState = {
+  envLoading: false,
+  isSaas: true,
+  isSelfHosted: false,
+  packageVersion: "",
+  revision: "",
+  displayDisaStigBanner: false,
+};
 
 describe("UserInfo", () => {
   beforeEach(() => {
     vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
     vi.mocked(useAuth).mockReturnValue(mockAuth);
     setEndpointStatus("default");
+    vi.mocked(useAlertsSummary).mockImplementation(realUseAlertsSummary);
   });
 
   afterEach(() => {
@@ -146,25 +174,23 @@ describe("UserInfo", () => {
     expect(alertsLink).toHaveAttribute("aria-current", "page");
   });
 
-  it("renders the alerts badge with the displayed alert count", async () => {
+  it("shows the alerts indicator when there are alerts", async () => {
     renderWithProviders(<UserInfo />);
 
     const alertsLink = screen.getByRole("link", { name: /alerts/i });
     expect(
-      await within(alertsLink).findByText(String(alertsSummary.length)),
+      await within(alertsLink).findByLabelText("There are unresolved alerts"),
     ).toBeInTheDocument();
   });
 
-  it("hides the alerts badge when there are no alerts", async () => {
-    setEndpointStatus("empty");
-
+  it("hides the alerts indicator when there are no alerts", () => {
+    mockUseAlertsSummary(false);
     renderWithProviders(<UserInfo />);
 
     const alertsLink = screen.getByRole("link", { name: /alerts/i });
-
-    await waitFor(() => {
-      expect(within(alertsLink).queryByText(/^\d+$/)).not.toBeInTheDocument();
-    });
+    expect(
+      within(alertsLink).queryByLabelText("There are unresolved alerts"),
+    ).not.toBeInTheDocument();
   });
 
   describe("mobile accordion", () => {
@@ -212,6 +238,29 @@ describe("UserInfo", () => {
       await waitFor(() => {
         expect(btn).toHaveAttribute("aria-expanded", "true");
       });
+    });
+
+    it("hides the legacy license link when the account is not entitled", async () => {
+      setEndpointStatus({
+        status: "variant",
+        path: "self-hosted/status",
+        response: { enabled: false },
+      });
+
+      renderWithProviders(
+        <EnvContext.Provider value={resolvedEnvState}>
+          <UserInfo />
+        </EnvContext.Provider>,
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("list", { name: "Account settings" }),
+        ).toHaveAttribute("aria-busy", "false");
+      });
+      expect(
+        screen.queryByRole("link", { name: "Legacy license file" }),
+      ).not.toBeInTheDocument();
     });
   });
 });

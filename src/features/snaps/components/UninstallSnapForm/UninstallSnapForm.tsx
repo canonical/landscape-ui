@@ -67,7 +67,9 @@ const UninstallSnapForm: FC<UninstallSnapFormProps> = ({ installedSnaps }) => {
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <p>This will remove {snapLabel} from your system.</p>
+      <p className="u-margin--bottom">
+        This will remove {snapLabel} from your system.
+      </p>
       <DeliveryBlock formik={formik} />
       <RandomizationBlock formik={formik} />
       <SidePanelFormButtons

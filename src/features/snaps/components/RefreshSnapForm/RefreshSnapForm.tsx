@@ -67,7 +67,7 @@ const RefreshSnapForm: FC<RefreshSnapFormProps> = ({ installedSnaps }) => {
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <p>
+      <p className="u-margin--bottom">
         This will update {snapLabel} to the latest version available. Automatic
         updates will resume, and {snapLabel} will be upgraded based on the
         regular refresh schedule.

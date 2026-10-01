@@ -42,8 +42,11 @@ const InstallSnaps: FC = () => {
         computer_ids: [instanceId],
         snaps: selectedSnaps.map((snap) => ({
           name: snap.name,
-          channel: snap.channel,
-          revision: snap.revision,
+          args: {
+            channel: snap.channel,
+            revision: snap.revision,
+            classic: snap.confinement === "classic",
+          },
         })),
         action: "install",
       });

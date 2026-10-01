@@ -1,3 +1,5 @@
+import * as Constants from "@/constants";
+import { API_URL } from "@/constants";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
@@ -6,12 +8,16 @@ import {
   ubuntuCoreInstance,
   ubuntuInstance,
 } from "@/tests/mocks/instance";
+import { features } from "@/tests/mocks/features";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
+import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import type { Instance } from "@/types/Instance";
 import { fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
-import { describe, expect, vi } from "vitest";
+import { afterEach, describe, expect, vi } from "vitest";
 import InstanceList from "./InstanceList";
 
 const props: ComponentProps<typeof InstanceList> = {
@@ -321,5 +327,74 @@ describe("InstanceList", () => {
 
     await userEvent.click(clearSelectionButton);
     expect(props.setSelectedInstances).toHaveBeenCalledWith([]);
+  });
+
+  describe("cross-page 'Select all' control", () => {
+    const disableInstanceReportsFeature = () => {
+      server.use(
+        http.get(`${API_URL}features`, () =>
+          HttpResponse.json(
+            generatePaginatedResponse({
+              data: features.map((feature) =>
+                feature.key === "instance-reports"
+                  ? { ...feature, enabled: false }
+                  : feature,
+              ),
+              offset: 0,
+              limit: 20,
+            }),
+          ),
+        ),
+      );
+    };
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("is shown when the report view feature is enabled", async () => {
+      vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
+
+      renderWithProviders(
+        <InstanceList {...props} selectedInstances={instances} />,
+      );
+
+      expect(
+        await screen.findByRole("button", {
+          name: `Select all ${props.instanceCount} instances`,
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it("is shown when TSV export is enabled", async () => {
+      vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
+      disableInstanceReportsFeature();
+
+      renderWithProviders(
+        <InstanceList {...props} selectedInstances={instances} />,
+      );
+
+      expect(
+        await screen.findByRole("button", {
+          name: `Select all ${props.instanceCount} instances`,
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it("is hidden when neither the report view nor TSV export is enabled", async () => {
+      vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
+      disableInstanceReportsFeature();
+
+      renderWithProviders(
+        <InstanceList {...props} selectedInstances={instances} />,
+      );
+
+      await screen.findByRole("button", { name: /clear selection/i });
+      expect(
+        screen.queryByRole("button", {
+          name: `Select all ${props.instanceCount} instances`,
+        }),
+      ).not.toBeInTheDocument();
+    });
   });
 });

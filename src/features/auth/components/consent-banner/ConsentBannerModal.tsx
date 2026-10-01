@@ -26,7 +26,7 @@ const ConsentBannerModal: FC<ConsentBannerProps> = ({ onClose }) => {
       }
     >
       <section>
-        <p>
+        <p className="u-margin--bottom">
           You are accessing a U.S. Government (USG) Information System (IS) that
           is provided for USG authorized use only. By using this IS (which
           includes any device attached to this IS), you consent to the following
@@ -60,7 +60,7 @@ const ConsentBannerModal: FC<ConsentBannerProps> = ({ onClose }) => {
             are private and confidential. See User Agreement for details.
           </li>
         </ul>
-        <p>
+        <p className="u-margin--bottom">
           <CheckboxInput
             inline
             label="I acknowledge that I have read and understood the above consent notice."

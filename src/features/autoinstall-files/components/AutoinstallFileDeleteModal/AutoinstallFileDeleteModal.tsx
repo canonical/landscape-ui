@@ -42,7 +42,7 @@ const AutoinstallFileDeleteModal: FC<AutoinstallFileDeleteModalProps> = ({
       title={`Remove ${autoinstallFile.filename}, autoinstall file`}
       renderInPortal
     >
-      <p>
+      <p className="u-margin--bottom">
         You are about to remove {autoinstallFile.filename}, an autoinstall file.
         This action is irreversible. All Employee accounts previously assigned
         this file via identity provider will instead use the default autoinstall

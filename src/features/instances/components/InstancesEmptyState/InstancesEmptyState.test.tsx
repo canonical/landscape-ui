@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import InstancesEmptyState from "./InstancesEmptyState";
-import { MANAGE_INSTANCES_DOCUMENTATION_URL } from "./constants";
+import { MANAGE_INSTANCES_DOCUMENTATION_URL } from "@/constants";
 
 describe("InstancesEmptyState", () => {
   it("renders empty-state title and body copy", () => {

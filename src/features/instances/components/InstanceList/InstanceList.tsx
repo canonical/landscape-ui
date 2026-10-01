@@ -4,8 +4,9 @@ import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
 import StaticLink from "@/components/layout/StaticLink";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT, TSV_EXPORTS_ENABLED } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
+import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import type { Instance } from "@/types/Instance";
@@ -401,6 +402,12 @@ const InstanceList = memo(function InstanceList({
     [disabledColumns, columns],
   );
 
+  const { isFeatureEnabled } = useAuth();
+  // "Select all" is only useful if the resulting selection can feed into an
+  // all-selection-aware feature, currently TSV export or the report view.
+  const canSelectAll =
+    TSV_EXPORTS_ENABLED || isFeatureEnabled("instance-reports");
+
   const showSubhead =
     (isAllSelected || !!selectedInstances.length) &&
     instanceCount !== undefined &&
@@ -414,7 +421,7 @@ const InstanceList = memo(function InstanceList({
           onClearSelection={onClearSelection}
           selectedCount={selectedInstances.length}
           totalCount={instanceCount}
-          canSelectAll
+          canSelectAll={canSelectAll}
           onSelectAll={onSelectAll}
           isAllSelected={isAllSelected}
         />

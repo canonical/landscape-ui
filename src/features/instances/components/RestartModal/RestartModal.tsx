@@ -96,7 +96,7 @@ const RestartModal: FC<RestartModalProps> = ({ instances, close }) => {
           disabled={formik.values.deliverImmediately}
           error={getFormikError(formik, "deliver_after")}
         />
-        <p>This will restart {title}.</p>
+        <p className="u-margin--bottom">This will restart {title}.</p>
       </ConfirmationModal>
     </>
   );

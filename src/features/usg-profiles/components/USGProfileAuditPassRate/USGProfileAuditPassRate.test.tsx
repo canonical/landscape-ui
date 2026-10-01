@@ -23,7 +23,7 @@ describe("USGProfileAuditPassRate", () => {
       screen.getByRole("link", { name: `${results.passing} passed` }),
     ).toHaveAttribute(
       "href",
-      expect.stringContaining(`usg-profile%3A${profileWithRun.id}%3Apass`),
+      expect.stringContaining(`profile%3Ausg%3A${profileWithRun.id}%3Apass`),
     );
     expect(screen.getByText(`${results.failing} failed`)).not.toHaveRole(
       "link",
@@ -44,6 +44,30 @@ describe("USGProfileAuditPassRate", () => {
       within(tooltip).getByText(`${results.in_progress} instances (80%)`),
     ).toBeInTheDocument();
     expect(within(tooltip).getAllByText(`0 instances (0%)`)).toHaveLength(2);
+  });
+
+  it("uses profile:usg syntax for pass and fail links", () => {
+    const profileWithPassAndFail = {
+      ...profileWithRun,
+      last_run_results: {
+        ...profileWithRun.last_run_results,
+        passing: 1,
+        failing: 1,
+      },
+    };
+
+    renderWithProviders(
+      <USGProfileAuditPassRate profile={profileWithPassAndFail} />,
+    );
+
+    expect(screen.getByRole("link", { name: "1 passed" })).toHaveAttribute(
+      "href",
+      expect.stringContaining(`profile%3Ausg%3A${profileWithRun.id}%3Apass`),
+    );
+    expect(screen.getByRole("link", { name: "1 failed" })).toHaveAttribute(
+      "href",
+      expect.stringContaining(`profile%3Ausg%3A${profileWithRun.id}%3Afail`),
+    );
   });
 
   it("renders passed count without a link when there are no passing instances", () => {

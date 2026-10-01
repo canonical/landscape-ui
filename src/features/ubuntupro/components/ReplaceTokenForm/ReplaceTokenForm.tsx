@@ -20,7 +20,7 @@ const ReplaceTokenForm: FC<ReplaceTokenFormProps> = ({ selectedInstances }) => {
       submitButtonText="Replace"
       notification={notification}
     >
-      <p>
+      <p className="u-margin--bottom">
         Replacing a token will override your{" "}
         {pluralize(selectedInstances.length, ["instance's", "instances'"])}{" "}
         existing token. You can find your tokens on the{" "}

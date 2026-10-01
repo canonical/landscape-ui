@@ -1,0 +1,108 @@
+import LoadingState from "@/components/layout/LoadingState";
+import PageContent from "@/components/layout/PageContent";
+import PageHeader from "@/components/layout/PageHeader";
+import PageMain from "@/components/layout/PageMain";
+import useSidePanel from "@/hooks/useSidePanel";
+import {
+  AdministratorsTabs,
+  AdministratorsLimit,
+  useGetAdministratorsLimit,
+  useAdministrators,
+  AdministratorLimitModal,
+  InviteAdministratorForm,
+} from "@/features/administrators";
+import { Button } from "@canonical/react-components";
+import type { FC } from "react";
+import { useBoolean } from "usehooks-ts";
+
+const AdministratorsPage: FC = () => {
+  const { setSidePanelContent } = useSidePanel();
+  const {
+    value: isModalOpen,
+    setTrue: openModal,
+    setFalse: closeModal,
+  } = useBoolean(false);
+
+  const { getAdministratorsQuery, getInvitationsQuery } = useAdministrators();
+  const { data: administratorsData, isPending: isGettingAdministrators } =
+    getAdministratorsQuery();
+  const {
+    data: invitationsData,
+    isPending: isGettingInvitations,
+    isError: isInvitationsError,
+  } = getInvitationsQuery();
+
+  const {
+    administratorsLimit,
+    isGettingAdministratorsLimit,
+    isAdministratorsLimitError,
+  } = useGetAdministratorsLimit();
+
+  const administrators = administratorsData?.data ?? [];
+  const invitationsCount = invitationsData?.data.count ?? 0;
+
+  const isGettingAdminInfo =
+    isGettingAdministratorsLimit ||
+    isGettingAdministrators ||
+    isGettingInvitations;
+
+  const isAdminInfoError = isAdministratorsLimitError || isInvitationsError;
+
+  const totalAdminsAndInvites = administrators.length + invitationsCount;
+  const isAdminLimitReached = totalAdminsAndInvites >= administratorsLimit;
+
+  const handleInviteAdministrator = () => {
+    if (isAdminLimitReached || isAdminInfoError) {
+      openModal();
+    } else {
+      setSidePanelContent("Invite administrator", <InviteAdministratorForm />);
+    }
+  };
+
+  if (isGettingAdminInfo) {
+    return <LoadingState />;
+  }
+
+  return (
+    <PageMain>
+      <PageHeader
+        title="Administrators"
+        actions={
+          administrators.length
+            ? [
+                <Button
+                  appearance="positive"
+                  key="invite-administrator"
+                  onClick={handleInviteAdministrator}
+                  type="button"
+                >
+                  Invite administrator
+                </Button>,
+              ]
+            : undefined
+        }
+      />
+      <AdministratorsLimit
+        adminAndInviteCount={totalAdminsAndInvites}
+        administratorsLimit={administratorsLimit}
+        isAdminInfoError={isAdminInfoError}
+      />
+      <PageContent hasTable>
+        <AdministratorsTabs
+          administrators={administrators}
+          invitationsCount={invitationsCount}
+          handleInvite={handleInviteAdministrator}
+        />
+      </PageContent>
+
+      {isModalOpen && (
+        <AdministratorLimitModal
+          close={closeModal}
+          isAdminInfoError={isAdminInfoError}
+        />
+      )}
+    </PageMain>
+  );
+};
+
+export default AdministratorsPage;

@@ -1,5 +1,5 @@
-import { cardClasses } from "@/components/layout/Card";
 import useAuth from "@/hooks/useAuth";
+import { Card } from "@canonical/react-ds-global";
 import type { MultiSelectItem } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
@@ -18,16 +18,18 @@ const AlertsList: FC<AlertsListProps> = ({ alerts, availableTagOptions }) => {
     (account) => account.name === user.current_account,
   );
   return (
-    <div className={classNames(cardClasses.card, classes.card)}>
-      <div className={cardClasses.header}>
-        <p className={cardClasses.title}>{account?.title || "Alerts"}</p>
-      </div>
-      <div className={classNames(cardClasses.content, classes.content)}>
-        <AlertsTable
-          alerts={alerts}
-          availableTagOptions={availableTagOptions}
-        />
-      </div>
+    <div className={classNames("grid", classes.cardGrid)}>
+      <Card className={classes.card}>
+        <Card.Header className={classes.header}>
+          <strong>{account?.title || "Alerts"}</strong>
+        </Card.Header>
+        <Card.Content className={classes.content}>
+          <AlertsTable
+            alerts={alerts}
+            availableTagOptions={availableTagOptions}
+          />
+        </Card.Content>
+      </Card>
     </div>
   );
 };

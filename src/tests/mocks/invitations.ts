@@ -1,4 +1,4 @@
-import type { Invitation, InvitationSummary } from "@/types/Invitation";
+import type { Invitation, InvitationSummary } from "@/features/administrators";
 
 export const invitations: Invitation[] = [
   {

@@ -66,14 +66,14 @@ const UnholdSnapForm: FC<UnholdSnapFormProps> = ({ installedSnaps }) => {
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       {hasOneItem(installedSnaps) ? (
-        <p>
+        <p className="u-margin--bottom">
           This will resume automatic updates for {installedSnaps[0].snap.name},
           and it will be eligible for the latest version upgrades based on the
           regular refresh schedule.
         </p>
       ) : (
         <>
-          <p>
+          <p className="u-margin--bottom">
             Unholding a snap will resume automatic updates for that particular
             snap.
           </p>

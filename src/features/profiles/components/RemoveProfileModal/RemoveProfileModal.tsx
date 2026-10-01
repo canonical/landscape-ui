@@ -29,7 +29,7 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
 
   const { notify } = useNotify();
   const debug = useDebug();
-  const { setPageParams } = usePageParams();
+  const { closeSidePanel } = usePageParams();
   const { removeProfile, isRemovingProfile } = useProfiles();
 
   const handleRemoveProfile = async () => {
@@ -39,7 +39,7 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
         name: profile.name,
       });
 
-      setPageParams({ sidePath: [], name: "" });
+      closeSidePanel();
 
       notify.success({
         title: `${capitalize(type)} profile ${removalType}d`,
@@ -65,8 +65,8 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
       confirmationText={`${removalType} ${profile.title}`}
       renderInPortal
     >
-      <p>{getModalMessage(type, profile.title)}</p>
-      <p>
+      <p className="u-margin--bottom">{getModalMessage(type, profile.title)}</p>
+      <p className="u-margin--bottom">
         This action is <strong>irreversible</strong>.
       </p>
     </TextConfirmationModal>

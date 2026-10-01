@@ -1,6 +1,6 @@
 import ListActions from "@/components/layout/ListActions";
-import { type FC } from "react";
 import usePageParams from "@/hooks/usePageParams";
+import { type FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import type { AccessGroupWithInstancesCount } from "../../types";
 import AccessGroupDeleteModal from "../AccessGroupDeleteModal";
@@ -26,6 +26,15 @@ const AccessGroupListActions: FC<AccessGroupListActionsProps> = ({
       <ListActions
         toggleAriaLabel={`${accessGroup.title} access group actions`}
         actions={[
+          {
+            icon: "show",
+            label: "View details",
+            "aria-label": `View "${accessGroup.title}" access group details`,
+            onClick: createPageParamsSetter({
+              name: accessGroup.name,
+              sidePath: ["view"],
+            }),
+          },
           {
             icon: "edit",
             label: "Edit",

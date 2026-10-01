@@ -2,8 +2,8 @@ import type { FC } from "react";
 import classNames from "classnames";
 import classes from "@/templates/dashboard/Navigation/Navigation.module.scss";
 import type { MenuItem } from "@/templates/dashboard/Navigation/types";
+import { Badge } from "@canonical/react-ds-global";
 import { Link } from "react-router";
-import { Badge } from "@canonical/react-components";
 
 interface NavigationRouteProps {
   readonly item: MenuItem;
@@ -46,7 +46,7 @@ const NavigationRoute: FC<NavigationRouteProps> = ({
           <div className={classes.badge}>
             <Badge
               value={item.badge.count}
-              isNegative={item.badge.isNegative}
+              criticality={item.badge.isNegative ? "error" : undefined}
             />
           </div>
         )}
