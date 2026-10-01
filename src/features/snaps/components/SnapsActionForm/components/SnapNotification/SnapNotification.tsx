@@ -1,15 +1,12 @@
 import type { FC } from "react";
 import { Notification } from "@canonical/react-components";
 import type { ActionWithNotification } from "../../../../types";
-import { useBoolean } from "usehooks-ts";
 
 interface SnapNotificationProps {
   readonly action: ActionWithNotification;
 }
 
 const SnapNotification: FC<SnapNotificationProps> = ({ action }) => {
-  const { value: isDismissed, setTrue: dismiss } = useBoolean(false);
-
   const content =
     action === "hold"
       ? {
@@ -18,21 +15,12 @@ const SnapNotification: FC<SnapNotificationProps> = ({ action }) => {
           onDismiss: undefined,
         }
       : {
-          title: "Instances of multiple architectures selected",
-          body: "The instances you selected are of more than one architecture. The snaps added will only be installed on compatible instances.",
-          onDismiss: dismiss,
+          title: undefined,
+          body: "Specifying a revision doesn't change the tracked channel, so future updates may replace it with that channel's latest revision.",
         };
 
-  if (isDismissed) {
-    return null;
-  }
-
   return (
-    <Notification
-      severity="information"
-      title={content.title}
-      onDismiss={content.onDismiss}
-    >
+    <Notification severity="information" title={content.title}>
       {content.body}
     </Notification>
   );
