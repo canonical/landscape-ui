@@ -7,7 +7,6 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import InvitationWelcome from "./InvitationWelcome";
 import { expectLoadingState } from "@/tests/helpers";
 import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
-import { noneLoginMethods } from "@/tests/mocks/loginMethods";
 
 describe("InvitationWelcome", () => {
   const defaultProps: ComponentProps<typeof InvitationWelcome> = {
