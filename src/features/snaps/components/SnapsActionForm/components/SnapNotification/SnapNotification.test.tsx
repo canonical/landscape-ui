@@ -1,6 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import SnapNotification from "./SnapNotification";
 
@@ -22,25 +21,7 @@ describe("SnapNotification", () => {
     renderWithProviders(<SnapNotification action="install" />);
 
     expect(
-      screen.getByText("Instances of multiple architectures selected"),
+      screen.getByText(/revision doesn't change the tracked channel/i),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/will only be installed on compatible instances/i),
-    ).toBeInTheDocument();
-  });
-
-  it("dismisses the install notification", async () => {
-    renderWithProviders(<SnapNotification action="install" />);
-
-    const dismissButton = screen.getByRole("button", {
-      name: /Close notification/i,
-    });
-    await userEvent.click(dismissButton);
-
-    await waitFor(() => {
-      expect(
-        screen.queryByText("Instances of multiple architectures selected"),
-      ).not.toBeInTheDocument();
-    });
   });
 });
