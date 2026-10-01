@@ -1,39 +1,52 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
-import { describe } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it } from "vitest";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import InvitationWelcome from "./InvitationWelcome";
 import { expectLoadingState } from "@/tests/helpers";
 import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
+import { noneLoginMethods } from "@/tests/mocks/loginMethods";
 
 describe("InvitationWelcome", () => {
   const defaultProps: ComponentProps<typeof InvitationWelcome> = {
     accountTitle: "Test Account",
   };
 
-  it("should render the welcome message", async () => {
+  it("should show account creation when opening an invitation", async () => {
     renderWithProviders(<InvitationWelcome {...defaultProps} />);
     await expectLoadingState();
 
     expect(
-      screen.getByText("You have been invited to Test Account"),
+      screen.getByText("Create a user to join Test Account"),
     ).toBeInTheDocument();
   });
 
-  it("should show login methods when loaded successfully", async () => {
+  it("shows sign-in methods when the invitee chooses to sign in", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<InvitationWelcome {...defaultProps} />);
     await expectLoadingState();
 
+    await user.click(
+      screen.getByRole("button", {
+        name: "Already have an account? Sign in here",
+      }),
+    );
     expect(screen.getByText("Sign in with Ubuntu One")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Create user" }),
+    ).not.toBeInTheDocument();
   });
 
   it("should show error message when login methods fail to load", async () => {
     setEndpointStatus("error");
 
     renderWithProviders(<InvitationWelcome {...defaultProps} />);
-    await expectLoadingState();
-
-    expect(screen.getByText(CONTACT_SUPPORT_TEAM_MESSAGE)).toBeInTheDocument();
+    expect(
+      await screen.findByText(CONTACT_SUPPORT_TEAM_MESSAGE, undefined, {
+        timeout: 3000,
+      }),
+    ).toBeInTheDocument();
   });
 });
