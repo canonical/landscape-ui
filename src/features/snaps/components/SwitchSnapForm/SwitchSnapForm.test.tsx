@@ -189,7 +189,6 @@ describe("SwitchSnapForm", () => {
           name: snapWithChannels.snap.name,
           args: {
             channel: strictChannel.channel.name,
-            revision: strictChannel.revision.toString(),
             classic: false,
           },
         },
@@ -212,7 +211,6 @@ describe("SwitchSnapForm", () => {
           name: snapWithChannels.snap.name,
           args: {
             channel: classicChannel.channel.name,
-            revision: classicChannel.revision.toString(),
             classic: true,
           },
         },
