@@ -66,7 +66,10 @@ describe("PendingUserActivity", () => {
 
     await userEventInstance.click(activityLink);
 
-    const panel = screen.getByRole("complementary");
+    const panel = screen
+      .getByRole("heading", { level: 3, name: childActivity.summary })
+      .closest("aside");
+    assert(panel);
     expect(
       await within(panel).findByRole("link", { name: ubuntuInstance.title }),
     ).toHaveAttribute(
