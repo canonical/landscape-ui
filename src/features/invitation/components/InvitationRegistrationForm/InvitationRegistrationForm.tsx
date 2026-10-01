@@ -1,15 +1,15 @@
-import { Button } from '@canonical/react-components';
-import type { FC } from 'react';
+import { Button } from "@canonical/react-components";
+import type { FC } from "react";
 import {
   PamUserForm,
   type PamUserFormValues,
-} from '@/features/account-creation';
-import { useInvitation } from '@/features/auth';
-import AuthTemplate from '@/templates/auth/AuthTemplate';
-import useDebug from '@/hooks/useDebug';
-import type { useAcceptInvitation } from '../../api/useAcceptInvitation';
-import InvitationLocalUserForm from '../InvitationLocalUserForm';
-import type { InvitationLocalUserFormValues } from '../InvitationLocalUserForm';
+  PasswordUserForm,
+  type PasswordUserFormValues,
+} from "@/features/account-creation";
+import { useInvitation } from "@/features/auth";
+import AuthTemplate from "@/templates/auth/AuthTemplate";
+import useDebug from "@/hooks/useDebug";
+import type { useAcceptInvitation } from "../../api/useAcceptInvitation";
 
 interface InvitationRegistrationFormProps {
   readonly accountTitle: string;
@@ -18,7 +18,7 @@ interface InvitationRegistrationFormProps {
   readonly isAcceptingInvitation: boolean;
   readonly acceptInvitation: ReturnType<
     typeof useAcceptInvitation
-  >['acceptInvitation'];
+  >["acceptInvitation"];
   readonly onSignIn: () => void;
 }
 
@@ -44,7 +44,7 @@ const InvitationRegistrationForm: FC<InvitationRegistrationFormProps> = ({
     }
   };
 
-  const handleLocalRegister = async (values: InvitationLocalUserFormValues) => {
+  const handleLocalRegister = async (values: PasswordUserFormValues) => {
     try {
       await acceptInvitation({
         ...values,
@@ -66,17 +66,18 @@ const InvitationRegistrationForm: FC<InvitationRegistrationFormProps> = ({
       {isPamEnabled && (
         <PamUserForm
           onSubmit={handleRegister}
-          submitButtonText='Create user'
+          submitButtonText="Create user"
           submitting={isAcceptingInvitation}
         />
       )}
       {!isPamEnabled && isPasswordEnabled && (
-        <InvitationLocalUserForm
+        <PasswordUserForm
           onSubmit={handleLocalRegister}
+          submitButtonText="Create user"
           submitting={isAcceptingInvitation}
         />
       )}
-      <Button type='button' appearance='link' onClick={onSignIn}>
+      <Button type="button" appearance="link" onClick={onSignIn}>
         Already have an account? Sign in here
       </Button>
     </AuthTemplate>
