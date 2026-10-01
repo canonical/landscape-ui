@@ -1,6 +1,6 @@
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
-import type { ActivityGroup } from "@/features/activities/types";
+import type { ActivityGroup } from "@/features/activities";
 import type { SnapActionParams } from "../types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
