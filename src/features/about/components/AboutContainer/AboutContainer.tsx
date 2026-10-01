@@ -3,6 +3,8 @@ import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import { APP_COMMIT, APP_VERSION } from "@/constants";
 import useEnv from "@/hooks/useEnv";
+import { ROUTES } from "@/libs/routes";
+import { Link } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./AboutContainer.module.scss";
 
@@ -14,8 +16,9 @@ const AboutContainer: FC = () => {
   }
 
   return (
-    <>
-      <FormSection title="UI version">
+    <div className={classes.aboutContainer}>
+      <hr className="p-rule--muted" />
+      <FormSection className={classes.aboutSection} title="UI version">
         <InfoGrid className={classes.versionGrid} dense>
           <InfoGrid.Item label="App version" value={APP_VERSION || "unknown"} />
           <InfoGrid.Item
@@ -24,7 +27,7 @@ const AboutContainer: FC = () => {
           />
         </InfoGrid>
       </FormSection>
-      <FormSection title="Server version">
+      <FormSection className={classes.aboutSection} title="Server version">
         <InfoGrid className={classes.versionGrid} dense>
           <InfoGrid.Item
             label="Package version"
@@ -33,7 +36,37 @@ const AboutContainer: FC = () => {
           <InfoGrid.Item label="Revision" value={revision || "unknown"} />
         </InfoGrid>
       </FormSection>
-    </>
+      <FormSection className={classes.aboutSection} title="Useful Links">
+        <ul className="p-list">
+          <li>
+            <Link
+              href={ROUTES.external.documentation()}
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+            >
+              Landscape documentation
+            </Link>
+          </li>
+          <li>
+            <Link
+              href={ROUTES.external.support()}
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+            >
+              Support portal
+            </Link>
+          </li>
+        </ul>
+      </FormSection>
+      <FormSection className={classes.aboutSection} title="Copyright">
+        <span>
+          © 2026 Canonical Ltd.
+          <br />
+          Ubuntu, Landscape, and Canonical are registered trademarks of
+          Canonical Ltd.
+        </span>
+      </FormSection>
+    </div>
   );
 };
 

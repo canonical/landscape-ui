@@ -1,5 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import useEnv from "@/hooks/useEnv";
+import { PATHS } from "@/libs/routes";
 import { screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import AboutContainer from "./AboutContainer";
@@ -34,6 +35,18 @@ describe("AboutContainer", () => {
     expect(screen.getByRole("heading", { name: "Server version" })).toBeInTheDocument();
     expect(container).toHaveInfoItem("Package version", "1.2.3");
     expect(container).toHaveInfoItem("Revision", "abcdef");
+  });
+
+  it("renders useful external links", () => {
+    renderWithProviders(<AboutContainer />);
+
+    expect(
+      screen.getByRole("link", { name: "Landscape documentation" }),
+    ).toHaveAttribute("href", PATHS.external.documentation);
+    expect(screen.getByRole("link", { name: "Support portal" })).toHaveAttribute(
+      "href",
+      PATHS.external.support,
+    );
   });
 
   it("falls back to unknown when UI version or hash are unavailable", () => {

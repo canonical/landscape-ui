@@ -3,14 +3,17 @@ import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { AboutContainer } from "@/features/about";
 import type { FC } from "react";
+import classes from "./AboutPage.module.scss";
 
 const AboutPage: FC = () => (
-  <PageMain>
-    <PageHeader title="About" />
-    <PageContent container="medium" align="left">
-      <AboutContainer />
-    </PageContent>
-  </PageMain>
+  <div className={classes.aboutPage}>
+    <PageMain>
+      <PageHeader title="About" />
+      <PageContent container="fluid">
+        <AboutContainer />
+      </PageContent>
+    </PageMain>
+  </div>
 );
 
 export default AboutPage;

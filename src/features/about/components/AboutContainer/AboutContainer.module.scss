@@ -1,5 +1,27 @@
+.aboutContainer {
+  min-width: 310px;
+  width: 100%;
+
+  & > section > div {
+    max-width: 1376px;
+  }
+}
+
+.aboutContainer .aboutSection + .aboutSection {
+  margin-top: 2rem;
+  padding-top: 0.5rem;
+}
+
+.aboutSection > div {
+  align-items: baseline;
+}
+
+.aboutSection > div > div:first-child > h2 {
+  padding-top: 0;
+}
+
 .versionGrid {
   & > div {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 350px));
   }
 }

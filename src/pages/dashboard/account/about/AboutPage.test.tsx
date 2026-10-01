@@ -8,5 +8,6 @@ describe("AboutPage", () => {
     renderWithProviders(<AboutPage />);
 
     expect(screen.getByRole("heading", { name: "About" })).toBeInTheDocument();
+    expect(screen.getByRole("separator")).toHaveClass("p-rule--muted");
   });
 });
