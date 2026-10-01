@@ -55,14 +55,16 @@ jobs:
       # this job needs. Requires LANDSCAPE_PACKAGER_APP_ID (var) and
       # LANDSCAPE_PACKAGER_PRIVATE_KEY (secret) to be set on this repo.
       #
-      # Skipped for PRs authored by Dependabot: GitHub exposes only the isolated
-      # Dependabot secrets store to those runs, so vars/secrets referenced here
-      # resolve to empty strings and create-github-app-token would fail. The
-      # "Resolve packaging token" step below falls back to LANDSCAPE_PACKAGER_PAT
+      # Skipped when Dependabot is the triggering actor: for the pull_request event,
+      # GitHub scopes secrets by github.actor (not who opened the PR), so a human
+      # pushing a follow-up commit to a Dependabot PR gets normal secrets and should
+      # not be skipped here. See
+      # https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-on-actions
+      # The "Resolve packaging token" step below falls back to LANDSCAPE_PACKAGER_PAT
       # (a fine-grained PAT with Contents: Read access in the Dependabot secrets store) for that case.
       - name: Generate App Token
         id: get_token
-        if: github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
+        if: github.actor != 'dependabot[bot]'
         uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
         with:
           app-id: ${{ vars.LANDSCAPE_PACKAGER_APP_ID }}
