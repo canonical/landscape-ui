@@ -45,6 +45,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
     <>
       {modeLabel && <div>{modeLabel}</div>}
       <div className={classNames(classes.fieldsRow, !isDarkMode && "is-paper")}>
+        <Select
           aria-label={`Snap channel or revision for ${snapName}`}
           options={MODE_OPTIONS}
           onChange={(event) => {
