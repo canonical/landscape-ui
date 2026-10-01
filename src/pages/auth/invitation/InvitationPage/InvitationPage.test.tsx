@@ -52,7 +52,7 @@ describe("InvitationPage", () => {
     renderWithProviders(<InvitationPage />);
 
     expect(
-      await screen.findByText(/You have been invited to/),
+      await screen.findByText(/Create a user to join/),
     ).toBeInTheDocument();
   });
 
