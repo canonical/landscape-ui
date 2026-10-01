@@ -140,7 +140,9 @@ const Activities: FC<ActivitiesProps> = ({
                 appearance="link"
                 className="u-no-margin--bottom u-no-padding--top u-align-text--left"
                 onClick={() => {
-                  handleActivityDetailsOpen(row.original);
+                  handleActivityDetailsOpen(row.original, {
+                    hideInstanceField: instanceId !== undefined,
+                  });
                 }}
               >
                 {row.original.summary}
@@ -151,6 +153,7 @@ const Activities: FC<ActivitiesProps> = ({
         {
           accessor: "activity_status",
           Header: "Status",
+          className: "medium-cell",
           Cell: ({
             row: {
               original: { activity_status },
@@ -167,12 +170,13 @@ const Activities: FC<ActivitiesProps> = ({
         {
           accessor: "computer_id",
           Header: "Instance",
+          className: "large-cell",
           Cell: ({ row }: CellProps<ActivityCommon>) =>
             row.original.computer_id ? (
               <Link
                 to={ROUTES.instances.details.single(row.original.computer_id)}
               >
-                ID: {row.original.computer_id}
+                {row.original.computer_title}
               </Link>
             ) : (
               <NoData />
@@ -191,8 +195,24 @@ const Activities: FC<ActivitiesProps> = ({
           ),
         },
         {
+          accessor: "completion_time",
+          Header: "Completed at",
+          className: "large-cell",
+          Cell: ({ row }: CellProps<ActivityCommon>) =>
+            row.original.completion_time ? (
+              <span className="font-monospace">
+                {date(row.original.completion_time).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
+              </span>
+            ) : (
+              <NoData />
+            ),
+        },
+        {
           accessor: "creator.name",
           Header: "Creator",
+          className: "medium-cell",
           Cell: ({ row }: CellProps<ActivityCommon>) => (
             <>{row.original.creator?.name ?? <NoData />}</>
           ),
@@ -264,7 +284,7 @@ const Activities: FC<ActivitiesProps> = ({
           emptyMsg="No activities found according to your search parameters."
           columns={columns}
           data={activities}
-          minWidth={1150}
+          minWidth={1400}
           subhead={subhead}
         />
       )}

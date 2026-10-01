@@ -49,6 +49,8 @@ describe("SingleInstanceTabs", () => {
         user: authUser,
         safeRedirect: vi.fn(),
         hasAccounts: true,
+        isSuperAdmin: false,
+        canManageAccounts: false,
       });
     });
 
@@ -111,6 +113,8 @@ describe("SingleInstanceTabs", () => {
         user: authUser,
         safeRedirect: vi.fn(),
         hasAccounts: true,
+        isSuperAdmin: false,
+        canManageAccounts: false,
       });
     });
 
@@ -269,6 +273,8 @@ describe("SingleInstanceTabs", () => {
         user: authUser,
         safeRedirect: vi.fn(),
         hasAccounts: true,
+        isSuperAdmin: false,
+        canManageAccounts: false,
       });
     });
 
