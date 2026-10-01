@@ -10,7 +10,6 @@ import type { ControllerStateAndHelpers } from "downshift";
 import type { FC } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
 import classes from "./SnapBulkSearchList.module.scss";
-import TooltipCell from "@/components/layout/TooltipCell";
 import type { InstalledSnapWithCount } from "../../../../types";
 import type { SearchSnapsResponse } from "../../../../api/useGetBulkInstalledSnaps";
 
@@ -67,13 +66,9 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
             key={item.snap.id}
             {...downshiftOptions.getItemProps({ item, index })}
           >
-            <div className="u-truncate">
-              <TooltipCell
-                message={`${item.snap.name} ${item.tracking_channel}`}
-              >
-                <BoldSubstring text={item.snap.name} substring={search} />
-              </TooltipCell>
-            </div>
+            <span className="u-truncate">
+              <BoldSubstring text={item.snap.name} substring={search} />
+            </span>
             <div className={classNames("u-text--muted", classes.publisher)}>
               {item.snap.publisher["display-name"] ??
                 item.snap.publisher.username}

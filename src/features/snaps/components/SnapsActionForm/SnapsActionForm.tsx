@@ -103,34 +103,37 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
               if (isChangeChannel) {
                 return (
-                  <SnapChangeChannelItem
-                    key={item.snap.id}
-                    selectedSnap={item}
-                    onDelete={handleDelete}
-                    instanceIds={selectedInstances}
-                    onItemsUpdate={() => {
-                      // Update selected snaps
-                    }}
-                  />
+                  <li className={classes.selectedItem} key={item.snap.id}>
+                    <SnapChangeChannelItem
+                      selectedSnap={item}
+                      onDelete={handleDelete}
+                      instanceIds={selectedInstances}
+                      onItemsUpdate={() => {
+                        // Update selected snaps
+                      }}
+                    />
+                  </li>
                 );
               }
               if (action === "install") {
                 return (
-                  <SnapAvailableItem
-                    key={item.snap.id}
-                    selectedSnap={item}
-                    onDelete={handleDelete}
-                  />
+                  <li className={classes.selectedItem} key={item.snap.id}>
+                    <SnapAvailableItem
+                      selectedSnap={item}
+                      onDelete={handleDelete}
+                    />
+                  </li>
                 );
               }
               return (
-                <SnapInstalledItem
-                  key={item.snap.id}
-                  selectedSnap={item}
-                  onDelete={handleDelete}
-                  isUnhold={action === "unhold"}
-                  instancesCount={selectedInstances.length}
-                />
+                <li className={classes.selectedItem} key={item.snap.id}>
+                  <SnapInstalledItem
+                    selectedSnap={item}
+                    onDelete={handleDelete}
+                    isUnhold={action === "unhold"}
+                    instancesCount={selectedInstances.length}
+                  />
+                </li>
               );
             })}
           </ul>
