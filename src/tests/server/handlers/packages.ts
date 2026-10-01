@@ -11,6 +11,9 @@ import type {
   ListPackageChangePlanItemsResponse,
   SearchUpgradesRequest,
   SearchUpgradesResponse,
+  PackageChangePlanItem,
+  Package,
+  PackageChangePlanAction,
 } from "@/features/packages";
 import type { GetPackagesParams, PackageOld } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
@@ -45,113 +48,98 @@ const parseBooleanParam = (value: string | null): boolean | undefined => {
   return undefined;
 };
 
-const getPackageChangePlanSummaryActions = (
+const getPackageChangePlanSummaryAction = (
   id: string,
-): GetPackageChangePlanSummaryResponse["actions"] => {
+  { id: packageId, name, version }: Package,
+): PackageChangePlanAction => {
   switch (id) {
     case "1": // install
-      return packages.map<
-        GetPackageChangePlanSummaryResponse<"install">["actions"][number]
-      >(({ id: packageId, name, version, computers }) => ({
-        action: {
-          type: "install",
-          package: {
-            id: packageId,
-            name,
-            version,
-          },
+      return {
+        type: "install",
+        package: {
+          id: packageId,
+          name,
+          version,
         },
-        computer_count: computers.count,
-      }));
+      };
     case "2": // remove
-      return packages.map<
-        GetPackageChangePlanSummaryResponse<"remove">["actions"][number]
-      >(({ id: packageId, name, version, computers }) => ({
-        action: {
-          type: "remove",
-          package: {
-            id: packageId,
-            name,
-            version,
-          },
+      return {
+        type: "remove",
+        package: {
+          id: packageId,
+          name,
+          version,
         },
-        computer_count: computers.count,
-      }));
+      };
     case "3": // hold
-      return packages.map<
-        GetPackageChangePlanSummaryResponse<"hold">["actions"][number]
-      >(({ id: packageId, name, version, computers }) => ({
-        action: {
-          type: "hold",
-          package: {
-            id: packageId,
-            name,
-            version,
-          },
+      return {
+        type: "hold",
+        package: {
+          id: packageId,
+          name,
+          version,
         },
-        computer_count: computers.count,
-      }));
+      };
     case "4": // unhold
-      return packages.map<
-        GetPackageChangePlanSummaryResponse<"unhold">["actions"][number]
-      >(({ id: packageId, name, version, computers }) => ({
-        action: {
-          type: "unhold",
-          package: {
-            id: packageId,
-            name,
-            version,
-          },
+      return {
+        type: "unhold",
+        package: {
+          id: packageId,
+          name,
+          version,
         },
-        computer_count: computers.count,
-      }));
+      };
     case "5": // change_version
-      return packages.map<
-        GetPackageChangePlanSummaryResponse<"change_version">["actions"][number]
-      >(({ id: packageId, name, version, computers }) => ({
-        action: {
-          type: "change_version",
-          from_package: {
-            id: packageId,
-            name,
-            version,
-          },
-          to_package: {
-            id: packageId + 1,
-            name,
-            version: `${version}-1`,
-          },
+      return {
+        type: "change_version",
+        from_package: {
+          id: packageId,
+          name,
+          version,
         },
-        computer_count: computers.count,
-      }));
+        to_package: {
+          id: packageId + 1,
+          name,
+          version: `${version}-1`,
+        },
+      };
     case "6": // upgrade
-      return packages.map<
-        GetPackageChangePlanSummaryResponse<"upgrade">["actions"][number]
-      >(({ id: packageId, name, version, computers }) => ({
-        action: {
-          type: "upgrade",
-          to_package: {
-            id: packageId,
-            name,
-            version,
-          },
+      return {
+        type: "upgrade",
+        to_package: {
+          id: packageId,
+          name,
+          version,
         },
-        computer_count: computers.count,
-      }));
+      };
     default:
-      return packages.map<
-        GetPackageChangePlanSummaryResponse["actions"][number]
-      >(({ id: packageId, name, version, computers }) => ({
-        action: {
-          type: "install",
-          package: {
-            id: packageId,
-            name,
-            version,
-          },
+      return {
+        type: "install",
+        package: {
+          id: packageId,
+          name,
+          version,
         },
-        computer_count: computers.count,
-      }));
+      };
+  }
+};
+
+const getPackageChangePlanActionType = (id: string) => {
+  switch (id) {
+    case "1":
+      return "install";
+    case "2":
+      return "remove";
+    case "3":
+      return "hold";
+    case "4":
+      return "unhold";
+    case "5":
+      return "change_version";
+    case "6":
+      return "upgrade";
+    default:
+      return "install";
   }
 };
 
@@ -346,10 +334,10 @@ export default [
   ),
 
   http.get<
-    never,
+    { id: string },
     ListPackageChangePlanItemsRequest,
     ListPackageChangePlanItemsResponse
-  >(`${API_URL}package-change-plans/:id/items`, async ({ request }) => {
+  >(`${API_URL}package-change-plans/:id/items`, async ({ params, request }) => {
     const url = new URL(request.url);
     const limit = Number(url.searchParams.get("limit"));
     const offset = Number(url.searchParams.get("offset")) || 0;
@@ -359,15 +347,19 @@ export default [
       instance.title.toLowerCase().includes(search.toLowerCase()),
     );
 
+    const actionType = getPackageChangePlanActionType(params.id);
+
     return HttpResponse.json<ListPackageChangePlanItemsResponse>({
+      action: actionType,
       items: filteredInstances
         .slice(offset, offset + limit)
-        .map((instance) => ({
+        .map<PackageChangePlanItem>((instance) => ({
+          action: getPackageChangePlanSummaryAction(params.id, packages[0]),
           computer: { id: instance.id, name: instance.title },
-          id: 0,
-          package_id: 0,
         })),
       count: filteredInstances.length,
+      next: "",
+      previous: "",
     });
   }),
 
@@ -375,8 +367,15 @@ export default [
     `${API_URL}package-change-plans/:id/summary`,
     async ({ params }) => {
       return HttpResponse.json<GetPackageChangePlanSummaryResponse>({
-        actions: getPackageChangePlanSummaryActions(params.id),
-        exclusions: packages.map(({ name, computers }) => ({
+        actions: packages
+          .slice(0, 10)
+          .map<GetPackageChangePlanSummaryResponse["actions"][number]>(
+            (pkg) => ({
+              action: getPackageChangePlanSummaryAction(params.id, pkg),
+              computer_count: pkg.computers.count,
+            }),
+          ),
+        exclusions: packages.slice(0, 10).map(({ name, computers }) => ({
           package_name: name,
           computer_count: computers.count,
         })),
