@@ -311,6 +311,7 @@ export const activities = [
     summary: "Activity with no creator",
     result_text: "test\ntest",
     computer_id: 6,
+    computer_title: "Computer 6",
     approval_time: null,
     delivery_time: "2024-04-15T15:47:07Z",
     deliver_after_time: null,
