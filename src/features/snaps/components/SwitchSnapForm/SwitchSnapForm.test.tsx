@@ -162,7 +162,7 @@ describe("SwitchSnapForm", () => {
     assert(classicChannel, "No classic release available to switch to.");
 
     const releaseValue = (channel: AvailableSnapInfo["channel-map"][number]) =>
-      `${channel.channel.name} - ${channel.channel.architecture}`;
+      channel.channel.name;
 
     it("submits successfully and shows success notification", async () => {
       renderSwitchSnapForm();
