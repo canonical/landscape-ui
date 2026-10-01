@@ -64,9 +64,7 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
     <li className={classes.selectedContainer}>
       <div className={classes.topRow}>
         <div>
-          <strong>
-            {selectedSnap.snap.name} {selectedSnap.tracking_channel}
-          </strong>
+          <strong>{selectedSnap.snap.name}</strong>
           <div className="u-text--muted u-no-margin">
             Installed on{" "}
             {pluralize(selectedSnap.computerCount, ["instance"], "exact")}
@@ -74,8 +72,8 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
         </div>
         <Button
           type="button"
-          appearance="link"
-          className="u-no-margin--bottom u-no-padding--top"
+          appearance="base"
+          className={classes.deleteButton}
           aria-label={`Delete ${selectedSnap.snap.name}`}
           onClick={onDelete}
         >
