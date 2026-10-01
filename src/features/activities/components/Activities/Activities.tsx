@@ -170,13 +170,13 @@ const Activities: FC<ActivitiesProps> = ({
         {
           accessor: "computer_id",
           Header: "Instance",
-          className: "small-cell",
+          className: "large-cell",
           Cell: ({ row }: CellProps<ActivityCommon>) =>
             row.original.computer_id ? (
               <Link
                 to={ROUTES.instances.details.single(row.original.computer_id)}
               >
-                ID: {row.original.computer_id}
+                {row.original.computer_title}
               </Link>
             ) : (
               <NoData />
