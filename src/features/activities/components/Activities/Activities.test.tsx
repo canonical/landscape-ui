@@ -1,11 +1,14 @@
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ROUTES } from "@/libs/routes";
+import date from "@/libs/date";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import {
   activities,
   INVALID_ACTIVITY_SEARCH_QUERY,
 } from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -32,10 +35,32 @@ describe("Activities", () => {
         "Status",
         "Instance",
         "Created at",
+        "Completed at",
         "Creator",
       ];
       const table = screen.getByRole("table");
       expect(table).toHaveTexts(columnHeaders);
+    });
+
+    it("should render the completion time for each activity", () => {
+      renderWithProviders(<Activities {...defaultProps} />);
+
+      const table = screen.getByRole("table");
+      const headerCells = within(table).getAllByRole("columnheader");
+      const completionTimeColumnIndex = headerCells.findIndex((cell) =>
+        cell.textContent?.includes("Completed at"),
+      );
+      const [, ...rows] = within(table).getAllByRole("row");
+
+      activities.forEach(({ completion_time }, index) => {
+        assert(rows[index], "Row should exist for the activity");
+        const cells = within(rows[index]).getAllByRole("cell");
+        expect(cells[completionTimeColumnIndex]).toHaveTextContent(
+          completion_time
+            ? date(completion_time).format(DISPLAY_DATE_TIME_FORMAT)
+            : NO_DATA_TEXT,
+        );
+      });
     });
   });
 
@@ -135,6 +160,23 @@ describe("Activities", () => {
       renderWithProviders(<Activities {...defaultProps} instanceId={6} />);
 
       expect(screen.queryByText("Instance")).not.toBeInTheDocument();
+    });
+
+    it("should hide the activity details instance field when opened with an instanceId", async () => {
+      renderWithProviders(<Activities {...defaultProps} instanceId={6} />);
+
+      const activityButton = screen.getByRole("button", {
+        name: activities[0].summary,
+      });
+      await user.click(activityButton);
+
+      const sidePanel = await screen.findByRole("complementary");
+      expect(
+        within(sidePanel).getByRole("heading", {
+          name: activities[0].summary,
+        }),
+      ).toBeInTheDocument();
+      expect(within(sidePanel).queryByText("Instance")).not.toBeInTheDocument();
     });
   });
 

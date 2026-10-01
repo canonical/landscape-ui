@@ -59,6 +59,8 @@ pnpm dev       # Vite dev server (5173)
 pnpm build     # Lint + typecheck + Vite build
 pnpm vitest    # Unit/integration tests
 pnpm test      # Playwright E2E
+pnpm eval:collect  # API-contract gap report (needs `pnpm coverage:full` first)
+pnpm eval:suggest  # LLM-drafted spec suggestions (needs LLM_API_KEY, or LLM_MOCK=1 for a dry-run)
 ```
 
 ---
@@ -414,6 +416,8 @@ The repo uses six workflows. Copilot must follow these triggers, job orders, and
 - **process-release:** computes the version via `scripts/calculate-version.cjs`, derives the per-branch `ppa-build-*` destination, resolves stable promotion (highest `release/YY.MM` on origin, or the `STABLE_RELEASE_BRANCH` override), and sets `should_build=false` when `v<version>` is already tagged. When building: version bump → production build → force-publish `dist/` to the destination branch → tag `v<version>` → mirror to `ppa-build-stable` if promoted.
 - **build-deb:** needs `process-release`; builds the unsigned `.deb` from the `dist` artifact and uploads it.  
   **Rule:** Do not change branch selection, the `should_build` tag guard, or the tag-after-deploy ordering.
+
+Production dashboard builds use `VITE_ROOT_PATH=/portal/`; local development and Playwright E2E builds use `/`.
 
 ### Vulnerability Scan (`.github/workflows/security.yaml`)
 
