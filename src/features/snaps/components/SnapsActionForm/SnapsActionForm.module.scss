@@ -15,8 +15,9 @@
 .selectedItem {
   background-color: $colors--theme--background-alt;
   margin-bottom: 0;
-  margin-top: $spv--small;
-  padding: $spv--small $sph--large $spv--large;
+  padding: $spv--large;
+  // margin-top: $spv--small;
+  // padding: $spv--small $sph--large $spv--large;
 
   :global(.is-dark) & {
     background-color: $colors--theme--background-default;

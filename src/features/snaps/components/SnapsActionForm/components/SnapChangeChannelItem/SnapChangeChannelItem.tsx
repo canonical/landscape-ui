@@ -1,14 +1,14 @@
 import type { FC } from "react";
 import { useMemo } from "react";
 import classes from "./SnapChangeChannelItem.module.scss";
-import { Button, Icon, ICONS } from "@canonical/react-components";
-import { pluralize } from "@/utils/_helpers";
 import type { InstalledSnapWithCount, SnapChangeMode } from "../../../../types";
 import { useGetSnapInfo } from "../../../../api";
 import { isValidRevision, getChannelConfinement } from "../../../../helpers";
 import SnapChannelRevisionFields, {
   getChannelOptions,
 } from "../../../SnapChannelRevisionFields";
+import SnapItemTitleRow from "../SnapItemTitleRow";
+import SnapItemSubtitle from "../SnapItemSubtitle";
 
 interface SnapChangeChannelItemProps {
   readonly instanceIds: number[];
@@ -62,30 +62,17 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
 
   return (
     <li className={classes.selectedContainer}>
-      <div className={classes.topRow}>
-        <div>
-          <strong>{selectedSnap.snap.name}</strong>
-          <div className="u-text--muted u-no-margin">
-            Installed on{" "}
-            {pluralize(selectedSnap.computerCount, ["instance"], "exact")}
-          </div>
-        </div>
-        <Button
-          type="button"
-          appearance="base"
-          className={classes.deleteButton}
-          aria-label={`Delete ${selectedSnap.snap.name}`}
-          onClick={onDelete}
-        >
-          <Icon name={ICONS.delete} />
-        </Button>
-      </div>
+      <SnapItemTitleRow name={selectedSnap.snap.name} onDelete={onDelete} />
+      <SnapItemSubtitle
+        scope="Installed"
+        computerCount={selectedSnap.computerCount}
+      />
+      <div>Change to</div>
       <SnapChannelRevisionFields
         mode={mode}
         value={value}
         channelOptions={channelOptions}
         snapName={selectedSnap.snap.name}
-        modeLabel="Change to"
         error={error}
         isLoading={isSnapInfoLoading}
         onChange={(newValue) => {

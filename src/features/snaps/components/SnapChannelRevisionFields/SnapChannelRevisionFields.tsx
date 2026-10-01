@@ -13,7 +13,6 @@ interface SnapChannelRevisionFieldsProps {
   readonly value: string;
   readonly channelOptions: SelectOption[];
   readonly snapName: string;
-  readonly modeLabel?: string;
   readonly error?: string;
   readonly isLoading?: boolean;
   readonly onChange: (value: string) => void;
@@ -25,7 +24,6 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   value,
   channelOptions,
   snapName,
-  modeLabel,
   error,
   isLoading = false,
   onChange,
@@ -42,46 +40,43 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   const { isDarkMode } = useTheme();
 
   return (
-    <>
-      {modeLabel && <div>{modeLabel}</div>}
-      <div className={classNames(classes.fieldsRow, !isDarkMode && "is-paper")}>
+    <div className={classNames(classes.fieldsRow, !isDarkMode && "is-paper")}>
+      <Select
+        aria-label={`Snap channel or revision for ${snapName}`}
+        options={MODE_OPTIONS}
+        onChange={(event) => {
+          onModeChange(event.currentTarget.value as SnapChangeMode);
+        }}
+      />
+      {mode === "channel" ? (
         <Select
-          aria-label={`Snap channel or revision for ${snapName}`}
-          options={MODE_OPTIONS}
+          aria-label={`Channel for ${snapName}`}
+          disabled={isLoading || channelOptions.length === 0}
+          value={value}
+          error={error}
+          options={
+            channelOptions.length > 0
+              ? channelOptions
+              : [{ label: "No channels available", value: "" }]
+          }
           onChange={(event) => {
-            onModeChange(event.currentTarget.value as SnapChangeMode);
+            onChange(event.currentTarget.value);
           }}
         />
-        {mode === "channel" ? (
-          <Select
-            aria-label={`Channel for ${snapName}`}
-            disabled={isLoading || channelOptions.length === 0}
-            value={value}
-            error={error}
-            options={
-              channelOptions.length > 0
-                ? channelOptions
-                : [{ label: "No channels available", value: "" }]
-            }
-            onChange={(event) => {
-              onChange(event.currentTarget.value);
-            }}
-          />
-        ) : (
-          <Input
-            type="number"
-            min={1}
-            step={1}
-            aria-label={`Revision for ${snapName}`}
-            defaultValue={value}
-            error={error}
-            onBlur={(event) => {
-              onChange(event.currentTarget.value);
-            }}
-          />
-        )}
-      </div>
-    </>
+      ) : (
+        <Input
+          type="number"
+          min={1}
+          step={1}
+          aria-label={`Revision for ${snapName}`}
+          defaultValue={value}
+          error={error}
+          onBlur={(event) => {
+            onChange(event.currentTarget.value);
+          }}
+        />
+      )}
+    </div>
   );
 };
 
