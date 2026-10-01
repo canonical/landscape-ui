@@ -20,6 +20,7 @@ import SelfHostedLicenseProvider from "@/context/selfHostedLicense";
 
 const resolvedEnvState: EnvContextState = {
   envLoading: false,
+  envError: false,
   isSaas: true,
   isSelfHosted: false,
   packageVersion: "",

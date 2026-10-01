@@ -27,6 +27,7 @@ const mockAuth: AuthContextProps = {
 
 const mockEnv: EnvContextState = {
   envLoading: false,
+  envError: false,
   isSaas: false,
   isSelfHosted: false,
   packageVersion: "",

@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import useEnv from "@/hooks/useEnv";
 import { PATHS } from "@/libs/routes";
 import { screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AboutContainer from "./AboutContainer";
 import * as Constants from "@/constants";
 import { APP_COMMIT, APP_VERSION } from "@/constants";
@@ -23,16 +23,19 @@ describe("AboutContainer", () => {
   });
 
   it("renders version details", () => {
-
     const { container } = renderWithProviders(<AboutContainer />);
 
-    expect(screen.getByRole("heading", { name: "UI version" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "UI version" }),
+    ).toBeInTheDocument();
     expect(container).toHaveInfoItem("App version", APP_VERSION);
     expect(container).toHaveInfoItem(
       "UI hash",
       APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown",
     );
-    expect(screen.getByRole("heading", { name: "Server version" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Server version" }),
+    ).toBeInTheDocument();
     expect(container).toHaveInfoItem("Package version", "1.2.3");
     expect(container).toHaveInfoItem("Revision", "abcdef");
   });
@@ -43,10 +46,9 @@ describe("AboutContainer", () => {
     expect(
       screen.getByRole("link", { name: "Landscape documentation" }),
     ).toHaveAttribute("href", PATHS.external.documentation);
-    expect(screen.getByRole("link", { name: "Support portal" })).toHaveAttribute(
-      "href",
-      PATHS.external.support,
-    );
+    expect(
+      screen.getByRole("link", { name: "Support portal" }),
+    ).toHaveAttribute("href", PATHS.external.support);
   });
 
   it("falls back to unknown when UI version or hash are unavailable", () => {

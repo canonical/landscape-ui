@@ -8,6 +8,7 @@ import { SelfHostedGuard } from "../SelfHostedGuard";
 describe("SelfHostedGuard", () => {
   const envState: EnvContextState = {
     envLoading: false,
+    envError: false,
     isSaas: true,
     isSelfHosted: false,
     packageVersion: "",

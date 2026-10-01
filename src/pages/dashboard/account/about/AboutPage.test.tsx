@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 import AboutPage from "./AboutPage";
 
 describe("AboutPage", () => {
-  it("renders the About page title", () => {
+  it("renders the About page title", async () => {
     renderWithProviders(<AboutPage />);
 
     expect(screen.getByRole("heading", { name: "About" })).toBeInTheDocument();
-    expect(screen.getByRole("separator")).toHaveClass("p-rule--muted");
+    expect(await screen.findByRole("separator")).toHaveClass("p-rule--muted");
   });
 });

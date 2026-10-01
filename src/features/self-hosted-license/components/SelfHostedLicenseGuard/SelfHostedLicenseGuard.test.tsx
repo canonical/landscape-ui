@@ -13,6 +13,7 @@ import SelfHostedLicenseGuard from "./SelfHostedLicenseGuard";
 
 const envState: EnvContextState = {
   envLoading: false,
+  envError: false,
   isSaas: true,
   isSelfHosted: false,
   packageVersion: "",
