@@ -9,7 +9,7 @@ import type {
 } from "../types";
 
 export interface GetPackageChangePlanSummaryResponse<
-  T extends PackageChangePlanActionType,
+  T extends PackageChangePlanActionType = PackageChangePlanActionType,
 > {
   actions: {
     action: PackageChangePlanAction<T>;

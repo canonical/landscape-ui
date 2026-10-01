@@ -1,31 +1,38 @@
 import type { PackageChangePlanActionType } from "./PackageChangePlan";
 
-export interface PackageChangePlanAction<
+export type PackageChangePlanAction<
   T extends PackageChangePlanActionType = PackageChangePlanActionType,
-> {
-  type: T;
-  package: T extends "install" | "remove" | "hold" | "unhold"
-    ? {
+> = T extends "change_version"
+  ? {
+      type: T;
+      from_package: {
         id: number;
         name: string;
         version: string;
-      }
-    : never;
-  from_package: T extends "change_version"
-    ? {
+      };
+      to_package: {
         id: number;
         name: string;
         version: string;
-      }
-    : never;
-  to_package: T extends "change_version" | "upgrade"
+      };
+    }
+  : T extends "upgrade"
     ? {
-        id: number;
-        name: string;
-        version: string;
+        type: T;
+        to_package: {
+          id: number;
+          name: string;
+          version: string;
+        };
       }
-    : never;
-}
+    : {
+        type: T;
+        package: {
+          id: number;
+          name: string;
+          version: string;
+        };
+      };
 
 export interface PackageChangePlanItem extends Record<string, unknown> {
   action: PackageChangePlanAction<PackageChangePlanActionType>;
