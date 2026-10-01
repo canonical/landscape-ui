@@ -1,7 +1,10 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { type FC, lazy, Suspense, useState } from "react";
-import { getRequestAction, hasNotification } from "./helpers";
-import { isValidRevision } from "../../helpers";
+import {
+  getRequestAction,
+  hasNotification,
+  isRevisionNotificationAction,
+} from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import type {
   SnapAction,
@@ -21,6 +24,7 @@ import useNotify from "@/hooks/useNotify";
 import { useBoolean } from "usehooks-ts";
 import LoadingState from "@/components/layout/LoadingState";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
+import { isValidRevision } from "../../helpers";
 
 const ConfirmSnapActionModal = lazy(
   () => import("./components/ConfirmSnapActionModal"),
@@ -200,7 +204,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   return (
     <>
       <div className={classes.container}>
-        {hasNotification(action) && (
+        {(hasNotification(action) || isRevisionNotificationAction(action)) && (
           <Suspense fallback={<LoadingState />}>
             <SnapNotification
               action={action}

@@ -1,77 +1,53 @@
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 import { Notification } from "@canonical/react-components";
-import type {
-  ActionWithNotification,
-  SnapAction,
-  SnapChangeMode,
-} from "../../../../types";
-import { useBoolean } from "usehooks-ts";
+import type { SnapAction, SnapChangeMode } from "../../../../types";
+import { hasNotification } from "../../helpers";
 
 interface SnapChangeConfig {
   mode: SnapChangeMode;
   value: string;
   channel?: string;
 }
-import type { ActionWithNotification } from "../../../../types";
 
 interface SnapNotificationProps {
   readonly action: SnapAction;
   readonly snapChangeConfigs?: Record<string, SnapChangeConfig>;
 }
 
+const HoldNotification = () => (
+  <Notification
+    severity="information"
+    title="Landscape holds snaps indefinitely"
+  >
+    Due to Landscape’s asynchronous delivery of activities, the snaps held will
+    be held indefinitely from the moment the client executes the activity.
+  </Notification>
+);
+
+const revisionMessages: Record<
+  Extract<SnapAction, "install" | "change channel">,
+  string
+> = {
+  install:
+    "Specifying a revision doesn't set a tracked channel, so future updates may replace it with the store's latest revision.",
+  "change channel":
+    "Specifying a revision doesn't change the tracked channel, so future updates may replace it with that channel's latest revision.",
+};
+
 const SnapNotification: FC<SnapNotificationProps> = ({
   action,
   snapChangeConfigs,
 }) => {
-  const { value: isArchitectureDismissed, setTrue: dismissArchitecture } =
-    useBoolean(false);
-
-  const actionContent: Record<
-    Exclude<ActionWithNotification, "install" | "change channel">,
-    ReactNode
-  > = {
-    hold: (
-      <Notification
-        severity="information"
-        title="Landscape holds snaps indefinitely"
-      >
-        Due to Landscape’s asynchronous delivery of activities, the snaps held
-        will be held indefinitely from the moment the client executes the
-        activity.
-      </Notification>
-    ),
-  };
-
   const hasRevision =
     snapChangeConfigs &&
     Object.values(snapChangeConfigs).some(
       (config) => config.mode === "revision",
     );
 
-  const isArchitectureNotification =
-    action === "install" || action === "change channel";
-
-  const architectureTarget =
-    action === "install" ? "the snap" : "the selected channel or revision";
-
-  if (isArchitectureNotification && isArchitectureDismissed && !hasRevision) {
-    return null;
-  }
-
   return (
     <>
-      {action === "hold" && actionContent.hold}
-      {isArchitectureNotification && !isArchitectureDismissed && (
-        <Notification
-          severity="information"
-          title="Instance architecture compatibility"
-          onDismiss={dismissArchitecture}
-        >
-          The {action} action will only be applied to instances whose
-          architecture is supported by {architectureTarget}.
-        </Notification>
-      )}
-      {hasRevision && (
+      {hasNotification(action) && <HoldNotification />}
+      {hasRevision && (action === "install" || action === "change channel") && (
         <Notification
           severity="information"
           actions={[
@@ -87,9 +63,7 @@ const SnapNotification: FC<SnapNotificationProps> = ({
             },
           ]}
         >
-          Specifying a revision doesn&apos;t change the tracked channel, so
-          future updates may replace it with that channel&apos;s latest
-          revision.
+          {revisionMessages[action]}
         </Notification>
       )}
     </>

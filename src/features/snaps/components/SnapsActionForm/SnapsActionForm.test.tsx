@@ -46,24 +46,6 @@ describe("SnapsActionForm", () => {
       ).not.toHaveAttribute("aria-disabled");
     });
 
-    it("shows the architecture notification when change channel panel is open", async () => {
-      renderWithProviders(
-        <SnapsActionForm
-          selectedInstances={[instanceId]}
-          action="change channel"
-        />,
-      );
-
-      expect(
-        await screen.findByText("Instance architecture compatibility"),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          /The change channel action will only be applied to instances whose architecture is supported by the selected channel or revision/i,
-        ),
-      ).toBeInTheDocument();
-    });
-
     it("includes count in submit button when snaps are selected", async () => {
       renderWithProviders(
         <SnapsActionForm selectedInstances={[instanceId]} action="uninstall" />,
