@@ -31,11 +31,7 @@ describe("SnapChangeChannelItem", () => {
 
     await screen.findByLabelText("Snap channel or revision");
 
-    expect(
-      screen.getByText(
-        `${snapWithChannels.snap.name} ${snapWithChannels.tracking_channel}`,
-      ),
-    ).toBeInTheDocument();
+    expect(screen.getByText(snapWithChannels.snap.name)).toBeInTheDocument();
     expect(
       screen.getByText(
         `Installed on ${snapWithChannels.computerCount} instances`,

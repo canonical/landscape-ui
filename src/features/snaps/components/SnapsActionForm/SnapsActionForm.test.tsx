@@ -3,6 +3,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import SnapsActionForm from "./SnapsActionForm";
+import { SNAP_ACTION_ACTIVITY } from "@/tests/mocks/activity";
 import {
   installedSnaps,
   successfulSnapInstallResponse,
@@ -185,6 +186,46 @@ describe("SnapsActionForm", () => {
 
     expect(
       await screen.findByText("Snaps successfully queued to change channel"),
+    ).toBeInTheDocument();
+  });
+
+  it("shows a View details action that opens the activity details side panel", async () => {
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: secondSnapOptionTitle,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("combobox", {
+          name: `Channel for ${secondSnap.snap.name}`,
+        }),
+      ).not.toBeDisabled();
+    });
+
+    await user.click(screen.getByRole("button", { name: "Change channel" }));
+
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Change channel" }),
+    );
+
+    const viewDetailsButton = await screen.findByRole("button", {
+      name: /view details/i,
+    });
+    await user.click(viewDetailsButton);
+
+    expect(
+      await screen.findByText(SNAP_ACTION_ACTIVITY.summary),
     ).toBeInTheDocument();
   });
 

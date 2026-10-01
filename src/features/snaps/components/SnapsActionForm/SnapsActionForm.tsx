@@ -20,6 +20,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import useNotify from "@/hooks/useNotify";
 import { useBoolean } from "usehooks-ts";
 import LoadingState from "@/components/layout/LoadingState";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 
 const ConfirmSnapActionModal = lazy(
   () => import("./components/ConfirmSnapActionModal"),
@@ -58,6 +59,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
   const debug = useDebug();
   const { notify } = useNotify();
+  const openActivityDetails = useOpenActivityDetailsPanel();
   const { closeSidePanel } = useSidePanel();
   const { snapAction, isSnapActionPending } = useSnapAction();
 
@@ -74,7 +76,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
   const onSubmit = async () => {
     try {
-      await snapAction({
+      const { data: activity } = await snapAction({
         action: getRequestAction(action),
         computer_ids: selectedInstances,
         snaps: selectedSnaps.map((item) => {
@@ -106,6 +108,14 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       notify.success({
         title: `Snaps successfully queued to ${action}`,
         message: `You can track the progress in the Activities page.`,
+        actions: [
+          {
+            label: "View details",
+            onClick: () => {
+              openActivityDetails(activity);
+            },
+          },
+        ],
       });
     } catch (error) {
       closeModal();
