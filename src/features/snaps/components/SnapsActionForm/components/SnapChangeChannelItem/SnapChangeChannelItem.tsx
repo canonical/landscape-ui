@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import type { InstalledSnapWithCount, SnapChangeMode } from "../../../../types";
 import { useGetSnapInfo } from "../../../../api";
 import { isValidRevision, getChannelConfinement } from "../../../../helpers";
@@ -17,6 +17,7 @@ interface SnapChangeChannelItemProps {
   readonly value: string;
   readonly hasAttemptedSubmit?: boolean;
   readonly onLoadingChange?: (isLoading: boolean) => void;
+  readonly onErrorChange?: (isError: boolean) => void;
   readonly onChange: (
     value: string,
     channel?: string,
@@ -33,23 +34,28 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
   value,
   hasAttemptedSubmit = false,
   onLoadingChange,
+  onErrorChange,
   onChange,
   onModeChange,
 }) => {
-  const { snapInfo, isSnapInfoLoading } = useGetSnapInfo({
+  const { snapInfo, isSnapInfoLoading, isSnapInfoError } = useGetSnapInfo({
     instance_id: instanceIds[0] ?? 0,
     name: selectedSnap.snap.name,
   });
 
-  const onLoadingChangeRef = useRef(onLoadingChange);
-  onLoadingChangeRef.current = onLoadingChange;
+  useEffect(() => {
+    onLoadingChange?.(isSnapInfoLoading);
+    return () => {
+      onLoadingChange?.(false);
+    };
+  }, [isSnapInfoLoading, onLoadingChange]);
 
   useEffect(() => {
-    onLoadingChangeRef.current?.(isSnapInfoLoading);
+    onErrorChange?.(isSnapInfoError);
     return () => {
-      onLoadingChangeRef.current?.(false);
+      onErrorChange?.(false);
     };
-  }, [isSnapInfoLoading]);
+  }, [isSnapInfoError, onErrorChange]);
 
   const channelOptions = useMemo(
     () => getChannelOptions(snapInfo?.["channel-map"]),
@@ -57,6 +63,9 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
   );
 
   const getError = () => {
+    if (mode === "channel" && isSnapInfoError) {
+      return "Failed to load channels for this snap";
+    }
     if (!hasAttemptedSubmit) {
       return undefined;
     }

@@ -310,6 +310,42 @@ describe("SnapsActionForm", () => {
     releaseInfoRequest?.();
   });
 
+  it("shows an error and blocks confirmation modal when channel info fails to load in channel mode", async () => {
+    server.use(
+      http.get(`${API_URL}computers/:computerId/snaps/:name/info`, () =>
+        HttpResponse.json(
+          {
+            error: "InternalServerError",
+            message: "Failed to fetch snap info",
+          },
+          { status: 500 },
+        ),
+      ),
+    );
+
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: secondSnapOptionTitle,
+      }),
+    );
+
+    expect(
+      await screen.findByText("Failed to load channels for this snap"),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Change channel" }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
   it("submits when a change-channel snap has no channel selected", async () => {
     let requestBody: SnapActionParams | null = null;
     server.use(
