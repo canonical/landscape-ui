@@ -5,6 +5,7 @@ import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import {
   type GetPackageChangePlanSummaryResponse,
   PackagesActionSummaryCount,
+  useDeletePackageChangePlan,
   useExecutePackageChangePlan,
   useGetPackageChangePlanSummary,
 } from "@/features/packages";
@@ -23,7 +24,7 @@ import { useOpenActivityDetailsPanel } from "@/features/activities";
 
 interface UpgradesSummaryProps {
   readonly packageChangePlanId: number;
-  readonly onBackButtonPress?: () => void;
+  readonly onBackButtonPress: () => void;
 }
 
 const UpgradesSummary: FC<UpgradesSummaryProps> = ({
@@ -46,6 +47,7 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
 
   const { mutateAsync: executeChangePlan, isPending: isExecutingChangePlan } =
     useExecutePackageChangePlan();
+  const { mutateAsync: deleteChangePlan } = useDeletePackageChangePlan();
 
   const columns = useMemo<
     Column<GetPackageChangePlanSummaryResponse<"upgrade">["actions"][number]>[]
@@ -122,6 +124,16 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
     }
   };
 
+  const goBack = () => {
+    deleteChangePlan(packageChangePlanId);
+    onBackButtonPress();
+  };
+
+  const cancel = () => {
+    deleteChangePlan(packageChangePlanId);
+    closeSidePanel();
+  };
+
   return (
     <>
       <span className={classes.summary}>
@@ -137,11 +149,12 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
         currentItemCount={currentItems.length}
       />
       <SidePanelFormButtons
-        hasBackButton={!!onBackButtonPress}
-        onBackButtonPress={onBackButtonPress}
-        submitButtonText={`Upgrade ${pluralize(items.length, ["package"], "exact")}`}
         submitButtonLoading={isExecutingChangePlan}
+        submitButtonText={`Upgrade ${pluralize(items.length, ["package"], "exact")}`}
         onSubmit={submit}
+        hasBackButton
+        onBackButtonPress={goBack}
+        onCancel={cancel}
       />
     </>
   );

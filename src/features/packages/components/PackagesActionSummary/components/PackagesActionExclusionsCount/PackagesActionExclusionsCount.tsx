@@ -44,14 +44,18 @@ const PackageActionExclusionsCount: FC<PackagesActionExclusionsCount> = ({
 
   return (
     <>
-      <Button
-        type="button"
-        appearance="link"
-        onClick={openSidePanel}
-        className="u-no-margin u-no-padding"
-      >
-        {pluralize(count, ["instance"], "exact")}
-      </Button>
+      {count > 0 ? (
+        <Button
+          type="button"
+          appearance="link"
+          onClick={openSidePanel}
+          className="u-no-margin u-no-padding"
+        >
+          {pluralize(count, ["instance"], "exact")}
+        </Button>
+      ) : (
+        "0 instances"
+      )}
       <SidePanel onClose={closeSidePanel} isOpen={isSidePanelOpen}>
         <SidePanel.Header>{getHeader()}</SidePanel.Header>
         <SidePanel.Content>

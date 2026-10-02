@@ -55,7 +55,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   if (exact) {
     queryParams.names = [search];
   } else {
-    queryParams.text = search.trim() || undefined;
+    queryParams.text = search || undefined;
   }
 
   const packagesQueryResult = useSearchPackages(queryParams, {
@@ -74,7 +74,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
   const handleSearchBoxChange = (value: string) => {
     setInputValue(value);
-    setSearch(value);
+    setSearch(value.trim());
   };
 
   const clearSearchBox = () => {

@@ -1,5 +1,5 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import { ModalTablePagination } from "@/components/layout/TablePagination";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import { SearchBox } from "@canonical/react-components";
 import { useMemo, useState, type FC } from "react";
 import type { Column } from "react-table";
@@ -9,13 +9,14 @@ import type {
   PackageChangePlanAction,
 } from "../../../../types";
 import classes from "./PackagesActionSummaryDetails.module.scss";
-import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
+import {
+  DEFAULT_CURRENT_PAGE,
+  DEFAULT_PAGE_SIZE,
+} from "@/libs/pageParamsManager/constants";
 import {
   type ListPackageChangePlanItemsRequest,
   useListPackageChangePlanItems,
 } from "@/features/packages";
-import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
-import { useCounter } from "usehooks-ts";
 import LoadingState from "@/components/layout/LoadingState";
 
 interface PackagesActionSummaryDetailsProps {
@@ -29,19 +30,14 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
 }) => {
   const [inputText, setInputText] = useState("");
   const [search, setSearch] = useState("");
-
-  const {
-    count: currentPage,
-    decrement: goToPreviousPage,
-    increment: goToNextPage,
-    reset: resetPage,
-  } = useCounter(DEFAULT_CURRENT_PAGE);
+  const [currentPage, paginate] = useState(DEFAULT_CURRENT_PAGE);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
 
   const query: ListPackageChangePlanItemsRequest = {
     id,
     computer_instance_name: search || undefined,
-    limit: DEFAULT_MODAL_PAGE_SIZE,
-    offset: (currentPage - 1) * DEFAULT_MODAL_PAGE_SIZE,
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize,
   };
 
   switch (action.type) {
@@ -99,11 +95,11 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
   const clearSearchBox = () => {
     setInputText("");
     setSearch("");
-    resetPage();
+    paginate(DEFAULT_CURRENT_PAGE);
   };
 
   const handleSearch = (value: string) => {
-    resetPage();
+    paginate(DEFAULT_CURRENT_PAGE);
     setSearch(value);
   };
 
@@ -127,11 +123,12 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
         className={classes.table}
         style={{ flex: 1 }}
       />
-      <ModalTablePagination
-        current={currentPage}
-        onPrev={goToPreviousPage}
-        onNext={goToNextPage}
-        max={Math.ceil(itemsResponse.data.count / DEFAULT_MODAL_PAGE_SIZE)}
+      <SidePanelTablePagination
+        currentPage={currentPage}
+        pageSize={pageSize}
+        paginate={paginate}
+        setPageSize={setPageSize}
+        totalItems={itemsResponse.data.count}
       />
     </>
   );

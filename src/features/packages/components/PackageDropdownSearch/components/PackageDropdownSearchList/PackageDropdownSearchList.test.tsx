@@ -9,7 +9,7 @@ import { screen } from "@testing-library/react";
 import { AxiosHeaders, type AxiosResponse } from "axios";
 import type { ControllerStateAndHelpers } from "downshift";
 import type { ComponentProps } from "react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import PackageDropdownSearchList from "./PackageDropdownSearchList";
 import classes from "./PackageDropdownSearchList.module.scss";
 

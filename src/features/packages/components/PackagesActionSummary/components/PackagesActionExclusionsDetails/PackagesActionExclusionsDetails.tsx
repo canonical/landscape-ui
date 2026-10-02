@@ -1,15 +1,16 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import { ModalTablePagination } from "@/components/layout/TablePagination";
 import { SearchBox } from "@canonical/react-components";
 import { useMemo, useState, type FC } from "react";
 import type { Column } from "react-table";
 import { type CellProps } from "react-table";
 import classes from "./PackagesActionExclusionsDetails.module.scss";
-import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
+import {
+  DEFAULT_CURRENT_PAGE,
+  DEFAULT_PAGE_SIZE,
+} from "@/libs/pageParamsManager/constants";
 import { useGetPackageChangePlanExclusionItems } from "@/features/packages";
-import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
-import { useCounter } from "usehooks-ts";
 import LoadingState from "@/components/layout/LoadingState";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 
 interface PackagesActionExclusionsDetailsProps {
   readonly id: number;
@@ -21,13 +22,8 @@ const PackagesActionExclusionsDetails: FC<
 > = ({ id, packageName }) => {
   const [inputText, setInputText] = useState("");
   const [search, setSearch] = useState("");
-
-  const {
-    count: currentPage,
-    decrement: goToPreviousPage,
-    increment: goToNextPage,
-    reset: resetPage,
-  } = useCounter(DEFAULT_CURRENT_PAGE);
+  const [currentPage, paginate] = useState(DEFAULT_CURRENT_PAGE);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
 
   const {
     data: itemsResponse,
@@ -64,11 +60,11 @@ const PackagesActionExclusionsDetails: FC<
   const clearSearchBox = () => {
     setInputText("");
     setSearch("");
-    resetPage();
+    paginate(DEFAULT_CURRENT_PAGE);
   };
 
   const handleSearch = (value: string) => {
-    resetPage();
+    paginate(DEFAULT_CURRENT_PAGE);
     setSearch(value);
   };
 
@@ -87,21 +83,20 @@ const PackagesActionExclusionsDetails: FC<
       <ResponsiveTable
         columns={columns}
         data={itemsResponse.data.computers.slice(
-          (currentPage - 1) * DEFAULT_MODAL_PAGE_SIZE,
-          currentPage * DEFAULT_MODAL_PAGE_SIZE,
+          (currentPage - 1) * pageSize,
+          currentPage * pageSize,
         )}
         emptyMsg={"No instances found according to your search parameters."}
         minWidth={400}
         className={classes.table}
         style={{ flex: 1 }}
       />
-      <ModalTablePagination
-        current={currentPage}
-        onPrev={goToPreviousPage}
-        onNext={goToNextPage}
-        max={Math.ceil(
-          itemsResponse.data.computers.length / DEFAULT_MODAL_PAGE_SIZE,
-        )}
+      <SidePanelTablePagination
+        currentPage={currentPage}
+        pageSize={pageSize}
+        paginate={paginate}
+        setPageSize={setPageSize}
+        totalItems={itemsResponse.data.computers.length}
       />
     </>
   );

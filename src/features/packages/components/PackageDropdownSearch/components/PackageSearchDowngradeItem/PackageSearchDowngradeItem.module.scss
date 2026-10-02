@@ -36,3 +36,8 @@
 .multiSelect :global(.p-contextual-menu) {
   margin: 0;
 }
+
+.deleteButton {
+  margin-bottom: 0;
+  padding: $spv--x-small $sph--small;
+}

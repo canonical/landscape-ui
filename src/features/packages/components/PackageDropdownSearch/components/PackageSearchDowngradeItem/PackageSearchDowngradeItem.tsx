@@ -7,7 +7,13 @@ import { mapActionTypeToQueryParams } from "@/features/packages";
 import type { FC } from "react";
 import classes from "./PackageSearchDowngradeItem.module.scss";
 import type { MultiSelectItem } from "@canonical/react-components";
-import { Button, Icon, ICONS, Notification } from "@canonical/react-components";
+import {
+  Button,
+  Icon,
+  ICONS,
+  Notification,
+  Tooltip,
+} from "@canonical/react-components";
 import { pluralize } from "@/utils/_helpers";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import LoadingState from "@/components/layout/LoadingState";
@@ -107,15 +113,17 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
             )}
           </div>
         </div>
-        <Button
-          type="button"
-          appearance="link"
-          className="u-no-margin--bottom u-no-padding--top"
-          aria-label={`Delete ${selectedPackage[0].name}`}
-          onClick={onDelete}
-        >
-          <Icon name={ICONS.delete} />
-        </Button>
+        <Tooltip message="Remove" position="top-center">
+          <Button
+            type="button"
+            appearance="base"
+            className={classes.deleteButton}
+            aria-label={`Delete ${selectedPackage[0].name}`}
+            onClick={onDelete}
+          >
+            <Icon name={ICONS.delete} />
+          </Button>
+        </Tooltip>
       </div>
       <MultiSelectField
         className={classNames(classes.multiSelect, { "is-paper": !isDarkMode })}

@@ -30,12 +30,14 @@ const ResponsiveTableSubhead: FC<ResponsiveTableSubheadProps> = ({
   onClearSelection,
   onSelectAll,
 }) => {
+  const pluralName = pluralize(totalCount, [itemName], "exact");
+
   return (
     <div className={classes.subhead}>
       <span>
         {isAllSelected
-          ? `All ${totalCount} instances selected`
-          : `${selectedCount} of ${pluralize(totalCount, [itemName], "exact")} selected`}
+          ? `All ${pluralName} selected`
+          : `${selectedCount} of ${pluralName} selected`}
       </span>
       <div className={classes.buttons}>
         {canSelectAll && !isAllSelected && (
@@ -44,7 +46,7 @@ const ResponsiveTableSubhead: FC<ResponsiveTableSubheadProps> = ({
             appearance="link"
             onClick={onSelectAll}
           >
-            Select all {totalCount} instances
+            Select all {pluralName}
           </Button>
         )}
         <Button

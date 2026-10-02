@@ -19,12 +19,15 @@ import {
   useDeletePackageChangePlan,
   useSearchUpgrades,
 } from "@/features/packages";
+import useDebug from "@/hooks/useDebug";
 
 interface UpgradesProps {
   readonly selectedInstances: Instance[];
 }
 
 const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
+  const debug = useDebug();
+
   const {
     closeSidePanel,
     setSidePanelTitle,
@@ -128,26 +131,30 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
             submitButtonDisabled={isPendingUpgrades || !selectedUpgrades.length}
             submitButtonLoading={isCreatingPackageChangePlan}
             onSubmit={async () => {
-              const config = {
-                upgrade_config: {
-                  select_by_ids: {
-                    package_ids: selectedUpgrades.map(({ id }) => id),
+              try {
+                const config = {
+                  upgrade_config: {
+                    select_by_ids: {
+                      package_ids: selectedUpgrades.map(({ id }) => id),
+                    },
                   },
-                },
-              };
+                };
 
-              const { data } = await createPackageChangePlan({
-                computer_query: computerQuery,
-                ...config,
-              });
+                const { data } = await createPackageChangePlan({
+                  computer_query: computerQuery,
+                  ...config,
+                });
 
-              setSidePanelTitle("Summary");
-              changeSidePanelSize("medium");
-              setPackageChangePlanId(data.id);
-              setOnCloseOverride(() => {
-                deletePackageChangePlan(data.id);
-                closeSidePanel();
-              });
+                setSidePanelTitle("Summary");
+                changeSidePanelSize("medium");
+                setPackageChangePlanId(data.id);
+                setOnCloseOverride(() => {
+                  deletePackageChangePlan(data.id);
+                  closeSidePanel();
+                });
+              } catch (error) {
+                debug(error);
+              }
             }}
           />
         </>

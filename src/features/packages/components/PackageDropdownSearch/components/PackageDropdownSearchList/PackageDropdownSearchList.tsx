@@ -48,7 +48,9 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
     return <LoadingState />;
   }
 
-  const results = queryResult.data.pages.flatMap((page) => page.data.packages);
+  const results = queryResult.data.pages
+    .flatMap((page) => page.data.packages)
+    .filter((item) => !selectedPackages.some(({ id }) => item.id === id));
 
   if (results.length) {
     return (
@@ -59,21 +61,14 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
           )}
         >
           {results.map((item: Package, index: number) => {
-            const disabled = selectedPackages.some(({ id }) => item.id === id);
-
-            const props = disabled
-              ? {}
-              : downshiftOptions.getItemProps({ item, index });
-
             return (
               <li
                 className={classNames("p-list__item", classes.listItem, {
                   [classes.highlighted]:
                     downshiftOptions.highlightedIndex === index,
-                  [classes.disabled]: disabled,
                 })}
                 key={`${item.name}-${item.version}`}
-                {...props}
+                {...downshiftOptions.getItemProps({ item, index })}
               >
                 <div className="u-truncate font-monospace">
                   <TooltipCell

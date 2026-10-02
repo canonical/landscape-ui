@@ -13,6 +13,7 @@ import {
 } from "../../api";
 import { getActionFormTitle } from "../../helpers";
 import { getActionConfig } from "./helpers";
+import useDebug from "@/hooks/useDebug";
 
 interface PackagesActionFormProps {
   readonly instanceIds: number[];
@@ -23,6 +24,8 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
   instanceIds,
   actionType,
 }) => {
+  const debug = useDebug();
+
   const [selectedPackages, setSelectedPackages] = useState<
     PackageWithVersions[]
   >([]);
@@ -50,29 +53,36 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
             actionType={actionType}
           />
           <SidePanelFormButtons
-            submitButtonDisabled={!selectedPackages.length}
+            submitButtonDisabled={
+              !selectedPackages.length ||
+              (actionType == "change_version" &&
+                selectedPackages.some(([, versions]) => !versions.length))
+            }
             submitButtonText="Next"
             submitButtonAppearance="positive"
             submitButtonLoading={isCreatingPackageChangePlan}
             onSubmit={async () => {
-              const computer_query = instanceIds
-                .map((id) => `id:${id}`)
-                .join(" OR ");
+              try {
+                const computer_query = instanceIds
+                  .map((id) => `id:${id}`)
+                  .join(" OR ");
 
-              const packageIds = selectedPackages.map(([{ id }]) => id);
-              const config = getActionConfig(actionType, packageIds);
+                const config = getActionConfig(actionType, selectedPackages);
 
-              const { data } = await createPackageChangePlan({
-                computer_query,
-                ...config,
-              });
+                const { data } = await createPackageChangePlan({
+                  computer_query,
+                  ...config,
+                });
 
-              setPackageChangePlanId(data.id);
-              setSidePanelTitle("Summary");
-              setOnCloseOverride(() => {
-                deletePackageChangePlan(data.id);
-                closeSidePanel();
-              });
+                setPackageChangePlanId(data.id);
+                setSidePanelTitle("Summary");
+                setOnCloseOverride(() => {
+                  deletePackageChangePlan(data.id);
+                  closeSidePanel();
+                });
+              } catch (error) {
+                debug(error);
+              }
             }}
           />
         </>
