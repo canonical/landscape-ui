@@ -1,16 +1,17 @@
-import { availableSnaps } from "@/tests/mocks/snap";
-import { renderWithProviders } from "@/tests/render";
-import { screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import SnapDropdownSearch from "./SnapDropdownSearch";
-import { useGetAvailableSnaps } from "@/features/snaps";
-import type { FC } from "react";
-import { PATHS } from "@/libs/routes";
 import { API_URL } from "@/constants";
+import { PATHS } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import server from "@/tests/server";
+import { availableSnaps } from "@/tests/mocks/snap";
+import { renderWithProviders } from "@/tests/render";
+import { screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
+import type { FC } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useGetAvailableSnaps } from "@/features/snaps";
+import SnapDropdownSearch from "./SnapDropdownSearch";
+import { DEBOUNCE_DELAY } from "./constants";
 
 const props = {
   selectedItems: [],
@@ -31,6 +32,48 @@ describe("SnapDropdownSearch", () => {
   it("renders snap dropdown search component", () => {
     const searchBox = screen.getByRole("searchbox");
     expect(searchBox).toBeInTheDocument();
+  });
+
+  it("debounces rapid typing into a single API request", async () => {
+    let requestCount = 0;
+    server.use(
+      http.get(`${API_URL}computers/:instanceId/snaps/available`, () => {
+        requestCount++;
+        return HttpResponse.json({ results: availableSnaps });
+      }),
+    );
+
+    const searchBox = screen.getByRole("searchbox");
+    await userEvent.type(searchBox, "testsnap");
+
+    await waitFor(
+      () => {
+        expect(requestCount).toBe(1);
+      },
+      { timeout: 1000 },
+    );
+  });
+
+  it("cancels a pending debounced request when the field is cleared", async () => {
+    let requestCount = 0;
+    server.use(
+      http.get(`${API_URL}computers/:instanceId/snaps/available`, () => {
+        requestCount++;
+        return HttpResponse.json({ results: availableSnaps });
+      }),
+    );
+
+    const searchBox = screen.getByRole("searchbox");
+    await userEvent.type(searchBox, "testsnap");
+
+    const clearButton = screen.getByRole("button", {
+      name: /clear search field/i,
+    });
+    await userEvent.click(clearButton);
+
+    // Wait past the debounce window to ensure the cancelled request does not fire.
+    await new Promise((resolve) => setTimeout(resolve, DEBOUNCE_DELAY * 2));
+    expect(requestCount).toBe(0);
   });
 
   describe("snap selection flow", () => {
