@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { ComputerPackageSearchGroupedResult } from "../types";
-import { mapGroupedResultToInstancePackage } from "./usePackages";
+import type { ComputerPackageSearchGroupedResult } from "./types";
+import { mapGroupedResultToInstancePackage } from "./helpers";
 
 describe("mapGroupedResultToInstancePackage", () => {
   it("maps a package with a security upgrade candidate to status 'security'", () => {

@@ -1,7 +1,8 @@
 export { default as PackageList } from "./components/PackageList";
 export { default as PackagesInstallButton } from "./components/PackagesInstallButton";
 export { default as PackagesPanelHeader } from "./components/PackagesPanelHeader";
-export { usePackages, mapGroupedResultToInstancePackage } from "./hooks";
+export { usePackages } from "./hooks";
+export { mapGroupedResultToInstancePackage } from "./helpers";
 export type { InstancePackagesToExclude } from "./hooks";
 export type {
   InstancePackage,

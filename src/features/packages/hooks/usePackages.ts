@@ -10,16 +10,15 @@ import type { AxiosError, AxiosResponse } from "axios";
 import { FilterState } from "../types";
 import type {
   ComputerPackageSearchGroupedResponse,
-  ComputerPackageSearchGroupedResult,
   ComputerPackageSearchParams,
   DowngradePackageVersion,
   InstancePackage,
   Package,
-  PackageInstallationCandidate,
   SearchPackagesRequest,
   SearchPackagesResponse,
   SearchUpgradesRequest,
 } from "../types";
+import { mapGroupedResultToInstancePackage } from "../helpers";
 
 interface GetInstancePackagesParams extends ComputerPackageSearchParams {
   instance_id: number;
@@ -60,66 +59,6 @@ export interface InstancePackagesToExclude {
 interface UpgradeInstancePackagesParams {
   computers: InstancePackagesToExclude[];
 }
-
-const SYNTHETIC_ID_PREFIX = -900000;
-
-let syntheticIdCounter = 0;
-
-const getSyntheticId = (): number => {
-  syntheticIdCounter -= 1;
-
-  return SYNTHETIC_ID_PREFIX + syntheticIdCounter;
-};
-
-const pickAvailableCandidate = (
-  candidates: PackageInstallationCandidate[],
-): PackageInstallationCandidate | undefined => {
-  const securityCandidate = candidates.find(({ security }) => security);
-
-  if (securityCandidate) {
-    return securityCandidate;
-  }
-
-  return candidates.find(({ upgrade }) => upgrade);
-};
-
-const resolvePackageStatus = (
-  result: ComputerPackageSearchGroupedResult,
-  candidate?: PackageInstallationCandidate,
-): "available" | "installed" | "held" | "security" => {
-  if (result.held) {
-    return "held";
-  }
-
-  if (candidate?.security) {
-    return "security";
-  }
-
-  if (result.installed_version) {
-    return "installed";
-  }
-
-  if (candidate) {
-    return "available";
-  }
-
-  return "installed";
-};
-
-export const mapGroupedResultToInstancePackage = (
-  result: ComputerPackageSearchGroupedResult,
-): InstancePackage => {
-  const candidate = pickAvailableCandidate(result.installation_candidates);
-
-  return {
-    id: result.installed_id ?? candidate?.id ?? getSyntheticId(),
-    name: result.name,
-    summary: result.summary ?? "",
-    current_version: result.installed_version,
-    available_version: candidate?.version ?? null,
-    status: resolvePackageStatus(result, candidate),
-  };
-};
 
 const sanitizeFilterState = (state?: FilterState): FilterState | undefined => {
   if (!state || state === FilterState.UNSPECIFIED) {
