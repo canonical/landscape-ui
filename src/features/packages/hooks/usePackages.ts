@@ -87,12 +87,12 @@ const resolvePackageStatus = (
   result: ComputerPackageSearchGroupedResult,
   candidate?: PackageInstallationCandidate,
 ): "available" | "installed" | "held" | "security" => {
-  if (candidate?.security) {
-    return "security";
-  }
-
   if (result.held) {
     return "held";
+  }
+
+  if (candidate?.security) {
+    return "security";
   }
 
   if (result.installed_version) {
@@ -112,7 +112,7 @@ export const mapGroupedResultToInstancePackage = (
   const candidate = pickAvailableCandidate(result.installation_candidates);
 
   return {
-    id: result.installed_id ?? getSyntheticId(),
+    id: result.installed_id ?? candidate?.id ?? getSyntheticId(),
     name: result.name,
     summary: result.summary ?? "",
     current_version: result.installed_version,

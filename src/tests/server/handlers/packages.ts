@@ -99,6 +99,14 @@ export default [
         if (status === "error") {
           throw createEndpointStatusNetworkError();
         }
+        if (status === "empty") {
+          return HttpResponse.json<SearchPackagesResponse>({
+            packages: [],
+            count: 0,
+            next: null,
+            prev: null,
+          });
+        }
       }
 
       let body: SearchUpgradesRequest = { computer_query: "" };

@@ -2,4 +2,4 @@
 "landscape-ui": patch
 ---
 
-Refactor to no longer user deprecated API endpoints
+Refactor to no longer use deprecated API endpoints
