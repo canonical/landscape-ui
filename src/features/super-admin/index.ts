@@ -27,4 +27,4 @@ export {
   useGetStaffPeople,
 } from "./api";
 
-export { default as StaffAccountsList } from "./components/StaffAccountsList";
+export { default as StaffAccountsContainer } from "./components/StaffAccountsContainer";

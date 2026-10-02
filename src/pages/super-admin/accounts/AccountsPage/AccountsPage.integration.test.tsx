@@ -133,6 +133,26 @@ describe("AccountsPage (integration)", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows the error state, not an empty list, when the request fails", async () => {
+    server.use(
+      http.get(`${API_URL}accounts`, () =>
+        HttpResponse.json(
+          { error: "InternalServerError", message: "Server error" },
+          { status: 500 },
+        ),
+      ),
+    );
+
+    renderWithProviders(<AccountsPage />);
+
+    expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "No accounts found according to your search parameters.",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
   it("requests the next page from the server", async () => {
     const queries = serveManyAccounts();
 
