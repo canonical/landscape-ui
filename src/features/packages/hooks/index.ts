@@ -1,4 +1,7 @@
-export { default as usePackages } from "./usePackages";
+export {
+  default as usePackages,
+  mapGroupedResultToInstancePackage,
+} from "./usePackages";
 export type {
   UpgradePackagesParams,
   InstancePackagesToExclude,

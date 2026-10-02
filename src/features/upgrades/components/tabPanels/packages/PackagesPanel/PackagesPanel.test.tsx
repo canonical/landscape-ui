@@ -73,4 +73,35 @@ describe("usePackages request params", () => {
     expect(capturedBody?.text).toBeUndefined();
     expect(capturedBody?.names).toBeUndefined();
   });
+
+  it("asserts getPackagesQuery hits POST /packages:search", async () => {
+    let capturedSearchBody: Record<string, unknown> | undefined;
+
+    server.use(
+      http.post(`${API_URL}packages:search`, async ({ request }) => {
+        capturedSearchBody = (await request.json()) as Record<string, unknown>;
+        return HttpResponse.json({
+          packages,
+          count: packages.length,
+          next: null,
+          prev: null,
+        });
+      }),
+    );
+
+    const SearchPackagesConsumer: FC = () => {
+      const { getPackagesQuery } = usePackages();
+      getPackagesQuery({ computer_query: "id:1", text: "curl" });
+      return null;
+    };
+
+    renderWithProviders(<SearchPackagesConsumer />, undefined, "/packages");
+
+    await vi.waitFor(() => {
+      expect(capturedSearchBody).toBeDefined();
+    });
+
+    expect(capturedSearchBody?.computer_query).toBe("id:1");
+    expect(capturedSearchBody?.text).toBe("curl");
+  });
 });
