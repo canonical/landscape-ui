@@ -246,7 +246,7 @@ describe("SnapsActionForm", () => {
     });
   });
 
-  it("shows validation error when a change-channel snap has no value", async () => {
+  it("shows validation error when a change-channel snap has no revision", async () => {
     renderWithProviders(
       <SnapsActionForm
         selectedInstances={[instanceId]}
@@ -257,17 +257,78 @@ describe("SnapsActionForm", () => {
     await user.click(await screen.findByRole("searchbox"));
     await user.click(
       await screen.findByRole("option", {
-        name: firstSnapOptionTitle,
+        name: secondSnapOptionTitle,
       }),
     );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("combobox", {
+          name: `Channel for ${secondSnap.snap.name}`,
+        }),
+      ).not.toBeDisabled();
+    });
+
+    const modeSelect = screen.getByLabelText(
+      `Snap channel or revision for ${secondSnap.snap.name}`,
+    );
+    await user.selectOptions(modeSelect, "revision");
 
     await user.click(screen.getByRole("button", { name: "Change channel" }));
 
     expect(
-      await screen.findByText(
-        "Select a channel or revision for this snap to continue",
-      ),
+      await screen.findByText("Select a revision for this snap to continue"),
     ).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("submits when a change-channel snap has no channel selected", async () => {
+    let requestBody: SnapActionParams | null = null;
+    server.use(
+      http.post(`${API_URL}snaps`, async ({ request }) => {
+        requestBody = (await request.json()) as SnapActionParams;
+        return HttpResponse.json(successfulSnapInstallResponse);
+      }),
+    );
+
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: secondSnapOptionTitle,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("combobox", {
+          name: `Channel for ${secondSnap.snap.name}`,
+        }),
+      ).not.toBeDisabled();
+    });
+
+    await user.click(screen.getByRole("button", { name: "Change channel" }));
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Change channel" }),
+    );
+
+    expect(
+      await screen.findByText("Snaps successfully queued to change channel"),
+    ).toBeInTheDocument();
+    expect(requestBody).toMatchObject({
+      action: "refresh",
+      computer_ids: [instanceId],
+      snaps: [
+        { name: secondSnap.snap.name, args: { channel: "latest/stable" } },
+      ],
+    });
   });
 
   it("sends the 'refresh' action with the selected channel for 'change channel'", async () => {

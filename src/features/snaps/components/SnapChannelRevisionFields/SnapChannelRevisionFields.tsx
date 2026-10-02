@@ -58,7 +58,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
           options={
             channelOptions.length > 0
               ? channelOptions
-              : [{ label: "No channels available", value: "" }]
+              : [{ label: "Default channel", value: "" }]
           }
           onChange={(event) => {
             onChange(event.currentTarget.value);

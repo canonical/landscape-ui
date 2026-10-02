@@ -196,7 +196,7 @@ describe("SnapChangeChannelItem", () => {
     );
     expect(channelSelect).toBeDisabled();
     expect(
-      within(channelSelect).getByText("No channels available"),
+      within(channelSelect).getByText("Default channel"),
     ).toBeInTheDocument();
   });
 

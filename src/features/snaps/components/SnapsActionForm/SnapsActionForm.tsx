@@ -127,9 +127,13 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     }
   };
 
-  const hasMissingChangeValue =
+  const hasMissingRevisionValue =
     isChangeChannel &&
-    selectedSnaps.some((item) => !snapChangeConfigs[item.snap.id]?.value);
+    selectedSnaps.some((item) => {
+      const config = snapChangeConfigs[item.snap.id];
+
+      return config?.mode === "revision" && !config.value;
+    });
 
   const hasInvalidRevisionValue =
     isChangeChannel &&
@@ -155,7 +159,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     setHasAttemptedSubmit(true);
     if (
       !getValidationError() &&
-      !hasMissingChangeValue &&
+      !hasMissingRevisionValue &&
       !hasInvalidRevisionValue
     ) {
       openModal();
