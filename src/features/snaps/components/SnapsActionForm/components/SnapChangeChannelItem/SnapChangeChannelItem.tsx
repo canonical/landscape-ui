@@ -48,8 +48,8 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
     if (!hasAttemptedSubmit) {
       return undefined;
     }
-    if (!value) {
-      return "Select a channel or revision for this snap to continue";
+    if (mode === "revision" && !value) {
+      return "Select a revision for this snap to continue";
     }
     if (mode === "revision" && !isValidRevision(value)) {
       return "Revision must be a positive whole number";
