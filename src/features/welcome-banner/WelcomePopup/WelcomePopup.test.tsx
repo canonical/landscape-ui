@@ -12,9 +12,7 @@ describe("WelcomePopup", () => {
     renderWithProviders(<WelcomePopup />);
 
     await waitFor(() => {
-      expect(
-        screen.queryByText("Landscape web portal (Preview)"),
-      ).toBeInTheDocument();
+      expect(screen.queryByText("Landscape web portal")).toBeInTheDocument();
     });
   });
 
@@ -23,9 +21,7 @@ describe("WelcomePopup", () => {
 
     renderWithProviders(<WelcomePopup />);
 
-    expect(
-      screen.queryByText("Landscape web portal (Preview)"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Landscape web portal")).not.toBeInTheDocument();
   });
 
   it("should close and save in local storage", async () => {
@@ -39,7 +35,7 @@ describe("WelcomePopup", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Landscape web portal (Preview)"),
+        screen.queryByText("Landscape web portal"),
       ).not.toBeInTheDocument();
     });
 
