@@ -124,6 +124,6 @@ describe("mapGroupedResultToInstancePackage", () => {
     expect(result.current_version).toBeNull();
     expect(result.available_version).toBe("3.0.5-7build1");
     expect(result.status).toBe("available");
-    expect(result.id).toBeLessThan(0);
+    expect(result.id).toBe(205);
   });
 });
