@@ -13,12 +13,13 @@ import useEnv from "@/hooks/useEnv";
 import { useGetStandaloneAccount } from "@/features/account-creation";
 import classes from "./OidcAuthPage.module.scss";
 import { ROUTES } from "@/libs/routes";
+import EnvError from "@/pages/EnvError";
 
 const OidcAuthPage: FC = () => {
   const [searchParams] = useSearchParams();
 
   const { safeRedirect, setUser } = useAuth();
-  const { isSelfHosted, isSaas } = useEnv();
+  const { envLoading, envError, isSelfHosted, isSaas } = useEnv();
   const { accountExists } = useGetStandaloneAccount();
   const navigate = useNavigate();
 
@@ -31,7 +32,12 @@ const OidcAuthPage: FC = () => {
   );
 
   useEffect(() => {
-    if (!authData || !("current_account" in authData)) {
+    if (
+      envLoading ||
+      envError ||
+      !authData ||
+      !("current_account" in authData)
+    ) {
       return;
     }
 
@@ -73,6 +79,8 @@ const OidcAuthPage: FC = () => {
       replace: true,
     });
   }, [
+    envLoading,
+    envError,
     authData,
     navigate,
     safeRedirect,
@@ -82,9 +90,13 @@ const OidcAuthPage: FC = () => {
     isSaas,
   ]);
 
+  if (envError) {
+    return <EnvError />;
+  }
+
   return (
     <div className={classes.container}>
-      {isLoading ? (
+      {isLoading || envLoading ? (
         <div className="u-align-text--center">
           <span className={classes.loading}>
             <LoadingState inline />
