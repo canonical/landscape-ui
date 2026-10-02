@@ -69,7 +69,12 @@ describe("PackageDropdownSearch", () => {
       const searchBox = screen.getByRole("searchbox");
       await user.type(searchBox, "testpackage");
 
-      await waitFor(() => { expect(requestCount).toBe(1); }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(requestCount).toBe(1);
+        },
+        { timeout: 1000 },
+      );
     });
 
     it("shows matching packages after searching", async () => {

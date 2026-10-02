@@ -45,7 +45,12 @@ describe("SnapDropdownSearch", () => {
     const searchBox = screen.getByRole("searchbox");
     await userEvent.type(searchBox, "testsnap");
 
-    await waitFor(() => { expect(requestCount).toBe(1); }, { timeout: 1000 });
+    await waitFor(
+      () => {
+        expect(requestCount).toBe(1);
+      },
+      { timeout: 1000 },
+    );
   });
 
   describe("snap selection flow", () => {
