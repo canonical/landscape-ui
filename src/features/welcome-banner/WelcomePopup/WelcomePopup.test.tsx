@@ -19,7 +19,7 @@ describe("WelcomePopup", () => {
   });
 
   it("should not render if saved in local storage", async () => {
-    localStorage.setItem("_landscape_isWelcomePopupClosed", "true");
+    localStorage.setItem("_landscape_isDefaultPortalPopupClosed", "true");
 
     renderWithProviders(<WelcomePopup />);
 
@@ -43,7 +43,7 @@ describe("WelcomePopup", () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(localStorage.getItem("_landscape_isWelcomePopupClosed")).toBe(
+    expect(localStorage.getItem("_landscape_isDefaultPortalPopupClosed")).toBe(
       "true",
     );
   });
