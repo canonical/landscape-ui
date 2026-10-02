@@ -15,7 +15,7 @@ Architectural and CI rules already live in `.github/copilot-instructions.md`; re
 - **API hooks.** New endpoints belong in a feature's `api/` folder as a typed React Query hook that unwraps the raw response (e.g. `{ items, count, isLoading }`), not inline `axios`/`fetch` in components.
 - **Root path drift.** `VITE_ROOT_PATH` is `/portal/` in production builds and `/` in dev/E2E. Flag hardcoded paths that assume one over the other instead of using the env/config value.
 - **CI workflow edits.** `.github/workflows/` changes are high-risk: don't unpin the SHA-pinned actions in `integration-tests.yml`, don't add build/publish steps to `changeset-version.yml` (main never ships), and don't touch branch selection or the `should_build` guard in `release-and-build.yml`.
-- **Generated output.** `dist/` is gitignored and build-only; a hand-edit there is a correctness flag, not a style nit.
+- **Vitest globals.** `globals: true` is set in `vitest.config.ts`; `describe`/`it`/`expect`/`vi` etc. are ambient. Flag unnecessary `import { describe, it, expect } from "vitest"` (or similar) added to test files.
 
 ## How to review
 
