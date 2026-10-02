@@ -29,8 +29,8 @@ interface SelfHostedLicenseProviderProps {
 const SelfHostedLicenseProvider: FC<SelfHostedLicenseProviderProps> = ({
   children,
 }) => {
-  const { envLoading, isSaas } = useEnv();
-  const shouldQuery = !envLoading && isSaas;
+  const { envLoading, envError, isSaas } = useEnv();
+  const shouldQuery = !envLoading && !envError && isSaas;
   const selfHostedLicense = useGetSelfHostedEnabled(shouldQuery);
 
   return (

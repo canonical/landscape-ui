@@ -4,13 +4,14 @@ import type { FC } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
+import EnvError from "@/pages/EnvError";
 
 const ProfilesPage: FC = () => {
   const navigate = useNavigate();
-  const { envLoading, isSaas } = useEnv();
+  const { envLoading, envError, isSaas } = useEnv();
 
   useEffect(() => {
-    if (envLoading) {
+    if (envLoading || envError) {
       return;
     }
 
@@ -18,8 +19,9 @@ const ProfilesPage: FC = () => {
       isSaas ? ROUTES.profiles.repositoryProfiles() : ROUTES.profiles.package(),
       { replace: true },
     );
-  }, [navigate, envLoading, isSaas]);
+  }, [navigate, envLoading, envError, isSaas]);
 
+  if (envError) return <EnvError />;
   return <LoadingState />;
 };
 

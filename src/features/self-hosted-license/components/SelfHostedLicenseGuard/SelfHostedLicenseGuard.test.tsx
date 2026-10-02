@@ -45,6 +45,19 @@ const renderWithRoutes = (value: EnvContextState) =>
   );
 
 describe("SelfHostedLicenseGuard", () => {
+  it("shows an environment failure without redirecting or exposing the license", () => {
+    renderWithRoutes({ ...envState, envError: true, isSaas: false });
+
+    expect(
+      screen.getByText("Unable to load environment information."),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Legacy license file" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(getLocationDisplay()).toHaveTextContent(/^\/$/);
+  });
+
   it("renders children when SaaS account has self-hosted enabled", async () => {
     renderWithRoutes(envState);
 

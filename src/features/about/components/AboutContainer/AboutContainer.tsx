@@ -9,9 +9,9 @@ import type { FC } from "react";
 import classes from "./AboutContainer.module.scss";
 
 const AboutContainer: FC = () => {
-  const { envError, envLoading, packageVersion, revision } = useEnv();
+  const { envLoading, packageVersion, revision } = useEnv();
 
-  if (envLoading && !envError) {
+  if (envLoading) {
     return <LoadingState />;
   }
 

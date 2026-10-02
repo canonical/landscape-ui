@@ -38,6 +38,29 @@ vi.mock("usehooks-ts", async () => {
 });
 
 describe("SecondaryNavigation", () => {
+  it("keeps ordinary account links available when environment loading fails", () => {
+    renderWithProviders(
+      <EnvContext.Provider value={{ ...resolvedEnvState, envError: true }}>
+        <SelfHostedLicenseProvider>
+          <SecondaryNavigation
+            title={ACCOUNT_SETTINGS.label}
+            items={ACCOUNT_SETTINGS.items}
+          />
+        </SelfHostedLicenseProvider>
+      </EnvContext.Provider>,
+    );
+
+    expect(screen.getByRole("link", { name: "General" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "About" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Legacy license file" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("navigation")).toHaveAttribute(
+      "aria-busy",
+      "false",
+    );
+  });
+
   it("renders correctly", async () => {
     renderWithProviders(
       <EnvContext.Provider value={resolvedEnvState}>

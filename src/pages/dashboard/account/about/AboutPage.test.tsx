@@ -39,7 +39,7 @@ describe("AboutPage", () => {
       await screen.findByRole("heading", { name: "Server version" }),
     ).toBeInTheDocument();
     expect(screen.getByTestId("environment-state")).toHaveTextContent(
-      "true,true",
+      "false,true",
     );
     expect(container).toHaveInfoItem("Package version", "unknown");
     expect(container).toHaveInfoItem("Revision", "unknown");

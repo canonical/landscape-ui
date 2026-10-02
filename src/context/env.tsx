@@ -63,6 +63,7 @@ const EnvProvider: FC<EnvProviderProps> = ({ children }) => {
       } catch (error) {
         setState((currentState) => ({
           ...currentState,
+          envLoading: false,
           envError: true,
         }));
         debug(error);

@@ -5,16 +5,21 @@ import useEnv from "@/hooks/useEnv";
 import { ROUTES } from "@/libs/routes";
 
 const EnvError: FC = () => {
-  const { isSaas, isSelfHosted } = useEnv();
+  const { envError, isSaas, isSelfHosted } = useEnv();
 
   return (
     <EmptyState
       title="Environment Error"
       body={
-        <>
-          {isSaas && "This feature is not available in SaaS mode."}
-          {isSelfHosted && "This feature is not available in Self Hosted mode."}
-        </>
+        envError ? (
+          "Unable to load environment information."
+        ) : (
+          <>
+            {isSaas && "This feature is not available in SaaS mode."}
+            {isSelfHosted &&
+              "This feature is not available in Self Hosted mode."}
+          </>
+        )
       }
       cta={[
         <Link
