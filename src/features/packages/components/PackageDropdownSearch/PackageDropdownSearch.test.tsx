@@ -77,6 +77,39 @@ describe("PackageDropdownSearch", () => {
       );
     });
 
+    it("cancels a pending debounced request when the field is cleared", async () => {
+      let requestCount = 0;
+      server.use(
+        http.get(`${API_URL}computers/:id/packages`, ({ request }) => {
+          requestCount++;
+          const url = new URL(request.url);
+          const limit = Number(url.searchParams.get("limit"));
+          const offset = Number(url.searchParams.get("offset")) || 0;
+          const search = url.searchParams.get("search") || "";
+          return HttpResponse.json(
+            generatePaginatedResponse({
+              data: instancePackages,
+              limit,
+              offset,
+              search,
+              searchFields: ["name"],
+            }),
+          );
+        }),
+      );
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.type(searchBox, "testpackage");
+
+      const clearButton = screen.getByRole("button", {
+        name: /clear search field/i,
+      });
+      await user.click(clearButton);
+
+      await new Promise((resolve) => setTimeout(resolve, 350));
+      expect(requestCount).toBe(0);
+    });
+
     it("shows matching packages after searching", async () => {
       const searchBox = screen.getByRole("searchbox");
       assert(availablePackages[0]);

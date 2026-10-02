@@ -53,6 +53,27 @@ describe("SnapDropdownSearch", () => {
     );
   });
 
+  it("cancels a pending debounced request when the field is cleared", async () => {
+    let requestCount = 0;
+    server.use(
+      http.get(`${API_URL}computers/:instanceId/snaps/available`, () => {
+        requestCount++;
+        return HttpResponse.json({ results: availableSnaps });
+      }),
+    );
+
+    const searchBox = screen.getByRole("searchbox");
+    await userEvent.type(searchBox, "testsnap");
+
+    const clearButton = screen.getByRole("button", {
+      name: /clear search field/i,
+    });
+    await userEvent.click(clearButton);
+
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(requestCount).toBe(0);
+  });
+
   describe("snap selection flow", () => {
     it("shows matching snaps after searching", async () => {
       const searchBox = screen.getByRole("searchbox");
