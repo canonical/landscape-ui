@@ -48,8 +48,8 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
   const packageData = packageDataRes?.data?.results ?? [];
 
-  const getAvailablePackageSuggestions = (item: InstancePackage): boolean => {
-    return !selectedItems.map((item) => item.name).includes(item.name);
+  const getAvailablePackageSuggestions = (pkg: InstancePackage): boolean => {
+    return !selectedItems.map((item) => item.name).includes(pkg.name);
   };
 
   const suggestions = packageData.filter(getAvailablePackageSuggestions);
