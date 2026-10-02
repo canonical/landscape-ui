@@ -19,7 +19,7 @@ export const useGetSnapInfo = (
 ) => {
   const authFetch = useFetch();
 
-  const { data, isLoading } = useQuery<
+  const { data, isLoading, isError } = useQuery<
     AxiosResponse<AvailableSnapInfo>,
     AxiosError<ApiError>
   >({
@@ -34,5 +34,6 @@ export const useGetSnapInfo = (
   return {
     snapInfo: data?.data ?? null,
     isSnapInfoLoading: isLoading,
+    isSnapInfoError: isError,
   };
 };

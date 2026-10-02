@@ -46,6 +46,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const [loadingSnapIds, setLoadingSnapIds] = useState<Record<string, boolean>>(
     {},
   );
+  const [errorSnapIds, setErrorSnapIds] = useState<Record<string, boolean>>({});
   const [snapChangeConfigs, setSnapChangeConfigs] = useState<
     Record<
       string,
@@ -154,6 +155,13 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     isChangeChannel &&
     selectedSnaps.some((item) => loadingSnapIds[item.snap.id]);
 
+  const hasSnapInfoErrorInChannelMode =
+    isChangeChannel &&
+    selectedSnaps.some((item) => {
+      const mode = snapChangeConfigs[item.snap.id]?.mode ?? "channel";
+      return mode === "channel" && errorSnapIds[item.snap.id];
+    });
+
   const getValidationError = () => {
     if (hasNoSelectedSnaps) {
       return "You must add at least one snap to continue";
@@ -167,6 +175,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     if (
       !getValidationError() &&
       !isAnySnapInfoLoading &&
+      !hasSnapInfoErrorInChannelMode &&
       !hasMissingRevisionValue &&
       !hasInvalidRevisionValue
     ) {
@@ -178,6 +187,15 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     (snapId: string, isLoading: boolean) => {
       setLoadingSnapIds((prev) =>
         prev[snapId] === isLoading ? prev : { ...prev, [snapId]: isLoading },
+      );
+    },
+    [],
+  );
+
+  const handleSnapErrorChange = useCallback(
+    (snapId: string, isError: boolean) => {
+      setErrorSnapIds((prev) =>
+        prev[snapId] === isError ? prev : { ...prev, [snapId]: isError },
       );
     },
     [],
@@ -209,6 +227,9 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       Object.fromEntries(Object.entries(prev).filter(([id]) => id !== snapId)),
     );
     setLoadingSnapIds((prev) =>
+      Object.fromEntries(Object.entries(prev).filter(([id]) => id !== snapId)),
+    );
+    setErrorSnapIds((prev) =>
       Object.fromEntries(Object.entries(prev).filter(([id]) => id !== snapId)),
     );
   };
@@ -273,6 +294,9 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                       hasAttemptedSubmit={hasAttemptedSubmit}
                       onLoadingChange={(isLoading) => {
                         handleSnapLoadingChange(item.snap.id, isLoading);
+                      }}
+                      onErrorChange={(isError) => {
+                        handleSnapErrorChange(item.snap.id, isError);
                       }}
                       onChange={(value, channel, confinement) => {
                         handleSnapValueChange(
