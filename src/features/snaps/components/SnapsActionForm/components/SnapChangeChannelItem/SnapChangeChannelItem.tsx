@@ -1,71 +1,115 @@
 import type { FC } from "react";
-import classes from "./SnapChangeChannelItem.module.scss";
-import type { MultiSelectItem } from "@canonical/react-components";
-import { Button, Icon, ICONS } from "@canonical/react-components";
-import { pluralize } from "@/utils/_helpers";
-// import MultiSelectField from "@/components/form/MultiSelectField";
-// import { useTheme } from "@/context/theme";
-// import classNames from "classnames";
-import type { InstalledSnapWithCount } from "../../../../types";
+import { useEffect, useMemo } from "react";
+import type { InstalledSnapWithCount, SnapChangeMode } from "../../../../types";
+import { useGetSnapInfo } from "../../../../api";
+import { isValidRevision, getChannelConfinement } from "../../../../helpers";
+import SnapChannelRevisionFields, {
+  getChannelOptions,
+} from "../../../SnapChannelRevisionFields";
+import SnapItemTitleRow from "../SnapItemTitleRow";
+import SnapItemSubtitle from "../SnapItemSubtitle";
 
 interface SnapChangeChannelItemProps {
   readonly instanceIds: number[];
   readonly selectedSnap: InstalledSnapWithCount;
   readonly onDelete: () => void;
-  readonly onItemsUpdate: (items: MultiSelectItem[]) => void;
+  readonly mode: SnapChangeMode;
+  readonly value: string;
+  readonly hasAttemptedSubmit?: boolean;
+  readonly onLoadingChange?: (isLoading: boolean) => void;
+  readonly onErrorChange?: (isError: boolean) => void;
+  readonly onChange: (
+    value: string,
+    channel?: string,
+    confinement?: string,
+  ) => void;
+  readonly onModeChange: (mode: SnapChangeMode) => void;
 }
 
 const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
-  // instanceIds,
+  instanceIds,
   selectedSnap,
   onDelete,
-  // onItemsUpdate,
+  mode,
+  value,
+  hasAttemptedSubmit = false,
+  onLoadingChange,
+  onErrorChange,
+  onChange,
+  onModeChange,
 }) => {
-  // const { isDarkMode } = useTheme();
+  const { snapInfo, isSnapInfoLoading, isSnapInfoError } = useGetSnapInfo({
+    instance_id: instanceIds[0] ?? 0,
+    name: selectedSnap.snap.name,
+  });
 
-  // const queryParams: SearchSnapsRequest = {
-  //   computer_query: instanceIds.map((id) => `id:${id}`).join(" OR "),
-  //   names: [selectedSnap.snap.name],
-  //   ...mapActionToQueryParams("install"),
-  // };
+  useEffect(() => {
+    onLoadingChange?.(isSnapInfoLoading);
+    return () => {
+      onLoadingChange?.(false);
+    };
+  }, [isSnapInfoLoading, onLoadingChange]);
 
-  // const { items, dropdownHeader } = useMultiSelectSnaps(queryParams);
+  useEffect(() => {
+    onErrorChange?.(isSnapInfoError);
+    return () => {
+      onErrorChange?.(false);
+    };
+  }, [isSnapInfoError, onErrorChange]);
+
+  const channelOptions = useMemo(
+    () => getChannelOptions(snapInfo?.["channel-map"]),
+    [snapInfo],
+  );
+
+  const getError = () => {
+    if (mode === "channel" && isSnapInfoError) {
+      return "Failed to load channels for this snap";
+    }
+    if (!hasAttemptedSubmit) {
+      return undefined;
+    }
+    if (mode === "revision" && !value) {
+      return "Select a revision for this snap to continue";
+    }
+    if (mode === "revision" && !isValidRevision(value)) {
+      return "Revision must be a positive whole number";
+    }
+    return undefined;
+  };
+
+  const error = getError();
 
   return (
     <>
-      {/* TODO: Replace this with SnapItemTitleRow and SnapItemSubtitle components */}
-      <div className={classes.topRow}>
-        <div>
-          <div className="font-monospace">
-            {selectedSnap.snap.name} {selectedSnap.tracking_channel}
-          </div>
-          <div className="u-text--muted u-no-margin">
-            Installed on{" "}
-            {pluralize(selectedSnap.computerCount, ["instance"], "exact")}
-          </div>
-        </div>
-        <Button
-          type="button"
-          appearance="link"
-          className="u-no-margin--bottom u-no-padding--top"
-          aria-label={`Delete ${selectedSnap.snap.name}`}
-          onClick={onDelete}
-        >
-          <Icon name={ICONS.delete} />
-        </Button>
-      </div>
-      {/* <MultiSelectField
-        className={classNames(classes.multiSelect, { "is-paper": !isDarkMode })}
-        items={items}
-        dropdownHeader={dropdownHeader}
-        showDropdownFooter={false}
-        variant="condensed"
-        placeholder="Version"
-        onItemsUpdate={onItemsUpdate}
-        selectedItems={selectedSnap.selectedVersions.map(
-          (id) => items.find((item) => item.value === id) as MultiSelectItem,
-        )}
-      /> */}
+      <SnapItemTitleRow name={selectedSnap.snap.name} onDelete={onDelete} />
+      <SnapItemSubtitle
+        scope="Installed"
+        computerCount={selectedSnap.computerCount}
+      />
+      <div>Change to</div>
+      <SnapChannelRevisionFields
+        mode={mode}
+        value={value}
+        channelOptions={channelOptions}
+        snapName={selectedSnap.snap.name}
+        error={error}
+        isLoading={isSnapInfoLoading}
+        onChange={(newValue) => {
+          if (mode !== "channel") {
+            onChange(newValue);
+            return;
+          }
+
+          const channelMap = snapInfo?.["channel-map"];
+          onChange(
+            newValue,
+            newValue,
+            getChannelConfinement(channelMap, newValue),
+          );
+        }}
+        onModeChange={onModeChange}
+      />
     </>
   );
 };

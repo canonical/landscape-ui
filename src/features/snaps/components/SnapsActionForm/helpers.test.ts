@@ -20,7 +20,6 @@ describe("getRequestAction", () => {
 
 describe("hasNotification", () => {
   it("returns true for actions with a notification", () => {
-    expect(hasNotification("install")).toBe(true);
     expect(hasNotification("hold")).toBe(true);
   });
 
@@ -28,6 +27,7 @@ describe("hasNotification", () => {
     expect(hasNotification("uninstall")).toBe(false);
     expect(hasNotification("refresh")).toBe(false);
     expect(hasNotification("unhold")).toBe(false);
+    expect(hasNotification("install")).toBe(false);
     expect(hasNotification("change channel")).toBe(false);
   });
 });

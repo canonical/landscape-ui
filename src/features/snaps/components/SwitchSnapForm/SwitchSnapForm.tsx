@@ -17,13 +17,11 @@ import { useMemo } from "react";
 import { useParams } from "react-router";
 import { useSnapAction } from "../../api";
 import type { AvailableSnapInfo, InstalledSnap } from "../../types";
+import { getChannelConfinement, getChannelOptions } from "../../helpers";
 import { VALIDATION_SCHEMA } from "./constants";
 import type { SwitchFormValues } from "./types";
-import {
-  getChannelOptions,
-  getInitialValues,
-  getSelectedChannel,
-} from "./helpers";
+import { getInitialValues } from "./helpers";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 
 interface SwitchSnapFormProps {
   readonly installedSnaps: InstalledSnap[];
@@ -37,12 +35,16 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
+  const openActivityDetails = useOpenActivityDetailsPanel();
   const { closeSidePanel } = useSidePanel();
   const { snapAction } = useSnapAction();
 
   const instanceId = Number(urlInstanceId);
 
-  const channelOptions = useMemo(() => getChannelOptions(snapInfo), [snapInfo]);
+  const channelOptions = useMemo(
+    () => getChannelOptions(snapInfo?.["channel-map"]),
+    [snapInfo],
+  );
 
   const hasNoAvailableChannels =
     !!snapInfo && snapInfo["channel-map"].length === 0;
@@ -56,16 +58,18 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({
           !values.deliver_immediately && values.deliver_after
             ? date(values.deliver_after).format()
             : undefined;
-        const selectedChannel = getSelectedChannel(snapInfo, values.release);
-        await snapAction({
+        const { data: activity } = await snapAction({
           computer_ids: [instanceId],
           action: "refresh",
           snaps: installedSnaps.map((snap) => ({
             name: snap.snap.name,
             args: {
-              channel: selectedChannel?.channel.name,
-              revision: selectedChannel?.revision.toString(),
-              classic: selectedChannel?.confinement === "classic",
+              channel: values.release,
+              classic:
+                getChannelConfinement(
+                  snapInfo?.["channel-map"],
+                  values.release,
+                ) === "classic",
             },
           })),
           deliver_after: deliverAfter,
@@ -76,6 +80,14 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({
         closeSidePanel();
         notify.success({
           message: `You queued ${pluralize(installedSnaps.length, ["snap"], "exact")} to be switched.`,
+          actions: [
+            {
+              label: "View details",
+              onClick: () => {
+                openActivityDetails(activity);
+              },
+            },
+          ],
         });
       } catch (error) {
         debug(error);

@@ -1,5 +1,6 @@
 import { API_URL } from "@/constants";
 import { PATHS } from "@/libs/routes";
+import { SNAP_ACTION_ACTIVITY } from "@/tests/mocks/activity";
 import {
   availableSnapInfo,
   installedSnaps,
@@ -12,7 +13,11 @@ import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { assert, describe, expect, it, beforeEach } from "vitest";
-import type { InstalledSnap, SnapActionParams } from "../../types";
+import type {
+  AvailableSnapInfo,
+  InstalledSnap,
+  SnapActionParams,
+} from "../../types";
 import SwitchSnapForm from "./SwitchSnapForm";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 
@@ -157,8 +162,8 @@ describe("SwitchSnapForm", () => {
     assert(strictChannel, "No strict release available to switch to.");
     assert(classicChannel, "No classic release available to switch to.");
 
-    const releaseValue = (channel: typeof strictChannel) =>
-      `${channel.channel.name} - ${channel.channel.architecture}`;
+    const releaseValue = (channel: AvailableSnapInfo["channel-map"][number]) =>
+      channel.channel.name;
 
     it("submits successfully and shows success notification", async () => {
       renderSwitchSnapForm();
@@ -167,6 +172,21 @@ describe("SwitchSnapForm", () => {
 
       expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
       expect(await screen.findByText(/to be switched/i)).toBeInTheDocument();
+    });
+
+    it("shows a View details action that opens the activity details side panel", async () => {
+      renderSwitchSnapForm();
+
+      await userEvent.click(screen.getByRole("button", { name: /switch/i }));
+
+      const viewDetailsButton = await screen.findByRole("button", {
+        name: /view details/i,
+      });
+      await userEvent.click(viewDetailsButton);
+
+      expect(
+        await screen.findByText(SNAP_ACTION_ACTIVITY.summary),
+      ).toBeInTheDocument();
     });
 
     it("sends classic: false when switching to a strict release", async () => {
@@ -185,7 +205,6 @@ describe("SwitchSnapForm", () => {
           name: snapWithChannels.snap.name,
           args: {
             channel: strictChannel.channel.name,
-            revision: strictChannel.revision.toString(),
             classic: false,
           },
         },
@@ -208,7 +227,6 @@ describe("SwitchSnapForm", () => {
           name: snapWithChannels.snap.name,
           args: {
             channel: classicChannel.channel.name,
-            revision: classicChannel.revision.toString(),
             classic: true,
           },
         },

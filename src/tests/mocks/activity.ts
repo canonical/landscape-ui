@@ -1,4 +1,25 @@
-import type { Activity } from "@/features/activities";
+import type { Activity, ActivityGroup } from "@/features/activities";
+
+export const SNAP_ACTION_ACTIVITY: ActivityGroup = {
+  id: 1000,
+  type: "ActivityGroup",
+  summary: "Install snaps on computer",
+  computer_id: 1,
+  computer_title: "Computer 1",
+  activity_status: "undelivered",
+  completion_time: null,
+  creation_time: "2024-04-15T15:22:03Z",
+  creator: { name: "John Smith", email: "john@example.com", id: 1 },
+  parent_id: null,
+  result_code: null,
+  result_text: null,
+  actions: {
+    approvable: false,
+    cancelable: true,
+    reappliable: false,
+  },
+  deliver_delay_window: 0,
+};
 
 export const RELEASE_UPGRADE_ACTIVITY: Activity = {
   id: 9001,
@@ -298,6 +319,7 @@ export const activities = [
     type: "GenerateFDERecoveryKeyRequest",
   },
   RELEASE_UPGRADE_ACTIVITY,
+  SNAP_ACTION_ACTIVITY,
   {
     id: 10101,
     actions: {
