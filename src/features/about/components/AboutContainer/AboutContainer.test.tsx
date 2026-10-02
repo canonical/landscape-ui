@@ -19,7 +19,19 @@ describe("AboutContainer", () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.restoreAllMocks();
+  });
+
+  it("renders the current year in the copyright notice", () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2031-06-15T12:00:00Z"));
+
+    renderWithProviders(<AboutContainer />);
+
+    expect(
+      screen.getByText("© 2031 Canonical Ltd.", { exact: false }),
+    ).toBeInTheDocument();
   });
 
   it("renders version details", () => {

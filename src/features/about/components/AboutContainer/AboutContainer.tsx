@@ -62,7 +62,7 @@ const AboutContainer: FC = () => {
       </FormSection>
       <FormSection className={classes.aboutSection} title="Copyright">
         <span>
-          © 2026 Canonical Ltd.
+          © {new Date().getFullYear()} Canonical Ltd.
           <br />
           Ubuntu, Landscape, and Canonical are registered trademarks of
           Canonical Ltd.
