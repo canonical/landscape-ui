@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { InstalledSnapWithCount, SnapChangeMode } from "../../../../types";
 import { useGetSnapInfo } from "../../../../api";
 import { isValidRevision, getChannelConfinement } from "../../../../helpers";
@@ -41,9 +41,15 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
     name: selectedSnap.snap.name,
   });
 
+  const onLoadingChangeRef = useRef(onLoadingChange);
+  onLoadingChangeRef.current = onLoadingChange;
+
   useEffect(() => {
-    onLoadingChange?.(isSnapInfoLoading);
-  }, [isSnapInfoLoading, onLoadingChange]);
+    onLoadingChangeRef.current?.(isSnapInfoLoading);
+    return () => {
+      onLoadingChangeRef.current?.(false);
+    };
+  }, [isSnapInfoLoading]);
 
   const channelOptions = useMemo(
     () => getChannelOptions(snapInfo?.["channel-map"]),

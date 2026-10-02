@@ -1,5 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { type FC, lazy, Suspense, useState } from "react";
+import { type FC, lazy, Suspense, useCallback, useState } from "react";
 import {
   getRequestAction,
   hasNotification,
@@ -174,6 +174,15 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     }
   };
 
+  const handleSnapLoadingChange = useCallback(
+    (snapId: string, isLoading: boolean) => {
+      setLoadingSnapIds((prev) =>
+        prev[snapId] === isLoading ? prev : { ...prev, [snapId]: isLoading },
+      );
+    },
+    [],
+  );
+
   const handleSnapValueChange = (
     snapId: string,
     value: string,
@@ -263,10 +272,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                       value={config.value}
                       hasAttemptedSubmit={hasAttemptedSubmit}
                       onLoadingChange={(isLoading) => {
-                        setLoadingSnapIds((prev) => ({
-                          ...prev,
-                          [item.snap.id]: isLoading,
-                        }));
+                        handleSnapLoadingChange(item.snap.id, isLoading);
                       }}
                       onChange={(value, channel, confinement) => {
                         handleSnapValueChange(
