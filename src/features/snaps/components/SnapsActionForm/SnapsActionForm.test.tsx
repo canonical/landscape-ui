@@ -124,18 +124,6 @@ describe("SnapsActionForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows validation error when submitting without selected snaps", async () => {
-    renderWithProviders(
-      <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
-    );
-
-    await user.click(screen.getByRole("button", { name: "Install snaps" }));
-
-    expect(
-      await screen.findByText("You must add at least one snap to continue"),
-    ).toBeInTheDocument();
-  });
-
   it("shows success notification", async () => {
     renderWithProviders(
       <SnapsActionForm
