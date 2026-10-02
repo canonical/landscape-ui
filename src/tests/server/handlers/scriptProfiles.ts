@@ -111,6 +111,7 @@ export default [
         activity_status: "succeeded",
         completion_time: null,
         computer_id: 0,
+        computer_title: "Computer 0",
         creation_time: "",
         creator: {
           email: "",

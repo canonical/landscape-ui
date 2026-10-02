@@ -13,6 +13,7 @@ import { REPOSITORIES_PATHS } from "./repositories";
 import { ROOT_PATHS } from "./root";
 import { SCRIPT_PATHS } from "./scripts";
 import { SETTINGS_PATHS } from "./settings";
+import { SUPER_ADMIN_PATHS } from "./superAdmin";
 
 export const PATHS = {
   account: ACCOUNT_PATHS,
@@ -30,4 +31,5 @@ export const PATHS = {
   root: ROOT_PATHS,
   scripts: SCRIPT_PATHS,
   settings: SETTINGS_PATHS,
+  superAdmin: SUPER_ADMIN_PATHS,
 };

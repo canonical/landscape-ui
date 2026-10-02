@@ -13,6 +13,7 @@ import { REPOSITORIES_ROUTES } from "./repositories";
 import { ROOT_ROUTES } from "./root";
 import { SCRIPT_ROUTES } from "./scripts";
 import { SETTINGS_ROUTES } from "./settings";
+import { SUPER_ADMIN_ROUTES } from "./superAdmin";
 
 export const ROUTES = {
   account: ACCOUNT_ROUTES,
@@ -30,4 +31,5 @@ export const ROUTES = {
   root: ROOT_ROUTES,
   scripts: SCRIPT_ROUTES,
   settings: SETTINGS_ROUTES,
+  superAdmin: SUPER_ADMIN_ROUTES,
 };

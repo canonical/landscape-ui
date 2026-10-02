@@ -36,6 +36,7 @@ Routing is composed in `src/routes/`:
 
 - `DashboardRoutes.tsx` contains authenticated dashboard routes under `AuthGuard`
 - `AuthRoutes.tsx` contains guest/authentication routes under `GuestGuard`
+- `SuperAdminRoutes.tsx` contains the staff-only `/super-admin` subtree under `AuthGuard` and `SuperAdminGuard`, rendered in its own layout from `src/templates/super-admin/`
 - `elements.tsx` centralizes lazy route imports behind a shared `Loadable` wrapper with `Suspense`
 
 Route paths are assembled from `src/libs/routes/`, with one file per domain. Feature flags and deployment-specific behavior are enforced in the route tree through guards such as `FeatureGuard` and `SelfHostedGuard`.

@@ -42,6 +42,21 @@ describe("Activities", () => {
       expect(table).toHaveTexts(columnHeaders);
     });
 
+    it("should render each computer title linked to its instance", () => {
+      renderWithProviders(<Activities {...defaultProps} />);
+
+      const table = screen.getByRole("table");
+      const instanceLinks = within(table).getAllByRole("link");
+
+      expect(instanceLinks.map((link) => link.textContent)).toEqual(
+        activities.map((activity) => activity.computer_title),
+      );
+      expect(instanceLinks[0]).toHaveAttribute(
+        "href",
+        ROUTES.instances.details.single(activities[0].computer_id),
+      );
+    });
+
     it("should render the completion time for each activity", () => {
       renderWithProviders(<Activities {...defaultProps} />);
 

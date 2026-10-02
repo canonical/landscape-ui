@@ -417,6 +417,8 @@ The repo uses six workflows. Copilot must follow these triggers, job orders, and
 - **build-deb:** needs `process-release`; builds the unsigned `.deb` from the `dist` artifact and uploads it.  
   **Rule:** Do not change branch selection, the `should_build` tag guard, or the tag-after-deploy ordering.
 
+Production dashboard builds use `VITE_ROOT_PATH=/portal/`; local development and Playwright E2E builds use `/`.
+
 ### Vulnerability Scan (`.github/workflows/security.yaml`)
 
 **Triggers:** `workflow_dispatch`; push → `release/**` (ignoring `security/sbom/**`)  

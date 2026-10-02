@@ -17,6 +17,7 @@ const baseActivity: Activity = {
   children: [],
   completion_time: null,
   computer_id: 0,
+  computer_title: "Computer 0",
   creation_time: "",
   creator: { email: "", id: 0, name: "" },
   deliver_after_time: null,
