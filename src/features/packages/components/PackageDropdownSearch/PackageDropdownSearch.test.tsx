@@ -112,6 +112,13 @@ describe("PackageDropdownSearch", () => {
       expect(requestCount).toBe(0);
     });
 
+    it("shows minimum characters help text when fewer than 3 characters are entered", async () => {
+      const searchBox = screen.getByRole("searchbox");
+      await user.type(searchBox, "ab");
+
+      expect(screen.getByText(/min 3\. characters/i)).toBeInTheDocument();
+    });
+
     it("shows matching packages after searching", async () => {
       const searchBox = screen.getByRole("searchbox");
       assert(availablePackages[0]);

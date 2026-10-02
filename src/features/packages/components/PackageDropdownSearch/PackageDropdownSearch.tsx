@@ -66,10 +66,11 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
     setInputValue("");
     setSearch.cancel();
     setSearch("");
+    setOpen(false);
   };
 
   const handleDropdownState = () => {
-    setOpen(Boolean(inputValue.length));
+    setOpen(inputValue.length > 2);
   };
 
   const handleSearchBoxChange = (value: string) => {
@@ -77,11 +78,11 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
     if (!value) {
       setSearch.cancel();
       setSearch("");
-      setOpen(true);
+      setOpen(false);
       return;
     }
     setSearch(value);
-    setOpen(true);
+    setOpen(value.length > 2);
   };
 
   const handleAddToSelectedItems = (item: InstancePackage) => {
