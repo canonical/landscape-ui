@@ -43,6 +43,9 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const [selectedSnaps, setSelectedSnaps] = useState<InstalledSnapWithCount[]>(
     [],
   );
+  const [loadingSnapIds, setLoadingSnapIds] = useState<Record<string, boolean>>(
+    {},
+  );
   const [snapChangeConfigs, setSnapChangeConfigs] = useState<
     Record<
       string,
@@ -147,6 +150,10 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       );
     });
 
+  const isAnySnapInfoLoading =
+    isChangeChannel &&
+    selectedSnaps.some((item) => loadingSnapIds[item.snap.id]);
+
   const getValidationError = () => {
     if (hasNoSelectedSnaps) {
       return "You must add at least one snap to continue";
@@ -159,6 +166,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     setHasAttemptedSubmit(true);
     if (
       !getValidationError() &&
+      !isAnySnapInfoLoading &&
       !hasMissingRevisionValue &&
       !hasInvalidRevisionValue
     ) {
@@ -189,6 +197,9 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const handleDeleteSnap = (snapId: string) => {
     setSelectedSnaps((snaps) => snaps.filter(({ snap }) => snap.id !== snapId));
     setSnapChangeConfigs((prev) =>
+      Object.fromEntries(Object.entries(prev).filter(([id]) => id !== snapId)),
+    );
+    setLoadingSnapIds((prev) =>
       Object.fromEntries(Object.entries(prev).filter(([id]) => id !== snapId)),
     );
   };
@@ -251,6 +262,12 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                       mode={config.mode}
                       value={config.value}
                       hasAttemptedSubmit={hasAttemptedSubmit}
+                      onLoadingChange={(isLoading) => {
+                        setLoadingSnapIds((prev) => ({
+                          ...prev,
+                          [item.snap.id]: isLoading,
+                        }));
+                      }}
                       onChange={(value, channel, confinement) => {
                         handleSnapValueChange(
                           item.snap.id,

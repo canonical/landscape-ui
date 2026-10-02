@@ -282,6 +282,46 @@ describe("SnapsActionForm", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
+  it("does not open confirmation modal when channel info is still loading", async () => {
+    let releaseInfoRequest: (() => void) | undefined;
+    const requestStarted = new Promise<void>((resolveStarted) => {
+      server.use(
+        http.get(
+          `${API_URL}computers/:computerId/snaps/:name/info`,
+          async () => {
+            resolveStarted();
+            await new Promise<void>((resolveRequest) => {
+              releaseInfoRequest = resolveRequest;
+            });
+            return HttpResponse.json(null);
+          },
+        ),
+      );
+    });
+
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: secondSnapOptionTitle,
+      }),
+    );
+
+    await requestStarted;
+
+    await user.click(screen.getByRole("button", { name: "Change channel" }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    releaseInfoRequest?.();
+  });
+
   it("submits when a change-channel snap has no channel selected", async () => {
     let requestBody: SnapActionParams | null = null;
     server.use(
