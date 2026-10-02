@@ -89,7 +89,6 @@ const PackagesActionExclusionsDetails: FC<
         emptyMsg={"No instances found according to your search parameters."}
         minWidth={400}
         className={classes.table}
-        style={{ flex: 1 }}
       />
       <SidePanelTablePagination
         currentPage={currentPage}

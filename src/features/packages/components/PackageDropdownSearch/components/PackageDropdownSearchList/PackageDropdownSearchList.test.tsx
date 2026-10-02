@@ -11,7 +11,6 @@ import type { ControllerStateAndHelpers } from "downshift";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import PackageDropdownSearchList from "./PackageDropdownSearchList";
-import classes from "./PackageDropdownSearchList.module.scss";
 
 type QueryResultType = UseInfiniteQueryResult<
   InfiniteData<AxiosResponse<SearchPackagesResponse>>
@@ -60,18 +59,17 @@ describe("PackageDropdownSearchList", () => {
   it("renders list of packages when query is completed", async () => {
     renderWithProviders(<PackageDropdownSearchList {...props} />);
 
-    for (const pkg of packages) {
+    for (const pkg of packages.slice(1, 10)) {
       screen.getByText(`${pkg.name} ${pkg.version}`);
     }
   });
 
-  it("renders selected packages disabled in dropdown", () => {
+  it("doesn't render selected packages in the dropdown", () => {
     renderWithProviders(<PackageDropdownSearchList {...props} />);
 
-    const listItem = screen
-      .getByText(`${selectedPackage.name} ${selectedPackage.version}`)
-      .closest("li");
-    expect(listItem).toHaveClass(classes.disabled);
+    expect(
+      screen.queryByText(`${selectedPackage.name} ${selectedPackage.version}`),
+    ).not.toBeInTheDocument();
   });
 
   it("renders nothing when exact is true and search is empty", () => {
@@ -83,7 +81,7 @@ describe("PackageDropdownSearchList", () => {
   });
 
   it("renders bold text for searched term", () => {
-    const search = selectedPackage.name.substring(7);
+    const search = packages[1].name.substring(7);
 
     renderWithProviders(
       <PackageDropdownSearchList {...props} search={search} />,
@@ -92,7 +90,7 @@ describe("PackageDropdownSearchList", () => {
     const searchResult = screen.getByText(search);
     expect(searchResult).toHaveStyle("font-weight: bolder;");
     expect(searchResult.closest("div")?.textContent).toEqual(
-      `${selectedPackage.name} ${selectedPackage.version}`,
+      `${packages[1].name} ${packages[1].version}`,
     );
   });
 
