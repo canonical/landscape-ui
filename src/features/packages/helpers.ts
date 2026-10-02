@@ -40,7 +40,7 @@ const resolvePackageStatus = (
     return "held";
   }
 
-  if (candidate?.security) {
+  if (result.security || candidate?.security) {
     return "security";
   }
 

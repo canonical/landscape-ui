@@ -99,6 +99,29 @@ describe("mapGroupedResultToInstancePackage", () => {
     });
   });
 
+  it("maps a security-marked result with no candidate to status 'security'", () => {
+    const input: ComputerPackageSearchGroupedResult = {
+      name: "openssl",
+      summary: "Secure Sockets Layer toolkit",
+      installed_version: "1.1.1f-1ubuntu2",
+      installed_id: 104,
+      held: false,
+      security: true,
+      installation_candidates: [],
+    };
+
+    const result = mapGroupedResultToInstancePackage(input);
+
+    expect(result).toEqual({
+      id: 104,
+      name: "openssl",
+      summary: "Secure Sockets Layer toolkit",
+      current_version: "1.1.1f-1ubuntu2",
+      available_version: null,
+      status: "security",
+    });
+  });
+
   it("maps an available-only (not installed) package to status 'available' with a synthetic id", () => {
     const input: ComputerPackageSearchGroupedResult = {
       name: "htop",
