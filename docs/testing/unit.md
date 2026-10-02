@@ -42,6 +42,61 @@ That setup already provides:
 
 Because the setup is global, unit tests should assume network requests must be handled and responsive state will be reset after each test.
 
+## Browser Authentication Scenarios
+
+For backend-free manual authentication testing, set both
+`VITE_MSW_ENABLED=true` and `VITE_MSW_AUTHENTICATION_TESTING=true` in
+`.env.local`. The latter defaults to disabled when missing, empty, or false.
+Without this explicit opt-in, the existing MSW handlers and interception
+allowlist behave as before. These environment overrides are installed only in
+the browser worker, not in the unit-test server.
+
+Configure the starting state with:
+
+```dotenv
+VITE_MSW_ACCOUNT_EXISTS=false
+VITE_MSW_PAM_ENABLED=false
+VITE_MSW_PASSWORD_ENABLED=true
+VITE_MSW_OIDC_ENABLED=false
+VITE_MSW_UBUNTU_ONE_ENABLED=true
+```
+
+Use `VITE_SELF_HOSTED_ENV=true` for standalone account creation. The OIDC toggle
+advertises standalone OIDC in self-hosted mode and the existing mock OIDC
+providers in SaaS mode. PAM login and creation accept arbitrary identities and
+passwords; existing frontend validation still applies. Successful account
+creation follows the normal frontend login flow using the existing mock user
+response. Successful invitation acceptance establishes that mock session.
+
+Open `/accept-invitation/mock-invite` (under `VITE_ROOT_PATH` if configured) to
+test invitations while signed out. Unknown invitation IDs show the normal
+not-found screen. Signing in allows the existing accept/reject screen. Provider
+redirects stay on the UI origin and simulate completion without contacting
+OIDC, Ubuntu One, or LDAP services.
+
+Error selectors default to `none` and repeat on every relevant request:
+
+| Variable                         | Supported Values                                                                                                                                                                                                    |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_MSW_AUTH_CREATION_ERROR`   | `none`, `account_exists`, `pam_unavailable`, `invalid_credentials`, `not_standalone`, `blank_password`, `weak_password`, `missing_password`, `missing_identity`, `invalid_identity`, `blank_name`, `blank_identity` |
+| `VITE_MSW_AUTH_LOGIN_ERROR`      | `none`, `invalid_credentials`, `pam_unavailable`, `password_disabled`                                                                                                                                               |
+| `VITE_MSW_AUTH_INVITATION_ERROR` | `none`, `not_found`, `duplicate_email`, `duplicate_identity`, `wrong_recipient`, `administrator_limit`, `pam_unavailable`, `invalid_credentials`, `blank_password`, `weak_password`, `disabled_account`             |
+
+The creation `account_exists` override fails the POST with the backend's 409
+response without changing the GET existence flag, so the form remains reachable.
+For repeatable error testing, forced invitation errors do not consume the mock
+invite, including administrator-limit failures that would cancel it on the real
+server. This is an intentional scenario override, not backend persistence
+simulation. Supported failures use the current backend's status, message, error
+type, and detail shape. Cookies, signed JWTs, database persistence, real credential
+validation, and external provider exchanges are not simulated.
+
+Restart Vite after changing environment variables. A full browser reload resets
+the in-memory account/session/invitation state to the configured defaults; SPA
+navigation retains it. In authentication-testing mode, all application APIs are
+intercepted. Unmatched API requests return a visible `MissingMockHandler` 501
+instead of silently contacting a backend. Static assets continue to load normally.
+
 ## Which Render Helper To Use
 
 This repository uses three main entrypoints:
@@ -178,7 +233,7 @@ Two mocking styles are common, depending on the seam.
 Use direct hook mocking when the behavior is easiest to isolate at the hook boundary:
 
 ```ts
-vi.mock("@/hooks/useAuth");
+vi.mock('@/hooks/useAuth');
 
 beforeEach(() => {
   vi.mocked(useAuth).mockReturnValue(authProps);
@@ -257,19 +312,19 @@ condition. For this, capture the request inside a **scoped `server.use(...)`
 override in the test**, not in the shared handler:
 
 ```tsx
-import { API_URL } from "@/constants";
-import { setEndpointStatus } from "@/tests/controllers/controller";
-import { renderWithProviders } from "@/tests/render";
-import server from "@/tests/server";
-import { http, HttpResponse } from "msw";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { API_URL } from '@/constants';
+import { setEndpointStatus } from '@/tests/controllers/controller';
+import { renderWithProviders } from '@/tests/render';
+import server from '@/tests/server';
+import { http, HttpResponse } from 'msw';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-describe("MyContainer request params", () => {
+describe('MyContainer request params', () => {
   let capturedUrl: URL | undefined;
 
   beforeEach(() => {
     capturedUrl = undefined;
-    setEndpointStatus("default");
+    setEndpointStatus('default');
 
     server.use(
       http.get(`${API_URL}my-endpoint`, ({ request }) => {
@@ -279,12 +334,12 @@ describe("MyContainer request params", () => {
     );
   });
 
-  it("omits search when the page param is empty", async () => {
-    renderWithProviders(<MyContainer />, undefined, "/");
+  it('omits search when the page param is empty', async () => {
+    renderWithProviders(<MyContainer />, undefined, '/');
 
     await vi.waitFor(() => expect(capturedUrl).toBeDefined());
 
-    expect(capturedUrl?.searchParams.has("search")).toBe(false);
+    expect(capturedUrl?.searchParams.has('search')).toBe(false);
   });
 });
 ```
@@ -330,7 +385,6 @@ The rule of thumb: a request-param regression test is only worth writing when a
 user action can drive the empty value onto the wire. "The PR touched this file" is
 not the same as "a regression is reachable here."
 
-
 ## Forms And Formik-Based Components
 
 Formik-backed units often use `createFormik(...)` from `src/tests/formik.ts` instead of mounting a full form.
@@ -371,20 +425,20 @@ Use `await` with `userEvent` interactions. Use `fireEvent` only when a lower-lev
 ### Pure component
 
 ```tsx
-import { render, screen } from "@testing-library/react";
-import type { ComponentProps } from "react";
-import MyComponent from "./MyComponent";
+import { render, screen } from '@testing-library/react';
+import type { ComponentProps } from 'react';
+import MyComponent from './MyComponent';
 
 const props: ComponentProps<typeof MyComponent> = {
-  title: "Example",
+  title: 'Example',
 };
 
-describe("MyComponent", () => {
-  it("renders the title", () => {
+describe('MyComponent', () => {
+  it('renders the title', () => {
     render(<MyComponent {...props} />);
 
     expect(
-      screen.getByRole("heading", { name: props.title }),
+      screen.getByRole('heading', { name: props.title }),
     ).toBeInTheDocument();
   });
 });
@@ -393,23 +447,23 @@ describe("MyComponent", () => {
 ### Provider-aware component
 
 ```tsx
-import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import type { ComponentProps } from "react";
-import { renderWithProviders } from "@/tests/render";
-import MyContainer from "./MyContainer";
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import type { ComponentProps } from 'react';
+import { renderWithProviders } from '@/tests/render';
+import MyContainer from './MyContainer';
 
 const props: ComponentProps<typeof MyContainer> = {
   onClose: vi.fn(),
 };
 
-describe("MyContainer", () => {
-  it("submits successfully", async () => {
+describe('MyContainer', () => {
+  it('submits successfully', async () => {
     const user = userEvent.setup();
 
     renderWithProviders(<MyContainer {...props} />);
 
-    await user.click(screen.getByRole("button", { name: /submit/i }));
+    await user.click(screen.getByRole('button', { name: /submit/i }));
 
     expect(props.onClose).toHaveBeenCalled();
   });
@@ -419,12 +473,12 @@ describe("MyContainer", () => {
 ### Hook with providers
 
 ```tsx
-import { renderHook, waitFor } from "@testing-library/react";
-import { renderHookWithProviders } from "@/tests/render";
-import useMyHook from "@/hooks/useMyHook";
+import { renderHook, waitFor } from '@testing-library/react';
+import { renderHookWithProviders } from '@/tests/render';
+import useMyHook from '@/hooks/useMyHook';
 
-describe("useMyHook", () => {
-  it("loads data", async () => {
+describe('useMyHook', () => {
+  it('loads data', async () => {
     const { result } = renderHook(() => useMyHook(), {
       wrapper: renderHookWithProviders(),
     });
