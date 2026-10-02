@@ -1,10 +1,12 @@
 import type {
+  ComputerPackageSearchGroupedResult,
   DowngradePackageVersion,
   InstancePackage,
   Package,
+  PackageSearchResultPackage,
 } from "@/features/packages";
 
-export const packages = [
+export const legacyPackages = [
   {
     id: 15,
     name: "libthai0",
@@ -332,16 +334,58 @@ export const packages = [
       },
     ],
   },
-] as const satisfies Package[];
+] as const;
+
+export const packages: (Package & PackageSearchResultPackage)[] =
+  legacyPackages.map((pkg) => ({
+    id: pkg.id,
+    name: pkg.name,
+    summary: pkg.summary,
+    version: pkg.computers[0]?.current_version ?? "1.0.0",
+    computers: {
+      count: pkg.computers.length,
+    },
+  }));
 
 export const getInstancePackages = (instanceId: number): InstancePackage[] => {
-  return packages
+  return legacyPackages
     .filter(({ computers }) => computers.some(({ id }) => id === instanceId))
     .flatMap(({ computers, ...commonProps }) =>
       computers
         .filter(({ id }) => id === instanceId)
         .map((instanceProps) => ({ ...instanceProps, ...commonProps })),
     );
+};
+
+export const getComputerPackageSearchResults = (
+  instanceId: number,
+): ComputerPackageSearchGroupedResult[] => {
+  const instancePkgs = getInstancePackages(instanceId);
+
+  return instancePkgs.map((pkg) => {
+    const isSecurity = pkg.status === "security";
+    const isHeld = pkg.status === "held";
+    const candidates = pkg.available_version
+      ? [
+          {
+            id: pkg.id + 100000,
+            version: pkg.available_version,
+            upgrade: true,
+            security: isSecurity,
+          },
+        ]
+      : [];
+
+    return {
+      name: pkg.name,
+      summary: pkg.summary,
+      installed_version: pkg.current_version,
+      installed_id: pkg.id,
+      held: isHeld,
+      security: isSecurity,
+      installation_candidates: candidates,
+    };
+  });
 };
 
 export const downgradePackageVersions = [

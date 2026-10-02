@@ -1,6 +1,6 @@
 import { instances } from "@/tests/mocks/instance";
 import { packages } from "@/tests/mocks/packages";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, vi } from "vitest";
@@ -12,17 +12,14 @@ const excludedPackages = instances.map(({ id }) => ({
 }));
 const increasedIndex = 9;
 const increasedLimit = increasedIndex + 1;
-const increasedPackage = packages[increasedIndex];
+const increasedPackage = packages[increasedIndex] ?? packages[0];
+assert(increasedPackage);
 const limit = 5;
-const newExcludedPackages = excludedPackages.map((instanceExcludedPackages) =>
-  increasedPackage.computers.some(
-    ({ id }) => id === instanceExcludedPackages.id,
-  )
-    ? {
-        id: instanceExcludedPackages.id,
-        exclude_packages: [increasedPackage.id],
-      }
-    : instanceExcludedPackages,
+const newExcludedPackages = excludedPackages.map(
+  (instanceExcludedPackages) => ({
+    id: instanceExcludedPackages.id,
+    exclude_packages: [increasedPackage.id],
+  }),
 );
 const onExcludedPackagesChange = vi.fn();
 const onTableLimitChange = vi.fn();
@@ -36,7 +33,6 @@ const getPackageCheckboxes = () => {
 const props: ComponentProps<typeof AffectedPackages> = {
   excludedPackages,
   hasNoMoreItems: false,
-  instances,
   isPackagesLoading: false,
   onExcludedPackagesChange,
   onTableLimitChange,
@@ -140,19 +136,14 @@ describe("AffectedPackages", () => {
     expect(onExcludedPackagesChange).toHaveBeenCalledWith(excludedPackages);
   });
 
-  it("should render instances affected by package on relative button click", async () => {
+  it("should render affected instances count as plain text", () => {
     render(<AffectedPackages {...props} />);
 
-    const rows = screen.getAllByRole("row");
-
-    const firstPackageRow = rows.find(
-      ({ childNodes }) => childNodes.item(1).textContent === packages[0].name,
-    );
-
-    assert(firstPackageRow);
-
-    await userEvent.click(within(firstPackageRow).getByRole("button"));
-
-    expect(screen.getByText("Instances affected by")).toBeInTheDocument();
+    expect(
+      screen.queryAllByRole("button", { name: /instances affected/i }),
+    ).toHaveLength(0);
+    expect(
+      screen.getByText(String(packages[0]?.computers.count)),
+    ).toBeInTheDocument();
   });
 });

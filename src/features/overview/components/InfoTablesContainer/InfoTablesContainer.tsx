@@ -50,7 +50,7 @@ const InfoTablesContainer: FC = () => {
   const navigate = useNavigate();
   const debug = useDebug();
   const { notify } = useNotify();
-  const { getPackagesQuery, upgradePackagesQuery } = usePackages();
+  const { getPackageUpgradesQuery, upgradePackagesQuery } = usePackages();
   const { getUsnsQuery } = useUsns();
 
   const { mutateAsync: upgradePackages, isPending: isUpgrading } =
@@ -122,12 +122,11 @@ const InfoTablesContainer: FC = () => {
     } as AxiosResponse<ApiPaginatedResponse<Package>>,
     refetch: refetchPackages,
     isFetching: isFetchingPackages,
-  } = getPackagesQuery(
+  } = getPackageUpgradesQuery(
     {
-      query: instancesWithUpgrades
+      computer_query: instancesWithUpgrades
         .map((instance) => `id:${instance.id}`)
         .join(" OR "),
-      upgrade: true,
       limit: packagesLimit,
     },
     {
@@ -240,7 +239,7 @@ const InfoTablesContainer: FC = () => {
             Header: "Affected Instances",
             accessor: "computers",
             Cell: ({ row }: CellProps<Package>): ReactNode =>
-              pluralize(row.original.computers.length, ["instance"], "exact"),
+              pluralize(row.original.computers.count, ["instance"], "exact"),
             className: classes.lastCol,
           },
         ];

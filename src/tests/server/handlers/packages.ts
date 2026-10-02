@@ -1,16 +1,22 @@
 import { delay, http, HttpResponse } from "msw";
 import { API_URL, API_URL_OLD } from "@/constants";
-import type { GetPackagesParams, Package } from "@/features/packages";
+import type {
+  ComputerPackageSearchGroupedResponse,
+  PackageSearchResultPackage,
+  SearchPackagesRequest,
+  SearchPackagesResponse,
+  SearchUpgradesRequest,
+} from "@/features/packages";
 import type { Activity } from "@/features/activities";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   downgradePackageVersions,
-  getInstancePackages,
+  getComputerPackageSearchResults,
   packages,
 } from "@/tests/mocks/packages";
 import { activities } from "@/tests/mocks/activity";
 import {
-  generatePaginatedResponse,
+  generateFilteredResponse,
   isAction,
   shouldApplyEndpointStatus,
 } from "./_helpers";
@@ -32,8 +38,8 @@ const parseBooleanParam = (value: string | null): boolean | undefined => {
 };
 
 export default [
-  http.get<never, GetPackagesParams>(
-    `${API_URL}packages`,
+  http.post<never, SearchPackagesRequest>(
+    `${API_URL}packages:search`,
     async ({ request }) => {
       if (shouldApplyEndpointStatus("packages")) {
         const { status } = getEndpointStatus();
@@ -42,97 +48,166 @@ export default [
         }
       }
 
-      const url = new URL(request.url);
-      const limit = Number(url.searchParams.get("limit"));
-      const offset = Number(url.searchParams.get("offset")) || 0;
+      let body: SearchPackagesRequest = { computer_query: "" };
+      try {
+        body = await request.json();
+      } catch {
+        // use default empty body
+      }
+
+      const limit = body.limit ?? 10;
+      const offset = body.offset ?? 0;
       const endpointStatus = getEndpointStatus();
 
       if (
         endpointStatus.status === "empty" &&
         endpointStatus.path === "packages"
       ) {
-        return HttpResponse.json(
-          generatePaginatedResponse<Package>({ data: [], limit, offset }),
-        );
+        return HttpResponse.json<SearchPackagesResponse>({
+          packages: [],
+          count: 0,
+          next: null,
+          prev: null,
+        });
       }
 
-      return HttpResponse.json(
-        generatePaginatedResponse<Package>({
-          data: packages,
-          limit,
-          offset,
-        }),
-      );
+      let results: PackageSearchResultPackage[] = [...packages];
+      if (body.text) {
+        results = generateFilteredResponse(results, body.text, ["name"]);
+      }
+
+      const totalCount = results.length;
+      const paginatedResults = results.slice(offset, offset + limit);
+
+      return HttpResponse.json<SearchPackagesResponse>({
+        packages: paginatedResults,
+        count: totalCount,
+        next: offset + limit < totalCount ? "next" : null,
+        prev: offset > 0 ? "prev" : null,
+      });
     },
   ),
 
-  http.get(`${API_URL}computers/:id/packages`, async ({ params, request }) => {
-    if (shouldApplyEndpointStatus("computers-packages")) {
-      const { status } = getEndpointStatus();
-      if (status === "error") {
-        throw createEndpointStatusNetworkError();
+  http.post<never, SearchUpgradesRequest>(
+    `${API_URL}packages:search-upgrades`,
+    async ({ request }) => {
+      if (
+        shouldApplyEndpointStatus("package-upgrades") ||
+        shouldApplyEndpointStatus("packages")
+      ) {
+        const { status } = getEndpointStatus();
+        if (status === "error") {
+          throw createEndpointStatusNetworkError();
+        }
+        if (status === "empty") {
+          return HttpResponse.json<SearchPackagesResponse>({
+            packages: [],
+            count: 0,
+            next: null,
+            prev: null,
+          });
+        }
       }
 
-      if (status === "loading") {
-        await delay("infinite");
+      let body: SearchUpgradesRequest = { computer_query: "" };
+      try {
+        body = await request.json();
+      } catch {
+        // default empty
       }
-    }
 
-    const url = new URL(request.url);
-    const limit = Number(url.searchParams.get("limit"));
-    const offset = Number(url.searchParams.get("offset")) || 0;
-    const search = url.searchParams.get("search") || "";
-    const available = parseBooleanParam(url.searchParams.get("available"));
-    const installed = parseBooleanParam(url.searchParams.get("installed"));
-    const upgrade = parseBooleanParam(url.searchParams.get("upgrade"));
-    const security = parseBooleanParam(url.searchParams.get("security"));
-    const held = parseBooleanParam(url.searchParams.get("held"));
-    const instanceId = Number(params.id);
+      const limit = body.limit ?? 10;
+      const offset = body.offset ?? 0;
 
-    const hasFilters = [upgrade, security, held, available].some(
-      (value) => value === true,
-    );
+      let results: PackageSearchResultPackage[] = [...packages];
+      if (body.text) {
+        results = generateFilteredResponse(results, body.text, ["name"]);
+      }
 
-    let instancePackages = getInstancePackages(instanceId);
+      const totalCount = results.length;
+      const paginatedResults = results.slice(offset, offset + limit);
 
-    if (!hasFilters && installed !== true) {
-      instancePackages = [];
-    }
+      return HttpResponse.json<SearchPackagesResponse>({
+        packages: paginatedResults,
+        count: totalCount,
+        next: offset + limit < totalCount ? "next" : null,
+        prev: offset > 0 ? "prev" : null,
+      });
+    },
+  ),
 
-    if (upgrade === true) {
-      instancePackages = instancePackages.filter(
-        ({ available_version }) => available_version,
+  http.get(
+    `${API_URL}computers/:id/packages/search`,
+    async ({ params, request }) => {
+      if (shouldApplyEndpointStatus("computers-packages")) {
+        const { status } = getEndpointStatus();
+        if (status === "error") {
+          throw createEndpointStatusNetworkError();
+        }
+
+        if (status === "loading") {
+          await delay("infinite");
+        }
+      }
+
+      const url = new URL(request.url);
+      const limit = Number(url.searchParams.get("limit"));
+      const offset = Number(url.searchParams.get("offset")) || 0;
+      const search = url.searchParams.get("search") || "";
+      const available = parseBooleanParam(url.searchParams.get("available"));
+      const installed = parseBooleanParam(url.searchParams.get("installed"));
+      const upgrade = parseBooleanParam(url.searchParams.get("upgrade"));
+      const security = parseBooleanParam(url.searchParams.get("security"));
+      const held = parseBooleanParam(url.searchParams.get("held"));
+      const instanceId = Number(params.id);
+
+      const hasFilters = [upgrade, security, held, available].some(
+        (value) => value === true,
       );
-    }
 
-    if (available === true) {
-      instancePackages = instancePackages.filter(
-        ({ available_version }) => available_version,
-      );
-    }
+      let groupedResults = getComputerPackageSearchResults(instanceId);
 
-    if (security === true) {
-      instancePackages = instancePackages.filter(
-        ({ status }) => status === "security",
-      );
-    }
+      if (!hasFilters && installed !== true) {
+        groupedResults = [];
+      }
 
-    if (held === true) {
-      instancePackages = instancePackages.filter(
-        ({ status }) => status === "held",
-      );
-    }
+      if (upgrade === true) {
+        groupedResults = groupedResults.filter(({ installation_candidates }) =>
+          installation_candidates.some((c) => c.upgrade),
+        );
+      }
 
-    return HttpResponse.json(
-      generatePaginatedResponse({
-        data: instancePackages,
-        limit,
-        offset,
-        search,
-        searchFields: ["name"],
-      }),
-    );
-  }),
+      if (available === true) {
+        groupedResults = groupedResults.filter(
+          ({ installation_candidates }) => installation_candidates.length > 0,
+        );
+      }
+
+      if (security === true) {
+        groupedResults = groupedResults.filter(({ security: isSec }) => isSec);
+      }
+
+      if (held === true) {
+        groupedResults = groupedResults.filter(({ held: isHeld }) => isHeld);
+      }
+
+      if (search) {
+        groupedResults = generateFilteredResponse(groupedResults, search, [
+          "name",
+        ]);
+      }
+
+      const totalCount = groupedResults.length;
+      const paginated = limit
+        ? groupedResults.slice(offset, offset + limit)
+        : groupedResults;
+
+      return HttpResponse.json<ComputerPackageSearchGroupedResponse>({
+        count: totalCount,
+        results: paginated,
+      });
+    },
+  ),
 
   http.get(
     `${API_URL}computers/:id/packages/installed/:packageName/downgrades`,
