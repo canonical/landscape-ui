@@ -1,17 +1,13 @@
-import classNames from "classnames";
 import type { FC } from "react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import { Button, CheckboxInput } from "@canonical/react-components";
+import { CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
 import SelectAllButton from "@/components/layout/SelectAllButton";
 import type { InstancePackagesToExclude, Package } from "@/features/packages";
-import type { Instance } from "@/types/Instance";
-import AffectedInstances from "../AffectedInstances";
 import { checkIsPackageUpdateRequired, getToggledPackage } from "../helpers";
 import {
-  checkIsPackageUpdateRequiredForAllInstances,
   checkIsUpdateRequired,
   checkIsUpdateRequiredForAllVisiblePackages,
   getPackagesData,
@@ -23,7 +19,6 @@ import classes from "./AffectedPackages.module.scss";
 interface AffectedPackagesProps {
   readonly excludedPackages: InstancePackagesToExclude[];
   readonly hasNoMoreItems: boolean;
-  readonly instances: Instance[];
   readonly isPackagesLoading: boolean;
   readonly onExcludedPackagesChange: (
     newExcludedPackages: InstancePackagesToExclude[],
@@ -36,18 +31,18 @@ interface AffectedPackagesProps {
 const AffectedPackages: FC<AffectedPackagesProps> = ({
   excludedPackages,
   hasNoMoreItems,
-  instances,
   isPackagesLoading,
   onExcludedPackagesChange,
   onTableLimitChange,
   packages,
   totalPackageCount,
 }) => {
-  const [expandedRow, setExpandedRow] = useState(-1);
-  const [limit, setLimit] = useState(5);
-
-  const excludedPackageIdSet = new Set(
-    excludedPackages.flatMap(({ exclude_packages }) => exclude_packages),
+  const excludedPackageIdSet = useMemo(
+    () =>
+      new Set(
+        excludedPackages.flatMap(({ exclude_packages }) => exclude_packages),
+      ),
+    [excludedPackages],
   );
 
   const showSelectAllButton = useMemo(() => {
@@ -60,41 +55,32 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
     }
 
     return false;
-  }, [packages.length, excludedPackageIdSet]);
+  }, [packages, excludedPackageIdSet]);
 
   const packagesData = useMemo(
     () =>
       getPackagesData({
-        expandedRow,
         isPackagesLoading,
         packages,
         showSelectAllButton,
       }),
-    [packages, expandedRow, isPackagesLoading, showSelectAllButton],
+    [packages, isPackagesLoading, showSelectAllButton],
   );
 
   const isUpdateRequired = checkIsUpdateRequired(excludedPackages, packages);
 
-  const handleAllPackagesToggle = () => {
+  const handleAllPackagesToggle = useCallback(() => {
     onExcludedPackagesChange(
       getToggledPackages(excludedPackages, packages, isUpdateRequired),
     );
-  };
+  }, [excludedPackages, packages, isUpdateRequired, onExcludedPackagesChange]);
 
-  const handlePackageToggle = (pkg: Package) => {
-    onExcludedPackagesChange(getToggledPackage(excludedPackages, pkg));
-  };
-
-  const handleExpandCellClick = (index: number) => {
-    setLimit(5);
-    setExpandedRow((prevState) => {
-      if (prevState === index) {
-        return -1;
-      }
-
-      return index > prevState && prevState !== -1 ? index - 1 : index;
-    });
-  };
+  const handlePackageToggle = useCallback(
+    (pkg: Package) => {
+      onExcludedPackagesChange(getToggledPackage(excludedPackages, pkg));
+    },
+    [excludedPackages, onExcludedPackagesChange],
+  );
 
   const isUpdateRequiredForAllVisiblePackages =
     checkIsUpdateRequiredForAllVisiblePackages(excludedPackages, packages);
@@ -124,16 +110,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
                 Toggle {original.name} package
               </span>
             }
-            checked={checkIsPackageUpdateRequiredForAllInstances(
-              excludedPackages,
-              original,
-            )}
-            indeterminate={
-              !checkIsPackageUpdateRequiredForAllInstances(
-                excludedPackages,
-                original,
-              ) && checkIsPackageUpdateRequired(excludedPackages, original)
-            }
+            checked={checkIsPackageUpdateRequired(excludedPackages, original)}
             onChange={() => {
               handlePackageToggle(original);
             }}
@@ -163,21 +140,6 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
             );
           }
 
-          if (expandedRow !== -1 && expandedRow === index - 1) {
-            return (
-              <AffectedInstances
-                currentPackage={original}
-                excludedPackages={excludedPackages}
-                limit={limit}
-                onExcludedPackagesChange={onExcludedPackagesChange}
-                onLimitChange={() => {
-                  setLimit((prevState) => prevState + 5);
-                }}
-                selectedInstances={instances}
-              />
-            );
-          }
-
           if (isPackagesLoading && index === packagesData.length - 1) {
             return <LoadingState />;
           }
@@ -188,27 +150,21 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
       {
         accessor: "computers.upgrades",
         Header: "Affected instances",
-        Cell: ({ row: { index, original } }: CellProps<Package>) => (
-          <Button
-            type="button"
-            className={classNames("p-accordion__tab", classes.expandButton)}
-            aria-expanded={expandedRow === index}
-            onClick={() => {
-              handleExpandCellClick(index);
-            }}
-          >
-            {new Set(original.computers.map(({ id }) => id)).size}
-          </Button>
-        ),
+        Cell: ({ row }: CellProps<Package>) => row.original.computers.count,
       },
     ],
     [
       packagesData,
-      instances,
       excludedPackages,
-      expandedRow,
       isPackagesLoading,
-      limit,
+      isUpdateRequired,
+      isUpdateRequiredForAllVisiblePackages,
+      showSelectAllButton,
+      excludedPackageIdSet,
+      totalPackageCount,
+      handleAllPackagesToggle,
+      handlePackageToggle,
+      onExcludedPackagesChange,
     ],
   );
 
@@ -219,7 +175,6 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
       itemCount={packages.length}
       hasNoMoreItems={hasNoMoreItems}
       getCellProps={handleCellProps({
-        expandedRow,
         isPackagesLoading,
         lastPackageIndex: packagesData.length - 1,
         showSelectAllButton,

@@ -37,42 +37,40 @@ describe("PackagesPanel", () => {
 });
 
 describe("usePackages request params", () => {
-  let capturedUrl: URL | undefined;
+  let capturedBody: Record<string, unknown> | undefined;
 
-  // Minimal consumer that drives usePackages with empty filters, since
-  // PackagesPanel always sends a non-empty `query`.
   const EmptyFiltersConsumer: FC = () => {
-    const { getPackagesQuery } = usePackages();
-    getPackagesQuery({ query: "", search: "", names: [] });
+    const { getPackageUpgradesQuery } = usePackages();
+    getPackageUpgradesQuery({ computer_query: "", text: "", names: [] });
     return null;
   };
 
   beforeEach(() => {
-    capturedUrl = undefined;
+    capturedBody = undefined;
     setEndpointStatus("default");
 
     server.use(
-      http.get(`${API_URL}packages`, ({ request }) => {
-        capturedUrl = new URL(request.url);
+      http.post(`${API_URL}packages:search-upgrades`, async ({ request }) => {
+        capturedBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({
-          results: packages,
+          packages,
           count: packages.length,
           next: null,
-          previous: null,
+          prev: null,
         });
       }),
     );
   });
 
-  it("omits query, search and names when they are empty", async () => {
+  it("handles empty computer_query, text and names", async () => {
     renderWithProviders(<EmptyFiltersConsumer />, undefined, "/packages");
 
     await vi.waitFor(() => {
-      expect(capturedUrl).toBeDefined();
+      expect(capturedBody).toBeDefined();
     });
 
-    expect(capturedUrl?.searchParams.has("query")).toBe(false);
-    expect(capturedUrl?.searchParams.has("search")).toBe(false);
-    expect(capturedUrl?.searchParams.has("names")).toBe(false);
+    expect(capturedBody?.computer_query).toBe("");
+    expect(capturedBody?.text).toBeUndefined();
+    expect(capturedBody?.names).toBeUndefined();
   });
 });
