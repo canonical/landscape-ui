@@ -28,7 +28,7 @@ const renderEnteringWith = (state: unknown) =>
   );
 
 const findBackLink = async () =>
-  screen.findByRole("link", { name: "Back to normal view" });
+  screen.findByRole("link", { name: "Back to main view" });
 
 describe("SuperAdminPage", () => {
   it("renders the super admin layout around the child page", async () => {
