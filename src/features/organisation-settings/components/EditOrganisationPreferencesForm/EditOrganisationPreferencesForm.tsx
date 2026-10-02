@@ -1,4 +1,3 @@
-import buttonClasses from "@/components/form/SidePanelFormButtons/SidePanelFormButtons.module.scss";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import useAuth from "@/hooks/useAuth";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
@@ -152,7 +151,7 @@ const EditOrganisationPreferencesForm: FC<
         key that&apos;s defined in the field.
       </p>
 
-      <div className={`${buttonClasses.buttons} ${classes.buttons}`}>
+      <div className={classes.buttons}>
         <ActionButton
           className="u-no-margin--bottom"
           appearance="positive"
