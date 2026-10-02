@@ -158,8 +158,11 @@ jobs:
           PROTO_TOKEN: ${{ secrets.LANDSCAPE_PROTO_TOKEN }}
           PKG_TOKEN: ${{ steps.pkg_token.outputs.token }}
         run: |
-          token="${PROTO_TOKEN:-$PKG_TOKEN}"
-          if [ -z "$token" ]; then
+          if [ -n "$PROTO_TOKEN" ]; then
+            token="$PROTO_TOKEN"
+          elif [ "$GITHUB_ACTOR" = "dependabot[bot]" ] && [ -n "$PKG_TOKEN" ]; then
+            token="$PKG_TOKEN"
+          else
             echo "::error::No credential available for landscape-proto (neither LANDSCAPE_PROTO_TOKEN nor packaging token)"
             exit 1
           fi
