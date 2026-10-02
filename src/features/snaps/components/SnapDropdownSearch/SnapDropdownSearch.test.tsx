@@ -11,6 +11,7 @@ import type { FC } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useGetAvailableSnaps } from "@/features/snaps";
 import SnapDropdownSearch from "./SnapDropdownSearch";
+import { DEBOUNCE_DELAY } from "./constants";
 
 const props = {
   selectedItems: [],
@@ -70,7 +71,8 @@ describe("SnapDropdownSearch", () => {
     });
     await userEvent.click(clearButton);
 
-    await new Promise((resolve) => setTimeout(resolve, 350));
+    // Wait past the debounce window to ensure the cancelled request does not fire.
+    await new Promise((resolve) => setTimeout(resolve, DEBOUNCE_DELAY * 2));
     expect(requestCount).toBe(0);
   });
 

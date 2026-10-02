@@ -10,6 +10,7 @@ import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PackageDropdownSearch from "./PackageDropdownSearch";
+import { DEBOUNCE_DELAY } from "./constants";
 
 const instanceId = 1;
 const instancePackages = getInstancePackages(instanceId);
@@ -106,7 +107,8 @@ describe("PackageDropdownSearch", () => {
       });
       await user.click(clearButton);
 
-      await new Promise((resolve) => setTimeout(resolve, 350));
+      // Wait past the debounce window to ensure the cancelled request does not fire.
+      await new Promise((resolve) => setTimeout(resolve, DEBOUNCE_DELAY * 2));
       expect(requestCount).toBe(0);
     });
 
