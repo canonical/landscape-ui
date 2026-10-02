@@ -22,6 +22,22 @@ describe("ProfilesPage", () => {
     vi.resetAllMocks();
   });
 
+  it("shows an environment failure instead of a loading state", () => {
+    vi.mocked(useEnv, { partial: true }).mockReturnValue({
+      envLoading: false,
+      envError: true,
+      isSaas: false,
+      isSelfHosted: false,
+    });
+
+    renderWithProviders(<ProfilesPage />);
+
+    expect(
+      screen.getByText("Unable to load environment information."),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
   it("doesn't redirect until env is loaded", async () => {
     vi.mocked(useEnv, { partial: true }).mockReturnValue({
       envLoading: true,

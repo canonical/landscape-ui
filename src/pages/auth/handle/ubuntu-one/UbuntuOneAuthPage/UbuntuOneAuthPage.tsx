@@ -13,13 +13,14 @@ import { useGetStandaloneAccount } from "@/features/account-creation";
 import classes from "./UbuntuOneAuthPage.module.scss";
 import { ROUTES } from "@/libs/routes";
 import { useGetUbuntuOneCompletion } from "@/features/auth";
+import EnvError from "@/pages/EnvError";
 
 const UbuntuOneAuthPage: FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const { safeRedirect, setUser } = useAuth();
-  const { isSelfHosted, isSaas } = useEnv();
+  const { envLoading, envError, isSelfHosted, isSaas } = useEnv();
   const { accountExists } = useGetStandaloneAccount();
 
   const { authData, isLoading } = useGetUbuntuOneCompletion(
@@ -28,7 +29,12 @@ const UbuntuOneAuthPage: FC = () => {
   );
 
   useEffect(() => {
-    if (!authData || !("current_account" in authData)) {
+    if (
+      envLoading ||
+      envError ||
+      !authData ||
+      !("current_account" in authData)
+    ) {
       return;
     }
 
@@ -62,6 +68,8 @@ const UbuntuOneAuthPage: FC = () => {
       replace: true,
     });
   }, [
+    envLoading,
+    envError,
     authData,
     navigate,
     safeRedirect,
@@ -71,9 +79,13 @@ const UbuntuOneAuthPage: FC = () => {
     isSaas,
   ]);
 
+  if (envError) {
+    return <EnvError />;
+  }
+
   return (
     <div className={classes.container}>
-      {isLoading ? (
+      {isLoading || envLoading ? (
         <div className="u-align-text--center">
           <span className={classes.loading}>
             <LoadingState inline />

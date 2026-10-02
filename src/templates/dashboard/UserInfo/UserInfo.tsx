@@ -9,7 +9,7 @@ import { useMediaQuery } from "usehooks-ts";
 import { ACCOUNT_SETTINGS } from "../SecondaryNavigation/constants";
 import { useAlertsSummary } from "@/features/alert-notifications";
 import { ROUTES } from "@/libs/routes";
-import { APP_COMMIT, APP_VERSION, TSV_EXPORTS_ENABLED } from "@/constants";
+import { TSV_EXPORTS_ENABLED } from "@/constants";
 import LogoutButton from "./LogoutButton";
 import useEnv from "@/hooks/useEnv";
 import { useSelfHostedLicense } from "@/context/selfHostedLicense";
@@ -20,7 +20,7 @@ const UserInfo: FC = () => {
   const { user, isSuperAdmin } = useAuth();
   const { pathname, search } = useLocation();
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
-  const { isSaas, isSelfHosted } = useEnv();
+  const { envError, isSaas, isSelfHosted } = useEnv();
   const {
     isGettingSelfHostedEnabled,
     isSelfHostedEnabled,
@@ -28,13 +28,14 @@ const UserInfo: FC = () => {
     selfHostedEnabledError,
   } = useSelfHostedLicense();
   const isEntitlementLoading =
+    !envError &&
     isEntitlementQueryEnabled &&
     isGettingSelfHostedEnabled &&
     !selfHostedEnabledError;
   const accountSettingsItems = getFilteredByEnvItems({
-    isSaas,
-    isSelfHosted,
-    isSelfHostedLicenseEnabled: isSelfHostedEnabled,
+    isSaas: !envError && isSaas,
+    isSelfHosted: !envError && isSelfHosted,
+    isSelfHostedLicenseEnabled: !envError && isSelfHostedEnabled,
     items: ACCOUNT_SETTINGS.items,
   });
   const { hasAlerts } = useAlertsSummary();
@@ -241,9 +242,6 @@ const UserInfo: FC = () => {
           <LogoutButton />
         </li>
       </ul>
-      <span className={classes.versionInfo}>
-        v{APP_VERSION} ({APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"})
-      </span>
     </div>
   );
 };

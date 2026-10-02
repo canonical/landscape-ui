@@ -11,14 +11,15 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { HOMEPAGE_PATH } from "@/constants";
 import { ROUTES } from "@/libs/routes";
+import EnvError from "@/pages/EnvError";
 
 const AccountCreationPage: FC = () => {
   const { authorized, authLoading, hasAccounts } = useAuth();
-  const { isSelfHosted, envLoading } = useEnv();
+  const { isSelfHosted, envLoading, envError } = useEnv();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (authLoading || envLoading) {
+    if (authLoading || envLoading || envError) {
       return;
     }
 
@@ -34,10 +35,15 @@ const AccountCreationPage: FC = () => {
     authorized,
     authLoading,
     envLoading,
+    envError,
     hasAccounts,
     isSelfHosted,
     navigate,
   ]);
+
+  if (envError) {
+    return <EnvError />;
+  }
 
   if (authLoading || envLoading) {
     return <LoadingState />;

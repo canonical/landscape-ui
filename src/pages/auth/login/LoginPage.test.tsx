@@ -14,6 +14,7 @@ vi.mock("@/hooks/useEnv");
 
 const envCommon: Omit<EnvContextState, "displayDisaStigBanner"> = {
   envLoading: false,
+  envError: false,
   packageVersion: "",
   revision: "",
   isSaas: true,

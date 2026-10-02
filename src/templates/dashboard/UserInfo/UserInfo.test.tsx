@@ -3,7 +3,6 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import UserInfo from "./UserInfo";
 import * as Constants from "@/constants";
-import { APP_COMMIT, APP_VERSION } from "@/constants";
 import { vi } from "vitest";
 import useAuth from "@/hooks/useAuth";
 import type { AuthContextProps } from "@/context/auth";
@@ -48,6 +47,7 @@ const labels = ["Unknown user", "Alerts", "Sign out"];
 
 const resolvedEnvState: EnvContextState = {
   envLoading: false,
+  envError: false,
   isSaas: true,
   isSelfHosted: false,
   packageVersion: "",
@@ -70,11 +70,6 @@ describe("UserInfo", () => {
   it("renders correctly", () => {
     renderWithProviders(<UserInfo />);
 
-    expect(
-      screen.getByText(
-        `v${APP_VERSION} (${APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"})`,
-      ),
-    ).toBeInTheDocument();
     labels.forEach((label) => {
       expect(screen.getByText(label)).toBeInTheDocument();
     });
@@ -155,12 +150,6 @@ describe("UserInfo", () => {
       "href",
       ROUTES.exports.root(),
     );
-  });
-
-  it("renders version info", () => {
-    renderWithProviders(<UserInfo />);
-    const versionText = `v${APP_VERSION} (${APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"})`;
-    expect(screen.getByText(versionText)).toBeInTheDocument();
   });
 
   it("renders the authenticated user name when user is set", () => {
@@ -254,6 +243,23 @@ describe("UserInfo", () => {
       await waitFor(() => {
         expect(btn).toHaveAttribute("aria-expanded", "true");
       });
+    });
+
+    it("keeps ordinary account links available when environment loading fails", () => {
+      renderWithProviders(
+        <EnvContext.Provider value={{ ...resolvedEnvState, envError: true }}>
+          <UserInfo />
+        </EnvContext.Provider>,
+      );
+
+      expect(screen.getByRole("link", { name: "General" })).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: "About" })).toBeInTheDocument();
+      expect(
+        screen.queryByRole("link", { name: "Legacy license file" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("list", { name: "Account settings" }),
+      ).toHaveAttribute("aria-busy", "false");
     });
 
     it("hides the legacy license link when the account is not entitled", async () => {

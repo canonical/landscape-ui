@@ -1,5 +1,6 @@
 import EnvError from "@/pages/EnvError";
 import { EnvContext, type EnvContextState } from "@/context/env";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { describe, expect, it } from "vitest";
@@ -8,6 +9,7 @@ import { SelfHostedGuard } from "../SelfHostedGuard";
 describe("SelfHostedGuard", () => {
   const envState: EnvContextState = {
     envLoading: false,
+    envError: false,
     isSaas: true,
     isSelfHosted: false,
     packageVersion: "",
@@ -30,6 +32,7 @@ describe("SelfHostedGuard", () => {
             />
             <Route path="/env-error" element={<EnvError />} />
           </Routes>
+          <LocationDisplay />
         </EnvContext.Provider>
       </MemoryRouter>,
     );
@@ -43,6 +46,21 @@ describe("SelfHostedGuard", () => {
 
     expect(screen.queryByText("secret")).not.toBeInTheDocument();
     expect(screen.queryByText("Environment Error")).not.toBeInTheDocument();
+  });
+
+  it("shows an environment failure without redirecting or exposing children", () => {
+    renderWithRoutes({
+      ...envState,
+      envError: true,
+      isSaas: false,
+    });
+
+    expect(
+      screen.getByText("Unable to load environment information."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("secret")).not.toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(getLocationDisplay()).toHaveTextContent(/^\/$/);
   });
 
   it("renders children when self hosted", () => {

@@ -30,6 +30,7 @@ const authProps: AuthContextProps = {
 
 const envCommon: Omit<EnvContextState, "isSaas" | "isSelfHosted"> = {
   envLoading: false,
+  envError: false,
   packageVersion: "",
   revision: "",
   displayDisaStigBanner: false,
