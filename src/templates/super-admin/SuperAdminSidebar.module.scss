@@ -1,0 +1,7 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+/* Lines the heading up with the "Organization" label of the normal sidebar
+   rather than Vanilla's icon offset. */
+.heading {
+  padding-left: $sph--small !important;
+}
