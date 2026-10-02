@@ -10,6 +10,7 @@ export const users = [
     username: "user1",
     home_phone: "1234567890",
     location: "location1",
+    pending_activity: null,
     work_phone: "1234567890",
   } satisfies User as User,
   {
@@ -20,6 +21,7 @@ export const users = [
     username: "user2",
     home_phone: "1234567890",
     location: "location2",
+    pending_activity: null,
     work_phone: "1234567890",
   } satisfies User as User,
   {
@@ -30,6 +32,7 @@ export const users = [
     username: "user3",
     home_phone: "1234567890",
     location: "location3",
+    pending_activity: null,
     work_phone: "1234567890",
   } satisfies User as User,
   {
@@ -40,6 +43,7 @@ export const users = [
     username: "user4",
     home_phone: "1234567890",
     location: "location4",
+    pending_activity: null,
     work_phone: "1234567890",
   } satisfies User as User,
   {
@@ -50,6 +54,7 @@ export const users = [
     username: "user5",
     home_phone: "1234567890",
     location: "location5",
+    pending_activity: null,
     work_phone: "1234567890",
   } satisfies User as User,
   {
@@ -59,6 +64,7 @@ export const users = [
     uid: 6,
     username: "user6",
     location: "location6",
+    pending_activity: null,
     work_phone: "1234567890",
   } satisfies User as User,
   {
@@ -69,6 +75,7 @@ export const users = [
     username: "user7",
     home_phone: "1234567890",
     location: "location7",
+    pending_activity: null,
   } satisfies User as User,
   {
     name: "user8",
@@ -77,6 +84,7 @@ export const users = [
     uid: 8,
     username: "user8",
     home_phone: "1234567890",
+    pending_activity: null,
     work_phone: "1234567890",
   } satisfies User as User,
   {
@@ -85,6 +93,7 @@ export const users = [
     primary_gid: 9,
     uid: 9,
     username: "user9",
+    pending_activity: null,
   } satisfies User as User,
 ] as const satisfies User[];
 

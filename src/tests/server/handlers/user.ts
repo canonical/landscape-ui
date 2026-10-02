@@ -3,8 +3,13 @@ import { API_URL } from "@/constants";
 import { generatePaginatedResponse } from "./_helpers";
 import type { User } from "@/types/User";
 import { userDetails, users } from "@/tests/mocks/user";
+import { RELEASE_UPGRADE_ACTIVITY } from "@/tests/mocks/activity";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { MAX_USERS_LIMIT } from "@/pages/dashboard/instances/[single]/tabs/users/UserPanel/constants";
+// Import the constant leaf directly. A value import from `@/features/users`
+// would evaluate the feature barrel (including UserContainer → react-router)
+// during global MSW setup, before per-test `vi.mock("react-router")` runs.
+// eslint-disable-next-line no-restricted-imports
+import { MAX_USERS_LIMIT } from "@/features/users/constants";
 import type { UserCredentials } from "@/features/api-credentials";
 import { createEndpointStatusError } from "./_constants";
 import { shouldApplyEndpointStatus } from "./_helpers";
@@ -67,7 +72,7 @@ export default [
       }
     }
 
-    return HttpResponse.json(userDetails);
+    return HttpResponse.json(RELEASE_UPGRADE_ACTIVITY);
   }),
 
   http.delete(`${API_URL}users`, async () => {
@@ -79,7 +84,7 @@ export default [
       }
     }
 
-    return HttpResponse.json(userDetails);
+    return HttpResponse.json(RELEASE_UPGRADE_ACTIVITY);
   }),
 
   http.post(`${API_URL}users/lock`, async () => {
@@ -91,7 +96,7 @@ export default [
       }
     }
 
-    return HttpResponse.json(userDetails);
+    return HttpResponse.json(RELEASE_UPGRADE_ACTIVITY);
   }),
 
   http.post(`${API_URL}users/unlock`, async () => {
@@ -103,7 +108,7 @@ export default [
       }
     }
 
-    return HttpResponse.json(userDetails);
+    return HttpResponse.json(RELEASE_UPGRADE_ACTIVITY);
   }),
 
   http.get(`${API_URL}person`, async () => {

@@ -142,6 +142,14 @@ export default [
 
   http.get(`${API_URL}activities/:id`, async ({ params: { id } }) => {
     if (shouldApplyEndpointStatus("activities/:id")) {
+      const { status, response } = getEndpointStatus("activities/:id");
+      if (status === "variant") {
+        const activity = response as Activity;
+        return activity.id === Number(id)
+          ? HttpResponse.json(activity)
+          : new HttpResponse(null, { status: 404 });
+      }
+
       throw createEndpointStatusNetworkError();
     }
 
