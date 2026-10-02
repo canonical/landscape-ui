@@ -1,0 +1,13 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.titleRow {
+  align-items: center;
+  display: flex;
+  gap: $sph--small;
+  justify-content: space-between;
+}
+
+.deleteButton {
+  margin-bottom: 0;
+  padding: $spv--x-small $sph--small;
+}
