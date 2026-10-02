@@ -1,8 +1,12 @@
+import { API_URL } from "@/constants";
 import { ROUTES } from "@/libs/routes";
+import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import server from "@/tests/server";
 import { getInstancePackages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PackageDropdownSearch from "./PackageDropdownSearch";
@@ -41,6 +45,33 @@ describe("PackageDropdownSearch", () => {
   });
 
   describe("Search functionality", () => {
+    it("debounces rapid typing into a single API request", async () => {
+      let requestCount = 0;
+      server.use(
+        http.get(`${API_URL}computers/:id/packages`, ({ request }) => {
+          requestCount++;
+          const url = new URL(request.url);
+          const limit = Number(url.searchParams.get("limit"));
+          const offset = Number(url.searchParams.get("offset")) || 0;
+          const search = url.searchParams.get("search") || "";
+          return HttpResponse.json(
+            generatePaginatedResponse({
+              data: instancePackages,
+              limit,
+              offset,
+              search,
+              searchFields: ["name"],
+            }),
+          );
+        }),
+      );
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.type(searchBox, "testpackage");
+
+      await waitFor(() => { expect(requestCount).toBe(1); }, { timeout: 1000 });
+    });
+
     it("shows matching packages after searching", async () => {
       const searchBox = screen.getByRole("searchbox");
       assert(availablePackages[0]);

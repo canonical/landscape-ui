@@ -1,4 +1,3 @@
-import useDebug from "@/hooks/useDebug";
 import type { UrlParams } from "@/types/UrlParams";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
@@ -6,7 +5,7 @@ import Downshift from "downshift";
 import type { FC } from "react";
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
-import { useDebounceCallback } from "usehooks-ts";
+import { useDebounceValue } from "usehooks-ts";
 import { useGetAvailableSnaps } from "../../api";
 import type { AvailableSnap, SelectedSnaps } from "../../types";
 import SuggestionContent from "./components";
@@ -25,13 +24,12 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
   setConfirming,
 }) => {
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
-  const debug = useDebug();
 
-  const [search, setSearch] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [toBeConfirmedItem, setToBeConfirmedItem] =
     useState<AvailableSnap | null>();
   const [inputValue, setInputValue] = useState<string>("");
+  const [search, setSearch] = useDebounceValue("", DEBOUNCE_DELAY);
   const searchBoxRef = useRef<HTMLInputElement>(null);
 
   const instanceId = Number(urlInstanceId);
@@ -76,6 +74,7 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
 
   const handleClearSearch = () => {
     setInputValue("");
+    setSearch.cancel();
     setSearch("");
   };
 
@@ -85,16 +84,15 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
 
   const handleSearchBoxChange = (value: string) => {
     setInputValue(value);
-    setSearch(value);
-  };
-
-  const debouncedSearch = useDebounceCallback(() => {
-    try {
-      handleDropdownState();
-    } catch (err) {
-      debug(err);
+    if (!value) {
+      setSearch.cancel();
+      setSearch("");
+      setOpen(true);
+      return;
     }
-  }, DEBOUNCE_DELAY);
+    setSearch(value);
+    setOpen(true);
+  };
 
   const handleAddToSelectedItems = (item: SelectedSnaps) => {
     setSelectedItems([...selectedItems, item]);
@@ -112,8 +110,6 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
   const handleOnKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Escape") {
       event.currentTarget.blur();
-    } else {
-      debouncedSearch();
     }
   };
 
