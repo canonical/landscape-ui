@@ -26,3 +26,5 @@ export {
   useGetStaffAccountWslLimits,
   useGetStaffPeople,
 } from "./api";
+
+export { default as StaffAccountsList } from "./components/StaffAccountsList";
