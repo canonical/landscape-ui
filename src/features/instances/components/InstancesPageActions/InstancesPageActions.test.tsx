@@ -27,13 +27,12 @@ const ubuntuProInfo = {
   attached: true,
 } as unknown as UbuntuProInfo;
 
-const MENU_LABELS = ["Operations", "Grouping", "Ubuntu Pro"];
+const MENU_LABELS = ["Operations", "Grouping", "Ubuntu Pro", "Deb management"];
 
 const OPERATIONS_LABELS = [
   "Shut down",
   "Restart",
   "Remove from Landscape",
-  "Upgrade",
   "Upgrade distributions",
   "Export selection as TSV",
   "View report",
@@ -182,7 +181,7 @@ describe("InstancesPageActions", () => {
       });
 
       await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
+        screen.getByRole("button", { name: MENU_LABELS[3] }),
       );
 
       const button = screen.getByRole("menuitem", { name: /^upgrade$/i });
@@ -200,7 +199,7 @@ describe("InstancesPageActions", () => {
       });
 
       await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
+        screen.getByRole("button", { name: MENU_LABELS[3] }),
       );
 
       const button = screen.getByRole("menuitem", { name: /^upgrade$/i });
@@ -360,7 +359,7 @@ describe("InstancesPageActions", () => {
 
     it("'Upgrade' menu item", async () => {
       await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
+        screen.getByRole("button", { name: MENU_LABELS[3] }),
       );
       await userEvent.click(
         screen.getByRole("menuitem", { name: /^upgrade$/i }),

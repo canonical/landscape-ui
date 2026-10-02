@@ -10,7 +10,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type {
   DowngradePackageVersion,
   InstancePackage,
-  Package,
+  PackageOld,
 } from "../types";
 
 export interface GetPackagesParams {
@@ -59,20 +59,21 @@ interface DowngradePackageVersionParams {
 }
 
 interface PackagesActionParams {
-  action: "install" | "remove" | "hold" | "unhold";
+  action: "install" | "remove" | "hold" | "unhold" | "downgrade";
   computer_ids: number[];
   package_ids: number[];
   deliver_after?: string;
   deliver_delay_window?: number;
 }
 
-export interface InstancePackagesToExclude {
-  exclude_packages: number[];
-  id: number;
-}
-
 interface UpgradeInstancePackagesParams {
-  computers: InstancePackagesToExclude[];
+  mode: "include" | "exclude";
+  query?: string;
+  packages?: number[];
+  security_only?: boolean;
+  priorities?: string[];
+  severities?: string[];
+  search?: string;
 }
 
 export default function usePackages() {
@@ -81,7 +82,7 @@ export default function usePackages() {
   const authFetch = useFetch();
 
   const getPackagesQuery: QueryFnType<
-    AxiosResponse<ApiPaginatedResponse<Package>>,
+    AxiosResponse<ApiPaginatedResponse<PackageOld>>,
     GetPackagesParams
   > = (queryParams, config = {}) => {
     const params = {
@@ -91,7 +92,7 @@ export default function usePackages() {
       names: queryParams?.names?.length ? queryParams.names : undefined,
     };
     return useQuery<
-      AxiosResponse<ApiPaginatedResponse<Package>>,
+      AxiosResponse<ApiPaginatedResponse<PackageOld>>,
       AxiosError<ApiError>
     >({
       queryKey: ["packages", params],

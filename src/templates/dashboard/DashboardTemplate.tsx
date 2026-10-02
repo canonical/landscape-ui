@@ -17,14 +17,14 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
   return (
     <div id={applicationId} className="l-application" role="presentation">
       <SelfHostedLicenseProvider>
-        <SidePanelProvider>
-          <Sidebar />
-          <ApplicationIdContext value={applicationId}>
+        <ApplicationIdContext value={applicationId}>
+          <SidePanelProvider>
+            <Sidebar />
             <main className={classNames("l-main", classes.wrapper)}>
               <div className={classes.pageContent}>{children}</div>
             </main>
-          </ApplicationIdContext>
-        </SidePanelProvider>
+          </SidePanelProvider>
+        </ApplicationIdContext>
       </SelfHostedLicenseProvider>
       <WelcomePopup />
     </div>
