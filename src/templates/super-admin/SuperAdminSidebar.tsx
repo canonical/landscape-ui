@@ -13,7 +13,7 @@ import footerClasses from "@/templates/dashboard/UserInfo/UserInfo.module.scss";
 import classes from "./SuperAdminSidebar.module.scss";
 
 interface SuperAdminSidebarProps {
-  /** Where "Back to normal view" goes. */
+  /** Where "Back to main view" goes. */
   readonly returnTo: string;
 }
 
@@ -115,7 +115,7 @@ const SuperAdminSidebar: FC<SuperAdminSidebarProps> = ({ returnTo }) => {
                             footerClasses.label,
                           )}
                         >
-                          Back to normal view
+                          Back to main view
                         </span>
                       </Link>
                     </li>
