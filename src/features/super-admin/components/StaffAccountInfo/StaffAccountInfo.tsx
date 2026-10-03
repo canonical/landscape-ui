@@ -8,7 +8,7 @@ import date from "@/libs/date";
 import type { FC } from "react";
 import type { StaffAccount } from "../../types";
 import EditStaffAccountForm from "../EditStaffAccountForm";
-import { formatAttachmentSize } from "../EditStaffAccountForm/helpers";
+import { formatSize } from "@/utils/size";
 
 interface StaffAccountInfoProps {
   readonly staffAccount: StaffAccount;
@@ -100,7 +100,7 @@ const StaffAccountInfo: FC<StaffAccountInfoProps> = ({ staffAccount }) => {
             />
             <InfoGrid.Item
               label="Attachment size limit"
-              value={formatAttachmentSize(staffAccount.max_attachment_size)}
+              value={formatSize(staffAccount.max_attachment_size)}
             />
           </InfoGrid>
         </Blocks.Item>

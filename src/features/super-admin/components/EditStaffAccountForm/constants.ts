@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { SIZE_UNITS, toBytes, type SizeUnit } from "@/utils/size";
 
 // The rules below mirror `AccountPatchBody` and `set_account_subdomain` on the
 // server, so a value the server would reject is caught before it is sent.
@@ -54,6 +55,21 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
   max_attachment_size: Yup.number()
     .typeError(REQUIRED_MESSAGE)
     .required(REQUIRED_MESSAGE)
-    .integer(INTEGER_MESSAGE)
-    .min(0, "Enter 0 or more."),
+    .min(0, "Enter 0 or more.")
+    .test(
+      "whole-bytes",
+      "Enter a size that is a whole number of bytes.",
+      (value, { parent }) =>
+        value === undefined ||
+        Number.isInteger(
+          toBytes({
+            value,
+            unit: (parent as { max_attachment_size_unit: SizeUnit })
+              .max_attachment_size_unit,
+          }),
+        ),
+    ),
+  max_attachment_size_unit: Yup.string().oneOf(
+    SIZE_UNITS.map(({ value }) => value),
+  ),
 });

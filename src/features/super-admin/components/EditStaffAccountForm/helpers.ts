@@ -2,6 +2,7 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import type { ApiError } from "@/types/api/ApiError";
 import { isAxiosError } from "axios";
 import type { FormikErrors } from "formik";
+import { formatSize, toBytes, toReadableSize } from "@/utils/size";
 import type { StaffAccount } from "../../types";
 import type {
   FormProps,
@@ -19,12 +20,17 @@ const FIELD_NAMES = [
 const isFieldName = (value: unknown): value is keyof FormProps =>
   FIELD_NAMES.some((fieldName) => fieldName === value);
 
-export const getInitialValues = (staffAccount: StaffAccount): FormProps => ({
-  subdomain: staffAccount.subdomain ?? "",
-  salesforce_account_key: staffAccount.salesforce_account_key ?? "",
-  max_people_count: staffAccount.max_people_count,
-  max_attachment_size: staffAccount.max_attachment_size,
-});
+export const getInitialValues = (staffAccount: StaffAccount): FormProps => {
+  const { value, unit } = toReadableSize(staffAccount.max_attachment_size);
+
+  return {
+    subdomain: staffAccount.subdomain ?? "",
+    salesforce_account_key: staffAccount.salesforce_account_key ?? "",
+    max_people_count: staffAccount.max_people_count,
+    max_attachment_size: value,
+    max_attachment_size_unit: unit,
+  };
+};
 
 /** The fields that differ from the account; an emptied text field clears with `null`. */
 export const getChanges = (
@@ -51,18 +57,19 @@ export const getChanges = (
     changes.max_people_count = values.max_people_count;
   }
 
-  if (
-    values.max_attachment_size !== "" &&
-    values.max_attachment_size !== staffAccount.max_attachment_size
-  ) {
-    changes.max_attachment_size = values.max_attachment_size;
+  if (values.max_attachment_size !== "") {
+    const maxAttachmentSize = toBytes({
+      value: values.max_attachment_size,
+      unit: values.max_attachment_size_unit,
+    });
+
+    if (maxAttachmentSize !== staffAccount.max_attachment_size) {
+      changes.max_attachment_size = maxAttachmentSize;
+    }
   }
 
   return changes;
 };
-
-export const formatAttachmentSize = (bytes: number): string =>
-  `${bytes.toLocaleString("en")} bytes`;
 
 /** Each change as "from" and "to" text, for the confirmation. */
 export const describeChanges = (
@@ -98,8 +105,8 @@ export const describeChanges = (
   if (changes.max_attachment_size !== undefined) {
     described.push({
       label: "Attachment size limit",
-      from: formatAttachmentSize(staffAccount.max_attachment_size),
-      to: formatAttachmentSize(changes.max_attachment_size),
+      from: formatSize(staffAccount.max_attachment_size),
+      to: formatSize(changes.max_attachment_size),
     });
   }
 
