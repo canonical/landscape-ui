@@ -1,12 +1,18 @@
 import { http, HttpResponse } from 'msw';
 import { HttpStatusCode } from 'axios';
 import { API_URL, ROOT_PATH, IS_SELF_HOSTED_ENV } from '@/constants';
-import { authResponse, authUser } from '@/tests/mocks/auth';
+import { authUser } from '@/tests/mocks/auth';
 import { identityProviders } from '@/tests/mocks/identityProviders';
 import type { LoginMethods } from '@/features/auth';
 import type { AuthTestingConfig } from './config';
 
 export const MOCK_INVITATION_ID = 'mock-invite';
+export const MOCK_AUTH_HANDOFF_KEY = 'landscape-msw-auth-handoff';
+
+interface ProviderHandoff {
+  storage: Storage;
+  pathname: string;
+}
 const accountTitle = 'Organization';
 const selfHosted =
   IS_SELF_HOSTED_ENV === undefined ||
@@ -39,16 +45,79 @@ const validationError = (
     'PydanticValidationError',
   );
 
-export const createAuthTestingHandlers = (config: AuthTestingConfig) => {
+export const createAuthTestingHandlers = (
+  config: AuthTestingConfig,
+  isSelfHosted = selfHosted,
+  handoff?: ProviderHandoff,
+) => {
   let { accountExists } = config;
-  let invitationActive = true;
+  let invitationActive = config.invitationEnabled;
   let session: Record<string, unknown> | null = null;
+  let createdSaasAccount: (typeof authUser.accounts)[number] | null = null;
 
   const signIn = () => {
-    const response = { ...authResponse };
+    let accounts = createdSaasAccount
+      ? [createdSaasAccount]
+      : authUser.accounts;
+    if (!isSelfHosted && !accountExists) {
+      accounts = [];
+    }
+    const response = {
+      ...authUser,
+      accounts,
+      current_account:
+        accounts.length === 0
+          ? null
+          : (createdSaasAccount?.name ?? authUser.current_account),
+      return_to: null,
+      attach_code: null,
+    };
     session = response;
     return response;
   };
+
+  if (config.invitationEnabled && config.invitationSignedIn) {
+    session = {
+      ...signIn(),
+      accounts: [],
+      current_account: null,
+      invitation_id: MOCK_INVITATION_ID,
+    };
+  }
+
+  if (handoff) {
+    const serialized = handoff.storage.getItem(MOCK_AUTH_HANDOFF_KEY);
+    handoff.storage.removeItem(MOCK_AUTH_HANDOFF_KEY);
+    if (serialized) {
+      try {
+        const saved = JSON.parse(serialized) as {
+          pathname: string;
+          selfHosted: boolean;
+          accountExists: boolean;
+          invitationActive: boolean;
+          session: Record<string, unknown>;
+          createdSaasAccount: typeof createdSaasAccount;
+        };
+        if (
+          saved.pathname === handoff.pathname &&
+          saved.selfHosted === isSelfHosted &&
+          typeof saved.accountExists === 'boolean' &&
+          typeof saved.invitationActive === 'boolean' &&
+          saved.session !== null &&
+          typeof saved.session === 'object' &&
+          Array.isArray(saved.session.accounts)
+        ) {
+          ({ accountExists, invitationActive, session, createdSaasAccount } =
+            saved);
+        }
+      } catch (error) {
+        console.warn(
+          'MSW auth testing: invalid provider session handoff',
+          error,
+        );
+      }
+    }
+  }
 
   const loginFailure = () => {
     switch (config.loginError) {
@@ -152,27 +221,11 @@ export const createAuthTestingHandlers = (config: AuthTestingConfig) => {
     }
   };
 
-  const providerStart = (request: Request, provider: 'oidc' | 'ubuntu-one') => {
-    const params = new URL(request.url).searchParams;
-    const callback = new URL(
-      `${ROOT_PATH}handle-auth/${provider}`,
-      window.location.origin,
-    );
-    callback.searchParams.set('code', 'mock-code');
-    callback.searchParams.set('state', params.toString());
-    if (!params.size) callback.searchParams.set('state', 'mock-state');
-    for (const key of ['return_to', 'invitation_id', 'external']) {
-      const value = params.get(key);
-      if (value !== null) callback.searchParams.set(key, value);
-    }
-    return HttpResponse.json({ location: callback.href });
-  };
-
   const providerCompletion = (params: URLSearchParams) => {
     const failure = loginFailure();
     if (failure) return failure;
     const invitationId = params.get('invitation_id');
-    if (!accountExists && !invitationId) accountExists = true;
+    if (isSelfHosted && !accountExists && !invitationId) accountExists = true;
     const response = signIn();
     if (invitationId) {
       const invitedSession = {
@@ -187,14 +240,55 @@ export const createAuthTestingHandlers = (config: AuthTestingConfig) => {
       return HttpResponse.json(invitedSession);
     }
     const returnTo = params.get('return_to');
-    return HttpResponse.json({
+    const completedSession = {
       ...response,
       has_password: false,
       invitation_id: null,
       return_to: returnTo
         ? { url: returnTo, external: params.get('external') === 'true' }
         : null,
-    });
+    };
+    session = completedSession;
+    return HttpResponse.json(completedSession);
+  };
+
+  const providerStart = (request: Request) => {
+    const params = new URL(request.url).searchParams;
+    const completion = providerCompletion(params);
+    if (!completion.ok) return completion;
+
+    const destination = new URL(`${ROOT_PATH}overview`, window.location.origin);
+    const invitationId = params.get('invitation_id');
+    if (invitationId) {
+      destination.pathname = `${ROOT_PATH}accept-invitation/${encodeURIComponent(invitationId)}`;
+    } else if (!isSelfHosted && !accountExists) {
+      destination.pathname = `${ROOT_PATH}create-account`;
+    } else {
+      const returnTo = params.get('return_to');
+      if (returnTo) {
+        const returnUrl = new URL(returnTo, window.location.origin);
+        if (returnUrl.origin === window.location.origin) {
+          destination.pathname = returnUrl.pathname;
+          destination.search = returnUrl.search;
+          destination.hash = returnUrl.hash;
+        }
+      }
+    }
+
+    if (handoff) {
+      handoff.storage.setItem(
+        MOCK_AUTH_HANDOFF_KEY,
+        JSON.stringify({
+          pathname: destination.pathname,
+          selfHosted: isSelfHosted,
+          accountExists,
+          invitationActive,
+          session,
+          createdSaasAccount,
+        }),
+      );
+    }
+    return HttpResponse.json({ location: destination.href });
   };
 
   const invitationNotFound = (id: string) =>
@@ -208,7 +302,7 @@ export const createAuthTestingHandlers = (config: AuthTestingConfig) => {
   return [
     http.get(`${API_URL}about`, () =>
       HttpResponse.json({
-        self_hosted: selfHosted,
+        self_hosted: isSelfHosted,
         package_version: '0.0.0-dev',
         revision: 'dev-rev',
         display_disa_stig_banner: false,
@@ -235,16 +329,58 @@ export const createAuthTestingHandlers = (config: AuthTestingConfig) => {
           enabled: config.ubuntuOneEnabled,
         },
         standalone_oidc: {
-          available: config.oidcEnabled && selfHosted,
-          enabled: config.oidcEnabled && selfHosted,
+          available: config.oidcEnabled && isSelfHosted,
+          enabled: config.oidcEnabled && isSelfHosted,
         },
         oidc: {
-          available: config.oidcEnabled && !selfHosted,
+          available: config.oidcEnabled && !isSelfHosted,
           configurations:
-            config.oidcEnabled && !selfHosted ? [...identityProviders] : [],
+            config.oidcEnabled && !isSelfHosted ? [...identityProviders] : [],
         },
       };
       return HttpResponse.json(methods);
+    }),
+    http.post(`${API_URL}accounts`, async ({ request }) => {
+      if (session === null) {
+        return apiError(
+          'No JWT found in headers.',
+          HttpStatusCode.Unauthorized,
+          null,
+          'JwtMissingException',
+        );
+      }
+      if (accountExists || config.creationError === 'account_exists') {
+        return apiError('The current user already has an account.');
+      }
+      const { title } = (await request.json()) as { title: string };
+      createdSaasAccount = {
+        name: 'mock-organization',
+        title,
+        default: true,
+        subdomain: null,
+        classic_dashboard_url: '',
+      };
+      accountExists = true;
+      signIn();
+      return HttpResponse.json(
+        {
+          account: createdSaasAccount.name,
+          creation_time: new Date().toISOString(),
+          administrators: [
+            { name: authUser.name, email: authUser.email, openid: null },
+          ],
+          disabled: false,
+          disabled_reason: null,
+          computers: 0,
+          company: title,
+          last_login_time: null,
+          licenses: [],
+          salesforce_account_key: null,
+          enabled_features: null,
+          subdomain: null,
+        },
+        { status: HttpStatusCode.Created },
+      );
     }),
     http.get(`${API_URL}standalone-account`, () =>
       HttpResponse.json({ exists: accountExists }),
@@ -375,6 +511,7 @@ export const createAuthTestingHandlers = (config: AuthTestingConfig) => {
       );
       if (failure) return failure;
       invitationActive = false;
+      accountExists = true;
       signIn();
       return HttpResponse.json({ account_id: 4, account_title: accountTitle });
     }),
@@ -398,11 +535,9 @@ export const createAuthTestingHandlers = (config: AuthTestingConfig) => {
       invitationActive = false;
       return new HttpResponse(null, { status: HttpStatusCode.NoContent });
     }),
-    http.get(`${API_URL}auth/start`, ({ request }) =>
-      providerStart(request, 'oidc'),
-    ),
+    http.get(`${API_URL}auth/start`, ({ request }) => providerStart(request)),
     http.get(`${API_URL}auth/ubuntu-one/start`, ({ request }) =>
-      providerStart(request, 'ubuntu-one'),
+      providerStart(request),
     ),
     http.get(`${API_URL}auth/handle-code`, ({ request }) =>
       providerCompletion(

@@ -28,6 +28,8 @@ describe('getAuthTestingConfig', () => {
         VITE_MSW_PASSWORD_ENABLED: 'false',
         VITE_MSW_OIDC_ENABLED: 'true',
         VITE_MSW_UBUNTU_ONE_ENABLED: 'false',
+        VITE_MSW_INVITATION_ENABLED: 'true',
+        VITE_MSW_INVITATION_SIGNED_IN: 'true',
       }),
     ).toMatchObject({
       accountExists: false,
@@ -35,6 +37,8 @@ describe('getAuthTestingConfig', () => {
       passwordEnabled: false,
       oidcEnabled: true,
       ubuntuOneEnabled: false,
+      invitationEnabled: true,
+      invitationSignedIn: true,
       creationError: 'none',
       loginError: 'none',
       invitationError: 'none',

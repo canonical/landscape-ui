@@ -2,8 +2,12 @@ import { API_URL } from '@/constants';
 import { HttpStatusCode } from 'axios';
 import { authResponse } from '@/tests/mocks/auth';
 import server from '@/tests/server';
-import { describe, expect, it } from 'vitest';
-import { createAuthTestingHandlers, MOCK_INVITATION_ID } from './handlers';
+import { afterEach, describe, expect, it } from 'vitest';
+import {
+  createAuthTestingHandlers,
+  MOCK_INVITATION_ID,
+  MOCK_AUTH_HANDOFF_KEY,
+} from './handlers';
 import { getAuthTestingConfig, type AuthTestingConfig } from './config';
 import { createBrowserHandlers } from './browserHandlers';
 import { allLoginMethods } from '@/tests/mocks/loginMethods';
@@ -12,16 +16,50 @@ import { AccountCreationSelfHostedForm } from '@/features/account-creation';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createElement } from 'react';
+import { EnvContext } from '@/context/env';
+import { Route, Routes } from 'react-router';
+import LoginPage from '@/pages/auth/login';
+import AccountCreationPage from '@/pages/auth/account-creation';
+import InvitationPage from '@/pages/auth/invitation';
+import { AuthGuard } from '@/components/guards/AuthGuard';
+import type { TestProviderProps } from '@/tests/render';
+import { PATHS } from '@/libs/routes';
 
-const enableScenario = (overrides: Partial<AuthTestingConfig> = {}) => {
+const enableScenario = (
+  overrides: Partial<AuthTestingConfig> = {},
+  selfHosted = true,
+  handoff?: { storage: Storage; pathname: string },
+) => {
   const config = getAuthTestingConfig({
     VITE_MSW_ENABLED: 'true',
     VITE_MSW_AUTHENTICATION_TESTING: 'true',
     VITE_MSW_ACCOUNT_EXISTS: 'false',
   });
   if (!config) throw new Error('Missing test scenario config');
-  server.use(...createAuthTestingHandlers({ ...config, ...overrides }));
+  server.use(
+    ...createAuthTestingHandlers(
+      { ...config, ...overrides },
+      selfHosted,
+      handoff,
+    ),
+  );
 };
+
+const SaasEnvironment = ({ children }: TestProviderProps) =>
+  createElement(
+    EnvContext.Provider,
+    {
+      value: {
+        envLoading: false,
+        isSaas: true,
+        isSelfHosted: false,
+        packageVersion: 'mock',
+        revision: 'mock',
+        displayDisaStigBanner: false,
+      },
+    },
+    children,
+  );
 
 const post = (path: string, values: object) =>
   fetch(`${API_URL}${path}`, {
@@ -31,6 +69,226 @@ const post = (path: string, values: object) =>
   });
 
 describe('auth testing handlers', () => {
+  afterEach(() => {
+    window.sessionStorage.removeItem(MOCK_AUTH_HANDOFF_KEY);
+  });
+
+  it.each(['oidc', 'ubuntu-one'] as const)(
+    'hands a fresh SaaS %s session to creation once',
+    async (provider) => {
+      const storage = window.sessionStorage;
+      const scenario = { oidcEnabled: true };
+      enableScenario(scenario, false, { storage, pathname: '/login' });
+      const start =
+        provider === 'oidc' ? 'auth/start' : 'auth/ubuntu-one/start';
+      const { location } = await (await fetch(`${API_URL}${start}`)).json();
+      expect(new URL(location).pathname).toBe('/create-account');
+      expect(storage.getItem(MOCK_AUTH_HANDOFF_KEY)).not.toBeNull();
+
+      enableScenario(scenario, false, { storage, pathname: '/create-account' });
+      expect(storage.getItem(MOCK_AUTH_HANDOFF_KEY)).toBeNull();
+      expect(await (await fetch(`${API_URL}me`)).json()).toMatchObject({
+        accounts: [],
+        current_account: null,
+      });
+      renderWithProviders(
+        createElement(AccountCreationPage),
+        {},
+        '/create-account',
+        undefined,
+        SaasEnvironment,
+      );
+      expect(
+        await screen.findByLabelText('Organization name'),
+      ).toBeInTheDocument();
+      const created = await post('accounts', {
+        title: 'Mock-only Organization',
+      });
+      expect(created.status).toBe(HttpStatusCode.Created);
+      expect(await (await fetch(`${API_URL}me`)).json()).toMatchObject({
+        accounts: [{ title: 'Mock-only Organization' }],
+      });
+
+      enableScenario(scenario, false, { storage, pathname: '/create-account' });
+      expect(await (await fetch(`${API_URL}me`)).json()).toEqual({});
+    },
+  );
+
+  it.each(['oidc', 'ubuntu-one'] as const)(
+    'hands a %s invitation session directly to Accept/Reject',
+    async (provider) => {
+      const storage = window.sessionStorage;
+      const scenario = { oidcEnabled: true, accountExists: true };
+      const path = `/accept-invitation/${MOCK_INVITATION_ID}`;
+      enableScenario(scenario, true, { storage, pathname: path });
+      const start =
+        provider === 'oidc' ? 'auth/start' : 'auth/ubuntu-one/start';
+      const { location } = await (
+        await fetch(`${API_URL}${start}?invitation_id=${MOCK_INVITATION_ID}`)
+      ).json();
+      expect(new URL(location).pathname).toBe(path);
+      enableScenario(scenario, true, { storage, pathname: path });
+      renderWithProviders(
+        createElement(InvitationPage),
+        {},
+        path,
+        PATHS.auth.invitation,
+      );
+      expect(
+        await screen.findByRole('button', { name: 'Accept' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Reject' }),
+      ).toBeInTheDocument();
+    },
+  );
+
+  it('does not create a provider handoff when a forced login error occurs', async () => {
+    const storage = window.sessionStorage;
+    enableScenario({ loginError: 'invalid_credentials' }, false, {
+      storage,
+      pathname: '/login',
+    });
+    const response = await fetch(`${API_URL}auth/start`);
+    expect(response.status).toBe(HttpStatusCode.Unauthorized);
+    expect(storage.getItem(MOCK_AUTH_HANDOFF_KEY)).toBeNull();
+    expect(await (await fetch(`${API_URL}me`)).json()).toEqual({});
+  });
+
+  it('does not redirect mock sign-in to another origin', async () => {
+    enableScenario({ accountExists: true });
+    const { location } = await (
+      await fetch(`${API_URL}auth/start?return_to=https://example.com/other`)
+    ).json();
+    expect(new URL(location).origin).toBe(window.location.origin);
+    expect(new URL(location).pathname).toBe('/overview');
+  });
+  it('opens Accept and Reject with the signed-in invitation scenario', async () => {
+    enableScenario({
+      invitationEnabled: true,
+      invitationSignedIn: true,
+      accountExists: true,
+    });
+    renderWithProviders(
+      createElement(InvitationPage),
+      {},
+      `/accept-invitation/${MOCK_INVITATION_ID}`,
+      PATHS.auth.invitation,
+    );
+    const user = userEvent.setup();
+    expect(
+      await screen.findByRole('button', { name: 'Accept' }),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Reject' }));
+    expect(
+      await screen.findByRole('heading', {
+        name: 'You have rejected the invitation',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('takes a fresh SaaS password login through organization creation', async () => {
+    enableScenario({}, false);
+    renderWithProviders(
+      createElement(
+        Routes,
+        null,
+        createElement(Route, {
+          path: '/login',
+          element: createElement(LoginPage),
+        }),
+        createElement(Route, {
+          path: '/create-account',
+          element: createElement(AccountCreationPage),
+        }),
+        createElement(Route, {
+          path: '/overview',
+          element: createElement(AuthGuard, null, 'Mock overview'),
+        }),
+      ),
+      {},
+      '/login',
+      undefined,
+      SaasEnvironment,
+    );
+    const user = userEvent.setup();
+    await user.type(await screen.findByLabelText('Email'), 'fresh@example.com');
+    await user.type(screen.getByLabelText('Password'), 'anything');
+    await user.click(screen.getByRole('button', { name: 'Sign in' }));
+    await user.type(
+      await screen.findByLabelText('Organization name'),
+      'My Mock Organization',
+    );
+    expect(await (await fetch(`${API_URL}me`)).json()).toMatchObject({
+      accounts: [],
+      current_account: null,
+    });
+    await user.click(screen.getByRole('button', { name: 'Create account' }));
+    expect(await screen.findByText('Mock overview')).toBeInTheDocument();
+    expect(await (await fetch(`${API_URL}me`)).json()).toMatchObject({
+      current_account: 'mock-organization',
+      accounts: [{ name: 'mock-organization', title: 'My Mock Organization' }],
+    });
+  });
+
+  it.each(['oidc', 'ubuntu-one'] as const)(
+    'keeps a fresh SaaS %s user accountless until organization creation',
+    async (provider) => {
+      enableScenario({ oidcEnabled: true }, false);
+      const completionPath =
+        provider === 'oidc'
+          ? 'auth/handle-code?code=mock-code&state=mock-state'
+          : `auth/ubuntu-one/complete?url=${encodeURIComponent('http://localhost/handle-auth/ubuntu-one?code=mock-code')}`;
+      const response = await fetch(`${API_URL}${completionPath}`);
+      expect(await response.json()).toMatchObject({
+        accounts: [],
+        current_account: null,
+        has_password: false,
+      });
+      expect(await (await fetch(`${API_URL}me`)).json()).toMatchObject({
+        accounts: [],
+        current_account: null,
+      });
+      const created = await post('accounts', {
+        title: 'Federated Organization',
+      });
+      expect(created.status).toBe(HttpStatusCode.Created);
+      expect(await created.json()).toMatchObject({
+        account: 'mock-organization',
+        company: 'Federated Organization',
+      });
+      expect(await (await fetch(`${API_URL}me`)).json()).toMatchObject({
+        accounts: [{ title: 'Federated Organization' }],
+      });
+    },
+  );
+
+  it('disables the invitation when the invitation toggle is off', async () => {
+    enableScenario({ invitationEnabled: false });
+    expect(
+      (await fetch(`${API_URL}invitations/${MOCK_INVITATION_ID}/summary`))
+        .status,
+    ).toBe(HttpStatusCode.NotFound);
+  });
+
+  it('opens the mock invitation link on the real registration screen', async () => {
+    enableScenario({ invitationEnabled: true, accountExists: true });
+    renderWithProviders(
+      createElement(InvitationPage),
+      {},
+      `/accept-invitation/${MOCK_INVITATION_ID}`,
+      PATHS.auth.invitation,
+    );
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Create a user to join Organization',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Create user' }),
+    ).toBeInTheDocument();
+  });
+
   it.each([false, true])(
     'supports the real creation form with PAM=%s',
     async (pamEnabled) => {
@@ -356,7 +614,7 @@ describe('auth testing handlers', () => {
   });
 
   it.each(['oidc', 'ubuntu-one'] as const)(
-    'simulates %s redirects and callback session without a provider',
+    'simulates %s invitation sign-in without a callback page',
     async (provider) => {
       enableScenario({ oidcEnabled: true, accountExists: true });
       const startPath =
@@ -366,14 +624,12 @@ describe('auth testing handlers', () => {
           `${API_URL}${startPath}?invitation_id=${MOCK_INVITATION_ID}&return_to=/accept-invitation/${MOCK_INVITATION_ID}`,
         )
       ).json();
-      const callback = new URL(location);
-      expect(callback.origin).toBe(window.location.origin);
-      expect(callback.pathname).toBe(`/handle-auth/${provider}`);
-      const completionPath =
-        provider === 'oidc'
-          ? `auth/handle-code?code=mock-code&state=${encodeURIComponent(callback.searchParams.get('state') ?? '')}`
-          : `auth/ubuntu-one/complete?url=${encodeURIComponent(location)}`;
-      const session = await (await fetch(`${API_URL}${completionPath}`)).json();
+      const destination = new URL(location);
+      expect(destination.origin).toBe(window.location.origin);
+      expect(destination.pathname).toBe(
+        `/accept-invitation/${MOCK_INVITATION_ID}`,
+      );
+      const session = await (await fetch(`${API_URL}me`)).json();
       expect(session).toMatchObject({
         accounts: [],
         current_account: null,

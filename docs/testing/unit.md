@@ -59,6 +59,8 @@ VITE_MSW_PAM_ENABLED=false
 VITE_MSW_PASSWORD_ENABLED=true
 VITE_MSW_OIDC_ENABLED=false
 VITE_MSW_UBUNTU_ONE_ENABLED=true
+VITE_MSW_INVITATION_ENABLED=true
+VITE_MSW_INVITATION_SIGNED_IN=false
 ```
 
 Use `VITE_SELF_HOSTED_ENV=true` for standalone account creation. The OIDC toggle
@@ -68,9 +70,24 @@ passwords; existing frontend validation still applies. Successful account
 creation follows the normal frontend login flow using the existing mock user
 response. Successful invitation acceptance establishes that mock session.
 
+With `VITE_SELF_HOSTED_ENV=false` and `VITE_MSW_ACCOUNT_EXISTS=false`, password,
+OIDC, and Ubuntu One sign-in return an authenticated user with no organizations.
+The SaaS organization form then submits to `POST accounts`, which adds the mock
+organization to the session returned by `GET me`. Mock provider-start endpoints
+simulate successful sign-in and return a direct creation, invitation, or dashboard
+URL on the UI origin. A one-use mock session handoff in `sessionStorage` restores
+the state after that document navigation. The browser mock does not exercise
+the real OIDC/Ubuntu One callback pages; their hostname and access checks remain
+unchanged and are covered separately by the existing callback tests.
+
 Open `/accept-invitation/mock-invite` (under `VITE_ROOT_PATH` if configured) to
-test invitations while signed out. Unknown invitation IDs show the normal
-not-found screen. Signing in allows the existing accept/reject screen. Provider
+test invitations with `VITE_MSW_INVITATION_ENABLED=true`; the worker also prints
+the full invitation URL in the browser console. Set
+`VITE_MSW_INVITATION_SIGNED_IN=false` for the registration screen, or `true` to
+start with an accountless authenticated session and open the existing Accept/Reject
+screen directly. Restart Vite and reload after changing these settings.
+Disabling the invitation toggle or using an unknown ID shows the normal
+not-found screen. Provider
 redirects stay on the UI origin and simulate completion without contacting
 OIDC, Ubuntu One, or LDAP services.
 
@@ -82,8 +99,11 @@ Error selectors default to `none` and repeat on every relevant request:
 | `VITE_MSW_AUTH_LOGIN_ERROR`      | `none`, `invalid_credentials`, `pam_unavailable`, `password_disabled`                                                                                                                                               |
 | `VITE_MSW_AUTH_INVITATION_ERROR` | `none`, `not_found`, `duplicate_email`, `duplicate_identity`, `wrong_recipient`, `administrator_limit`, `pam_unavailable`, `invalid_credentials`, `blank_password`, `weak_password`, `disabled_account`             |
 
-The creation `account_exists` override fails the POST with the backend's 409
-response without changing the GET existence flag, so the form remains reachable.
+The creation `account_exists` override fails standalone creation with the
+backend's 409 response, or SaaS organization creation with its 400 response,
+without changing the existence flag, so the form remains reachable. The other
+creation selectors describe standalone credential validation and do not apply
+to the SaaS organization-name form.
 For repeatable error testing, forced invitation errors do not consume the mock
 invite, including administrator-limit failures that would cancel it on the real
 server. This is an intentional scenario override, not backend persistence
@@ -91,9 +111,12 @@ simulation. Supported failures use the current backend's status, message, error
 type, and detail shape. Cookies, signed JWTs, database persistence, real credential
 validation, and external provider exchanges are not simulated.
 
-Restart Vite after changing environment variables. A full browser reload resets
+Restart Vite after changing environment variables. An ordinary browser reload resets
 the in-memory account/session/invitation state to the configured defaults; SPA
-navigation retains it. In authentication-testing mode, all application APIs are
+navigation retains it. The exception is the single navigation immediately after
+mock provider sign-in: its handoff is consumed once and removed, so later reloads
+reset as usual. Forced provider login failures return an error before navigation
+and do not create a handoff. In authentication-testing mode, all application APIs are
 intercepted. Unmatched API requests return a visible `MissingMockHandler` 501
 instead of silently contacting a backend. Static assets continue to load normally.
 
