@@ -26,3 +26,5 @@ export {
   useGetStaffAccountWslLimits,
   useGetStaffPeople,
 } from "./api";
+
+export { default as StaffAccountsContainer } from "./components/StaffAccountsContainer";
