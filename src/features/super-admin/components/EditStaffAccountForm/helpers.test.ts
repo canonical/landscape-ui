@@ -2,9 +2,9 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { createStaffAccounts } from "@/tests/mocks/staffAccounts";
 import { AxiosError, AxiosHeaders } from "axios";
 import { describe, expect, it } from "vitest";
+import { formatSize } from "@/utils/size";
 import {
   describeChanges,
-  formatAttachmentSize,
   getChanges,
   getFieldErrors,
   getInitialValues,
@@ -14,6 +14,7 @@ const [staffAccount] = createStaffAccounts();
 
 const NEW_LIMIT = 25;
 const KIBIBYTE = 1024;
+const ONE_AND_A_HALF = 1.5;
 
 const getRejection = (data: unknown): AxiosError =>
   new AxiosError("Bad request", "ERR_BAD_REQUEST", undefined, undefined, {
@@ -41,6 +42,32 @@ describe("EditStaffAccountForm helpers", () => {
             ...initialValues,
             subdomain: ` ${staffAccount.subdomain} `,
             salesforce_account_key: ` ${staffAccount.salesforce_account_key} `,
+          },
+          staffAccount,
+        ),
+      ).toEqual({});
+    });
+
+    it("converts the attachment size limit to bytes", () => {
+      expect(
+        getChanges(
+          {
+            ...initialValues,
+            max_attachment_size: ONE_AND_A_HALF,
+            max_attachment_size_unit: "MB",
+          },
+          staffAccount,
+        ),
+      ).toEqual({ max_attachment_size: ONE_AND_A_HALF * KIBIBYTE * KIBIBYTE });
+    });
+
+    it("sees no change when only the unit of the same size differs", () => {
+      expect(
+        getChanges(
+          {
+            ...initialValues,
+            max_attachment_size: staffAccount.max_attachment_size / KIBIBYTE,
+            max_attachment_size_unit: "KB",
           },
           staffAccount,
         ),
@@ -105,8 +132,8 @@ describe("EditStaffAccountForm helpers", () => {
         },
         {
           label: "Attachment size limit",
-          from: formatAttachmentSize(staffAccount.max_attachment_size),
-          to: "1,024 bytes",
+          from: formatSize(staffAccount.max_attachment_size),
+          to: "1 KB",
         },
       ]);
     });

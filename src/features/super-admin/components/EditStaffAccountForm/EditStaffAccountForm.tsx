@@ -3,11 +3,17 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
-import { ConfirmationModal, Form, Input } from "@canonical/react-components";
+import {
+  ConfirmationModal,
+  Form,
+  Input,
+  Select,
+} from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useState } from "react";
 import { useEditStaffAccount } from "../../api";
+import { SIZE_UNITS } from "@/utils/size";
 import type { StaffAccount } from "../../types";
 import {
   MAX_PEOPLE_COUNT_MAX,
@@ -21,6 +27,7 @@ import {
   getInitialValues,
 } from "./helpers";
 import type { FormProps, StaffAccountChanges } from "./types";
+import classes from "./EditStaffAccountForm.module.scss";
 
 interface EditStaffAccountFormProps {
   readonly staffAccount: StaffAccount;
@@ -112,15 +119,26 @@ const EditStaffAccountForm: FC<EditStaffAccountFormProps> = ({
           error={getFormikError(formik, "max_people_count")}
         />
 
-        <Input
-          type="number"
-          label="Attachment size limit"
-          help="The largest script attachment the account can upload, in bytes."
-          required
-          min={0}
-          {...formik.getFieldProps("max_attachment_size")}
-          error={getFormikError(formik, "max_attachment_size")}
-        />
+        <div className={classes.sizeField}>
+          <Input
+            type="number"
+            label="Attachment size limit"
+            help="The largest script attachment the account can upload. 1 MB is 1,048,576 bytes."
+            required
+            min={0}
+            step="any"
+            wrapperClassName={classes.sizeValue}
+            {...formik.getFieldProps("max_attachment_size")}
+            error={getFormikError(formik, "max_attachment_size")}
+          />
+          <Select
+            label="Unit"
+            aria-label="Attachment size unit"
+            options={SIZE_UNITS.map(({ value, label }) => ({ value, label }))}
+            wrapperClassName={classes.sizeUnit}
+            {...formik.getFieldProps("max_attachment_size_unit")}
+          />
+        </div>
 
         <SidePanelFormButtons
           submitButtonDisabled={isEditingStaffAccount}

@@ -103,7 +103,7 @@ describe("StaffAccountInfo", () => {
     expect(screen.getByRole("heading", { name: "Limits" })).toBeInTheDocument();
     expect(screen.getByText("1-001A1B2C3D4E5F0")).toBeInTheDocument();
     expect(screen.getByText(String(ADMINISTRATOR_LIMIT))).toBeInTheDocument();
-    expect(screen.getByText("2,048 bytes")).toBeInTheDocument();
+    expect(screen.getByText("2 KB")).toBeInTheDocument();
   });
 
   it("hides Edit without write access", () => {

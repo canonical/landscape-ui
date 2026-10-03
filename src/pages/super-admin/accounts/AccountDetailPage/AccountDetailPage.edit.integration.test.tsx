@@ -10,11 +10,15 @@ import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it } from "vitest";
 import AccountDetailPage from "./AccountDetailPage";
 
+const KB = 1024;
+const MB = KB * KB;
+
 // What the mock "acme" account starts with, and what the tests change it to.
 const ACME_ADMINISTRATOR_LIMIT = 10;
-const ACME_ATTACHMENT_SIZE = 1048576;
+const ACME_ATTACHMENT_SIZE_MB = 1;
 const NEW_ADMINISTRATOR_LIMIT = 25;
-const NEW_ATTACHMENT_SIZE = 2097152;
+const NEW_ATTACHMENT_SIZE_MB = 2;
+const NEW_ATTACHMENT_SIZE_KB = 512;
 
 const ROUTE_PATTERN = `/${PATHS.superAdmin.root}/${PATHS.superAdmin.account}`;
 
@@ -107,7 +111,7 @@ describe("AccountDetailPage: editing the account (integration)", () => {
     const limits = await findSection("Limits");
 
     expect(limits.getByText("10")).toBeInTheDocument();
-    expect(limits.getByText("1,048,576 bytes")).toBeInTheDocument();
+    expect(limits.getByText("1 MB")).toBeInTheDocument();
 
     const details = await findSection("Account details");
 
@@ -142,8 +146,9 @@ describe("AccountDetailPage: editing the account (integration)", () => {
       ACME_ADMINISTRATOR_LIMIT,
     );
     expect(screen.getByLabelText("Attachment size limit")).toHaveValue(
-      ACME_ATTACHMENT_SIZE,
+      ACME_ATTACHMENT_SIZE_MB,
     );
+    expect(screen.getByLabelText("Attachment size unit")).toHaveValue("MB");
   });
 
   it.each(["0", "101"])(
@@ -164,6 +169,49 @@ describe("AccountDetailPage: editing the account (integration)", () => {
       expect(patches).toEqual([]);
     },
   );
+
+  it("sends the attachment size limit in bytes for the chosen unit", async () => {
+    const patches = recordPatches("acme");
+
+    renderAccount("acme");
+
+    await openEditForm();
+    await user.selectOptions(
+      screen.getByLabelText("Attachment size unit"),
+      "KB",
+    );
+    await fillField("Attachment size limit", String(NEW_ATTACHMENT_SIZE_KB));
+    await saveChanges();
+
+    await waitFor(() => {
+      expect(patches).toEqual([
+        { max_attachment_size: NEW_ATTACHMENT_SIZE_KB * KB },
+      ]);
+    });
+
+    const limits = await findSection("Limits");
+
+    expect(await limits.findByText("512 KB")).toBeInTheDocument();
+  });
+
+  it("rejects an attachment size limit that is not a whole number of bytes", async () => {
+    const patches = recordPatches("acme");
+
+    renderAccount("acme");
+
+    await openEditForm();
+    await user.selectOptions(
+      screen.getByLabelText("Attachment size unit"),
+      "KB",
+    );
+    await fillField("Attachment size limit", "0.3");
+    await submitForm();
+
+    expect(
+      await screen.findByText("Enter a size that is a whole number of bytes."),
+    ).toBeInTheDocument();
+    expect(patches).toEqual([]);
+  });
 
   it("rejects a negative attachment size limit before sending anything", async () => {
     const patches = recordPatches("acme");
@@ -225,7 +273,7 @@ describe("AccountDetailPage: editing the account (integration)", () => {
 
     await openEditForm();
     await fillField("Administrator limit", String(NEW_ADMINISTRATOR_LIMIT));
-    await fillField("Attachment size limit", String(NEW_ATTACHMENT_SIZE));
+    await fillField("Attachment size limit", String(NEW_ATTACHMENT_SIZE_MB));
     await submitForm();
 
     const dialog = within(await screen.findByRole("dialog"));
@@ -237,7 +285,7 @@ describe("AccountDetailPage: editing the account (integration)", () => {
       "Administrator limit: 10 → 25",
     );
     expect(dialog.getByText(/Attachment size limit:/)).toHaveTextContent(
-      "Attachment size limit: 1,048,576 bytes → 2,097,152 bytes",
+      "Attachment size limit: 1 MB → 2 MB",
     );
     expect(patches).toEqual([]);
 
@@ -247,7 +295,7 @@ describe("AccountDetailPage: editing the account (integration)", () => {
       expect(patches).toEqual([
         {
           max_people_count: NEW_ADMINISTRATOR_LIMIT,
-          max_attachment_size: NEW_ATTACHMENT_SIZE,
+          max_attachment_size: NEW_ATTACHMENT_SIZE_MB * MB,
         },
       ]);
     });
@@ -256,7 +304,7 @@ describe("AccountDetailPage: editing the account (integration)", () => {
     const limits = await findSection("Limits");
 
     expect(await limits.findByText("25")).toBeInTheDocument();
-    expect(limits.getByText("2,097,152 bytes")).toBeInTheDocument();
+    expect(limits.getByText("2 MB")).toBeInTheDocument();
   });
 
   it("sends nothing when the confirmation is cancelled", async () => {
