@@ -43,6 +43,39 @@ describe("LoginMethodsLayout", () => {
     emptyMessageNotBeInTheDocument();
   });
 
+  it("should show the no-methods message when OIDC is unavailable", () => {
+    const methods = {
+      ...noneLoginMethods,
+      oidc: {
+        available: false,
+        configurations: allLoginMethods.oidc.configurations,
+      },
+    };
+
+    renderWithProviders(<LoginMethods methods={methods} />);
+
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(screen.getByText(EMPTY_MESSAGE)).toBeInTheDocument();
+  });
+
+  it("should show the no-methods message when every OIDC provider is disabled", () => {
+    const methods = {
+      ...noneLoginMethods,
+      oidc: {
+        available: true,
+        configurations: allLoginMethods.oidc.configurations.map((provider) => ({
+          ...provider,
+          enabled: false,
+        })),
+      },
+    };
+
+    renderWithProviders(<LoginMethods methods={methods} />);
+
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(screen.getByText(EMPTY_MESSAGE)).toBeInTheDocument();
+  });
+
   it("should render enterprise sign in method", async () => {
     const methods = {
       ...noneLoginMethods,

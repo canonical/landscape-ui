@@ -36,7 +36,7 @@ const LoginMethodsLayout: FC<LoginMethodsProps> = ({ methods }) => {
   const providersAvailable =
     isUbuntuOneEnabled ||
     isStandaloneOidcEnabled ||
-    methods.oidc.configurations.length > 0;
+    availableOidcProviders.length > 0;
 
   return (
     <>
