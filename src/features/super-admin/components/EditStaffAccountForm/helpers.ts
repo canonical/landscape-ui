@@ -3,6 +3,7 @@ import type { ApiError } from "@/types/api/ApiError";
 import { isAxiosError } from "axios";
 import type { FormikErrors } from "formik";
 import { formatSize, toBytes, toReadableSize } from "@/utils/size";
+import { getValidationErrors } from "../../helpers";
 import type { StaffAccount } from "../../types";
 import type {
   FormProps,
@@ -16,9 +17,6 @@ const FIELD_NAMES = [
   "max_people_count",
   "max_attachment_size",
 ] as const satisfies (keyof FormProps)[];
-
-const isFieldName = (value: unknown): value is keyof FormProps =>
-  FIELD_NAMES.some((fieldName) => fieldName === value);
 
 export const getInitialValues = (staffAccount: StaffAccount): FormProps => {
   const { value, unit } = toReadableSize(staffAccount.max_attachment_size);
@@ -113,51 +111,21 @@ export const describeChanges = (
   return described;
 };
 
-interface ValidationErrorDetail {
-  loc: (string | number)[];
-  msg: string;
-}
-
-const isValidationErrorDetail = (
-  value: unknown,
-): value is ValidationErrorDetail =>
-  typeof value === "object" &&
-  value !== null &&
-  "loc" in value &&
-  Array.isArray(value.loc) &&
-  "msg" in value &&
-  typeof value.msg === "string";
-
 /**
  * The fields a rejected PATCH is about. Validation errors name their field;
  * the Salesforce key and subdomain rejections only carry a message.
  */
 export const getFieldErrors = (error: unknown): FormikErrors<FormProps> => {
-  if (
-    !isAxiosError<ApiError & { detail?: unknown }>(error) ||
-    !error.response
-  ) {
-    return {};
-  }
+  const fieldErrors: FormikErrors<FormProps> = getValidationErrors(
+    error,
+    FIELD_NAMES,
+  );
 
-  const { detail, message } = error.response.data;
-  const fieldErrors: FormikErrors<FormProps> = {};
-
-  if (Array.isArray(detail)) {
-    for (const item of detail) {
-      if (!isValidationErrorDetail(item)) {
-        continue;
-      }
-
-      const fieldName = item.loc.find(isFieldName);
-
-      if (fieldName) {
-        fieldErrors[fieldName] ??= item.msg;
-      }
-    }
-
+  if (Object.keys(fieldErrors).length || !isAxiosError<ApiError>(error)) {
     return fieldErrors;
   }
+
+  const message = error.response?.data.message;
 
   if (typeof message !== "string") {
     return fieldErrors;
