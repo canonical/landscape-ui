@@ -1,6 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
 import { LoginMethodsLayout, useGetLoginMethods } from "@/features/auth";
+import useEnv from "@/hooks/useEnv";
 import AuthTemplate from "@/templates/auth/AuthTemplate";
 import { useAcceptInvitation } from "../../api";
 import InvitationRegistrationForm from "../InvitationRegistrationForm";
@@ -12,13 +13,14 @@ interface InvitationWelcomeProps {
 
 const InvitationWelcome: FC<InvitationWelcomeProps> = ({ accountTitle }) => {
   const [isRegistering, setIsRegistering] = useState(true);
+  const { isSelfHosted } = useEnv();
   const { loginMethods, loginMethodsLoading, isLoginMethodsError } =
     useGetLoginMethods();
 
   const { acceptInvitation, isAcceptingInvitation } = useAcceptInvitation();
 
   const isPamEnabled = Boolean(
-    loginMethods?.pam.available && loginMethods.pam.enabled,
+    isSelfHosted && loginMethods?.pam.available && loginMethods.pam.enabled,
   );
   const isPasswordEnabled = Boolean(
     loginMethods?.password.available && loginMethods.password.enabled,

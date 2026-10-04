@@ -3,6 +3,8 @@ import { screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
+import { EnvContext, type EnvContextState } from "@/context/env";
+import { allLoginMethods } from "@/tests/mocks/loginMethods";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import InvitationWelcome from "./InvitationWelcome";
 import { expectLoadingState } from "@/tests/helpers";
@@ -35,6 +37,42 @@ describe("InvitationWelcome", () => {
     expect(screen.getByText("Sign in with Ubuntu One")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Create user" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not offer PAM registration in SaaS", async () => {
+    const saasEnv: EnvContextState = {
+      envLoading: false,
+      isSaas: true,
+      isSelfHosted: false,
+      packageVersion: "",
+      revision: "",
+      displayDisaStigBanner: false,
+    };
+    setEndpointStatus({
+      status: "variant",
+      path: "login/methods",
+      response: {
+        ...allLoginMethods,
+        pam: { available: true, enabled: true },
+      },
+    });
+
+    renderWithProviders(
+      <InvitationWelcome {...defaultProps} />,
+      undefined,
+      undefined,
+      undefined,
+      ({ children }) => (
+        <EnvContext.Provider value={saasEnv}>{children}</EnvContext.Provider>
+      ),
+    );
+
+    expect(
+      await screen.findByText("Create a user to join Test Account"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Create a PAM user to join Test Account"),
     ).not.toBeInTheDocument();
   });
 
