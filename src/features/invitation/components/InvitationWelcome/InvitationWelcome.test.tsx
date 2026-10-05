@@ -7,7 +7,6 @@ import { EnvContext, type EnvContextState } from "@/context/env";
 import { allLoginMethods } from "@/tests/mocks/loginMethods";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import InvitationWelcome from "./InvitationWelcome";
-import { expectLoadingState } from "@/tests/helpers";
 import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
 
 describe("InvitationWelcome", () => {
@@ -17,17 +16,16 @@ describe("InvitationWelcome", () => {
 
   it("should show account creation when opening an invitation", async () => {
     renderWithProviders(<InvitationWelcome {...defaultProps} />);
-    await expectLoadingState();
 
     expect(
-      screen.getByText("Create a user to join Test Account"),
+      await screen.findByText("Create a user to join Test Account"),
     ).toBeInTheDocument();
   });
 
   it("shows sign-in methods when the invitee chooses to sign in", async () => {
     const user = userEvent.setup();
     renderWithProviders(<InvitationWelcome {...defaultProps} />);
-    await expectLoadingState();
+    await screen.findByText("Create a user to join Test Account");
 
     await user.click(
       screen.getByRole("button", {

@@ -114,6 +114,8 @@ describe("invitation routing", () => {
       authorized,
       hasAccounts,
       authLoading: false,
+      isSuperAdmin: false,
+      canManageAccounts: false,
       user: authorized ? authUser : null,
       setUser: vi.fn(),
       logout: vi.fn(),
