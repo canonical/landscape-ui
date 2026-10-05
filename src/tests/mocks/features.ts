@@ -114,3 +114,17 @@ export const features: Feature[] = [
     },
   },
 ];
+
+export const debarchiveFeatures: Feature[] = [
+  {
+    name: "Persistent LROs",
+    description:
+      "Supports persistent long-running operations that can be canceled.",
+    key: "persistent-lros",
+    database_key: 20,
+    enabled: true,
+    details: {
+      configuration: false,
+    },
+  },
+];

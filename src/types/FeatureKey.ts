@@ -1,4 +1,4 @@
-export type FeatureKey =
+type ServerFeatureKey =
   | "computer-soft-deletion"
   | "employee-management"
   | "instance-reports"
@@ -9,3 +9,7 @@ export type FeatureKey =
   | "ubuntu-pro-licensing"
   | "usg-profiles"
   | "wsl-child-instance-profiles";
+
+type DebarchiveFeatureKey = "persistent-lros";
+
+export type FeatureKey = ServerFeatureKey | DebarchiveFeatureKey;
