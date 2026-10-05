@@ -2,6 +2,7 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { noneLoginMethods, pamLoginMethods } from "@/tests/mocks/loginMethods";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
+import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AccountCreationSelfHostedForm from "./AccountCreationSelfHostedForm";
 
@@ -78,6 +79,20 @@ describe("AccountCreationSelfHostedForm", () => {
         "No login methods are configured. Ask your system administrator to configure password, PAM, OIDC, or Ubuntu One.",
       ),
     ).toBeInTheDocument();
+    expect(navigateMock).not.toHaveBeenCalled();
+  });
+
+  it("shows a support message when login methods fail to load", async () => {
+    setEndpointStatus({ status: "error", path: "login/methods" });
+
+    renderWithProviders(<AccountCreationSelfHostedForm />);
+
+    expect(
+      await screen.findByText(CONTACT_SUPPORT_TEAM_MESSAGE),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/no login methods are configured/i),
+    ).not.toBeInTheDocument();
     expect(navigateMock).not.toHaveBeenCalled();
   });
 });

@@ -3,9 +3,9 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
 import Redirecting from "@/components/layout/Redirecting";
+import { CONTACT_SUPPORT_TEAM_MESSAGE, HOMEPAGE_PATH } from "@/constants";
 import AuthTemplate from "@/templates/auth/AuthTemplate";
 import useAuth from "@/hooks/useAuth";
-import { HOMEPAGE_PATH } from "@/constants";
 import { ROUTES } from "@/libs/routes";
 
 import type { LoginRequestParams } from "@/features/auth";
@@ -23,7 +23,8 @@ const AccountCreationSelfHostedForm: FC = () => {
 
   const { login: signIn } = useLogin();
 
-  const { loginMethods, loginMethodsLoading } = useGetLoginMethods();
+  const { loginMethods, loginMethodsLoading, isLoginMethodsError } =
+    useGetLoginMethods();
 
   const isPamEnabled = Boolean(
     loginMethods?.pam.available && loginMethods.pam.enabled,
@@ -66,6 +67,14 @@ const AccountCreationSelfHostedForm: FC = () => {
 
   if (loginMethodsLoading) {
     return <LoadingState />;
+  }
+
+  if (isLoginMethodsError) {
+    return (
+      <AuthTemplate title="Unable to create a new Landscape account">
+        <p className="u-no-margin--bottom">{CONTACT_SUPPORT_TEAM_MESSAGE}</p>
+      </AuthTemplate>
+    );
   }
 
   if (shouldRedirectToLogin) {
