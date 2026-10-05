@@ -8,7 +8,6 @@ describe("PackagesActionSummary", () => {
     renderWithProviders(
       <PackagesActionSummary
         actionType="unhold"
-        instanceIds={[1, 2, 3]}
         onBackButtonPress={() => undefined}
         packageChangePlanId={1}
       />,

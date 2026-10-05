@@ -91,7 +91,6 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
       return (
         <PackagesActionSummary
           actionType={actionType}
-          instanceIds={instanceIds}
           packageChangePlanId={packageChangePlanId}
           onBackButtonPress={() => {
             const title = getActionFormTitle(actionType);

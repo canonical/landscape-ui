@@ -29,7 +29,6 @@ import PackageActionExclusionsCount from "./components/PackagesActionExclusionsC
 
 interface PackagesActionSummaryProps {
   readonly actionType: Exclude<PackageChangePlanActionType, "upgrade">;
-  readonly instanceIds: number[];
   readonly packageChangePlanId: number;
   readonly onBackButtonPress: () => void;
 }
