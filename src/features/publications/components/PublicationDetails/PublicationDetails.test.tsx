@@ -13,17 +13,22 @@ import { AUTOMATIC_LABELS } from "../../constants";
 import { expectLoadingState } from "@/tests/helpers";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { resetLroProgress } from "@/tests/server/handlers/operations";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+
+const [publication, publicationWithKey, manualPublication] = publications;
+
+const sourceDisplayName =
+  mirrors.find((m) => m.name === publication.source)?.displayName ??
+  publication.source;
+const publicationTargetDisplayName =
+  publicationTargets.find((t) => t.name === publication.publicationTarget)
+    ?.displayName ?? publication.publicationTarget;
 
 describe("PublicationDetails", () => {
-  const user = userEvent.setup();
-  const [publication, publicationWithKey, manualPublication] = publications;
-
-  const sourceDisplayName =
-    mirrors.find((m) => m.name === publication.source)?.displayName ??
-    publication.source;
-  const publicationTargetDisplayName =
-    publicationTargets.find((t) => t.name === publication.publicationTarget)
-      ?.displayName ?? publication.publicationTarget;
+  beforeEach(() => {
+    setEndpointStatus("default");
+    resetLroProgress();
+  });
 
   it("renders all info sections and values", async () => {
     const { container } = renderWithProviders(
@@ -105,7 +110,7 @@ describe("PublicationDetails", () => {
     );
 
     expect(
-      await screen.findByRole("heading", { name: "Publishing failed" }),
+      await screen.findByRole("heading", { name: /Publishing failed/i }),
     ).toBeInTheDocument();
 
     expect(
@@ -117,7 +122,8 @@ describe("PublicationDetails", () => {
     );
   });
 
-  it("renders disabled button while publishing", async () => {
+  it("confirms cancelling an ongoing publication before republishing", async () => {
+    const user = userEvent.setup();
     resetLroProgress();
 
     renderWithProviders(
@@ -130,14 +136,56 @@ describe("PublicationDetails", () => {
 
     await expectLoadingState();
 
+    await user.click(screen.getByRole("button", { name: "Republish" }));
+
+    const modalHeader = screen.getByRole("heading", {
+      name: `${publicationWithKey.displayName} is already being published`,
+    });
+    expect(modalHeader).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /cancel and start new republication/i,
+      }),
+    );
+
+    expect(
+      await screen.findByText(
+        `You have marked ${publicationWithKey.displayName} to be republished`,
+      ),
+    ).toBeInTheDocument();
+
+    expect(modalHeader).not.toBeInTheDocument();
+  });
+
+  it("renders a disabled republish button while publishing if persistent LROs are disabled", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({ status: "empty", path: "debarchive/features" });
+
+    renderWithProviders(
+      <PublicationDetails
+        publication={publicationWithKey}
+        sourceDisplayName={sourceDisplayName}
+        publicationTargetDisplayName={publicationTargetDisplayName}
+      />,
+    );
+
+    await expectLoadingState();
+
+    const publishingButton = screen.getByRole("button", { name: "Publishing" });
+    expect(publishingButton).toHaveAttribute("aria-disabled", "true");
+
     expect(
       screen.queryByRole("button", { name: "Republish" }),
     ).not.toBeInTheDocument();
 
-    expect(screen.getByRole("button", { name: "Publishing" })).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
+    await user.hover(publishingButton);
+
+    expect(
+      await screen.findByText(
+        "You must wait for this action to be completed to republish it.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("renders GPG key fingerprint when it exists", async () => {
@@ -192,6 +240,7 @@ describe("PublicationDetails", () => {
   });
 
   it("opens republish modal", async () => {
+    const user = userEvent.setup();
     renderWithProviders(
       <PublicationDetails
         publication={publication}
@@ -213,6 +262,7 @@ describe("PublicationDetails", () => {
   });
 
   it("opens remove modal", async () => {
+    const user = userEvent.setup();
     renderWithProviders(
       <PublicationDetails
         publication={publication}

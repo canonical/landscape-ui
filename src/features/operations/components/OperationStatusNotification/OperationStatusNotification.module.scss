@@ -1,0 +1,19 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.inProgress {
+  background-color: $colors--theme--background-alt;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: $spv--x-large;
+  padding: $spv--large;
+
+  .is-dark & {
+    background-color: $colors--theme--background-default;
+  }
+}
+
+.cancelButton {
+  margin-left: auto;
+  padding-top: $spv--small;
+}

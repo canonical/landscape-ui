@@ -1,7 +1,5 @@
 import type { Publication } from "@canonical/landscape-openapi";
 
-export { publicationTargets } from "@/tests/mocks/publicationTargets";
-
 export const publications = [
   {
     name: "publications/7b1d5c2f-0c4e-4d8e-8f2f-99d4f2d9a123",
@@ -109,6 +107,7 @@ export const publications = [
     skipBz2: false,
     skipContents: false,
     publishTime: new Date("March 1, 2026"),
+    lastOperation: "operations/iiii-dddd-llll",
   },
   {
     name: "publications/9f3d7e0a-1111-2222-3333-444444444444",
