@@ -76,6 +76,7 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
     setInputValue("");
     setSearch.cancel();
     setSearch("");
+    setOpen(false);
   };
 
   const handleDropdownState = () => {
@@ -87,11 +88,11 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
     if (!value) {
       setSearch.cancel();
       setSearch("");
-      setOpen(true);
+      setOpen(false);
       return;
     }
     setSearch(value);
-    setOpen(true);
+    setOpen(Boolean(value.length));
   };
 
   const handleAddToSelectedItems = (item: SelectedSnaps) => {

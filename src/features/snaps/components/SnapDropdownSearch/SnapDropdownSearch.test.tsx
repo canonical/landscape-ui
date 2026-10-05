@@ -75,6 +75,22 @@ describe("SnapDropdownSearch", () => {
     expect(requestCount).toBe(0);
   });
 
+  it("closes the dropdown suggestions when the search field is cleared", async () => {
+    const searchBox = screen.getByRole("searchbox");
+    await userEvent.type(searchBox, "Snap 1");
+
+    expect(await screen.findByRole("listbox")).toBeInTheDocument();
+
+    const clearButton = screen.getByRole("button", {
+      name: /clear search field/i,
+    });
+    await userEvent.click(clearButton);
+
+    await waitFor(() => {
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    });
+  });
+
   describe("snap selection flow", () => {
     it("shows matching snaps after searching", async () => {
       const searchBox = screen.getByRole("searchbox");
