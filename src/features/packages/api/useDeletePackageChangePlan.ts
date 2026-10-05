@@ -9,8 +9,8 @@ export default function useDeletePackageChangePlan() {
 
   return useMutation<unknown, AxiosError<ApiError>, number>({
     mutationFn: async (id) => authFetch.delete(`package-change-plans/${id}`),
-    onSuccess: async (_, id) => {
-      await queryClient.invalidateQueries({
+    onSuccess: (_, id) => {
+      queryClient.removeQueries({
         queryKey: ["packageChangePlans", id],
       });
     },
