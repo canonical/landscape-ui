@@ -28,8 +28,9 @@ const LoginPage: FC = () => {
 
   const needsFirstAdmin = isSelfHosted && !accountExists;
   const isFirstAdminSupported =
-    (loginMethods?.password?.enabled ?? false) ||
-    (loginMethods?.pam?.enabled ?? false);
+    Boolean(
+      loginMethods?.password?.available && loginMethods.password.enabled,
+    ) || Boolean(loginMethods?.pam?.available && loginMethods.pam.enabled);
   const allowFederatedLogin =
     (location.state as { allowFederatedLogin?: boolean } | null)
       ?.allowFederatedLogin === true;

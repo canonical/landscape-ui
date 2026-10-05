@@ -9,7 +9,11 @@ import useEnv from "@/hooks/useEnv";
 import type { EnvContextState } from "@/context/env";
 import { standaloneAccountState } from "@/tests/server/handlers/standaloneAccount";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
-import { pamLoginMethods, ubuntuOneOnlyLoginMethods } from "@/tests/mocks/loginMethods";
+import {
+  noneLoginMethods,
+  pamLoginMethods,
+  ubuntuOneOnlyLoginMethods,
+} from "@/tests/mocks/loginMethods";
 import userEvent from "@testing-library/user-event";
 import { Route, Routes } from "react-router";
 import { AccountCreationAlternative } from "@/features/account-creation";
@@ -142,10 +146,7 @@ describe("LoginPage", () => {
         <Route
           path="/create-account"
           element={
-            <AccountCreationAlternative
-              oidcEnabled={false}
-              ubuntuOneEnabled
-            />
+            <AccountCreationAlternative oidcEnabled={false} ubuntuOneEnabled />
           }
         />
         <Route
@@ -202,6 +203,49 @@ describe("LoginPage", () => {
       expect(getLocationDisplay()).toHaveTextContent("create-account");
     });
   });
+
+  it.each([
+    {
+      method: "password",
+      response: {
+        ...noneLoginMethods,
+        password: { available: false, enabled: true },
+      },
+    },
+    {
+      method: "PAM",
+      response: {
+        ...noneLoginMethods,
+        pam: { available: false, enabled: true },
+      },
+    },
+  ])(
+    "does not redirect when $method is enabled but unavailable",
+    async ({ response }) => {
+      standaloneAccountState.exists = false;
+      setEndpointStatus({
+        status: "variant",
+        path: "login/methods",
+        response,
+      });
+      vi.mocked(useEnv).mockReturnValue({
+        ...envCommon,
+        isSelfHosted: true,
+        isSaas: false,
+        displayDisaStigBanner: false,
+      });
+
+      renderWithProviders(
+        <>
+          <LoginPage />
+          <LocationDisplay />
+        </>,
+      );
+
+      expect(await screen.findByText(/no way to get in/i)).toBeInTheDocument();
+      expect(getLocationDisplay()).not.toHaveTextContent("create-account");
+    },
+  );
 
   it("shows login form when self-hosted with existing standalone account", async () => {
     vi.mocked(useEnv).mockReturnValue({
