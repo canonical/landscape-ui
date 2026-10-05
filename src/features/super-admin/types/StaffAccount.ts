@@ -1,10 +1,10 @@
-export interface StaffAccountAdministrator {
+export interface StaffAccountAdministrator extends Record<string, unknown> {
   name: string;
   email: string;
   openid: string | null;
 }
 
-export interface StaffAccountLicense {
+export interface StaffAccountLicense extends Record<string, unknown> {
   expires: string | null;
   seats: number;
   type: string;
