@@ -42,7 +42,7 @@ export const useGetStaffAccounts = (
 
   return {
     staffAccounts: response?.data.results ?? [],
-    staffAccountsCount: response?.data.count ?? 0,
+    staffAccountsCount: response?.data.count,
     staffAccountsError: error,
     isGettingStaffAccounts: isLoading,
     isStaffAccountsError: isError,

@@ -1,3 +1,4 @@
+import type { PageParams } from "../pageParamsManager";
 import {
   createPathBuilder,
   createRoute,
@@ -17,7 +18,10 @@ const buildPath = createPathBuilder(base);
 export const SUPER_ADMIN_ROUTES = {
   root: createRoute(base),
   accounts: createRoute(buildPath(SUPER_ADMIN_PATHS.accounts)),
-  account: (name: string) =>
-    createRouteWithParams(buildPath(SUPER_ADMIN_PATHS.account))({ name }),
+  account: (name: string, queryParams?: Partial<PageParams>) =>
+    createRouteWithParams(buildPath(SUPER_ADMIN_PATHS.account))(
+      { name },
+      queryParams,
+    ),
   people: createRoute(buildPath(SUPER_ADMIN_PATHS.people)),
 } as const;

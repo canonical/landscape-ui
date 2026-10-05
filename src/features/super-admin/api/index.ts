@@ -2,6 +2,7 @@ export type { EditStaffAccountParams } from "./useEditStaffAccount";
 export { useEditStaffAccount } from "./useEditStaffAccount";
 export type { EditStaffAccountWslLimitsParams } from "./useEditStaffAccountWslLimits";
 export { useEditStaffAccountWslLimits } from "./useEditStaffAccountWslLimits";
+export { useGetFeatureRegistry } from "./useGetFeatureRegistry";
 export { useGetStaffAccount } from "./useGetStaffAccount";
 export type { GetStaffAccountsParams } from "./useGetStaffAccounts";
 export { useGetStaffAccounts } from "./useGetStaffAccounts";

@@ -4,7 +4,6 @@ import classes from "./OperationStatusContent.module.scss";
 import ViewLogsButton from "../ViewLogsButton";
 import { getOperationTypeTexts } from "./helpers";
 import { Icon, ICONS } from "@canonical/react-components";
-import ProgressBar from "@/components/ui/ProgressBar";
 import LoadingState from "@/components/layout/LoadingState";
 
 interface OperationStatusContentProps {
@@ -87,13 +86,9 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
           <span className={classes.marginRight} id={labelId}>
             {ongoing}
           </span>
-          {isTableCell ? (
-            <span className="u-text--muted" aria-live="off">
-              {progressPercent}%
-            </span>
-          ) : (
-            <ProgressBar progress={progressPercent} labelledBy={labelId} />
-          )}
+          <span className="u-text--muted" aria-live="off">
+            {progressPercent}%
+          </span>
         </div>
       </>
     );

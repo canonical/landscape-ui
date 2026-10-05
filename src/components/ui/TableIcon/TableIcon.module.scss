@@ -1,0 +1,16 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+/* Same technique as the offset indicator icons in the instances table: the
+   icon plus its gap fill the leading icon gutter of the cell, so the label
+   lines up with the column header. */
+$icon-size: 1rem;
+$gutter: $icon-size + $sph--small;
+
+.wrapper {
+  display: flex;
+  transform: translateX(-$gutter);
+}
+
+.iconSpan {
+  margin-right: $sph--small;
+}

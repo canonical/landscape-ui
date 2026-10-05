@@ -18,7 +18,7 @@ import { useDownloadExportJob } from "../../api/useDownloadExportJob";
 import { useRetryExportJob } from "../../api/useRetryExportJob";
 import { getStatusLabel, getTypeLabel } from "../../helpers";
 import type { ExportJob } from "../../types/ExportJob";
-import ProgressBar from "@/components/ProgressBar";
+import ProgressBar from "@/components/ui/ProgressBar";
 import { getFilterValue } from "./helpers";
 
 interface ExportDetailsProps {

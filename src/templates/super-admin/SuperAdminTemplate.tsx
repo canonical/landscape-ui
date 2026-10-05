@@ -8,7 +8,7 @@ import SuperAdminSidebar from "./SuperAdminSidebar";
 
 interface SuperAdminTemplateProps {
   readonly children: ReactNode;
-  /** Where "Back to normal view" goes. */
+  /** Where "Back to main view" goes. */
   readonly returnTo: string;
 }
 
