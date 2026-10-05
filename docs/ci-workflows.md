@@ -59,8 +59,6 @@ Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual
 
 Runs `pnpm coverage:full` to produce the MSW contract-coverage report, deterministically diffs frontend-exercised routes against the Playwright API-contract specs (`pnpm eval:collect`), then asks an LLM to draft spec suggestions for the top-5 gaps (`pnpm eval:suggest`, needs `secrets.LLM_API_KEY`; OpenRouter by default). Uploads the `api-contract-eval-report` artifact even if the LLM step fails — only the coverage/gap-collection steps are fail-fast.
 
-**Known drift:** this workflow still sets `VITE_ROOT_PATH: /new_dashboard/`, predating the `/portal/` rename. Treat any root-relative path in its generated suggestions with that in mind until it's updated.
-
 ## CI Tooling Contracts
 
 - **Node:** `24` · **pnpm:** `10` · **Install:** `pnpm install --frozen-lockfile` only
