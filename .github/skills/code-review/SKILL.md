@@ -9,7 +9,6 @@ Architectural and CI rules already live in `.github/copilot-instructions.md`; re
 
 ## What to check
 
-- **Hook tests.** Custom hooks (`useXxx`) must not get dedicated `*.test.tsx` files — hooks can't be called outside components. Flag a standalone hook test; expect coverage via the consuming form/page component test instead.
 - **Error handling.** Async handlers (`onSubmit`, mutation callbacks) must route failures through `useDebug()`. Flag any `catch` that doesn't call `debug(error)` or that only does a raw `console.error`.
 - **API hooks.** New endpoints belong in a feature's `api/` folder as a typed React Query hook that unwraps the raw response (e.g. `{ items, count, isLoading }`), not inline `axios`/`fetch` in components.
 - **Root path drift.** `VITE_ROOT_PATH` is `/portal/` in production builds and `/` in dev/E2E. Flag hardcoded paths that assume one over the other instead of using the env/config value.
