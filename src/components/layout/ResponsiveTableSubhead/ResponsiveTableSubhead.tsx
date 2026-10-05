@@ -34,7 +34,7 @@ const ResponsiveTableSubhead: FC<ResponsiveTableSubheadProps> = ({
 
   return (
     <div className={classes.subhead}>
-      <span>
+      <span aria-live="polite">
         {isAllSelected
           ? `All ${pluralName} selected`
           : `${selectedCount} of ${pluralName} selected`}
