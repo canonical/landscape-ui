@@ -133,9 +133,9 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
         variant="condensed"
         placeholder="Version"
         onItemsUpdate={onItemsUpdate}
-        selectedItems={selectedPackage[1].map(
-          (id) => items.find((item) => item.value === id) as MultiSelectItem,
-        )}
+        selectedItems={selectedPackage[1]
+          .map((id) => items.find((item) => item.value === id))
+          .filter((item) => item !== undefined)}
       />
     </li>
   );
