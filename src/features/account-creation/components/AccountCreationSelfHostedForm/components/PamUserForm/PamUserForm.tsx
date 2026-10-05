@@ -23,8 +23,10 @@ const validationSchema = Yup.object().shape({
     .required("This field is required")
     .email("Invalid email address"),
   identity: Yup.string()
-    .trim()
     .required("This field is required")
+    .test("non-whitespace", "This field is required", (value) =>
+      Boolean(value?.trim()),
+    )
     .matches(
       /^[^()*\\\0]*$/,
       "Identity cannot contain these characters: (, ), *, \\, or \\0 (NUL).",
@@ -46,7 +48,10 @@ const PamUserForm: FC<PamUserFormProps> = ({
     },
     validationSchema,
     onSubmit: async (values) => {
-      await onSubmit(values);
+      await onSubmit({
+        ...values,
+        name: values.name.trim(),
+      });
     },
   });
 

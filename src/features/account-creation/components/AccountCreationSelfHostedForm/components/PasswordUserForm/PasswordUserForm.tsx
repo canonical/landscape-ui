@@ -42,7 +42,7 @@ const PasswordUserForm: FC<PasswordUserFormProps> = ({
     },
     validationSchema,
     onSubmit: async (values) => {
-      await onSubmit(values);
+      await onSubmit({ ...values, name: values.name.trim() });
     },
   });
 

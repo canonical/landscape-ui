@@ -15,9 +15,11 @@ import { renderWithProviders } from "@/tests/render";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { HOMEPAGE_PATH } from "@/constants";
 import { GuestGuard } from "@/components/guards/GuestGuard";
+import { AuthGuard } from "@/components/guards/AuthGuard";
 import { FeatureGuard } from "@/components/guards/FeatureGuard";
 import { PATHS } from "@/libs/routes";
 import { AuthRoutes } from "./AuthRoutes";
+import { invitationState } from "@/tests/server/handlers/invitations";
 
 interface RouteLikeProps {
   children?: ReactNode;
@@ -107,6 +109,7 @@ describe("AuthRoutes", () => {
 describe("invitation routing", () => {
   beforeEach(() => {
     setEndpointStatus("default");
+    invitationState.accepted = false;
   });
 
   const renderInvitation = (authorized = true, hasAccounts = true) => {
@@ -191,6 +194,36 @@ describe("invitation routing", () => {
     expect(
       await screen.findByText("Organization dashboard"),
     ).toBeInTheDocument();
+  });
+
+  it("loads the registered user before entering the guarded homepage", async () => {
+    renderWithProviders(
+      <Suspense fallback={<div>Loading route</div>}>
+        <Routes>
+          {AuthRoutes}
+          <Route
+            path={HOMEPAGE_PATH}
+            element={<AuthGuard>Organization dashboard</AuthGuard>}
+          />
+        </Routes>
+      </Suspense>,
+      {},
+      "/accept-invitation/1",
+    );
+
+    const user = userEvent.setup();
+    await user.type(await screen.findByLabelText("Full name"), "Invited User");
+    await user.type(
+      screen.getByLabelText("Email address"),
+      "invited@example.com",
+    );
+    await user.type(screen.getByLabelText("Password"), "Password1234");
+    await user.click(screen.getByRole("button", { name: "Create user" }));
+
+    expect(
+      await screen.findByText("Organization dashboard"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Redirecting...")).not.toBeInTheDocument();
   });
 
   it("stays on the invitation after failed acceptance", async () => {

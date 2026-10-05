@@ -30,7 +30,7 @@ describe("PasswordUserForm", () => {
     expect(submitButton).toHaveAttribute("aria-disabled", "true");
     await user.clear(screen.getByLabelText("Full name"));
 
-    await user.type(screen.getByLabelText("Full name"), "John Doe");
+    await user.type(screen.getByLabelText("Full name"), "  John Doe  ");
     await user.type(screen.getByLabelText("Email address"), "john@example.com");
     await user.type(screen.getByLabelText("Password"), "Password1234");
 

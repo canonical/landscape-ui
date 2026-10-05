@@ -48,7 +48,7 @@ describe("InvitationRegistrationForm", () => {
     const user = userEvent.setup();
     const { acceptInvitation } = renderRegistrationForm();
 
-    await user.type(screen.getByLabelText("Full name"), "Mickey Mouse");
+    await user.type(screen.getByLabelText("Full name"), "  Mickey Mouse  ");
     await user.type(
       screen.getByLabelText("Email address"),
       "mouse@example.com",
@@ -74,19 +74,19 @@ describe("InvitationRegistrationForm", () => {
     expect(screen.getByLabelText("PAM identity")).toBeInTheDocument();
     expect(screen.getByLabelText("PAM password")).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText("Full name"), "Mickey Mouse");
+    await user.type(screen.getByLabelText("Full name"), "  Mickey Mouse  ");
     await user.type(
       screen.getByLabelText("Email address"),
       "mouse@example.com",
     );
-    await user.type(screen.getByLabelText("PAM identity"), "mickey");
+    await user.type(screen.getByLabelText("PAM identity"), "  mickey mouse  ");
     await user.type(screen.getByLabelText("PAM password"), "PAMPassword!");
     await user.click(screen.getByRole("button", { name: "Create user" }));
 
     expect(acceptInvitation).toHaveBeenCalledWith({
       name: "Mickey Mouse",
       email: "mouse@example.com",
-      identity: "mickey",
+      identity: "  mickey mouse  ",
       password: "PAMPassword!",
       invitation_id: invitationId,
     });

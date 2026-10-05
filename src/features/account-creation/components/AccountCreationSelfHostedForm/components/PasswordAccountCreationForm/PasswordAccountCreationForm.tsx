@@ -34,7 +34,7 @@ const PasswordAccountCreationForm: FC<PasswordAccountCreationFormProps> = ({
   const handleSubmit = async (values: PasswordUserFormValues) => {
     try {
       await createStandaloneAccount({
-        name: values.name.trim(),
+        name: values.name,
         email: values.email,
         password: values.password,
       });

@@ -1,5 +1,9 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { noneLoginMethods, pamLoginMethods } from "@/tests/mocks/loginMethods";
+import {
+  noneLoginMethods,
+  oidcOnlyLoginMethods,
+  pamLoginMethods,
+} from "@/tests/mocks/loginMethods";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
@@ -64,6 +68,58 @@ describe("AccountCreationSelfHostedForm", () => {
       });
     });
   });
+
+  it("redirects to login when only generic OIDC is enabled", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "login/methods",
+      response: {
+        ...oidcOnlyLoginMethods,
+        password: noneLoginMethods.password,
+      },
+    });
+
+    renderWithProviders(<AccountCreationSelfHostedForm />);
+
+    await vi.waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith("/login", {
+        replace: true,
+        state: { allowFederatedLogin: true },
+      });
+    });
+    expect(
+      screen.queryByText(/no login methods are configured/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it.each([
+    { available: false, enabled: true },
+    { available: true, enabled: false },
+  ])(
+    "does not redirect for generic OIDC with available=$available and enabled=$enabled",
+    async ({ available, enabled }) => {
+      setEndpointStatus({
+        status: "variant",
+        path: "login/methods",
+        response: {
+          ...noneLoginMethods,
+          oidc: {
+            available,
+            configurations: oidcOnlyLoginMethods.oidc.configurations.map(
+              (provider) => ({ ...provider, enabled }),
+            ),
+          },
+        },
+      });
+
+      renderWithProviders(<AccountCreationSelfHostedForm />);
+
+      expect(
+        await screen.findByText(/no login methods are configured/i),
+      ).toBeInTheDocument();
+      expect(navigateMock).not.toHaveBeenCalled();
+    },
+  );
 
   it("shows an error when no login methods are configured", async () => {
     setEndpointStatus({

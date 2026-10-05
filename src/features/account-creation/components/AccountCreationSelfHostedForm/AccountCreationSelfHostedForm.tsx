@@ -39,7 +39,12 @@ const AccountCreationSelfHostedForm: FC = () => {
   const isUbuntuOneEnabled = Boolean(
     loginMethods?.ubuntu_one.available && loginMethods.ubuntu_one.enabled,
   );
-  const hasFederatedLoginMethod = isOidcEnabled || isUbuntuOneEnabled;
+  const isGenericOidcEnabled = Boolean(
+    loginMethods?.oidc.available &&
+    loginMethods.oidc.configurations.some(({ enabled }) => enabled),
+  );
+  const hasFederatedLoginMethod =
+    isOidcEnabled || isGenericOidcEnabled || isUbuntuOneEnabled;
   const shouldRedirectToLogin =
     !isPamEnabled && !isPasswordEnabled && hasFederatedLoginMethod;
 

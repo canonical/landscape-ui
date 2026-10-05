@@ -54,4 +54,22 @@ describe("PamUserForm", () => {
     ).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
+
+  it("trims the name but preserves spaces in the PAM identity", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<PamUserForm onSubmit={onSubmit} />);
+
+    await user.type(screen.getByLabelText("Full name"), "  John Doe  ");
+    await user.type(screen.getByLabelText("Email address"), "john@example.com");
+    await user.type(screen.getByLabelText("PAM identity"), "  john smith  ");
+    await user.type(screen.getByLabelText("PAM password"), "PAMPassword1");
+    await user.click(screen.getByRole("button", { name: "Create account" }));
+
+    expect(onSubmit).toHaveBeenCalledWith({
+      name: "John Doe",
+      email: "john@example.com",
+      identity: "  john smith  ",
+      password: "PAMPassword1",
+    });
+  });
 });
