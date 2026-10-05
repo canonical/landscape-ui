@@ -8,6 +8,7 @@ import SnapChannelRevisionFields, {
 } from "../../../SnapChannelRevisionFields";
 import SnapItemTitleRow from "../SnapItemTitleRow";
 import SnapItemSubtitle from "../SnapItemSubtitle";
+import classes from "./SnapChangeChannelItem.module.scss";
 
 interface SnapChangeChannelItemProps {
   readonly instanceIds: number[];
@@ -96,7 +97,7 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
         scope="Installed"
         computerCount={selectedSnap.computerCount}
       />
-      <div>Change to</div>
+      <div className={classes.changeToLabel}>Change to</div>
       <SnapChannelRevisionFields
         mode={mode}
         value={value}
