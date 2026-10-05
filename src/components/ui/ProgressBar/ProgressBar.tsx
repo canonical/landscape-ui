@@ -1,24 +1,49 @@
 import type { FC } from "react";
+import { MAX_PROGRESS } from "./constants";
+import { getEtaLabel } from "./helpers";
 import classes from "./ProgressBar.module.scss";
 
-interface ProgressBarProps {
+export interface ProgressBarProps {
   readonly progress: number;
-  readonly labelledBy?: string;
+  readonly secondsRemaining?: number | null;
+  readonly fullWidth?: boolean;
+  readonly loading?: boolean;
+  readonly label?: string;
 }
 
-const ProgressBar: FC<ProgressBarProps> = ({ progress, labelledBy }) => {
+const ProgressBar: FC<ProgressBarProps> = ({
+  progress,
+  secondsRemaining,
+  fullWidth = false,
+  loading = false,
+  label,
+}) => {
+  const clampedProgress = Math.min(
+    MAX_PROGRESS,
+    Math.max(0, Math.round(progress)),
+  );
+
   return (
-    <>
-      <div
-        className={classes.progressBar}
-        role="progressbar"
-        aria-valuenow={progress}
-        aria-labelledby={labelledBy}
-      >
-        <div style={{ width: `${progress}%` }} />
+    <div className={`${classes.wrapper} ${fullWidth ? classes.fullWidth : ""}`}>
+      {loading && <i className="p-icon--spinner" aria-hidden="true" />}
+      <div className={classes.content}>
+        <div
+          className={classes.bar}
+          role="progressbar"
+          aria-valuenow={clampedProgress}
+          aria-label={label || "Progress"}
+        >
+          <div
+            className={classes.fill}
+            style={{ width: `${clampedProgress}%` }}
+          />
+        </div>
+        <span>{clampedProgress}%</span>
+        {secondsRemaining !== undefined && (
+          <span className={classes.eta}>{getEtaLabel(secondsRemaining)}</span>
+        )}
       </div>
-      <span aria-hidden="true">{progress}%</span>
-    </>
+    </div>
   );
 };
 
