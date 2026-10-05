@@ -9,10 +9,11 @@ import { API_URL_DEB_ARCHIVE } from "@/constants";
 import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { inProgressOperation } from "@/tests/mocks/operations";
 
 const typedMirrors = mirrors as Mirror[];
 
-describe("MirrorDetails", () => {
+describe("MirrorDetailsTab", () => {
   beforeEach(() => {
     setEndpointStatus("default");
   });
@@ -69,6 +70,24 @@ describe("MirrorDetails", () => {
     await expectLoadingState();
 
     expect(await screen.findByText("Not yet updated")).toBeInTheDocument();
+  });
+
+  it("renders status for mirror that is updating", async () => {
+    const updatingMirror = typedMirrors.find(
+      ({ lastOperation }) => lastOperation === "operations/pppp-gggg-ssss",
+    );
+    assert(updatingMirror, "Missing mock mirror with ongoing lastOperation");
+
+    renderWithProviders(
+      <MirrorDetailsTab
+        mirror={updatingMirror}
+        operation={inProgressOperation}
+      />,
+    );
+
+    await expectLoadingState();
+
+    expect(await screen.findByText("Updating")).toBeInTheDocument();
   });
 
   it("renders GPG key fingerprint", async () => {

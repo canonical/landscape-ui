@@ -28,10 +28,7 @@ describe("MirrorDetailsActionBlock", () => {
 
   it("renders edit, update, publish, and remove actions", () => {
     renderWithProviders(
-      <MirrorDetailsActionBlock
-        mirror={nonPreserveMirror}
-        operation={undefined}
-      />,
+      <MirrorDetailsActionBlock mirror={nonPreserveMirror} />,
       undefined,
       `?name=${nonPreserveMirror.name}`,
     );
@@ -48,10 +45,7 @@ describe("MirrorDetailsActionBlock", () => {
 
       renderWithProviders(
         <>
-          <MirrorDetailsActionBlock
-            mirror={nonPreserveMirror}
-            operation={undefined}
-          />
+          <MirrorDetailsActionBlock mirror={nonPreserveMirror} />
           <LocationDisplay />
         </>,
         undefined,
@@ -69,10 +63,7 @@ describe("MirrorDetailsActionBlock", () => {
   describe("Update action", () => {
     it("is hidden for preserve-signatures mirrors", () => {
       renderWithProviders(
-        <MirrorDetailsActionBlock
-          mirror={preserveMirror}
-          operation={undefined}
-        />,
+        <MirrorDetailsActionBlock mirror={preserveMirror} />,
         undefined,
         `?name=${preserveMirror.name}`,
       );
@@ -116,10 +107,7 @@ describe("MirrorDetailsActionBlock", () => {
       const user = userEvent.setup();
 
       renderWithProviders(
-        <MirrorDetailsActionBlock
-          mirror={nonPreserveMirror}
-          operation={undefined}
-        />,
+        <MirrorDetailsActionBlock mirror={nonPreserveMirror} />,
         undefined,
         `?name=${nonPreserveMirror.name}`,
       );
@@ -137,10 +125,7 @@ describe("MirrorDetailsActionBlock", () => {
       const user = userEvent.setup();
 
       renderWithProviders(
-        <MirrorDetailsActionBlock
-          mirror={nonPreserveMirror}
-          operation={undefined}
-        />,
+        <MirrorDetailsActionBlock mirror={nonPreserveMirror} />,
         undefined,
         `?name=${nonPreserveMirror.name}&updateModal=true`,
       );
@@ -164,10 +149,7 @@ describe("MirrorDetailsActionBlock", () => {
     it("does not open the update modal from the query param for preserve-signatures mirrors", async () => {
       renderWithProviders(
         <>
-          <MirrorDetailsActionBlock
-            mirror={preserveMirror}
-            operation={undefined}
-          />
+          <MirrorDetailsActionBlock mirror={preserveMirror} />
           <LocationDisplay />
         </>,
         undefined,
@@ -193,10 +175,7 @@ describe("MirrorDetailsActionBlock", () => {
       setEndpointStatus({ status: "empty", path: "publicationTargets" });
 
       renderWithProviders(
-        <MirrorDetailsActionBlock
-          mirror={nonPreserveMirror}
-          operation={undefined}
-        />,
+        <MirrorDetailsActionBlock mirror={nonPreserveMirror} />,
         undefined,
         `?name=${nonPreserveMirror.name}`,
       );
@@ -215,10 +194,7 @@ describe("MirrorDetailsActionBlock", () => {
 
       renderWithProviders(
         <>
-          <MirrorDetailsActionBlock
-            mirror={nonPreserveMirror}
-            operation={undefined}
-          />
+          <MirrorDetailsActionBlock mirror={nonPreserveMirror} />
           <LocationDisplay />
         </>,
         undefined,
@@ -249,10 +225,7 @@ describe("MirrorDetailsActionBlock", () => {
       const user = userEvent.setup();
 
       renderWithProviders(
-        <MirrorDetailsActionBlock
-          mirror={nonPreserveMirror}
-          operation={undefined}
-        />,
+        <MirrorDetailsActionBlock mirror={nonPreserveMirror} />,
         undefined,
         `?name=${nonPreserveMirror.name}`,
       );

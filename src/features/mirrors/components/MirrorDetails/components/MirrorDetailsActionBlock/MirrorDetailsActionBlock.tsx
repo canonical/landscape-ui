@@ -13,7 +13,7 @@ import RemoveMirrorModal from "../../../RemoveMirrorModal";
 
 interface MirrorDetailsActionBlockProps {
   readonly mirror: Mirror;
-  readonly operation: Operation | undefined;
+  readonly operation?: Operation;
 }
 
 const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
