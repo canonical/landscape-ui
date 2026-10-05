@@ -312,11 +312,14 @@ describe("SupportSessionPage (integration)", () => {
       ROUTES.superAdmin.sessionProfile(ACME, "package"),
     );
     expect(
-      sidebar.getByText("Org. settings").closest("[aria-disabled]"),
-    ).toHaveAttribute("aria-disabled", "true");
+      sidebar.getByRole("button", { name: "Org. settings" }),
+    ).toBeInTheDocument();
     expect(
-      sidebar.queryByRole("link", { name: "Org. settings" }),
-    ).not.toBeInTheDocument();
+      sidebar.getByRole("link", { name: "Administrators" }),
+    ).toHaveAttribute(
+      "href",
+      ROUTES.superAdmin.sessionSetting(ACME, "administrators"),
+    );
 
     // Nothing about the staff member.
     expect(
