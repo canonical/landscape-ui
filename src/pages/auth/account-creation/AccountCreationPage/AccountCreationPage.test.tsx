@@ -132,4 +132,29 @@ describe("AccountCreationPage", () => {
       expect(navigateMock).toHaveBeenCalledWith("/login", { replace: true });
     });
   });
+
+  it("redirects authenticated self-hosted users with accounts to the homepage when the standalone account exists", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "standalone-account",
+      response: { exists: true },
+    });
+    vi.mocked(useAuth).mockReturnValue({
+      ...mockAuth,
+      authorized: true,
+      hasAccounts: true,
+    });
+    vi.mocked(useEnv).mockReturnValue({ ...mockEnv, isSelfHosted: true });
+
+    renderWithProviders(<AccountCreationPage />);
+
+    await vi.waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith(HOMEPAGE_PATH, {
+        replace: true,
+      });
+    });
+    expect(navigateMock).not.toHaveBeenCalledWith("/login", {
+      replace: true,
+    });
+  });
 });

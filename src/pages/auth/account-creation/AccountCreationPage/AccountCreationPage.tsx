@@ -23,7 +23,7 @@ const AccountCreationPage: FC = () => {
   const navigate = useNavigate();
   const shouldRedirectToLogin =
     (!isSelfHosted && !authorized) ||
-    (isSelfHosted && standaloneAccountExists);
+    (isSelfHosted && standaloneAccountExists && !hasAccounts);
 
   useEffect(() => {
     if (authLoading || envLoading || standaloneAccountLoading) {
