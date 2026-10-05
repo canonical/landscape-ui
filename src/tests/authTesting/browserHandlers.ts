@@ -4,6 +4,7 @@ import {
   API_URL_OLD,
   MSW_ENDPOINTS_TO_INTERCEPT,
 } from "@/constants";
+import type { AuthUser } from "@/features/auth";
 import type { RequestHandler } from "msw";
 import { http, HttpResponse, passthrough } from "msw";
 import fallbackHandlers from "../server/handlers";
@@ -15,8 +16,26 @@ const isApiRequest = (url: string) =>
     url.includes(apiUrl),
   );
 
+export const createRememberedSessionHandler = (
+  readSession: () => AuthUser | null,
+  readGlobalRoles: () => string[],
+): RequestHandler =>
+  http.get(`${API_URL}me`, ({ request }) => {
+    const session = readSession();
+
+    if (request.headers.get("Authorization") || !session) {
+      return;
+    }
+
+    return HttpResponse.json({
+      ...session,
+      global_roles: readGlobalRoles(),
+    });
+  });
+
 export const createBrowserHandlers = (
   config: AuthTestingConfig | null,
+  initialSession: AuthUser | null = null,
 ): RequestHandler[] => [
   http.all("*", ({ request }) => {
     if (!isApiRequest(request.url) || request.url.match(/\.(ts|tsx|scss)/)) {
@@ -36,10 +55,15 @@ export const createBrowserHandlers = (
   }),
   ...(config === null
     ? []
-    : createAuthTestingHandlers(config, undefined, {
-        storage: window.sessionStorage,
-        pathname: window.location.pathname,
-      })),
+    : createAuthTestingHandlers(
+        config,
+        undefined,
+        {
+          storage: window.sessionStorage,
+          pathname: window.location.pathname,
+        },
+        initialSession,
+      )),
   ...fallbackHandlers,
   http.all("*", ({ request }) => {
     if (config !== null && isApiRequest(request.url)) {

@@ -179,6 +179,8 @@ describe("SecondaryNavigation", () => {
             authLoading: false,
             authorized: true,
             hasAccounts: true,
+            isSuperAdmin: false,
+            canManageAccounts: false,
             isFeatureEnabled: () => true,
             logout: vi.fn(),
             redirectToExternalUrl: vi.fn(),

@@ -122,6 +122,9 @@ export const GeneralOrganisationSettings = Loadable(
 export const IdentityProvidersPage = Loadable(
   lazy(() => import("@/pages/dashboard/settings/identity-providers")),
 );
+export const LicensesPage = Loadable(
+  lazy(() => import("@/pages/dashboard/settings/licenses")),
+);
 export const GeneralSettings = Loadable(
   lazy(() => import("@/pages/dashboard/account/general")),
 );
@@ -136,4 +139,17 @@ export const SelfHostedLicensePage = Loadable(
 );
 export const ExportsPage = Loadable(
   lazy(() => import("@/pages/dashboard/account/exports")),
+);
+
+export const SuperAdminPage = Loadable(
+  lazy(() => import("@/pages/super-admin/SuperAdminPage")),
+);
+export const SuperAdminAccountsPage = Loadable(
+  lazy(() => import("@/pages/super-admin/accounts/AccountsPage")),
+);
+export const SuperAdminAccountDetailPage = Loadable(
+  lazy(() => import("@/pages/super-admin/accounts/AccountDetailPage")),
+);
+export const SuperAdminPeoplePage = Loadable(
+  lazy(() => import("@/pages/super-admin/people/PeoplePage")),
 );

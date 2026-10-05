@@ -3,7 +3,7 @@ import { HttpStatusCode } from 'axios';
 import { API_URL, ROOT_PATH, IS_SELF_HOSTED_ENV } from '@/constants';
 import { authUser } from '@/tests/mocks/auth';
 import { identityProviders } from '@/tests/mocks/identityProviders';
-import type { LoginMethods } from '@/features/auth';
+import type { AuthUser, LoginMethods } from '@/features/auth';
 import type { AuthTestingConfig } from './config';
 
 export const MOCK_INVITATION_ID = 'mock-invite';
@@ -49,10 +49,13 @@ export const createAuthTestingHandlers = (
   config: AuthTestingConfig,
   isSelfHosted = selfHosted,
   handoff?: ProviderHandoff,
+  initialSession: AuthUser | null = null,
 ) => {
   let { accountExists } = config;
   let invitationActive = config.invitationEnabled;
-  let session: Record<string, unknown> | null = null;
+  let session: Record<string, unknown> | null = initialSession
+    ? { ...initialSession }
+    : null;
   let createdSaasAccount: (typeof authUser.accounts)[number] | null = null;
 
   const signIn = () => {

@@ -1,6 +1,6 @@
 import { API_URL } from '@/constants';
 import { HttpStatusCode } from 'axios';
-import { authResponse } from '@/tests/mocks/auth';
+import { authResponse, authUser } from '@/tests/mocks/auth';
 import server from '@/tests/server';
 import { afterEach, describe, expect, it } from 'vitest';
 import {
@@ -9,7 +9,10 @@ import {
   MOCK_AUTH_HANDOFF_KEY,
 } from './handlers';
 import { getAuthTestingConfig, type AuthTestingConfig } from './config';
-import { createBrowserHandlers } from './browserHandlers';
+import {
+  createBrowserHandlers,
+  createRememberedSessionHandler,
+} from './browserHandlers';
 import { allLoginMethods } from '@/tests/mocks/loginMethods';
 import { renderWithProviders } from '@/tests/render';
 import { AccountCreationSelfHostedForm } from '@/features/account-creation';
@@ -375,6 +378,37 @@ describe('auth testing handlers', () => {
     expect(await (await fetch(`${API_URL}login/methods`)).json()).toEqual(
       allLoginMethods,
     );
+  });
+
+  it('restores a persisted dev session from the tokenless me endpoint', async () => {
+    server.use(
+      createRememberedSessionHandler(
+        () => authUser,
+        () => ['SupportProvider'],
+      ),
+    );
+
+    expect(await (await fetch(`${API_URL}me`)).json()).toMatchObject({
+      token: authUser.token,
+      accounts: authUser.accounts,
+      global_roles: ['SupportProvider'],
+    });
+  });
+
+  it('seeds auth-testing session state from a persisted browser session', async () => {
+    const config = getAuthTestingConfig({
+      VITE_MSW_ENABLED: 'true',
+      VITE_MSW_AUTHENTICATION_TESTING: 'true',
+      VITE_MSW_INVITATION_SIGNED_IN: 'false',
+    });
+    if (!config) throw new Error('Missing test scenario config');
+
+    server.use(...createBrowserHandlers(config, authUser));
+
+    expect(await (await fetch(`${API_URL}me`)).json()).toMatchObject({
+      token: authUser.token,
+      accounts: authUser.accounts,
+    });
   });
 
   it('does not pass unmatched APIs through in auth testing mode', async () => {

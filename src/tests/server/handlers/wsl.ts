@@ -81,6 +81,7 @@ export default [
         type: "InstallWSLInstance",
         summary: "Install WSL instance",
         computer_id: 1,
+        computer_title: "Computer 1",
         activity_status: "undelivered",
         completion_time: null,
         creation_time: "2024-04-15T15:47:07Z",

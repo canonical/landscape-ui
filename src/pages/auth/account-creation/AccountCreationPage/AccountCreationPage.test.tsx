@@ -29,6 +29,8 @@ const mockAuth: AuthContextProps = {
   safeRedirect: vi.fn(),
   isFeatureEnabled: vi.fn().mockReturnValue(false),
   hasAccounts: false,
+  isSuperAdmin: false,
+  canManageAccounts: false,
 };
 
 const mockEnv: EnvContextState = {

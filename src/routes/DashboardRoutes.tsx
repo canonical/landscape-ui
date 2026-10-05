@@ -167,6 +167,10 @@ export const DashboardRoutes = (
           path={PATHS.settings.accessGroups}
           element={<Pages.AccessGroupsPage />}
         />
+        <Route
+          path={PATHS.settings.licenses}
+          element={<Pages.LicensesPage />}
+        />
 
         <Route
           path={PATHS.settings.employees}

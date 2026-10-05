@@ -36,6 +36,8 @@ const mockAuth: AuthContextProps = {
   safeRedirect: vi.fn(),
   isFeatureEnabled: vi.fn().mockReturnValue(false),
   hasAccounts: false,
+  isSuperAdmin: false,
+  canManageAccounts: false,
 };
 
 const { useAlertsSummary: realUseAlertsSummary } = await vi.importActual<
@@ -76,6 +78,22 @@ describe("UserInfo", () => {
     labels.forEach((label) => {
       expect(screen.getByText(label)).toBeInTheDocument();
     });
+  });
+
+  it("shows the Super admin entry to Canonical staff only", () => {
+    renderWithProviders(<UserInfo />);
+
+    expect(
+      screen.queryByRole("link", { name: "Super admin" }),
+    ).not.toBeInTheDocument();
+
+    vi.mocked(useAuth).mockReturnValue({ ...mockAuth, isSuperAdmin: true });
+    renderWithProviders(<UserInfo />);
+
+    expect(screen.getByRole("link", { name: "Super admin" })).toHaveAttribute(
+      "href",
+      ROUTES.superAdmin.root(),
+    );
   });
 
   it("renders Sign out button that can be clicked", async () => {

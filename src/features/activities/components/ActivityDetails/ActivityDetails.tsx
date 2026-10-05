@@ -14,20 +14,24 @@ import { ROUTES } from "@/libs/routes/routes";
 
 interface ActivityDetailsProps {
   readonly activityId: number;
+  readonly hideInstanceField?: boolean;
 }
 
-const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
+const ActivityDetails: FC<ActivityDetailsProps> = ({
+  activityId,
+  hideInstanceField,
+}) => {
   const { activity, isGettingActivity, activityError } = useGetSingleActivity({
     activityId,
   });
 
   const instanceId = activity?.computer_id;
 
-  const isInstanceIdDefined = instanceId !== undefined;
+  const instanceQueryEnabled = instanceId !== undefined && !hideInstanceField;
 
   const { instance, isGettingInstance } = useGetInstance(
     { instanceId: instanceId as number },
-    { enabled: isInstanceIdDefined },
+    { enabled: instanceQueryEnabled },
   );
 
   if (isGettingActivity) {
@@ -42,7 +46,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
     throw new Error();
   }
 
-  if (isInstanceIdDefined && isGettingInstance) {
+  if (instanceQueryEnabled && isGettingInstance) {
     return <LoadingState />;
   }
 
@@ -53,7 +57,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
       <InfoGrid spaced>
         <InfoGrid.Item label="Description" large value={activity.summary} />
 
-        {instance && (
+        {!hideInstanceField && instance && (
           <InfoGrid.Item
             label="Instance"
             large
@@ -98,6 +102,8 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
             )}
           />
         )}
+
+        <InfoGrid.Item label="Creator" large value={activity.creator?.name} />
       </InfoGrid>
 
       {activity.result_text && (
