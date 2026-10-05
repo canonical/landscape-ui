@@ -77,7 +77,12 @@ const InvitationRegistrationForm: FC<InvitationRegistrationFormProps> = ({
           submitting={isAcceptingInvitation}
         />
       )}
-      <Button type="button" appearance="link" onClick={onSignIn}>
+      <Button
+        type="button"
+        appearance="link"
+        className="u-margin--bottom"
+        onClick={onSignIn}
+      >
         Already have an account? Sign in here
       </Button>
     </AuthTemplate>

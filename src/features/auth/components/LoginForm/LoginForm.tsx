@@ -1,5 +1,5 @@
 import { HOMEPAGE_PATH } from "@/constants";
-import { useLogin } from "@/features/auth";
+import { useInvitation, useLogin } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import {
@@ -14,6 +14,7 @@ import { useSearchParams } from "react-router";
 import * as Yup from "yup";
 import classes from "./LoginForm.module.scss";
 import { getFormikError } from "@/utils/formikErrors";
+import { ROUTES } from "@/libs/routes";
 
 interface FormProps {
   identifier: string;
@@ -29,6 +30,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
 
   const debug = useDebug();
   const { login, isLoggingIn } = useLogin();
+  const { invitationId } = useInvitation();
 
   const { safeRedirect, setUser } = useAuth();
 
@@ -93,8 +95,11 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
           setUser(data);
         }
 
-        safeRedirect(redirectTo ?? HOMEPAGE_PATH, {
-          external: isExternalRedirect,
+        const destination = invitationId
+          ? ROUTES.auth.invitation({ secureId: invitationId })
+          : (redirectTo ?? HOMEPAGE_PATH);
+        safeRedirect(destination, {
+          external: !invitationId && isExternalRedirect,
           replace: true,
         });
       } catch (error) {

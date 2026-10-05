@@ -23,7 +23,7 @@ const AccountCreationAlternative: FC<AccountCreationAlternativeProps> = ({
   }
 
   return (
-    <p className="p-text--small u-text--center u-no-margin--bottom">
+    <p className="p-text--small u-text--center u-margin--bottom">
       <Link
         className="p-link"
         to={ROUTES.auth.login()}

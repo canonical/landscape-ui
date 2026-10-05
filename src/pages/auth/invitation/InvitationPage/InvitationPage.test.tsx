@@ -56,6 +56,17 @@ describe("InvitationPage", () => {
     ).toBeInTheDocument();
   });
 
+  it("waits for authentication before showing invitation actions", async () => {
+    vi.mocked(useAuth).mockReturnValue({ ...mockAuth, authLoading: true });
+    renderWithProviders(<InvitationPage />);
+
+    expect(screen.getByRole("status")).toBeInTheDocument();
+    expect(screen.queryByText(/Create a user to join/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /accept/i }),
+    ).not.toBeInTheDocument();
+  });
+
   it("shows InvitationForm when authorized", async () => {
     vi.mocked(useAuth).mockReturnValue({
       ...mockAuth,
