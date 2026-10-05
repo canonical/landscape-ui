@@ -99,9 +99,7 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
 
     return (
       <>
-        <Icon
-          name={`status-in-progress ${classes.marginRight}`}
-        />
+        <Icon name={`status-in-progress ${classes.marginRight}`} />
         <span className={classes.marginRight}>{ongoing}</span>
         <span className="u-text--muted">{progressPercent}%</span>
         {isTableCell && canCancelOperations && (
