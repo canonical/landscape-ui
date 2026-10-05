@@ -1,13 +1,31 @@
-import { installedSnaps } from "@/tests/mocks/snap";
+import { availableSnapInfo, installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import { ICONS } from "@canonical/react-components";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { assert, beforeEach, describe, expect, it, vi } from "vitest";
 import SnapChangeChannelItem from "./SnapChangeChannelItem";
 
-const [snapWithNoChannels, snapWithChannels] = installedSnaps;
+const snapWithChannels = installedSnaps.find((snap) => {
+  const snapInfo = availableSnapInfo.find(
+    (info) => info.name === snap.snap.name,
+  );
+  return snapInfo && snapInfo["channel-map"].length > 0;
+});
+
+const snapWithNoChannels = installedSnaps.find((snap) => {
+  const snapInfo = availableSnapInfo.find(
+    (info) => info.name === snap.snap.name,
+  );
+  return snapInfo && snapInfo["channel-map"].length === 0;
+});
+
+assert(
+  snapWithChannels,
+  "No installed snap has available channels to switch to.",
+);
+assert(snapWithNoChannels, "No installed snap has zero available channels.");
 
 const props: ComponentProps<typeof SnapChangeChannelItem> = {
   instanceIds: [1],
@@ -186,7 +204,7 @@ describe("SnapChangeChannelItem", () => {
     ).toBeInTheDocument();
   });
 
-  it("disables the channel dropdown when the snap has no available channels", async () => {
+  it("displays Default channel as enabled when the snap has no available channels", async () => {
     renderWithProviders(
       <SnapChangeChannelItem {...props} selectedSnap={snapWithNoChannels} />,
     );
@@ -194,7 +212,9 @@ describe("SnapChangeChannelItem", () => {
     const channelSelect = await screen.findByLabelText(
       `Channel for ${snapWithNoChannels.snap.name}`,
     );
-    expect(channelSelect).toBeDisabled();
+    await waitFor(() => {
+      expect(channelSelect).not.toBeDisabled();
+    });
     expect(
       within(channelSelect).getByText("Default channel"),
     ).toBeInTheDocument();

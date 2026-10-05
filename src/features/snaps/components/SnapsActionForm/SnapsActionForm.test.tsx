@@ -395,6 +395,51 @@ describe("SnapsActionForm", () => {
     });
   });
 
+  it("omits channel from the payload when a snap has no channel options", async () => {
+    let requestBody: SnapActionParams | null = null;
+    server.use(
+      http.post(`${API_URL}snaps`, async ({ request }) => {
+        requestBody = (await request.json()) as SnapActionParams;
+        return HttpResponse.json(successfulSnapInstallResponse);
+      }),
+    );
+
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: firstSnapOptionTitle,
+      }),
+    );
+
+    const channelSelect = await screen.findByRole("combobox", {
+      name: `Channel for ${firstSnap.snap.name}`,
+    });
+    expect(channelSelect).not.toBeDisabled();
+    expect(
+      within(channelSelect).getByText("Default channel"),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Change channel" }));
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Change channel" }),
+    );
+
+    expect(
+      await screen.findByText("Snaps successfully queued to change channel"),
+    ).toBeInTheDocument();
+    expect(
+      (requestBody as unknown as SnapActionParams).snaps[0]?.args?.channel,
+    ).toBeUndefined();
+  });
+
   it("sends the 'refresh' action with the selected channel for 'change channel'", async () => {
     let requestBody: SnapActionParams | null = null;
     server.use(

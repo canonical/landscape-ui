@@ -48,8 +48,13 @@ export default [
   http.get<{ name: string }>(
     `${API_URL}computers/:computerId/snaps/:name/info`,
     async ({ params }) => {
-      const endpointStatus = getEndpointStatus();
-      if (endpointStatus.status === "error") {
+      const endpointStatus = getEndpointStatus(
+        "computers/:computerId/snaps/:name/info",
+      );
+      if (
+        shouldApplyEndpointStatus("computers/:computerId/snaps/:name/info") &&
+        endpointStatus.status === "error"
+      ) {
         return HttpResponse.json(
           {
             error: "InternalServerError",

@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { InstalledSnapWithCount, SnapChangeMode } from "../../../../types";
 import { useGetSnapInfo } from "../../../../api";
 import { isValidRevision, getChannelConfinement } from "../../../../helpers";
@@ -43,19 +43,28 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
     name: selectedSnap.snap.name,
   });
 
-  useEffect(() => {
-    onLoadingChange?.(isSnapInfoLoading);
-    return () => {
-      onLoadingChange?.(false);
-    };
-  }, [isSnapInfoLoading, onLoadingChange]);
+  const onLoadingChangeRef = useRef(onLoadingChange);
+  const onErrorChangeRef = useRef(onErrorChange);
 
   useEffect(() => {
-    onErrorChange?.(isSnapInfoError);
+    onLoadingChangeRef.current = onLoadingChange;
+    onErrorChangeRef.current = onErrorChange;
+  });
+
+  useEffect(() => {
+    onLoadingChangeRef.current?.(isSnapInfoLoading);
+  }, [isSnapInfoLoading]);
+
+  useEffect(() => {
+    onErrorChangeRef.current?.(isSnapInfoError);
+  }, [isSnapInfoError]);
+
+  useEffect(() => {
     return () => {
-      onErrorChange?.(false);
+      onLoadingChangeRef.current?.(false);
+      onErrorChangeRef.current?.(false);
     };
-  }, [isSnapInfoError, onErrorChange]);
+  }, []);
 
   const channelOptions = useMemo(
     () => getChannelOptions(snapInfo?.["channel-map"]),

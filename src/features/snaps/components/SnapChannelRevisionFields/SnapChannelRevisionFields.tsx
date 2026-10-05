@@ -52,7 +52,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
       {mode === "channel" ? (
         <Select
           aria-label={`Channel for ${snapName}`}
-          disabled={isLoading || channelOptions.length === 0}
+          disabled={isLoading}
           value={value}
           error={error}
           options={
