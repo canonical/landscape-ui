@@ -17,10 +17,9 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
   return (
     <li
       className={classNames("u-no-margin--bottom", classes.selectedContainer)}
-      key={selectedPackage.id}
     >
       <div>
-        <div className="font-monospace">
+        <div className={classNames(classes.name, "font-monospace")}>
           {selectedPackage.name} {selectedPackage.version}
         </div>
         <div className="u-text--muted p-text--small u-no-margin">

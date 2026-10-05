@@ -180,7 +180,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
       case "unhold":
         return (
           <>
-            <span className="font-monospace">
+            <span className={classNames("font-monospace", classes.name)}>
               {item.action.package.version}
             </span>{" "}
             will be {mapActionTypeToPast(actionType)} on{" "}
@@ -194,11 +194,11 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
       case "change_version":
         return (
           <>
-            <span className="font-monospace">
+            <span className={classNames("font-monospace", classes.name)}>
               {item.action.from_package.version}
             </span>{" "}
             <Icon name="arrow-right--muted" />{" "}
-            <span className="font-monospace">
+            <span className={classNames("font-monospace", classes.name)}>
               {item.action.to_package.version}
             </span>{" "}
             on{" "}
@@ -223,7 +223,9 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
           return (
             <li key={packageName}>
               <div>
-                <strong className="font-monospace">{packageName}</strong>
+                <strong className={classNames("font-monospace", classes.name)}>
+                  {packageName}
+                </strong>
               </div>
               {items.map((item) => {
                 return (

@@ -101,7 +101,7 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
     <li className={classes.selectedContainer}>
       <div className={classes.topRow}>
         <div>
-          <div className="font-monospace">
+          <div className={classNames("font-monospace", classes.name)}>
             {selectedPackage[0].name} {selectedPackage[0].version}
           </div>
           <div className="u-text--muted p-text--small u-no-margin">
