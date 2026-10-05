@@ -1,6 +1,6 @@
-import type { FC, ReactNode } from 'react';
-import useNotify from '@/hooks/useNotify';
-import AppNotification from '@/components/layout/AppNotification';
+import type { FC, ReactNode } from "react";
+import useNotify from "@/hooks/useNotify";
+import AppNotification from "@/components/layout/AppNotification";
 
 export const GlobalShell: FC<{ readonly children: ReactNode }> = ({
   children,
@@ -9,7 +9,7 @@ export const GlobalShell: FC<{ readonly children: ReactNode }> = ({
 
   const showNotification =
     !(sidePanel.open || inlineErrors) ||
-    notify.notification?.type !== 'negative';
+    notify.notification?.type !== "negative";
 
   return (
     <>

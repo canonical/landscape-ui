@@ -4,20 +4,20 @@ import {
   isValidElement,
   type ReactElement,
   type ReactNode,
-} from 'react';
-import { Outlet, Route, Routes } from 'react-router';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { AuthContext, type AuthContextProps } from '@/context/auth';
-import { authUser } from '@/tests/mocks/auth';
-import { renderWithProviders } from '@/tests/render';
-import { setEndpointStatus } from '@/tests/controllers/controller';
-import { HOMEPAGE_PATH } from '@/constants';
-import { GuestGuard } from '@/components/guards/GuestGuard';
-import { FeatureGuard } from '@/components/guards/FeatureGuard';
-import { PATHS } from '@/libs/routes';
-import { AuthRoutes } from './AuthRoutes';
+} from "react";
+import { Outlet, Route, Routes } from "react-router";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { AuthContext, type AuthContextProps } from "@/context/auth";
+import { authUser } from "@/tests/mocks/auth";
+import { renderWithProviders } from "@/tests/render";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { HOMEPAGE_PATH } from "@/constants";
+import { GuestGuard } from "@/components/guards/GuestGuard";
+import { FeatureGuard } from "@/components/guards/FeatureGuard";
+import { PATHS } from "@/libs/routes";
+import { AuthRoutes } from "./AuthRoutes";
 
 interface RouteLikeProps {
   children?: ReactNode;
@@ -42,11 +42,11 @@ const getGuestRoutes = () => {
   return guardedRoute;
 };
 
-describe('AuthRoutes', () => {
+describe("AuthRoutes", () => {
   beforeEach(() => {
-    setEndpointStatus('default');
+    setEndpointStatus("default");
   });
-  it('wraps auth routes with guest guard and outlet', () => {
+  it("wraps auth routes with guest guard and outlet", () => {
     const wrapper = getGuestRoutes().props.element;
     assert(wrapper);
     const guardWrapper = wrapper as ReactElement<{ children: ReactElement }>;
@@ -56,7 +56,7 @@ describe('AuthRoutes', () => {
     expect(wrappedChild.type).toBe(Outlet);
   });
 
-  it('defines expected auth paths', () => {
+  it("defines expected auth paths", () => {
     const childRoutes = [
       ...getRouteChildren(AuthRoutes),
       ...getRouteChildren(getGuestRoutes()),
@@ -73,7 +73,7 @@ describe('AuthRoutes', () => {
     expect(paths).toContain(PATHS.auth.supportLogin);
   });
 
-  it('uses feature guard for attach and support login routes', () => {
+  it("uses feature guard for attach and support login routes", () => {
     const childRoutes = getRouteChildren(getGuestRoutes());
 
     const attachRoute = childRoutes.find(
@@ -90,7 +90,7 @@ describe('AuthRoutes', () => {
     expect(supportLoginRoute.props.element.type).toBe(FeatureGuard);
   });
 
-  it('keeps invitations outside the guest guard', () => {
+  it("keeps invitations outside the guest guard", () => {
     expect(
       getRouteChildren(AuthRoutes).some(
         (route) => route.props.path === PATHS.auth.invitation,
@@ -104,9 +104,9 @@ describe('AuthRoutes', () => {
   });
 });
 
-describe('invitation routing', () => {
+describe("invitation routing", () => {
   beforeEach(() => {
-    setEndpointStatus('default');
+    setEndpointStatus("default");
   });
 
   const renderInvitation = (authorized = true, hasAccounts = true) => {
@@ -134,88 +134,88 @@ describe('invitation routing', () => {
         </Suspense>
       </AuthContext.Provider>,
       {},
-      '/accept-invitation/1',
+      "/accept-invitation/1",
     );
   };
 
-  it('allows a signed-out invitee to register or sign in', async () => {
+  it("allows a signed-out invitee to register or sign in", async () => {
     renderInvitation(false, false);
     expect(
-      await screen.findByRole('button', {
-        name: 'Already have an account? Sign in here',
+      await screen.findByRole("button", {
+        name: "Already have an account? Sign in here",
       }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText('Organization dashboard'),
+      screen.queryByText("Organization dashboard"),
     ).not.toBeInTheDocument();
   });
 
   it.each([false, true])(
-    'allows a signed-in invitee to accept or reject (existing accounts: %s)',
+    "allows a signed-in invitee to accept or reject (existing accounts: %s)",
     async (hasAccounts) => {
       renderInvitation(true, hasAccounts);
       expect(
-        await screen.findByRole('button', { name: 'Accept' }),
+        await screen.findByRole("button", { name: "Accept" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole('button', { name: 'Reject' }),
+        screen.getByRole("button", { name: "Reject" }),
       ).toBeInTheDocument();
       expect(
-        screen.queryByText('Organization dashboard'),
+        screen.queryByText("Organization dashboard"),
       ).not.toBeInTheDocument();
     },
   );
 
-  it('navigates to the dashboard after successful acceptance', async () => {
+  it("navigates to the dashboard after successful acceptance", async () => {
     renderInvitation();
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Accept' }),
+      await screen.findByRole("button", { name: "Accept" }),
     );
     expect(
-      await screen.findByText('Organization dashboard'),
+      await screen.findByText("Organization dashboard"),
     ).toBeInTheDocument();
   });
 
-  it('navigates to the dashboard after registering through an invitation', async () => {
+  it("navigates to the dashboard after registering through an invitation", async () => {
     renderInvitation(false, false);
     const user = userEvent.setup();
-    await user.type(await screen.findByLabelText('Full name'), 'Invited User');
+    await user.type(await screen.findByLabelText("Full name"), "Invited User");
     await user.type(
-      screen.getByLabelText('Email address'),
-      'invited@example.com',
+      screen.getByLabelText("Email address"),
+      "invited@example.com",
     );
-    await user.type(screen.getByLabelText('Password'), 'Password1234');
-    await user.click(screen.getByRole('button', { name: 'Create user' }));
+    await user.type(screen.getByLabelText("Password"), "Password1234");
+    await user.click(screen.getByRole("button", { name: "Create user" }));
     expect(
-      await screen.findByText('Organization dashboard'),
+      await screen.findByText("Organization dashboard"),
     ).toBeInTheDocument();
   });
 
-  it('stays on the invitation after failed acceptance', async () => {
-    setEndpointStatus({ status: 'error', path: 'accept-invitation' });
+  it("stays on the invitation after failed acceptance", async () => {
+    setEndpointStatus({ status: "error", path: "accept-invitation" });
     renderInvitation();
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Accept' }),
+      await screen.findByRole("button", { name: "Accept" }),
     );
-    expect(await screen.findByText('Accept failed')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Reject' })).toBeInTheDocument();
+    expect(await screen.findByText("Accept failed")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reject" })).toBeInTheDocument();
     expect(
-      screen.queryByText('Organization dashboard'),
+      screen.queryByText("Organization dashboard"),
     ).not.toBeInTheDocument();
   });
 
-  it('shows the rejection confirmation for an existing member', async () => {
+  it("shows the rejection confirmation for an existing member", async () => {
     renderInvitation();
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Reject' }),
+      await screen.findByRole("button", { name: "Reject" }),
     );
     expect(
-      await screen.findByRole('heading', {
-        name: 'You have rejected the invitation',
+      await screen.findByRole("heading", {
+        name: "You have rejected the invitation",
       }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText('Organization dashboard'),
+      screen.queryByText("Organization dashboard"),
     ).not.toBeInTheDocument();
   });
 });

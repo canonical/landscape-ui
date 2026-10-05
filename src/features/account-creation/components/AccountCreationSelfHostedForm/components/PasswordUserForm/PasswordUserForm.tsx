@@ -3,15 +3,15 @@ import {
   Form,
   Input,
   PasswordToggle,
-} from '@canonical/react-components';
-import { useFormik } from 'formik';
-import type { FC } from 'react';
-import * as Yup from 'yup';
+} from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import * as Yup from "yup";
 import PasswordConstraints, {
   passwordValidationSchema,
-} from '@/components/form/PasswordConstraints';
-import { getFormikError } from '@/utils/formikErrors';
-import type { PasswordUserFormValues } from './types';
+} from "@/components/form/PasswordConstraints";
+import { getFormikError } from "@/utils/formikErrors";
+import type { PasswordUserFormValues } from "./types";
 
 interface PasswordUserFormProps {
   readonly onSubmit: (values: PasswordUserFormValues) => Promise<void> | void;
@@ -22,23 +22,23 @@ interface PasswordUserFormProps {
 
 const validationSchema = Yup.object().shape({
   ...passwordValidationSchema,
-  name: Yup.string().trim().required('This field is required'),
+  name: Yup.string().trim().required("This field is required"),
   email: Yup.string()
-    .required('This field is required')
-    .email('Invalid email address'),
+    .required("This field is required")
+    .email("Invalid email address"),
 });
 
 const PasswordUserForm: FC<PasswordUserFormProps> = ({
   onSubmit,
-  submitButtonText = 'Create account',
+  submitButtonText = "Create account",
   submitButtonClassName,
   submitting = false,
 }) => {
   const formik = useFormik<PasswordUserFormValues>({
     initialValues: {
-      name: '',
-      email: '',
-      password: '',
+      name: "",
+      email: "",
+      password: "",
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -49,28 +49,28 @@ const PasswordUserForm: FC<PasswordUserFormProps> = ({
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
-        type='text'
-        label='Full name'
+        type="text"
+        label="Full name"
         required
-        autoComplete='name'
-        {...formik.getFieldProps('name')}
-        error={getFormikError(formik, 'name')}
+        autoComplete="name"
+        {...formik.getFieldProps("name")}
+        error={getFormikError(formik, "name")}
       />
       <Input
-        type='email'
-        label='Email address'
+        type="email"
+        label="Email address"
         required
-        autoComplete='email'
-        {...formik.getFieldProps('email')}
-        error={getFormikError(formik, 'email')}
+        autoComplete="email"
+        {...formik.getFieldProps("email")}
+        error={getFormikError(formik, "email")}
       />
       <PasswordToggle
-        id='password'
-        label='Password'
+        id="password"
+        label="Password"
         required
-        autoComplete='new-password'
-        {...formik.getFieldProps('password')}
-        error={getFormikError(formik, 'password')}
+        autoComplete="new-password"
+        {...formik.getFieldProps("password")}
+        error={getFormikError(formik, "password")}
       />
       <PasswordConstraints
         password={formik.values.password}
@@ -79,8 +79,8 @@ const PasswordUserForm: FC<PasswordUserFormProps> = ({
       />
       <ActionButton
         className={submitButtonClassName}
-        appearance='positive'
-        type='submit'
+        appearance="positive"
+        type="submit"
         loading={submitting || formik.isSubmitting}
         disabled={
           submitting || formik.isSubmitting || !formik.isValid || !formik.dirty

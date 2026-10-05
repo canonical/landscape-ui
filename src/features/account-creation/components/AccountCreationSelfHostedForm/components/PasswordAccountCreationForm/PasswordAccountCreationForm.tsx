@@ -1,14 +1,14 @@
-import classNames from 'classnames';
-import type { FC } from 'react';
-import AuthTemplate from '@/templates/auth/AuthTemplate';
-import useDebug from '@/hooks/useDebug';
-import AccountCreationAlternative from '../../../AccountCreationAlternative/AccountCreationAlternative';
-import type { CreateStandaloneAccountParams } from '../../../../api';
-import type { LoginRequestParams } from '@/features/auth';
+import classNames from "classnames";
+import type { FC } from "react";
+import AuthTemplate from "@/templates/auth/AuthTemplate";
+import useDebug from "@/hooks/useDebug";
+import AccountCreationAlternative from "../../../AccountCreationAlternative/AccountCreationAlternative";
+import type { CreateStandaloneAccountParams } from "../../../../api";
+import type { LoginRequestParams } from "@/features/auth";
 import PasswordUserForm, {
   type PasswordUserFormValues,
-} from '../PasswordUserForm';
-import classes from './PasswordAccountCreationForm.module.scss';
+} from "../PasswordUserForm";
+import classes from "./PasswordAccountCreationForm.module.scss";
 
 interface PasswordAccountCreationFormProps {
   readonly createStandaloneAccount: (
@@ -49,11 +49,11 @@ const PasswordAccountCreationForm: FC<PasswordAccountCreationFormProps> = ({
   };
 
   return (
-    <AuthTemplate title='Create a new Landscape account'>
+    <AuthTemplate title="Create a new Landscape account">
       <PasswordUserForm
         onSubmit={handleSubmit}
-        submitButtonText='Create account'
-        submitButtonClassName={classNames(classes.button, 'u-margin--bottom')}
+        submitButtonText="Create account"
+        submitButtonClassName={classNames(classes.button, "u-margin--bottom")}
         submitting={submitting}
       />
       <AccountCreationAlternative

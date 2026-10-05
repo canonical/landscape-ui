@@ -103,10 +103,7 @@ const PamUserForm: FC<PamUserFormProps> = ({
         type="submit"
         loading={submitting || formik.isSubmitting}
         disabled={
-          submitting ||
-          formik.isSubmitting ||
-          !formik.isValid ||
-          !formik.dirty
+          submitting || formik.isSubmitting || !formik.isValid || !formik.dirty
         }
       >
         {submitButtonText}

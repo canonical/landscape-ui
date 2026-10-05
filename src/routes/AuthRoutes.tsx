@@ -1,8 +1,8 @@
-import { Route, Outlet } from 'react-router';
-import { PATHS } from '@/libs/routes';
-import { GuestGuard } from '@/components/guards/GuestGuard';
-import { FeatureGuard } from '@/components/guards/FeatureGuard';
-import * as Pages from '@/routes/elements';
+import { Route, Outlet } from "react-router";
+import { PATHS } from "@/libs/routes";
+import { GuestGuard } from "@/components/guards/GuestGuard";
+import { FeatureGuard } from "@/components/guards/FeatureGuard";
+import * as Pages from "@/routes/elements";
 
 export const AuthRoutes = (
   <Route>
@@ -29,7 +29,7 @@ export const AuthRoutes = (
       <Route
         path={PATHS.auth.attach}
         element={
-          <FeatureGuard feature='employee-management'>
+          <FeatureGuard feature="employee-management">
             <Pages.AttachPage />
           </FeatureGuard>
         }
@@ -38,7 +38,7 @@ export const AuthRoutes = (
       <Route
         path={PATHS.auth.supportLogin}
         element={
-          <FeatureGuard feature='support-provider-login'>
+          <FeatureGuard feature="support-provider-login">
             <Pages.SupportLoginPage />
           </FeatureGuard>
         }
