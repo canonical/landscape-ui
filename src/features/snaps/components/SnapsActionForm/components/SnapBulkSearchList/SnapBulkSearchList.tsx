@@ -54,7 +54,7 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
   if (filteredResults.length) {
     return (
       <ul
-        className={classNames(stylingClass, "u-no-margin", "u-no-padding")}
+        className={classNames(stylingClass, "p-list u-no-margin u-no-padding")}
         {...downshiftOptions.getMenuProps()}
       >
         {filteredResults.map((item: InstalledSnapWithCount, index: number) => (

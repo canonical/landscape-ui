@@ -1,4 +1,5 @@
 @import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
 
 .titleRow {
   align-items: center;
@@ -10,4 +11,8 @@
 .deleteButton {
   margin-bottom: 0;
   padding: $spv--x-small $sph--small;
+
+  &:hover {
+    background-color: $colors--theme--background-active;
+  }
 }
