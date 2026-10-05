@@ -33,9 +33,12 @@ export default function useGetPackageChangePlanExclusionItems(
   return useQuery({
     queryKey: ["packageChangePlans", id, "exclusions", package_name, params],
     queryFn: async () =>
-      authFetch.get(`package-change-plans/${id}/exclusions/${package_name}`, {
-        params,
-      }),
+      authFetch.get(
+        `package-change-plans/${id}/exclusions/${encodeURIComponent(package_name)}`,
+        {
+          params,
+        },
+      ),
     ...options,
   });
 }
