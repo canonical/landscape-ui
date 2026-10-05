@@ -1,5 +1,8 @@
+import { ROUTES } from "@/libs/routes";
+import type { SupportSessionNavItem } from "@/templates/support-session";
 import type { ApiError } from "@/types/api/ApiError";
 import { isAxiosError } from "axios";
+import { SUPPORT_PROFILE_PAGES } from "./constants";
 
 /** The server's message for a failed request, or the error's own. */
 export const getErrorMessage = (error: unknown): string => {
@@ -56,3 +59,24 @@ export const getValidationErrors = <F extends string>(
 
   return fieldErrors;
 };
+
+/** The support session's navigation for the account named `name`. */
+export const getSupportSessionNavigation = (
+  name: string,
+): SupportSessionNavItem[] => [
+  {
+    label: "Events log",
+    icon: "status",
+    path: ROUTES.superAdmin.sessionEventsLog(name),
+  },
+  {
+    label: "Profiles",
+    icon: "cluster",
+    items: SUPPORT_PROFILE_PAGES.map(({ slug, label }) => ({
+      label,
+      path: ROUTES.superAdmin.sessionProfile(name, slug),
+    })),
+  },
+  // A placeholder: org settings land with LNDENG-5321.
+  { label: "Org. settings", icon: "settings" },
+];

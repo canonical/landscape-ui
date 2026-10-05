@@ -7,10 +7,24 @@ export { default as ProfilesHeader } from "./components/ProfilesHeader";
 export { default as ProfilesList } from "./components/ProfilesList";
 export { default as ProfilesListActions } from "./components/ProfilesList/components/ProfilesListActions";
 export { default as RemoveProfileModal } from "./components/RemoveProfileModal";
+export { default as ViewProfileGeneralBlock } from "./components/ViewProfileSidePanel/components/ViewProfileGeneralBlock";
+export { default as ViewProfileDetailsBlock } from "./components/ViewProfileSidePanel/components/ViewProfileDetailsBlock";
+export { default as ViewProfileScheduleBlock } from "./components/ViewProfileSidePanel/components/ViewProfileScheduleBlock";
+export {
+  getRebootColumn,
+  getRemovalColumn,
+} from "./components/ProfilesList/helpers";
 
 export { PROFILE_DAY_OPTIONS } from "./constants";
 export { useOpenProfileSidePanel } from "./hooks";
+export { useGetProfileAssociatedCount } from "./hooks/useGetProfileAssociatedCount";
 
-export { parseSchedule, ProfileTypes } from "./helpers";
+export {
+  hasAssociations,
+  hasSchedule,
+  isPackageProfile,
+  parseSchedule,
+  ProfileTypes,
+} from "./helpers";
 
 export type { Profile, ComplianceInstanceCounts, ProfileDay } from "./types";
