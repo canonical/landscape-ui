@@ -80,6 +80,7 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
             count={upgrade.computer_count}
             id={packageChangePlanId}
             action={upgrade.action}
+            size="medium"
           />
         ),
       },

@@ -5,17 +5,20 @@ import PackagesActionSummaryDetails from "../PackagesActionSummaryDetails";
 import { pluralize } from "@/utils/_helpers";
 import SidePanel from "@/components/layout/SidePanel";
 import type { PackageChangePlanAction } from "../../../../types";
+import type { SidePanelProps } from "@/components/layout/SidePanel/SidePanel";
 
 export interface PackagesActionSummaryCountProps {
   readonly count: number;
   readonly id: number;
   readonly action: PackageChangePlanAction;
+  readonly size?: SidePanelProps["size"];
 }
 
 const PackagesActionSummaryCount: FC<PackagesActionSummaryCountProps> = ({
   count,
   id,
   action,
+  size,
 }) => {
   const {
     value: isSidePanelOpen,
@@ -54,7 +57,7 @@ const PackagesActionSummaryCount: FC<PackagesActionSummaryCountProps> = ({
       ) : (
         "0 instances"
       )}
-      <SidePanel onClose={closeSidePanel} isOpen={isSidePanelOpen}>
+      <SidePanel onClose={closeSidePanel} isOpen={isSidePanelOpen} size={size}>
         <SidePanel.Header>{getHeader()}</SidePanel.Header>
         <SidePanel.Content>
           <PackagesActionSummaryDetails id={id} action={action} />
