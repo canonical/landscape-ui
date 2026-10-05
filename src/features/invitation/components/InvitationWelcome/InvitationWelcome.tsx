@@ -13,7 +13,7 @@ interface InvitationWelcomeProps {
 
 const InvitationWelcome: FC<InvitationWelcomeProps> = ({ accountTitle }) => {
   const [isRegistering, setIsRegistering] = useState(true);
-  const { isSelfHosted } = useEnv();
+  const { envLoading, isSelfHosted } = useEnv();
   const { loginMethods, loginMethodsLoading, isLoginMethodsError } =
     useGetLoginMethods();
 
@@ -25,7 +25,7 @@ const InvitationWelcome: FC<InvitationWelcomeProps> = ({ accountTitle }) => {
   const isPasswordEnabled = Boolean(
     loginMethods?.password.available && loginMethods.password.enabled,
   );
-  if (loginMethodsLoading) {
+  if (envLoading || loginMethodsLoading) {
     return <LoadingState />;
   }
 

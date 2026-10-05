@@ -4,7 +4,7 @@ import type { ComponentProps } from "react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { EnvContext, type EnvContextState } from "@/context/env";
-import { allLoginMethods } from "@/tests/mocks/loginMethods";
+import { allLoginMethods, pamLoginMethods } from "@/tests/mocks/loginMethods";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import InvitationWelcome from "./InvitationWelcome";
 import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
@@ -72,6 +72,38 @@ describe("InvitationWelcome", () => {
     expect(
       screen.queryByText("Create a PAM user to join Test Account"),
     ).not.toBeInTheDocument();
+  });
+
+  it("waits for environment detection before choosing PAM registration", async () => {
+    const loadingEnv: EnvContextState = {
+      envLoading: true,
+      isSaas: false,
+      isSelfHosted: false,
+      packageVersion: "",
+      revision: "",
+      displayDisaStigBanner: false,
+    };
+    setEndpointStatus({
+      status: "variant",
+      path: "login/methods",
+      response: pamLoginMethods,
+    });
+
+    renderWithProviders(
+      <InvitationWelcome {...defaultProps} />,
+      undefined,
+      undefined,
+      undefined,
+      ({ children }) => (
+        <EnvContext.Provider value={loadingEnv}>{children}</EnvContext.Provider>
+      ),
+    );
+
+    expect(await screen.findByRole("status")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Create a PAM user to join Test Account"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/no way to get in/i)).not.toBeInTheDocument();
   });
 
   it("should show error message when login methods fail to load", async () => {
