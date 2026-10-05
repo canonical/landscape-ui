@@ -29,6 +29,12 @@
   z-index: var(--z-navigation);
 }
 
+.icon {
+  flex-shrink: 0;
+  height: 1rem;
+  width: 1rem;
+}
+
 .title {
   white-space: nowrap;
 }

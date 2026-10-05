@@ -1,12 +1,17 @@
+import { ROOT_PATH } from "@/constants";
 import ApplicationIdContext from "@/context/applicationId";
 import SidePanelProvider from "@/context/sidePanel";
+import { getIconRootPath } from "@/libs/icons";
 import classes from "@/templates/dashboard/DashboardTemplate.module.scss";
-import { Button, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
+import { Icon } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
 import { useId } from "react";
 import SupportSessionSidebar from "./SupportSessionSidebar";
 import sessionClasses from "./SupportSessionTemplate.module.scss";
+
+const iconRootPath = getIconRootPath(ROOT_PATH);
 
 interface SupportSessionTemplateProps {
   readonly children: ReactNode;
@@ -48,7 +53,11 @@ const SupportSessionTemplate: FC<SupportSessionTemplateProps> = ({
         aria-label="Support session"
         className={classNames("p-text--small", sessionClasses.bar)}
       >
-        <Icon name="security" light aria-hidden />
+        <Icon
+          icon="security"
+          rootPath={iconRootPath}
+          className={sessionClasses.icon}
+        />
         <span className={sessionClasses.title}>
           Support session: <strong>{accountTitle}</strong>
         </span>
