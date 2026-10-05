@@ -1,64 +1,20 @@
-import { useEffect, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import SidePanel from "@/components/layout/SidePanel/SidePanel";
-import {
-  Button,
-  Icon,
-  ICONS,
-  Notification,
-  Tabs,
-  Tooltip,
-} from "@canonical/react-components";
-import Blocks from "@/components/layout/Blocks";
-import InfoGrid from "@/components/layout/InfoGrid";
+import { Tabs } from "@canonical/react-components";
 import { useGetMirror } from "../../api";
 import usePageParams from "@/hooks/usePageParams";
-import { getSourceType, shouldShowAuthentication } from "./helpers";
-import MirrorPackagesCount from "../MirrorPackagesCount";
-import date from "@/libs/date";
-import {
-  DEFAULT_POLLING_INTERVAL,
-  DISPLAY_DATE_TIME_FORMAT,
-} from "@/constants";
-import UpdateMirrorModal from "../UpdateMirrorModal";
-import { useBoolean } from "usehooks-ts";
-import RemoveMirrorModal from "../RemoveMirrorModal";
-import { boolToLabel } from "@/utils/output";
-import {
-  NoPublicationTargetsModal,
-  useGetPublicationTargets,
-} from "@/features/publication-targets";
-import {
-  AssociatedPublicationsList,
-  useGetPublicationsBySource,
-} from "@/features/publications";
+import { DEFAULT_POLLING_INTERVAL } from "@/constants";
+import MirrorDetailsActionBlock from "./components/MirrorDetailsActionBlock";
+import MirrorDetailsTab from "./components/MirrorDetailsTab";
 import MirrorPackagesList from "../MirrorPackagesList";
-import LoadingState from "@/components/layout/LoadingState";
 import {
-  OperationStatusContent,
   useGetOperation,
   OperationErrorNotification,
 } from "@/features/operations";
 
 const MirrorDetails: FC = () => {
-  const { name, updateModal, createSidePathPusher, sidePath, setPageParams } =
-    usePageParams();
+  const { name } = usePageParams();
   const { mirror, isGettingMirror } = useGetMirror(name);
-
-  const {
-    value: isUpdateModalOpen,
-    setTrue: openUpdateModal,
-    setFalse: closeUpdateModal,
-  } = useBoolean();
-  const {
-    value: isRemoveModalOpen,
-    setTrue: openRemoveModal,
-    setFalse: closeRemoveModal,
-  } = useBoolean();
-  const {
-    value: isNoPublicationTargetsModalOpen,
-    setTrue: openNoPublicationTargetsModal,
-    setFalse: closeNoPublicationTargetsModal,
-  } = useBoolean();
 
   const [tabId, setTabId] = useState<"details" | "packages">("details");
 
@@ -67,21 +23,6 @@ const MirrorDetails: FC = () => {
     refetchInterval: ({ state }) =>
       state.error || state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
   });
-  const { publications, isGettingPublications } =
-    useGetPublicationsBySource(name);
-
-  const { publicationTargets, isGettingPublicationTargets } =
-    useGetPublicationTargets();
-
-  const tryPublish = () => {
-    if (publicationTargets.length) {
-      setPageParams({
-        sidePath: [...sidePath, "publish"],
-      });
-    } else {
-      openNoPublicationTargetsModal();
-    }
-  };
 
   const tabs: { label: string; id: "details" | "packages" }[] = [
     {
@@ -102,24 +43,6 @@ const MirrorDetails: FC = () => {
     },
   }));
 
-  useEffect(() => {
-    if (!updateModal || !mirror) {
-      return;
-    }
-    if (mirror.preserveSignatures) {
-      setPageParams({ updateModal: false });
-    } else {
-      openUpdateModal();
-    }
-  }, [mirror, openUpdateModal, setPageParams, updateModal]);
-
-  const closeAndClearUpdateModal = () => {
-    closeUpdateModal();
-    setPageParams({
-      updateModal: false,
-    });
-  };
-
   if (isGettingMirror) {
     return <SidePanel.LoadingState />;
   }
@@ -136,208 +59,15 @@ const MirrorDetails: FC = () => {
           title="Update failed"
           message="Your last mirror update was not completed successfully."
         />
-        <div className="p-segmented-control">
-          <Button
-            type="button"
-            hasIcon
-            className="p-segmented-control__button"
-            onClick={createSidePathPusher("edit")}
-          >
-            <Icon name="edit" />
-            <span>Edit</span>
-          </Button>
-          {!mirror.preserveSignatures &&
-            (operation && !operation.done ? (
-              <Tooltip
-                message="You must wait for this action to be completed to trigger a new update."
-                position="btm-center"
-              >
-                <Button
-                  type="button"
-                  hasIcon
-                  className="p-segmented-control__button"
-                  disabled
-                >
-                  <Icon name="spinner" className="u-animation--spin" />
-                  <span>Updating</span>
-                </Button>
-              </Tooltip>
-            ) : (
-              <Button
-                type="button"
-                hasIcon
-                className="p-segmented-control__button"
-                onClick={openUpdateModal}
-              >
-                <Icon name="restart" />
-                <span>Update</span>
-              </Button>
-            ))}
-          <Button
-            type="button"
-            hasIcon
-            className="p-segmented-control__button"
-            onClick={tryPublish}
-            disabled={isGettingPublicationTargets}
-          >
-            <Icon name="upload" />
-            <span>Publish</span>
-          </Button>
-          <Button
-            type="button"
-            hasIcon
-            className="p-segmented-control__button"
-            onClick={openRemoveModal}
-          >
-            <Icon name={`${ICONS.delete}--negative`} />
-            <span className="u-text--negative">Remove</span>
-          </Button>
-        </div>
+        <MirrorDetailsActionBlock mirror={mirror} operation={operation} />
         <Tabs links={links} />
         {tabId === "details" && (
-          <Blocks>
-            <Blocks.Item
-              title="Details"
-              notification={
-                mirror.preserveSignatures && (
-                  <Notification severity="information">
-                    Signature-preserving mirrors do not support independent
-                    syncs - they sync during publication
-                  </Notification>
-                )
-              }
-            >
-              <InfoGrid dense>
-                <InfoGrid.Item label="Name" value={mirror.displayName} />
-                <InfoGrid.Item
-                  label="Source type"
-                  value={getSourceType(mirror)}
-                />
-                <InfoGrid.Item
-                  label="Source URL"
-                  value={
-                    <a
-                      href={mirror.archiveRoot}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {mirror.archiveRoot}
-                    </a>
-                  }
-                  large
-                />
-                <InfoGrid.Item
-                  label="Status"
-                  value={
-                    <OperationStatusContent
-                      operationMetadata={operation?.metadata}
-                      type="mirror"
-                      hasOperation={!!mirror.lastOperation}
-                    />
-                  }
-                />
-                <InfoGrid.Item
-                  label="Preserve upstream signing key"
-                  value={boolToLabel(mirror.preserveSignatures)}
-                />
-                <InfoGrid.Item
-                  label="Last update"
-                  value={
-                    mirror.lastDownloadDate &&
-                    date(mirror.lastDownloadDate).format(
-                      DISPLAY_DATE_TIME_FORMAT,
-                    )
-                  }
-                />
-                <InfoGrid.Item
-                  label="Packages"
-                  value={
-                    mirror.name && (
-                      <MirrorPackagesCount mirrorName={mirror.name} />
-                    )
-                  }
-                />
-              </InfoGrid>
-            </Blocks.Item>
-            <Blocks.Item title="Contents">
-              <InfoGrid dense>
-                <InfoGrid.Item
-                  label="Distribution"
-                  value={mirror.distribution}
-                />
-                <InfoGrid.Item
-                  label="Components"
-                  value={mirror.components.join(", ")}
-                  large
-                />
-                <InfoGrid.Item
-                  label="Architectures"
-                  value={mirror.architectures.join(", ")}
-                  large
-                />
-                <InfoGrid.Item label="Filter" value={mirror.filter} large />
-                {mirror.filter && (
-                  <InfoGrid.Item
-                    label="Include dependencies in filter"
-                    value={boolToLabel(mirror.filterWithDeps)}
-                    large
-                  />
-                )}
-                <InfoGrid.Item
-                  label="Download .udeb"
-                  value={boolToLabel(mirror.downloadUdebs)}
-                />
-                <InfoGrid.Item
-                  label="Download sources"
-                  value={boolToLabel(mirror.downloadSources)}
-                />
-                <InfoGrid.Item
-                  label="Download installer files"
-                  value={boolToLabel(mirror.downloadInstaller)}
-                />
-              </InfoGrid>
-            </Blocks.Item>
-            {shouldShowAuthentication(mirror) && (
-              <Blocks.Item title="Authentication">
-                <InfoGrid dense>
-                  <InfoGrid.Item
-                    label="Verification GPG Key"
-                    value={mirror.gpgKey?.fingerprint}
-                  />
-                </InfoGrid>
-              </Blocks.Item>
-            )}
-            <Blocks.Item title="Used in">
-              {isGettingPublications ? (
-                <LoadingState />
-              ) : (
-                <AssociatedPublicationsList
-                  publications={publications}
-                  showSources={false}
-                />
-              )}
-            </Blocks.Item>
-          </Blocks>
+          <MirrorDetailsTab mirror={mirror} operation={operation} />
         )}
         {tabId === "packages" && mirror.name && (
           <MirrorPackagesList mirrorName={mirror.name} />
         )}
       </SidePanel.Content>
-      <UpdateMirrorModal
-        isOpen={isUpdateModalOpen}
-        close={closeAndClearUpdateModal}
-        mirrorDisplayName={mirror.displayName}
-        mirrorName={name}
-      />
-      <RemoveMirrorModal
-        isOpen={isRemoveModalOpen}
-        close={closeRemoveModal}
-        mirrorDisplayName={mirror.displayName}
-        mirrorName={name}
-      />
-      {isNoPublicationTargetsModalOpen && (
-        <NoPublicationTargetsModal close={closeNoPublicationTargetsModal} />
-      )}
     </>
   );
 };
