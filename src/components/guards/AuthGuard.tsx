@@ -9,10 +9,15 @@ import Redirecting from "@/components/layout/Redirecting";
 
 interface Props {
   readonly children: ReactNode;
+  /**
+   * Whether the route needs an account. Super admin mode does not: staff
+   * without accounts of their own work there.
+   */
+  readonly requireAccount?: boolean;
 }
 
-export const AuthGuard: FC<Props> = ({ children }) => {
-  const { authorized, authLoading, hasAccounts } = useAuth();
+export const AuthGuard: FC<Props> = ({ children, requireAccount = true }) => {
+  const { authorized, authLoading, hasAccounts, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { pathname, search } = useLocation();
@@ -32,13 +37,19 @@ export const AuthGuard: FC<Props> = ({ children }) => {
       return;
     }
 
-    if (!hasAccounts) {
-      navigate(ROUTES.auth.createAccount(), { replace: true });
+    if (requireAccount && !hasAccounts) {
+      // Staff without accounts of their own have super admin mode to go to.
+      navigate(
+        isSuperAdmin ? ROUTES.superAdmin.root() : ROUTES.auth.createAccount(),
+        { replace: true },
+      );
     }
   }, [
     authorized,
     authLoading,
     hasAccounts,
+    isSuperAdmin,
+    requireAccount,
     pathname,
     search,
     navigate,
@@ -47,5 +58,9 @@ export const AuthGuard: FC<Props> = ({ children }) => {
 
   if (authLoading) return <LoadingState />;
 
-  return authorized && hasAccounts ? <>{children}</> : <Redirecting />;
+  return authorized && (hasAccounts || !requireAccount) ? (
+    <>{children}</>
+  ) : (
+    <Redirecting />
+  );
 };

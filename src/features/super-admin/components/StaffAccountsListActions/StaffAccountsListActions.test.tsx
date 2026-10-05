@@ -1,7 +1,11 @@
+import { API_URL } from "@/constants";
 import { createStaffAccounts } from "@/tests/mocks/staffAccounts";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import server from "@/tests/server";
+import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http } from "msw";
 import { describe, expect, it } from "vitest";
 import StaffAccountsListActions from "./StaffAccountsListActions";
 
@@ -14,7 +18,17 @@ describe("StaffAccountsListActions", () => {
 
   const { account } = staffAccount;
 
-  it("offers Enter account as a disabled placeholder", async () => {
+  it("enters the account from its menu", async () => {
+    setStaffGlobalRoles(["SupportProvider"]);
+
+    const switches: unknown[] = [];
+
+    server.use(
+      http.post(`${API_URL}switch-account`, async ({ request }) => {
+        switches.push(await request.clone().json());
+      }),
+    );
+
     renderWithProviders(
       <StaffAccountsListActions staffAccount={staffAccount} />,
     );
@@ -24,8 +38,13 @@ describe("StaffAccountsListActions", () => {
     );
 
     expect(screen.getAllByRole("menuitem")).toHaveLength(1);
-    expect(
+
+    await user.click(
       screen.getByRole("menuitem", { name: `Enter ${account}` }),
-    ).toHaveAttribute("aria-disabled", "true");
+    );
+
+    await waitFor(() => {
+      expect(switches).toEqual([{ account_name: account }]);
+    });
   });
 });

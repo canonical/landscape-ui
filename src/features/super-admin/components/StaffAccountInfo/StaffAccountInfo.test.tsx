@@ -55,12 +55,10 @@ describe("StaffAccountInfo", () => {
     expect(screen.queryByText("Disabled reason")).not.toBeInTheDocument();
   });
 
-  it("offers Enter account as a disabled placeholder", () => {
+  it("offers Enter account", () => {
     renderWithProviders(<StaffAccountInfo staffAccount={activeAccount} />);
 
-    expect(
-      screen.getByRole("button", { name: "Enter account" }),
-    ).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("button", { name: "Enter account" })).toBeEnabled();
   });
 
   it("renders why an account is disabled", () => {

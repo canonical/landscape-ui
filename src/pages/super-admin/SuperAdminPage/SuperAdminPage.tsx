@@ -3,6 +3,7 @@ import { Suspense, useState } from "react";
 import { Outlet, useLocation } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
 import { getSameOriginPath } from "@/features/auth";
+import { useRestoreOwnAccount } from "@/features/super-admin";
 import { ROUTES } from "@/libs/routes";
 import SuperAdminTemplate from "@/templates/super-admin";
 
@@ -28,6 +29,9 @@ const SuperAdminPage: FC = () => {
 
   // Read once on entry: navigating within super admin mode keeps the origin.
   const [returnTo] = useState(() => getReturnTo(state));
+
+  // A support session left by any other way than its exit control.
+  useRestoreOwnAccount();
 
   return (
     <SuperAdminTemplate returnTo={returnTo}>

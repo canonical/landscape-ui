@@ -7,6 +7,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import date from "@/libs/date";
 import type { FC } from "react";
 import type { StaffAccount } from "../../types";
+import { useEnterAccount } from "../../hooks";
 import EditStaffAccountForm from "../EditStaffAccountForm";
 import { formatSize } from "@/utils/size";
 
@@ -17,6 +18,7 @@ interface StaffAccountInfoProps {
 const StaffAccountInfo: FC<StaffAccountInfoProps> = ({ staffAccount }) => {
   const { canManageAccounts } = useAuth();
   const { setSidePanelContent } = useSidePanel();
+  const { enterAccount, isEnteringAccount } = useEnterAccount();
 
   const openEditForm = () => {
     setSidePanelContent(
@@ -41,11 +43,11 @@ const StaffAccountInfo: FC<StaffAccountInfoProps> = ({ staffAccount }) => {
               onClick: openEditForm,
               excluded: !canManageAccounts,
             },
-            // A placeholder: entering an account lands with LNDENG-5100.
             {
               icon: "switcher-environments",
               label: "Enter account",
-              disabled: true,
+              disabled: isEnteringAccount,
+              onClick: async () => enterAccount(staffAccount.account),
             },
           ],
         }}
