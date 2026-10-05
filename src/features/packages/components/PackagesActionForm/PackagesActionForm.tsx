@@ -97,6 +97,7 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
             const title = getActionFormTitle(actionType);
             setPackageChangePlanId(null);
             setSidePanelTitle(title);
+            setOnCloseOverride(undefined);
           }}
         />
       );

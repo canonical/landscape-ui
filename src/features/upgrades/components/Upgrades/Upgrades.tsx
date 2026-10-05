@@ -169,6 +169,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
             );
             changeSidePanelSize("large");
             setPackageChangePlanId(null);
+            setOnCloseOverride(undefined);
           }}
           packageChangePlanId={packageChangePlanId}
         />
