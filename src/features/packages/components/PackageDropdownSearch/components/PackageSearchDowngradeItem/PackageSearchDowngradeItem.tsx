@@ -14,7 +14,7 @@ import {
   Notification,
   Tooltip,
 } from "@canonical/react-components";
-import { pluralize } from "@/utils/_helpers";
+import { pluralize, toInstanceQuery } from "@/utils/_helpers";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import LoadingState from "@/components/layout/LoadingState";
 import type { UseQueryOptions } from "@tanstack/react-query";
@@ -85,7 +85,7 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
   const { isDarkMode } = useTheme();
 
   const queryParams: SearchPackagesRequest = {
-    computer_query: instanceIds.map((id) => `id:${id}`).join(" OR "),
+    computer_query: toInstanceQuery(instanceIds),
     names: [selectedPackage[0].name],
     ...mapActionTypeToQueryParams("install"),
   };

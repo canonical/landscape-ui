@@ -14,6 +14,7 @@ import {
 import { getActionFormTitle } from "../../helpers";
 import { getActionConfig } from "./helpers";
 import useDebug from "@/hooks/useDebug";
+import { toInstanceQuery } from "@/utils/_helpers";
 
 interface PackagesActionFormProps {
   readonly instanceIds: number[];
@@ -63,9 +64,7 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
             submitButtonLoading={isCreatingPackageChangePlan}
             onSubmit={async () => {
               try {
-                const computer_query = instanceIds
-                  .map((id) => `id:${id}`)
-                  .join(" OR ");
+                const computer_query = toInstanceQuery(instanceIds);
 
                 const config = getActionConfig(actionType, selectedPackages);
 

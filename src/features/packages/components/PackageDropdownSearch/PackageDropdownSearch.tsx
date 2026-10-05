@@ -1,4 +1,4 @@
-import { pluralize } from "@/utils/_helpers";
+import { pluralize, toInstanceQuery } from "@/utils/_helpers";
 import { SearchBox, Switch } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
@@ -47,7 +47,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   const { value: isOpen, setFalse: close, setTrue: open } = useBoolean();
 
   const queryParams: SearchPackagesRequest = {
-    computer_query: instanceIds.map((id) => `id:${id}`).join(" OR "),
+    computer_query: toInstanceQuery(instanceIds),
     limit: QUERY_LIMIT,
     ...mapActionTypeToQueryParams(actionType),
   };
