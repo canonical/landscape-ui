@@ -14,7 +14,7 @@ export interface StaffAccountLicense {
  * An account as listed for Canonical staff. `account` is the account name and
  * `company` its title, following the server's `get_state()` naming.
  */
-export interface StaffAccountListItem {
+export interface StaffAccountListItem extends Record<string, unknown> {
   account: string;
   company: string;
   subdomain: string | null;
