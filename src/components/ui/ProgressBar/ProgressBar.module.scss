@@ -1,14 +1,43 @@
-@import "vanilla-framework/scss/settings_spacing";
 @import "vanilla-framework/scss/settings_colors";
 
-.progressBar {
-  background-color: $colors--theme--background-active;
+.wrapper {
+  align-items: center;
   display: flex;
-  height: $spv--small;
-  margin-right: $sph--small;
-  width: 4rem;
+  width: 100%;
+}
 
-  > div {
-    background-color: $colors--theme--link-default;
+.content {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.fullWidth {
+  .bar {
+    max-width: none;
   }
+}
+
+.bar {
+  background-color: $color-mid-x-light;
+  flex: 1 1 auto;
+  height: 0.5rem;
+  max-width: 8rem;
+  min-width: 0;
+  overflow: hidden;
+
+  .fill {
+    background-color: $colors--theme--link-default;
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+}
+
+.eta {
+  color: $colors--theme--text-muted;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

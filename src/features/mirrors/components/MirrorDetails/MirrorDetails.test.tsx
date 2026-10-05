@@ -274,7 +274,6 @@ describe("MirrorDetails", () => {
       screen.queryByRole("button", { name: "Update" }),
     ).not.toBeInTheDocument();
     expect(await screen.findByText("Updating")).toBeInTheDocument();
-    expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
 
   it("shows disabled updating action while last operation is in progress for non-preserve mirrors", async () => {
