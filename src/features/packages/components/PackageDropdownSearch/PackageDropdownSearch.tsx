@@ -1,5 +1,6 @@
 import BoldSubstring from "@/components/form/BoldSubstring";
 import LoadingState from "@/components/layout/LoadingState";
+import { DEBOUNCE_DELAY } from "@/constants";
 import type { UrlParams } from "@/types/UrlParams";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
@@ -10,7 +11,6 @@ import { useParams } from "react-router";
 import { useDebounceValue } from "usehooks-ts";
 import { usePackages } from "../../hooks";
 import type { InstancePackage } from "../../types";
-import { DEBOUNCE_DELAY } from "./constants";
 import classes from "./PackageDropdownSearch.module.scss";
 
 interface PackageDropdownSearchProps {

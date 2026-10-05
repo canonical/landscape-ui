@@ -10,7 +10,7 @@ import { useGetAvailableSnaps } from "../../api";
 import type { AvailableSnap, SelectedSnaps } from "../../types";
 import SuggestionContent from "./components";
 import classes from "./SnapDropdownSearch.module.scss";
-import { DEBOUNCE_DELAY } from "./constants";
+import { DEBOUNCE_DELAY } from "@/constants";
 
 interface SnapDropdownSearchProps {
   readonly selectedItems: SelectedSnaps[];

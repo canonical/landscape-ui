@@ -1,4 +1,4 @@
-import { API_URL } from "@/constants";
+import { API_URL, DEBOUNCE_DELAY } from "@/constants";
 import { ROUTES } from "@/libs/routes";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import server from "@/tests/server";
@@ -10,7 +10,6 @@ import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PackageDropdownSearch from "./PackageDropdownSearch";
-import { DEBOUNCE_DELAY } from "./constants";
 
 const instanceId = 1;
 const instancePackages = getInstancePackages(instanceId);

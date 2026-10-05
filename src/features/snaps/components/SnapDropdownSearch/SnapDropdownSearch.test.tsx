@@ -1,4 +1,4 @@
-import { API_URL } from "@/constants";
+import { API_URL, DEBOUNCE_DELAY } from "@/constants";
 import { PATHS } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import server from "@/tests/server";
@@ -11,7 +11,6 @@ import type { FC } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useGetAvailableSnaps } from "@/features/snaps";
 import SnapDropdownSearch from "./SnapDropdownSearch";
-import { DEBOUNCE_DELAY } from "./constants";
 
 const props = {
   selectedItems: [],
