@@ -45,7 +45,7 @@ export default function useSearchPackages(
 ) {
   const authFetch = useFetch();
 
-  const { limit = 0 } = params;
+  const { limit = 10 } = params;
 
   return useInfiniteQuery<
     AxiosResponse<SearchPackagesResponse>,
