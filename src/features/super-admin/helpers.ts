@@ -2,7 +2,12 @@ import { ROUTES } from "@/libs/routes";
 import type { SupportSessionNavItem } from "@/templates/support-session";
 import type { ApiError } from "@/types/api/ApiError";
 import { isAxiosError } from "axios";
-import { SUPPORT_PROFILE_PAGES, SUPPORT_SETTINGS_PAGES } from "./constants";
+import {
+  STAFF_PEOPLE_TYPE_OPTIONS,
+  SUPPORT_PROFILE_PAGES,
+  SUPPORT_SETTINGS_PAGES,
+} from "./constants";
+import type { StaffPeopleResult, StaffPeopleResultType } from "./types";
 
 /** The server's message for a failed request, or the error's own. */
 export const getErrorMessage = (error: unknown): string => {
@@ -58,6 +63,38 @@ export const getValidationErrors = <F extends string>(
   }
 
   return fieldErrors;
+};
+
+/** The `type` page param as the server's filter; `undefined` for anything else. */
+export const toStaffPeopleResultType = (
+  type: string,
+): StaffPeopleResultType | undefined =>
+  STAFF_PEOPLE_TYPE_OPTIONS.some((option) => option.value === type && type)
+    ? (type as StaffPeopleResultType)
+    : undefined;
+
+/** The lower-cased emails that two or more people in `results` share. */
+export const getDuplicateEmails = (
+  results: readonly StaffPeopleResult[],
+): Set<string> => {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+
+  for (const result of results) {
+    if (result.type !== "person") {
+      continue;
+    }
+
+    const email = result.email.toLowerCase();
+
+    if (seen.has(email)) {
+      duplicates.add(email);
+    }
+
+    seen.add(email);
+  }
+
+  return duplicates;
 };
 
 /** The support session's navigation for the account named `name`. */
