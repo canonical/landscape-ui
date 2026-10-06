@@ -5,7 +5,7 @@ import server from "@/tests/server";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http } from "msw";
+import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import StaffAccountsListActions from "./StaffAccountsListActions";
 
@@ -46,5 +46,39 @@ describe("StaffAccountsListActions", () => {
     await waitFor(() => {
       expect(switches).toEqual([{ account_name: account }]);
     });
+  });
+
+  it("reports a switch the server refused under the account's title", async () => {
+    setStaffGlobalRoles(["AccountManager"]);
+
+    server.use(
+      http.post(`${API_URL}switch-account`, () =>
+        HttpResponse.json(
+          {
+            error: "UnknownAccountError",
+            message: "The specified account couldn't be found.",
+          },
+          { status: 400 },
+        ),
+      ),
+    );
+
+    renderWithProviders(
+      <StaffAccountsListActions staffAccount={staffAccount} />,
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: `${account} actions` }),
+    );
+    await user.click(
+      screen.getByRole("menuitem", { name: `Enter ${account}` }),
+    );
+
+    expect(
+      await screen.findByText(`Could not enter ${staffAccount.company}`),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("The specified account couldn't be found."),
+    ).toBeInTheDocument();
   });
 });

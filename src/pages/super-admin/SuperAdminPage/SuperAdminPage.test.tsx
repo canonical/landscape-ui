@@ -1,6 +1,6 @@
 import { screen, waitFor } from "@testing-library/react";
 import { Navigate, Route, Routes } from "react-router";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import { API_URL } from "@/constants";
 import { ROUTES } from "@/libs/routes";
@@ -11,6 +11,7 @@ import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
 import SuperAdminPage from "./SuperAdminPage";
 
 const ENTRY = "/enter";
+const SWITCH_DELAY_MS = 100;
 
 // Enters super admin mode the way the sidebar entry does: a navigation that
 // carries `returnTo` in the location state.
@@ -50,13 +51,17 @@ const signInAs = (currentAccount: string, accounts = authUser.accounts) => {
   );
 };
 
-/** Records the body of every account switch, then lets the mock API handle it. */
-const recordSwitches = (): unknown[] => {
+/**
+ * Records the body of every account switch, then lets the mock API handle
+ * it after `delayMs`, long enough for what is shown in between to be seen.
+ */
+const recordSwitches = (delayMs = 0): unknown[] => {
   const bodies: unknown[] = [];
 
   server.use(
     http.post(`${API_URL}switch-account`, async ({ request }) => {
       bodies.push(await request.clone().json());
+      await delay(delayMs);
     }),
   );
 
@@ -113,13 +118,37 @@ describe("SuperAdminPage", () => {
     it("returns the session to the person's own account", async () => {
       signInAs("acme");
 
-      const switches = recordSwitches();
+      const switches = recordSwitches(SWITCH_DELAY_MS);
 
       renderEnteringWith(null);
+
+      // The entered account's pages stay hidden until the session is back.
+      expect(await screen.findByText("Leaving acme…")).toBeInTheDocument();
+      expect(screen.queryByText("Child page")).not.toBeInTheDocument();
 
       await waitFor(() => {
         expect(switches).toEqual([{ account_name: authUser.current_account }]);
       });
+
+      expect(await screen.findByText("Child page")).toBeInTheDocument();
+      expect(screen.queryByText("Leaving acme…")).not.toBeInTheDocument();
+    });
+
+    it("shows the pages again when the session could not be returned", async () => {
+      signInAs("acme");
+      server.use(
+        http.post(`${API_URL}switch-account`, () =>
+          HttpResponse.json(
+            { error: "NotFound", message: "Not found.", detail: null },
+            { status: 404 },
+          ),
+        ),
+      );
+
+      renderEnteringWith(null);
+
+      expect(await screen.findByText("Child page")).toBeInTheDocument();
+      expect(await screen.findByText("Not found.")).toBeInTheDocument();
     });
 
     it("leaves the session alone when it is in one of the person's accounts", async () => {

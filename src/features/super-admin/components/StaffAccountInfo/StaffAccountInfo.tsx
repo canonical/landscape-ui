@@ -47,7 +47,8 @@ const StaffAccountInfo: FC<StaffAccountInfoProps> = ({ staffAccount }) => {
               icon: "switcher-environments",
               label: "Enter account",
               disabled: isEnteringAccount,
-              onClick: async () => enterAccount(staffAccount.account),
+              onClick: async () =>
+                enterAccount(staffAccount.account, staffAccount.company),
             },
           ],
         }}

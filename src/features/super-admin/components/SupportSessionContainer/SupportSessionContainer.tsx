@@ -9,7 +9,7 @@ import SupportSessionTemplate from "@/templates/support-session";
 import type { AxiosError } from "axios";
 import { isAxiosError } from "axios";
 import type { FC, ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGetStaffAccount } from "../../api";
 import { useExitSupportSession } from "../../hooks";
 
@@ -30,7 +30,7 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
   children,
 }) => {
   const { user } = useAuth();
-  const { switchAccount, isSwitchingAccount } = useSwitchAccount();
+  const { switchAccount } = useSwitchAccount();
   const { staffAccount, staffAccountError, isGettingStaffAccount } =
     useGetStaffAccount(name);
   const { exitSupportSession, isExitingSupportSession } =
@@ -42,6 +42,9 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
   // Leaving switches the session back before navigating away; the account
   // must not be re-entered in between.
   const [isLeaving, setIsLeaving] = useState(false);
+  // A ref, not the mutation's pending flag: that flag only turns on in the
+  // next render, after a doubled effect (StrictMode) has already switched twice.
+  const isEntering = useRef(false);
 
   const hasUser = !!user;
   const isInAccount = user?.current_account === name;
@@ -51,17 +54,23 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
       !hasUser ||
       isInAccount ||
       isLeaving ||
-      isSwitchingAccount ||
+      isEntering.current ||
       enterError
     ) {
       return;
     }
 
-    switchAccount(name).catch((error: unknown) => {
-      if (isAxiosError<ApiError>(error)) {
-        setEnterError(error);
-      }
-    });
+    isEntering.current = true;
+
+    switchAccount(name)
+      .catch((error: unknown) => {
+        if (isAxiosError<ApiError>(error)) {
+          setEnterError(error);
+        }
+      })
+      .finally(() => {
+        isEntering.current = false;
+      });
   }, [hasUser, isInAccount, isLeaving, name]);
 
   const exit = async () => {

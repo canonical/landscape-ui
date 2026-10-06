@@ -6,9 +6,12 @@ import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
 import { screen, waitFor, within } from "@testing-library/react";
+import { StrictMode } from "react";
+import { AuthGuard } from "@/components/guards/AuthGuard";
+import { SuperAdminGuard } from "@/components/guards/SuperAdminGuard";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { Navigate, Route, Routes } from "react-router";
+import { Navigate, Outlet, Route, Routes } from "react-router";
 import { beforeEach, describe, expect, it } from "vitest";
 import SupportSessionPage from "./SupportSessionPage";
 
@@ -58,10 +61,21 @@ const recordSwitches = (): unknown[] => {
 };
 
 /** The super admin routes as the app declares them, with a stand-in events log. */
-const renderApp = (initialPath: string) =>
+const renderApp = (initialPath: string, { strict = false } = {}) =>
   renderWithProviders(
     <Routes>
-      <Route path={SUPER_ADMIN}>
+      <Route
+        path={SUPER_ADMIN}
+        element={
+          // The guards mount the session once the user is known, as the app
+          // does; the StrictMode case depends on that.
+          <AuthGuard requireAccount={false}>
+            <SuperAdminGuard>
+              <Outlet />
+            </SuperAdminGuard>
+          </AuthGuard>
+        }
+      >
         <Route path={PATHS.superAdmin.session} element={<SupportSessionPage />}>
           <Route
             index
@@ -82,6 +96,8 @@ const renderApp = (initialPath: string) =>
     </Routes>,
     undefined,
     initialPath,
+    undefined,
+    strict ? StrictMode : undefined,
   );
 
 const findSupportBar = async () =>
@@ -117,6 +133,19 @@ describe("SupportSessionPage (integration)", () => {
     const switches = recordSwitches();
 
     renderApp(ROUTES.superAdmin.session(ACME));
+
+    expect(
+      await screen.findByRole("heading", { name: "Events log page" }),
+    ).toBeInTheDocument();
+    expect(switches).toEqual([{ account_name: ACME }]);
+  });
+
+  it("enters the account once when its effects run twice", async () => {
+    // StrictMode doubles the mount effect in development; the real server
+    // saw two switches back to back from a deep link.
+    const switches = recordSwitches();
+
+    renderApp(ROUTES.superAdmin.session(ACME), { strict: true });
 
     expect(
       await screen.findByRole("heading", { name: "Events log page" }),

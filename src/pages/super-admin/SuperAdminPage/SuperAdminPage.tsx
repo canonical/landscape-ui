@@ -31,13 +31,22 @@ const SuperAdminPage: FC = () => {
   const [returnTo] = useState(() => getReturnTo(state));
 
   // A support session left by any other way than its exit control.
-  useRestoreOwnAccount();
+  const { leavingAccount } = useRestoreOwnAccount();
 
   return (
     <SuperAdminTemplate returnTo={returnTo}>
-      <Suspense fallback={<LoadingState />}>
-        <Outlet />
-      </Suspense>
+      {leavingAccount ? (
+        <>
+          <LoadingState />
+          <p className="u-align-text--center u-text--muted">
+            Leaving {leavingAccount}…
+          </p>
+        </>
+      ) : (
+        <Suspense fallback={<LoadingState />}>
+          <Outlet />
+        </Suspense>
+      )}
     </SuperAdminTemplate>
   );
 };

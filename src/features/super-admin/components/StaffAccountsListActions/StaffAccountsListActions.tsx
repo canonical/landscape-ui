@@ -9,7 +9,7 @@ interface StaffAccountsListActionsProps {
 }
 
 const StaffAccountsListActions: FC<StaffAccountsListActionsProps> = ({
-  staffAccount: { account },
+  staffAccount: { account, company },
 }) => {
   const { enterAccount, isEnteringAccount } = useEnterAccount();
 
@@ -19,7 +19,7 @@ const StaffAccountsListActions: FC<StaffAccountsListActionsProps> = ({
       label: "Enter account",
       "aria-label": `Enter ${account}`,
       disabled: isEnteringAccount,
-      onClick: async () => enterAccount(account),
+      onClick: async () => enterAccount(account, company),
     },
   ];
 
