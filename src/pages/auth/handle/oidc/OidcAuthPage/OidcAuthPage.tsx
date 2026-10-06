@@ -20,7 +20,8 @@ const OidcAuthPage: FC = () => {
 
   const { safeRedirect, setUser } = useAuth();
   const { envLoading, envError, isSelfHosted, isSaas } = useEnv();
-  const { accountExists } = useGetStandaloneAccount();
+  const { accountExists, isLoading: standaloneAccountLoading } =
+    useGetStandaloneAccount();
   const navigate = useNavigate();
 
   const code = searchParams.get("code") ?? "";
@@ -30,14 +31,15 @@ const OidcAuthPage: FC = () => {
     { code, state },
     !!code && !!state,
   );
+  const needsEnvironmentDecision =
+    !!authData &&
+    "current_account" in authData &&
+    authData.accounts.length === 0 &&
+    !authData.invitation_id &&
+    !authData.attach_code;
 
   useEffect(() => {
-    if (
-      envLoading ||
-      envError ||
-      !authData ||
-      !("current_account" in authData)
-    ) {
+    if (!authData || !("current_account" in authData)) {
       return;
     }
 
@@ -62,9 +64,20 @@ const OidcAuthPage: FC = () => {
     }
 
     if (authData.accounts.length === 0) {
+      if (envLoading || envError) {
+        return;
+      }
+
+      if (
+        isSelfHosted &&
+        (standaloneAccountLoading || accountExists === undefined)
+      ) {
+        return;
+      }
+
       const isPublicSaas =
         isSaas && window.location.hostname === GENERIC_DOMAIN;
-      const isPrivateInstance = isSelfHosted && !accountExists;
+      const isPrivateInstance = isSelfHosted && accountExists === false;
 
       if (isPublicSaas || isPrivateInstance) {
         navigate(ROUTES.auth.createAccount(), { replace: true });
@@ -87,16 +100,26 @@ const OidcAuthPage: FC = () => {
     setUser,
     isSelfHosted,
     accountExists,
+    standaloneAccountLoading,
     isSaas,
   ]);
 
-  if (envError) {
+  if (envError && needsEnvironmentDecision) {
     return <EnvError />;
   }
 
+  const isWaitingForEnvironment = needsEnvironmentDecision && envLoading;
+  const isWaitingForStandaloneAccount =
+    needsEnvironmentDecision && isSelfHosted && standaloneAccountLoading;
+  const isRoutingAuthResponse =
+    !!authData && "current_account" in authData && !needsEnvironmentDecision;
+
   return (
     <div className={classes.container}>
-      {isLoading || envLoading ? (
+      {isLoading ||
+      isWaitingForEnvironment ||
+      isWaitingForStandaloneAccount ||
+      isRoutingAuthResponse ? (
         <div className="u-align-text--center">
           <span className={classes.loading}>
             <LoadingState inline />

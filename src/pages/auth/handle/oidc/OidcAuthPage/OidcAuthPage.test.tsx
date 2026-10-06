@@ -1,4 +1,8 @@
-import { CONTACT_SUPPORT_TEAM_MESSAGE, HOMEPAGE_PATH } from "@/constants";
+import {
+  API_URL,
+  CONTACT_SUPPORT_TEAM_MESSAGE,
+  HOMEPAGE_PATH,
+} from "@/constants";
 import type { AuthContextProps } from "@/context/auth";
 import type { EnvContextState } from "@/context/env";
 import type { AuthStateResponse } from "@/features/auth";
@@ -8,8 +12,10 @@ import useEnv from "@/hooks/useEnv";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { authUser } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { screen, waitFor } from "@testing-library/react";
+import { delay, http, HttpResponse } from "msw";
 import { useNavigate } from "react-router";
 import type * as ReactRouter from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -19,6 +25,7 @@ const safeRedirect = vi.fn();
 const navigate = vi.fn();
 const setUser = vi.fn();
 const setSearchParams = vi.fn();
+const STANDALONE_ACCOUNT_CHECK_DELAY_MS = 250;
 let searchParams = "";
 
 vi.mock("@/hooks/useEnv");
@@ -388,6 +395,148 @@ describe("OidcAuthPage", () => {
 
     await waitFor(() => {
       expect(navigate).toHaveBeenCalledWith("/no-access", {
+        replace: true,
+      });
+    });
+  });
+
+  it("completes existing-account sign-in when environment discovery fails", async () => {
+    vi.mocked(useEnv).mockReturnValue({ ...mockSaas, envError: true });
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState(),
+    });
+
+    renderWithProviders(<OidcAuthPage />);
+
+    await waitFor(() => {
+      expect(safeRedirect).toHaveBeenCalledWith(HOMEPAGE_PATH, {
+        external: false,
+        replace: true,
+      });
+    });
+  });
+
+  it("routes invitations when environment discovery fails", async () => {
+    vi.mocked(useEnv).mockReturnValue({ ...mockSaas, envError: true });
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState({ invitation_id: "invite-id" }),
+    });
+
+    renderWithProviders(<OidcAuthPage />);
+
+    await waitFor(() => {
+      expect(navigate).toHaveBeenCalledWith("/accept-invitation/invite-id", {
+        replace: true,
+      });
+    });
+  });
+
+  it("confirms OIDC attachment when environment discovery fails", async () => {
+    vi.mocked(useEnv).mockReturnValue({ ...mockSaas, envError: true });
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState({ attach_code: "QWER12" }),
+    });
+
+    renderWithProviders(<OidcAuthPage />);
+
+    await waitFor(() => {
+      expect(navigate).toHaveBeenCalledWith("/attach", {
+        replace: true,
+        state: { success: true },
+      });
+    });
+  });
+
+  it("waits for the standalone-account check before choosing a first-admin route", async () => {
+    vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState({ accounts: [], current_account: "" }),
+    });
+    server.use(
+      http.get(`${API_URL}standalone-account`, async () => {
+        await delay(STANDALONE_ACCOUNT_CHECK_DELAY_MS);
+        return HttpResponse.json({ exists: true });
+      }),
+    );
+
+    renderWithProviders(
+      <>
+        <OidcAuthPage />
+        <CallbackResult />
+      </>,
+    );
+
+    await screen.findByText("Authentication completed");
+    expect(screen.getByRole("status")).toBeInTheDocument();
+    expect(navigate).not.toHaveBeenCalledWith("/create-account", {
+      replace: true,
+    });
+    await waitFor(() => {
+      expect(navigate).toHaveBeenCalledWith("/no-access", { replace: true });
+    });
+  });
+
+  it("does not route to account creation when standalone-account checking fails", async () => {
+    vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState({ accounts: [], current_account: "" }),
+    });
+    server.use(
+      http.get(`${API_URL}standalone-account`, () =>
+        HttpResponse.json({ message: "Unavailable" }, { status: 500 }),
+      ),
+    );
+
+    renderWithProviders(
+      <>
+        <OidcAuthPage />
+        <CallbackResult />
+      </>,
+    );
+
+    await screen.findByText("Authentication completed");
+    expect(
+      await screen.findByText(CONTACT_SUPPORT_TEAM_MESSAGE),
+    ).toBeInTheDocument();
+    expect(navigate).not.toHaveBeenCalledWith("/create-account", {
+      replace: true,
+    });
+    expect(navigate).not.toHaveBeenCalledWith("/no-access", { replace: true });
+  });
+
+  it("routes to first-admin creation when standalone-account returns 404", async () => {
+    vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState({ accounts: [], current_account: "" }),
+    });
+    server.use(
+      http.get(`${API_URL}standalone-account`, () =>
+        HttpResponse.json({ message: "Not found" }, { status: 404 }),
+      ),
+    );
+
+    renderWithProviders(
+      <>
+        <OidcAuthPage />
+        <CallbackResult />
+      </>,
+    );
+
+    await screen.findByText("Authentication completed");
+    await waitFor(() => {
+      expect(navigate).toHaveBeenCalledWith("/create-account", {
         replace: true,
       });
     });

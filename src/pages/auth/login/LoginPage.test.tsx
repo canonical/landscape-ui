@@ -1,4 +1,5 @@
-import { describe, vi, afterEach } from "vitest";
+import { describe, vi, beforeEach, expect, it } from "vitest";
+import { API_URL } from "@/constants";
 import { screen, waitFor } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/render";
 import LoginPage from "./LoginPage";
@@ -7,8 +8,9 @@ import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
 import { expectLoadingState } from "@/tests/helpers";
 import useEnv from "@/hooks/useEnv";
 import type { EnvContextState } from "@/context/env";
-import { standaloneAccountState } from "@/tests/server/handlers/standaloneAccount";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
 
 vi.mock("@/hooks/useEnv");
 
@@ -27,11 +29,6 @@ describe("LoginPage", () => {
       ...envCommon,
       displayDisaStigBanner: false,
     });
-    standaloneAccountState.exists = true;
-  });
-
-  afterEach(() => {
-    standaloneAccountState.exists = true;
   });
 
   it("should render", async () => {
@@ -95,13 +92,17 @@ describe("LoginPage", () => {
   });
 
   it("shows loading state when self-hosted and no standalone account exists", async () => {
-    standaloneAccountState.exists = false;
     vi.mocked(useEnv).mockReturnValue({
       ...envCommon,
       isSelfHosted: true,
       isSaas: false,
       displayDisaStigBanner: false,
     });
+    server.use(
+      http.get(`${API_URL}standalone-account`, () =>
+        HttpResponse.json({ message: "Not found" }, { status: 404 }),
+      ),
+    );
 
     renderWithProviders(
       <>
@@ -132,5 +133,28 @@ describe("LoginPage", () => {
     await expectLoadingState();
 
     expect(screen.getByText("Sign in to Landscape")).toBeInTheDocument();
+  });
+
+  it("does not route to first-admin creation when the standalone-account request fails", async () => {
+    vi.mocked(useEnv).mockReturnValue({
+      ...envCommon,
+      isSelfHosted: true,
+      isSaas: false,
+      displayDisaStigBanner: false,
+    });
+    server.use(
+      http.get(`${API_URL}standalone-account`, () =>
+        HttpResponse.json({ message: "Unavailable" }, { status: 500 }),
+      ),
+    );
+
+    renderWithProviders(<LoginPage />);
+
+    expect(
+      await screen.findByRole("heading", { name: "Sign in to Landscape" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: /create.*account/i }),
+    ).not.toBeInTheDocument();
   });
 });
