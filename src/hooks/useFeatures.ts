@@ -34,7 +34,6 @@ export default function useFeatures(userEmail: string | null) {
     queryKey: ["debarchive", "features", userEmail],
     queryFn: async () => axios.get(`${API_URL_DEB_ARCHIVE}features`),
     select: (response) => response.data?.features,
-    enabled: !!userEmail,
   });
 
   const isLoading = isGettingFeatures || isGettingDebarchiveFeatures;
