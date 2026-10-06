@@ -19,6 +19,7 @@ type QueryResultType = UseInfiniteQueryResult<
 const mockDownshift = {
   highlightedIndex: -1,
   getItemProps: vi.fn(),
+  getMenuProps: vi.fn(),
 } as unknown as ControllerStateAndHelpers<Package>;
 
 const mockQueryResult = {
