@@ -162,7 +162,6 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                   "u-no-padding",
                   classes.suggestionsContainer,
                 )}
-                {...downshiftOptions.getMenuProps()}
               >
                 <div className={classes.topRow}>
                   <Switch

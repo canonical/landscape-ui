@@ -59,6 +59,7 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
           className={classNames(
             "p-list u-no-margin p-autocomplete__suggestions",
           )}
+          {...downshiftOptions.getMenuProps()}
         >
           {results.map((item: Package, index: number) => {
             return (
