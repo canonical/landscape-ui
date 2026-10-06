@@ -54,7 +54,7 @@ const StaffPeopleContainer: FC = () => {
   return (
     <>
       <HeaderWithSearch
-        placeholder="Search by name, email or Salesforce key"
+        placeholder="Search by name, email or invitation Salesforce key"
         actions={
           <PageParamFilter
             pageParamKey="type"
