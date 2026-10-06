@@ -45,13 +45,11 @@ describe("SnapDropdownSearch", () => {
     const searchBox = screen.getByRole("searchbox");
     await userEvent.type(searchBox, "testsnap");
 
-      await waitFor(() => {
-        expect(requestCount).toBeGreaterThan(0);
-      });
-      await new Promise((resolve) =>
-        setTimeout(resolve, DEBOUNCE_DELAY * 2),
-      );
-      expect(requestCount).toBe(1);
+    await waitFor(() => {
+      expect(requestCount).toBeGreaterThan(0);
+    });
+    await new Promise((resolve) => setTimeout(resolve, DEBOUNCE_DELAY * 2));
+    expect(requestCount).toBe(1);
   });
 
   it("cancels a pending debounced request when the field is cleared", async () => {

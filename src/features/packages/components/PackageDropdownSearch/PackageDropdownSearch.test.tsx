@@ -72,9 +72,7 @@ describe("PackageDropdownSearch", () => {
       await waitFor(() => {
         expect(requestCount).toBeGreaterThan(0);
       });
-      await new Promise((resolve) =>
-        setTimeout(resolve, DEBOUNCE_DELAY * 2),
-      );
+      await new Promise((resolve) => setTimeout(resolve, DEBOUNCE_DELAY * 2));
       expect(requestCount).toBe(1);
     });
 
