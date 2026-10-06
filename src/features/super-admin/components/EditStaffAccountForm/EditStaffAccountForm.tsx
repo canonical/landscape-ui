@@ -135,7 +135,6 @@ const EditStaffAccountForm: FC<EditStaffAccountFormProps> = ({
             label="Unit"
             aria-label="Attachment size unit"
             options={SIZE_UNITS.map(({ value, label }) => ({ value, label }))}
-            wrapperClassName={classes.sizeUnit}
             {...formik.getFieldProps("max_attachment_size_unit")}
           />
         </div>
