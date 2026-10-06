@@ -43,8 +43,8 @@ const AccountCreationSelfHostedForm: FC = () => {
     loginMethods?.oidc.available &&
     loginMethods.oidc.configurations.some(({ enabled }) => enabled),
   );
-  const hasFederatedLoginMethod =
-    isOidcEnabled || isGenericOidcEnabled || isUbuntuOneEnabled;
+  const hasOidcLoginMethod = isOidcEnabled || isGenericOidcEnabled;
+  const hasFederatedLoginMethod = hasOidcLoginMethod || isUbuntuOneEnabled;
   const shouldRedirectToLogin =
     !isPamEnabled && !isPasswordEnabled && hasFederatedLoginMethod;
 
@@ -92,7 +92,7 @@ const AccountCreationSelfHostedForm: FC = () => {
         createStandaloneAccount={createStandaloneAccount}
         signInAfterCreation={signInAfterCreation}
         submitting={isCreatingStandaloneAccount}
-        oidcEnabled={isOidcEnabled}
+        oidcEnabled={hasOidcLoginMethod}
         ubuntuOneEnabled={isUbuntuOneEnabled}
       />
     );
@@ -114,7 +114,7 @@ const AccountCreationSelfHostedForm: FC = () => {
       createStandaloneAccount={createStandaloneAccount}
       signInAfterCreation={signInAfterCreation}
       submitting={isCreatingStandaloneAccount}
-      oidcEnabled={isOidcEnabled}
+      oidcEnabled={hasOidcLoginMethod}
       ubuntuOneEnabled={isUbuntuOneEnabled}
     />
   );

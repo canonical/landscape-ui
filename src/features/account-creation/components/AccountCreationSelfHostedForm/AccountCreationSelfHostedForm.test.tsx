@@ -7,6 +7,7 @@ import {
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
+import { ROUTES } from "@/libs/routes";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AccountCreationSelfHostedForm from "./AccountCreationSelfHostedForm";
 
@@ -91,6 +92,37 @@ describe("AccountCreationSelfHostedForm", () => {
       screen.queryByText(/no login methods are configured/i),
     ).not.toBeInTheDocument();
   });
+
+  it.each([false, true])(
+    "offers generic OIDC sign-in alongside account creation with PAM=%s",
+    async (pamEnabled) => {
+      setEndpointStatus({
+        status: "variant",
+        path: "login/methods",
+        response: {
+          ...oidcOnlyLoginMethods,
+          pam: { available: pamEnabled, enabled: pamEnabled },
+          password: pamEnabled
+            ? noneLoginMethods.password
+            : oidcOnlyLoginMethods.password,
+        },
+      });
+
+      renderWithProviders(<AccountCreationSelfHostedForm />);
+
+      expect(
+        await screen.findByRole("heading", {
+          name: pamEnabled
+            ? "Create a new Landscape account with PAM"
+            : "Create a new Landscape account",
+        }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: "Sign in with OIDC instead" }),
+      ).toHaveAttribute("href", ROUTES.auth.login());
+      expect(navigateMock).not.toHaveBeenCalled();
+    },
+  );
 
   it.each([
     { available: false, enabled: true },
