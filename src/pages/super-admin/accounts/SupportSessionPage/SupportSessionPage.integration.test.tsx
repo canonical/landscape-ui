@@ -14,8 +14,12 @@ import userEvent from "@testing-library/user-event";
 import { delay, http, HttpResponse } from "msw";
 import type { FC, ReactNode } from "react";
 import { Navigate, Outlet, Route, Routes, useNavigate } from "react-router";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import SupportSessionPage from "./SupportSessionPage";
+
+// Super admin mode only exists on SaaS; the deployment mode is not under
+// test here.
+vi.mock("@/hooks/useEnv", () => import("@/tests/mocks/env"));
 
 const SUPER_ADMIN = `/${PATHS.superAdmin.root}`;
 const SLOW_SWITCH_MS = 1000;

@@ -11,6 +11,7 @@ import {
 } from "@/features/auth";
 import Redirecting from "@/components/layout/Redirecting";
 import type { FeatureKey } from "@/types/FeatureKey";
+import useEnv from "@/hooks/useEnv";
 import useFeatures from "@/hooks/useFeatures";
 import { ROUTES } from "@/libs/routes";
 import { HOMEPAGE_PATH } from "@/constants";
@@ -28,7 +29,7 @@ export interface AuthContextProps {
   hasAccounts: boolean;
   /**
    * Whether the user is Canonical staff, who can use super admin mode.
-   * Always false on self-hosted, where staff cannot log in.
+   * Always false on self-hosted, where the mode does not exist.
    */
   isSuperAdmin: boolean;
   /** Whether the user can edit any account in super admin mode. */
@@ -81,10 +82,18 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     user?.email ?? null,
   );
 
+  const { isSaas, envLoading } = useEnv();
+
   const globalRoles = user?.global_roles ?? [];
-  const canManageAccounts = globalRoles.includes(ACCOUNT_MANAGER);
-  const isSuperAdmin =
-    canManageAccounts || globalRoles.includes(SUPPORT_PROVIDER);
+  const hasStaffRole =
+    globalRoles.includes(ACCOUNT_MANAGER) ||
+    globalRoles.includes(SUPPORT_PROVIDER);
+
+  // Super admin mode is a SaaS tool: the server only grants its permissions
+  // on hosted deployments, whatever roles a self-hosted person holds.
+  const isSuperAdmin = hasStaffRole && isSaas;
+  const canManageAccounts =
+    isSuperAdmin && globalRoles.includes(ACCOUNT_MANAGER);
 
   const handleLogout = useCallback(() => {
     queryClient.setQueryData(AUTH_QUERY_KEY, null);
@@ -144,7 +153,9 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       value={{
         isFeatureEnabled,
         user,
-        authLoading: isAuthLoading || isFeaturesLoading,
+        // Only staff wait for the deployment mode: it decides their gates.
+        authLoading:
+          isAuthLoading || isFeaturesLoading || (hasStaffRole && envLoading),
         authorized: null !== user,
         hasAccounts: !!user?.accounts.length,
         isSuperAdmin,
