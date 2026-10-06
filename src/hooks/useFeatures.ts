@@ -1,16 +1,20 @@
 import { useCallback } from "react";
 import type { FeatureKey } from "@/types/FeatureKey";
-import type { Feature } from "@/types/Feature";
+import type { DebarchiveFeature, Feature } from "@/types/Feature";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import axios from "axios";
 import type { ApiError } from "@/types/api/ApiError";
 import { API_URL, API_URL_DEB_ARCHIVE } from "@/constants";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+
+interface DebarchiveFeatureResponse {
+  readonly features: DebarchiveFeature[];
+  readonly nextPageToken: string;
+}
 
 export default function useFeatures(userEmail: string | null) {
   const { data: serverFeatures = [], isPending: isGettingFeatures } = useQuery<
-    AxiosResponse<ApiPaginatedResponse<Feature>>,
+    AxiosResponse<{ results: Feature[] }>,
     AxiosError<ApiError>,
     Feature[]
   >({
@@ -21,23 +25,25 @@ export default function useFeatures(userEmail: string | null) {
 
   const {
     data: debarchiveFeatures = [],
-    isPending: isGettingDebarchiveFeatures,
+    isLoading: isGettingDebarchiveFeatures,
   } = useQuery<
-    AxiosResponse<ApiPaginatedResponse<Feature>>,
+    AxiosResponse<DebarchiveFeatureResponse>,
     AxiosError<ApiError>,
-    Feature[]
+    DebarchiveFeature[]
   >({
     queryKey: ["debarchive", "features", userEmail],
     queryFn: async () => axios.get(`${API_URL_DEB_ARCHIVE}features`),
-    select: (response) => response.data?.results,
+    select: (response) => response.data?.features,
+    enabled: !!userEmail,
   });
 
   const isLoading = isGettingFeatures || isGettingDebarchiveFeatures;
 
   const isFeatureEnabled = useCallback(
     (featureKey: FeatureKey) => {
-      const features = [...serverFeatures, ...debarchiveFeatures];
-      const match = features.find((feature) => feature.key === featureKey);
+      const match =
+        serverFeatures.find(({ key }) => key === featureKey) ??
+        debarchiveFeatures.find(({ featureId }) => featureId === featureKey);
 
       if (!match) {
         if (!isLoading) {

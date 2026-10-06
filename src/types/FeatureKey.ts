@@ -1,4 +1,4 @@
-type ServerFeatureKey =
+export type ServerFeatureKey =
   | "computer-soft-deletion"
   | "employee-management"
   | "instance-reports"
@@ -10,6 +10,6 @@ type ServerFeatureKey =
   | "usg-profiles"
   | "wsl-child-instance-profiles";
 
-type DebarchiveFeatureKey = "persistent-lros";
+export type DebarchiveFeatureKey = "temporal-lros";
 
 export type FeatureKey = ServerFeatureKey | DebarchiveFeatureKey;

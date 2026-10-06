@@ -6,7 +6,7 @@ import ViewLogsButton from "../ViewLogsButton";
 import { getOperationTypeTexts } from "./helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
-import { useCanCancelOperations } from "../..";
+import { useCanCancelOperations } from "../../hooks";
 
 interface OperationStatusContentProps {
   readonly type: "publication" | "mirror" | "local";
@@ -62,9 +62,9 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
           <Icon
             name={`spinner--muted u-animation--spin ${classes.marginRight}`}
           />
-          <i role="status" className="u-text--muted">
+          <span role="status" className="u-text--muted">
             Loading...
-          </i>
+          </span>
         </>
       );
     }
@@ -101,7 +101,9 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
       <>
         <Icon name={`status-in-progress ${classes.marginRight}`} />
         <span className={classes.marginRight}>{ongoing}</span>
-        <span className="u-text--muted">{progressPercent}%</span>
+        <span className="u-text--muted" aria-live="off">
+          {progressPercent}%
+        </span>
         {isTableCell && canCancelOperations && (
           <Button
             appearance="link"

@@ -27,7 +27,7 @@ export const useGetOperation = (
     queryKey: ["operation", name],
     queryFn: async () => authFetchDebArchive.get(name),
     ...config,
-    enabled: !!name && config.enabled,
+    enabled: !!name && (config.enabled ?? true),
   });
 
   return {

@@ -2,11 +2,7 @@ import { http, HttpResponse } from "msw";
 import { API_URL, API_URL_DEB_ARCHIVE } from "@/constants";
 import { debarchiveFeatures, features } from "@/tests/mocks/features";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import type { Feature } from "@/types/Feature";
-import {
-  generatePaginatedResponse,
-  shouldApplyEndpointStatus,
-} from "@/tests/server/handlers/_helpers";
+import { shouldApplyEndpointStatus } from "@/tests/server/handlers/_helpers";
 import { createEndpointStatusNetworkError } from "./_constants";
 
 // Keep `instance-reports` present even when the features endpoint is mocked as
@@ -25,13 +21,7 @@ export default [
       const { status } = getEndpointStatus();
 
       if (status === "empty") {
-        return HttpResponse.json(
-          generatePaginatedResponse<Feature>({
-            data: alwaysEnabledFeatures,
-            offset: 0,
-            limit: 20,
-          }),
-        );
+        return HttpResponse.json({ results: alwaysEnabledFeatures });
       }
 
       if (status === "error") {
@@ -39,13 +29,7 @@ export default [
       }
     }
 
-    return HttpResponse.json(
-      generatePaginatedResponse<Feature>({
-        data: features,
-        offset: 0,
-        limit: 20,
-      }),
-    );
+    return HttpResponse.json({ results: features });
   }),
 
   http.get(`${API_URL_DEB_ARCHIVE}features`, () => {
@@ -53,13 +37,7 @@ export default [
       const { status } = getEndpointStatus();
 
       if (status === "empty") {
-        return HttpResponse.json(
-          generatePaginatedResponse<Feature>({
-            data: [],
-            offset: 0,
-            limit: 20,
-          }),
-        );
+        return HttpResponse.json({ features: [], nextPageToken: "" });
       }
 
       if (status === "error") {
@@ -67,12 +45,9 @@ export default [
       }
     }
 
-    return HttpResponse.json(
-      generatePaginatedResponse<Feature>({
-        data: debarchiveFeatures,
-        offset: 0,
-        limit: 20,
-      }),
-    );
+    return HttpResponse.json({
+      features: debarchiveFeatures,
+      nextPageToken: "",
+    });
   }),
 ];

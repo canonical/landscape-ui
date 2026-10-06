@@ -1,4 +1,4 @@
-import type { Feature } from "@/types/Feature";
+import type { DebarchiveFeature, Feature } from "@/types/Feature";
 
 export const features: Feature[] = [
   {
@@ -115,16 +115,13 @@ export const features: Feature[] = [
   },
 ];
 
-export const debarchiveFeatures: Feature[] = [
+export const debarchiveFeatures: DebarchiveFeature[] = [
   {
-    name: "Persistent LROs",
+    name: "features/temporal-lros",
+    featureId: "temporal-lros",
+    displayName: "Temporal long-running operations",
     description:
-      "Supports persistent long-running operations that can be canceled.",
-    key: "persistent-lros",
-    database_key: 20,
+      "Run long-running operations on Temporal instead of in memory.",
     enabled: true,
-    details: {
-      configuration: false,
-    },
   },
 ];
