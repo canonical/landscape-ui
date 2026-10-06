@@ -13,27 +13,25 @@ const CheckboxInputWithHelp = ({
   ...checkboxInputProps
 }: CheckboxInputWithHelpProps) => {
   return (
-    <div className={classes.container}>
-      <Input
-        type="checkbox"
-        label={label}
-        disabled={disabled}
-        {...checkboxInputProps}
-      />
-      <Tooltip
-        message={tooltipMessage}
-        position="top-center"
-        className={classes.tooltip}
-        positionElementClassName={classes.tooltipPositionElement}
-      >
-        <Icon
-          name={ICONS.help}
-          aria-hidden
-          className={disabled ? classes.disabled : undefined}
-        />
-        <span className="u-off-screen">Help</span>
-      </Tooltip>
-    </div>
+    <Input
+      type="checkbox"
+      label={
+        <span>
+          {label}
+          <Tooltip
+            message={tooltipMessage}
+            position="top-center"
+            className={classes.tooltip}
+            positionElementClassName={classes.tooltipPositionElement}
+          >
+            <Icon name={ICONS.help} aria-hidden />
+            <span className="u-off-screen">Help</span>
+          </Tooltip>
+        </span>
+      }
+      disabled={disabled}
+      {...checkboxInputProps}
+    />
   );
 };
 

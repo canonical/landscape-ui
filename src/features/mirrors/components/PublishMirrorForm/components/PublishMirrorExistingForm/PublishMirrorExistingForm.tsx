@@ -3,9 +3,9 @@ import Blocks from "@/components/layout/Blocks";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import { Form, Select } from "@canonical/react-components";
+import { Form, Select, Icon } from "@canonical/react-components";
 import { useFormik } from "formik";
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import useNotify from "@/hooks/useNotify";
 import type { SelectOption } from "@/types/SelectOption";
 import {
@@ -15,16 +15,28 @@ import {
 } from "@/features/publications";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import PublishMirrorContentsBlock from "../PublishMirrorContentsBlock";
-import type { Mirror, Publication } from "@canonical/landscape-openapi";
+import type {
+  Mirror,
+  Publication,
+  PublicationTarget,
+} from "@canonical/landscape-openapi";
+import {
+  useGetOperation,
+  useCancelOperation,
+  useCanCancelOperations,
+} from "@/features/operations";
+import classes from "./PublishMirrorExistingForm.module.scss";
 
 interface PublishMirrorExistingFormProps {
   readonly mirror: Mirror;
   readonly publications: Publication[];
+  readonly publicationTargets: PublicationTarget[];
 }
 
 const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
   mirror,
   publications,
+  publicationTargets,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
@@ -32,12 +44,26 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
 
   const { publishPublication, isPublishingPublication } =
     usePublishPublication();
+  const { cancelOperation } = useCancelOperation();
+  const canCancelOperations = useCanCancelOperations();
+
+  const [publication, setPublication] = useState<Publication | undefined>(
+    publications[0],
+  );
+  const { operation, isGettingOperation } = useGetOperation(
+    publication?.lastOperation ?? "",
+  );
+  const isInProgress = !!operation && !operation.done;
 
   const formik = useFormik({
     initialValues: { name: publications[0]?.name ?? "" },
 
     onSubmit: async (values) => {
       try {
+        if (isInProgress) {
+          if (!canCancelOperations) return;
+          await cancelOperation(operation.name);
+        }
         await publishPublication({ name: values.name });
 
         closeSidePanel();
@@ -64,15 +90,37 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
     }),
   );
 
-  const publication = publications.find(
-    ({ name }) => name === formik.values.name,
-  );
-
   // This should never happen because this form is only enabled when there are
   // publications, but handling it reduces the cyclomatic complexity.
   if (!publication) {
     throw new Error("Selected publication not found");
   }
+
+  const helpText = isGettingOperation ? (
+    <span>
+      <Icon
+        name="spinner--muted"
+        className={`${classes.loadingIcon} u-animation--spin`}
+      />{" "}
+      Checking publication status... please wait.
+    </span>
+  ) : undefined;
+
+  const warning =
+    canCancelOperations && isInProgress
+      ? "The selected publication is already being published. If you proceed, it will cancel the ongoing publishing and start a new one."
+      : undefined;
+
+  const getErrors = () => {
+    if (formik.touched.name && isInProgress && !canCancelOperations) {
+      return "The selected publication is already being published. You must wait for this action to be completed to republish it.";
+    }
+    return getFormikError(formik, "name");
+  };
+
+  const targetDisplayName = publicationTargets.find(
+    ({ name }) => name === publication.publicationTarget,
+  )?.displayName;
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -82,13 +130,21 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
             label="Publication"
             required
             options={publicationOptions}
-            error={getFormikError(formik, "name")}
+            error={getErrors()}
+            caution={warning}
+            help={helpText}
             {...formik.getFieldProps("name")}
+            onChange={(event) => {
+              formik.handleChange(event);
+              setPublication(
+                publications.find(({ name }) => name === event.target.value),
+              );
+            }}
           />
 
           <ReadOnlyField
             label="Publication target"
-            value={publication.publicationTarget}
+            value={targetDisplayName ?? publication.publicationTarget}
             tooltipMessage="The publication target is defined by the publication."
           />
 
@@ -106,6 +162,7 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
 
       <SidePanelFormButtons
         submitButtonLoading={formik.isSubmitting || isPublishingPublication}
+        submitButtonDisabled={isGettingOperation}
         submitButtonText="Publish mirror"
         onCancel={popSidePathUntilClear}
       />

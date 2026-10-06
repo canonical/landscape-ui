@@ -9,7 +9,7 @@ import MirrorDetailsTab from "./components/MirrorDetailsTab";
 import MirrorPackagesList from "../MirrorPackagesList";
 import {
   useGetOperation,
-  OperationErrorNotification,
+  OperationStatusNotification,
 } from "@/features/operations";
 
 const MirrorDetails: FC = () => {
@@ -19,7 +19,6 @@ const MirrorDetails: FC = () => {
   const [tabId, setTabId] = useState<"details" | "packages">("details");
 
   const { operation } = useGetOperation(mirror?.lastOperation ?? "", {
-    enabled: !!mirror?.lastOperation,
     refetchInterval: ({ state }) =>
       state.error || state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
   });
@@ -54,12 +53,11 @@ const MirrorDetails: FC = () => {
     <>
       <SidePanel.Header>{mirror.displayName}</SidePanel.Header>
       <SidePanel.Content>
-        <OperationErrorNotification
-          isVisible={!!operation?.error}
-          title="Update failed"
-          message="Your last mirror update was not completed successfully."
+        <OperationStatusNotification operation={operation} type="update" />
+        <MirrorDetailsActionBlock
+          mirror={mirror}
+          isUpdating={!!operation && !operation.done}
         />
-        <MirrorDetailsActionBlock mirror={mirror} operation={operation} />
         <Tabs links={links} />
         {tabId === "details" && (
           <MirrorDetailsTab mirror={mirror} operation={operation} />

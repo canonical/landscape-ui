@@ -33,7 +33,7 @@ describe("MirrorDetails", () => {
     );
 
     expect(
-      await screen.findByRole("heading", { name: "Update failed" }),
+      await screen.findByRole("heading", { name: /Update failed/i }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
