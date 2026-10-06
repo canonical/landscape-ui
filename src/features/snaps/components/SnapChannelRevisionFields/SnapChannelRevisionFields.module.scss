@@ -13,8 +13,9 @@
       margin-bottom: 0;
     }
 
-    :global(.p-form-validation__message) {
-      // cancel Vanilla's own -$sp-unit pull now that the input has no bottom margin to offset
+    :global(.p-form-validation__message),
+    :global(.p-form-help-text) {
+      // cancel Vanilla's -$sp-unit pull now that the input has no bottom margin to offset
       margin-top: calc($sp-unit + $spv--x-small);
     }
   }

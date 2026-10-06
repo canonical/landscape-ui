@@ -204,7 +204,7 @@ describe("SnapChangeChannelItem", () => {
     ).toBeInTheDocument();
   });
 
-  it("displays Default channel as enabled when the snap has no available channels", async () => {
+  it("displays Default channel as disabled with help text when the snap has no available channels", async () => {
     renderWithProviders(
       <SnapChangeChannelItem {...props} selectedSnap={snapWithNoChannels} />,
     );
@@ -213,11 +213,12 @@ describe("SnapChangeChannelItem", () => {
       `Channel for ${snapWithNoChannels.snap.name}`,
     );
     await waitFor(() => {
-      expect(channelSelect).not.toBeDisabled();
+      expect(channelSelect).toBeDisabled();
     });
     expect(
       within(channelSelect).getByText("Default channel"),
     ).toBeInTheDocument();
+    expect(screen.getByText("No channels were found")).toBeInTheDocument();
   });
 
   it("calls onDelete when the delete button is clicked", async () => {

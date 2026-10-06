@@ -421,7 +421,7 @@ describe("SnapsActionForm", () => {
     const channelSelect = await screen.findByRole("combobox", {
       name: `Channel for ${firstSnap.snap.name}`,
     });
-    expect(channelSelect).not.toBeDisabled();
+    expect(channelSelect).toBeDisabled();
     expect(
       within(channelSelect).getByText("Default channel"),
     ).toBeInTheDocument();
