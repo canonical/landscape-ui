@@ -16,8 +16,8 @@
     :global(.p-form-validation__message),
     :global(.p-form-help-text) {
       // cancel Vanilla's -$sp-unit pull now that the input has no bottom margin to offset
-      margin-top: calc($sp-unit + $spv--x-small);
       margin-bottom: 0;
+      margin-top: calc($sp-unit + $spv--x-small);
     }
   }
 }
