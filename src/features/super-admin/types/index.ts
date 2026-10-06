@@ -1,3 +1,4 @@
+export type { FeatureRegistryEntry } from "./FeatureRegistry";
 export type {
   StaffAccount,
   StaffAccountAdministrator,

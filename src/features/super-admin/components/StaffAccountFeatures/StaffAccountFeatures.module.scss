@@ -1,0 +1,23 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.description {
+  margin-bottom: $spv--large;
+}
+
+.name {
+  display: block;
+}
+
+.enabledColumn {
+  width: 8rem;
+}
+
+/* Contain the absolutely positioned input of the switch: left to the page, it
+   overflows the scrolling panel and focusing it scrolls the whole document. */
+.switch {
+  position: relative;
+
+  :global(.p-switch) {
+    margin-bottom: 0;
+  }
+}

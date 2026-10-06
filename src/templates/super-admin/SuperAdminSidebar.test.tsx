@@ -83,7 +83,7 @@ describe("SuperAdminSidebar", () => {
     renderAt(ROUTES.superAdmin.accounts());
 
     expect(
-      screen.getByRole("link", { name: "Back to normal view" }),
+      screen.getByRole("link", { name: "Back to main view" }),
     ).toHaveAttribute("href", RETURN_TO);
   });
 
