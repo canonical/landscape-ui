@@ -30,15 +30,11 @@ const LoginPage: FC = () => {
       return;
     }
 
-    if (
-      isCheckingStandaloneAccount ||
-      loginMethodsLoading ||
-      accountExists === undefined
-    ) {
+    if (isCheckingStandaloneAccount || loginMethodsLoading) {
       return;
     }
 
-    const needsFirstAdmin = accountExists === false;
+    const needsFirstAdmin = !accountExists;
     const isPasswordAuthEnabled = loginMethods?.password?.enabled ?? false;
 
     if (needsFirstAdmin && isPasswordAuthEnabled) {
@@ -53,7 +49,7 @@ const LoginPage: FC = () => {
     navigate,
   ]);
 
-  const needsFirstAdmin = isSelfHosted && accountExists === false;
+  const needsFirstAdmin = isSelfHosted && !accountExists;
   const isPasswordAuthEnabled = loginMethods?.password?.enabled ?? false;
   const shouldRedirect = needsFirstAdmin && isPasswordAuthEnabled;
 

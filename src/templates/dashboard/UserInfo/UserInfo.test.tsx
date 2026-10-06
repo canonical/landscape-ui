@@ -47,7 +47,6 @@ const labels = ["Unknown user", "Alerts", "Sign out"];
 
 const resolvedEnvState: EnvContextState = {
   envLoading: false,
-  envError: false,
   isSaas: true,
   isSelfHosted: false,
   packageVersion: "",
@@ -243,23 +242,6 @@ describe("UserInfo", () => {
       await waitFor(() => {
         expect(btn).toHaveAttribute("aria-expanded", "true");
       });
-    });
-
-    it("keeps ordinary account links available when environment loading fails", () => {
-      renderWithProviders(
-        <EnvContext.Provider value={{ ...resolvedEnvState, envError: true }}>
-          <UserInfo />
-        </EnvContext.Provider>,
-      );
-
-      expect(screen.getByRole("link", { name: "General" })).toBeInTheDocument();
-      expect(screen.getByRole("link", { name: "About" })).toBeInTheDocument();
-      expect(
-        screen.queryByRole("link", { name: "Legacy license file" }),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.getByRole("list", { name: "Account settings" }),
-      ).toHaveAttribute("aria-busy", "false");
     });
 
     it("hides the legacy license link when the account is not entitled", async () => {

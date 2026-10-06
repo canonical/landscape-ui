@@ -4,7 +4,6 @@ import Redirecting from "@/components/layout/Redirecting";
 import useDebug from "@/hooks/useDebug";
 import useEnv from "@/hooks/useEnv";
 import { ROUTES } from "@/libs/routes";
-import EnvError from "@/pages/EnvError";
 import { useEffect, useEffectEvent, type FC, type ReactNode } from "react";
 import { useNavigate } from "react-router";
 
@@ -13,7 +12,7 @@ interface Props {
 }
 
 const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
-  const { isSaas, envLoading, envError } = useEnv();
+  const { isSaas, envLoading } = useEnv();
   const {
     isGettingSelfHostedEnabled,
     isSelfHostedEnabled,
@@ -36,7 +35,6 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
 
   useEffect(() => {
     if (
-      envError ||
       envLoading ||
       (selfHostedEnabledQuery && isGettingSelfHostedEnabled) ||
       shouldRender
@@ -55,7 +53,6 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
 
     navigate(ROUTES.account.general(), { replace: true });
   }, [
-    envError,
     envLoading,
     isGettingSelfHostedEnabled,
     navigate,
@@ -64,10 +61,6 @@ const SelfHostedLicenseGuard: FC<Props> = ({ children }) => {
     shouldRender,
     isSaas,
   ]);
-
-  if (envError) {
-    return <EnvError />;
-  }
 
   if (envLoading || (selfHostedEnabledQuery && isGettingSelfHostedEnabled)) {
     return <LoadingState />;

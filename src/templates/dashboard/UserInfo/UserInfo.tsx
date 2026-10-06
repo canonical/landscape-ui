@@ -20,7 +20,7 @@ const UserInfo: FC = () => {
   const { user, isSuperAdmin } = useAuth();
   const { pathname, search } = useLocation();
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
-  const { envError, isSaas, isSelfHosted } = useEnv();
+  const { isSaas, isSelfHosted } = useEnv();
   const {
     isGettingSelfHostedEnabled,
     isSelfHostedEnabled,
@@ -28,14 +28,13 @@ const UserInfo: FC = () => {
     selfHostedEnabledError,
   } = useSelfHostedLicense();
   const isEntitlementLoading =
-    !envError &&
     isEntitlementQueryEnabled &&
     isGettingSelfHostedEnabled &&
     !selfHostedEnabledError;
   const accountSettingsItems = getFilteredByEnvItems({
-    isSaas: !envError && isSaas,
-    isSelfHosted: !envError && isSelfHosted,
-    isSelfHostedLicenseEnabled: !envError && isSelfHostedEnabled,
+    isSaas,
+    isSelfHosted,
+    isSelfHostedLicenseEnabled: isSelfHostedEnabled,
     items: ACCOUNT_SETTINGS.items,
   });
   const { hasAlerts } = useAlertsSummary();

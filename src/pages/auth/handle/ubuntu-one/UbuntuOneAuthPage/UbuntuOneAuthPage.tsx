@@ -13,26 +13,19 @@ import { useGetStandaloneAccount } from "@/features/account-creation";
 import classes from "./UbuntuOneAuthPage.module.scss";
 import { ROUTES } from "@/libs/routes";
 import { useGetUbuntuOneCompletion } from "@/features/auth";
-import EnvError from "@/pages/EnvError";
 
 const UbuntuOneAuthPage: FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const { safeRedirect, setUser } = useAuth();
-  const { envLoading, envError, isSelfHosted, isSaas } = useEnv();
-  const { accountExists, isLoading: standaloneAccountLoading } =
-    useGetStandaloneAccount();
+  const { isSelfHosted, isSaas } = useEnv();
+  const { accountExists } = useGetStandaloneAccount();
 
   const { authData, isLoading } = useGetUbuntuOneCompletion(
     window.location.toString(),
     searchParams.size > 0,
   );
-  const needsEnvironmentDecision =
-    !!authData &&
-    "current_account" in authData &&
-    authData.accounts.length === 0 &&
-    !authData.invitation_id;
 
   useEffect(() => {
     if (!authData || !("current_account" in authData)) {
@@ -52,20 +45,9 @@ const UbuntuOneAuthPage: FC = () => {
     }
 
     if (authData.accounts.length === 0) {
-      if (envLoading || envError) {
-        return;
-      }
-
-      if (
-        isSelfHosted &&
-        (standaloneAccountLoading || accountExists === undefined)
-      ) {
-        return;
-      }
-
       const isPublicSaas =
         isSaas && window.location.hostname === GENERIC_DOMAIN;
-      const isPrivateInstance = isSelfHosted && accountExists === false;
+      const isPrivateInstance = isSelfHosted && !accountExists;
 
       if (isPublicSaas || isPrivateInstance) {
         navigate(ROUTES.auth.createAccount(), { replace: true });
@@ -80,34 +62,18 @@ const UbuntuOneAuthPage: FC = () => {
       replace: true,
     });
   }, [
-    envLoading,
-    envError,
     authData,
     navigate,
     safeRedirect,
     setUser,
     isSelfHosted,
     accountExists,
-    standaloneAccountLoading,
     isSaas,
   ]);
 
-  if (envError && needsEnvironmentDecision) {
-    return <EnvError />;
-  }
-
-  const isWaitingForEnvironment = needsEnvironmentDecision && envLoading;
-  const isWaitingForStandaloneAccount =
-    needsEnvironmentDecision && isSelfHosted && standaloneAccountLoading;
-  const isRoutingAuthResponse =
-    !!authData && "current_account" in authData && !needsEnvironmentDecision;
-
   return (
     <div className={classes.container}>
-      {isLoading ||
-      isWaitingForEnvironment ||
-      isWaitingForStandaloneAccount ||
-      isRoutingAuthResponse ? (
+      {isLoading ? (
         <div className="u-align-text--center">
           <span className={classes.loading}>
             <LoadingState inline />

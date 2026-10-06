@@ -6,7 +6,6 @@ import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
 import { authUser } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
-import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import AccountCreationPage from "./AccountCreationPage";
 
 vi.mock("@/hooks/useAuth");
@@ -28,7 +27,6 @@ const mockAuth: AuthContextProps = {
 
 const mockEnv: EnvContextState = {
   envLoading: false,
-  envError: false,
   isSaas: false,
   isSelfHosted: false,
   packageVersion: "",
@@ -37,26 +35,6 @@ const mockEnv: EnvContextState = {
 };
 
 describe("AccountCreationPage", () => {
-  it("shows an environment failure without redirecting to login", () => {
-    vi.mocked(useAuth).mockReturnValue({ ...mockAuth, authorized: false });
-    vi.mocked(useEnv).mockReturnValue({ ...mockEnv, envError: true });
-
-    renderWithProviders(
-      <>
-        <AccountCreationPage />
-        <LocationDisplay />
-      </>,
-      undefined,
-      "/create-account",
-    );
-
-    expect(
-      screen.getByText("Unable to load environment information."),
-    ).toBeInTheDocument();
-    expect(screen.queryByRole("status")).not.toBeInTheDocument();
-    expect(getLocationDisplay()).toHaveTextContent(/^\/create-account$/);
-  });
-
   it("shows loading state while authLoading", () => {
     vi.mocked(useAuth).mockReturnValue({ ...mockAuth, authLoading: true });
     vi.mocked(useEnv).mockReturnValue(mockEnv);

@@ -13,7 +13,6 @@ interface AboutResponse {
 
 export interface EnvContextState {
   envLoading: boolean;
-  envError: boolean;
   isSaas: boolean;
   isSelfHosted: boolean;
   packageVersion: string;
@@ -23,7 +22,6 @@ export interface EnvContextState {
 
 const initialState: EnvContextState = {
   envLoading: true,
-  envError: false,
   isSaas: false,
   isSelfHosted: false,
   packageVersion: "",
@@ -47,7 +45,6 @@ const EnvProvider: FC<EnvProviderProps> = ({ children }) => {
         const { data } = await axios.get<AboutResponse>(`${API_URL}about`);
         setState({
           envLoading: false,
-          envError: false,
           isSaas:
             undefined !== IS_SELF_HOSTED_ENV
               ? ["false", "0"].includes(IS_SELF_HOSTED_ENV)
@@ -61,11 +58,6 @@ const EnvProvider: FC<EnvProviderProps> = ({ children }) => {
           displayDisaStigBanner: data.display_disa_stig_banner,
         });
       } catch (error) {
-        setState((currentState) => ({
-          ...currentState,
-          envLoading: false,
-          envError: true,
-        }));
         debug(error);
       }
     })();

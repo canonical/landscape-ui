@@ -65,7 +65,6 @@ const authContextValues: AuthContextProps = {
 
 const mockSelfHosted: EnvContextState = {
   envLoading: false,
-  envError: false,
   isSaas: false,
   isSelfHosted: true,
   packageVersion: "",
@@ -75,7 +74,6 @@ const mockSelfHosted: EnvContextState = {
 
 const mockSaas: EnvContextState = {
   envLoading: false,
-  envError: false,
   isSaas: true,
   isSelfHosted: false,
   packageVersion: "",
