@@ -58,12 +58,102 @@ export const packages = [
     },
   },
   {
+    id: 75,
+    name: "apt",
+    summary: "APT package management utility",
+    version: "2.3.6",
+    computers: {
+      count: 23,
+    },
+  },
+  {
+    id: 74,
+    name: "apt",
+    summary: "APT package management utility",
+    version: "2.3.5",
+    computers: {
+      count: 23,
+    },
+  },
+  {
+    id: 73,
+    name: "apt",
+    summary: "APT package management utility",
+    version: "2.3.4",
+    computers: {
+      count: 23,
+    },
+  },
+  {
+    id: 72,
+    name: "apt",
+    summary: "APT package management utility",
+    version: "2.3.3",
+    computers: {
+      count: 23,
+    },
+  },
+  {
+    id: 71,
+    name: "apt",
+    summary: "APT package management utility",
+    version: "2.3.2",
+    computers: {
+      count: 23,
+    },
+  },
+  {
     id: 7,
     name: "apt",
     summary: "APT package management utility",
     version: "2.3.1",
     computers: {
       count: 23,
+    },
+  },
+  {
+    id: 85,
+    name: "apt",
+    summary: "APT package management utility",
+    version: "1.4.13",
+    computers: {
+      count: 7,
+    },
+  },
+  {
+    id: 84,
+    name: "apt",
+    summary: "APT package management utility",
+    version: "1.4.12",
+    computers: {
+      count: 7,
+    },
+  },
+  {
+    id: 83,
+    name: "apt",
+    summary: "APT package management utility",
+    version: "1.4.11",
+    computers: {
+      count: 7,
+    },
+  },
+  {
+    id: 82,
+    name: "apt",
+    summary: "APT package management utility",
+    version: "1.4.10",
+    computers: {
+      count: 7,
+    },
+  },
+  {
+    id: 81,
+    name: "apt",
+    summary: "APT package management utility",
+    version: "1.4.9",
+    computers: {
+      count: 7,
     },
   },
   {

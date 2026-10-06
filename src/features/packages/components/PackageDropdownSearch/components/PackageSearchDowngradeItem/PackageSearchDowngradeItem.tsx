@@ -1,9 +1,8 @@
-import type {
-  PackageWithVersions,
-  SearchPackagesRequest,
-  SearchPackagesResponse,
+import type { PackageWithVersions } from "@/features/packages";
+import {
+  mapActionTypeToQueryParams,
+  useSearchPackages,
 } from "@/features/packages";
-import { mapActionTypeToQueryParams } from "@/features/packages";
 import type { FC } from "react";
 import classes from "./PackageSearchDowngradeItem.module.scss";
 import type { MultiSelectItem } from "@canonical/react-components";
@@ -17,13 +16,10 @@ import {
 import { pluralize, toInstanceQuery } from "@/utils/_helpers";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import LoadingState from "@/components/layout/LoadingState";
-import type { UseQueryOptions } from "@tanstack/react-query";
-import { useQuery } from "@tanstack/react-query";
-import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiError } from "@/types/api/ApiError";
-import useFetch from "@/hooks/useFetch";
 import { useTheme } from "@/context/theme";
 import classNames from "classnames";
+import { useIntersectionObserver } from "usehooks-ts";
+import { QUERY_LIMIT } from "../../constants";
 
 interface PackageSearchDowngradeItemProps {
   readonly instanceIds: number[];
@@ -32,70 +28,65 @@ interface PackageSearchDowngradeItemProps {
   readonly onItemsUpdate: (items: MultiSelectItem[]) => void;
 }
 
-const useMultiSelectPackages = (
-  options: UseQueryOptions<
-    AxiosResponse<SearchPackagesResponse>,
-    AxiosError<ApiError>
-  >,
-) => {
-  const {
-    data: packagesResponse,
-    isPending: isPendingPackages,
-    error: packagesError,
-  } = useQuery<AxiosResponse<SearchPackagesResponse>, AxiosError<ApiError>>(
-    options,
-  );
-
-  if (packagesError) {
-    throw packagesError;
-  }
-
-  if (isPendingPackages) {
-    return {
-      items: [],
-      dropdownHeader: <LoadingState />,
-    };
-  }
-
-  return {
-    items: packagesResponse.data.packages.map((pkg) => ({
-      label: `${pkg.version} (${pluralize(pkg.computers.count, ["instance"], "exact")})`,
-      value: pkg.id,
-    })),
-
-    dropdownHeader:
-      packagesResponse.data.packages.length > 1 ? (
-        <div className={classes.notification}>
-          <Notification severity="caution" borderless className="u-no-margin">
-            If you select multiple versions that apply to the same instance, the
-            most recent version will be applied.
-          </Notification>
-        </div>
-      ) : undefined,
-  };
-};
-
 const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
   instanceIds,
   selectedPackage,
   onDelete,
   onItemsUpdate,
 }) => {
-  const authFetch = useFetch();
   const { isDarkMode } = useTheme();
 
-  const queryParams: SearchPackagesRequest = {
+  const {
+    data: packagesResponse,
+    error: packagesError,
+    isPending: isPendingPackages,
+    isFetchingNextPage: isFetchingNextPackagesPage,
+    fetchNextPage: fetchNextPackagesPage,
+    hasNextPage: hasNextPackagesPage,
+  } = useSearchPackages({
     computer_query: toInstanceQuery(instanceIds),
     names: [selectedPackage[0].name],
+    limit: QUERY_LIMIT,
     ...mapActionTypeToQueryParams("install"),
-  };
+  });
 
-  const { items, dropdownHeader } = useMultiSelectPackages({
-    queryKey: ["packages", queryParams],
-    queryFn: async () => {
-      return authFetch.post("packages:search", queryParams);
+  if (packagesError) {
+    throw packagesError;
+  }
+
+  const { ref: loadingStateRef } = useIntersectionObserver({
+    onChange: (isIntersecting) => {
+      if (isIntersecting && !isFetchingNextPackagesPage) {
+        fetchNextPackagesPage();
+      }
     },
   });
+
+  const packages = isPendingPackages
+    ? []
+    : packagesResponse.pages.flatMap((page) => page.data.packages);
+
+  const items = packages.map((pkg) => ({
+    label: `${pkg.version} (${pluralize(pkg.computers.count, ["instance"], "exact")})`,
+    value: pkg.id,
+  }));
+
+  const getDropdownHeader = () => {
+    if (isPendingPackages) {
+      return <LoadingState />;
+    } else if (packages.length > 1) {
+      return (
+        <div className={classes.notification}>
+          <Notification severity="caution" borderless className="u-no-margin">
+            If you select multiple versions that apply to the same instance, the
+            most recent version will be applied.
+          </Notification>
+        </div>
+      );
+    } else {
+      return undefined;
+    }
+  };
 
   return (
     <li className={classes.selectedContainer}>
@@ -128,8 +119,10 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
       <MultiSelectField
         className={classNames(classes.multiSelect, { "is-paper": !isDarkMode })}
         items={items}
-        dropdownHeader={dropdownHeader}
-        showDropdownFooter={false}
+        dropdownHeader={getDropdownHeader()}
+        showDropdownFooter={hasNextPackagesPage}
+        footerClassName={classes.footer}
+        dropdownFooter={<LoadingState ref={loadingStateRef} />}
         variant="condensed"
         placeholder="Version"
         onItemsUpdate={onItemsUpdate}
