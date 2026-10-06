@@ -70,7 +70,7 @@ describe("LoginForm", () => {
 
       expect(setUser).toHaveBeenCalledWith(authUser);
       expect(safeRedirect).toHaveBeenCalledWith(
-        "/accept-invitation/test-invite",
+        "/accept-invitation/test-invite?redirect-to=%2Fdashboard&external=true",
         {
           external: false,
           replace: true,

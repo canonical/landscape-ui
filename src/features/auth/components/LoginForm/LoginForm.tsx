@@ -95,9 +95,19 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
           setUser(data);
         }
 
-        const destination = invitationId
-          ? ROUTES.auth.invitation({ secureId: invitationId })
-          : (redirectTo ?? HOMEPAGE_PATH);
+        const invitationRedirectParams = new URLSearchParams();
+        if (redirectTo) {
+          invitationRedirectParams.set("redirect-to", redirectTo);
+        }
+        if (isExternalRedirect) {
+          invitationRedirectParams.set("external", "true");
+        }
+        const invitationRedirectQuery = invitationRedirectParams.toString();
+        const invitationDestination = invitationId
+          ? `${ROUTES.auth.invitation({ secureId: invitationId })}${invitationRedirectQuery ? `?${invitationRedirectQuery}` : ""}`
+          : null;
+        const destination =
+          invitationDestination ?? redirectTo ?? HOMEPAGE_PATH;
         safeRedirect(destination, {
           external: !invitationId && isExternalRedirect,
           replace: true,

@@ -460,6 +460,34 @@ describe("auth testing handlers", () => {
     });
   });
 
+  it("mocks employee OIDC login methods and provider start", async () => {
+    enableScenario({
+      pamEnabled: true,
+      passwordEnabled: true,
+      ubuntuOneEnabled: true,
+      oidcEnabled: true,
+    });
+
+    const methodsResponse = await fetch(
+      `${API_URL}employee-access/login/methods`,
+    );
+    expect(methodsResponse.status).toBe(HttpStatusCode.Ok);
+    expect(await methodsResponse.json()).toEqual({
+      pam: { available: false, enabled: false },
+      password: { available: false, enabled: false },
+      ubuntu_one: { available: false, enabled: false },
+      standalone_oidc: { available: true, enabled: true },
+      oidc: { available: false, configurations: [] },
+    });
+
+    const startResponse = await fetch(
+      `${API_URL}employee-access/auth/start?attach_code=mock-attach-code`,
+    );
+    expect(startResponse.status).toBe(HttpStatusCode.Ok);
+    const { location } = await startResponse.json();
+    expect(new URL(location).origin).toBe(window.location.origin);
+  });
+
   it("starts signed out, creates an account, and signs in with the existing mock", async () => {
     enableScenario();
     expect(await (await fetch(`${API_URL}me`)).json()).toEqual({});

@@ -294,6 +294,34 @@ export const createAuthTestingHandlers = (
     return HttpResponse.json({ location: destination.href });
   };
 
+  const loginMethods = (): LoginMethods => ({
+    pam: { available: config.pamEnabled, enabled: config.pamEnabled },
+    password: {
+      available: config.passwordEnabled,
+      enabled: config.passwordEnabled,
+    },
+    ubuntu_one: {
+      available: config.ubuntuOneEnabled,
+      enabled: config.ubuntuOneEnabled,
+    },
+    standalone_oidc: {
+      available: config.oidcEnabled && isSelfHosted,
+      enabled: config.oidcEnabled && isSelfHosted,
+    },
+    oidc: {
+      available: config.oidcEnabled && !isSelfHosted,
+      configurations:
+        config.oidcEnabled && !isSelfHosted ? [...identityProviders] : [],
+    },
+  });
+
+  const employeeLoginMethods = (): LoginMethods => ({
+    ...loginMethods(),
+    pam: { available: false, enabled: false },
+    password: { available: false, enabled: false },
+    ubuntu_one: { available: false, enabled: false },
+  });
+
   const invitationNotFound = (id: string) =>
     apiError(
       `No invitation with secure id '${id}'`,
@@ -321,27 +349,10 @@ export const createAuthTestingHandlers = (
       return new HttpResponse(null, { status: HttpStatusCode.NoContent });
     }),
     http.get(`${API_URL}login/methods`, () => {
-      const methods: LoginMethods = {
-        pam: { available: config.pamEnabled, enabled: config.pamEnabled },
-        password: {
-          available: config.passwordEnabled,
-          enabled: config.passwordEnabled,
-        },
-        ubuntu_one: {
-          available: config.ubuntuOneEnabled,
-          enabled: config.ubuntuOneEnabled,
-        },
-        standalone_oidc: {
-          available: config.oidcEnabled && isSelfHosted,
-          enabled: config.oidcEnabled && isSelfHosted,
-        },
-        oidc: {
-          available: config.oidcEnabled && !isSelfHosted,
-          configurations:
-            config.oidcEnabled && !isSelfHosted ? [...identityProviders] : [],
-        },
-      };
-      return HttpResponse.json(methods);
+      return HttpResponse.json(loginMethods());
+    }),
+    http.get(`${API_URL}employee-access/login/methods`, () => {
+      return HttpResponse.json(employeeLoginMethods());
     }),
     http.post(`${API_URL}accounts`, async ({ request }) => {
       if (session === null) {
@@ -539,6 +550,9 @@ export const createAuthTestingHandlers = (
       return new HttpResponse(null, { status: HttpStatusCode.NoContent });
     }),
     http.get(`${API_URL}auth/start`, ({ request }) => providerStart(request)),
+    http.get(`${API_URL}employee-access/auth/start`, ({ request }) =>
+      providerStart(request),
+    ),
     http.get(`${API_URL}auth/ubuntu-one/start`, ({ request }) =>
       providerStart(request),
     ),
