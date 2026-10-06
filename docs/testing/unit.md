@@ -112,10 +112,15 @@ type, and detail shape. Cookies, signed JWTs, database persistence, real credent
 validation, and external provider exchanges are not simulated.
 
 Restart Vite after changing environment variables. An ordinary browser reload resets
-the in-memory account/session/invitation state to the configured defaults; SPA
-navigation retains it. The exception is the single navigation immediately after
-mock provider sign-in: its handoff is consumed once and removed, so later reloads
-reset as usual. Forced provider login failures return an error before navigation
+the in-memory account and invitation state to the configured defaults; SPA
+navigation retains it. Successful authentication is persisted in `sessionStorage`
+under `msw:authState` and restored on reload, even after scenario flags change.
+To reset authentication, log out or run `sessionStorage.removeItem("msw:authState")`
+in the browser console, then reload to reset the in-memory session as well.
+The single navigation immediately after mock provider sign-in also restores a
+one-time handoff, which is consumed and removed; later reloads reset the remaining
+mock state as usual, but can still restore the persisted authentication.
+Forced provider login failures return an error before navigation
 and do not create a handoff. In authentication-testing mode, all application APIs are
 intercepted. Unmatched API requests return a visible `MissingMockHandler` 501
 instead of silently contacting a backend. Static assets continue to load normally.
