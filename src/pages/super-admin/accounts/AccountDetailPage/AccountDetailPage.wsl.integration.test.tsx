@@ -298,6 +298,32 @@ describe("AccountDetailPage: WSL limits (integration)", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows the saved limits without trusting a refetch", async () => {
+    // A GET straight after the first write has returned the old defaults
+    // on the real server; the POST response is what the view must show.
+    let gets = 0;
+
+    server.use(
+      http.get(`${API_URL}accounts/acme/wsl-feature-limits`, () => {
+        gets += 1;
+
+        return HttpResponse.json(defaultWslFeatureLimits);
+      }),
+    );
+
+    renderWslLimits("acme");
+
+    await openEditForm();
+    await fillField(HOSTS_LABEL, String(NEW_HOST_LIMIT));
+    await saveChanges();
+    await expectFormClosed();
+
+    const hosts = await findLimit(HOSTS_LABEL);
+
+    expect(await hosts.findByText(String(NEW_HOST_LIMIT))).toBeInTheDocument();
+    expect(gets).toBe(1);
+  });
+
   it("shows a validation error from the server on its field", async () => {
     server.use(
       http.post(`${API_URL}accounts/acme/wsl-feature-limits`, () =>
