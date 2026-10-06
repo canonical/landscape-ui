@@ -29,7 +29,7 @@ export const useGetUsers = (params: GetUsersParams) => {
 
   return {
     users: response?.data?.results ?? [],
-    usersCount: response?.data?.count,
+    usersCount: response?.data?.count ?? 0,
     isLoadingUsers: isPending,
     isFetchingUsers: isFetching,
     usersError: error,

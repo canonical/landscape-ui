@@ -10,12 +10,13 @@ import { users } from "@/tests/mocks/user";
 import { userGroups } from "@/tests/mocks/userGroup";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
-import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import type { User } from "@/types/User";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { Route, Routes } from "react-router";
+import type { UserActivityEvent } from "../../api";
+import UserContainer from "../UserContainer";
 import EditUserForm from "./EditUserForm";
 
 const routePattern = `/${PATHS.instances.root}/${PATHS.instances.single}`;
@@ -37,6 +38,24 @@ const renderEditUserFormWithActivitiesPage = () =>
     undefined,
     ROUTES.instances.details.single(1),
   );
+
+const renderEditUserSidePanel = () =>
+  renderWithProviders(
+    <UserContainer />,
+    undefined,
+    ROUTES.instances.details.single(1),
+    routePattern,
+  );
+
+const openEditUserSidePanel = async (
+  user: ReturnType<typeof userEvent.setup>,
+) => {
+  await user.click(
+    await screen.findByRole("button", { name: '"user1" user actions' }),
+  );
+  await user.click(screen.getByRole("menuitem", { name: 'Edit "user1" user' }));
+  await screen.findByRole("form");
+};
 
 describe("EditUserForm", () => {
   it("renders the form", () => {
@@ -516,7 +535,7 @@ describe("EditUserForm", () => {
       groupnames: [binGroup.name],
       action: "add",
     });
-    expect(requestedComputerIds).toEqual([2, 2, 2, 2]);
+    expect(new Set(requestedComputerIds)).toEqual(new Set([2]));
   });
 
   it("only sends changed profile fields in the edit request", async () => {
@@ -590,21 +609,280 @@ describe("EditUserForm", () => {
     expect(requestBody).toHaveProperty("primary_groupname", "bin");
   });
 
-  it("shows endpoint error notification on submit failure", async () => {
+  it("reports failed changes to user details when only the details request fails", async () => {
     const user = userEvent.setup();
+    renderEditUserSidePanel();
+    await openEditUserSidePanel(user);
+    await user.clear(screen.getByLabelText("Name"));
+    await user.type(screen.getByLabelText("Name"), "Updated user");
     setEndpointStatus({ status: "error", path: "users" });
-    renderEditUserForm();
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    const notification = await screen.findByText(
+      "Changes to user details for user1 could not be queued. Please try again.",
+    );
+    expect(notification.closest("aside")).toBeNull();
+    expect(screen.queryByRole("form")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("An activity is queued to edit user1."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("closes the panel and shows only failed changes on the page when every request fails", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({ status: "empty", path: "users/groups" });
+    renderEditUserSidePanel();
+    await openEditUserSidePanel(user);
+    const panel = screen
+      .getByRole("heading", { name: "Edit user", level: 3 })
+      .closest("aside");
+    assert(panel);
+
+    await user.click(
+      screen.getByRole("combobox", { name: "Additional Groups" }),
+    );
+    await user.click(await screen.findByRole("checkbox", { name: "bin" }));
 
     await user.clear(screen.getByLabelText("Name"));
     await user.type(screen.getByLabelText("Name"), "Updated user");
+    setEndpointStatus([
+      { status: "error", path: "users" },
+      { status: "error", path: "userGroups" },
+    ]);
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
-      ).toBeInTheDocument();
-    });
+    expect(
+      await screen.findByText(
+        "Group and user detail changes for user1 could not be queued. Please try again.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Edit user", level: 3 }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("form")).not.toBeInTheDocument();
+    expect(panel).not.toHaveTextContent("Could not queue");
+    expect(
+      screen.queryByText("An activity is queued to edit user1."),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "View details" }),
+    ).not.toBeInTheDocument();
   });
+
+  it.each(["add", "remove"] as const)(
+    "closes the panel with a page error and preserves the pending group caution when %s succeeds in a mixed save",
+    async (successfulAction) => {
+      const user = userEvent.setup();
+      const groupRequests: string[] = [];
+      const profileRequests: string[] = [];
+      server.use(
+        http.put(`${API_URL}users`, async ({ request }) => {
+          const body = (await request.json()) as { name: string };
+          profileRequests.push(body.name);
+          return HttpResponse.json(
+            { message: "Profile changes failed" },
+            { status: 500 },
+          );
+        }),
+        http.post(
+          `${API_URL}computers/:computerId/usergroups/update_bulk`,
+          async ({ request }) => {
+            const body = (await request.json()) as { action: string };
+            groupRequests.push(body.action);
+            if (body.action === successfulAction) {
+              await delay(100);
+            } else {
+              return HttpResponse.json(
+                { message: "Removing groups failed" },
+                { status: 500 },
+              );
+            }
+            return HttpResponse.json(activities[0]);
+          },
+        ),
+      );
+      setEndpointStatus({
+        status: "variant",
+        path: "user-groups",
+        response: userGroups.filter(({ name }) => name === "daemon"),
+      });
+      renderEditUserSidePanel();
+      await openEditUserSidePanel(user);
+      const panel = screen
+        .getByRole("heading", { name: "Edit user", level: 3 })
+        .closest("aside");
+      assert(panel);
+      await user.click(
+        screen.getByRole("combobox", { name: "Additional Groups" }),
+      );
+      const daemon = await screen.findByRole("checkbox", { name: "daemon" });
+      await waitFor(() => {
+        expect(daemon).toBeChecked();
+      });
+      await user.click(daemon);
+      await user.click(screen.getByRole("checkbox", { name: "bin" }));
+      await user.clear(screen.getByLabelText("Name"));
+      await user.type(screen.getByLabelText("Name"), "Updated user");
+      setEndpointStatus({
+        status: "variant",
+        path: "computers/:computerId/users/:username/pending-activities",
+        response: {
+          count: 1,
+          results: [
+            {
+              activity_id: 103,
+              summary: "Update user group membership",
+              activity_status: "undelivered",
+              creation_time: activities[0].creation_time,
+              completion_time: null,
+              changes: [
+                {
+                  kind: "additional_group",
+                  group_name: successfulAction === "add" ? "bin" : "daemon",
+                  operation: successfulAction,
+                },
+              ],
+            } satisfies UserActivityEvent,
+          ],
+        },
+      });
+      await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+      const failure = await screen.findByText(
+        "Group and user detail changes for user1 could not be queued. Please try again.",
+      );
+      expect(failure).toBeInTheDocument();
+      expect(
+        screen.getByText("Some group changes for user user1 were queued."),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "View details" }),
+      ).toBeInTheDocument();
+      expect(
+        within(panel).queryByRole("button", { name: "View added groups" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: "Edit user", level: 3 }),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByRole("form")).not.toBeInTheDocument();
+      expect(panel).not.toHaveTextContent("Some group changes were queued");
+      expect(failure).not.toHaveTextContent("were queued");
+      expect(
+        screen.queryByText("An activity is queued to edit user1."),
+      ).not.toBeInTheDocument();
+
+      await openEditUserSidePanel(user);
+      expect(
+        await within(panel).findByRole("button", {
+          name: "View activity 103: Queued",
+        }),
+      ).toHaveTextContent("Update user group membership: Queued");
+
+      expect(groupRequests).toEqual(["add", "remove"]);
+      expect(profileRequests).toEqual(["Updated user"]);
+    },
+  );
+
+  it.each([false, true])(
+    "closes the panel and clearly reports queued user details and failed groups (removals: %s)",
+    async (removeGroup) => {
+      const user = userEvent.setup();
+      let groupRequests = 0;
+      const profileRequests: string[] = [];
+      server.use(
+        http.put(`${API_URL}users`, async ({ request }) => {
+          const body = (await request.json()) as Record<string, unknown>;
+          profileRequests.push(String(body.name));
+          return HttpResponse.json(activities[0]);
+        }),
+        http.post(
+          `${API_URL}computers/:computerId/usergroups/update_bulk`,
+          () => {
+            groupRequests += 1;
+            return HttpResponse.json(
+              { message: "Adding groups failed" },
+              { status: 500 },
+            );
+          },
+        ),
+      );
+      setEndpointStatus({
+        status: "variant",
+        path: "user-groups",
+        response: removeGroup
+          ? userGroups.filter(({ name }) => name === "daemon")
+          : [],
+      });
+      renderEditUserSidePanel();
+      await openEditUserSidePanel(user);
+      const panel = screen
+        .getByRole("heading", { name: "Edit user", level: 3 })
+        .closest("aside");
+      assert(panel);
+      await user.click(
+        screen.getByRole("combobox", { name: "Additional Groups" }),
+      );
+      if (removeGroup) {
+        const daemon = await screen.findByRole("checkbox", { name: "daemon" });
+        await waitFor(() => {
+          expect(daemon).toBeChecked();
+        });
+        await user.click(daemon);
+      }
+      await user.click(await screen.findByRole("checkbox", { name: "bin" }));
+      await user.clear(screen.getByLabelText("Name"));
+      await user.type(screen.getByLabelText("Name"), "Updated user");
+      setEndpointStatus({
+        status: "variant",
+        path: "computers/:computerId/users/:username/pending-activities",
+        response: {
+          count: 1,
+          results: [
+            {
+              activity_id: 103,
+              summary: "Edit user user1",
+              activity_status: "undelivered",
+              creation_time: activities[0].creation_time,
+              completion_time: null,
+              changes: [{ kind: "profile", field: "name" }],
+            } satisfies UserActivityEvent,
+          ],
+        },
+      });
+      await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+      expect(
+        await screen.findByText(
+          "Group changes for user user1 could not be queued. Please try again.",
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: "Edit user", level: 3 }),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByRole("form")).not.toBeInTheDocument();
+      expect(panel).not.toHaveTextContent(
+        "User details were queued for update",
+      );
+      expect(
+        screen.queryByText("An activity is queued to edit user1."),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByText("User details for user user1 were queued for update."),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "View details" }),
+      ).toBeInTheDocument();
+
+      await openEditUserSidePanel(user);
+      expect(
+        await within(panel).findByRole("button", {
+          name: "View activity 103: Queued",
+        }),
+      ).toHaveTextContent("Edit user user1: Queued");
+      expect(groupRequests).toBe(removeGroup ? 2 : 1);
+      expect(profileRequests).toEqual(["Updated user"]);
+    },
+  );
 
   it("adds a newly selected additional group", async () => {
     const user = userEvent.setup();

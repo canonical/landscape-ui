@@ -65,7 +65,7 @@ export default [
 
   http.put(`${API_URL}users`, async () => {
     if (shouldApplyEndpointStatus("users")) {
-      const endpointStatus = getEndpointStatus();
+      const endpointStatus = getEndpointStatus("users");
 
       if (endpointStatus.status === "error") {
         throw createEndpointStatusError();

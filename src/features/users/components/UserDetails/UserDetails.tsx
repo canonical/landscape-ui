@@ -12,9 +12,10 @@ import { useGetGroups, useGetUserGroups } from "../../api";
 
 interface UserDetailsProps {
   readonly user: User;
+  readonly onEditError?: (message: string | null) => void;
 }
 
-const UserDetails: FC<UserDetailsProps> = ({ user }) => {
+const UserDetails: FC<UserDetailsProps> = ({ user, onEditError }) => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const instanceId = Number(childInstanceId ?? urlInstanceId);
   const { closeSidePanel } = useSidePanel();
@@ -56,7 +57,11 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
         </Notification>
       )}
 
-      <UserPanelActionButtons selectedUsers={[user]} sidePanel />
+      <UserPanelActionButtons
+        selectedUsers={[user]}
+        sidePanel
+        onEditError={onEditError}
+      />
 
       <InfoGrid spaced>
         <InfoGrid.Item label="Username" large value={user.username} />

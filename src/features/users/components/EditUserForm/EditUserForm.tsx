@@ -8,6 +8,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { ROUTES } from "@/libs/routes";
 import type { UrlParams } from "@/types/UrlParams";
 import type { User } from "@/types/User";
+import { capitalize } from "@/utils/_helpers";
 import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Notification, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -37,9 +38,10 @@ import UserActivityLink from "./UserActivityLink";
 
 interface EditUserFormProps {
   readonly user: User;
+  readonly onError?: (message: string) => void;
 }
 
-const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
+const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
@@ -118,11 +120,13 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
       try {
         const activityRequests: {
           label: string;
+          description: string;
           request: ReturnType<typeof editUser>;
         }[] = [];
         if (groupsToBeAdded.length) {
           activityRequests.push({
             label: "View added groups",
+            description: "group changes",
             request: addUserToGroup({
               computer_id: instanceId,
               groupnames: addedGroupNames,
@@ -133,6 +137,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         if (groupsToBeRemoved.length) {
           activityRequests.push({
             label: "View removed groups",
+            description: "group changes",
             request: removeUserFromGroup({
               computer_id: instanceId,
               groupnames: removedGroupNames,
@@ -150,6 +155,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         if (hasEditUserChanges(editUserPayload)) {
           activityRequests.push({
             label: "View profile changes",
+            description: "user details",
             request: editUser(editUserPayload),
           });
         }
@@ -157,24 +163,71 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
           closeSidePanel();
           return;
         }
-        const activities = await Promise.all(
-          activityRequests.map(async ({ label, request }) => ({
-            activity: (await request).data,
-            label,
-          })),
+        const results = await Promise.allSettled(
+          activityRequests.map(async ({ label, description, request }) => {
+            const { data: activity } = await request;
+            return { activity, label, description };
+          }),
         );
+        const activities = results
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value);
+        const failure = results.find((result) => result.status === "rejected");
+        const failedChanges = [
+          ...new Set(
+            activityRequests
+              .filter((_, index) => results[index]?.status === "rejected")
+              .map(({ description }) => description),
+          ),
+        ];
         closeSidePanel();
-        notify.success({
-          title: `You queued ${user.username} to be edited.`,
-          message: `An activity is queued to edit ${user.username}.`,
-          actions: activities.map(({ activity, label }) => ({
-            label: activities.length === 1 ? "View details" : label,
-            onClick: () => {
-              openActivityDetails(activity);
-            },
-          })),
-        });
+        if (failure) {
+          let failedChangesMessage = `Group changes for user ${user.username}`;
+          if (failedChanges.includes("user details")) {
+            failedChangesMessage = failedChanges.includes("group changes")
+              ? `Group and user detail changes for ${user.username}`
+              : `Changes to user details for ${user.username}`;
+          }
+          const message = `${failedChangesMessage} could not be queued. Please try again.`;
+          if (onError) {
+            onError(message);
+          } else {
+            debug(new Error(message, { cause: failure.reason }));
+            return;
+          }
+        }
+        if (activities.length) {
+          const queuedChanges = [
+            ...new Set(activities.map(({ description }) => description)),
+          ]
+            .map((description) =>
+              failedChanges.includes(description)
+                ? `some ${description}`
+                : description,
+            )
+            .join(" and ");
+          const queuedOperation = activities.some(
+            ({ description }) => description === "user details",
+          )
+            ? "were queued for update"
+            : "were queued";
+          notify.success({
+            title: failure
+              ? `You queued changes for ${user.username}.`
+              : `You queued ${user.username} to be edited.`,
+            message: failure
+              ? `${capitalize(queuedChanges)} for user ${user.username} ${queuedOperation}.`
+              : `An activity is queued to edit ${user.username}.`,
+            actions: activities.map(({ activity, label }) => ({
+              label: activities.length === 1 ? "View details" : label,
+              onClick: () => {
+                openActivityDetails(activity);
+              },
+            })),
+          });
+        }
       } catch (error) {
+        closeSidePanel();
         debug(error);
       }
     },

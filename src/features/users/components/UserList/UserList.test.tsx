@@ -36,6 +36,35 @@ describe("UserList", () => {
   });
 
   describe("Table Interactions", () => {
+    it("shows the pending activity link and spinner in the status cell", () => {
+      const activityId = 103;
+      const pendingUser: User = {
+        ...users[0],
+        pending_activity: {
+          activity_id: activityId,
+          activity_status: "undelivered",
+          summary: `Lock user ${users[0].username}`,
+          operation: "lock",
+        },
+      };
+      renderWithProviders(<UserList {...props} users={[pendingUser]} />);
+
+      const statusCell = screen.getByRole("cell", { name: "Status" });
+      expect(statusCell).toHaveIcon("spinner");
+      expect(
+        within(statusCell).getByRole("link", {
+          name: `View Pending activity to lock for ${pendingUser.username}`,
+        }),
+      ).toHaveAttribute(
+        "href",
+        ROUTES.activities.root({
+          query: `id:${activityId}`,
+        }),
+      );
+      expect(statusCell).toHaveTextContent("Pending activity to lock");
+      expect(statusCell).not.toHaveTextContent("Unlocked");
+    });
+
     it("shows locked and unlocked user icon in the user table", async () => {
       assert(lockedUser);
       assert(unlockedUser);

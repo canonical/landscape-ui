@@ -20,12 +20,14 @@ interface UserPanelActionButtonsProps {
   readonly selectedUsers: User[];
   readonly handleClearSelection?: () => void;
   readonly sidePanel?: boolean;
+  readonly onEditError?: (message: string | null) => void;
 }
 
 const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
   selectedUsers,
   handleClearSelection,
   sidePanel = false,
+  onEditError,
 }) => {
   const { setSidePanelContent } = useSidePanel();
   const {
@@ -54,10 +56,11 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
   };
 
   const handleEditUser = (currentUser: User) => {
+    onEditError?.(null);
     setSidePanelContent(
       "Edit user",
       <Suspense fallback={<LoadingState />}>
-        <EditUserForm user={currentUser} />
+        <EditUserForm user={currentUser} onError={onEditError} />
       </Suspense>,
     );
   };

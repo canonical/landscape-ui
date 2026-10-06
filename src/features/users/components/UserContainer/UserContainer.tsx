@@ -21,6 +21,7 @@ import { useGetUsers } from "../../api";
 
 const UserContainer: FC = () => {
   const [selected, setSelected] = useState<number[]>([]);
+  const [editError, setEditError] = useState<string | null>(null);
 
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const { search, currentPage, pageSize } = usePageParams();
@@ -75,7 +76,17 @@ const UserContainer: FC = () => {
         handleClearSelection={handleClearSelection}
         users={users}
       />
-      {usersCount && usersCount > MAX_USERS_LIMIT && (
+      {editError && (
+        <Notification
+          severity="negative"
+          onDismiss={() => {
+            setEditError(null);
+          }}
+        >
+          {editError}
+        </Notification>
+      )}
+      {usersCount > MAX_USERS_LIMIT && (
         <Notification
           severity="caution"
           title={`Fetched ${MAX_USERS_LIMIT} out of ${usersCount} users`}
@@ -94,6 +105,7 @@ const UserContainer: FC = () => {
           setSelected(userIds);
         }}
         users={users}
+        onEditError={setEditError}
       />
       <TablePagination
         handleClearSelection={handleClearSelection}

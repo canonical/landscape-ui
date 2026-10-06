@@ -19,16 +19,23 @@ interface UserListProps {
   readonly users: User[];
   readonly selected: number[];
   readonly setSelected: (userIds: number[]) => void;
+  readonly onEditError?: (message: string | null) => void;
 }
 
-const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
+const UserList: FC<UserListProps> = ({
+  users,
+  selected,
+  setSelected,
+  onEditError,
+}) => {
   const { setSidePanelContent } = useSidePanel();
 
   const handleEditUser = (user: User) => {
+    onEditError?.(null);
     setSidePanelContent(
       "Edit user",
       <Suspense fallback={<LoadingState />}>
-        <EditUserForm user={user} />
+        <EditUserForm user={user} onError={onEditError} />
       </Suspense>,
     );
   };
@@ -37,7 +44,7 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
     setSidePanelContent(
       "User details",
       <Suspense fallback={<LoadingState />}>
-        <UserDetails user={user} />
+        <UserDetails user={user} onEditError={onEditError} />
       </Suspense>,
     );
   };
@@ -135,7 +142,7 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
         ),
       },
     ],
-    [users, selected],
+    [users, selected, onEditError],
   );
 
   return (
