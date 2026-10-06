@@ -21,6 +21,7 @@ describe("RepublishPublicationModal", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    setEndpointStatus("default");
   });
 
   it("does not render when closed", () => {
