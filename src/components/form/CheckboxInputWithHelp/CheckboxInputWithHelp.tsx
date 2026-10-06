@@ -3,6 +3,7 @@ import { Icon, ICONS, Input, Tooltip } from "@canonical/react-components";
 import classes from "./CheckboxInputWithHelp.module.scss";
 
 interface CheckboxInputWithHelpProps extends InputProps {
+  readonly label: string;
   readonly tooltipMessage: string;
 }
 
@@ -15,6 +16,7 @@ const CheckboxInputWithHelp = ({
   return (
     <Input
       type="checkbox"
+      aria-label={label}
       label={
         <span>
           {label}

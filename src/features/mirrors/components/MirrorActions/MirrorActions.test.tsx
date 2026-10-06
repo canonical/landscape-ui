@@ -95,7 +95,7 @@ describe("MirrorActions", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("confirms canceling an ongoing import before importing packages", async () => {
+  it("confirms canceling an ongoing update before a new update", async () => {
     const user = userEvent.setup();
     renderWithProviders(
       <OperationProvider operationNames={["operations/pppp-gggg-ssss"]}>

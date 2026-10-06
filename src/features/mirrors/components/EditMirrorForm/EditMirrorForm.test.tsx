@@ -212,7 +212,7 @@ describe("EditMirrorForm", () => {
     await expectLoadingState();
 
     const dependenciesCheckbox = screen.getByLabelText(
-      /Include dependencies in filter/i,
+      "Include dependencies in filter",
     );
     expect(dependenciesCheckbox).toBeDisabled();
 
