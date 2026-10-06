@@ -118,7 +118,7 @@ describe("AccountDetailPage: WSL limits (integration)", () => {
     const instances = await findLimit(INSTANCES_LABEL);
     const profiles = await findLimit(PROFILES_LABEL);
 
-    expect(hosts.getByText("1000")).toBeInTheDocument();
+    expect(hosts.getByText("1,000")).toBeInTheDocument();
     expect(instances.getByText("10")).toBeInTheDocument();
     expect(profiles.getByText("100")).toBeInTheDocument();
   });
@@ -243,7 +243,7 @@ describe("AccountDetailPage: WSL limits (integration)", () => {
       }),
     ).toBeInTheDocument();
     expect(
-      dialog.getByText(`${HOSTS_LABEL}: 1000 →`, { exact: false }),
+      dialog.getByText(`${HOSTS_LABEL}: 1,000 →`, { exact: false }),
     ).toBeInTheDocument();
     expect(dialog.getByText(String(NEW_HOST_LIMIT))).toBeInTheDocument();
     expect(dialog.queryByText(INSTANCES_LABEL, { exact: false })).toBeNull();

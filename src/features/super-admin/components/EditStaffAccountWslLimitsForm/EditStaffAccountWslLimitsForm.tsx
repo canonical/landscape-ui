@@ -121,7 +121,8 @@ const EditStaffAccountWslLimitsForm: FC<EditStaffAccountWslLimitsFormProps> = ({
             {describeChanges(pendingLimits, wslLimits).map(
               ({ label, from, to }) => (
                 <li key={label}>
-                  {label}: {from} → <strong>{to}</strong>
+                  {label}: {from.toLocaleString("en")} →{" "}
+                  <strong>{to.toLocaleString("en")}</strong>
                 </li>
               ),
             )}

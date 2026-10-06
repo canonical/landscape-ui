@@ -17,7 +17,7 @@ export const getLimits = (values: FormProps): WslFeatureLimits | null => {
       return null;
     }
 
-    limits[name] = value;
+    limits[name] = Number(value);
   }
 
   return limits as WslFeatureLimits;

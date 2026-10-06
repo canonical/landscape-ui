@@ -63,7 +63,11 @@ const StaffAccountWslLimits: FC<StaffAccountWslLimitsProps> = ({
         <Blocks.Item description="The most Windows hosts, WSL instances per host and WSL instance profiles the account can have. An account without limits of its own has the defaults.">
           <InfoGrid>
             {WSL_LIMIT_FIELDS.map(({ name, label }) => (
-              <InfoGrid.Item key={name} label={label} value={wslLimits[name]} />
+              <InfoGrid.Item
+                key={name}
+                label={label}
+                value={wslLimits[name].toLocaleString("en")}
+              />
             ))}
           </InfoGrid>
         </Blocks.Item>
