@@ -2,6 +2,7 @@ import {
   Children,
   Suspense,
   isValidElement,
+  useContext,
   type ReactElement,
   type ReactNode,
 } from "react";
@@ -20,6 +21,16 @@ import { FeatureGuard } from "@/components/guards/FeatureGuard";
 import { PATHS } from "@/libs/routes";
 import { AuthRoutes } from "./AuthRoutes";
 import { invitationState } from "@/tests/server/handlers/invitations";
+import { redirectToExternalUrl } from "@/features/auth";
+
+vi.mock("@/features/auth", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  redirectToExternalUrl: vi.fn(),
+}));
+
+vi.mock("@/context/sidePanel", () => ({
+  default: ({ children }: { readonly children: ReactNode }) => children,
+}));
 
 interface RouteLikeProps {
   children?: ReactNode;
@@ -108,11 +119,16 @@ describe("AuthRoutes", () => {
 
 describe("invitation routing", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     setEndpointStatus("default");
     invitationState.accepted = false;
   });
 
-  const renderInvitation = (authorized = true, hasAccounts = true) => {
+  const renderInvitation = (
+    authorized = true,
+    hasAccounts = true,
+    routePath = "/accept-invitation/1",
+  ) => {
     const authState: AuthContextProps = {
       authorized,
       hasAccounts,
@@ -126,8 +142,16 @@ describe("invitation routing", () => {
       redirectToExternalUrl: vi.fn(),
       isFeatureEnabled: () => false,
     };
+    const AuthOverride = ({ children }: { readonly children: ReactNode }) => {
+      const { safeRedirect } = useContext(AuthContext);
+      return (
+        <AuthContext.Provider value={{ ...authState, safeRedirect }}>
+          {children}
+        </AuthContext.Provider>
+      );
+    };
     return renderWithProviders(
-      <AuthContext.Provider value={authState}>
+      <AuthOverride>
         <Suspense fallback={<div>Loading route</div>}>
           <Routes>
             {AuthRoutes}
@@ -135,11 +159,15 @@ describe("invitation routing", () => {
               path={HOMEPAGE_PATH}
               element={<div>Organization dashboard</div>}
             />
+            <Route
+              path="/invitation-destination"
+              element={<div>Invitation destination</div>}
+            />
           </Routes>
         </Suspense>
-      </AuthContext.Provider>,
+      </AuthOverride>,
       {},
-      "/accept-invitation/1",
+      routePath,
     );
   };
 
@@ -179,6 +207,55 @@ describe("invitation routing", () => {
     expect(
       await screen.findByText("Organization dashboard"),
     ).toBeInTheDocument();
+  });
+
+  it("honors an internal redirect target after acceptance", async () => {
+    renderInvitation(
+      true,
+      true,
+      "/accept-invitation/1?redirect-to=%2Finvitation-destination",
+    );
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Accept" }),
+    );
+
+    expect(
+      await screen.findByText("Invitation destination"),
+    ).toBeInTheDocument();
+    expect(redirectToExternalUrl).not.toHaveBeenCalled();
+  });
+
+  it("honors the external flag for a safe redirect target after acceptance", async () => {
+    renderInvitation(
+      true,
+      true,
+      "/accept-invitation/1?redirect-to=%2Finvitation-destination&external",
+    );
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Accept" }),
+    );
+
+    await screen.findByText("Redirecting...");
+    expect(redirectToExternalUrl).toHaveBeenCalledWith(
+      new URL("/invitation-destination", window.location.origin).toString(),
+      { replace: true },
+    );
+  });
+
+  it("falls back to the homepage for an unsafe redirect target", async () => {
+    renderInvitation(
+      true,
+      true,
+      "/accept-invitation/1?redirect-to=https%3A%2F%2Fexample.com%2Fother&external",
+    );
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Accept" }),
+    );
+
+    expect(
+      await screen.findByText("Organization dashboard"),
+    ).toBeInTheDocument();
+    expect(redirectToExternalUrl).not.toHaveBeenCalled();
   });
 
   it("navigates to the dashboard after registering through an invitation", async () => {
