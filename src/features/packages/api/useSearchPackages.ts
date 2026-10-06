@@ -54,7 +54,7 @@ export default function useSearchPackages(
     (string | SearchPackagesRequest)[],
     number
   >({
-    queryKey: ["packages", params],
+    queryKey: ["packageSearch", params],
     queryFn: async ({ pageParam }) => {
       return authFetch.post("packages:search", {
         ...params,
