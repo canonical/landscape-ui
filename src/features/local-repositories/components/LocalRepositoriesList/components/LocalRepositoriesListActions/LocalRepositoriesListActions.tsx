@@ -5,6 +5,7 @@ import { useBoolean } from "usehooks-ts";
 import RemoveLocalRepositoryModal from "../../../RemoveLocalRepositoryModal";
 import { useGetRepositoryActions } from "../../../../hooks";
 import PublishLocalRepositoryGuard from "../../../PublishLocalRepositoryGuard";
+import RestartImportModal from "../../../RestartImportModal";
 import { useOperation } from "@/features/operations";
 
 interface LocalRepositoriesListActionsProps {
@@ -24,6 +25,12 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
   } = useBoolean();
 
   const {
+    value: isCancelImportModalOpen,
+    setTrue: openCancelImportModal,
+    setFalse: closeCancelImportModal,
+  } = useBoolean();
+
+  const {
     value: isPublishGuardOpen,
     setTrue: openPublishGuard,
     setFalse: closePublishGuard,
@@ -33,6 +40,7 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
     repository,
     isImporting,
     openRemovalModal,
+    openCancelImportModal,
     openPublishGuard,
   });
 
@@ -53,6 +61,12 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
       <PublishLocalRepositoryGuard
         close={closePublishGuard}
         isOpen={isPublishGuardOpen}
+        repository={repository}
+      />
+
+      <RestartImportModal
+        close={closeCancelImportModal}
+        isOpen={isCancelImportModalOpen}
         repository={repository}
       />
     </>
