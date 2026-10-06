@@ -8,36 +8,48 @@ interface StaffPeopleListActionsProps {
   readonly result: StaffPeopleResult;
 }
 
+interface EnterableAccount {
+  account: string;
+  company: string;
+}
+
 /**
  * The accounts the row leads into: a person's memberships and the accounts
  * that invited them, or an invitation's target. Staff can enter any of them.
  */
-const getAccountNames = (result: StaffPeopleResult): string[] =>
-  result.type === "person"
-    ? [
-        ...new Set([
-          ...result.accounts.map(({ account }) => account),
-          ...result.pending_invitations.map(({ account }) => account),
-        ]),
-      ]
-    : [result.account];
+const getAccounts = (result: StaffPeopleResult): EnterableAccount[] => {
+  if (result.type !== "person") {
+    return [{ account: result.account, company: result.company }];
+  }
+
+  const accounts = new Map<string, EnterableAccount>();
+
+  for (const { account, company } of [
+    ...result.accounts,
+    ...result.pending_invitations,
+  ]) {
+    accounts.set(account, { account, company });
+  }
+
+  return [...accounts.values()];
+};
 
 const StaffPeopleListActions: FC<StaffPeopleListActionsProps> = ({
   result,
 }) => {
   const { enterAccount, isEnteringAccount } = useEnterAccount();
 
-  const accountNames = getAccountNames(result);
+  const accounts = getAccounts(result);
 
-  if (!accountNames.length) {
+  if (!accounts.length) {
     return null;
   }
 
-  const actions: Action[] = accountNames.map((account) => ({
+  const actions: Action[] = accounts.map(({ account, company }) => ({
     icon: "switcher-environments",
     label: `Enter ${account}`,
     disabled: isEnteringAccount,
-    onClick: async () => enterAccount(account),
+    onClick: async () => enterAccount(account, company),
   }));
 
   return (
