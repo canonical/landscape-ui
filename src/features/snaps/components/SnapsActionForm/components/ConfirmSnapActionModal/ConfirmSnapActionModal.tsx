@@ -9,6 +9,10 @@ import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./ConfirmSnapActionModal.module.scss";
 
+interface SnapChangeConfig {
+  confinement?: string;
+}
+
 interface ConfirmSnapActionModalProps {
   readonly actionVerb: SnapAction;
   readonly snaps: InstalledSnapWithCount[];
@@ -18,6 +22,7 @@ interface ConfirmSnapActionModalProps {
   readonly onConfirm: () => void;
   readonly isSubmitting: boolean;
   readonly submitText: string;
+  readonly snapModeConfigs: Record<string, SnapChangeConfig>;
 }
 
 const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
@@ -29,6 +34,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   onConfirm,
   isSubmitting,
   submitText,
+  snapModeConfigs,
 }) => {
   const isChangeChannel = actionVerb === "change channel";
   const hasChannelMode = snapModes.includes("channel");
@@ -45,7 +51,10 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     return "change channel";
   };
 
-  const isClassic = (snap: InstalledSnap) => snap.confinement === "classic";
+  const confinement = (snap: InstalledSnap) =>
+    snapModeConfigs[snap.snap.id]?.confinement ?? snap.confinement;
+
+  const isClassic = (snap: InstalledSnap) => confinement(snap) === "classic";
 
   const isInstallingClassicSnaps =
     actionVerb === "install" && snaps.some(isClassic);

@@ -328,7 +328,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                         onDelete={handleDelete}
                       />
                       {channelRevisionFields}
-                      {item.confinement === "classic" ? (
+                      {config.confinement === "classic" ? (
                         <Notification
                           severity="caution"
                           className={classNames(
@@ -379,6 +379,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
             onConfirm={onSubmit}
             isSubmitting={isSnapActionPending}
             submitText={submitText}
+            snapModeConfigs={snapModeConfigs}
           />
         </Suspense>
       )}

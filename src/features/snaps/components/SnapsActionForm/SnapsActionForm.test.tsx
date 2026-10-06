@@ -750,4 +750,38 @@ describe("SnapsActionForm", () => {
       within(modal).queryByText(/latest revision on the new channel/i),
     ).not.toBeInTheDocument();
   });
+
+  it("renders a notification when installing classic snaps", async () => {
+    renderWithProviders(
+      <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: classicSnapOptionTitle,
+      }),
+    );
+
+    expect(
+      await screen.findByText("This snap requires classic confinement"),
+    ).toBeInTheDocument();
+  });
+
+  it("doesn't render a notification when installing strict snaps", async () => {
+    renderWithProviders(
+      <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: firstSnapOptionTitle,
+      }),
+    );
+
+    expect(
+      screen.queryByText("This snap requires classic confinement"),
+    ).not.toBeInTheDocument();
+  });
 });
