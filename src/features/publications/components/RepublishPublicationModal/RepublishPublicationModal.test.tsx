@@ -65,6 +65,21 @@ describe("RepublishPublicationModal", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows an error notification when cancelation fails", async () => {
+    setEndpointStatus({ status: "error", path: "operations/cancel" });
+
+    renderWithProviders(
+      <RepublishPublicationModal {...props} isPublishing={true} />,
+    );
+
+    await user.click(screen.getByRole("button", { name: /start new/i }));
+
+    expect(props.close).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
+  });
+
   it("confirms cancelling an ongoing publication before showing the republish step", async () => {
     renderWithProviders(
       <RepublishPublicationModal {...props} isPublishing={true} />,
