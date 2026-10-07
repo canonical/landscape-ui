@@ -24,11 +24,13 @@ const StaffAccountTabs: FC<StaffAccountTabsProps> = ({ staffAccount }) => {
     <>
       <Tabs
         listClassName="u-no-margin--bottom"
-        links={TABS.map((item) => ({
-          ...item,
-          active: item.id === currentTab,
+        links={TABS.map(({ id, label, role }) => ({
+          id,
+          label,
+          role,
+          active: id === currentTab,
           onClick: () => {
-            setPageParams({ tab: item.id.replace("tab-link-", "") });
+            setPageParams({ tab: id.replace("tab-link-", "") });
           },
         }))}
       />
