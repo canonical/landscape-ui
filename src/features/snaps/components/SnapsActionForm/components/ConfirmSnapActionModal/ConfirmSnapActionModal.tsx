@@ -1,8 +1,4 @@
-import type {
-  SnapAction,
-  SnapMode,
-  InstalledSnapWithCount,
-} from "../../../../types";
+import type { SnapAction, SnapMode, SnapWithCount } from "../../../../types";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
@@ -18,8 +14,8 @@ interface SnapModeConfig {
 
 interface ConfirmSnapActionModalProps {
   readonly actionVerb: SnapAction;
-  readonly snaps: InstalledSnapWithCount[];
   readonly snapModes?: SnapMode[];
+  readonly snaps: SnapWithCount[];
   readonly instancesCount: number;
   readonly onClose: () => void;
   readonly onConfirm: () => void;
@@ -54,7 +50,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   // channel mode with no channel selected rather than being read as
   // "not classic". Other actions never populate snapChangeConfigs at all,
   // so this default must stay scoped to change channel.
-  const isClassic = (snap: InstalledSnapWithCount) => {
+  const isClassic = (snap: SnapWithCount) => {
     const config = snapModeConfigs[snap.snap.id];
 
     if (config?.confinement === "classic") {

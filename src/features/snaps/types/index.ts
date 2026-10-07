@@ -14,5 +14,5 @@ export type {
   SnapStatus,
   SnapAction,
   SnapMode,
-  InstalledSnapWithCount,
+  SnapWithCount,
 } from "./Snap";

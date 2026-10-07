@@ -2,7 +2,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { type FC, useCallback, useState } from "react";
 import { getActionVerb, getRequestAction, hasNotification } from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
-import type { SnapAction, InstalledSnapWithCount, SnapMode } from "../../types";
+import type { SnapAction, SnapWithCount, SnapMode } from "../../types";
 import classes from "./SnapsActionForm.module.scss";
 import classNames from "classnames";
 import SnapBulkSearch from "./components/SnapBulkSearch";
@@ -29,9 +29,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   selectedInstances,
   action,
 }) => {
-  const [selectedSnaps, setSelectedSnaps] = useState<InstalledSnapWithCount[]>(
-    [],
-  );
+  const [selectedSnaps, setSelectedSnaps] = useState<SnapWithCount[]>([]);
   const [loadingSnapIds, setLoadingSnapIds] = useState<Record<string, boolean>>(
     {},
   );
@@ -312,7 +310,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                       />
                       <SnapItemSubtitle
                         scope="Installed"
-                        computerCount={item.computerCount}
+                        computerCount={item.computer_count ?? 0}
                         instancesCount={selectedInstances.length}
                       />
                       <div className={classes.changeToLabel}>Change to</div>

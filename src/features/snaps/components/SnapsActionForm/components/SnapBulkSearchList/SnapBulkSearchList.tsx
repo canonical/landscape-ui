@@ -9,18 +9,18 @@ import classNames from "classnames";
 import type { ControllerStateAndHelpers } from "downshift";
 import type { FC, UIEvent } from "react";
 import classes from "./SnapBulkSearchList.module.scss";
-import type { InstalledSnapWithCount } from "../../../../types";
+import type { SnapWithCount } from "../../../../types";
 import type { SearchSnapsResponse } from "../../../../api/useGetBulkInstalledSnaps";
 
 const NEAR_BOTTOM_THRESHOLD = 20; // in pixels
 
 interface SnapBulkSearchListProps {
-  readonly downshiftOptions: ControllerStateAndHelpers<InstalledSnapWithCount>;
+  readonly downshiftOptions: ControllerStateAndHelpers<SnapWithCount>;
   readonly queryResult: UseInfiniteQueryResult<
     InfiniteData<AxiosResponse<SearchSnapsResponse>>
   > & { isError: false };
   readonly search: string;
-  readonly selectedSnaps: InstalledSnapWithCount[];
+  readonly selectedSnaps: SnapWithCount[];
 }
 
 const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
@@ -65,7 +65,7 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
         onScroll={handleScroll}
         {...downshiftOptions.getMenuProps()}
       >
-        {filteredResults.map((item: InstalledSnapWithCount, index: number) => (
+        {filteredResults.map((item: SnapWithCount, index: number) => (
           <li
             className={classNames(classes.listItem, {
               [classes.highlighted]:
