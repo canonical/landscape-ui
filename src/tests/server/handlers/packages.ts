@@ -13,6 +13,7 @@ import {
   downgradePackageVersions,
   getComputerPackageSearchResults,
   packages,
+  upgradablePackages,
 } from "@/tests/mocks/packages";
 import { activities } from "@/tests/mocks/activity";
 import {
@@ -119,7 +120,7 @@ export default [
       const limit = body.limit ?? 10;
       const offset = body.offset ?? 0;
 
-      let results: PackageSearchResultPackage[] = [...packages];
+      let results: PackageSearchResultPackage[] = [...upgradablePackages];
       if (body.text) {
         results = generateFilteredResponse(results, body.text, ["name"]);
       }

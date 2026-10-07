@@ -347,6 +347,19 @@ export const packages: (Package & PackageSearchResultPackage)[] =
     },
   }));
 
+export const upgradablePackages: (Package & PackageSearchResultPackage)[] =
+  legacyPackages
+    .filter((pkg) => pkg.computers.some((c) => c.available_version !== null))
+    .map((pkg) => ({
+      id: pkg.id,
+      name: pkg.name,
+      summary: pkg.summary,
+      version: pkg.computers[0]?.current_version ?? "1.0.0",
+      computers: {
+        count: pkg.computers.length,
+      },
+    }));
+
 export const getInstancePackages = (instanceId: number): InstancePackage[] => {
   return legacyPackages
     .filter(({ computers }) => computers.some(({ id }) => id === instanceId))
