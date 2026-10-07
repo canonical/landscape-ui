@@ -1,3 +1,4 @@
+import { DEBOUNCE_DELAY } from "@/constants";
 import { pluralize, toInstanceQuery } from "@/utils/_helpers";
 import { SearchBox, Switch } from "@canonical/react-components";
 import classNames from "classnames";
@@ -13,11 +14,7 @@ import type {
 import PackageDropdownSearchCount from "./components/PackageDropdownSearchCount";
 import PackageDropdownSearchItem from "./components/PackageDropdownSearchItem";
 import PackageDropdownSearchList from "./components/PackageDropdownSearchList";
-import {
-  DEBOUNCE_DELAY,
-  MAX_SELECTED_PACKAGES,
-  QUERY_LIMIT,
-} from "./constants";
+import { MAX_SELECTED_PACKAGES, QUERY_LIMIT } from "./constants";
 import classes from "./PackageDropdownSearch.module.scss";
 import {
   mapActionTypeToQueryParams,
@@ -40,8 +37,8 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   setSelectedItems,
   actionType,
 }) => {
-  const [search, setSearch] = useDebounceValue("", DEBOUNCE_DELAY);
   const [inputValue, setInputValue] = useState<string>("");
+  const [search, setSearch] = useDebounceValue("", DEBOUNCE_DELAY);
   const { value: exact, toggle: toggleExact } = useBoolean();
 
   const { value: isOpen, setFalse: close, setTrue: open } = useBoolean();
@@ -74,7 +71,12 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
   const handleSearchBoxChange = (value: string) => {
     setInputValue(value);
-    setSearch(value.trim());
+    if (!value) {
+      setSearch.cancel();
+      setSearch("");
+      return;
+    }
+    setSearch(value);
   };
 
   const clearSearchBox = () => {

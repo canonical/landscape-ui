@@ -1,16 +1,16 @@
-import { availableSnaps } from "@/tests/mocks/snap";
-import { renderWithProviders } from "@/tests/render";
-import { screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import SnapDropdownSearch from "./SnapDropdownSearch";
-import { useGetAvailableSnaps } from "@/features/snaps";
-import type { FC } from "react";
+import { API_URL, DEBOUNCE_DELAY } from "@/constants";
 import { PATHS } from "@/libs/routes";
-import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import server from "@/tests/server";
+import { availableSnaps } from "@/tests/mocks/snap";
+import { renderWithProviders } from "@/tests/render";
+import { screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
+import type { FC } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useGetAvailableSnaps } from "@/features/snaps";
+import SnapDropdownSearch from "./SnapDropdownSearch";
 
 const props = {
   selectedItems: [],
@@ -31,6 +31,63 @@ describe("SnapDropdownSearch", () => {
   it("renders snap dropdown search component", () => {
     const searchBox = screen.getByRole("searchbox");
     expect(searchBox).toBeInTheDocument();
+  });
+
+  it("debounces rapid typing into a single API request", async () => {
+    let requestCount = 0;
+    server.use(
+      http.get(`${API_URL}computers/:instanceId/snaps/available`, () => {
+        requestCount++;
+        return HttpResponse.json({ results: availableSnaps });
+      }),
+    );
+
+    const searchBox = screen.getByRole("searchbox");
+    await userEvent.type(searchBox, "testsnap");
+
+    await waitFor(() => {
+      expect(requestCount).toBeGreaterThan(0);
+    });
+    await new Promise((resolve) => setTimeout(resolve, DEBOUNCE_DELAY * 2));
+    expect(requestCount).toBe(1);
+  });
+
+  it("cancels a pending debounced request when the field is cleared", async () => {
+    let requestCount = 0;
+    server.use(
+      http.get(`${API_URL}computers/:instanceId/snaps/available`, () => {
+        requestCount++;
+        return HttpResponse.json({ results: availableSnaps });
+      }),
+    );
+
+    const searchBox = screen.getByRole("searchbox");
+    await userEvent.type(searchBox, "testsnap");
+
+    const clearButton = screen.getByRole("button", {
+      name: /clear search field/i,
+    });
+    await userEvent.click(clearButton);
+
+    // Wait past the debounce window to ensure the cancelled request does not fire.
+    await new Promise((resolve) => setTimeout(resolve, DEBOUNCE_DELAY * 2));
+    expect(requestCount).toBe(0);
+  });
+
+  it("closes the dropdown suggestions when the search field is cleared", async () => {
+    const searchBox = screen.getByRole("searchbox");
+    await userEvent.type(searchBox, "Snap 1");
+
+    expect(await screen.findByRole("listbox")).toBeInTheDocument();
+
+    const clearButton = screen.getByRole("button", {
+      name: /clear search field/i,
+    });
+    await userEvent.click(clearButton);
+
+    await waitFor(() => {
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    });
   });
 
   describe("snap selection flow", () => {
