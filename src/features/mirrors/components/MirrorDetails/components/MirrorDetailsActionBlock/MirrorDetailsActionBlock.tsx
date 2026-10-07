@@ -53,16 +53,18 @@ const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
     }
   };
 
+  const isUpdateDisabled = isUpdating && !canCancelOperations;
+
   useEffect(() => {
-    if (!updateModal || !mirror) {
+    if (!updateModal) {
       return;
     }
-    if (!mirror.preserveSignatures) {
+    if (!isUpdateDisabled && !mirror.preserveSignatures) {
       openUpdateModal();
     }
 
     setPageParams({ updateModal: false });
-  }, [mirror, openUpdateModal, setPageParams, updateModal]);
+  }, [mirror, openUpdateModal, setPageParams, updateModal, isUpdateDisabled]);
 
   return (
     <>
@@ -77,7 +79,7 @@ const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
           <span>Edit</span>
         </Button>
         {!mirror.preserveSignatures &&
-          (!canCancelOperations && isUpdating ? (
+          (isUpdateDisabled ? (
             <Tooltip
               message="You must wait for this action to be completed to trigger a new update."
               position="btm-center"

@@ -188,6 +188,27 @@ describe("MirrorDetailsActionBlock", () => {
         expect(getLocationDisplay()).not.toHaveTextContent("updateModal=true");
       });
     });
+
+    it("does not open the update modal from the query param if isUpdating and can't cancel operations", async () => {
+      renderWithProviders(
+        <>
+          <MirrorDetailsActionBlock mirror={preserveMirror} isUpdating={true} />
+          <LocationDisplay />
+        </>,
+        undefined,
+        `?name=${preserveMirror.name}&updateModal=true`,
+      );
+
+      expect(
+        screen.queryByRole("heading", {
+          name: `Update ${preserveMirror.displayName}`,
+        }),
+      ).not.toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(getLocationDisplay()).not.toHaveTextContent("updateModal=true");
+      });
+    });
   });
 
   describe("Publish action", () => {
