@@ -1,10 +1,10 @@
 import { type FC } from "react";
-import type { InstalledSnapWithCount } from "../../../../types";
+import type { SnapWithCount } from "../../../../types";
 import SnapItemTitleRow from "../SnapItemTitleRow";
 import SnapItemSubtitle from "../SnapItemSubtitle";
 
 interface SnapInstalledItemProps {
-  readonly selectedSnap: InstalledSnapWithCount;
+  readonly selectedSnap: SnapWithCount;
   readonly onDelete: () => void;
   readonly isUnhold: boolean;
   readonly instancesCount: number;
@@ -21,7 +21,7 @@ const SnapInstalledItem: FC<SnapInstalledItemProps> = ({
       <SnapItemTitleRow name={selectedSnap.snap.name} onDelete={onDelete} />
       <SnapItemSubtitle
         scope={isUnhold ? "Held" : "Installed"}
-        computerCount={selectedSnap.computerCount}
+        computerCount={selectedSnap.computer_count ?? 0}
         instancesCount={instancesCount}
       />
     </>

@@ -4,7 +4,7 @@ import { screen } from "@testing-library/react";
 import type { ControllerStateAndHelpers } from "downshift";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
-import type { InstalledSnapWithCount } from "../../../../types";
+import type { SnapWithCount } from "../../../../types";
 import SnapBulkSearchList from "./SnapBulkSearchList";
 
 type QueryResult = ComponentProps<typeof SnapBulkSearchList>["queryResult"];
@@ -16,10 +16,10 @@ const downshiftOptions = {
   highlightedIndex: -1,
   getItemProps: vi.fn().mockReturnValue({}),
   getMenuProps: vi.fn().mockReturnValue({}),
-} as unknown as ControllerStateAndHelpers<InstalledSnapWithCount>;
+} as unknown as ControllerStateAndHelpers<SnapWithCount>;
 
 const buildQueryResult = (
-  results: InstalledSnapWithCount[] = installedSnaps,
+  results: SnapWithCount[] = installedSnaps,
   overrides: Partial<QueryResult> = {},
 ): QueryResult =>
   ({

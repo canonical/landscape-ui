@@ -6,7 +6,7 @@ import type {
 } from "@tanstack/react-query";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { InstalledSnapWithCount, SnapStatus } from "../types";
+import type { SnapWithCount, SnapStatus } from "../types";
 
 interface SearchSnapsRequest {
   computer_ids: number[];
@@ -16,7 +16,7 @@ interface SearchSnapsRequest {
 }
 
 export interface SearchSnapsResponse {
-  results: InstalledSnapWithCount[];
+  results: SnapWithCount[];
   count: number;
   previous: string | null;
   next: string | null;
@@ -24,7 +24,7 @@ export interface SearchSnapsResponse {
 
 const DEFAULT_LIMIT = 10;
 
-export const useGetBulkInstalledSnaps = (
+export const useGetBulkSnaps = (
   params: SearchSnapsRequest,
   options: Omit<
     UseInfiniteQueryOptions<
@@ -50,7 +50,7 @@ export const useGetBulkInstalledSnaps = (
   >({
     queryKey: ["snaps", queryParams],
     queryFn: async ({ pageParam = 0 }) =>
-      authFetch.get("snaps/installed", {
+      authFetch.get("snaps", {
         params: { ...queryParams, offset: pageParam * limit },
       }),
     initialPageParam: 0,

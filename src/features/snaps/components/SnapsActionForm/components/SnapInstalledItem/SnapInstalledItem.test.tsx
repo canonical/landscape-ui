@@ -29,7 +29,7 @@ describe("SnapInstalledItem", () => {
     expect(screen.getByText(selectedSnap.snap.name)).toBeInTheDocument();
     expect(
       screen.getByText(
-        `Installed on ${selectedSnap.computerCount} of ${props.instancesCount} instances`,
+        `Installed on ${selectedSnap.computer_count} of ${props.instancesCount} instances`,
       ),
     ).toBeInTheDocument();
 
@@ -52,7 +52,7 @@ describe("SnapInstalledItem", () => {
 
     expect(
       screen.getByText(
-        `Held on ${selectedSnap.computerCount} of ${props.instancesCount} instances`,
+        `Held on ${selectedSnap.computer_count} of ${props.instancesCount} instances`,
       ),
     ).toBeInTheDocument();
   });

@@ -1,8 +1,7 @@
 import type {
   SnapAction,
   SnapMode,
-  InstalledSnapWithCount,
-  InstalledSnap,
+  SnapWithCount,
 } from "../../../../types";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
@@ -15,8 +14,8 @@ interface SnapChangeConfig {
 
 interface ConfirmSnapActionModalProps {
   readonly actionVerb: SnapAction;
-  readonly snaps: InstalledSnapWithCount[];
   readonly snapModes?: SnapMode[];
+  readonly snaps: SnapWithCount[];
   readonly instancesCount: number;
   readonly onClose: () => void;
   readonly onConfirm: () => void;
@@ -51,10 +50,10 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     return "change channel";
   };
 
-  const confinement = (snap: InstalledSnap) =>
+  const confinement = (snap: SnapWithCount) =>
     snapModeConfigs[snap.snap.id]?.confinement ?? snap.confinement;
 
-  const isClassic = (snap: InstalledSnap) => confinement(snap) === "classic";
+  const isClassic = (snap: SnapWithCount) => confinement(snap) === "classic";
 
   const isInstallingClassicSnaps =
     actionVerb === "install" && snaps.some(isClassic);

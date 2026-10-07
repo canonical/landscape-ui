@@ -1,5 +1,5 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { installedSnaps } from "@/tests/mocks/snap";
+import { bulkSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import { ErrorBoundary } from "@sentry/react";
 import { screen } from "@testing-library/react";
@@ -9,7 +9,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import SnapBulkSearch from "./SnapBulkSearch";
 import { MAX_SELECTED_SNAPS } from "./constants";
 
-const [firstSnap, secondSnap, , , , , , , , , searchedSnap] = installedSnaps;
+const [firstSnap, secondSnap, , , , , , , , , searchedSnap] = bulkSnaps;
 
 const props: ComponentProps<typeof SnapBulkSearch> = {
   instanceIds: [1],
@@ -96,7 +96,7 @@ describe("SnapBulkSearch", () => {
     renderWithProviders(
       <SnapBulkSearch
         {...props}
-        selectedItems={installedSnaps.slice(0, MAX_SELECTED_SNAPS)}
+        selectedItems={bulkSnaps.slice(0, MAX_SELECTED_SNAPS)}
       />,
     );
 
@@ -112,7 +112,7 @@ describe("SnapBulkSearch", () => {
       <SnapBulkSearch
         {...props}
         action={"change channel"}
-        selectedItems={installedSnaps.slice(0, MAX_SELECTED_SNAPS)}
+        selectedItems={bulkSnaps.slice(0, MAX_SELECTED_SNAPS)}
       />,
     );
 

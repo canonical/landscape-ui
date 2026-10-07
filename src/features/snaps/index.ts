@@ -13,5 +13,5 @@ export type {
   InstalledSnap,
   SnapAction,
   SnapActionParams,
-  InstalledSnapWithCount,
+  SnapWithCount,
 } from "./types";
