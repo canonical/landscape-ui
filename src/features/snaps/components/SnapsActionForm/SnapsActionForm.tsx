@@ -10,9 +10,7 @@ import type { SnapAction, InstalledSnapWithCount, SnapMode } from "../../types";
 import classes from "./SnapsActionForm.module.scss";
 import classNames from "classnames";
 import SnapBulkSearch from "./components/SnapBulkSearch";
-import SnapChangeChannelItem from "./components/SnapChangeChannelItem";
 import SnapInstalledItem from "./components/SnapInstalledItem";
-import SnapAvailableItem from "./components/SnapAvailableItem";
 import { useSnapAction } from "../../api";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -21,6 +19,10 @@ import { useBoolean } from "usehooks-ts";
 import LoadingState from "@/components/layout/LoadingState";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 import { isValidRevision } from "../../helpers";
+import SnapItemTitleRow from "./components/SnapItemTitleRow";
+import SnapItemSubtitle from "./components/SnapItemSubtitle";
+import SnapChannelRevisionFields from "../SnapChannelRevisionFields";
+import { Notification } from "@canonical/react-components";
 
 const ConfirmSnapActionModal = lazy(
   () => import("./components/ConfirmSnapActionModal"),
@@ -273,68 +275,70 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                 value: "",
               };
 
+              const channelRevisionFields = (
+                <SnapChannelRevisionFields
+                  instanceIds={selectedInstances}
+                  selectedSnap={item}
+                  mode={config.mode}
+                  value={config.value}
+                  hasAttemptedSubmit={hasAttemptedSubmit}
+                  onLoadingChange={(isLoading) => {
+                    handleSnapLoadingChange(item.snap.id, isLoading);
+                  }}
+                  onErrorChange={(isError) => {
+                    handleSnapErrorChange(item.snap.id, isError);
+                  }}
+                  onChange={(value, channel, confinement) => {
+                    handleSnapValueChange(
+                      item.snap.id,
+                      value,
+                      config.mode,
+                      channel,
+                      confinement,
+                    );
+                  }}
+                  onModeChange={(mode) => {
+                    handleSnapModeChange(item.snap.id, mode);
+                  }}
+                />
+              );
+
               switch (action) {
                 case "change channel": {
                   return (
                     <li className={classes.selectedItem} key={item.snap.id}>
-                      <SnapChangeChannelItem
-                        selectedSnap={item}
+                      <SnapItemTitleRow
+                        name={item.snap.name}
                         onDelete={handleDelete}
-                        instanceIds={selectedInstances}
-                        mode={config.mode}
-                        value={config.value}
-                        hasAttemptedSubmit={hasAttemptedSubmit}
-                        onLoadingChange={(isLoading) => {
-                          handleSnapLoadingChange(item.snap.id, isLoading);
-                        }}
-                        onErrorChange={(isError) => {
-                          handleSnapErrorChange(item.snap.id, isError);
-                        }}
-                        onChange={(value, channel, confinement) => {
-                          handleSnapValueChange(
-                            item.snap.id,
-                            value,
-                            config.mode,
-                            channel,
-                            confinement,
-                          );
-                        }}
-                        onModeChange={(mode) => {
-                          handleSnapModeChange(item.snap.id, mode);
-                        }}
                       />
+                      <SnapItemSubtitle
+                        scope="Installed"
+                        computerCount={item.computerCount}
+                      />
+                      <div className={classes.changeToLabel}>Change to</div>
+                      {channelRevisionFields}
                     </li>
                   );
                 }
                 case "install": {
                   return (
                     <li className={classes.selectedItem} key={item.snap.id}>
-                      <SnapAvailableItem
-                        selectedSnap={item}
+                      <SnapItemTitleRow
+                        name={item.snap.name}
                         onDelete={handleDelete}
-                        instanceIds={selectedInstances}
-                        mode={config.mode}
-                        value={config.value}
-                        hasAttemptedSubmit={hasAttemptedSubmit}
-                        onLoadingChange={(isLoading) => {
-                          handleSnapLoadingChange(item.snap.id, isLoading);
-                        }}
-                        onErrorChange={(isError) => {
-                          handleSnapErrorChange(item.snap.id, isError);
-                        }}
-                        onChange={(value, channel, confinement) => {
-                          handleSnapValueChange(
-                            item.snap.id,
-                            value,
-                            config.mode,
-                            channel,
-                            confinement,
-                          );
-                        }}
-                        onModeChange={(mode) => {
-                          handleSnapModeChange(item.snap.id, mode);
-                        }}
                       />
+                      {channelRevisionFields}
+                      {item.confinement === "classic" ? (
+                        <Notification
+                          severity="caution"
+                          className={classNames(
+                            classes.classicNotification,
+                            "u-no-margin--bottom",
+                          )}
+                        >
+                          This snap requires classic confinement
+                        </Notification>
+                      ) : null}
                     </li>
                   );
                 }
