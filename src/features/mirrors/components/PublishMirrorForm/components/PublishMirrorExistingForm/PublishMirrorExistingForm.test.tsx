@@ -129,10 +129,8 @@ describe("PublishMirrorExistingForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows a loading caution while the operation status is being fetched", () => {
-    const pendingPublication = { ...ongoingPublication, lastOperation: "" };
-
-    renderForm([pendingPublication]);
+  it("shows a loading help text while the operation status is being fetched", () => {
+    renderForm([ongoingPublication]);
 
     expect(
       screen.getByText(/Checking publication status/i),
@@ -140,6 +138,25 @@ describe("PublishMirrorExistingForm", () => {
     expect(
       screen.getByRole("button", { name: "Publish mirror" }),
     ).toHaveAttribute("aria-disabled", "true");
+  });
+
+  it("does not show help text if the publication has no operation", () => {
+    const unpublishedPublication = typedPublications.find(
+      ({ lastOperation }) => !lastOperation,
+    );
+    assert(
+      unpublishedPublication,
+      "Need mock publication with no lastOperation",
+    );
+
+    renderForm([unpublishedPublication]);
+
+    expect(
+      screen.queryByText(/Checking publication status/i),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Publish mirror" }),
+    ).not.toHaveAttribute("aria-disabled");
   });
 
   it("shows warning if publication is already publishing", async () => {
