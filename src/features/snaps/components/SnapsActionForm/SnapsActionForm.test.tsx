@@ -632,7 +632,7 @@ describe("SnapsActionForm", () => {
     );
 
     expect(
-      await screen.findByText("Snaps successfully queued to change channel"),
+      await screen.findByText("Snaps successfully queued to change revision"),
     ).toBeInTheDocument();
     expect(requestBody).toMatchObject({
       action: "refresh",
@@ -685,7 +685,7 @@ describe("SnapsActionForm", () => {
     );
 
     expect(
-      await screen.findByText("Snaps successfully queued to change channel"),
+      await screen.findByText("Snaps successfully queued to change revision"),
     ).toBeInTheDocument();
     expect(requestBody).toMatchObject({
       snaps: [
@@ -749,5 +749,86 @@ describe("SnapsActionForm", () => {
     expect(
       within(modal).queryByText(/latest revision on the new channel/i),
     ).not.toBeInTheDocument();
+  });
+
+  it("shows mixed copy and toast when both channel and revision modes are submitted", async () => {
+    let requestBody: SnapActionParams | null = null;
+    server.use(
+      http.post(`${API_URL}snaps`, async ({ request }) => {
+        requestBody = (await request.json()) as SnapActionParams;
+        return HttpResponse.json(successfulSnapInstallResponse);
+      }),
+    );
+
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: secondSnapOptionTitle,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("combobox", {
+          name: `Channel for ${secondSnap.snap.name}`,
+        }),
+      ).not.toBeDisabled();
+    });
+
+    const modeSelect = screen.getByLabelText(
+      `Snap channel or revision for ${secondSnap.snap.name}`,
+    );
+    await user.selectOptions(modeSelect, "revision");
+
+    const revisionInput = screen.getByRole("spinbutton", {
+      name: `Revision for ${secondSnap.snap.name}`,
+    });
+    await user.type(revisionInput, "123");
+
+    await user.click(screen.getByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: firstSnapOptionTitle,
+      }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Change channel" }));
+    const modal = await screen.findByRole("dialog");
+
+    expect(
+      within(modal).getByRole("heading", {
+        name: "Change channel or revision of 2 snaps on 1 instance",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(modal).getByText(
+        "The following snaps have been selected to change channel or revision:",
+      ),
+    ).toBeInTheDocument();
+
+    await user.click(
+      within(modal).getByRole("button", { name: "Change channel" }),
+    );
+
+    expect(
+      await screen.findByText(
+        "Snaps successfully queued to change channel or revision",
+      ),
+    ).toBeInTheDocument();
+    expect(requestBody).toMatchObject({
+      action: "refresh",
+      computer_ids: [instanceId],
+      snaps: [
+        { name: secondSnap.snap.name, args: { revision: "123" } },
+        { name: firstSnap.snap.name },
+      ],
+    });
   });
 });

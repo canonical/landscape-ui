@@ -7,6 +7,7 @@ import { capitalize, pluralize } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./ConfirmSnapActionModal.module.scss";
+import { getChangeChannelVerb } from "../../helpers";
 
 interface ConfirmSnapActionModalProps {
   readonly actionVerb: SnapAction;
@@ -33,23 +34,14 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   const hasChannelMode = changeModes.includes("channel");
   const hasRevisionMode = changeModes.includes("revision");
   const isMixedChangeMode = hasChannelMode && hasRevisionMode;
-
-  const getChangeChannelVerb = () => {
-    if (isMixedChangeMode) {
-      return "change channel or revision";
-    }
-    if (hasRevisionMode) {
-      return "change revision";
-    }
-    return "change channel";
-  };
+  const changeChannelVerb = getChangeChannelVerb(changeModes);
 
   const getTitle = () => {
     const snapsText = pluralize(snaps.length, ["snap"], "exact");
     const instancesText = pluralize(instancesCount, ["instance"], "exact");
 
     if (isChangeChannel) {
-      return `${capitalize(getChangeChannelVerb())} of ${snapsText} on ${instancesText}`;
+      return `${capitalize(changeChannelVerb)} of ${snapsText} on ${instancesText}`;
     }
 
     switch (actionVerb) {
@@ -104,7 +96,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     >
       <p className={classes.summary}>
         The following snaps have been selected to{" "}
-        {isChangeChannel ? getChangeChannelVerb() : actionVerb}:
+        {isChangeChannel ? changeChannelVerb : actionVerb}:
       </p>
       <ul>
         {snaps.map(({ snap }) => (

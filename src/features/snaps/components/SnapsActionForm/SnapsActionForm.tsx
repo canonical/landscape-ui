@@ -1,6 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { type FC, lazy, Suspense, useCallback, useState } from "react";
 import {
+  getActionVerb,
   getRequestAction,
   hasNotification,
   isRevisionNotificationAction,
@@ -74,6 +75,18 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const hasNoSelectedSnaps = selectedSnaps.length === 0;
   const isChangeChannel = action === "change channel";
 
+  const changeModes = isChangeChannel
+    ? Array.from(
+        new Set(
+          selectedSnaps.map(
+            (item) => snapChangeConfigs[item.snap.id]?.mode ?? "channel",
+          ),
+        ),
+      )
+    : [];
+
+  const actionVerb = getActionVerb(action, changeModes);
+
   const snapsText = hasNoSelectedSnaps
     ? "snaps"
     : pluralize(selectedSnaps.length, ["snap"], "exact");
@@ -115,7 +128,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `Snaps successfully queued to ${action}`,
+        title: `Snaps successfully queued to ${actionVerb}`,
         message: `You can track the progress in the Activities page.`,
         actions: [
           {
@@ -234,16 +247,6 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       Object.fromEntries(Object.entries(prev).filter(([id]) => id !== snapId)),
     );
   };
-
-  const changeModes = isChangeChannel
-    ? Array.from(
-        new Set(
-          selectedSnaps.map(
-            (item) => snapChangeConfigs[item.snap.id]?.mode ?? "channel",
-          ),
-        ),
-      )
-    : [];
 
   const buttonAppearance = action === "uninstall" ? "negative" : "positive";
 
