@@ -182,7 +182,22 @@ describe("SnapChangeChannelItem", () => {
     await user.click(revisionInput);
     await user.keyboard("123");
     await user.tab();
-    expect(onChange).toHaveBeenLastCalledWith("123");
+    expect(onChange).toHaveBeenLastCalledWith("123", undefined, undefined);
+  });
+
+  it("resolves confinement for a revision that matches a known channel-map entry", async () => {
+    const onChange = vi.fn();
+    renderWithProviders(
+      <SnapChangeChannelItem {...props} mode="revision" onChange={onChange} />,
+    );
+
+    const revisionInput = await screen.findByRole("spinbutton", {
+      name: `Revision for ${snapWithChannels.snap.name}`,
+    });
+    await user.click(revisionInput);
+    await user.keyboard("5");
+    await user.tab();
+    expect(onChange).toHaveBeenLastCalledWith("5", undefined, "classic");
   });
 
   it("shows an error for a non-positive-integer revision after submit is attempted", async () => {
