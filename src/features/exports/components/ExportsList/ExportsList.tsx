@@ -7,7 +7,7 @@ import date from "@/libs/date";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import ProgressBar from "@/components/ProgressBar";
+import ProgressBar from "@/components/ui/ProgressBar";
 import ExportsListActions from "../ExportsListActions";
 import { getStatusLabel, getTypeLabel } from "../../helpers";
 import { getStatusIcon, getTypeIcon } from "./helpers";

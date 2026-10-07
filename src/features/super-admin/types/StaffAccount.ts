@@ -1,10 +1,10 @@
-export interface StaffAccountAdministrator {
+export interface StaffAccountAdministrator extends Record<string, unknown> {
   name: string;
   email: string;
   openid: string | null;
 }
 
-export interface StaffAccountLicense {
+export interface StaffAccountLicense extends Record<string, unknown> {
   expires: string | null;
   seats: number;
   type: string;
@@ -14,7 +14,7 @@ export interface StaffAccountLicense {
  * An account as listed for Canonical staff. `account` is the account name and
  * `company` its title, following the server's `get_state()` naming.
  */
-export interface StaffAccountListItem {
+export interface StaffAccountListItem extends Record<string, unknown> {
   account: string;
   company: string;
   subdomain: string | null;

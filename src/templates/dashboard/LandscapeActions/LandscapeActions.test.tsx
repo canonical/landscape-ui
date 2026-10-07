@@ -21,14 +21,14 @@ describe("LandscapeActions", () => {
     ).toHaveProperty("href", FEEDBACK_LINK);
     expect(
       await screen.findByRole("link", {
-        name: "Switch to classic dashboard",
+        name: "Switch to legacy portal",
       }),
     ).toBeInTheDocument();
   });
 
   it("should have the old dashboard url", async () => {
     expect(
-      await screen.findByRole("link", { name: "Switch to classic dashboard" }),
+      await screen.findByRole("link", { name: "Switch to legacy portal" }),
     ).toHaveAttribute("href", "https://old-dashboard-url");
   });
 });
