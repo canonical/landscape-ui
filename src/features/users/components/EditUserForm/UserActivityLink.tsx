@@ -16,7 +16,7 @@ const UserActivityLink: FC<UserActivityLinkProps> = ({ event }) => {
   const status = ACTIVITY_STATUSES[event.activity_status].label;
 
   return (
-    <p className="p-text--small u-no-margin--bottom">
+    <span className="p-text--small">
       This field is pending to be changed by this activity:{" "}
       <Button
         type="button"
@@ -43,7 +43,7 @@ const UserActivityLink: FC<UserActivityLinkProps> = ({ event }) => {
           {event.summary}: <code>{status}</code>
         </span>
       </Button>
-    </p>
+    </span>
   );
 };
 

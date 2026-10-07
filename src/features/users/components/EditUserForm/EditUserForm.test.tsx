@@ -193,47 +193,45 @@ describe("EditUserForm", () => {
   });
 
   it("shows the latest pending activity link for each requested field change", async () => {
-    server.use(
-      http.get(
-        `${API_URL}computers/:computerId/users/:username/pending-activities`,
-        () =>
-          HttpResponse.json({
-            count: 3,
-            results: [
+    setEndpointStatus({
+      status: "variant",
+      path: "computers/:computerId/users/:username/pending-activities",
+      response: {
+        count: 3,
+        results: [
+          {
+            activity_id: 103,
+            summary: "Editing user(s)",
+            activity_status: "undelivered",
+            creation_time: "2026-08-17T10:00:00Z",
+            completion_time: null,
+            changes: [{ kind: "profile", field: "name" }],
+          },
+          {
+            activity_id: 102,
+            summary: "Editing user(s)",
+            activity_status: "unapproved",
+            creation_time: "2026-08-17T09:00:00Z",
+            completion_time: null,
+            changes: [{ kind: "profile", field: "location" }],
+          },
+          {
+            activity_id: 101,
+            summary: "Adding user(s) to group(s)",
+            activity_status: "undelivered",
+            creation_time: "2026-08-17T08:00:00Z",
+            completion_time: null,
+            changes: [
               {
-                activity_id: 103,
-                summary: "Editing user(s)",
-                activity_status: "undelivered",
-                creation_time: "2026-08-17T10:00:00Z",
-                completion_time: null,
-                changes: [{ kind: "profile", field: "name" }],
-              },
-              {
-                activity_id: 102,
-                summary: "Editing user(s)",
-                activity_status: "unapproved",
-                creation_time: "2026-08-17T09:00:00Z",
-                completion_time: null,
-                changes: [{ kind: "profile", field: "location" }],
-              },
-              {
-                activity_id: 101,
-                summary: "Adding user(s) to group(s)",
-                activity_status: "undelivered",
-                creation_time: "2026-08-17T08:00:00Z",
-                completion_time: null,
-                changes: [
-                  {
-                    kind: "additional_group",
-                    group_name: "developers",
-                    operation: "add",
-                  },
-                ],
+                kind: "additional_group",
+                group_name: "developers",
+                operation: "add",
               },
             ],
-          }),
-      ),
-    );
+          },
+        ] satisfies UserActivityEvent[],
+      },
+    });
 
     renderEditUserForm();
 
