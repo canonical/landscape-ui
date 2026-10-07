@@ -86,7 +86,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
         action: getRequestAction(action),
         computer_ids: selectedInstances,
         snaps: selectedSnaps.map((item) => {
-          if (action !== "change channel") {
+          if (action !== "change channel" && action !== "install") {
             return { name: item.snap.name };
           }
 
