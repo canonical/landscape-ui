@@ -17,6 +17,7 @@ const props: ComponentProps<typeof PackageDropdownSearchItem> = {
     version: "0.1.28-1",
   },
   onDelete: vi.fn(),
+  actionType: "install",
 };
 
 describe("PackageDropdownSearchItem", () => {
