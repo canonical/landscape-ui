@@ -1,17 +1,17 @@
 import type { FC } from "react";
 import { Notification } from "@canonical/react-components";
-import type { SnapAction, SnapChangeMode } from "../../../../types";
+import type { SnapAction, SnapMode } from "../../../../types";
 import { hasNotification } from "../../helpers";
 
 interface SnapChangeConfig {
-  mode: SnapChangeMode;
+  mode: SnapMode;
   value: string;
   channel?: string;
 }
 
 interface SnapNotificationProps {
   readonly action: SnapAction;
-  readonly snapChangeConfigs?: Record<string, SnapChangeConfig>;
+  readonly snapModeConfigs?: Record<string, SnapChangeConfig>;
 }
 
 const HoldNotification = () => (
@@ -36,13 +36,11 @@ const revisionMessages: Record<
 
 const SnapNotification: FC<SnapNotificationProps> = ({
   action,
-  snapChangeConfigs,
+  snapModeConfigs,
 }) => {
   const hasRevision =
-    snapChangeConfigs &&
-    Object.values(snapChangeConfigs).some(
-      (config) => config.mode === "revision",
-    );
+    snapModeConfigs &&
+    Object.values(snapModeConfigs).some((config) => config.mode === "revision");
 
   return (
     <>

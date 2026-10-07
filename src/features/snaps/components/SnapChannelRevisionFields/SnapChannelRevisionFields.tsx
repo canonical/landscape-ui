@@ -3,20 +3,20 @@ import { useEffect } from "react";
 import { Input, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import type { SelectOption } from "@/types/SelectOption";
-import type { SnapChangeMode } from "../../types";
+import type { SnapMode } from "../../types";
 import classes from "./SnapChannelRevisionFields.module.scss";
 import { MODE_OPTIONS } from "./helpers";
 import { useTheme } from "@/context/theme";
 
 interface SnapChannelRevisionFieldsProps {
-  readonly mode: SnapChangeMode;
+  readonly mode: SnapMode;
   readonly value: string;
   readonly channelOptions: SelectOption[];
   readonly snapName: string;
   readonly error?: string;
   readonly isLoading?: boolean;
   readonly onChange: (value: string) => void;
-  readonly onModeChange: (mode: SnapChangeMode) => void;
+  readonly onModeChange: (mode: SnapMode) => void;
 }
 
 const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
@@ -46,7 +46,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
         options={MODE_OPTIONS}
         value={mode}
         onChange={(event) => {
-          onModeChange(event.currentTarget.value as SnapChangeMode);
+          onModeChange(event.currentTarget.value as SnapMode);
         }}
       />
       {mode === "channel" ? (

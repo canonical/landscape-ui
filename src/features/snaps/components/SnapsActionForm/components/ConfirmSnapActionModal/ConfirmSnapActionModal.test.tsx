@@ -118,7 +118,7 @@ describe("ConfirmSnapActionModal", () => {
       <ConfirmSnapActionModal
         {...props}
         actionVerb="change channel"
-        changeModes={["channel"]}
+        snapModes={["channel"]}
       />,
     );
 
@@ -144,7 +144,7 @@ describe("ConfirmSnapActionModal", () => {
       <ConfirmSnapActionModal
         {...props}
         actionVerb="change channel"
-        changeModes={["revision"]}
+        snapModes={["revision"]}
       />,
     );
 
@@ -171,7 +171,7 @@ describe("ConfirmSnapActionModal", () => {
       <ConfirmSnapActionModal
         {...props}
         actionVerb="change channel"
-        changeModes={["channel", "revision"]}
+        snapModes={["channel", "revision"]}
       />,
     );
 

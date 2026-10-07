@@ -1,7 +1,8 @@
 import type {
   SnapAction,
-  SnapChangeMode,
+  SnapMode,
   InstalledSnapWithCount,
+  InstalledSnap,
 } from "../../../../types";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
@@ -11,7 +12,7 @@ import classes from "./ConfirmSnapActionModal.module.scss";
 interface ConfirmSnapActionModalProps {
   readonly actionVerb: SnapAction;
   readonly snaps: InstalledSnapWithCount[];
-  readonly changeModes?: SnapChangeMode[];
+  readonly snapModes?: SnapMode[];
   readonly instancesCount: number;
   readonly onClose: () => void;
   readonly onConfirm: () => void;
@@ -22,7 +23,7 @@ interface ConfirmSnapActionModalProps {
 const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   actionVerb,
   snaps,
-  changeModes = [],
+  snapModes = [],
   instancesCount,
   onClose,
   onConfirm,
@@ -30,8 +31,8 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   submitText,
 }) => {
   const isChangeChannel = actionVerb === "change channel";
-  const hasChannelMode = changeModes.includes("channel");
-  const hasRevisionMode = changeModes.includes("revision");
+  const hasChannelMode = snapModes.includes("channel");
+  const hasRevisionMode = snapModes.includes("revision");
   const isMixedChangeMode = hasChannelMode && hasRevisionMode;
 
   const getChangeChannelVerb = () => {
@@ -44,7 +45,27 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     return "change channel";
   };
 
+  const isClassic = (snap: InstalledSnap) => snap.confinement === "classic";
+
+  const isInstallingClassicSnaps =
+    actionVerb === "install" && snaps.some(isClassic);
+
+  const getInfoText = () => {
+    if (isInstallingClassicSnaps) {
+      return "The following snaps you selected for installation require classic confinement";
+    }
+    return `The following snaps have been selected to ${isChangeChannel ? getChangeChannelVerb() : actionVerb}`;
+  };
+
+  const snapsToShow = isInstallingClassicSnaps
+    ? snaps.filter(isClassic)
+    : snaps;
+
   const getTitle = () => {
+    if (isInstallingClassicSnaps) {
+      return `${pluralize(snapsToShow.length, ["snap requires", "snaps require"], "exact")} classic confinement`;
+    }
+
     const snapsText = pluralize(snaps.length, ["snap"], "exact");
     const instancesText = pluralize(instancesCount, ["instance"], "exact");
 
@@ -71,6 +92,18 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
       return "Changing the channel will update the snap to the latest revision on the new channel.";
     }
 
+    if (isInstallingClassicSnaps) {
+      return (
+        <>
+          <strong>
+            By installing these, you acknowledge that these snaps may have
+            access to your files and system.
+          </strong>{" "}
+          Only install snaps in classic confinement if you trust the publisher.
+        </>
+      );
+    }
+
     switch (actionVerb) {
       case "refresh":
         return "Landscape will check each of the selected instances for a newer revision on the channel that snap is currently tracking, and install it where one is found.";
@@ -83,7 +116,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
       case "hold":
         return "Landscape will hold all refreshes from the moment the client executes the activity. If the snap was already held, Landscape will replace the existing hold with an indefinite one.";
       case "install":
-        return "By installing these, you acknowledge that these snaps may have access to your files and system. Only install snaps in classic confinement if you trust the publisher.";
+        return "These will be queued to install on all relevant instances.";
       case "unhold":
         return "Each refresh will now update the snap to the latest revision on the current channel.";
     }
@@ -102,12 +135,9 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
       confirmButtonLoading={isSubmitting}
       renderInPortal
     >
-      <p className={classes.summary}>
-        The following snaps have been selected to{" "}
-        {isChangeChannel ? getChangeChannelVerb() : actionVerb}:
-      </p>
+      <p className={classes.summary}>{getInfoText()}:</p>
       <ul>
-        {snaps.map(({ snap }) => (
+        {snapsToShow.map(({ snap }) => (
           <li key={snap.name}>{snap.name}</li>
         ))}
       </ul>

@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { useEffect, useMemo, useRef } from "react";
-import type { InstalledSnapWithCount, SnapChangeMode } from "../../../../types";
+import type { InstalledSnapWithCount, SnapMode } from "../../../../types";
 import { useGetSnapInfo } from "../../../../api";
 import { isValidRevision, getChannelConfinement } from "../../../../helpers";
 import SnapChannelRevisionFields, {
@@ -14,7 +14,7 @@ interface SnapChangeChannelItemProps {
   readonly instanceIds: number[];
   readonly selectedSnap: InstalledSnapWithCount;
   readonly onDelete: () => void;
-  readonly mode: SnapChangeMode;
+  readonly mode: SnapMode;
   readonly value: string;
   readonly hasAttemptedSubmit?: boolean;
   readonly onLoadingChange?: (isLoading: boolean) => void;
@@ -24,7 +24,7 @@ interface SnapChangeChannelItemProps {
     channel?: string,
     confinement?: string,
   ) => void;
-  readonly onModeChange: (mode: SnapChangeMode) => void;
+  readonly onModeChange: (mode: SnapMode) => void;
 }
 
 const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({

@@ -24,7 +24,7 @@ describe("SnapNotification", () => {
     renderWithProviders(
       <SnapNotification
         action="change channel"
-        snapChangeConfigs={{
+        snapModeConfigs={{
           snap1: { mode: "revision", value: "123" },
         }}
       />,
@@ -38,7 +38,7 @@ describe("SnapNotification", () => {
     renderWithProviders(
       <SnapNotification
         action="change channel"
-        snapChangeConfigs={{
+        snapModeConfigs={{
           snap1: { mode: "channel", value: "latest/stable" },
         }}
       />,
