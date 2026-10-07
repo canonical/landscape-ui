@@ -86,7 +86,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
         action: getRequestAction(action),
         computer_ids: selectedInstances,
         snaps: selectedSnaps.map((item) => {
-          if (!["change channel", "install"].includes(action)) {
+          if (action !== "change channel") {
             return { name: item.snap.name };
           }
 
@@ -210,7 +210,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const handleSnapModeChange = (snapId: string, mode: SnapMode) => {
     setSnapModeConfigs((prev) => ({
       ...prev,
-      [snapId]: { mode, value: "" },
+      [snapId]: { mode, value: "", confinement: prev[snapId]?.confinement },
     }));
   };
 

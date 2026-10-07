@@ -49,23 +49,19 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   );
 
   const handleChange = (newValue: string) => {
-    if (mode !== "channel") {
-      onChange(newValue);
-      return;
-    }
-
     const channelMap = snapInfo?.["channel-map"];
+
     onChange(
       newValue,
-      newValue,
+      mode === "channel" ? newValue : undefined,
       getChannelConfinement(channelMap, newValue) ?? selectedSnap.confinement,
     );
   };
 
   useEffect(() => {
     const [firstChannel] = channelOptions;
-    if (mode === "channel" && !value && firstChannel) {
-      handleChange(firstChannel.value);
+    if (mode === "channel" && !value) {
+      handleChange(firstChannel?.value ?? "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelOptions, mode, value]);
