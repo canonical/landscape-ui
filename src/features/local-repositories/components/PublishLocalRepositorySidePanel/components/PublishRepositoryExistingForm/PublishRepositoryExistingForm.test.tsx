@@ -12,13 +12,13 @@ import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_cons
 import type { Publication } from "@canonical/landscape-openapi";
 import { resetLroProgress } from "@/tests/server/handlers/operations";
 
-const typedPulications = publications as Publication[];
+const typedPublications = publications as Publication[];
 const [repository] = repositories;
 
-const donePublication = typedPulications.find(
+const donePublication = typedPublications.find(
   ({ lastOperation }) => lastOperation !== "operations/pppp-gggg-ssss",
 );
-const ongoingPublication = typedPulications.find(
+const ongoingPublication = typedPublications.find(
   ({ lastOperation }) => lastOperation === "operations/pppp-gggg-ssss",
 );
 assert(
@@ -29,7 +29,7 @@ assert(
 const props = {
   repository: repository,
   publicationTargets: publicationTargets,
-  publications: typedPulications,
+  publications: typedPublications,
 };
 
 describe("PublishRepositoryExistingForm", () => {
@@ -156,13 +156,11 @@ describe("PublishRepositoryExistingForm", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows a loading caution while the operation status is being fetched", () => {
-    const pendingPublication = { ...ongoingPublication, lastOperation: "" };
-
+  it("shows a loading help text while the operation status is being fetched", () => {
     renderWithProviders(
       <PublishRepositoryExistingForm
         {...props}
-        publications={[pendingPublication]}
+        publications={[ongoingPublication]}
       />,
     );
 
@@ -172,6 +170,31 @@ describe("PublishRepositoryExistingForm", () => {
     expect(
       screen.getByRole("button", { name: /publish repository/i }),
     ).toHaveAttribute("aria-disabled", "true");
+  });
+
+  it("does not show help text if the publication has no operation", () => {
+    const unpublishedPublication = typedPublications.find(
+      ({ lastOperation }) => !lastOperation,
+    );
+    assert(
+      unpublishedPublication,
+      "Need mock publication with no lastOperation",
+    );
+
+    renderWithProviders(
+      <PublishRepositoryExistingForm
+        {...props}
+        publications={[unpublishedPublication]}
+      />,
+    );
+
+    expect(
+      screen.queryByText(/Checking publication status/i),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByRole("button", { name: "Publish repository" }),
+    ).not.toHaveAttribute("aria-disabled");
   });
 
   it("shows warning if the publication is already publishing", async () => {
