@@ -25,6 +25,7 @@ export const useCreateStandaloneAccount = () => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["standaloneAccount"],
+        refetchType: "none",
       });
     },
   });

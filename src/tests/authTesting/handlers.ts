@@ -242,6 +242,18 @@ export const createAuthTestingHandlers = (
       session = invitedSession;
       return HttpResponse.json(invitedSession);
     }
+    const attachCode = params.get("attach_code");
+    if (attachCode) {
+      const attachedSession = {
+        ...response,
+        has_password: false,
+        invitation_id: null,
+        attach_code: attachCode,
+        return_to: null,
+      };
+      session = attachedSession;
+      return HttpResponse.json(attachedSession);
+    }
     const returnTo = params.get("return_to");
     const completedSession = {
       ...response,
@@ -292,6 +304,25 @@ export const createAuthTestingHandlers = (
       );
     }
     return HttpResponse.json({ location: destination.href });
+  };
+
+  const employeeProviderStart = (request: Request) => {
+    const failure = loginFailure();
+    if (failure) return failure;
+
+    const attachCode = new URL(request.url).searchParams.get("attach_code");
+    if (!attachCode) return providerStart(request);
+
+    const callback = new URL(
+      `${ROOT_PATH}handle-auth/oidc`,
+      window.location.origin,
+    );
+    callback.searchParams.set("code", "mock-code");
+    callback.searchParams.set(
+      "state",
+      new URLSearchParams({ attach_code: attachCode }).toString(),
+    );
+    return HttpResponse.json({ location: callback.href });
   };
 
   const loginMethods = (): LoginMethods => ({
@@ -551,7 +582,7 @@ export const createAuthTestingHandlers = (
     }),
     http.get(`${API_URL}auth/start`, ({ request }) => providerStart(request)),
     http.get(`${API_URL}employee-access/auth/start`, ({ request }) =>
-      providerStart(request),
+      employeeProviderStart(request),
     ),
     http.get(`${API_URL}auth/ubuntu-one/start`, ({ request }) =>
       providerStart(request),

@@ -460,7 +460,7 @@ describe("auth testing handlers", () => {
     });
   });
 
-  it("mocks employee OIDC login methods and provider start", async () => {
+  it("preserves employee attach codes through OIDC provider start and callback", async () => {
     enableScenario({
       pamEnabled: true,
       passwordEnabled: true,
@@ -485,7 +485,18 @@ describe("auth testing handlers", () => {
     );
     expect(startResponse.status).toBe(HttpStatusCode.Ok);
     const { location } = await startResponse.json();
-    expect(new URL(location).origin).toBe(window.location.origin);
+    const callback = new URL(location);
+    expect(callback.origin).toBe(window.location.origin);
+    expect(callback.pathname).toBe(withRootPath("/handle-auth/oidc"));
+    expect(callback.searchParams.get("code")).toBe("mock-code");
+
+    const callbackResponse = await fetch(
+      `${API_URL}auth/handle-code?code=${callback.searchParams.get("code")}&state=${encodeURIComponent(callback.searchParams.get("state") ?? "")}`,
+    );
+    expect(callbackResponse.status).toBe(HttpStatusCode.Ok);
+    expect(await callbackResponse.json()).toMatchObject({
+      attach_code: "mock-attach-code",
+    });
   });
 
   it("starts signed out, creates an account, and signs in with the existing mock", async () => {

@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
 import Redirecting from "@/components/layout/Redirecting";
@@ -9,6 +10,7 @@ import useAuth from "@/hooks/useAuth";
 import { ROUTES } from "@/libs/routes";
 
 import type { LoginRequestParams } from "@/features/auth";
+import type { AuthStateResponse } from "@/features/auth";
 import { useGetLoginMethods, useLogin } from "@/features/auth";
 import { useCreateStandaloneAccount } from "../../api";
 import PamAccountCreationForm from "./components/PamAccountCreationForm";
@@ -16,6 +18,7 @@ import PasswordAccountCreationForm from "./components/PasswordAccountCreationFor
 
 const AccountCreationSelfHostedForm: FC = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { setUser } = useAuth();
 
   const { createStandaloneAccount, isCreatingStandaloneAccount } =
@@ -60,7 +63,15 @@ const AccountCreationSelfHostedForm: FC = () => {
   }, [navigate, shouldRedirectToLogin]);
 
   const signInAfterCreation = async (credentials: LoginRequestParams) => {
-    const { data } = await signIn(credentials);
+    let data: AuthStateResponse;
+    try {
+      ({ data } = await signIn(credentials));
+    } catch (error) {
+      await queryClient.invalidateQueries({
+        queryKey: ["standaloneAccount"],
+      });
+      throw error;
+    }
 
     if ("current_account" in data) {
       setUser(data);
