@@ -10,6 +10,7 @@ import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PackageDropdownSearch from "./PackageDropdownSearch";
+import type { SearchPackagesRequest, SearchPackagesResponse } from "../../api";
 
 const instanceId = 1;
 const instancePageUrl = ROUTES.instances.details.single(instanceId);
@@ -43,22 +44,35 @@ describe("PackageDropdownSearch", () => {
     it("debounces rapid typing into a single API request", async () => {
       let requestCount = 0;
       server.use(
-        http.get(`${API_URL}computers/:id/packages`, ({ request }) => {
-          requestCount++;
-          const url = new URL(request.url);
-          const limit = Number(url.searchParams.get("limit"));
-          const offset = Number(url.searchParams.get("offset")) || 0;
-          const search = url.searchParams.get("search") || "";
-          return HttpResponse.json(
-            generatePaginatedResponse({
-              data: instancePackages,
-              limit,
-              offset,
-              search,
-              searchFields: ["name"],
-            }),
-          );
-        }),
+        http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
+          `${API_URL}packages\\:search`,
+          async ({ request }) => {
+            requestCount++;
+
+            const body = await request.json();
+
+            const response = generatePaginatedResponse({
+              data: availablePackages.filter((pkg) => {
+                if (body.names === undefined) {
+                  return true;
+                }
+
+                return body.names.includes(pkg.name);
+              }),
+              limit: body.limit,
+              offset: body.offset,
+              search: body.text,
+              searchFields: ["name", "summary"],
+            });
+
+            return HttpResponse.json({
+              packages: response.results,
+              count: response.count,
+              next: response.next,
+              prev: response.previous,
+            });
+          },
+        ),
       );
 
       const searchBox = screen.getByRole("searchbox");
@@ -74,22 +88,35 @@ describe("PackageDropdownSearch", () => {
     it("cancels a pending debounced request when the field is cleared", async () => {
       let requestCount = 0;
       server.use(
-        http.get(`${API_URL}computers/:id/packages`, ({ request }) => {
-          requestCount++;
-          const url = new URL(request.url);
-          const limit = Number(url.searchParams.get("limit"));
-          const offset = Number(url.searchParams.get("offset")) || 0;
-          const search = url.searchParams.get("search") || "";
-          return HttpResponse.json(
-            generatePaginatedResponse({
-              data: instancePackages,
-              limit,
-              offset,
-              search,
-              searchFields: ["name"],
-            }),
-          );
-        }),
+        http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
+          `${API_URL}packages\\:search`,
+          async ({ request }) => {
+            requestCount++;
+
+            const body = await request.json();
+
+            const response = generatePaginatedResponse({
+              data: availablePackages.filter((pkg) => {
+                if (body.names === undefined) {
+                  return true;
+                }
+
+                return body.names.includes(pkg.name);
+              }),
+              limit: body.limit,
+              offset: body.offset,
+              search: body.text,
+              searchFields: ["name", "summary"],
+            });
+
+            return HttpResponse.json({
+              packages: response.results,
+              count: response.count,
+              next: response.next,
+              prev: response.previous,
+            });
+          },
+        ),
       );
 
       const searchBox = screen.getByRole("searchbox");
