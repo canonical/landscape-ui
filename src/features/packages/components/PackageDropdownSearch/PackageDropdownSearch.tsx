@@ -227,6 +227,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                 key={`${selectedPackage[0].id}${index}`}
                 selectedPackage={selectedPackage[0]}
                 onDelete={handleDelete}
+                actionType={actionType}
               />
             );
           })}

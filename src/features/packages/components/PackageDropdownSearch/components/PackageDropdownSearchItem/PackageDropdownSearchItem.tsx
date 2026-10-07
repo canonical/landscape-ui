@@ -1,5 +1,5 @@
 import { type FC } from "react";
-import type { Package } from "../../../../types";
+import type { Package, PackageChangePlanActionType } from "../../../../types";
 import classes from "./PackageDropdownSearchItem.module.scss";
 import classNames from "classnames";
 import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
@@ -8,11 +8,13 @@ import { pluralize } from "@/utils/_helpers";
 interface PackageDropdownSearchItemProps {
   readonly selectedPackage: Package;
   readonly onDelete: () => void;
+  readonly actionType: PackageChangePlanActionType;
 }
 
 const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
   onDelete,
   selectedPackage,
+  actionType,
 }) => {
   return (
     <li
@@ -23,7 +25,7 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
           {selectedPackage.name} {selectedPackage.version}
         </div>
         <div className="u-text--muted p-text--small u-no-margin">
-          Available on{" "}
+          {actionType === "install" ? "Available on" : "Installed on"}{" "}
           {pluralize(selectedPackage.computers.count, ["instance"], "exact")}
         </div>
       </div>
