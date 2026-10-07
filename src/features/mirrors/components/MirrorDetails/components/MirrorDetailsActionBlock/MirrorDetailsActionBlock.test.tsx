@@ -192,16 +192,19 @@ describe("MirrorDetailsActionBlock", () => {
     it("does not open the update modal from the query param if isUpdating and can't cancel operations", async () => {
       renderWithProviders(
         <>
-          <MirrorDetailsActionBlock mirror={preserveMirror} isUpdating={true} />
+          <MirrorDetailsActionBlock
+            mirror={nonPreserveMirror}
+            isUpdating={true}
+          />
           <LocationDisplay />
         </>,
         undefined,
-        `?name=${preserveMirror.name}&updateModal=true`,
+        `?name=${nonPreserveMirror.name}&updateModal=true`,
       );
 
       expect(
         screen.queryByRole("heading", {
-          name: `Update ${preserveMirror.displayName}`,
+          name: `Update ${nonPreserveMirror.displayName}`,
         }),
       ).not.toBeInTheDocument();
 
