@@ -16,6 +16,7 @@ const props: ComponentProps<typeof ConfirmSnapActionModal> = {
   onConfirm: vi.fn(),
   isSubmitting: false,
   submitText: "Act on 2 snaps",
+  snapModeConfigs: {},
 };
 
 describe("ConfirmSnapActionModal", () => {
