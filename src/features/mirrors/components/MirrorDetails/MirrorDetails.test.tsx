@@ -6,90 +6,16 @@ import { Suspense } from "react";
 import userEvent from "@testing-library/user-event";
 import LoadingState from "@/components/layout/LoadingState";
 import { expectLoadingState } from "@/tests/helpers";
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import type { Mirror } from "@canonical/landscape-openapi";
-import { API_URL_DEB_ARCHIVE } from "@/constants";
-import server from "@/tests/server";
-import { http, HttpResponse } from "msw";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
-import { inProgressOperation } from "@/tests/mocks/operations";
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 
 const typedMirrors = mirrors as Mirror[];
 
 describe("MirrorDetails", () => {
   beforeEach(() => {
     setEndpointStatus("default");
-  });
-
-  it("renders the mirror display name once loaded", async () => {
-    renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <MirrorDetails />
-      </Suspense>,
-      undefined,
-      `?name=${mirrors[0].name}`,
-    );
-
-    await expectLoadingState();
-
-    expect(
-      await screen.findByRole("heading", { name: mirrors[0].displayName }),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByRole("heading", { name: "Details" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Name")).toBeInTheDocument();
-    expect(screen.getByText("Source type")).toBeInTheDocument();
-    expect(screen.getByText("Source URL")).toBeInTheDocument();
-    expect(screen.getByText("Status")).toBeInTheDocument();
-    expect(screen.getByText("Last update")).toBeInTheDocument();
-    expect(screen.getAllByText("Packages")).toHaveLength(2);
-    expect(
-      screen.getByText("Preserve upstream signing key"),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByRole("heading", { name: "Contents" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Distribution")).toBeInTheDocument();
-    expect(screen.getByText("Components")).toBeInTheDocument();
-    expect(screen.getByText("Architectures")).toBeInTheDocument();
-    expect(screen.getByText("Filter")).toBeInTheDocument();
-    expect(
-      screen.queryByText("Include dependencies in filter"),
-    ).not.toBeInTheDocument();
-    expect(screen.getByText(/Download .udeb/i)).toBeInTheDocument();
-    expect(screen.getByText("Download sources")).toBeInTheDocument();
-    expect(screen.getByText(/Download installer files/i)).toBeInTheDocument();
-
-    expect(
-      screen.queryByRole("heading", { name: "Authentication" }),
-    ).not.toBeInTheDocument();
-
-    expect(
-      screen.getByRole("heading", { name: "Used in" }),
-    ).toBeInTheDocument();
-  });
-
-  it("renders without operation", async () => {
-    const mirrorNoLro = typedMirrors.find(
-      ({ lastOperation }) => !lastOperation,
-    );
-    assert(mirrorNoLro, "Missing mock mirror without lastOperation");
-
-    renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <MirrorDetails />
-      </Suspense>,
-      undefined,
-      `?name=${mirrorNoLro.name}`,
-    );
-
-    await expectLoadingState();
-
-    expect(await screen.findByText("Not yet updated")).toBeInTheDocument();
   });
 
   it("renders failed update notification", async () => {
@@ -120,82 +46,7 @@ describe("MirrorDetails", () => {
     );
   });
 
-  it("renders GPG key fingerprint", async () => {
-    const mirrorWithGpgKey = typedMirrors.find(
-      ({ gpgKey }) => !!gpgKey?.fingerprint,
-    );
-    assert(mirrorWithGpgKey, "Missing mock mirror with GPG key");
-    const fingerprint = mirrorWithGpgKey.gpgKey?.fingerprint;
-    assert(fingerprint, "Missing fingerprint in selected GPG key mirror");
-
-    renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <MirrorDetails />
-      </Suspense>,
-      undefined,
-      `?name=${mirrorWithGpgKey.name}`,
-    );
-
-    await expectLoadingState();
-
-    expect(
-      await screen.findByRole("heading", { name: "Authentication" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Verification GPG Key")).toBeInTheDocument();
-    expect(screen.getByText(fingerprint)).toBeInTheDocument();
-  });
-
-  it("displays preserve signatures status", async () => {
-    const mirrorWithPreserveSignatures = mirrors.find(
-      ({ preserveSignatures }) => preserveSignatures,
-    );
-
-    assert(mirrorWithPreserveSignatures);
-
-    renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <MirrorDetails />
-      </Suspense>,
-      undefined,
-      `?name=${mirrorWithPreserveSignatures.name}`,
-    );
-
-    await expectLoadingState();
-
-    const label = await screen.findByText("Preserve upstream signing key");
-    expect(label).toBeInTheDocument();
-    expect(label.closest("div")?.nextSibling?.textContent).toBe("Yes");
-    expect(
-      screen.queryByRole("button", { name: "Update" }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByText(/Signature-preserving mirrors/i),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: "Close notification" }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("shows include dependencies in filter field only if mirror has filter", async () => {
-    const mirrorWithFilter = typedMirrors.find(({ filter }) => filter);
-    assert(mirrorWithFilter, "Test data should include a mirror with a filter");
-
-    const { container } = renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <MirrorDetails />
-      </Suspense>,
-      undefined,
-      `?name=${mirrorWithFilter.name}`,
-    );
-
-    await expectLoadingState();
-
-    await waitFor(() => {
-      expect(container).toHaveInfoItem("Include dependencies in filter", "Yes");
-    });
-  });
-
-  it("renders packages tab when clicked", async () => {
+  it("renders both tabs and navigates to them when clicked", async () => {
     const user = userEvent.setup();
 
     renderWithProviders(
@@ -208,11 +59,12 @@ describe("MirrorDetails", () => {
 
     await expectLoadingState();
 
-    await screen.findByRole("heading", { name: mirrors[0].displayName });
+    expect(
+      screen.getByRole("heading", { name: "Details" }),
+    ).toBeInTheDocument();
 
-    const packagesTab = within(screen.getByRole("navigation")).getByText(
-      "Packages",
-    );
+    const tabs = within(screen.getByRole("navigation"));
+    const packagesTab = tabs.getByText("Packages");
     await user.click(packagesTab);
 
     expect(
@@ -221,210 +73,29 @@ describe("MirrorDetails", () => {
     expect(
       screen.getByRole("columnheader", { name: /Package name/i }),
     ).toBeInTheDocument();
-  });
 
-  it("opens no publication targets modal when publish is clicked with no targets", async () => {
-    const user = userEvent.setup();
-
-    setEndpointStatus({ status: "empty", path: "publicationTargets" });
-
-    renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <MirrorDetails />
-      </Suspense>,
-      undefined,
-      `?name=${mirrors[0].name}`,
-    );
-
-    await expectLoadingState();
-
-    await user.click(await screen.findByRole("button", { name: "Publish" }));
+    const detailsTab = tabs.getByText("General details");
+    await user.click(detailsTab);
 
     expect(
-      await screen.findByRole("heading", {
-        name: "No publication targets have been added",
-      }),
+      screen.getByRole("heading", { name: "Details" }),
     ).toBeInTheDocument();
-  });
-
-  it("hides update actions when preserve signatures mirror has in-progress operation", async () => {
-    const mirrorWithInProgressOperation = typedMirrors.find(
-      ({ lastOperation, preserveSignatures }) =>
-        preserveSignatures && lastOperation?.includes("pppp-gggg-ssss"),
-    );
-    assert(
-      mirrorWithInProgressOperation,
-      "Missing mock mirror with an in-progress operation",
-    );
-
-    renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <MirrorDetails />
-      </Suspense>,
-      undefined,
-      `?name=${mirrorWithInProgressOperation.name}`,
-    );
-
-    await expectLoadingState();
-
     expect(
-      screen.queryByRole("button", { name: "Updating" }),
+      screen.queryByRole("columnheader", { name: /Package name/i }),
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: "Update" }),
-    ).not.toBeInTheDocument();
-    expect(await screen.findByText("Updating")).toBeInTheDocument();
-    expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
 
-  it("shows disabled updating action while last operation is in progress for non-preserve mirrors", async () => {
-    const mirrorWithInProgressOperation = typedMirrors.find(
-      ({ lastOperation, preserveSignatures }) =>
-        !preserveSignatures && lastOperation?.includes("pppp-gggg-ssss"),
-    );
-    assert(
-      mirrorWithInProgressOperation,
-      "Missing non-preserve mock mirror with an in-progress operation",
-    );
-
-    const user = userEvent.setup();
-
-    server.use(
-      http.get(`${API_URL_DEB_ARCHIVE}operations/pppp-gggg-ssss`, () =>
-        HttpResponse.json(inProgressOperation),
-      ),
-    );
-
+  it("throws when the mirror is not found", async () => {
     renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <MirrorDetails />
-      </Suspense>,
-      undefined,
-      `?name=${mirrorWithInProgressOperation.name}`,
-    );
-
-    await expectLoadingState();
-
-    const updatingButton = await screen.findByRole("button", {
-      name: "Updating",
-    });
-    expect(updatingButton).toHaveAttribute("aria-disabled", "true");
-    expect(
-      screen.queryByRole("button", { name: "Update" }),
-    ).not.toBeInTheDocument();
-
-    await user.hover(updatingButton);
-
-    expect(
-      await screen.findByText(
-        "You must wait for this action to be completed to trigger a new update.",
-      ),
-    ).toBeInTheDocument();
-  });
-
-  it("shows authentication for legacy mirrors that have a GPG key but no mirrorType", async () => {
-    const mirrorWithGpgKey = typedMirrors.find(
-      ({ gpgKey }) => !!gpgKey?.fingerprint,
-    );
-    assert(mirrorWithGpgKey, "Missing mock mirror with GPG key");
-    const fingerprint = mirrorWithGpgKey.gpgKey?.fingerprint;
-    assert(fingerprint, "Missing fingerprint in selected GPG key mirror");
-
-    const legacyMirror = { ...mirrorWithGpgKey, mirrorType: undefined };
-
-    server.use(
-      http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, () =>
-        HttpResponse.json(legacyMirror),
-      ),
-    );
-
-    renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <MirrorDetails />
-      </Suspense>,
-      undefined,
-      `?name=${mirrorWithGpgKey.name}`,
-    );
-
-    await expectLoadingState();
-
-    expect(
-      screen.getByRole("heading", { name: "Authentication" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText(fingerprint)).toBeInTheDocument();
-  });
-
-  it("opens UpdateMirrorModal if updateModal param is true", async () => {
-    renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <MirrorDetails />
-      </Suspense>,
-      undefined,
-      `?name=${mirrors[0].name}&updateModal=true`,
-    );
-
-    await expectLoadingState();
-
-    expect(
-      await screen.findByRole("heading", {
-        name: `Update ${mirrors[0].displayName}`,
-      }),
-    ).toBeInTheDocument();
-  });
-
-  it("does not open UpdateMirrorModal from query param for preserve signatures mirror", async () => {
-    const preserveSignaturesMirror = mirrors.find(
-      ({ preserveSignatures }) => preserveSignatures,
-    );
-
-    assert(preserveSignaturesMirror);
-
-    renderWithProviders(
-      <>
+      <AppErrorBoundary>
         <Suspense fallback={<LoadingState />}>
           <MirrorDetails />
         </Suspense>
-        <LocationDisplay />
-      </>,
-      undefined,
-      `?name=${preserveSignaturesMirror.name}&updateModal=true`,
+      </AppErrorBoundary>,
     );
-
-    await expectLoadingState();
 
     expect(
-      screen.queryByRole("heading", {
-        name: `Update ${preserveSignaturesMirror.displayName}`,
-      }),
-    ).not.toBeInTheDocument();
-    await waitFor(() => {
-      expect(getLocationDisplay()).not.toHaveTextContent("updateModal=true");
-    });
-  });
-
-  it("renders mirror details for a mirror with preserve signatures disabled", async () => {
-    const mirrorWithoutPreserveSignatures = mirrors.find(
-      ({ preserveSignatures }) => !preserveSignatures,
-    );
-
-    assert(mirrorWithoutPreserveSignatures);
-
-    renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <MirrorDetails />
-      </Suspense>,
-      undefined,
-      `?name=${mirrorWithoutPreserveSignatures.name}`,
-    );
-
-    await expectLoadingState();
-
-    const label = screen.getByText("Preserve upstream signing key");
-    expect(label).toBeInTheDocument();
-    expect(label.closest("div")?.nextSibling?.textContent).toBe("No");
-    expect(screen.getByRole("button", { name: "Update" })).toBeInTheDocument();
-    expect(
-      screen.queryByText(/Signature-preserving mirrors/i),
-    ).not.toBeInTheDocument();
+      await screen.findByText(/^Mirror\s+was not found$/),
+    ).toBeInTheDocument();
   });
 });

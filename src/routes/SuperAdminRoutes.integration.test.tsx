@@ -144,7 +144,7 @@ describe("super admin routes (integration)", () => {
     expect(await findSuperAdminNav()).toBeInTheDocument();
 
     await userEvent.click(
-      screen.getByRole("link", { name: "Back to normal view" }),
+      screen.getByRole("link", { name: "Back to main view" }),
     );
 
     expect(await screen.findByText("Normal view")).toBeInTheDocument();
@@ -156,7 +156,7 @@ describe("super admin routes (integration)", () => {
 
     await findSuperAdminNav();
     await userEvent.click(
-      screen.getByRole("link", { name: "Back to normal view" }),
+      screen.getByRole("link", { name: "Back to main view" }),
     );
 
     expect(await screen.findByText("Normal view")).toBeInTheDocument();
