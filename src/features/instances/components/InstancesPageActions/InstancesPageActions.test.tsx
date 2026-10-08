@@ -80,9 +80,7 @@ describe("InstancesPageActions", () => {
   ])("shows the Deb management instance limit modal for %s", async (action) => {
     renderPageActions({ selectedInstances: overLimitSelection });
 
-    await userEvent.click(
-      screen.getByRole("button", { name: MENU_LABELS[3] }),
-    );
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[3] }));
     await userEvent.click(screen.getByRole("menuitem", { name: action }));
 
     expect(
