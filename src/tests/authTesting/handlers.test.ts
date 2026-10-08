@@ -78,7 +78,7 @@ const post = (path: string, values: object) =>
   });
 
 const withRootPath = (path: string) =>
-  `${ROOT_PATH.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
+  `${(ROOT_PATH ?? "").replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
 
 describe("auth testing handlers", () => {
   afterEach(() => {
@@ -612,6 +612,26 @@ describe("auth testing handlers", () => {
       (await fetch(`${API_URL}invitations/${MOCK_INVITATION_ID}/summary`))
         .status,
     ).toBe(HttpStatusCode.NotFound);
+  });
+
+  it("requires registration details for a signed-out invitation acceptance", async () => {
+    enableScenario({ accountExists: true });
+    const response = await post("accept-invitation", {
+      invitation_id: MOCK_INVITATION_ID,
+    });
+
+    expect(response.status).toBe(HttpStatusCode.BadRequest);
+    expect(await response.json()).toEqual({
+      error: "ApiRequestError",
+      message:
+        "Registration details are required when accepting an invitation without signing in.",
+      detail: { fields: ["name", "email", "password"] },
+    });
+    expect(await (await fetch(`${API_URL}me`)).json()).toEqual({});
+    expect(
+      (await fetch(`${API_URL}invitations/${MOCK_INVITATION_ID}/summary`))
+        .status,
+    ).toBe(HttpStatusCode.Ok);
   });
 
   it("does not mark an invited PAM user as having a Landscape password", async () => {

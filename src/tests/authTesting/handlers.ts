@@ -534,8 +534,10 @@ export const createAuthTestingHandlers = (
     http.post(`${API_URL}accept-invitation`, async ({ request }) => {
       const values = (await request.json()) as {
         invitation_id: string;
+        name?: string;
         email?: string;
         identity?: string;
+        password?: string;
       };
       if (
         values.invitation_id !== MOCK_INVITATION_ID ||
@@ -547,6 +549,19 @@ export const createAuthTestingHandlers = (
           HttpStatusCode.NotFound,
           null,
           "NotFound",
+        );
+      }
+      if (
+        session === null &&
+        values.name === undefined &&
+        values.email === undefined &&
+        values.identity === undefined &&
+        values.password === undefined
+      ) {
+        return apiError(
+          "Registration details are required when accepting an invitation without signing in.",
+          HttpStatusCode.BadRequest,
+          { fields: ["name", "email", "password"] },
         );
       }
       const failure = registrationFailure(
