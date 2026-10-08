@@ -58,6 +58,7 @@ export default function useSearchPackages(
     queryFn: async ({ pageParam }) => {
       return authFetch.post("packages:search", {
         ...params,
+        names: params.names?.join(","),
         offset: pageParam * limit,
       });
     },
