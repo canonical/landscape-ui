@@ -12,7 +12,7 @@ type AccessGroupRow = AccessGroup & Record<string, unknown>;
 /** The entered account's access groups, read-only. */
 const SupportAccessGroups: FC = () => {
   const { getAccessGroupQuery } = useRoles();
-  const { data, isPending } = getAccessGroupQuery();
+  const { data, isPending, error } = getAccessGroupQuery();
 
   const columns = useMemo<Column<AccessGroupRow>[]>(
     () => [
@@ -27,6 +27,10 @@ const SupportAccessGroups: FC = () => {
     ],
     [data],
   );
+
+  if (error) {
+    throw error;
+  }
 
   if (isPending) {
     return <LoadingState />;

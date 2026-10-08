@@ -7,9 +7,11 @@ import { authResponse } from "@/tests/mocks/auth";
 import { invitations } from "@/tests/mocks/invitations";
 import { preferences } from "@/tests/mocks/organisationPreferences";
 import { roles } from "@/tests/mocks/roles";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
+import { ErrorBoundary } from "@sentry/react";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
@@ -40,21 +42,23 @@ const signIn = () => {
 
 const renderSettings = (setting: string) =>
   renderWithProviders(
-    <Routes>
-      <Route
-        path={`/${PATHS.superAdmin.root}/${PATHS.superAdmin.session}`}
-        element={<SupportSessionPage />}
-      >
+    <ErrorBoundary fallback={<p>Something went wrong</p>}>
+      <Routes>
         <Route
-          path={PATHS.superAdmin.sessionSettings}
-          element={<SupportSettingsPage />}
-        />
-        <Route
-          path={PATHS.superAdmin.sessionSetting}
-          element={<SupportSettingsPage />}
-        />
-      </Route>
-    </Routes>,
+          path={`/${PATHS.superAdmin.root}/${PATHS.superAdmin.session}`}
+          element={<SupportSessionPage />}
+        >
+          <Route
+            path={PATHS.superAdmin.sessionSettings}
+            element={<SupportSettingsPage />}
+          />
+          <Route
+            path={PATHS.superAdmin.sessionSetting}
+            element={<SupportSettingsPage />}
+          />
+        </Route>
+      </Routes>
+    </ErrorBoundary>,
     undefined,
     ROUTES.superAdmin.sessionSetting(ACME, setting),
   );
@@ -76,7 +80,38 @@ describe("SupportSettingsPage (integration)", () => {
   assert(childAccessGroup);
 
   beforeEach(() => {
+    setEndpointStatus("default");
     signIn();
+  });
+
+  it("counts every pending invitation in the Invites tab", async () => {
+    server.use(
+      http.get(`${API_URL}invitations`, () =>
+        HttpResponse.json({
+          count: 25,
+          next: null,
+          previous: null,
+          results: [invitation],
+        }),
+      ),
+    );
+
+    renderSettings("administrators");
+
+    expect(
+      await screen.findByRole("tab", { name: /Invites/ }),
+    ).toHaveTextContent("25");
+  });
+
+  it("surfaces a failed access-group request instead of an empty list", async () => {
+    setEndpointStatus({ status: "error", path: "GetAccessGroups" });
+
+    renderSettings("access-groups");
+
+    expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
+    expect(
+      screen.queryByText("This account has no access groups."),
+    ).not.toBeInTheDocument();
   });
 
   it("shows the account's preferences as read-only values", async () => {
