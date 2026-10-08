@@ -10,10 +10,13 @@ import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
+import { ErrorBoundary } from "@sentry/react";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { Route, Routes } from "react-router";
+import type { FC, ReactNode } from "react";
+import { Route, Routes, useNavigate } from "react-router";
 import { beforeEach, describe, expect, it } from "vitest";
 import SupportProfilesPage from "./SupportProfilesPage";
 
@@ -39,23 +42,47 @@ const signIn = () => {
   );
 };
 
-const renderProfiles = (profileType: string, search = "") =>
+/** A button that moves to `to` the way history or an edited address would. */
+const GoTo: FC<{ readonly to: string }> = ({ to }) => {
+  const navigate = useNavigate();
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        navigate(to);
+      }}
+    >
+      Go to {to}
+    </button>
+  );
+};
+
+const renderProfiles = (
+  profileType: string,
+  search = "",
+  extra: ReactNode = null,
+) =>
   renderWithProviders(
-    <Routes>
-      <Route
-        path={`/${PATHS.superAdmin.root}/${PATHS.superAdmin.session}`}
-        element={<SupportSessionPage />}
-      >
+    <ErrorBoundary fallback={<p>Something went wrong</p>}>
+      <Routes>
         <Route
-          path={PATHS.superAdmin.sessionProfiles}
-          element={<SupportProfilesPage />}
-        />
-        <Route
-          path={PATHS.superAdmin.sessionProfile}
-          element={<SupportProfilesPage />}
-        />
-      </Route>
-    </Routes>,
+          path={`/${PATHS.superAdmin.root}/${PATHS.superAdmin.session}`}
+          element={<SupportSessionPage />}
+        >
+          <Route
+            path={PATHS.superAdmin.sessionProfiles}
+            element={<SupportProfilesPage />}
+          />
+          <Route
+            path={PATHS.superAdmin.sessionProfile}
+            element={<SupportProfilesPage />}
+          />
+        </Route>
+      </Routes>
+      {extra}
+      <LocationDisplay />
+    </ErrorBoundary>,
     undefined,
     `${ROUTES.superAdmin.sessionProfile(ACME, profileType)}${search}`,
   );
@@ -212,6 +239,48 @@ describe("SupportProfilesPage (integration)", () => {
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     },
   );
+
+  it("drops the selected profile when the profile type changes", async () => {
+    const stalePackageUrl = `${ROUTES.superAdmin.sessionProfile(ACME, "package")}?sidePath=view&name=${repositoryProfile.name}`;
+
+    renderProfiles(
+      "repository",
+      `?sidePath=view&name=${repositoryProfile.name}`,
+      <GoTo to={stalePackageUrl} />,
+    );
+
+    await findSidePanel(repositoryProfile.title);
+
+    await user.click(screen.getByRole("button", { name: /^Go to/ }));
+
+    expect(
+      await screen.findByRole("heading", { name: "Package profiles" }),
+    ).toBeInTheDocument();
+    await findRow(packageProfile.title);
+    expect(
+      screen.queryByRole("heading", { name: repositoryProfile.title }),
+    ).not.toBeInTheDocument();
+    expect(getLocationDisplay()).not.toHaveTextContent("name=");
+    expect(screen.queryByText("Something went wrong")).not.toBeInTheDocument();
+  });
+
+  it("surfaces a failed profile list instead of an empty one", async () => {
+    server.use(
+      http.get(`${API_URL}packageprofiles`, () =>
+        HttpResponse.json(
+          { error: "Forbidden", message: "Forbidden." },
+          { status: 403 },
+        ),
+      ),
+    );
+
+    renderProfiles("package");
+
+    expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
+    expect(
+      screen.queryByText("This account has no package profiles."),
+    ).not.toBeInTheDocument();
+  });
 
   it("lists the removal profiles with their timeframe", async () => {
     renderProfiles("removal");

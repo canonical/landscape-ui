@@ -8,7 +8,7 @@ import SupportProfilesPanel from "./SupportProfilesPanel";
 
 const SupportRemovalProfiles: FC = () => {
   const { getRemovalProfilesQuery } = useRemovalProfiles();
-  const { data, isPending } = getRemovalProfilesQuery();
+  const { data, isPending, error } = getRemovalProfilesQuery();
   const { removalProfile } = useGetPageRemovalProfile();
 
   return (
@@ -16,6 +16,7 @@ const SupportRemovalProfiles: FC = () => {
       type={ProfileTypes.removal}
       profiles={data?.data ?? []}
       isPending={isPending}
+      error={error}
       profile={removalProfile}
     />
   );

@@ -3,7 +3,7 @@ import NavigationExpandableParent from "@/templates/dashboard/Navigation/compone
 import NavigationRoute from "@/templates/dashboard/Navigation/components/NavigationRoute";
 import classNames from "classnames";
 import type { FC } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import classes from "./SupportSessionTemplate.module.scss";
 import type { SupportSessionNavItem } from "./types";
@@ -20,13 +20,20 @@ const SupportSessionNavigation: FC<SupportSessionNavigationProps> = ({
 }) => {
   const { pathname } = useLocation();
 
-  // The group of the current page starts expanded.
-  const [expanded, setExpanded] = useState(
-    () =>
-      items.find(({ items: subItems }) =>
-        subItems?.some(({ path }) => isBelow(pathname, path)),
-      )?.label ?? "",
-  );
+  // The group of the current page, expanded whenever the page moves into
+  // one; collapsing it by hand holds until then.
+  const currentGroup =
+    items.find(({ items: subItems }) =>
+      subItems?.some(({ path }) => isBelow(pathname, path)),
+    )?.label ?? "";
+  const [expanded, setExpanded] = useState(currentGroup);
+
+  useEffect(() => {
+    if (currentGroup) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setExpanded(currentGroup);
+    }
+  }, [currentGroup]);
 
   return (
     <div className="p-side-navigation--icons is-dark">

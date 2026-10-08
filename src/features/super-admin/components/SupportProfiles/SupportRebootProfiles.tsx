@@ -7,7 +7,8 @@ import type { FC } from "react";
 import SupportProfilesPanel from "./SupportProfilesPanel";
 
 const SupportRebootProfiles: FC = () => {
-  const { rebootProfiles, isGettingRebootProfiles } = useGetRebootProfiles();
+  const { rebootProfiles, isGettingRebootProfiles, rebootProfilesError } =
+    useGetRebootProfiles();
   const { rebootProfile } = useGetPageRebootProfile();
 
   return (
@@ -15,6 +16,7 @@ const SupportRebootProfiles: FC = () => {
       type={ProfileTypes.reboot}
       profiles={rebootProfiles}
       isPending={isGettingRebootProfiles}
+      error={rebootProfilesError}
       profile={rebootProfile}
     />
   );
