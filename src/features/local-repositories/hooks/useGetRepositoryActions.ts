@@ -82,5 +82,6 @@ export const useGetRepositoryActions = ({
     viewAction,
     actions,
     destructiveAction,
+    openImportPackages: openSidePanel("import-packages"),
   };
 };

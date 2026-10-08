@@ -36,13 +36,14 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
     setFalse: closeCancelImportModal,
   } = useBoolean();
 
-  const { actions, destructiveAction } = useGetRepositoryActions({
-    repository,
-    isImporting,
-    openCancelImportModal,
-    openRemovalModal,
-    openPublishGuard,
-  });
+  const { actions, destructiveAction, openImportPackages } =
+    useGetRepositoryActions({
+      repository,
+      isImporting,
+      openCancelImportModal,
+      openRemovalModal,
+      openPublishGuard,
+    });
   const buttons = [...actions, destructiveAction];
 
   return (
@@ -98,6 +99,7 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
         close={closeCancelImportModal}
         isOpen={isCancelImportModalOpen}
         repository={repository}
+        onContinue={openImportPackages}
       />
     </>
   );

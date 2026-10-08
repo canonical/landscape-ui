@@ -1,7 +1,6 @@
 import type { FC } from "react";
 import type { Local } from "@canonical/landscape-openapi";
 import { ConfirmationModal } from "@canonical/react-components";
-import usePageParams from "@/hooks/usePageParams/usePageParams";
 import useDebug from "@/hooks/useDebug";
 import { useCancelOperation } from "@/features/operations";
 
@@ -9,14 +8,15 @@ interface RestartImportModalProps {
   readonly close: () => void;
   readonly isOpen: boolean;
   readonly repository: Local;
+  readonly onContinue: () => void;
 }
 
 const RestartImportModal: FC<RestartImportModalProps> = ({
   close,
   isOpen,
   repository,
+  onContinue,
 }) => {
-  const { sidePath, setPageParams } = usePageParams();
   const { cancelOperation, isCancelingOperation } = useCancelOperation();
   const debug = useDebug();
 
@@ -28,10 +28,7 @@ const RestartImportModal: FC<RestartImportModalProps> = ({
     try {
       await cancelOperation(repository.lastOperation ?? "");
 
-      setPageParams({
-        sidePath: [...sidePath, "import-packages"],
-        name: repository.localId,
-      });
+      onContinue();
       close();
     } catch (error) {
       debug(error);

@@ -36,13 +36,14 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
     setFalse: closePublishGuard,
   } = useBoolean();
 
-  const { viewAction, actions, destructiveAction } = useGetRepositoryActions({
-    repository,
-    isImporting,
-    openRemovalModal,
-    openCancelImportModal,
-    openPublishGuard,
-  });
+  const { viewAction, actions, destructiveAction, openImportPackages } =
+    useGetRepositoryActions({
+      repository,
+      isImporting,
+      openRemovalModal,
+      openCancelImportModal,
+      openPublishGuard,
+    });
 
   return (
     <>
@@ -68,6 +69,7 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
         close={closeCancelImportModal}
         isOpen={isCancelImportModalOpen}
         repository={repository}
+        onContinue={openImportPackages}
       />
     </>
   );

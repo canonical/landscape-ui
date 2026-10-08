@@ -4,7 +4,6 @@ import RestartImportModal from "./RestartImportModal";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 
@@ -13,6 +12,7 @@ const props = {
   close: vi.fn(),
   isOpen: true,
   repository: repository,
+  onContinue: vi.fn(),
 };
 
 describe("RestartImportModal", () => {
@@ -60,24 +60,17 @@ describe("RestartImportModal", () => {
     expect(props.close).toHaveBeenCalled();
   });
 
-  it("cancels the ongoing import and closes the modal", async () => {
+  it("cancels the ongoing import, continues and closes the modal", async () => {
     const user = userEvent.setup();
-    renderWithProviders(
-      <>
-        <RestartImportModal {...props} />
-        <LocationDisplay />
-      </>,
-    );
+    renderWithProviders(<RestartImportModal {...props} />);
 
     await user.click(
       screen.getByRole("button", { name: "Cancel import and continue" }),
     );
 
-    const location = getLocationDisplay();
     await waitFor(() => {
-      expect(location).toHaveTextContent("sidePath=import-packages");
+      expect(props.onContinue).toHaveBeenCalled();
     });
-    expect(location).toHaveTextContent(`name=${repository.localId}`);
 
     expect(props.close).toHaveBeenCalled();
   });
@@ -85,13 +78,11 @@ describe("RestartImportModal", () => {
   it("shows an error and keeps the modal open when canceling the import fails", async () => {
     setEndpointStatus({ status: "error", path: "operations/cancel" });
     const close = vi.fn();
+    const onContinue = vi.fn();
     const user = userEvent.setup();
 
     renderWithProviders(
-      <>
-        <RestartImportModal {...props} close={close} />
-        <LocationDisplay />
-      </>,
+      <RestartImportModal {...props} close={close} onContinue={onContinue} />,
     );
 
     await user.click(
@@ -103,8 +94,6 @@ describe("RestartImportModal", () => {
     ).toBeInTheDocument();
 
     expect(close).not.toHaveBeenCalled();
-    expect(getLocationDisplay()).not.toHaveTextContent(
-      "sidePath=import-packages",
-    );
+    expect(onContinue).not.toHaveBeenCalled();
   });
 });

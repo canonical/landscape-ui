@@ -42,7 +42,7 @@ describe("LocalRepositoriesListActions", () => {
     ).toBeInTheDocument();
   });
 
-  it("disables import button while importing packages if persistent LROs are disabled", async () => {
+  it("disables import button while importing packages if canceling LROs is disabled", async () => {
     setEndpointStatus({ status: "empty", path: "debarchive/features" });
     const user = userEvent.setup();
 

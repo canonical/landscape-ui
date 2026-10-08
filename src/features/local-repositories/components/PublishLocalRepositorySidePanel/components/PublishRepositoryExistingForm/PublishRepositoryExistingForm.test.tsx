@@ -156,6 +156,27 @@ describe("PublishRepositoryExistingForm", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("hides cancelation failure and publishes anyway", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({ path: "operations/cancel", status: "error" });
+
+    renderWithProviders(<PublishRepositoryExistingForm {...props} />);
+
+    await user.click(
+      await screen.findByRole("button", { name: "Publish repository" }),
+    );
+
+    expect(
+      await screen.findByRole("heading", {
+        name: `You have marked ${repository.displayName} to be published`,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).not.toBeInTheDocument();
+  });
+
   it("shows a loading help text while the operation status is being fetched", () => {
     renderWithProviders(
       <PublishRepositoryExistingForm
@@ -213,7 +234,7 @@ describe("PublishRepositoryExistingForm", () => {
       ),
     ).toBeInTheDocument();
     expect(
-      await screen.findByText(/it will cancel the ongoing/i),
+      await screen.findByText(/it will be canceled and restarted/i),
     ).toBeInTheDocument();
 
     await user.click(
@@ -227,7 +248,7 @@ describe("PublishRepositoryExistingForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows error if the publication is already publishing and persistent LROs are disabled", async () => {
+  it("shows error if the publication is already publishing and canceling LROs is disabled", async () => {
     setEndpointStatus({ status: "empty", path: "debarchive/features" });
     const user = userEvent.setup();
 
