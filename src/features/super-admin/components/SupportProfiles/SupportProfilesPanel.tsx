@@ -9,6 +9,8 @@ interface SupportProfilesPanelProps {
   readonly type: ProfileTypes;
   readonly profiles: Profile[];
   readonly isPending: boolean;
+  /** The list request's failure, surfaced instead of an empty list. */
+  readonly error?: Error | null;
   /** The profile the `name` page param names, once loaded. */
   readonly profile: Profile | undefined;
 }
@@ -18,9 +20,14 @@ const SupportProfilesPanel: FC<SupportProfilesPanelProps> = ({
   type,
   profiles,
   isPending,
+  error,
   profile,
 }) => {
   const { lastSidePathSegment, popSidePathUntilClear } = usePageParams();
+
+  if (error) {
+    throw error;
+  }
 
   return (
     <>

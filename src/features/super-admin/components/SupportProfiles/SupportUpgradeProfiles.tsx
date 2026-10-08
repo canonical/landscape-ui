@@ -8,7 +8,7 @@ import SupportProfilesPanel from "./SupportProfilesPanel";
 
 const SupportUpgradeProfiles: FC = () => {
   const { getUpgradeProfilesQuery } = useUpgradeProfiles();
-  const { data, isPending } = getUpgradeProfilesQuery();
+  const { data, isPending, error } = getUpgradeProfilesQuery();
   const { upgradeProfile } = useGetPageUpgradeProfile();
 
   return (
@@ -16,6 +16,7 @@ const SupportUpgradeProfiles: FC = () => {
       type={ProfileTypes.upgrade}
       profiles={data?.data ?? []}
       isPending={isPending}
+      error={error}
       profile={upgradeProfile}
     />
   );

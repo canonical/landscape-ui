@@ -8,7 +8,7 @@ import SupportProfilesPanel from "./SupportProfilesPanel";
 
 const SupportPackageProfiles: FC = () => {
   const { getPackageProfilesQuery } = usePackageProfiles();
-  const { data, isPending } = getPackageProfilesQuery();
+  const { data, isPending, error } = getPackageProfilesQuery();
   const { packageProfile } = useGetPagePackageProfile();
 
   return (
@@ -16,6 +16,7 @@ const SupportPackageProfiles: FC = () => {
       type={ProfileTypes.package}
       profiles={data?.data.result ?? []}
       isPending={isPending}
+      error={error}
       profile={packageProfile}
     />
   );

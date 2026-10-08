@@ -35,11 +35,15 @@ const SupportRepositoryProfiles: FC = () => {
   const { data: accessGroupsResponse } = getAccessGroupQuery();
   const { getRepositoryProfilesQuery } = useRepositoryProfiles();
 
-  const { data, isPending } = getRepositoryProfilesQuery({
+  const { data, isPending, error } = getRepositoryProfilesQuery({
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
     search,
   });
+
+  if (error) {
+    throw error;
+  }
 
   const profiles = data?.data.results ?? [];
 
