@@ -50,14 +50,22 @@ type TabId = "administrators" | "invites";
 /** The entered account's administrators and pending invitations, read-only. */
 const SupportAdministrators: FC = () => {
   const { getAdministratorsQuery, getInvitationsQuery } = useAdministrators();
-  const { data: administratorsData, isPending: isGettingAdministrators } =
-    getAdministratorsQuery();
-  const { data: invitationsData, isPending: isGettingInvitations } =
-    getInvitationsQuery();
+  const {
+    data: administratorsData,
+    isPending: isGettingAdministrators,
+    error: administratorsError,
+  } = getAdministratorsQuery();
+  const {
+    data: invitationsData,
+    isPending: isGettingInvitations,
+    error: invitationsError,
+  } = getInvitationsQuery();
 
   const [tabId, setTabId] = useState<TabId>("administrators");
 
   const administrators = administratorsData?.data ?? [];
+  // The list is one page; the badge counts them all.
+  const invitationsCount = invitationsData?.data.count ?? 0;
   const invitations = useMemo(
     () =>
       [...(invitationsData?.data.results ?? [])].sort((a, b) =>
@@ -65,6 +73,12 @@ const SupportAdministrators: FC = () => {
       ),
     [invitationsData],
   );
+
+  const error = administratorsError ?? invitationsError;
+
+  if (error) {
+    throw error;
+  }
 
   if (isGettingAdministrators || isGettingInvitations) {
     return <LoadingState />;
@@ -77,7 +91,7 @@ const SupportAdministrators: FC = () => {
       label: (
         <>
           <span>Invites</span>
-          {!!invitations.length && <Badge value={invitations.length} />}
+          {!!invitationsCount && <Badge value={invitationsCount} />}
         </>
       ),
     },
@@ -102,6 +116,7 @@ const SupportAdministrators: FC = () => {
         id={`tab-panel-${tabId}`}
         role="tabpanel"
         aria-labelledby={`tab-link-${tabId}`}
+        tabIndex={0}
       >
         {tabId === "administrators" && (
           <ResponsiveTable
