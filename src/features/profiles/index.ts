@@ -25,6 +25,7 @@ export {
   isPackageProfile,
   parseSchedule,
   ProfileTypes,
+  usesNameAsIdentifier,
 } from "./helpers";
 
 export type { Profile, ComplianceInstanceCounts, ProfileDay } from "./types";

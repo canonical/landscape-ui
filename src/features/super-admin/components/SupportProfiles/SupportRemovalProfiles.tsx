@@ -4,12 +4,23 @@ import {
   useRemovalProfiles,
 } from "@/features/removal-profiles";
 import type { FC } from "react";
+import SupportProfileSidePanel from "../SupportProfileSidePanel";
 import SupportProfilesPanel from "./SupportProfilesPanel";
+
+const RemovalProfileDetails: FC = () => {
+  const { removalProfile } = useGetPageRemovalProfile();
+
+  return (
+    <SupportProfileSidePanel
+      type={ProfileTypes.removal}
+      profile={removalProfile}
+    />
+  );
+};
 
 const SupportRemovalProfiles: FC = () => {
   const { getRemovalProfilesQuery } = useRemovalProfiles();
   const { data, isPending, error } = getRemovalProfilesQuery();
-  const { removalProfile } = useGetPageRemovalProfile();
 
   return (
     <SupportProfilesPanel
@@ -17,7 +28,7 @@ const SupportRemovalProfiles: FC = () => {
       profiles={data?.data ?? []}
       isPending={isPending}
       error={error}
-      profile={removalProfile}
+      details={<RemovalProfileDetails />}
     />
   );
 };

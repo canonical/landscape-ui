@@ -30,7 +30,11 @@ const SupportRepositoryProfileSidePanel = lazy(
 const SupportRepositoryProfiles: FC = () => {
   const { currentPage, pageSize, search, createPageParamsSetter } =
     usePageParams();
-  const { lastSidePathSegment, popSidePathUntilClear } = usePageParams();
+  const {
+    name: selectedProfile,
+    lastSidePathSegment,
+    popSidePathUntilClear,
+  } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse } = getAccessGroupQuery();
   const { getRepositoryProfilesQuery } = useRepositoryProfiles();
@@ -46,6 +50,11 @@ const SupportRepositoryProfiles: FC = () => {
   }
 
   const profiles = data?.data.results ?? [];
+  // Only a profile on the page is opened: a stale `name` (a deep link, a
+  // name left behind by another profile type) must not be looked up.
+  const isViewing =
+    lastSidePathSegment === "view" &&
+    profiles.some(({ name }) => name === selectedProfile);
 
   const columns = useMemo<Column<RepositoryProfile>[]>(
     () => [
@@ -114,11 +123,8 @@ const SupportRepositoryProfiles: FC = () => {
         totalItems={data?.data.count}
         currentItemCount={profiles.length}
       />
-      <SidePanel
-        onClose={popSidePathUntilClear}
-        isOpen={lastSidePathSegment === "view"}
-      >
-        {lastSidePathSegment === "view" && (
+      <SidePanel onClose={popSidePathUntilClear} isOpen={isViewing}>
+        {isViewing && (
           <SidePanel.Suspense key="view">
             <SupportRepositoryProfileSidePanel />
           </SidePanel.Suspense>

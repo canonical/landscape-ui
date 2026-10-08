@@ -1,8 +1,12 @@
 import SidePanel from "@/components/layout/SidePanel";
-import type { Profile, ProfileTypes } from "@/features/profiles";
+import {
+  type Profile,
+  type ProfileTypes,
+  usesNameAsIdentifier,
+} from "@/features/profiles";
 import usePageParams from "@/hooks/usePageParams";
-import type { FC } from "react";
-import SupportProfileSidePanel from "../SupportProfileSidePanel";
+import type { FC, ReactNode } from "react";
+import { useEffect } from "react";
 import SupportProfilesList from "../SupportProfilesList";
 
 interface SupportProfilesPanelProps {
@@ -11,8 +15,11 @@ interface SupportProfilesPanelProps {
   readonly isPending: boolean;
   /** The list request's failure, surfaced instead of an empty list. */
   readonly error?: Error | null;
-  /** The profile the `name` page param names, once loaded. */
-  readonly profile: Profile | undefined;
+  /**
+   * The selected profile's details, mounted only once the `name` page param
+   * names one of `profiles`: its lookup must not run for a stale selection.
+   */
+  readonly details: ReactNode;
 }
 
 /** A read-only profile list with the details of the selected one in a side panel. */
@@ -21,13 +28,36 @@ const SupportProfilesPanel: FC<SupportProfilesPanelProps> = ({
   profiles,
   isPending,
   error,
-  profile,
+  details,
 }) => {
-  const { lastSidePathSegment, popSidePathUntilClear } = usePageParams();
+  const {
+    name: selectedProfile,
+    lastSidePathSegment,
+    popSidePathUntilClear,
+    closeSidePanel,
+  } = usePageParams();
+
+  const isSelectionListed = profiles.some(
+    (profile) =>
+      (usesNameAsIdentifier(profile) ? profile.name : `${profile.id}`) ===
+      selectedProfile,
+  );
+  const hasStaleSelection =
+    !isPending && !!selectedProfile && !isSelectionListed;
+
+  // A selection the list does not know (a deep link, a name left behind by
+  // another profile type) is dropped rather than looked up.
+  useEffect(() => {
+    if (hasStaleSelection) {
+      closeSidePanel();
+    }
+  }, [hasStaleSelection, closeSidePanel]);
 
   if (error) {
     throw error;
   }
+
+  const isViewing = lastSidePathSegment === "view" && isSelectionListed;
 
   return (
     <>
@@ -36,14 +66,9 @@ const SupportProfilesPanel: FC<SupportProfilesPanelProps> = ({
         profiles={profiles}
         isPending={isPending}
       />
-      <SidePanel
-        onClose={popSidePathUntilClear}
-        isOpen={lastSidePathSegment === "view"}
-      >
-        {lastSidePathSegment === "view" && (
-          <SidePanel.Suspense key="view">
-            <SupportProfileSidePanel type={type} profile={profile} />
-          </SidePanel.Suspense>
+      <SidePanel onClose={popSidePathUntilClear} isOpen={isViewing}>
+        {isViewing && (
+          <SidePanel.Suspense key="view">{details}</SidePanel.Suspense>
         )}
       </SidePanel>
     </>
