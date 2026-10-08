@@ -84,6 +84,25 @@ describe("SupportSettingsPage (integration)", () => {
     signIn();
   });
 
+  it("treats a blank registration key as none", async () => {
+    server.use(
+      http.get(`${API_URL}preferences`, () =>
+        HttpResponse.json({
+          ...preferences,
+          registration_password: "",
+          // The only "No" on the page is then the registration key's.
+          auto_register_new_computers: true,
+        }),
+      ),
+    );
+
+    renderSettings("general");
+
+    expect(await screen.findByText("Use registration key")).toBeInTheDocument();
+    expect(screen.getByText("No")).toBeInTheDocument();
+    expect(screen.queryByText("Registration key")).not.toBeInTheDocument();
+  });
+
   it("counts every pending invitation in the Invites tab", async () => {
     server.use(
       http.get(`${API_URL}invitations`, () =>

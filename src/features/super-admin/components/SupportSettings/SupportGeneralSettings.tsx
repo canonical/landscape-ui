@@ -37,9 +37,9 @@ const SupportGeneralSettings: FC = () => {
         <InfoGrid>
           <InfoGrid.Item
             label="Use registration key"
-            value={boolToLabel(preferences.registration_password !== null)}
+            value={boolToLabel(!!preferences.registration_password)}
           />
-          {preferences.registration_password !== null && (
+          {!!preferences.registration_password && (
             <InfoGrid.Item
               label="Registration key"
               value={preferences.registration_password}
