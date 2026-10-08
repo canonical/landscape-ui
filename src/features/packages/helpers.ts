@@ -21,7 +21,7 @@ export const mapActionTypeToQueryParams = (
       } as const;
 
     case "hold":
-      return { held: "false" } as const;
+      return { installed: "true", held: "false" } as const;
 
     case "unhold":
       return { held: "true" } as const;
