@@ -1,9 +1,11 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { FC, ReactNode } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import { delay, http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import { API_URL } from "@/constants";
+import useAuth from "@/hooks/useAuth";
 import { ROUTES } from "@/libs/routes";
 import { authResponse, authUser } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
@@ -14,9 +16,30 @@ import SuperAdminPage from "./SuperAdminPage";
 const ENTRY = "/enter";
 const SWITCH_DELAY_MS = 100;
 
+/** Puts the session into `account` the way a switch landing late would. */
+const LandIn: FC<{ readonly account: string }> = ({ account }) => {
+  const { user, setUser } = useAuth();
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        if (user) {
+          setUser({ ...user, current_account: account });
+        }
+      }}
+    >
+      Land in {account}
+    </button>
+  );
+};
+
 // Enters super admin mode the way the sidebar entry does: a navigation that
 // carries `returnTo` in the location state.
-const renderEnteringWith = (state: unknown) =>
+const renderEnteringWith = (
+  state: unknown,
+  child: ReactNode = <p>Child page</p>,
+) =>
   renderWithProviders(
     <Routes>
       <Route
@@ -27,7 +50,7 @@ const renderEnteringWith = (state: unknown) =>
         path={`${ROUTES.superAdmin.root()}/*`}
         element={<SuperAdminPage />}
       >
-        <Route index element={<p>Child page</p>} />
+        <Route index element={child} />
       </Route>
     </Routes>,
     undefined,
@@ -118,6 +141,30 @@ describe("SuperAdminPage", () => {
   });
 
   describe("after a support session", () => {
+    it("returns a session that lands in another account later", async () => {
+      signInAs(authUser.current_account);
+
+      const switches = recordSwitches();
+
+      renderEnteringWith(
+        null,
+        <>
+          <p>Child page</p>
+          <LandIn account="acme" />
+        </>,
+      );
+
+      expect(await screen.findByText("Child page")).toBeInTheDocument();
+      expect(switches).toEqual([]);
+
+      await user.click(screen.getByRole("button", { name: "Land in acme" }));
+
+      await waitFor(() => {
+        expect(switches).toEqual([{ account_name: authUser.current_account }]);
+      });
+      expect(await screen.findByText("Child page")).toBeInTheDocument();
+    });
+
     it("returns the session to the person's own account", async () => {
       signInAs("acme");
 
