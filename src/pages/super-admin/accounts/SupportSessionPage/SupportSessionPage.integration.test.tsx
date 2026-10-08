@@ -307,7 +307,9 @@ describe("SupportSessionPage (integration)", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("handles an account that does not exist", async () => {
+  it("handles an account that does not exist without switching", async () => {
+    const switches = recordSwitches();
+
     renderApp(ROUTES.superAdmin.session("no-such-account"));
 
     expect(await screen.findByText("Account not found")).toBeInTheDocument();
@@ -316,5 +318,6 @@ describe("SupportSessionPage (integration)", () => {
         screen.queryByRole("region", { name: "Support session" }),
       ).not.toBeInTheDocument();
     });
+    expect(switches).toEqual([]);
   });
 });

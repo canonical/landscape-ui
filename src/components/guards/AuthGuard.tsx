@@ -17,10 +17,18 @@ interface Props {
 }
 
 export const AuthGuard: FC<Props> = ({ children, requireAccount = true }) => {
-  const { authorized, authLoading, hasAccounts, isSuperAdmin } = useAuth();
+  const { authorized, authLoading, hasAccounts, isSuperAdmin, user } =
+    useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { pathname, search } = useLocation();
+
+  // Staff can have the session in an account they are not a member of (a
+  // support session); the ordinary dashboard must not show that account.
+  const isInForeignAccount =
+    !!user?.current_account &&
+    !user.accounts.some(({ name }) => name === user.current_account);
+  const canUseAccount = hasAccounts && !isInForeignAccount;
 
   useEffect(() => {
     if (authLoading) return;
@@ -37,8 +45,9 @@ export const AuthGuard: FC<Props> = ({ children, requireAccount = true }) => {
       return;
     }
 
-    if (requireAccount && !hasAccounts) {
-      // Staff without accounts of their own have super admin mode to go to.
+    if (requireAccount && !canUseAccount) {
+      // Staff without accounts of their own have super admin mode to go to;
+      // it also returns a session left in a support account to their own.
       navigate(
         isSuperAdmin ? ROUTES.superAdmin.root() : ROUTES.auth.createAccount(),
         { replace: true },
@@ -47,7 +56,7 @@ export const AuthGuard: FC<Props> = ({ children, requireAccount = true }) => {
   }, [
     authorized,
     authLoading,
-    hasAccounts,
+    canUseAccount,
     isSuperAdmin,
     requireAccount,
     pathname,
@@ -58,7 +67,7 @@ export const AuthGuard: FC<Props> = ({ children, requireAccount = true }) => {
 
   if (authLoading) return <LoadingState />;
 
-  return authorized && (hasAccounts || !requireAccount) ? (
+  return authorized && (canUseAccount || !requireAccount) ? (
     <>{children}</>
   ) : (
     <Redirecting />

@@ -53,12 +53,16 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
   const isEntering = useRef(false);
 
   const hasUser = !!user;
+  // Entered only once the account is known to exist: a switch must not go
+  // out alongside a lookup that may fail.
+  const hasStaffAccount = !!staffAccount;
   const isInAccount = user?.current_account === name;
   const enterError = failedEntry?.name === name ? failedEntry.error : null;
 
   useEffect(() => {
     if (
       !hasUser ||
+      !hasStaffAccount ||
       isInAccount ||
       isLeaving ||
       isEntering.current ||
@@ -76,7 +80,7 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
       .finally(() => {
         isEntering.current = false;
       });
-  }, [hasUser, isInAccount, isLeaving, name]);
+  }, [hasUser, hasStaffAccount, isInAccount, isLeaving, name]);
 
   const exit = async () => {
     setIsLeaving(true);
