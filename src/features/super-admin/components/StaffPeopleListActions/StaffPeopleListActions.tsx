@@ -37,7 +37,7 @@ const getAccounts = (result: StaffPeopleResult): EnterableAccount[] => {
 const StaffPeopleListActions: FC<StaffPeopleListActionsProps> = ({
   result,
 }) => {
-  const { enterAccount, isEnteringAccount } = useEnterAccount();
+  const { enterAccount } = useEnterAccount();
 
   const accounts = getAccounts(result);
 
@@ -45,11 +45,12 @@ const StaffPeopleListActions: FC<StaffPeopleListActionsProps> = ({
     return null;
   }
 
-  const actions: Action[] = accounts.map(({ account, company }) => ({
+  const actions: Action[] = accounts.map(({ account }) => ({
     icon: "switcher-environments",
     label: `Enter ${account}`,
-    disabled: isEnteringAccount,
-    onClick: async () => enterAccount(account, company),
+    onClick: () => {
+      enterAccount(account);
+    },
   }));
 
   return (

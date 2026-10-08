@@ -2,6 +2,7 @@ import { API_URL, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { StaffPersonResult } from "@/features/super-admin";
 import date from "@/libs/date";
 import { PATHS, ROUTES } from "@/libs/routes";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
@@ -77,19 +78,22 @@ const serveManyPeople = (): URLSearchParams[] => {
 /** The people page among the super admin routes, with stand-ins for where it leads. */
 const renderPeople = (initialPath = ROUTES.superAdmin.people()) =>
   renderWithProviders(
-    <Routes>
-      <Route path={SUPER_ADMIN}>
-        <Route path={PATHS.superAdmin.people} element={<PeoplePage />} />
-        <Route
-          path={PATHS.superAdmin.account}
-          element={<h1>Account detail page</h1>}
-        />
-        <Route
-          path={`${PATHS.superAdmin.session}/*`}
-          element={<h1>Support session</h1>}
-        />
-      </Route>
-    </Routes>,
+    <>
+      <Routes>
+        <Route path={SUPER_ADMIN}>
+          <Route path={PATHS.superAdmin.people} element={<PeoplePage />} />
+          <Route
+            path={PATHS.superAdmin.account}
+            element={<h1>Account detail page</h1>}
+          />
+          <Route
+            path={`${PATHS.superAdmin.session}/*`}
+            element={<h1>Support session</h1>}
+          />
+        </Route>
+      </Routes>
+      <LocationDisplay />
+    </>,
     undefined,
     initialPath,
   );
@@ -261,15 +265,7 @@ describe("PeoplePage (integration)", () => {
     ).toBeInTheDocument();
   });
 
-  it("enters one of a person's accounts from the row actions", async () => {
-    const switches: unknown[] = [];
-
-    server.use(
-      http.post(`${API_URL}switch-account`, async ({ request }) => {
-        switches.push(await request.clone().json());
-      }),
-    );
-
+  it("opens one of a person's accounts in a support session from the row actions", async () => {
     renderPeople();
 
     await search("jane");
@@ -290,7 +286,9 @@ describe("PeoplePage (integration)", () => {
     expect(
       await screen.findByRole("heading", { name: "Support session" }),
     ).toBeInTheDocument();
-    expect(switches).toEqual([{ account_name: "jane-free-1" }]);
+    expect(getLocationDisplay()).toHaveTextContent(
+      ROUTES.superAdmin.session("jane-free-1"),
+    );
   });
 
   it("offers the account that invited a person without accounts", async () => {
