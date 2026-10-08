@@ -6,7 +6,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
 import type { Instance } from "@/types/Instance";
-import { getSelectionLabel } from "@/utils/_helpers";
+import { getSelectionLabel, toInstanceQuery } from "@/utils/_helpers";
 import { SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import { useState, type FC } from "react";
@@ -44,9 +44,9 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
     null,
   );
 
-  const computerQuery = selectedInstances
-    .map((instance) => `id:${instance.id}`)
-    .join(" OR ");
+  const computerQuery = toInstanceQuery(
+    selectedInstances.map((instance) => instance.id),
+  );
 
   const {
     data: upgradesResponse,
@@ -165,7 +165,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
         <UpgradesSummary
           onBackButtonPress={() => {
             setSidePanelTitle(
-              `Upgrade ${getSelectionLabel(selectedInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
+              `Apply upgrades to ${getSelectionLabel(selectedInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
             );
             changeSidePanelSize("large");
             setPackageChangePlanId(null);

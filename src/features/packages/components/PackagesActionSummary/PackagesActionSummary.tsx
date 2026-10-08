@@ -64,57 +64,6 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
   const items = summaryResponse.data.actions;
   const actionPast = mapActionTypeToPast(actionType);
 
-  const submit = async () => {
-    try {
-      const { data: activity } = await executeChangePlan(packageChangePlanId);
-
-      closeSidePanel();
-
-      notify.success({
-        title: `You queued ${getSelectionLabel(
-          items,
-          (item) => {
-            switch (item.action.type) {
-              case "install":
-              case "remove":
-              case "hold":
-              case "unhold":
-                return `${item.action.package.name} to be ${actionPast}`;
-              case "change_version":
-                return `${item.action.to_package.name} to be changed to version ${item.action.to_package.version}`;
-            }
-          },
-          `packages to be ${actionPast}`,
-        )}.`,
-        message: `${getSelectionLabel(
-          items,
-          (item) => {
-            switch (item.action.type) {
-              case "install":
-              case "remove":
-              case "hold":
-              case "unhold":
-                return `${item.action.package.name} will be ${actionPast}`;
-              case "change_version":
-                return `${item.action.to_package.name} will be changed to version ${item.action.to_package.version}`;
-            }
-          },
-          `selected packages will be ${actionPast}`,
-        )} and ${pluralize(items.length, ["is", "are"])} queued in Activities.`,
-        actions: [
-          {
-            label: "Details",
-            onClick: () => {
-              openActivityDetails(activity);
-            },
-          },
-        ],
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
   const getPackageName = (
     action: PackageChangePlanAction<typeof actionType>,
   ) => {
@@ -144,6 +93,41 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
     },
     {},
   );
+
+  const submit = async () => {
+    try {
+      const { data: activity } = await executeChangePlan(packageChangePlanId);
+
+      closeSidePanel();
+
+      notify.success({
+        title: `You queued ${getSelectionLabel(
+          Object.keys(packagesByName),
+          (packageName) => {
+            return `${packageName} to be ${actionPast}`;
+          },
+          `packages to be ${actionPast}`,
+        )}.`,
+        message: `${getSelectionLabel(
+          Object.keys(packagesByName),
+          (packageName) => {
+            return `${packageName} will be ${actionPast}`;
+          },
+          `selected packages will be ${actionPast}`,
+        )} and ${pluralize(items.length, ["is", "are"])} queued in Activities.`,
+        actions: [
+          {
+            label: "Details",
+            onClick: () => {
+              openActivityDetails(activity);
+            },
+          },
+        ],
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
 
   const goBack = () => {
     deleteChangePlan(packageChangePlanId);
@@ -251,7 +235,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
       <SidePanelFormButtons
         submitButtonLoading={isExecutingChangePlan}
         submitButtonText={`${getActionSubmitButtonText(actionType)} ${pluralize(
-          items.length,
+          Object.keys(packagesByName).length,
           ["package"],
           "exact",
         )}`}

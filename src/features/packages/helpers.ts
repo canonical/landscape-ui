@@ -17,7 +17,6 @@ export const mapActionTypeToQueryParams = (
       return {
         installed: "true",
         held: "false",
-        upgrade: "false",
       } as const;
 
     case "hold":

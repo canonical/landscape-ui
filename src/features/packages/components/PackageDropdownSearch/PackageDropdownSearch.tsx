@@ -209,7 +209,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
             return actionType == "change_version" ? (
               <PackageSearchDowngradeItem
-                key={`${selectedPackage[0].id}${index}`}
+                key={`${selectedPackage[0].id}`}
                 selectedPackage={selectedPackage}
                 onDelete={handleDelete}
                 instanceIds={instanceIds}
