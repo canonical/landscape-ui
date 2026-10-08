@@ -62,7 +62,12 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
       try {
         if (isInProgress) {
           if (!canCancelOperations) return;
-          await cancelOperation(operation.name);
+
+          try {
+            await cancelOperation(operation.name);
+          } catch {
+            // Ignore cancelation failures and try to publish anyway
+          }
         }
         await publishPublication({ name: values.name });
 
@@ -108,7 +113,7 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
 
   const warning =
     canCancelOperations && isInProgress
-      ? "The selected publication is already being published. If you proceed, it will cancel the ongoing publishing and start a new one."
+      ? "The selected publication is already being published. If you proceed and it's still not done, it will be canceled and restarted."
       : undefined;
 
   const getErrors = () => {

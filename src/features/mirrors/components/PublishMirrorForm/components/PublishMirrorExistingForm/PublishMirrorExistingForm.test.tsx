@@ -129,6 +129,27 @@ describe("PublishMirrorExistingForm", () => {
     ).toBeInTheDocument();
   });
 
+  it("hides cancelation failure and publishes anyway", async () => {
+    setEndpointStatus({ path: "operations/cancel", status: "error" });
+    const user = userEvent.setup();
+
+    renderForm([ongoingPublication]);
+
+    await user.click(
+      await screen.findByRole("button", { name: "Publish mirror" }),
+    );
+
+    expect(
+      await screen.findByRole("heading", {
+        name: `You have marked ${mirror.displayName} to be published`,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).not.toBeInTheDocument();
+  });
+
   it("shows a loading help text while the operation status is being fetched", () => {
     renderForm([ongoingPublication]);
 
@@ -171,9 +192,7 @@ describe("PublishMirrorExistingForm", () => {
     ).toBeInTheDocument();
 
     expect(
-      await screen.findByText(
-        /cancel the ongoing publishing and start a new one/i,
-      ),
+      await screen.findByText(/it will be canceled and restarted/i),
     ).toBeInTheDocument();
 
     await user.click(
@@ -187,7 +206,7 @@ describe("PublishMirrorExistingForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows error if the publication is already publishing and persistent LROs are disabled", async () => {
+  it("shows error if the publication is already publishing and canceling LROs is disabled", async () => {
     setEndpointStatus({ status: "empty", path: "debarchive/features" });
     const user = userEvent.setup();
 

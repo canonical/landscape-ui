@@ -60,7 +60,7 @@ describe("MirrorDetails", () => {
     await expectLoadingState();
 
     expect(
-      screen.getByRole("heading", { name: "Details" }),
+      await screen.findByRole("heading", { name: "Details" }),
     ).toBeInTheDocument();
 
     const tabs = within(screen.getByRole("navigation"));
