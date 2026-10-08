@@ -91,7 +91,7 @@ describe("MirrorDetailsActionBlock", () => {
       ).toBeInTheDocument();
     });
 
-    it("shows a disabled updating action while updating if persistent LROs are disabled", async () => {
+    it("shows a disabled updating action while updating if canceling LROs is disabled", async () => {
       setEndpointStatus({ status: "empty", path: "debarchive/features" });
       const user = userEvent.setup();
 

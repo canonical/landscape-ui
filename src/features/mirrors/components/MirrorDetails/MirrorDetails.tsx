@@ -11,6 +11,7 @@ import {
   useGetOperation,
   OperationStatusNotification,
 } from "@/features/operations";
+import LoadingState from "@/components/layout/LoadingState";
 
 const MirrorDetails: FC = () => {
   const { name } = usePageParams();
@@ -18,10 +19,15 @@ const MirrorDetails: FC = () => {
 
   const [tabId, setTabId] = useState<"details" | "packages">("details");
 
-  const { operation } = useGetOperation(mirror?.lastOperation ?? "", {
-    refetchInterval: ({ state }) =>
-      state.error || state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
-  });
+  const { operation, isGettingOperation } = useGetOperation(
+    mirror?.lastOperation ?? "",
+    {
+      refetchInterval: ({ state }) =>
+        state.error || state.data?.data?.done
+          ? false
+          : DEFAULT_POLLING_INTERVAL,
+    },
+  );
 
   const tabs: { label: string; id: "details" | "packages" }[] = [
     {
@@ -52,20 +58,24 @@ const MirrorDetails: FC = () => {
   return (
     <>
       <SidePanel.Header>{mirror.displayName}</SidePanel.Header>
-      <SidePanel.Content>
-        <OperationStatusNotification operation={operation} type="update" />
-        <MirrorDetailsActionBlock
-          mirror={mirror}
-          isUpdating={!!operation && !operation.done}
-        />
-        <Tabs links={links} />
-        {tabId === "details" && (
-          <MirrorDetailsTab mirror={mirror} operation={operation} />
-        )}
-        {tabId === "packages" && mirror.name && (
-          <MirrorPackagesList mirrorName={mirror.name} />
-        )}
-      </SidePanel.Content>
+      {mirror.lastOperation && isGettingOperation ? (
+        <LoadingState />
+      ) : (
+        <SidePanel.Content>
+          <OperationStatusNotification operation={operation} type="update" />
+          <MirrorDetailsActionBlock
+            mirror={mirror}
+            isUpdating={!!operation && !operation.done}
+          />
+          <Tabs links={links} />
+          {tabId === "details" && (
+            <MirrorDetailsTab mirror={mirror} operation={operation} />
+          )}
+          {tabId === "packages" && mirror.name && (
+            <MirrorPackagesList mirrorName={mirror.name} />
+          )}
+        </SidePanel.Content>
+      )}
     </>
   );
 };
