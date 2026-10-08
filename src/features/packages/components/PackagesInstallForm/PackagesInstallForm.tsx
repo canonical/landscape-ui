@@ -9,7 +9,7 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { usePackages } from "../../hooks";
 import type { InstancePackage } from "../../types";
-import PackageDropdownSearch from "../PackageDropdownSearch";
+import PackageDropdownSearch from "../PackageDropdownSearchOld";
 import type { UrlParams } from "@/types/UrlParams";
 import { pluralize, getSelectionLabel } from "@/utils/_helpers";
 
