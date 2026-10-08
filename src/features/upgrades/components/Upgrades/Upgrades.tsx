@@ -19,7 +19,7 @@ import UpgradesSummary from "../UpgradesSummary";
 import classes from "./Upgrades.module.scss";
 import type { Package } from "@/features/packages";
 import {
-  DEB_MANAGEMENT_UPGRADE_LIMIT,
+  DEB_MANAGEMENT_PACKAGE_LIMIT,
   useCreatePackageChangePlan,
   useDeletePackageChangePlan,
   useSearchUpgrades,
@@ -143,7 +143,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
             submitButtonDisabled={isPendingUpgrades || !selectedUpgrades.length}
             submitButtonLoading={isCreatingPackageChangePlan}
             onSubmit={async () => {
-              if (selectedUpgrades.length > DEB_MANAGEMENT_UPGRADE_LIMIT) {
+              if (selectedUpgrades.length > DEB_MANAGEMENT_PACKAGE_LIMIT) {
                 openLimitModal();
                 return;
               }
@@ -186,7 +186,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
             >
               <p className="u-margin--bottom">
                 Upgrades are only available for a selection of{" "}
-                {pluralize(DEB_MANAGEMENT_UPGRADE_LIMIT, ["package"], "exact")}{" "}
+                {pluralize(DEB_MANAGEMENT_PACKAGE_LIMIT, ["package"], "exact")}{" "}
                 or fewer. Please select fewer packages, then try again.
               </p>
             </Modal>
