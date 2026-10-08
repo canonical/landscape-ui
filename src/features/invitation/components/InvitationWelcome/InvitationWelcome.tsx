@@ -17,7 +17,8 @@ const InvitationWelcome: FC<InvitationWelcomeProps> = ({ accountTitle }) => {
   const { loginMethods, loginMethodsLoading, isLoginMethodsError } =
     useGetLoginMethods();
 
-  const { acceptInvitation, isAcceptingInvitation } = useAcceptInvitation();
+  const { registerWithInvitation, isAcceptingInvitation } =
+    useAcceptInvitation();
 
   const isPamEnabled = Boolean(
     isSelfHosted && loginMethods?.pam.available && loginMethods.pam.enabled,
@@ -40,7 +41,7 @@ const InvitationWelcome: FC<InvitationWelcomeProps> = ({ accountTitle }) => {
         isPamEnabled={isPamEnabled}
         isPasswordEnabled={isPasswordEnabled}
         isAcceptingInvitation={isAcceptingInvitation}
-        acceptInvitation={acceptInvitation}
+        registerWithInvitation={registerWithInvitation}
         onSignIn={() => {
           setIsRegistering(false);
         }}

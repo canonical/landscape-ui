@@ -16,9 +16,9 @@ interface InvitationRegistrationFormProps {
   readonly isPamEnabled: boolean;
   readonly isPasswordEnabled: boolean;
   readonly isAcceptingInvitation: boolean;
-  readonly acceptInvitation: ReturnType<
+  readonly registerWithInvitation: ReturnType<
     typeof useAcceptInvitation
-  >["acceptInvitation"];
+  >["registerWithInvitation"];
   readonly onSignIn: () => void;
 }
 
@@ -27,7 +27,7 @@ const InvitationRegistrationForm: FC<InvitationRegistrationFormProps> = ({
   isPamEnabled,
   isPasswordEnabled,
   isAcceptingInvitation,
-  acceptInvitation,
+  registerWithInvitation,
   onSignIn,
 }) => {
   const debug = useDebug();
@@ -35,7 +35,7 @@ const InvitationRegistrationForm: FC<InvitationRegistrationFormProps> = ({
 
   const handleRegister = async (values: PamUserFormValues) => {
     try {
-      await acceptInvitation({
+      await registerWithInvitation({
         ...values,
         invitation_id: invitationId,
       });
@@ -46,7 +46,7 @@ const InvitationRegistrationForm: FC<InvitationRegistrationFormProps> = ({
 
   const handleLocalRegister = async (values: PasswordUserFormValues) => {
     try {
-      await acceptInvitation({
+      await registerWithInvitation({
         ...values,
         invitation_id: invitationId,
       });

@@ -557,7 +557,10 @@ export const createAuthTestingHandlers = (
       if (failure) return failure;
       invitationActive = false;
       accountExists = true;
-      signIn();
+      const authState = signIn();
+      session = values.identity
+        ? { ...authState, has_password: false }
+        : authState;
       return HttpResponse.json({ account_id: 4, account_title: accountTitle });
     }),
     http.post(`${API_URL}reject-invitation`, async ({ request }) => {

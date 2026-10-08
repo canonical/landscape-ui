@@ -2,17 +2,27 @@ import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
+import axios from "axios";
 import { useSearchParams } from "react-router";
-import { HOMEPAGE_PATH } from "@/constants";
+import { API_URL, HOMEPAGE_PATH } from "@/constants";
 import useAuth from "@/hooks/useAuth";
+
+const publicFetch = axios.create({ baseURL: API_URL });
 
 export interface AcceptInvitationParams {
   invitation_id: string;
-  name?: string;
-  email?: string;
-  identity?: string;
-  password?: string;
 }
+
+export interface RegisterInvitationParams extends AcceptInvitationParams {
+  name: string;
+  email: string;
+  identity?: string;
+  password: string;
+}
+
+type AcceptInvitationVariables =
+  | { mode: "accept"; params: AcceptInvitationParams }
+  | { mode: "register"; params: RegisterInvitationParams };
 
 export interface AcceptInvitationResponse {
   account_id: number;
@@ -28,9 +38,12 @@ export const useAcceptInvitation = () => {
   const { isPending, mutateAsync } = useMutation<
     AxiosResponse<AcceptInvitationResponse>,
     AxiosError<ApiError>,
-    AcceptInvitationParams
+    AcceptInvitationVariables
   >({
-    mutationFn: async (params) => authFetch.post("accept-invitation", params),
+    mutationFn: async ({ mode, params }) => {
+      const fetch = mode === "accept" ? authFetch : publicFetch;
+      return fetch.post("accept-invitation", params);
+    },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["authUser"] });
       safeRedirect(searchParams.get("redirect-to") ?? HOMEPAGE_PATH, {
@@ -40,8 +53,14 @@ export const useAcceptInvitation = () => {
     },
   });
 
+  const acceptInvitation = (params: AcceptInvitationParams) =>
+    mutateAsync({ mode: "accept", params });
+  const registerWithInvitation = (params: RegisterInvitationParams) =>
+    mutateAsync({ mode: "register", params });
+
   return {
-    acceptInvitation: mutateAsync,
+    acceptInvitation,
+    registerWithInvitation,
     isAcceptingInvitation: isPending,
   };
 };

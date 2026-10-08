@@ -98,7 +98,7 @@ const PamUserForm: FC<PamUserFormProps> = ({
           />
         }
         required
-        autoComplete="new-password"
+        autoComplete="current-password"
         {...formik.getFieldProps("password")}
         error={getFormikError(formik, "password")}
       />

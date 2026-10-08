@@ -614,6 +614,23 @@ describe("auth testing handlers", () => {
     ).toBe(HttpStatusCode.NotFound);
   });
 
+  it("does not mark an invited PAM user as having a Landscape password", async () => {
+    enableScenario({ accountExists: true });
+    const response = await post("accept-invitation", {
+      invitation_id: MOCK_INVITATION_ID,
+      name: "PAM Invitee",
+      email: "pam-invitee@example.com",
+      identity: "pam-invitee",
+      password: "pam-password",
+    });
+
+    expect(response.status).toBe(HttpStatusCode.Ok);
+    expect(await (await fetch(`${API_URL}me`)).json()).toMatchObject({
+      ...authResponse,
+      has_password: false,
+    });
+  });
+
   it("forces duplicate email without consuming the invitation", async () => {
     enableScenario({ invitationError: "duplicate_email" });
     const response = await post("accept-invitation", {
