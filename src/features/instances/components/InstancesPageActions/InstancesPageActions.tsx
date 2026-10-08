@@ -33,6 +33,9 @@ const RunInstanceScriptForm = lazy(
 const Upgrades = lazy(
   async () => import("@/features/upgrades/components/Upgrades"),
 );
+const PackagesUpgradeForm = lazy(
+  async () => import("@/features/packages/components/PackagesUpgradeForm"),
+);
 const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
 const DistributionUpgrades = lazy(
   async () => import("../DistributionUpgrades"),
@@ -143,7 +146,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleUpgradesRequest = () => {
     setSidePanelContent(
-      `Apply upgrades to ${getSelectionLabel(selectedInstances, (instance) => instance.title, "instances")}`,
+      "Upgrades",
       <Suspense fallback={<LoadingState />}>
         <Upgrades selectedInstances={selectedInstances} />
       </Suspense>,
@@ -160,6 +163,16 @@ const InstancesPageActions = memo(function InstancesPageActions({
         />
       </Suspense>,
       "medium",
+    );
+  };
+
+  const openUpgradesForm = () => {
+    setSidePanelContent(
+      `Apply upgrades to ${getSelectionLabel(selectedInstances, (instance) => instance.title, "instances")}`,
+      <Suspense fallback={<LoadingState />}>
+        <PackagesUpgradeForm selectedInstances={selectedInstances} />
+      </Suspense>,
+      "large",
     );
   };
 
@@ -335,6 +348,20 @@ const InstancesPageActions = memo(function InstancesPageActions({
     {
       children: (
         <>
+          <Icon name="change-version" />
+          <span>Upgrade</span>
+        </>
+      ),
+      onClick: handleUpgradesRequest,
+      hasIcon: true,
+      disabled:
+        !hasSelectedInstances ||
+        selectedInstances.every((instance) => !hasUpgrades(instance.alerts)) ||
+        isGettingInstances,
+    },
+    {
+      children: (
+        <>
           <Icon name="arrow-up" />
           <span>Upgrade distributions</span>
         </>
@@ -397,7 +424,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <span>Upgrade</span>
         </>
       ),
-      onClick: handleUpgradesRequest,
+      onClick: openUpgradesForm,
       disabled: noInstanceHasUpgrades,
       hasIcon: true,
     },

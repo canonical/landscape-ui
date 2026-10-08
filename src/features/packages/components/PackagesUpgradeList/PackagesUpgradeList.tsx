@@ -3,7 +3,7 @@ import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
 import { CheckboxInput } from "@canonical/react-components";
 import { useCallback, useMemo, type FC } from "react";
 import type { CellProps, Column } from "react-table";
-import classes from "./UpgradesList.module.scss";
+import classes from "./PackagesUpgradeList.module.scss";
 import type { Package } from "@/features/packages";
 import { pluralize } from "@/utils/_helpers";
 
