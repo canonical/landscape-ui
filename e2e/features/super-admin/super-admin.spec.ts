@@ -177,7 +177,7 @@ test.describe("@saas Canonical staff", () => {
       await expect(page).toHaveURL(
         /\/super-admin\/accounts\/acme\/session\/events-log/,
       );
-      expect(staffApi.switches).toEqual(["acme"]);
+      await expect.poll(() => staffApi.switches).toEqual(["acme"]);
 
       await expect(superAdmin.supportSession).toContainText("ACME Corp");
       await expect(page.getByText("Organization")).toBeVisible();
@@ -264,7 +264,7 @@ test.describe("@saas Canonical staff", () => {
       await expect(superAdmin.supportSession).toContainText(
         "Jane's free account",
       );
-      expect(staffApi.switches).toEqual(["jane-free-1"]);
+      await expect.poll(() => staffApi.switches).toEqual(["jane-free-1"]);
     });
   });
 
