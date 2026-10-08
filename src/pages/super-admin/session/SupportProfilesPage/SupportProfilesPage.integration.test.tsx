@@ -320,6 +320,33 @@ describe("SupportProfilesPage (integration)", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("drops a repository profile selection that a search no longer lists", async () => {
+    renderProfiles("repository");
+
+    await user.click(
+      await screen.findByRole("button", { name: repositoryProfile.title }),
+    );
+    await findSidePanel(repositoryProfile.title);
+
+    await user.type(screen.getByRole("searchbox"), "no-such-profile{enter}");
+
+    await waitFor(() => {
+      expect(getLocationDisplay()).not.toHaveTextContent("name=");
+    });
+    expect(
+      screen.queryByRole("heading", { name: repositoryProfile.title }),
+    ).not.toBeInTheDocument();
+
+    // Clearing the search lists the profile again without reopening it.
+    await user.clear(screen.getByRole("searchbox"));
+    await user.keyboard("{enter}");
+
+    await screen.findByRole("button", { name: repositoryProfile.title });
+    expect(
+      screen.queryByRole("heading", { name: repositoryProfile.title }),
+    ).not.toBeInTheDocument();
+  });
+
   it("opens the first profile page for an unknown type", async () => {
     renderProfiles("no-such-type");
 
