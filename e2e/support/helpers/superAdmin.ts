@@ -34,6 +34,8 @@ export interface StaffApiMockOptions {
 export interface StaffApiMock {
   /** The deployment's accounts; the PATCH and WSL handlers mutate them in place. */
   accounts: StaffAccount[];
+  /** The real session's own account, from its first auth response; `null` until then. */
+  ownAccount: string | null;
   /** The `account_name` of every `POST switch-account`, in order. */
   switches: string[];
   /** The body of every `PATCH accounts/:name`, in order. */
@@ -210,6 +212,7 @@ export async function mockStaffApi(
 ): Promise<StaffApiMock> {
   const mock: StaffApiMock = {
     accounts: createStaffAccounts(),
+    ownAccount: null,
     switches: [],
     patches: [],
   };
@@ -237,6 +240,10 @@ export async function mockStaffApi(
     ) {
       await route.fulfill({ response });
       return;
+    }
+
+    if (!enteredAccount && typeof body.current_account === "string") {
+      mock.ownAccount = body.current_account;
     }
 
     await route.fulfill({

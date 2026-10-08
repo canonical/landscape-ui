@@ -203,8 +203,8 @@ test.describe("@saas Canonical staff", () => {
     ).toBeVisible();
 
     // The session went back to the person's own account on the way out.
-    expect(staffApi.switches).toHaveLength(2);
-    expect(staffApi.switches[1]).not.toBe("acme");
+    expect(staffApi.ownAccount).not.toBeNull();
+    expect(staffApi.switches).toEqual(["acme", staffApi.ownAccount]);
   });
 
   test("search people and invitations, and enter an account from a person", async ({
