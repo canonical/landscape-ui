@@ -208,9 +208,12 @@ test.describe("@saas Canonical staff", () => {
         page.getByRole("heading", { name: "ACME Corp" }),
       ).toBeVisible();
 
-      // The session went back to the person's own account on the way out.
+      // Super admin mode returns the session to the person's own account
+      // once the account's page is open.
       expect(staffApi.ownAccount).not.toBeNull();
-      expect(staffApi.switches).toEqual(["acme", staffApi.ownAccount]);
+      await expect
+        .poll(() => staffApi.switches)
+        .toEqual(["acme", staffApi.ownAccount]);
     });
 
     test("search people and invitations, and enter an account from a person", async ({
