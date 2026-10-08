@@ -221,7 +221,7 @@ describe("SupportProfilesPage (integration)", () => {
     ).toEqual(["Profile name", "Access group", "Associated", "Next restart"]);
   });
 
-  it.each(["reboot", "removal"])(
+  it.each(["package", "upgrade", "reboot", "removal"])(
     "lists the %s profiles despite another type's profile name in the URL",
     async (profileType) => {
       // Left behind when the side panel was open on a repository profile.
@@ -310,6 +310,11 @@ describe("SupportProfilesPage (integration)", () => {
     const panel = await findSidePanel(repositoryProfile.title);
 
     expect(panel.getByText("Sources")).toBeInTheDocument();
+    expect(
+      panel
+        .getAllByRole("columnheader")
+        .map((header) => header.textContent?.trim()),
+    ).toEqual(["Source", "Deb line", "Fingerprint"]);
     expect(
       panel.queryByRole("button", { name: /edit|remove/i }),
     ).not.toBeInTheDocument();

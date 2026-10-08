@@ -4,12 +4,23 @@ import {
   useGetRebootProfiles,
 } from "@/features/reboot-profiles";
 import type { FC } from "react";
+import SupportProfileSidePanel from "../SupportProfileSidePanel";
 import SupportProfilesPanel from "./SupportProfilesPanel";
+
+const RebootProfileDetails: FC = () => {
+  const { rebootProfile } = useGetPageRebootProfile();
+
+  return (
+    <SupportProfileSidePanel
+      type={ProfileTypes.reboot}
+      profile={rebootProfile}
+    />
+  );
+};
 
 const SupportRebootProfiles: FC = () => {
   const { rebootProfiles, isGettingRebootProfiles, rebootProfilesError } =
     useGetRebootProfiles();
-  const { rebootProfile } = useGetPageRebootProfile();
 
   return (
     <SupportProfilesPanel
@@ -17,7 +28,7 @@ const SupportRebootProfiles: FC = () => {
       profiles={rebootProfiles}
       isPending={isGettingRebootProfiles}
       error={rebootProfilesError}
-      profile={rebootProfile}
+      details={<RebootProfileDetails />}
     />
   );
 };
