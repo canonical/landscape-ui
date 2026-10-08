@@ -202,7 +202,7 @@ const PublicationDetails = ({
 
       <RepublishPublicationModal
         isOpen={isRepublishModalOpen}
-        isPublishing={!!operation && !operation.done}
+        isPublishing={isPublishing}
         close={closeRepublishModal}
         publication={publication}
       />

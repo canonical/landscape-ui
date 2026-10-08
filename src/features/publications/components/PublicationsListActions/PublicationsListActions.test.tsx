@@ -42,7 +42,7 @@ describe("PublicationsListActions", () => {
     ).toBeInTheDocument();
   });
 
-  it("disables republish button while publishing if persistent LROs are disabled", async () => {
+  it("disables republish button while publishing if canceling LROs is disabled", async () => {
     setEndpointStatus({ status: "empty", path: "debarchive/features" });
     const label = inProgressPublication.displayName;
     const user = userEvent.setup();

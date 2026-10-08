@@ -8,7 +8,7 @@
   margin-bottom: $spv--x-large;
   padding: $spv--large;
 
-  .is-dark & {
+  :global(.is-dark) & {
     background-color: $colors--theme--background-default;
   }
 }

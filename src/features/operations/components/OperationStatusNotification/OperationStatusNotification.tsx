@@ -3,7 +3,8 @@ import type { FC } from "react";
 import ViewLogsButton from "../ViewLogsButton";
 import type { Operation } from "../../types";
 import ProgressBar from "@/components/ui/ProgressBar";
-import { useCancelOperation, useCanCancelOperations } from "../..";
+import { useCancelOperation } from "../../api";
+import { useCanCancelOperations } from "../../hooks";
 import classes from "./OperationStatusNotification.module.scss";
 import useDebug from "@/hooks/useDebug";
 
@@ -65,7 +66,9 @@ const OperationStatusNotification: FC<OperationStatusNotificationProps> = ({
       {!done && (
         <div className={classes.inProgress}>
           <strong>{content.progressText}</strong>
-          <ProgressBar progress={metadata.progressPercent} fullWidth />
+          <div aria-live="off">
+            <ProgressBar progress={metadata.progressPercent} fullWidth />
+          </div>
           {canCancelOperations && (
             <Button
               appearance="link"

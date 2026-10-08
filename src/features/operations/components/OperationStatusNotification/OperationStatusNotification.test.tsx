@@ -80,7 +80,7 @@ describe("OperationStatusNotification", () => {
     },
   );
 
-  it("does not render the cancel button when persistent LROs are disabled", () => {
+  it("does not render the cancel button when canceling LROs is disabled", () => {
     setEndpointStatus({ status: "empty", path: "debarchive/features" });
 
     renderWithProviders(

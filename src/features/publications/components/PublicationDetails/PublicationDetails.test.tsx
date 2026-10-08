@@ -158,7 +158,7 @@ describe("PublicationDetails", () => {
     expect(modalHeader).not.toBeInTheDocument();
   });
 
-  it("renders a disabled republish button while publishing if persistent LROs are disabled", async () => {
+  it("renders a disabled republish button while publishing if canceling LROs is disabled", async () => {
     const user = userEvent.setup();
     setEndpointStatus({ status: "empty", path: "debarchive/features" });
 
