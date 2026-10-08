@@ -15,7 +15,6 @@ export type {
 
 export {
   FilterState,
-  type SearchPackagesRequest,
   type SearchUpgradesRequest,
   type PackageComputersResponse,
   type PackageSearchResultPackage,

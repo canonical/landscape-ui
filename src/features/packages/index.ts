@@ -18,7 +18,6 @@ export type {
   FilterState,
   PackageInstallationCandidate,
   PackageSearchResultPackage,
-  SearchPackagesRequest,
   SearchPackagesResponse,
   SearchUpgradesRequest,
 } from "./types";

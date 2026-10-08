@@ -3,7 +3,6 @@ import { API_URL, API_URL_OLD } from "@/constants";
 import type {
   ComputerPackageSearchGroupedResponse,
   PackageSearchResultPackage,
-  SearchPackagesRequest,
   SearchPackagesResponse,
   SearchUpgradesRequest,
 } from "@/features/packages";
@@ -12,7 +11,6 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   downgradePackageVersions,
   getComputerPackageSearchResults,
-  packages,
   upgradablePackages,
 } from "@/tests/mocks/packages";
 import { activities } from "@/tests/mocks/activity";
@@ -39,56 +37,6 @@ const parseBooleanParam = (value: string | null): boolean | undefined => {
 };
 
 export default [
-  http.post<never, SearchPackagesRequest>(
-    `${API_URL}packages:search`,
-    async ({ request }) => {
-      if (shouldApplyEndpointStatus("packages")) {
-        const { status } = getEndpointStatus();
-        if (status === "error") {
-          throw createEndpointStatusNetworkError();
-        }
-      }
-
-      let body: SearchPackagesRequest = { computer_query: "" };
-      try {
-        body = await request.json();
-      } catch {
-        // use default empty body
-      }
-
-      const limit = body.limit ?? 10;
-      const offset = body.offset ?? 0;
-      const endpointStatus = getEndpointStatus();
-
-      if (
-        endpointStatus.status === "empty" &&
-        endpointStatus.path === "packages"
-      ) {
-        return HttpResponse.json<SearchPackagesResponse>({
-          packages: [],
-          count: 0,
-          next: null,
-          prev: null,
-        });
-      }
-
-      let results: PackageSearchResultPackage[] = [...packages];
-      if (body.text) {
-        results = generateFilteredResponse(results, body.text, ["name"]);
-      }
-
-      const totalCount = results.length;
-      const paginatedResults = results.slice(offset, offset + limit);
-
-      return HttpResponse.json<SearchPackagesResponse>({
-        packages: paginatedResults,
-        count: totalCount,
-        next: offset + limit < totalCount ? "next" : null,
-        prev: offset > 0 ? "prev" : null,
-      });
-    },
-  ),
-
   http.post<never, SearchUpgradesRequest>(
     `${API_URL}packages:search-upgrades`,
     async ({ request }) => {

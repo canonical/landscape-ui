@@ -4,19 +4,6 @@ export enum FilterState {
   FALSE = "false",
 }
 
-export interface SearchPackagesRequest {
-  computer_query: string;
-  text?: string;
-  names?: string[];
-  installed?: FilterState;
-  available?: FilterState;
-  upgrade?: FilterState;
-  held?: FilterState;
-  security?: FilterState;
-  limit?: number;
-  offset?: number;
-}
-
 export interface SearchUpgradesRequest {
   computer_query: string;
   text?: string;

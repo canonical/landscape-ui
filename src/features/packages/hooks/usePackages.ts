@@ -14,7 +14,6 @@ import type {
   DowngradePackageVersion,
   InstancePackage,
   Package,
-  SearchPackagesRequest,
   SearchPackagesResponse,
   SearchUpgradesRequest,
 } from "../types";
@@ -68,26 +67,6 @@ const sanitizeFilterState = (state?: FilterState): FilterState | undefined => {
   return state;
 };
 
-const sanitizeSearchPackagesRequest = (
-  request?: SearchPackagesRequest,
-): SearchPackagesRequest => {
-  const names = request?.names?.length ? request.names : undefined;
-  const text = request?.text || undefined;
-
-  return {
-    computer_query: request?.computer_query ?? "",
-    text,
-    names,
-    installed: sanitizeFilterState(request?.installed),
-    available: sanitizeFilterState(request?.available),
-    upgrade: sanitizeFilterState(request?.upgrade),
-    held: sanitizeFilterState(request?.held),
-    security: sanitizeFilterState(request?.security),
-    limit: request?.limit,
-    offset: request?.offset,
-  };
-};
-
 const sanitizeSearchUpgradesRequest = (
   request?: SearchUpgradesRequest,
 ): SearchUpgradesRequest => {
@@ -124,32 +103,6 @@ export default function usePackages() {
   const queryClient = useQueryClient();
   const authFetchOld = useFetchOld();
   const authFetch = useFetch();
-
-  const getPackagesQuery: QueryFnType<
-    AxiosResponse<ApiPaginatedResponse<Package>>,
-    SearchPackagesRequest
-  > = (request, config = {}) => {
-    const sanitizedRequest = sanitizeSearchPackagesRequest(request);
-
-    return useQuery<
-      AxiosResponse<ApiPaginatedResponse<Package>>,
-      AxiosError<ApiError>
-    >({
-      queryKey: ["packages", sanitizedRequest],
-      queryFn: async () => {
-        const response = await authFetch.post<SearchPackagesResponse>(
-          "packages:search",
-          sanitizedRequest,
-        );
-
-        return {
-          ...response,
-          data: mapSearchResponseToPaginatedPackages(response.data),
-        };
-      },
-      ...config,
-    });
-  };
 
   const getPackageUpgradesQuery: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<Package>>,
@@ -310,7 +263,6 @@ export default function usePackages() {
   });
 
   return {
-    getPackagesQuery,
     getPackageUpgradesQuery,
     getInstancePackagesQuery,
     upgradePackagesQuery,
