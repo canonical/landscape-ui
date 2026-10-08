@@ -844,7 +844,7 @@ describe("SnapsActionForm", () => {
     await user.click(await screen.findByRole("searchbox"));
     await user.click(
       await screen.findByRole("option", {
-        name: classicSnapOptionTitle,
+        name: `${installedSnaps[2].snap.name} ${installedSnaps[2].snap.publisher.username}`,
       }),
     );
 
