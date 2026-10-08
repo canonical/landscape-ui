@@ -39,7 +39,7 @@ const signIn = () => {
   );
 };
 
-const renderProfiles = (profileType: string) =>
+const renderProfiles = (profileType: string, search = "") =>
   renderWithProviders(
     <Routes>
       <Route
@@ -57,7 +57,7 @@ const renderProfiles = (profileType: string) =>
       </Route>
     </Routes>,
     undefined,
-    ROUTES.superAdmin.sessionProfile(ACME, profileType),
+    `${ROUTES.superAdmin.sessionProfile(ACME, profileType)}${search}`,
   );
 
 const findRow = async (title: string) => {
@@ -193,6 +193,25 @@ describe("SupportProfilesPage (integration)", () => {
         .map((header) => header.textContent?.trim()),
     ).toEqual(["Profile name", "Access group", "Associated", "Next restart"]);
   });
+
+  it.each(["reboot", "removal"])(
+    "lists the %s profiles despite another type's profile name in the URL",
+    async (profileType) => {
+      // Left behind when the side panel was open on a repository profile.
+      renderProfiles(
+        profileType,
+        `?sidePath=view&name=${repositoryProfile.name}`,
+      );
+
+      expect(
+        await screen.findByRole("heading", {
+          name: `${profileType[0]?.toUpperCase()}${profileType.slice(1)} profiles`,
+        }),
+      ).toBeInTheDocument();
+      expect(await screen.findAllByRole("row")).not.toHaveLength(0);
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    },
+  );
 
   it("lists the removal profiles with their timeframe", async () => {
     renderProfiles("removal");
