@@ -13,9 +13,21 @@ import type { CellProps, Column } from "react-table";
 const SupportRoles: FC = () => {
   const { getRolesQuery, getPermissionsQuery, getAccessGroupQuery } =
     useRoles();
-  const { data: rolesData, isLoading: isGettingRoles } = getRolesQuery();
-  const { data: permissionsData } = getPermissionsQuery();
-  const { data: accessGroupsData } = getAccessGroupQuery();
+  const {
+    data: rolesData,
+    isLoading: isGettingRoles,
+    error: rolesError,
+  } = getRolesQuery();
+  const {
+    data: permissionsData,
+    isLoading: isGettingPermissions,
+    error: permissionsError,
+  } = getPermissionsQuery();
+  const {
+    data: accessGroupsData,
+    isLoading: isGettingAccessGroups,
+    error: accessGroupsError,
+  } = getAccessGroupQuery();
 
   const columns = useMemo<Column<Role>[]>(() => {
     const permissionOptions = permissionsData
@@ -53,7 +65,14 @@ const SupportRoles: FC = () => {
     ];
   }, [accessGroupsData, permissionsData]);
 
-  if (isGettingRoles) {
+  const error = rolesError ?? permissionsError ?? accessGroupsError;
+
+  if (error) {
+    throw error;
+  }
+
+  // The columns summarise permissions and access groups: wait for all three.
+  if (isGettingRoles || isGettingPermissions || isGettingAccessGroups) {
     return <LoadingState />;
   }
 

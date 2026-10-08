@@ -112,6 +112,11 @@ describe("SupportSettingsPage (integration)", () => {
 
     await user.click(screen.getByRole("tab", { name: /Invites/ }));
 
+    expect(screen.getByRole("tab", { name: /Invites/ })).toHaveAttribute(
+      "aria-controls",
+      screen.getByRole("tabpanel").id,
+    );
+
     const invitationRow = await findRow(invitation.email);
 
     expect(invitationRow.getByText(invitation.name)).toBeInTheDocument();

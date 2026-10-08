@@ -91,13 +91,18 @@ const SupportAdministrators: FC = () => {
           id: `tab-link-${id}`,
           label,
           role: "tab",
+          "aria-controls": `tab-panel-${id}`,
           active: id === tabId,
           onClick: () => {
             setTabId(id);
           },
         }))}
       />
-      <div role="tabpanel" aria-labelledby={`tab-link-${tabId}`}>
+      <div
+        id={`tab-panel-${tabId}`}
+        role="tabpanel"
+        aria-labelledby={`tab-link-${tabId}`}
+      >
         {tabId === "administrators" && (
           <ResponsiveTable
             columns={ADMINISTRATOR_COLUMNS}
