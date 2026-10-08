@@ -18,7 +18,7 @@ import {
 import { getSelectionLabel, pluralize } from "@/utils/_helpers";
 import { useMemo, useState, type FC } from "react";
 import type { CellProps, Column } from "react-table";
-import classes from "./UpgradesSummary.module.scss";
+import classes from "./PackagesUpgradeSummary.module.scss";
 import useNotify from "@/hooks/useNotify";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 

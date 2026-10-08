@@ -4,7 +4,7 @@ export { default as PackagesActionForm } from "./components/PackagesActionForm";
 export { default as PackagesInstallButton } from "./components/PackagesInstallButton";
 export { default as PackagesPanelHeader } from "./components/PackagesPanelHeader";
 export { usePackages } from "./hooks";
-export type { GetPackagesParams } from "./hooks";
+export type { GetPackagesParams, InstancePackagesToExclude } from "./hooks";
 export * from "./types";
 export * from "./helpers";
 export { default as PackagesActionSummaryCount } from "./components/PackagesActionSummary/components/PackagesActionSummaryCount";

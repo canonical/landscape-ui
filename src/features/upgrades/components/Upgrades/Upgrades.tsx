@@ -1,180 +1,140 @@
-import { SidePanelTableFilterChips } from "@/components/filter";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import LoadingState from "@/components/layout/LoadingState";
-import { SidePanelTablePagination } from "@/components/layout/TablePagination";
-import useSidePanel from "@/hooks/useSidePanel";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
-import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
-import type { Instance } from "@/types/Instance";
-import { getSelectionLabel, toInstanceQuery } from "@/utils/_helpers";
-import { SearchBox } from "@canonical/react-components";
-import classNames from "classnames";
-import { useState, type FC } from "react";
-import UpgradesList from "../UpgradesList";
-import UpgradesSummary from "../UpgradesSummary";
-import classes from "./Upgrades.module.scss";
-import type { Package } from "@/features/packages";
-import {
-  useCreatePackageChangePlan,
-  useDeletePackageChangePlan,
-  useSearchUpgrades,
-} from "@/features/packages";
+import { hasSecurityUpgrades, hasUpgrades } from "@/features/instances";
+import { usePackages } from "@/features/packages";
+import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import type { Instance } from "@/types/Instance";
+import { pluralize } from "@/utils/_helpers";
+import { Form, Tabs } from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { Suspense, useState } from "react";
+import UpgradeInfo from "../UpgradeInfo";
+import { TAB_LINKS, TAB_PANELS, VALIDATION_SCHEMA } from "./constants";
+import { getInitialValues, getTabLinks } from "./helpers";
+import type { UpgradesFormProps } from "./types";
 
 interface UpgradesProps {
   readonly selectedInstances: Instance[];
 }
 
 const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
+  const [activeTabLinkId, setActiveTabLinkId] = useState<string>(
+    TAB_LINKS[0].id,
+  );
+
+  const affectedInstances = selectedInstances.filter(({ alerts }) =>
+    hasUpgrades(alerts),
+  );
+
+  const instancesWithUsn = affectedInstances.filter(({ alerts }) =>
+    hasSecurityUpgrades(alerts),
+  );
+
   const debug = useDebug();
+  const { notify } = useNotify();
+  const { closeSidePanel } = useSidePanel();
+  const { upgradeInstancesPackagesQuery } = usePackages();
+  const { upgradeUsnsQuery } = useUsns();
 
-  const {
-    closeSidePanel,
-    setSidePanelTitle,
-    changeSidePanelSize,
-    setOnCloseOverride,
-  } = useSidePanel();
+  const { mutateAsync: upgradeInstancesPackages } =
+    upgradeInstancesPackagesQuery;
+  const { mutateAsync: upgradeUsns } = upgradeUsnsQuery;
 
-  const [selectedUpgrades, setSelectedUpgrades] = useState<Package[]>([]);
-  const [inputValue, setInputValue] = useState("");
-  const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
-  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
-  const [packageChangePlanId, setPackageChangePlanId] = useState<number | null>(
-    null,
-  );
+  const handleSubmit = async (values: UpgradesFormProps) => {
+    try {
+      if (activeTabLinkId === "tab-link-usns") {
+        await upgradeUsns({
+          computers: instancesWithUsn.map(({ id }) => ({
+            id,
+            exclude_usns: values.excludedUsns,
+          })),
+        });
+      } else {
+        await upgradeInstancesPackages({
+          computers: values.excludedPackages,
+        });
+      }
 
-  const computerQuery = toInstanceQuery(
-    selectedInstances.map((instance) => instance.id),
-  );
+      closeSidePanel();
 
-  const {
-    data: upgradesResponse,
-    isPending: isPendingUpgrades,
-    error: upgradesError,
-  } = useSearchUpgrades({
-    offset: (currentPage - 1) * pageSize,
-    limit: pageSize,
-    text: search.trim() || undefined,
-    computer_query: computerQuery,
+      notify.success({
+        title: "You queued packages to be upgraded",
+        message: `Packages on ${pluralize(selectedInstances.length, ["instance"], "exact")} will be upgraded and are queued in Activities`,
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
+
+  const formik = useFormik({
+    initialValues: getInitialValues(affectedInstances),
+    onSubmit: handleSubmit,
+    validationSchema: VALIDATION_SCHEMA,
   });
 
-  const {
-    mutateAsync: createPackageChangePlan,
-    isPending: isCreatingPackageChangePlan,
-  } = useCreatePackageChangePlan();
+  const handleExcludedPackagesChange = async (
+    newExcludedPackages: UpgradesFormProps["excludedPackages"],
+  ) => formik.setFieldValue("excludedPackages", newExcludedPackages);
 
-  const { mutateAsync: deletePackageChangePlan } = useDeletePackageChangePlan();
+  return (
+    <Form onSubmit={formik.handleSubmit}>
+      <UpgradeInfo instances={selectedInstances} />
 
-  if (upgradesError) {
-    throw upgradesError;
-  }
+      <Tabs
+        links={getTabLinks({
+          activeTabLinkId,
+          onTabLinkClick: (id) => {
+            setActiveTabLinkId(id);
+          },
+          withUsnsTab: instancesWithUsn.length > 0,
+        })}
+      />
 
-  const reset = () => {
-    setSelectedUpgrades([]);
-    setCurrentPage(DEFAULT_CURRENT_PAGE);
-  };
-
-  const handleSearch = (value: string) => {
-    setSearch(value);
-    reset();
-  };
-
-  const clearSearch = () => {
-    setInputValue("");
-    handleSearch("");
-  };
-
-  switch (packageChangePlanId) {
-    case null:
-      return (
-        <>
-          <SearchBox
-            className={classNames(classes.search)}
-            externallyControlled
-            value={inputValue}
-            onChange={setInputValue}
-            onClear={clearSearch}
-            onSearch={handleSearch}
-            autoComplete="off"
-          />
-          <SidePanelTableFilterChips
-            filters={[
-              {
-                label: "Search",
-                item: search,
-                clear: clearSearch,
-              },
-            ]}
-          />
-          {isPendingUpgrades ? (
-            <LoadingState />
-          ) : (
-            <UpgradesList
-              currentUpgrades={upgradesResponse.data.packages}
-              selectedUpgrades={selectedUpgrades}
-              setSelectedUpgrades={setSelectedUpgrades}
-              upgradeCount={upgradesResponse.data.count}
-            />
+      <AppErrorBoundary>
+        <div tabIndex={0} role="tabpanel" aria-labelledby={activeTabLinkId}>
+          {activeTabLinkId === "tab-link-instances" && (
+            <Suspense fallback={<LoadingState />}>
+              <TAB_PANELS.instances
+                excludedPackages={formik.values.excludedPackages}
+                instances={affectedInstances}
+                onExcludedPackagesChange={handleExcludedPackagesChange}
+              />
+            </Suspense>
           )}
-          <SidePanelTablePagination
-            currentPage={currentPage}
-            pageSize={pageSize}
-            paginate={setCurrentPage}
-            setPageSize={setPageSize}
-            totalItems={upgradesResponse?.data.count}
-            currentItemCount={upgradesResponse?.data.packages.length}
-          />
-          <SidePanelFormButtons
-            onCancel={closeSidePanel}
-            submitButtonText="Next"
-            submitButtonDisabled={isPendingUpgrades || !selectedUpgrades.length}
-            submitButtonLoading={isCreatingPackageChangePlan}
-            onSubmit={async () => {
-              try {
-                const config = {
-                  upgrade_config: {
-                    select_by_ids: {
-                      package_ids: selectedUpgrades.map(({ id }) => id),
-                    },
-                  },
-                };
+          {activeTabLinkId === "tab-link-packages" && (
+            <Suspense fallback={<LoadingState />}>
+              <TAB_PANELS.packages
+                excludedPackages={formik.values.excludedPackages}
+                instances={affectedInstances}
+                onExcludedPackagesChange={handleExcludedPackagesChange}
+              />
+            </Suspense>
+          )}
+          {activeTabLinkId === "tab-link-usns" && (
+            <Suspense fallback={<LoadingState />}>
+              <TAB_PANELS.usns
+                excludedUsns={formik.values.excludedUsns}
+                instances={instancesWithUsn}
+                onExcludedUsnsChange={async (usns) =>
+                  formik.setFieldValue("excludedUsns", usns)
+                }
+              />
+            </Suspense>
+          )}
+        </div>
+      </AppErrorBoundary>
 
-                const { data } = await createPackageChangePlan({
-                  computer_query: computerQuery,
-                  ...config,
-                });
-
-                setSidePanelTitle("Summary");
-                changeSidePanelSize("medium");
-                setPackageChangePlanId(data.id);
-                setOnCloseOverride(() => {
-                  deletePackageChangePlan(data.id);
-                  closeSidePanel();
-                });
-              } catch (error) {
-                debug(error);
-              }
-            }}
-          />
-        </>
-      );
-
-    default:
-      return (
-        <UpgradesSummary
-          onBackButtonPress={() => {
-            setSidePanelTitle(
-              `Apply upgrades to ${getSelectionLabel(selectedInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
-            );
-            changeSidePanelSize("large");
-            setPackageChangePlanId(null);
-            setOnCloseOverride(undefined);
-          }}
-          packageChangePlanId={packageChangePlanId}
-        />
-      );
-  }
+      <SidePanelFormButtons
+        submitButtonLoading={formik.isSubmitting}
+        submitButtonText="Upgrade"
+      />
+    </Form>
+  );
 };
 
 export default Upgrades;

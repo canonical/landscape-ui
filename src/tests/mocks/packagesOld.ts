@@ -3,7 +3,7 @@ import type {
   DowngradePackageVersion,
   DowngradeVersion,
   InstancePackage,
-  PackageOld,
+  PackageOld as Package,
   PackageInstance,
 } from "@/features/packages";
 
@@ -335,7 +335,7 @@ export const packagesOld = [
       },
     ],
   },
-] as const satisfies PackageOld[];
+] as const satisfies Package[];
 
 export const getInstancePackages = (instanceId: number): InstancePackage[] => {
   return packagesOld
