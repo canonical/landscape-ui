@@ -94,7 +94,11 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
     close();
   };
 
-  const isOverLimit = selectedItems.length >= DEB_MANAGEMENT_PACKAGE_LIMIT;
+  const isOverLimit =
+    actionType === "change_version"
+      ? selectedItems.reduce((acc, [, versions]) => acc + versions.length, 0) >=
+        DEB_MANAGEMENT_PACKAGE_LIMIT
+      : selectedItems.length >= DEB_MANAGEMENT_PACKAGE_LIMIT;
 
   const getWarningVerb = () => {
     switch (actionType) {
@@ -222,6 +226,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                     ]),
                   );
                 }}
+                isOverLimit={isOverLimit}
               />
             ) : (
               <PackageDropdownSearchItem
