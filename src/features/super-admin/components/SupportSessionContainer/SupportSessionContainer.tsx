@@ -45,6 +45,10 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
   // A ref, not the mutation's pending flag: that flag only turns on in the
   // next render, after a doubled effect (StrictMode) has already switched twice.
   const isEntering = useRef(false);
+  // Counted so that the entry effect runs again once a switch settles: the
+  // URL may name another account by then, and a refused switch changes
+  // nothing else the effect depends on.
+  const [settledEntries, setSettledEntries] = useState(0);
 
   const hasUser = !!user;
   // Entered only once the account is known to exist: a switch must not go
@@ -72,8 +76,9 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
       })
       .finally(() => {
         isEntering.current = false;
+        setSettledEntries((count) => count + 1);
       });
-  }, [hasUser, hasStaffAccount, isInAccount, name]);
+  }, [hasUser, hasStaffAccount, isInAccount, settledEntries, name]);
 
   if (staffAccountError?.response?.status === NOT_FOUND_STATUS) {
     return (

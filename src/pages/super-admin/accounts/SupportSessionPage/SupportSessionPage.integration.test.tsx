@@ -54,20 +54,39 @@ const signInWith = ({
   );
 };
 
+interface SwitchOptions {
+  /** How long the first switch takes. */
+  firstDelayMs?: number;
+  /** Whether the first switch is refused once it settles. */
+  refuseFirst?: boolean;
+}
+
 /**
  * Records the body of every account switch, then lets the mock API handle
- * it; the first one only after `firstDelayMs`.
+ * it, the first one as `options` say.
  */
-const recordSwitches = (firstDelayMs = 0): unknown[] => {
+const recordSwitches = ({
+  firstDelayMs = 0,
+  refuseFirst = false,
+}: SwitchOptions = {}): unknown[] => {
   const bodies: unknown[] = [];
 
   server.use(
     http.post(`${API_URL}switch-account`, async ({ request }) => {
       bodies.push(await request.clone().json());
 
-      if (bodies.length === 1) {
-        await delay(firstDelayMs);
+      if (bodies.length > 1) {
+        return undefined;
       }
+
+      await delay(firstDelayMs);
+
+      return refuseFirst
+        ? HttpResponse.json(
+            { error: "Unavailable", message: "Try again later." },
+            { status: 503 },
+          )
+        : undefined;
     }),
   );
 
@@ -214,38 +233,48 @@ describe("SupportSessionPage (integration)", () => {
     expect(switches).toEqual([{ account_name: ACME }]);
   });
 
-  it("enters the account the URL moved to while entering another", async () => {
-    const switches = recordSwitches(SLOW_SWITCH_MS);
-    const lookups = recordLookups();
+  it.each([
+    { outcome: "settles", refuseFirst: false },
+    { outcome: "is refused", refuseFirst: true },
+  ])(
+    "enters the account the URL moved to once the switch into another $outcome",
+    async ({ refuseFirst }) => {
+      const switches = recordSwitches({
+        firstDelayMs: SLOW_SWITCH_MS,
+        refuseFirst,
+      });
+      const lookups = recordLookups();
 
-    renderApp(ROUTES.superAdmin.session(ACME), {
-      extra: <GoTo to={ROUTES.superAdmin.session(GLOBEX)} />,
-    });
+      renderApp(ROUTES.superAdmin.session(ACME), {
+        extra: <GoTo to={ROUTES.superAdmin.session(GLOBEX)} />,
+      });
 
-    // The first switch is still on its way when the address changes, and
-    // the new account is looked up before it settles.
-    await waitFor(() => {
-      expect(switches).toEqual([{ account_name: ACME }]);
-    });
-    await user.click(screen.getByRole("button", { name: /^Go to/ }));
-    await waitFor(() => {
-      expect(lookups).toContain(GLOBEX);
-    });
+      // The first switch is still on its way when the address changes, and
+      // the new account is looked up before it settles.
+      await waitFor(() => {
+        expect(switches).toEqual([{ account_name: ACME }]);
+      });
+      await user.click(screen.getByRole("button", { name: /^Go to/ }));
+      await waitFor(() => {
+        expect(lookups).toContain(GLOBEX);
+      });
 
-    const bar = within(
-      await screen.findByRole(
-        "region",
-        { name: "Support session" },
-        { timeout: SLOW_SWITCH_MS * 3 },
-      ),
-    );
+      const bar = within(
+        await screen.findByRole(
+          "region",
+          { name: "Support session" },
+          { timeout: SLOW_SWITCH_MS * 3 },
+        ),
+      );
 
-    expect(bar.getByText(GLOBEX_TITLE)).toBeInTheDocument();
-    expect(switches).toEqual([
-      { account_name: ACME },
-      { account_name: GLOBEX },
-    ]);
-  });
+      expect(bar.getByText(GLOBEX_TITLE)).toBeInTheDocument();
+      expect(switches).toEqual([
+        { account_name: ACME },
+        { account_name: GLOBEX },
+      ]);
+      expect(screen.queryByText(/Could not enter/)).not.toBeInTheDocument();
+    },
+  );
 
   it("does not switch again when the session is already in the account", async () => {
     signInWith({ currentAccount: ACME });
