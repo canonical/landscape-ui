@@ -2,7 +2,7 @@ import { API_URL, DEBOUNCE_DELAY } from "@/constants";
 import { ROUTES } from "@/libs/routes";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import server from "@/tests/server";
-import { getInstancePackages } from "@/tests/mocks/packages";
+import { getInstancePackages } from "@/tests/mocks/packagesOld";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
