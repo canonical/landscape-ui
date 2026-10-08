@@ -1,18 +1,8 @@
 import useNotify from "@/hooks/useNotify";
 import useSwitchAccount from "@/hooks/useSwitchAccount";
 import { ROUTES } from "@/libs/routes";
-import type { ApiError } from "@/types/api/ApiError";
-import { isAxiosError } from "axios";
 import { useNavigate } from "react-router";
-
-/** The server's message for a failed request, or the error's own. */
-const getErrorMessage = (error: unknown): string => {
-  if (isAxiosError<ApiError>(error) && error.response?.data.message) {
-    return error.response.data.message;
-  }
-
-  return error instanceof Error ? error.message : "Unknown error";
-};
+import { getErrorMessage } from "../helpers";
 
 /**
  * Enters the account named `name` as Canonical staff and opens its support

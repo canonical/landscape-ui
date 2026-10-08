@@ -30,6 +30,9 @@ const SupportSessionSidebar: FC<SupportSessionSidebarProps> = ({
   const { pathname } = useLocation();
 
   const eventsLogPath = ROUTES.superAdmin.sessionEventsLog(accountName);
+  // The logo stays inside the session: the dashboard root would show the
+  // entered account without the frame or the way out.
+  const sessionPath = ROUTES.superAdmin.session(accountName);
 
   return (
     <>
@@ -39,6 +42,7 @@ const SupportSessionSidebar: FC<SupportSessionSidebarProps> = ({
             toggleMenu={() => {
               setMenuClosed((prevValue) => !prevValue);
             }}
+            logoPath={sessionPath}
           />
         </div>
       </div>
@@ -52,6 +56,7 @@ const SupportSessionSidebar: FC<SupportSessionSidebarProps> = ({
                 closeMenu={() => {
                   setMenuClosed(true);
                 }}
+                logoPath={sessionPath}
               />
 
               <div className={sidebarClasses.navigation}>

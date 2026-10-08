@@ -12,9 +12,14 @@ const ICON_RATIO = 1.6;
 
 interface DesktopHeaderProps {
   readonly closeMenu: () => void;
+  /** Where the logo leads; the dashboard root by default. */
+  readonly logoPath?: string;
 }
 
-const DesktopHeader: FC<DesktopHeaderProps> = ({ closeMenu }) => {
+const DesktopHeader: FC<DesktopHeaderProps> = ({
+  closeMenu,
+  logoPath = ROUTES.root.root(),
+}) => {
   return (
     <div
       className={classNames(
@@ -22,7 +27,7 @@ const DesktopHeader: FC<DesktopHeaderProps> = ({ closeMenu }) => {
         classes.container,
       )}
     >
-      <Link to={ROUTES.root.root()} className={classes.link}>
+      <Link to={logoPath} className={classes.link}>
         <img
           className={classNames("is-fading-when-collapsed", classes.logoImg)}
           src={Logo}

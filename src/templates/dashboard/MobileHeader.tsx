@@ -7,12 +7,17 @@ import { ROUTES } from "@/libs/routes";
 
 interface MobileHeaderProps {
   readonly toggleMenu: () => void;
+  /** Where the logo leads; the dashboard root by default. */
+  readonly logoPath?: string;
 }
 
-const MobileHeader: FC<MobileHeaderProps> = ({ toggleMenu }) => {
+const MobileHeader: FC<MobileHeaderProps> = ({
+  toggleMenu,
+  logoPath = ROUTES.root.root(),
+}) => {
   return (
     <div className="p-panel__header">
-      <Link to={ROUTES.root.root()}>
+      <Link to={logoPath}>
         <img
           className="p-panel__logo-name is-fading-when-collapsed"
           src={Logo}

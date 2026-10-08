@@ -2,15 +2,14 @@ import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import StaticLink from "@/components/layout/StaticLink";
 import useAuth from "@/hooks/useAuth";
+import useDebug from "@/hooks/useDebug";
 import useSwitchAccount from "@/hooks/useSwitchAccount";
 import { ROUTES } from "@/libs/routes";
-import type { ApiError } from "@/types/api/ApiError";
 import SupportSessionTemplate from "@/templates/support-session";
-import type { AxiosError } from "axios";
-import { isAxiosError } from "axios";
 import type { FC, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { useGetStaffAccount } from "../../api";
+import { getErrorMessage } from "../../helpers";
 import { useExitSupportSession } from "../../hooks";
 
 const NOT_FOUND_STATUS = 404;
@@ -18,6 +17,12 @@ const NOT_FOUND_STATUS = 404;
 interface SupportSessionContainerProps {
   readonly name: string;
   readonly children: ReactNode;
+}
+
+/** A refused entry, remembered with the account it was for. */
+interface FailedEntry {
+  readonly name: string;
+  readonly error: unknown;
 }
 
 /**
@@ -29,6 +34,7 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
   name,
   children,
 }) => {
+  const debug = useDebug();
   const { user } = useAuth();
   const { switchAccount } = useSwitchAccount();
   const { staffAccount, staffAccountError, isGettingStaffAccount } =
@@ -36,9 +42,9 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
   const { exitSupportSession, isExitingSupportSession } =
     useExitSupportSession(name);
 
-  const [enterError, setEnterError] = useState<AxiosError<ApiError> | null>(
-    null,
-  );
+  // Kept with its account name so that a change of `name` while mounted
+  // (back/forward, an edited URL) tries the new account afresh.
+  const [failedEntry, setFailedEntry] = useState<FailedEntry | null>(null);
   // Leaving switches the session back before navigating away; the account
   // must not be re-entered in between.
   const [isLeaving, setIsLeaving] = useState(false);
@@ -48,6 +54,7 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
 
   const hasUser = !!user;
   const isInAccount = user?.current_account === name;
+  const enterError = failedEntry?.name === name ? failedEntry.error : null;
 
   useEffect(() => {
     if (
@@ -64,9 +71,7 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
 
     switchAccount(name)
       .catch((error: unknown) => {
-        if (isAxiosError<ApiError>(error)) {
-          setEnterError(error);
-        }
+        setFailedEntry({ name, error });
       })
       .finally(() => {
         isEntering.current = false;
@@ -76,7 +81,12 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
   const exit = async () => {
     setIsLeaving(true);
 
-    await exitSupportSession();
+    try {
+      await exitSupportSession();
+    } catch (error) {
+      debug(error);
+      setIsLeaving(false);
+    }
   };
 
   if (staffAccountError?.response?.status === NOT_FOUND_STATUS) {
@@ -101,7 +111,7 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
     return (
       <EmptyState
         title={`Could not enter ${staffAccount?.company ?? name}`}
-        body={enterError.response?.data.message ?? enterError.message}
+        body={getErrorMessage(enterError)}
         cta={[
           <StaticLink key="account" to={ROUTES.superAdmin.account(name)}>
             Back to the account

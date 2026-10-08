@@ -198,6 +198,49 @@ describe("SupportSessionPage (integration)", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("keeps the logo inside the session", async () => {
+    signInWith({ currentAccount: ACME });
+
+    renderApp(ROUTES.superAdmin.sessionEventsLog(ACME));
+
+    await screen.findByRole("banner");
+
+    // The desktop and the mobile header each carry one.
+    const logos = screen.getAllByRole("link", { name: /landscape/i });
+
+    expect(logos).toHaveLength(2);
+    for (const logo of logos) {
+      expect(logo).toHaveAttribute("href", ROUTES.superAdmin.session(ACME));
+    }
+  });
+
+  it("stays in the session when it cannot be left", async () => {
+    signInWith({ currentAccount: ACME });
+    server.use(
+      http.post(`${API_URL}switch-account`, () =>
+        HttpResponse.json(
+          { error: "Unavailable", message: "Try again later." },
+          { status: 503 },
+        ),
+      ),
+    );
+
+    renderApp(ROUTES.superAdmin.sessionEventsLog(ACME));
+
+    const bar = await findSupportBar();
+    const exitButton = bar.getByRole("button", { name: "Exit to super admin" });
+
+    await user.click(exitButton);
+
+    expect(await screen.findByText("Try again later.")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(exitButton).toBeEnabled();
+    });
+    expect(
+      screen.getByRole("heading", { name: "Events log page" }),
+    ).toBeInTheDocument();
+  });
+
   it("exits to the account's page, back in the person's own account", async () => {
     signInWith({ currentAccount: ACME });
 

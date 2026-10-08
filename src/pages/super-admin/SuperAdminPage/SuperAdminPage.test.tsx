@@ -1,4 +1,5 @@
 import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Navigate, Route, Routes } from "react-router";
 import { delay, http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
@@ -69,6 +70,8 @@ const recordSwitches = (delayMs = 0): unknown[] => {
 };
 
 describe("SuperAdminPage", () => {
+  const user = userEvent.setup();
+
   it("renders the super admin layout around the child page", async () => {
     renderEnteringWith(null);
 
@@ -134,21 +137,34 @@ describe("SuperAdminPage", () => {
       expect(screen.queryByText("Leaving acme…")).not.toBeInTheDocument();
     });
 
-    it("shows the pages again when the session could not be returned", async () => {
+    it("offers to try again when the session could not be returned", async () => {
       signInAs("acme");
+      const switches = recordSwitches();
       server.use(
-        http.post(`${API_URL}switch-account`, () =>
-          HttpResponse.json(
-            { error: "NotFound", message: "Not found.", detail: null },
-            { status: 404 },
-          ),
+        http.post(
+          `${API_URL}switch-account`,
+          () =>
+            HttpResponse.json(
+              { error: "Unavailable", message: "Try again later." },
+              { status: 503 },
+            ),
+          { once: true },
         ),
       );
 
       renderEnteringWith(null);
 
+      // The entered account's pages stay hidden while the session is stuck.
+      expect(
+        await screen.findByText("Could not leave acme"),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Try again later.")).toBeInTheDocument();
+      expect(screen.queryByText("Child page")).not.toBeInTheDocument();
+
+      await user.click(screen.getByRole("button", { name: "Try again" }));
+
       expect(await screen.findByText("Child page")).toBeInTheDocument();
-      expect(await screen.findByText("Not found.")).toBeInTheDocument();
+      expect(switches).toEqual([{ account_name: authUser.current_account }]);
     });
 
     it("leaves the session alone when it is in one of the person's accounts", async () => {
