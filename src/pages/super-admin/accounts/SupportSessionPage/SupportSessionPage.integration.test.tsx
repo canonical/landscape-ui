@@ -1,6 +1,7 @@
 import { API_URL } from "@/constants";
 import { PATHS, ROUTES } from "@/libs/routes";
 import AccountDetailPage from "@/pages/super-admin/accounts/AccountDetailPage";
+import SuperAdminPage from "@/pages/super-admin/SuperAdminPage";
 import { authResponse, authUser } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
@@ -10,12 +11,18 @@ import { StrictMode } from "react";
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { SuperAdminGuard } from "@/components/guards/SuperAdminGuard";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
-import { Navigate, Outlet, Route, Routes } from "react-router";
+import { delay, http, HttpResponse } from "msw";
+import type { FC, ReactNode } from "react";
+import { Navigate, Outlet, Route, Routes, useNavigate } from "react-router";
 import { beforeEach, describe, expect, it } from "vitest";
 import SupportSessionPage from "./SupportSessionPage";
 
 const SUPER_ADMIN = `/${PATHS.superAdmin.root}`;
+const SLOW_SWITCH_MS = 1000;
+
+// A second mock account the signed-in user is not a member of.
+const GLOBEX = "globex";
+const GLOBEX_TITLE = "Globex Corporation";
 
 // The mock "acme" account: the signed-in user is not a member of it.
 const ACME = "acme";
@@ -47,53 +54,107 @@ const signInWith = ({
   );
 };
 
-/** Records the body of every account switch, then lets the mock API handle it. */
-const recordSwitches = (): unknown[] => {
+/**
+ * Records the body of every account switch, then lets the mock API handle
+ * it; the first one only after `firstDelayMs`.
+ */
+const recordSwitches = (firstDelayMs = 0): unknown[] => {
   const bodies: unknown[] = [];
 
   server.use(
     http.post(`${API_URL}switch-account`, async ({ request }) => {
       bodies.push(await request.clone().json());
+
+      if (bodies.length === 1) {
+        await delay(firstDelayMs);
+      }
     }),
   );
 
   return bodies;
 };
 
+/** Records the name of every staff account looked up, then lets the mock API answer. */
+const recordLookups = (): string[] => {
+  const names: string[] = [];
+
+  server.use(
+    http.get(`${API_URL}accounts/:name`, ({ params }) => {
+      names.push(String(params.name));
+    }),
+  );
+
+  return names;
+};
+
+/** A button that moves to `to` the way history or an edited address would. */
+const GoTo: FC<{ readonly to: string }> = ({ to }) => {
+  const navigate = useNavigate();
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        navigate(to);
+      }}
+    >
+      Go to {to}
+    </button>
+  );
+};
+
+interface RenderOptions {
+  strict?: boolean;
+  /** Rendered next to the routes, for driving the URL. */
+  extra?: ReactNode;
+}
+
 /** The super admin routes as the app declares them, with a stand-in events log. */
-const renderApp = (initialPath: string, { strict = false } = {}) =>
+const renderApp = (
+  initialPath: string,
+  { strict = false, extra = null }: RenderOptions = {},
+) =>
   renderWithProviders(
-    <Routes>
-      <Route
-        path={SUPER_ADMIN}
-        element={
-          // The guards mount the session once the user is known, as the app
-          // does; the StrictMode case depends on that.
-          <AuthGuard requireAccount={false}>
-            <SuperAdminGuard>
-              <Outlet />
-            </SuperAdminGuard>
-          </AuthGuard>
-        }
-      >
-        <Route path={PATHS.superAdmin.session} element={<SupportSessionPage />}>
-          <Route
-            index
-            element={
-              <Navigate to={PATHS.superAdmin.sessionEventsLog} replace />
-            }
-          />
-          <Route
-            path={PATHS.superAdmin.sessionEventsLog}
-            element={<h1>Events log page</h1>}
-          />
-        </Route>
+    <>
+      <Routes>
         <Route
-          path={PATHS.superAdmin.account}
-          element={<AccountDetailPage />}
-        />
-      </Route>
-    </Routes>,
+          path={SUPER_ADMIN}
+          element={
+            // The guards mount the session once the user is known, as the app
+            // does; the StrictMode case depends on that.
+            <AuthGuard requireAccount={false}>
+              <SuperAdminGuard>
+                <Outlet />
+              </SuperAdminGuard>
+            </AuthGuard>
+          }
+        >
+          <Route
+            path={PATHS.superAdmin.session}
+            element={<SupportSessionPage />}
+          >
+            <Route
+              index
+              element={
+                <Navigate to={PATHS.superAdmin.sessionEventsLog} replace />
+              }
+            />
+            <Route
+              path={PATHS.superAdmin.sessionEventsLog}
+              element={<h1>Events log page</h1>}
+            />
+          </Route>
+          {/* The layout that returns a session left behind to its owner. */}
+          <Route element={<SuperAdminPage />}>
+            <Route
+              path={PATHS.superAdmin.account}
+              element={<AccountDetailPage />}
+            />
+          </Route>
+        </Route>
+      </Routes>
+      {extra}
+    </>,
     undefined,
     initialPath,
     undefined,
@@ -151,6 +212,39 @@ describe("SupportSessionPage (integration)", () => {
       await screen.findByRole("heading", { name: "Events log page" }),
     ).toBeInTheDocument();
     expect(switches).toEqual([{ account_name: ACME }]);
+  });
+
+  it("enters the account the URL moved to while entering another", async () => {
+    const switches = recordSwitches(SLOW_SWITCH_MS);
+    const lookups = recordLookups();
+
+    renderApp(ROUTES.superAdmin.session(ACME), {
+      extra: <GoTo to={ROUTES.superAdmin.session(GLOBEX)} />,
+    });
+
+    // The first switch is still on its way when the address changes, and
+    // the new account is looked up before it settles.
+    await waitFor(() => {
+      expect(switches).toEqual([{ account_name: ACME }]);
+    });
+    await user.click(screen.getByRole("button", { name: /^Go to/ }));
+    await waitFor(() => {
+      expect(lookups).toContain(GLOBEX);
+    });
+
+    const bar = within(
+      await screen.findByRole(
+        "region",
+        { name: "Support session" },
+        { timeout: SLOW_SWITCH_MS * 3 },
+      ),
+    );
+
+    expect(bar.getByText(GLOBEX_TITLE)).toBeInTheDocument();
+    expect(switches).toEqual([
+      { account_name: ACME },
+      { account_name: GLOBEX },
+    ]);
   });
 
   it("does not switch again when the session is already in the account", async () => {
@@ -214,7 +308,7 @@ describe("SupportSessionPage (integration)", () => {
     }
   });
 
-  it("stays in the session when it cannot be left", async () => {
+  it("offers to try again when the session cannot be returned after exiting", async () => {
     signInWith({ currentAccount: ACME });
     server.use(
       http.post(`${API_URL}switch-account`, () =>
@@ -228,17 +322,19 @@ describe("SupportSessionPage (integration)", () => {
     renderApp(ROUTES.superAdmin.sessionEventsLog(ACME));
 
     const bar = await findSupportBar();
-    const exitButton = bar.getByRole("button", { name: "Exit to super admin" });
 
-    await user.click(exitButton);
+    await user.click(bar.getByRole("button", { name: "Exit to super admin" }));
 
-    expect(await screen.findByText("Try again later.")).toBeInTheDocument();
-    await waitFor(() => {
-      expect(exitButton).toBeEnabled();
-    });
     expect(
-      screen.getByRole("heading", { name: "Events log page" }),
+      await screen.findByText(`Could not leave ${ACME}`),
     ).toBeInTheDocument();
+    expect(screen.getByText("Try again later.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Try again" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("region", { name: "Support session" }),
+    ).not.toBeInTheDocument();
   });
 
   it("exits to the account's page, back in the person's own account", async () => {
@@ -255,7 +351,9 @@ describe("SupportSessionPage (integration)", () => {
     expect(
       await screen.findByRole("heading", { name: ACME_TITLE, level: 2 }),
     ).toBeInTheDocument();
-    expect(switches).toEqual([{ account_name: authUser.current_account }]);
+    await waitFor(() => {
+      expect(switches).toEqual([{ account_name: authUser.current_account }]);
+    });
     expect(
       screen.queryByRole("region", { name: "Support session" }),
     ).not.toBeInTheDocument();

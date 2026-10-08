@@ -2,7 +2,6 @@ import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import StaticLink from "@/components/layout/StaticLink";
 import useAuth from "@/hooks/useAuth";
-import useDebug from "@/hooks/useDebug";
 import useSwitchAccount from "@/hooks/useSwitchAccount";
 import { ROUTES } from "@/libs/routes";
 import SupportSessionTemplate from "@/templates/support-session";
@@ -34,20 +33,15 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
   name,
   children,
 }) => {
-  const debug = useDebug();
   const { user } = useAuth();
   const { switchAccount } = useSwitchAccount();
   const { staffAccount, staffAccountError, isGettingStaffAccount } =
     useGetStaffAccount(name);
-  const { exitSupportSession, isExitingSupportSession } =
-    useExitSupportSession(name);
+  const { exitSupportSession } = useExitSupportSession(name);
 
   // Kept with its account name so that a change of `name` while mounted
   // (back/forward, an edited URL) tries the new account afresh.
   const [failedEntry, setFailedEntry] = useState<FailedEntry | null>(null);
-  // Leaving switches the session back before navigating away; the account
-  // must not be re-entered in between.
-  const [isLeaving, setIsLeaving] = useState(false);
   // A ref, not the mutation's pending flag: that flag only turns on in the
   // next render, after a doubled effect (StrictMode) has already switched twice.
   const isEntering = useRef(false);
@@ -64,7 +58,6 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
       !hasUser ||
       !hasStaffAccount ||
       isInAccount ||
-      isLeaving ||
       isEntering.current ||
       enterError
     ) {
@@ -80,18 +73,7 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
       .finally(() => {
         isEntering.current = false;
       });
-  }, [hasUser, hasStaffAccount, isInAccount, isLeaving, name]);
-
-  const exit = async () => {
-    setIsLeaving(true);
-
-    try {
-      await exitSupportSession();
-    } catch (error) {
-      debug(error);
-      setIsLeaving(false);
-    }
-  };
+  }, [hasUser, hasStaffAccount, isInAccount, name]);
 
   if (staffAccountError?.response?.status === NOT_FOUND_STATUS) {
     return (
@@ -133,8 +115,7 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
     <SupportSessionTemplate
       accountName={name}
       accountTitle={staffAccount.company}
-      onExit={exit}
-      isExiting={isLeaving || isExitingSupportSession}
+      onExit={exitSupportSession}
     >
       {children}
     </SupportSessionTemplate>

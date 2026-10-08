@@ -1,25 +1,18 @@
-import useSwitchAccount from "@/hooks/useSwitchAccount";
 import { ROUTES } from "@/libs/routes";
 import { useNavigate } from "react-router";
-import { useOwnAccount } from "./useOwnAccount";
 
 /**
- * Ends the support session in the account named `name`: returns to the staff
- * member's own account, when they have one, and opens the account's page.
- * Throws when the switch back is refused, leaving the session where it is.
+ * Ends the support session in the account named `name` by opening the
+ * account's page. Super admin mode returns the session to the staff member's
+ * own account from there (see `useRestoreOwnAccount`): doing it here would
+ * leave a switch in flight under a route that is on its way out.
  */
 export const useExitSupportSession = (name: string) => {
   const navigate = useNavigate();
-  const { ownAccount } = useOwnAccount();
-  const { switchAccount, isSwitchingAccount } = useSwitchAccount();
 
-  const exitSupportSession = async (): Promise<void> => {
-    if (ownAccount) {
-      await switchAccount(ownAccount.name);
-    }
-
+  const exitSupportSession = () => {
     navigate(ROUTES.superAdmin.account(name));
   };
 
-  return { exitSupportSession, isExitingSupportSession: isSwitchingAccount };
+  return { exitSupportSession };
 };

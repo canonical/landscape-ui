@@ -18,7 +18,6 @@ interface SupportSessionTemplateProps {
   readonly accountName: string;
   readonly accountTitle: string;
   readonly onExit: () => void;
-  readonly isExiting?: boolean;
 }
 
 /**
@@ -30,7 +29,6 @@ const SupportSessionTemplate: FC<SupportSessionTemplateProps> = ({
   accountName,
   accountTitle,
   onExit,
-  isExiting = false,
 }) => {
   const applicationId = useId();
 
@@ -66,7 +64,6 @@ const SupportSessionTemplate: FC<SupportSessionTemplateProps> = ({
           appearance="base"
           className={classNames("is-dark", sessionClasses.exit)}
           dense
-          disabled={isExiting}
           onClick={onExit}
         >
           Exit to super admin
