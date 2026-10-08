@@ -6,7 +6,10 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { FeatureRegistryEntry } from "../types";
 
-/** Gets the registry metadata of every feature, sorted by name. */
+/**
+ * Gets the registry metadata of every feature, sorted by name. The endpoint
+ * is not paginated: it returns the whole registry in one response.
+ */
 export const useGetFeatureRegistry = () => {
   const authFetch = useFetch();
 

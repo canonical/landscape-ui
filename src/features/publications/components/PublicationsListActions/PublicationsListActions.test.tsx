@@ -5,13 +5,18 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PublicationsListActions from "./PublicationsListActions";
 import { OperationProvider } from "@/features/operations";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 
 describe("PublicationsListActions", () => {
-  const user = userEvent.setup();
   const [publication, inProgressPublication] = publications;
   const publicationLabel = publication.displayName;
 
+  beforeEach(() => {
+    setEndpointStatus("default");
+  });
+
   it("shows all dropdown actions", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<PublicationsListActions publication={publication} />);
 
     await user.click(
@@ -37,8 +42,11 @@ describe("PublicationsListActions", () => {
     ).toBeInTheDocument();
   });
 
-  it("disables republish button while publishing", async () => {
+  it("disables republish button while publishing if canceling LROs is disabled", async () => {
+    setEndpointStatus({ status: "empty", path: "debarchive/features" });
     const label = inProgressPublication.displayName;
+    const user = userEvent.setup();
+
     renderWithProviders(
       <OperationProvider operationNames={["operations/pppp-gggg-ssss"]}>
         <PublicationsListActions publication={inProgressPublication} />
@@ -52,15 +60,43 @@ describe("PublicationsListActions", () => {
     );
 
     expect(
-      screen.queryByRole("menuitem", { name: `Republish "${label}"` }),
-    ).not.toBeInTheDocument();
-
-    expect(
       screen.getByRole("menuitem", { name: `Publishing "${label}"` }),
     ).toHaveAttribute("aria-disabled", "true");
+
+    expect(
+      screen.queryByRole("menuitem", { name: `Republish "${label}"` }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("confirms canceling an ongoing publication before republishing", async () => {
+    const user = userEvent.setup();
+    const label = inProgressPublication.displayName;
+
+    renderWithProviders(
+      <OperationProvider operationNames={["operations/pppp-gggg-ssss"]}>
+        <PublicationsListActions publication={inProgressPublication} />
+      </OperationProvider>,
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: `${label} publication actions`,
+      }),
+    );
+
+    await user.click(
+      screen.getByRole("menuitem", { name: `Republish "${label}"` }),
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: `${label} is already being published`,
+      }),
+    ).toBeInTheDocument();
   });
 
   it("opens republish modal from menu", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<PublicationsListActions publication={publication} />);
 
     await user.click(
@@ -81,6 +117,7 @@ describe("PublicationsListActions", () => {
   });
 
   it("opens remove modal from menu", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<PublicationsListActions publication={publication} />);
 
     await user.click(

@@ -1,16 +1,20 @@
 import { useCallback } from "react";
 import type { FeatureKey } from "@/types/FeatureKey";
-import type { Feature } from "@/types/Feature";
+import type { DebarchiveFeature, Feature } from "@/types/Feature";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import axios from "axios";
 import type { ApiError } from "@/types/api/ApiError";
-import { API_URL } from "@/constants";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import { API_URL, API_URL_DEB_ARCHIVE } from "@/constants";
+
+interface DebarchiveFeatureResponse {
+  readonly features: DebarchiveFeature[];
+  readonly nextPageToken: string;
+}
 
 export default function useFeatures(userEmail: string | null) {
-  const { data: features = [], isLoading } = useQuery<
-    AxiosResponse<ApiPaginatedResponse<Feature>>,
+  const { data: serverFeatures = [], isPending: isGettingFeatures } = useQuery<
+    AxiosResponse<{ results: Feature[] }>,
     AxiosError<ApiError>,
     Feature[]
   >({
@@ -19,9 +23,26 @@ export default function useFeatures(userEmail: string | null) {
     select: (response) => response.data?.results,
   });
 
+  const {
+    data: debarchiveFeatures = [],
+    isLoading: isGettingDebarchiveFeatures,
+  } = useQuery<
+    AxiosResponse<DebarchiveFeatureResponse>,
+    AxiosError<ApiError>,
+    DebarchiveFeature[]
+  >({
+    queryKey: ["debarchive", "features", userEmail],
+    queryFn: async () => axios.get(`${API_URL_DEB_ARCHIVE}features`),
+    select: (response) => response.data?.features,
+  });
+
+  const isLoading = isGettingFeatures || isGettingDebarchiveFeatures;
+
   const isFeatureEnabled = useCallback(
     (featureKey: FeatureKey) => {
-      const match = features.find((feature) => feature.key === featureKey);
+      const match =
+        serverFeatures.find(({ key }) => key === featureKey) ??
+        debarchiveFeatures.find(({ featureId }) => featureId === featureKey);
 
       if (!match) {
         if (!isLoading) {
@@ -34,7 +55,7 @@ export default function useFeatures(userEmail: string | null) {
 
       return match.enabled;
     },
-    [features, isLoading],
+    [serverFeatures, debarchiveFeatures, isLoading],
   );
 
   return {

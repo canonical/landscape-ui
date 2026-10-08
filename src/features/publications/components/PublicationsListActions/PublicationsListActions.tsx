@@ -6,7 +6,7 @@ import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
 import type { Publication } from "@canonical/landscape-openapi";
-import { useOperation } from "@/features/operations";
+import { useCanCancelOperations, useOperation } from "@/features/operations";
 
 interface PublicationsListActionsProps {
   readonly publication: Publication;
@@ -18,6 +18,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   const { createPageParamsSetter } = usePageParams();
   const { isOperationInProgress } = useOperation();
   const isPublishing = isOperationInProgress(publication.lastOperation);
+  const canCancelOperations = useCanCancelOperations();
   const publicationDisplayName = publication.displayName;
 
   const {
@@ -42,7 +43,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
         name: publication.publicationId,
       }),
     },
-    isPublishing
+    !canCancelOperations && isPublishing
       ? {
           icon: "spinner u-animation--spin",
           label: "Publishing",
@@ -76,6 +77,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
 
       <RepublishPublicationModal
         isOpen={isRepublishModalOpen}
+        isPublishing={isPublishing}
         close={closeRepublishModal}
         publication={publication}
       />
