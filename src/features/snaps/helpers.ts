@@ -72,14 +72,6 @@ export const getChannelConfinement = (
   return classicEntry?.confinement ?? entries?.[0]?.confinement;
 };
 
-// Confinement for a specific revision via the channel-map entry
-export const getRevisionConfinement = (
-  channelMap: ChannelMapEntry[] | undefined,
-  revision: string,
-): string | undefined =>
-  channelMap?.find((entry) => String(entry.revision) === revision.trim())
-    ?.confinement;
-
 // Snap revisions are numeric identifiers (ChannelMap.revision is a number),
 // so a manually entered revision must be a positive whole number.
 export const isValidRevision = (value: string): boolean =>

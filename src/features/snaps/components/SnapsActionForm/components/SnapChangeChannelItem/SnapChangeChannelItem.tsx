@@ -2,11 +2,7 @@ import type { FC } from "react";
 import { useEffect, useMemo, useRef } from "react";
 import type { InstalledSnapWithCount, SnapChangeMode } from "../../../../types";
 import { useGetSnapInfo } from "../../../../api";
-import {
-  isValidRevision,
-  getChannelConfinement,
-  getRevisionConfinement,
-} from "../../../../helpers";
+import { isValidRevision, getChannelConfinement } from "../../../../helpers";
 import SnapChannelRevisionFields, {
   getChannelOptions,
 } from "../../../SnapChannelRevisionFields";
@@ -109,18 +105,17 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
         snapName={selectedSnap.snap.name}
         error={error}
         isLoading={isSnapInfoLoading}
-        onChange={(newValue) => {
-          const channelMap = snapInfo?.["channel-map"];
-
+        onChange={(newValue, isClassicConfinement) => {
           if (mode !== "channel") {
             onChange(
               newValue,
               undefined,
-              getRevisionConfinement(channelMap, newValue),
+              isClassicConfinement ? "classic" : "strict",
             );
             return;
           }
 
+          const channelMap = snapInfo?.["channel-map"];
           onChange(
             newValue,
             newValue,
