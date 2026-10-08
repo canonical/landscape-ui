@@ -504,6 +504,10 @@ const InstancesPageActions = memo(function InstancesPageActions({
     },
   }));
 
+  const isDebManagementEnabled = (
+    ["package-change-plans", "package-search-rest-api"] as const
+  ).every(isFeatureEnabled);
+
   return (
     <>
       <ResponsiveButtons
@@ -550,15 +554,19 @@ const InstancesPageActions = memo(function InstancesPageActions({
               hasToggleIcon
             />
           ),
-          <ContextualMenu
-            key="deb-management"
-            hasToggleIcon
-            links={debManagementLinks}
-            position="right"
-            toggleLabel={<span>Deb management</span>}
-            toggleClassName="u-no-margin--bottom"
-            toggleDisabled={0 === selectedInstances.length}
-          />,
+          ...(isDebManagementEnabled
+            ? [
+                <ContextualMenu
+                  key="deb-management"
+                  hasToggleIcon
+                  links={debManagementLinks}
+                  position="right"
+                  toggleLabel={<span>Deb management</span>}
+                  toggleClassName="u-no-margin--bottom"
+                  toggleDisabled={0 === selectedInstances.length}
+                />,
+              ]
+            : []),
         ]}
       />
 
