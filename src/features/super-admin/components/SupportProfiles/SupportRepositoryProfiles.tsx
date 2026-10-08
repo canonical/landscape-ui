@@ -16,7 +16,7 @@ import useRoles from "@/hooks/useRoles";
 import { getTitleByName, pluralize } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, useMemo } from "react";
+import { lazy, useEffect, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 
 const SupportRepositoryProfileSidePanel = lazy(
@@ -34,6 +34,7 @@ const SupportRepositoryProfiles: FC = () => {
     name: selectedProfile,
     lastSidePathSegment,
     popSidePathUntilClear,
+    closeSidePanel,
   } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse } = getAccessGroupQuery();
@@ -52,9 +53,20 @@ const SupportRepositoryProfiles: FC = () => {
   const profiles = data?.data.results ?? [];
   // Only a profile on the page is opened: a stale `name` (a deep link, a
   // name left behind by another profile type) must not be looked up.
-  const isViewing =
-    lastSidePathSegment === "view" &&
-    profiles.some(({ name }) => name === selectedProfile);
+  const isSelectionListed = profiles.some(
+    ({ name }) => name === selectedProfile,
+  );
+  const hasStaleSelection =
+    !isPending && !!selectedProfile && !isSelectionListed;
+  const isViewing = lastSidePathSegment === "view" && isSelectionListed;
+
+  // A selection the page no longer shows (another search or page) is
+  // dropped, or it would open again as soon as the profile is listed.
+  useEffect(() => {
+    if (hasStaleSelection) {
+      closeSidePanel();
+    }
+  }, [hasStaleSelection, closeSidePanel]);
 
   const columns = useMemo<Column<RepositoryProfile>[]>(
     () => [
