@@ -43,7 +43,10 @@ export interface SupportProfilePage {
  * only need `ViewAccount`. WSL and USG profiles need grants support staff
  * do not hold inside an account they are not a member of.
  */
-export const SUPPORT_PROFILE_PAGES: readonly SupportProfilePage[] = [
+export const SUPPORT_PROFILE_PAGES: readonly [
+  SupportProfilePage,
+  ...SupportProfilePage[],
+] = [
   {
     slug: "repository",
     type: ProfileTypes.repository,
