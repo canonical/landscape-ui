@@ -1,6 +1,6 @@
 import type { FC } from "react";
-import { useEffect, useMemo, useRef } from "react";
-import { Input, Select } from "@canonical/react-components";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { CheckboxInput, Input, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import type { InstalledSnapWithCount, SnapMode } from "../../types";
 import classes from "./SnapChannelRevisionFields.module.scss";
@@ -38,6 +38,14 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   onChange,
   onModeChange,
 }) => {
+  const [isClassicConfinement, setIsClassicConfinement] = useState(false);
+
+  const [prevMode, setPrevMode] = useState(mode);
+  if (mode !== prevMode) {
+    setPrevMode(mode);
+    setIsClassicConfinement(false);
+  }
+
   const { snapInfo, isSnapInfoLoading, isSnapInfoError } = useGetSnapInfo({
     instance_id: instanceIds[0] ?? 0,
     name: selectedSnap.snap.name,
@@ -48,19 +56,15 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
     [snapInfo],
   );
 
-  const handleChange = (newValue: string) => {
+  const handleChange = (newValue: string, isClassic?: boolean) => {
     if (mode !== "channel") {
-      onChange(newValue);
+      onChange(newValue, undefined, isClassic ? "classic" : "strict");
       return;
     }
 
     const channelMap = snapInfo?.["channel-map"];
 
-    onChange(
-      newValue,
-      newValue,
-      getChannelConfinement(channelMap, newValue) ?? selectedSnap.confinement,
-    );
+    onChange(newValue, newValue, getChannelConfinement(channelMap, newValue));
   };
 
   useEffect(() => {
@@ -115,47 +119,65 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   const error = getError();
 
   return (
-    <div className={classNames(classes.fieldsRow, !isDarkMode && "is-paper")}>
-      <Select
-        aria-label={`Snap channel or revision for ${selectedSnap.snap.name}`}
-        options={MODE_OPTIONS}
-        value={mode}
-        onChange={(event) => {
-          onModeChange(event.currentTarget.value as SnapMode);
-        }}
-      />
-      {mode === "channel" ? (
+    <>
+      <div className={classNames(classes.fieldsRow, !isDarkMode && "is-paper")}>
         <Select
-          aria-label={`Channel for ${selectedSnap.snap.name}`}
-          disabled={isLoading || channelOptions.length === 0}
-          value={value}
-          error={error}
-          help={
-            channelOptions.length === 0 ? "No channels were found" : undefined
-          }
-          options={
-            channelOptions.length > 0
-              ? channelOptions
-              : [{ label: "Default channel", value: "" }]
-          }
+          aria-label={`Snap channel or revision for ${selectedSnap.snap.name}`}
+          options={MODE_OPTIONS}
+          value={mode}
           onChange={(event) => {
-            handleChange(event.currentTarget.value);
+            onModeChange(event.currentTarget.value as SnapMode);
           }}
         />
-      ) : (
-        <Input
-          type="number"
-          min={1}
-          step={1}
-          aria-label={`Revision for ${selectedSnap.snap.name}`}
-          defaultValue={value}
-          error={error}
-          onBlur={(event) => {
-            handleChange(event.currentTarget.value);
+        {mode === "channel" ? (
+          <Select
+            aria-label={`Channel for ${selectedSnap.snap.name}`}
+            disabled={isLoading || channelOptions.length === 0}
+            value={value}
+            error={error}
+            help={
+              channelOptions.length === 0 ? "No channels were found" : undefined
+            }
+            options={
+              channelOptions.length > 0
+                ? channelOptions
+                : [{ label: "Default channel", value: "" }]
+            }
+            onChange={(event) => {
+              handleChange(event.currentTarget.value);
+            }}
+          />
+        ) : (
+          <Input
+            type="number"
+            min={1}
+            step={1}
+            aria-label={`Revision for ${selectedSnap.snap.name}`}
+            defaultValue={value}
+            error={error}
+            onBlur={(event) => {
+              handleChange(
+                event.currentTarget.value,
+
+                isClassicConfinement,
+              );
+            }}
+          />
+        )}
+      </div>
+      {mode === "revision" ? (
+        <CheckboxInput
+          label="Use classic confinement"
+          className={classes.classicConfinementCheckbox}
+          checked={isClassicConfinement}
+          onChange={(event) => {
+            const { checked } = event.currentTarget;
+            setIsClassicConfinement(checked);
+            onChange(value, undefined, checked ? "classic" : "strict");
           }}
         />
-      )}
-    </div>
+      ) : null}
+    </>
   );
 };
 

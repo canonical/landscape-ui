@@ -1,6 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { type FC, lazy, Suspense, useCallback, useState } from "react";
 import {
+  getActionVerb,
   getRequestAction,
   hasNotification,
   isRevisionNotificationAction,
@@ -71,6 +72,18 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
   const hasNoSelectedSnaps = selectedSnaps.length === 0;
 
+  const snapModes = ["change channel", "install"].includes(action)
+    ? Array.from(
+        new Set(
+          selectedSnaps.map(
+            (item) => snapModeConfigs[item.snap.id]?.mode ?? "channel",
+          ),
+        ),
+      )
+    : [];
+
+  const actionVerb = getActionVerb(action, snapModes);
+
   const snapsText = hasNoSelectedSnaps
     ? "snaps"
     : pluralize(selectedSnaps.length, ["snap"], "exact");
@@ -96,7 +109,8 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
             config?.mode === "revision"
               ? {
                   revision: config.value,
-                  classic: item.confinement === "classic",
+                  classic:
+                    (config?.confinement ?? item.confinement) === "classic",
                 }
               : {
                   ...(channel ? { channel } : {}),
@@ -113,7 +127,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `Snaps successfully queued to ${action}`,
+        title: `Snaps successfully queued to ${actionVerb}`,
         message: `You can track the progress in the Activities page.`,
         actions: [
           {
@@ -210,7 +224,12 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const handleSnapModeChange = (snapId: string, mode: SnapMode) => {
     setSnapModeConfigs((prev) => ({
       ...prev,
-      [snapId]: { mode, value: "", confinement: prev[snapId]?.confinement },
+      [snapId]: {
+        mode,
+        value: "",
+        confinement:
+          mode === "revision" ? undefined : prev[snapId]?.confinement,
+      },
     }));
   };
 
@@ -226,16 +245,6 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       Object.fromEntries(Object.entries(prev).filter(([id]) => id !== snapId)),
     );
   };
-
-  const snapModes = ["change channel", "install"].includes(action)
-    ? Array.from(
-        new Set(
-          selectedSnaps.map(
-            (item) => snapModeConfigs[item.snap.id]?.mode ?? "channel",
-          ),
-        ),
-      )
-    : [];
 
   const buttonAppearance = action === "uninstall" ? "negative" : "positive";
 
@@ -328,7 +337,8 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                         onDelete={handleDelete}
                       />
                       {channelRevisionFields}
-                      {config.confinement === "classic" ? (
+                      {config.confinement === "classic" &&
+                      config.mode === "channel" ? (
                         <Notification
                           severity="caution"
                           className={classNames(

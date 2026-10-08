@@ -8,6 +8,7 @@ import { capitalize, pluralize } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./ConfirmSnapActionModal.module.scss";
+import { getChangeChannelVerb } from "../../helpers";
 
 interface SnapChangeConfig {
   confinement?: string;
@@ -40,19 +41,10 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   const hasChannelMode = snapModes.includes("channel");
   const hasRevisionMode = snapModes.includes("revision");
   const isMixedChangeMode = hasChannelMode && hasRevisionMode;
-
-  const getChangeChannelVerb = () => {
-    if (isMixedChangeMode) {
-      return "change channel or revision";
-    }
-    if (hasRevisionMode) {
-      return "change revision";
-    }
-    return "change channel";
-  };
+  const changeChannelVerb = getChangeChannelVerb(snapModes);
 
   const confinement = (snap: InstalledSnap) =>
-    snapModeConfigs[snap.snap.id]?.confinement ?? snap.confinement;
+    snapModeConfigs[snap.snap.id]?.confinement;
 
   const isClassic = (snap: InstalledSnap) => confinement(snap) === "classic";
 
@@ -63,7 +55,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     if (isInstallingClassicSnaps) {
       return "The following snaps you selected for installation require classic confinement";
     }
-    return `The following snaps have been selected to ${isChangeChannel ? getChangeChannelVerb() : actionVerb}`;
+    return `The following snaps have been selected to ${isChangeChannel ? changeChannelVerb : actionVerb}`;
   };
 
   const snapsToShow = isInstallingClassicSnaps
@@ -79,7 +71,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     const instancesText = pluralize(instancesCount, ["instance"], "exact");
 
     if (isChangeChannel) {
-      return `${capitalize(getChangeChannelVerb())} of ${snapsText} on ${instancesText}`;
+      return `${capitalize(changeChannelVerb)} of ${snapsText} on ${instancesText}`;
     }
 
     switch (actionVerb) {

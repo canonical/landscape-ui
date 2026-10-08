@@ -160,7 +160,38 @@ describe("SnapChannelRevisionFields", () => {
     await user.click(revisionInput);
     await user.keyboard("123");
     await user.tab();
-    expect(onChange).toHaveBeenLastCalledWith("123");
+    expect(onChange).toHaveBeenLastCalledWith("123", undefined, "strict");
+  });
+
+  it("shows an unchecked 'Use classic confinement' checkbox in revision mode", async () => {
+    renderWithProviders(
+      <SnapChannelRevisionFields {...props} mode="revision" />,
+    );
+
+    const checkbox = await screen.findByRole("checkbox", {
+      name: "Use classic confinement",
+    });
+    expect(checkbox).not.toBeChecked();
+  });
+
+  it("calls onChange with classic confinement when the checkbox is checked", async () => {
+    const onChange = vi.fn();
+    renderWithProviders(
+      <SnapChannelRevisionFields
+        {...props}
+        mode="revision"
+        value="123"
+        onChange={onChange}
+      />,
+    );
+
+    const checkbox = await screen.findByRole("checkbox", {
+      name: "Use classic confinement",
+    });
+    await user.click(checkbox);
+
+    expect(checkbox).toBeChecked();
+    expect(onChange).toHaveBeenLastCalledWith("123", undefined, "classic");
   });
 
   it("shows an error for a non-positive-integer revision after submit is attempted", async () => {
