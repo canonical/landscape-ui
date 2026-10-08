@@ -158,102 +158,111 @@ test.describe("@saas Canonical staff", () => {
     await expect(page.getByText("globex-support")).toBeVisible();
   });
 
-  test("enter an account in a support session and exit back to its page", async ({
-    staffPage: page,
-    staffApi,
-  }) => {
-    const superAdmin = new SuperAdminPage(page);
+  // Entering an account one is not a member of takes the support tier too.
+  test.describe("with the support tier", () => {
+    test.use({
+      staffApiMock: { globalRoles: ["AccountManager", "SupportProvider"] },
+    });
 
-    await superAdmin.goToAccounts();
-    await superAdmin.openRowActions("acme");
-    await page.getByRole("menuitem", { name: "Enter acme" }).click();
+    test("enter an account in a support session and exit back to its page", async ({
+      staffPage: page,
+      staffApi,
+    }) => {
+      const superAdmin = new SuperAdminPage(page);
 
-    await expect(page).toHaveURL(
-      /\/super-admin\/accounts\/acme\/session\/events-log/,
-    );
-    expect(staffApi.switches).toEqual(["acme"]);
+      await superAdmin.goToAccounts();
+      await superAdmin.openRowActions("acme");
+      await page.getByRole("menuitem", { name: "Enter acme" }).click();
 
-    await expect(superAdmin.supportSession).toContainText("ACME Corp");
-    await expect(page.getByText("Organization")).toBeVisible();
-    await expect(page.getByText("ACME Corp").first()).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: "Events log" }),
-    ).toBeVisible();
-    await expect(superAdmin.navigation).toHaveCount(0);
+      await expect(page).toHaveURL(
+        /\/super-admin\/accounts\/acme\/session\/events-log/,
+      );
+      expect(staffApi.switches).toEqual(["acme"]);
 
-    await page.getByRole("button", { name: "Profiles" }).click();
-    await page.getByRole("link", { name: "Repository profiles" }).click();
+      await expect(superAdmin.supportSession).toContainText("ACME Corp");
+      await expect(page.getByText("Organization")).toBeVisible();
+      await expect(page.getByText("ACME Corp").first()).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: "Events log" }),
+      ).toBeVisible();
+      await expect(superAdmin.navigation).toHaveCount(0);
 
-    await expect(page).toHaveURL(/\/session\/profiles\/repository/);
-    await expect(superAdmin.supportSession).toBeVisible();
+      await page.getByRole("button", { name: "Profiles" }).click();
+      await page.getByRole("link", { name: "Repository profiles" }).click();
 
-    await page.reload();
+      await expect(page).toHaveURL(/\/session\/profiles\/repository/);
+      await expect(superAdmin.supportSession).toBeVisible();
 
-    await expect(superAdmin.supportSession).toContainText("ACME Corp");
-    await expect(page).toHaveURL(/\/session\/profiles\/repository/);
+      await page.reload();
 
-    await superAdmin.supportSession
-      .getByRole("button", { name: "Exit to super admin" })
-      .click();
+      await expect(superAdmin.supportSession).toContainText("ACME Corp");
+      await expect(page).toHaveURL(/\/session\/profiles\/repository/);
 
-    await expect(page).toHaveURL(/\/super-admin\/accounts\/acme$/);
-    await expect(superAdmin.supportSession).toHaveCount(0);
-    await expect(
-      page.getByRole("heading", { name: "ACME Corp" }),
-    ).toBeVisible();
+      await superAdmin.supportSession
+        .getByRole("button", { name: "Exit to super admin" })
+        .click();
 
-    // The session went back to the person's own account on the way out.
-    expect(staffApi.ownAccount).not.toBeNull();
-    expect(staffApi.switches).toEqual(["acme", staffApi.ownAccount]);
-  });
+      await expect(page).toHaveURL(/\/super-admin\/accounts\/acme$/);
+      await expect(superAdmin.supportSession).toHaveCount(0);
+      await expect(
+        page.getByRole("heading", { name: "ACME Corp" }),
+      ).toBeVisible();
 
-  test("search people and invitations, and enter an account from a person", async ({
-    staffPage: page,
-    staffApi,
-  }) => {
-    const superAdmin = new SuperAdminPage(page);
+      // The session went back to the person's own account on the way out.
+      expect(staffApi.ownAccount).not.toBeNull();
+      expect(staffApi.switches).toEqual(["acme", staffApi.ownAccount]);
+    });
 
-    await superAdmin.goToPeople();
+    test("search people and invitations, and enter an account from a person", async ({
+      staffPage: page,
+      staffApi,
+    }) => {
+      const superAdmin = new SuperAdminPage(page);
 
-    const prompt = page.getByText("Search for a user or a pending invitation");
-    await expect(prompt).toBeVisible();
+      await superAdmin.goToPeople();
 
-    // Too short to search by: the server wants three characters.
-    await superAdmin.search("ja");
-    await expect(prompt).toBeVisible();
+      const prompt = page.getByText(
+        "Search for a user or a pending invitation",
+      );
+      await expect(prompt).toBeVisible();
 
-    await superAdmin.search("jane");
+      // Too short to search by: the server wants three characters.
+      await superAdmin.search("ja");
+      await expect(prompt).toBeVisible();
 
-    await expect(superAdmin.personRows).toHaveCount(2);
-    await expect(superAdmin.invitationRows).toHaveCount(2);
+      await superAdmin.search("jane");
 
-    const janeRow = superAdmin.personRows.first();
-    await expect(janeRow.getByRole("link", { name: "acme" })).toBeVisible();
-    await expect(janeRow.getByRole("link", { name: "globex" })).toBeVisible();
-    await expect(janeRow).toContainText("(invited)");
+      await expect(superAdmin.personRows).toHaveCount(2);
+      await expect(superAdmin.invitationRows).toHaveCount(2);
 
-    await page.getByRole("button", { name: "Type" }).click();
-    await page.getByRole("button", { name: "Invitations" }).click();
+      const janeRow = superAdmin.personRows.first();
+      await expect(janeRow.getByRole("link", { name: "acme" })).toBeVisible();
+      await expect(janeRow.getByRole("link", { name: "globex" })).toBeVisible();
+      await expect(janeRow).toContainText("(invited)");
 
-    await expect(page).toHaveURL(/type=invitation/);
-    await expect(superAdmin.personRows).toHaveCount(0);
-    await expect(superAdmin.invitationRows).toHaveCount(2);
+      await page.getByRole("button", { name: "Type" }).click();
+      await page.getByRole("button", { name: "Invitations" }).click();
 
-    await page.getByRole("button", { name: "Type" }).click();
-    await page.getByRole("button", { name: "All" }).click();
+      await expect(page).toHaveURL(/type=invitation/);
+      await expect(superAdmin.personRows).toHaveCount(0);
+      await expect(superAdmin.invitationRows).toHaveCount(2);
 
-    await expect(superAdmin.personRows).toHaveCount(2);
+      await page.getByRole("button", { name: "Type" }).click();
+      await page.getByRole("button", { name: "All" }).click();
 
-    await janeRow.getByRole("button", { name: "Jane Doe actions" }).click();
-    await page.getByRole("menuitem", { name: "Enter jane-free-1" }).click();
+      await expect(superAdmin.personRows).toHaveCount(2);
 
-    await expect(page).toHaveURL(
-      /\/super-admin\/accounts\/jane-free-1\/session\/events-log/,
-    );
-    await expect(superAdmin.supportSession).toContainText(
-      "Jane's free account",
-    );
-    expect(staffApi.switches).toEqual(["jane-free-1"]);
+      await janeRow.getByRole("button", { name: "Jane Doe actions" }).click();
+      await page.getByRole("menuitem", { name: "Enter jane-free-1" }).click();
+
+      await expect(page).toHaveURL(
+        /\/super-admin\/accounts\/jane-free-1\/session\/events-log/,
+      );
+      await expect(superAdmin.supportSession).toContainText(
+        "Jane's free account",
+      );
+      expect(staffApi.switches).toEqual(["jane-free-1"]);
+    });
   });
 
   test.describe("on the read tier", () => {

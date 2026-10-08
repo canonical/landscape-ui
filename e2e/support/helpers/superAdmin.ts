@@ -36,6 +36,8 @@ export interface StaffApiMock {
   accounts: StaffAccount[];
   /** The real session's own account, from its first auth response; `null` until then. */
   ownAccount: string | null;
+  /** The names of the real session's own accounts, from its first auth response. */
+  ownAccounts: string[];
   /** The `account_name` of every `POST switch-account`, in order. */
   switches: string[];
   /** The body of every `PATCH accounts/:name`, in order. */
@@ -213,6 +215,7 @@ export async function mockStaffApi(
   const mock: StaffApiMock = {
     accounts: createStaffAccounts(),
     ownAccount: null,
+    ownAccounts: [],
     switches: [],
     patches: [],
   };
@@ -246,6 +249,17 @@ export async function mockStaffApi(
       mock.ownAccount = body.current_account;
     }
 
+    if (!enteredAccount && "accounts" in body && Array.isArray(body.accounts)) {
+      mock.ownAccounts = body.accounts.flatMap((account: unknown) =>
+        typeof account === "object" &&
+        account !== null &&
+        "name" in account &&
+        typeof account.name === "string"
+          ? [account.name]
+          : [],
+      );
+    }
+
     await route.fulfill({
       response,
       json: {
@@ -275,10 +289,24 @@ export async function mockStaffApi(
 
     mock.switches.push(name);
 
-    if (!findAccount(name)) {
-      // One of the person's own accounts: the real server switches.
+    // One of the person's own accounts, or none the deployment knows: the
+    // real server switches, or refuses.
+    if (mock.ownAccounts.includes(name) || !findAccount(name)) {
       enteredAccount = null;
       await route.continue();
+      return;
+    }
+
+    // Entering an account one is not a member of takes the support tier,
+    // as on the server.
+    if (!globalRoles.includes("SupportProvider")) {
+      await route.fulfill({
+        status: 400,
+        json: {
+          error: "UnknownAccountError",
+          message: "The specified account couldn't be found.",
+        },
+      });
       return;
     }
 
