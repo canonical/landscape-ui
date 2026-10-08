@@ -9,17 +9,18 @@ interface StaffAccountsListActionsProps {
 }
 
 const StaffAccountsListActions: FC<StaffAccountsListActionsProps> = ({
-  staffAccount: { account, company },
+  staffAccount: { account },
 }) => {
-  const { enterAccount, isEnteringAccount } = useEnterAccount();
+  const { enterAccount } = useEnterAccount();
 
   const actions: Action[] = [
     {
       icon: "switcher-environments",
       label: "Enter account",
       "aria-label": `Enter ${account}`,
-      disabled: isEnteringAccount,
-      onClick: async () => enterAccount(account, company),
+      onClick: () => {
+        enterAccount(account);
+      },
     },
   ];
 

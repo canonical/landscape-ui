@@ -18,7 +18,7 @@ interface StaffAccountInfoProps {
 const StaffAccountInfo: FC<StaffAccountInfoProps> = ({ staffAccount }) => {
   const { canManageAccounts } = useAuth();
   const { setSidePanelContent } = useSidePanel();
-  const { enterAccount, isEnteringAccount } = useEnterAccount();
+  const { enterAccount } = useEnterAccount();
 
   const openEditForm = () => {
     setSidePanelContent(
@@ -46,9 +46,9 @@ const StaffAccountInfo: FC<StaffAccountInfoProps> = ({ staffAccount }) => {
             {
               icon: "switcher-environments",
               label: "Enter account",
-              disabled: isEnteringAccount,
-              onClick: async () =>
-                enterAccount(staffAccount.account, staffAccount.company),
+              onClick: () => {
+                enterAccount(staffAccount.account);
+              },
             },
           ],
         }}

@@ -1,11 +1,9 @@
-import { API_URL } from "@/constants";
+import { ROUTES } from "@/libs/routes";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { createStaffAccounts } from "@/tests/mocks/staffAccounts";
 import { renderWithProviders } from "@/tests/render";
-import server from "@/tests/server";
-import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import StaffAccountsListActions from "./StaffAccountsListActions";
 
@@ -18,19 +16,12 @@ describe("StaffAccountsListActions", () => {
 
   const { account } = staffAccount;
 
-  it("enters the account from its menu", async () => {
-    setStaffGlobalRoles(["SupportProvider"]);
-
-    const switches: unknown[] = [];
-
-    server.use(
-      http.post(`${API_URL}switch-account`, async ({ request }) => {
-        switches.push(await request.clone().json());
-      }),
-    );
-
+  it("opens the account's support session from its menu", async () => {
     renderWithProviders(
-      <StaffAccountsListActions staffAccount={staffAccount} />,
+      <>
+        <StaffAccountsListActions staffAccount={staffAccount} />
+        <LocationDisplay />
+      </>,
     );
 
     await user.click(
@@ -43,42 +34,8 @@ describe("StaffAccountsListActions", () => {
       screen.getByRole("menuitem", { name: `Enter ${account}` }),
     );
 
-    await waitFor(() => {
-      expect(switches).toEqual([{ account_name: account }]);
-    });
-  });
-
-  it("reports a switch the server refused under the account's title", async () => {
-    setStaffGlobalRoles(["AccountManager"]);
-
-    server.use(
-      http.post(`${API_URL}switch-account`, () =>
-        HttpResponse.json(
-          {
-            error: "UnknownAccountError",
-            message: "The specified account couldn't be found.",
-          },
-          { status: 400 },
-        ),
-      ),
+    expect(getLocationDisplay()).toHaveTextContent(
+      ROUTES.superAdmin.session(account),
     );
-
-    renderWithProviders(
-      <StaffAccountsListActions staffAccount={staffAccount} />,
-    );
-
-    await user.click(
-      screen.getByRole("button", { name: `${account} actions` }),
-    );
-    await user.click(
-      screen.getByRole("menuitem", { name: `Enter ${account}` }),
-    );
-
-    expect(
-      await screen.findByText(`Could not enter ${staffAccount.company}`),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("The specified account couldn't be found."),
-    ).toBeInTheDocument();
   });
 });
