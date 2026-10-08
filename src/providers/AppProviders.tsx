@@ -16,8 +16,8 @@ interface AppProvidersProps {
 export const AppProviders: FC<AppProvidersProps> = ({ children }) => {
   return (
     <ThemeProvider>
-      <EnvProvider>
-        <NotifyProvider>
+      <NotifyProvider>
+        <EnvProvider>
           <ReactQueryProvider>
             <AuthProvider>
               <AccountsProvider>
@@ -29,8 +29,8 @@ export const AppProviders: FC<AppProvidersProps> = ({ children }) => {
               </AccountsProvider>
             </AuthProvider>
           </ReactQueryProvider>
-        </NotifyProvider>
-      </EnvProvider>
+        </EnvProvider>
+      </NotifyProvider>
     </ThemeProvider>
   );
 };

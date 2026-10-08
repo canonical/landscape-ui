@@ -1,6 +1,6 @@
 import BoldSubstring from "@/components/form/BoldSubstring";
 import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
+import { DEBOUNCE_DELAY } from "@/constants";
 import type { UrlParams } from "@/types/UrlParams";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
@@ -8,10 +8,9 @@ import Downshift from "downshift";
 import type { FC } from "react";
 import React, { useState } from "react";
 import { useParams } from "react-router";
-import { useDebounceCallback } from "usehooks-ts";
+import { useDebounceValue } from "usehooks-ts";
 import { usePackages } from "../../hooks";
 import type { InstancePackage } from "../../types";
-import { DEBOUNCE_DELAY } from "./constants";
 import classes from "./PackageDropdownSearch.module.scss";
 
 interface PackageDropdownSearchProps {
@@ -23,12 +22,11 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   selectedItems,
   setSelectedItems,
 }) => {
-  const [search, setSearch] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState<string>("");
+  const [search, setSearch] = useDebounceValue("", DEBOUNCE_DELAY);
 
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
-  const debug = useDebug();
   const { getInstancePackagesQuery } = usePackages();
 
   const instanceId = Number(urlInstanceId);
@@ -50,8 +48,8 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
   const packageData = packageDataRes?.data?.results ?? [];
 
-  const getAvailablePackageSuggestions = (item: InstancePackage): boolean => {
-    return !selectedItems.map((item) => item.name).includes(item.name);
+  const getAvailablePackageSuggestions = (pkg: InstancePackage): boolean => {
+    return !selectedItems.map((item) => item.name).includes(pkg.name);
   };
 
   const suggestions = packageData.filter(getAvailablePackageSuggestions);
@@ -66,31 +64,26 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
   const handleClearSearch = () => {
     setInputValue("");
+    setSearch.cancel();
     setSearch("");
+    setOpen(false);
   };
 
   const handleDropdownState = () => {
-    if (inputValue.length > 2) {
-      setOpen(true);
-    } else {
-      setOpen(false);
-    }
+    setOpen(inputValue.length > 2);
   };
 
   const handleSearchBoxChange = (value: string) => {
     setInputValue(value);
-    if (value.length > 2) {
-      setSearch(value);
+    if (!value) {
+      setSearch.cancel();
+      setSearch("");
+      setOpen(false);
+      return;
     }
+    setSearch(value);
+    setOpen(value.length > 2);
   };
-
-  const debouncedSearch = useDebounceCallback(() => {
-    try {
-      handleDropdownState();
-    } catch (err) {
-      debug(err);
-    }
-  }, DEBOUNCE_DELAY);
 
   const handleAddToSelectedItems = (item: InstancePackage) => {
     setSelectedItems([...selectedItems, item]);
@@ -108,8 +101,6 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   const handleOnKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Escape") {
       event.currentTarget.blur();
-    } else {
-      debouncedSearch();
     }
   };
 

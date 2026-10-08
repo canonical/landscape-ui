@@ -30,4 +30,5 @@ export {
 } from "./api";
 
 export { default as StaffAccountContainer } from "./components/StaffAccountContainer";
+export { isTableTab } from "./components/StaffAccountTabs";
 export { default as StaffAccountsContainer } from "./components/StaffAccountsContainer";

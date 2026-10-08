@@ -7,6 +7,10 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import StaffAccountInfo from "./StaffAccountInfo";
 
+const MISSING_VALUES = 3;
+const ADMINISTRATOR_LIMIT = 37;
+const ATTACHMENT_SIZE = 2048;
+
 const staffAccounts = createStaffAccounts();
 
 // The subdomain differs from the name, so each can be found by its text.
@@ -69,17 +73,44 @@ describe("StaffAccountInfo", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders placeholders for a missing subdomain and last login", () => {
+  it("renders placeholders for a missing subdomain, Salesforce key and last login", () => {
     renderWithProviders(
       <StaffAccountInfo
         staffAccount={{
           ...activeAccount,
           subdomain: null,
+          salesforce_account_key: null,
           last_login_time: null,
         }}
       />,
     );
 
-    expect(screen.getAllByText(NO_DATA_TEXT)).toHaveLength(2);
+    expect(screen.getAllByText(NO_DATA_TEXT)).toHaveLength(MISSING_VALUES);
+  });
+
+  it("renders the Salesforce key and the limits", () => {
+    renderWithProviders(
+      <StaffAccountInfo
+        staffAccount={{
+          ...activeAccount,
+          salesforce_account_key: "1-001A1B2C3D4E5F0",
+          max_people_count: ADMINISTRATOR_LIMIT,
+          max_attachment_size: ATTACHMENT_SIZE,
+        }}
+      />,
+    );
+
+    expect(screen.getByRole("heading", { name: "Limits" })).toBeInTheDocument();
+    expect(screen.getByText("1-001A1B2C3D4E5F0")).toBeInTheDocument();
+    expect(screen.getByText(String(ADMINISTRATOR_LIMIT))).toBeInTheDocument();
+    expect(screen.getByText("2 KB")).toBeInTheDocument();
+  });
+
+  it("hides Edit without write access", () => {
+    renderWithProviders(<StaffAccountInfo staffAccount={activeAccount} />);
+
+    expect(
+      screen.queryByRole("button", { name: "Edit" }),
+    ).not.toBeInTheDocument();
   });
 });
