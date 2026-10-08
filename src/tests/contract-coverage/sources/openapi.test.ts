@@ -4,23 +4,23 @@ import { createOpenApiSource } from "./openapi";
 
 const SPEC: OpenApiSpec = {
   paths: {
-    "/v1beta1/mirrors": { get: {}, post: {} },
-    "/v1beta1/mirrors/{mirror}": {
+    "/v1/mirrors": { get: {}, post: {} },
+    "/v1/mirrors/{mirror}": {
       get: { parameters: [{ name: "mirror", in: "path" }] },
     },
-    "/v1beta1/mirrors/{mirror}:sync": {
+    "/v1/mirrors/{mirror}:sync": {
       post: { parameters: [{ name: "mirror", in: "path" }] },
     },
     // Old gnostic wildcard style: param resolved via its schema pattern
-    "/v1beta1/{name}": {
+    "/v1/{name}": {
       get: {
         parameters: [
           { name: "name", in: "path", schema: { pattern: "locals/[^/]+" } },
         ],
       },
     },
-    "/v1beta1/{operation}": {
-      delete: {
+    "/v1/{operation}": {
+      get: {
         parameters: [
           {
             name: "operation",
@@ -38,9 +38,9 @@ const source = createOpenApiSource("/debarchive", SPEC);
 describe("createOpenApiSource", () => {
   it("declares routes mounted under the base path with go provenance", () => {
     const ids = source.listRoutes().map((route) => route.id);
-    expect(ids).toContain("GET /debarchive/v1beta1/mirrors");
-    expect(ids).toContain("POST /debarchive/v1beta1/mirrors");
-    expect(ids).toContain("GET /debarchive/v1beta1/mirrors/{mirror}");
+    expect(ids).toContain("GET /debarchive/v1/mirrors");
+    expect(ids).toContain("POST /debarchive/v1/mirrors");
+    expect(ids).toContain("GET /debarchive/v1/mirrors/{mirror}");
     expect(source.listRoutes().every((route) => route.backend === "go")).toBe(
       true,
     );
@@ -51,52 +51,48 @@ describe("createOpenApiSource", () => {
 
   it("resolves wildcard params from their schema patterns", () => {
     const ids = source.listRoutes().map((route) => route.id);
-    expect(ids).toContain("GET /debarchive/v1beta1/locals/{name}");
-    expect(ids).toContain(
-      "DELETE /debarchive/v1beta1/operations/{operation...}",
-    );
+    expect(ids).toContain("GET /debarchive/v1/locals/{name}");
+    expect(ids).toContain("GET /debarchive/v1/operations/{operation...}");
   });
 
   it("matches concrete URLs to declared routes", () => {
     const base = "http://localhost:3000";
     expect(
-      source.match("GET", new URL(`${base}/debarchive/v1beta1/mirrors`))?.id,
-    ).toBe("GET /debarchive/v1beta1/mirrors");
+      source.match("GET", new URL(`${base}/debarchive/v1/mirrors`))?.id,
+    ).toBe("GET /debarchive/v1/mirrors");
     expect(
       source.match(
         "GET",
-        new URL(`${base}/debarchive/v1beta1/mirrors/third-party-mirror`),
+        new URL(`${base}/debarchive/v1/mirrors/third-party-mirror`),
       )?.id,
-    ).toBe("GET /debarchive/v1beta1/mirrors/{mirror}");
+    ).toBe("GET /debarchive/v1/mirrors/{mirror}");
     expect(
       source.match(
         "POST",
-        new URL(`${base}/debarchive/v1beta1/mirrors/my-mirror:sync`),
+        new URL(`${base}/debarchive/v1/mirrors/my-mirror:sync`),
       )?.id,
-    ).toBe("POST /debarchive/v1beta1/mirrors/{mirror}:sync");
+    ).toBe("POST /debarchive/v1/mirrors/{mirror}:sync");
     expect(
-      source.match(
-        "GET",
-        new URL(`${base}/debarchive/v1beta1/locals/local-repo-1`),
-      )?.id,
-    ).toBe("GET /debarchive/v1beta1/locals/{name}");
+      source.match("GET", new URL(`${base}/debarchive/v1/locals/local-repo-1`))
+        ?.id,
+    ).toBe("GET /debarchive/v1/locals/{name}");
   });
 
   it("matches multi-segment wildcard params across slashes", () => {
     expect(
       source.match(
-        "DELETE",
+        "GET",
         new URL(
-          "http://localhost:3000/debarchive/v1beta1/operations/mirror-abc/123",
+          "http://localhost:3000/debarchive/v1/operations/mirror-abc/123",
         ),
       )?.id,
-    ).toBe("DELETE /debarchive/v1beta1/operations/{operation...}");
+    ).toBe("GET /debarchive/v1/operations/{operation...}");
   });
 
   it("returns null for other methods, paths, and backends", () => {
     const base = "http://localhost:3000";
     expect(
-      source.match("DELETE", new URL(`${base}/debarchive/v1beta1/mirrors`)),
+      source.match("DELETE", new URL(`${base}/debarchive/v1/mirrors`)),
     ).toBeNull();
     expect(source.match("GET", new URL(`${base}/api/v2/mirrors`))).toBeNull();
   });
