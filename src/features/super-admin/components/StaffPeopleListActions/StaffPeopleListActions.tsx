@@ -8,30 +8,23 @@ interface StaffPeopleListActionsProps {
   readonly result: StaffPeopleResult;
 }
 
-interface EnterableAccount {
-  account: string;
-  company: string;
-}
-
 /**
- * The accounts the row leads into: a person's memberships and the accounts
- * that invited them, or an invitation's target. Staff can enter any of them.
+ * The names of the accounts the row leads into: a person's memberships and
+ * the accounts that invited them, or an invitation's target. Staff can enter
+ * any of them.
  */
-const getAccounts = (result: StaffPeopleResult): EnterableAccount[] => {
+const getAccounts = (result: StaffPeopleResult): string[] => {
   if (result.type !== "person") {
-    return [{ account: result.account, company: result.company }];
+    return [result.account];
   }
 
-  const accounts = new Map<string, EnterableAccount>();
-
-  for (const { account, company } of [
-    ...result.accounts,
-    ...result.pending_invitations,
-  ]) {
-    accounts.set(account, { account, company });
-  }
-
-  return [...accounts.values()];
+  return [
+    ...new Set(
+      [...result.accounts, ...result.pending_invitations].map(
+        ({ account }) => account,
+      ),
+    ),
+  ];
 };
 
 const StaffPeopleListActions: FC<StaffPeopleListActionsProps> = ({
@@ -45,7 +38,7 @@ const StaffPeopleListActions: FC<StaffPeopleListActionsProps> = ({
     return null;
   }
 
-  const actions: Action[] = accounts.map(({ account }) => ({
+  const actions: Action[] = accounts.map((account) => ({
     icon: "switcher-environments",
     label: `Enter ${account}`,
     onClick: () => {
