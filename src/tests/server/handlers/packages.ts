@@ -290,7 +290,7 @@ export default [
             return true;
           }
 
-          return body.names.includes(pkg.name);
+          return body.names.split(",").includes(pkg.name);
         }),
         limit: body.limit,
         offset: body.offset,
@@ -318,7 +318,7 @@ export default [
             return true;
           }
 
-          return body.names.includes(pkg.name);
+          return body.names.split(",").includes(pkg.name);
         }),
         limit: body.limit,
         offset: body.offset,

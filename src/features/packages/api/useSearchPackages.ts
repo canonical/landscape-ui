@@ -13,7 +13,7 @@ export type FilterState = "unspecified" | "true" | "false";
 export interface SearchPackagesRequest {
   computer_query: string;
   text?: string;
-  names?: string[];
+  names?: string;
   installed?: FilterState;
   available?: FilterState;
   upgrade?: FilterState;
@@ -58,7 +58,6 @@ export default function useSearchPackages(
     queryFn: async ({ pageParam }) => {
       return authFetch.post("packages:search", {
         ...params,
-        names: params.names?.join(","),
         offset: pageParam * limit,
       });
     },

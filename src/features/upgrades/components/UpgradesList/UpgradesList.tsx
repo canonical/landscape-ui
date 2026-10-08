@@ -162,14 +162,16 @@ const UpgradesList: FC<UpgradesListProps> = ({
 
   const subhead = !!selectedUpgrades.length &&
     upgradeCount > currentUpgrades.length && (
-      <td colSpan={4} className="u-no-padding">
-        <ResponsiveTableSubhead
-          itemName="package"
-          onClearSelection={clearSelection}
-          selectedCount={selectedUpgrades.length}
-          totalCount={upgradeCount}
-        />
-      </td>
+      <tr>
+        <td colSpan={4} className="u-no-padding">
+          <ResponsiveTableSubhead
+            itemName="package"
+            onClearSelection={clearSelection}
+            selectedCount={selectedUpgrades.length}
+            totalCount={upgradeCount}
+          />
+        </td>
+      </tr>
     );
 
   return (

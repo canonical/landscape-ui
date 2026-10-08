@@ -8,7 +8,7 @@ import type { Package } from "../types";
 export interface SearchUpgradesRequest {
   computer_query: string;
   text?: string;
-  names?: string[];
+  names?: string;
   limit?: number;
   offset?: number;
 }

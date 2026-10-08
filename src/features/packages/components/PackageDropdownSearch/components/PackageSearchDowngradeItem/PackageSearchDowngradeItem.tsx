@@ -45,7 +45,7 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
     hasNextPage: hasNextPackagesPage,
   } = useSearchPackages({
     computer_query: toInstanceQuery(instanceIds),
-    names: [selectedPackage[0].name],
+    names: selectedPackage[0].name,
     limit: QUERY_LIMIT,
     ...mapActionTypeToQueryParams("install"),
   });
