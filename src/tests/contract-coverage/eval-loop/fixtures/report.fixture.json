@@ -43,9 +43,9 @@
         }
       ]
     },
-    "GET /debarchive/v1beta1/mirrors/{mirrorId}": {
+    "GET /debarchive/v1/mirrors/{mirrorId}": {
       "method": "GET",
-      "pattern": "/debarchive/v1beta1/mirrors/{mirrorId}",
+      "pattern": "/debarchive/v1/mirrors/{mirrorId}",
       "backend": "go",
       "source": "openapi",
       "totalHits": 25,

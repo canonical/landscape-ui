@@ -8,7 +8,7 @@ import {
 
 describe("classifyBackend", () => {
   it("classifies the three API generations by prefix", () => {
-    expect(classifyBackend("/debarchive/v1beta1/mirrors")).toBe("go");
+    expect(classifyBackend("/debarchive/v1/mirrors")).toBe("go");
     expect(classifyBackend("/api/v2/administrators")).toBe("v2");
     expect(classifyBackend("/api/")).toBe("v1");
     expect(classifyBackend("/something-else")).toBe("unknown");
@@ -35,15 +35,15 @@ describe("canonicalizeMswPath", () => {
   });
 
   it("keeps unescaped mid-segment colons literal (custom verbs)", () => {
-    expect(canonicalizeMswPath("/debarchive/v1beta1/mirrors:batchGet")).toBe(
-      "/debarchive/v1beta1/mirrors:batchGet",
+    expect(canonicalizeMswPath("/debarchive/v1/mirrors:batchGet")).toBe(
+      "/debarchive/v1/mirrors:batchGet",
     );
   });
 
   it("converts escaped colons to literal verb suffixes after params", () => {
-    expect(
-      canonicalizeMswPath("/debarchive/v1beta1/mirrors/:mirrorId\\:sync"),
-    ).toBe("/debarchive/v1beta1/mirrors/{mirrorId}:sync");
+    expect(canonicalizeMswPath("/debarchive/v1/mirrors/:mirrorId\\:sync")).toBe(
+      "/debarchive/v1/mirrors/{mirrorId}:sync",
+    );
     expect(canonicalizeMswPath("/api/v2/computers\\:delete")).toBe(
       "/api/v2/computers:delete",
     );
@@ -66,20 +66,20 @@ describe("patternToRegExp", () => {
   });
 
   it("does not let params swallow custom verb suffixes", () => {
-    const regExp = patternToRegExp("/v1beta1/mirrors/{mirror}:sync");
-    expect(regExp.test("/v1beta1/mirrors/my-mirror:sync")).toBe(true);
-    expect(regExp.test("/v1beta1/mirrors/my-mirror")).toBe(false);
+    const regExp = patternToRegExp("/v1/mirrors/{mirror}:sync");
+    expect(regExp.test("/v1/mirrors/my-mirror:sync")).toBe(true);
+    expect(regExp.test("/v1/mirrors/my-mirror")).toBe(false);
     expect(
-      patternToRegExp("/v1beta1/mirrors/{mirror}").test(
-        "/v1beta1/mirrors/my-mirror:sync",
+      patternToRegExp("/v1/mirrors/{mirror}").test(
+        "/v1/mirrors/my-mirror:sync",
       ),
     ).toBe(false);
   });
 
   it("matches multi-segment {param...} across slashes", () => {
-    const regExp = patternToRegExp("/v1beta1/{operation...}");
-    expect(regExp.test("/v1beta1/operations/mirror-abc/123")).toBe(true);
-    expect(regExp.test("/v1beta1/operations/mirror-abc:cancel")).toBe(false);
+    const regExp = patternToRegExp("/v1/{operation...}");
+    expect(regExp.test("/v1/operations/mirror-abc/123")).toBe(true);
+    expect(regExp.test("/v1/operations/mirror-abc:cancel")).toBe(false);
   });
 
   it("treats regex metacharacters in literals literally", () => {
@@ -91,23 +91,23 @@ describe("patternToRegExp", () => {
 
 describe("structuralSignature", () => {
   it("equates patterns that differ only in param names", () => {
-    expect(structuralSignature("GET", "/v1beta1/mirrors/{mirrorId}")).toBe(
-      structuralSignature("GET", "/v1beta1/mirrors/{name_1}"),
+    expect(structuralSignature("GET", "/v1/mirrors/{mirrorId}")).toBe(
+      structuralSignature("GET", "/v1/mirrors/{name_1}"),
     );
   });
 
   it("distinguishes methods and verbs", () => {
-    expect(structuralSignature("GET", "/v1beta1/mirrors/{m}")).not.toBe(
-      structuralSignature("DELETE", "/v1beta1/mirrors/{m}"),
+    expect(structuralSignature("GET", "/v1/mirrors/{m}")).not.toBe(
+      structuralSignature("DELETE", "/v1/mirrors/{m}"),
     );
-    expect(structuralSignature("POST", "/v1beta1/mirrors/{m}:sync")).not.toBe(
-      structuralSignature("POST", "/v1beta1/mirrors/{m}"),
+    expect(structuralSignature("POST", "/v1/mirrors/{m}:sync")).not.toBe(
+      structuralSignature("POST", "/v1/mirrors/{m}"),
     );
   });
 
   it("distinguishes single-segment from multi-segment params", () => {
-    expect(structuralSignature("GET", "/v1beta1/{name}")).not.toBe(
-      structuralSignature("GET", "/v1beta1/{name...}"),
+    expect(structuralSignature("GET", "/v1/{name}")).not.toBe(
+      structuralSignature("GET", "/v1/{name...}"),
     );
   });
 });
