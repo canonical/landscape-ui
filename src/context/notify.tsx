@@ -1,10 +1,10 @@
-import type { FC, ReactNode } from 'react';
-import { createContext, useEffect, useState } from 'react';
-import { matchPath, useLocation } from 'react-router';
-import { ROOT_PATH } from '@/constants';
-import useNotificationHelper from '@/hooks/useNotificationHelper';
-import type { NotificationHelper } from '@/types/Notification';
-import { PATHS } from '@/libs/routes';
+import type { FC, ReactNode } from "react";
+import { createContext, useEffect, useState } from "react";
+import { matchPath, useLocation } from "react-router";
+import { ROOT_PATH } from "@/constants";
+import useNotificationHelper from "@/hooks/useNotificationHelper";
+import type { NotificationHelper } from "@/types/Notification";
+import { PATHS } from "@/libs/routes";
 
 interface NotifyContextProps {
   notify: NotificationHelper;
@@ -42,10 +42,10 @@ const NotifyProvider: FC<NotifyProviderProps> = ({ children }) => {
   const notify = useNotificationHelper();
   const { clear } = notify;
   const { pathname } = useLocation();
-  const basename = (ROOT_PATH ?? '').replace(/\/+$/, '');
+  const basename = (ROOT_PATH ?? "").replace(/\/+$/, "");
   const normalizedPathname =
     basename && (pathname === basename || pathname.startsWith(`${basename}/`))
-      ? pathname.slice(basename.length) || '/'
+      ? pathname.slice(basename.length) || "/"
       : pathname;
   const inlineErrors = [
     PATHS.auth.login,
