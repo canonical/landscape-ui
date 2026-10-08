@@ -1,5 +1,6 @@
-import { API_URL } from "@/constants";
+import { API_URL, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { StaffPersonResult } from "@/features/super-admin";
+import date from "@/libs/date";
 import { PATHS, ROUTES } from "@/libs/routes";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
@@ -14,6 +15,9 @@ import PeoplePage from "./PeoplePage";
 const PAGE_SIZE = 20;
 const MANY_PEOPLE_COUNT = 45;
 const SUPER_ADMIN = `/${PATHS.superAdmin.root}`;
+
+/** The mock API's zone-less timestamps are UTC; shown in the local zone. */
+const formatUtc = (iso: string) => date(iso).format(DISPLAY_DATE_TIME_FORMAT);
 
 const manyPeople: StaffPersonResult[] = Array.from(
   { length: MANY_PEOPLE_COUNT },
@@ -150,7 +154,9 @@ describe("PeoplePage (integration)", () => {
     expect(getInvitationRows()).toHaveLength(2);
 
     expect(withAccounts.getByText("SSO")).toBeInTheDocument();
-    expect(withAccounts.getByText("Sep 01, 2026, 08:12")).toBeInTheDocument();
+    expect(
+      withAccounts.getByText(formatUtc("2026-09-01T08:12:44Z")),
+    ).toBeInTheDocument();
     expect(withAccounts.getByRole("link", { name: "acme" })).toHaveAttribute(
       "href",
       ROUTES.superAdmin.account("acme"),
@@ -172,7 +178,7 @@ describe("PeoplePage (integration)", () => {
 
     assert(invitation);
     expect(within(invitation).getByLabelText("status")).toHaveTextContent(
-      "Invited Aug 30, 2026, 15:00",
+      `Invited ${formatUtc("2026-08-30T15:00:00Z")}`,
     );
     expect(
       within(invitation).getByRole("link", { name: "acme" }),
@@ -187,6 +193,9 @@ describe("PeoplePage (integration)", () => {
     const { withAccounts, duplicate } = await findJaneRows();
 
     expect(withAccounts.getByText("Duplicate")).toBeInTheDocument();
+    expect(
+      withAccounts.getByTitle("Another user on this page has the same email"),
+    ).toBeInTheDocument();
     expect(withAccounts.queryByText("No accounts")).not.toBeInTheDocument();
     expect(duplicate.getByText("Duplicate")).toBeInTheDocument();
     expect(duplicate.getByText("No accounts")).toBeInTheDocument();

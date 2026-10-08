@@ -5,12 +5,11 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
 import { TableIcon } from "@/components/ui";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import date from "@/libs/date";
 import { ROUTES } from "@/libs/routes";
 import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import { getDuplicateEmails } from "../../helpers";
+import { getDuplicateEmails, parseServerDateTime } from "../../helpers";
 import type { StaffPeopleResult, StaffPersonResult } from "../../types";
 import StaffPeopleListActions from "../StaffPeopleListActions";
 import type { StaffPeopleRow } from "./helpers";
@@ -21,10 +20,12 @@ interface StaffPeopleListProps {
   readonly staffPeople: StaffPeopleResult[];
 }
 
-const formatDateTime = (value: string): ReactNode => (
-  <span className="font-monospace">
-    {date(value).format(DISPLAY_DATE_TIME_FORMAT)}
-  </span>
+// The people API sends UTC timestamps without a zone.
+const formatServerDateTime = (value: string): string =>
+  parseServerDateTime(value).format(DISPLAY_DATE_TIME_FORMAT);
+
+const DateTime: FC<{ readonly value: string }> = ({ value }) => (
+  <span className="font-monospace">{formatServerDateTime(value)}</span>
 );
 
 const AccountLink: FC<{
@@ -53,7 +54,7 @@ const PersonAccounts: FC<{ readonly person: StaffPersonResult }> = ({
           <AccountLink account={account} company={company} />{" "}
           <span
             className="u-text--muted"
-            title={`Invited on ${date(creation_time).format(DISPLAY_DATE_TIME_FORMAT)}`}
+            title={`Invited on ${formatServerDateTime(creation_time)}`}
           >
             (invited)
           </span>
@@ -94,7 +95,10 @@ const StaffPeopleList: FC<StaffPeopleListProps> = ({ staffPeople }) => {
             {original.name}
             {original.type === "person" &&
               duplicateEmails.has(original.email.toLowerCase()) && (
-                <Chip value="Duplicate" />
+                <Chip
+                  value="Duplicate"
+                  title="Another user on this page has the same email"
+                />
               )}
             {original.type === "person" && !original.accounts.length && (
               <Chip value="No accounts" />
@@ -117,7 +121,9 @@ const StaffPeopleList: FC<StaffPeopleListProps> = ({ staffPeople }) => {
           if (original.type === "invitation") {
             return (
               <TableIcon icon="email">
-                <span>Invited {formatDateTime(original.creation_time)}</span>
+                <span>
+                  Invited <DateTime value={original.creation_time} />
+                </span>
               </TableIcon>
             );
           }
@@ -159,7 +165,7 @@ const StaffPeopleList: FC<StaffPeopleListProps> = ({ staffPeople }) => {
           },
         }: CellProps<StaffPeopleRow>): ReactNode =>
           original.type === "person" && original.last_login_time ? (
-            formatDateTime(original.last_login_time)
+            <DateTime value={original.last_login_time} />
           ) : (
             <NoData />
           ),
