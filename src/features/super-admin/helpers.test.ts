@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getDuplicateEmails, toStaffPeopleResultType } from "./helpers";
+import {
+  getDuplicateEmails,
+  parseServerDateTime,
+  toStaffPeopleResultType,
+} from "./helpers";
 import type { StaffPeopleResult } from "./types";
 
 const person = (
@@ -62,5 +66,25 @@ describe("getDuplicateEmails", () => {
         invitation(4, "peter@initech.com"),
       ]),
     ).toEqual(new Set());
+  });
+});
+
+describe("parseServerDateTime", () => {
+  it("reads a timestamp without a zone as UTC", () => {
+    expect(
+      parseServerDateTime("2026-08-30T15:00:00.284113").toISOString(),
+    ).toBe("2026-08-30T15:00:00.284Z");
+    expect(parseServerDateTime("2026-08-30 15:00").toISOString()).toBe(
+      "2026-08-30T15:00:00.000Z",
+    );
+  });
+
+  it("leaves a timestamp with a zone alone", () => {
+    expect(parseServerDateTime("2026-08-30T15:00:00Z").toISOString()).toBe(
+      "2026-08-30T15:00:00.000Z",
+    );
+    expect(parseServerDateTime("2026-08-30T15:00:00+02:00").toISOString()).toBe(
+      "2026-08-30T13:00:00.000Z",
+    );
   });
 });

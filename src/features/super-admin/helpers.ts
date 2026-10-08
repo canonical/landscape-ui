@@ -1,13 +1,24 @@
+import date from "@/libs/date";
 import { ROUTES } from "@/libs/routes";
 import type { SupportSessionNavItem } from "@/templates/support-session";
 import type { ApiError } from "@/types/api/ApiError";
 import { isAxiosError } from "axios";
+
 import {
   STAFF_PEOPLE_TYPE_OPTIONS,
   SUPPORT_PROFILE_PAGES,
   SUPPORT_SETTINGS_PAGES,
 } from "./constants";
 import type { StaffPeopleResult, StaffPeopleResultType } from "./types";
+
+const ZONELESS_DATE_TIME_REGEX =
+  /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/;
+
+/** `value` as a date, read as UTC when the server sent it without a zone. */
+export const parseServerDateTime = (value: string) =>
+  date(
+    ZONELESS_DATE_TIME_REGEX.test(value.trim()) ? `${value.trim()}Z` : value,
+  );
 
 /** The server's message for a failed request, or the error's own. */
 export const getErrorMessage = (error: unknown): string => {
