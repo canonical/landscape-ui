@@ -20,6 +20,7 @@ export const getLimits = (values: FormProps): WslFeatureLimits | null => {
     limits[name] = Number(value);
   }
 
+  // `WSL_LIMIT_FIELDS` names every limit, so each one was set above.
   return limits as WslFeatureLimits;
 };
 
