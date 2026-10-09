@@ -148,7 +148,6 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
               onClear={clearSearchBox}
               onClick={open}
               onFocus={open}
-              onBlur={close}
               disabled={isOverLimit}
             />
             {isOverLimit && (
