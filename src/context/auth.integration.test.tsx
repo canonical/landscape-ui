@@ -101,4 +101,59 @@ describe("AuthProvider super admin gating (integration)", () => {
       canManageAccounts: false,
     });
   });
+
+  describe("while the deployment mode is still loading", () => {
+    const pendingEnv = {
+      ...saasEnv,
+      envLoading: true,
+      isSaas: false,
+      isSelfHosted: false,
+    };
+
+    it.each([
+      ["SaaS", saasEnv, true],
+      ["self-hosted", selfHostedEnv, false],
+    ])(
+      "keeps staff loading until the mode resolves to %s",
+      async (_, resolvedEnv, isSuperAdmin) => {
+        vi.mocked(useEnv).mockReturnValue(pendingEnv);
+        serveMe(["AccountManager"]);
+
+        const { result, rerender } = renderHook(() => useAuth(), {
+          wrapper: renderHookWithProviders(),
+        });
+
+        await waitFor(() => {
+          expect(result.current.authorized).toBe(true);
+        });
+        expect(result.current.authLoading).toBe(true);
+        expect(result.current.isSuperAdmin).toBe(false);
+
+        vi.mocked(useEnv).mockReturnValue(resolvedEnv);
+        rerender();
+
+        await waitFor(() => {
+          expect(result.current.authLoading).toBe(false);
+        });
+        expect(result.current.isSuperAdmin).toBe(isSuperAdmin);
+        expect(result.current.canManageAccounts).toBe(isSuperAdmin);
+
+        // With everything else settled, the mode alone holds the gates open.
+        vi.mocked(useEnv).mockReturnValue(pendingEnv);
+        rerender();
+
+        expect(result.current.authLoading).toBe(true);
+        expect(result.current.isSuperAdmin).toBe(false);
+      },
+    );
+
+    it("does not make everyone else wait for the mode", async () => {
+      vi.mocked(useEnv).mockReturnValue(pendingEnv);
+      serveMe([]);
+
+      const result = await renderAuth();
+
+      expect(result.current.isSuperAdmin).toBe(false);
+    });
+  });
 });
