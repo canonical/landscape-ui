@@ -1,8 +1,17 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { type FC, useState } from "react";
-import { getRequestAction, hasNotification } from "./helpers";
+import { type FC, lazy, Suspense, useCallback, useState } from "react";
+import {
+  getActionVerb,
+  getRequestAction,
+  hasNotification,
+  isRevisionNotificationAction,
+} from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
-import type { SnapAction, InstalledSnapWithCount } from "../../types";
+import type {
+  SnapAction,
+  InstalledSnapWithCount,
+  SnapChangeMode,
+} from "../../types";
 import classes from "./SnapsActionForm.module.scss";
 import classNames from "classnames";
 import SnapBulkSearch from "./components/SnapBulkSearch";
@@ -14,8 +23,14 @@ import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import useNotify from "@/hooks/useNotify";
 import { useBoolean } from "usehooks-ts";
-import SnapNotification from "./components/SnapNotification";
-import ConfirmSnapActionModal from "./components/ConfirmSnapActionModal";
+import LoadingState from "@/components/layout/LoadingState";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
+import { isValidRevision } from "../../helpers";
+
+const ConfirmSnapActionModal = lazy(
+  () => import("./components/ConfirmSnapActionModal"),
+);
+const SnapNotification = lazy(() => import("./components/SnapNotification"));
 
 interface SnapsActionFormProps {
   readonly selectedInstances: number[];
@@ -29,6 +44,22 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const [selectedSnaps, setSelectedSnaps] = useState<InstalledSnapWithCount[]>(
     [],
   );
+  const [loadingSnapIds, setLoadingSnapIds] = useState<Record<string, boolean>>(
+    {},
+  );
+  const [errorSnapIds, setErrorSnapIds] = useState<Record<string, boolean>>({});
+  const [snapChangeConfigs, setSnapChangeConfigs] = useState<
+    Record<
+      string,
+      {
+        mode: SnapChangeMode;
+        value: string;
+        channel?: string;
+        confinement?: string;
+      }
+    >
+  >({});
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const {
     value: isModalOpen,
     setTrue: openModal,
@@ -37,11 +68,24 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
   const debug = useDebug();
   const { notify } = useNotify();
+  const openActivityDetails = useOpenActivityDetailsPanel();
   const { closeSidePanel } = useSidePanel();
   const { snapAction, isSnapActionPending } = useSnapAction();
 
   const hasNoSelectedSnaps = selectedSnaps.length === 0;
   const isChangeChannel = action === "change channel";
+
+  const changeModes = isChangeChannel
+    ? Array.from(
+        new Set(
+          selectedSnaps.map(
+            (item) => snapChangeConfigs[item.snap.id]?.mode ?? "channel",
+          ),
+        ),
+      )
+    : [];
+
+  const actionVerb = getActionVerb(action, changeModes);
 
   const snapsText = hasNoSelectedSnaps
     ? "snaps"
@@ -53,17 +97,48 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
   const onSubmit = async () => {
     try {
-      await snapAction({
+      const { data: activity } = await snapAction({
         action: getRequestAction(action),
         computer_ids: selectedInstances,
-        snaps: selectedSnaps.map((item) => ({ name: item.snap.name })),
+        snaps: selectedSnaps.map((item) => {
+          if (!isChangeChannel) {
+            return { name: item.snap.name };
+          }
+
+          const config = snapChangeConfigs[item.snap.id];
+          const channel = config?.channel?.trim() || undefined;
+          const args =
+            config?.mode === "revision"
+              ? {
+                  revision: config.value,
+                  classic:
+                    (config?.confinement ?? item.confinement) === "classic",
+                }
+              : {
+                  ...(channel ? { channel } : {}),
+                  classic: config?.confinement === "classic",
+                };
+
+          return {
+            name: item.snap.name,
+            args,
+          };
+        }),
       });
 
       closeSidePanel();
 
       notify.success({
-        title: `Snaps successfully queued to ${action}`,
+        title: `Snaps successfully queued to ${actionVerb}`,
         message: `You can track the progress in the Activities page.`,
+        actions: [
+          {
+            label: "View details",
+            onClick: () => {
+              openActivityDetails(activity);
+            },
+          },
+        ],
       });
     } catch (error) {
       closeModal();
@@ -71,12 +146,107 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     }
   };
 
-  const checkSubmit = () => {
+  const hasMissingRevisionValue =
+    isChangeChannel &&
+    selectedSnaps.some((item) => {
+      const config = snapChangeConfigs[item.snap.id];
+
+      return config?.mode === "revision" && !config.value;
+    });
+
+  const hasInvalidRevisionValue =
+    isChangeChannel &&
+    selectedSnaps.some((item) => {
+      const config = snapChangeConfigs[item.snap.id];
+
+      return (
+        config?.mode === "revision" &&
+        !!config.value &&
+        !isValidRevision(config.value)
+      );
+    });
+
+  const isAnySnapInfoLoading =
+    isChangeChannel &&
+    selectedSnaps.some((item) => loadingSnapIds[item.snap.id]);
+
+  const hasSnapInfoErrorInChannelMode =
+    isChangeChannel &&
+    selectedSnaps.some((item) => {
+      const mode = snapChangeConfigs[item.snap.id]?.mode ?? "channel";
+      return mode === "channel" && errorSnapIds[item.snap.id];
+    });
+
+  const getValidationError = () => {
     if (hasNoSelectedSnaps) {
-      return;
+      return "You must add at least one snap to continue";
     }
 
-    openModal();
+    return null;
+  };
+
+  const checkSubmit = () => {
+    setHasAttemptedSubmit(true);
+    if (
+      !getValidationError() &&
+      !isAnySnapInfoLoading &&
+      !hasSnapInfoErrorInChannelMode &&
+      !hasMissingRevisionValue &&
+      !hasInvalidRevisionValue
+    ) {
+      openModal();
+    }
+  };
+
+  const handleSnapLoadingChange = useCallback(
+    (snapId: string, isLoading: boolean) => {
+      setLoadingSnapIds((prev) =>
+        prev[snapId] === isLoading ? prev : { ...prev, [snapId]: isLoading },
+      );
+    },
+    [],
+  );
+
+  const handleSnapErrorChange = useCallback(
+    (snapId: string, isError: boolean) => {
+      setErrorSnapIds((prev) =>
+        prev[snapId] === isError ? prev : { ...prev, [snapId]: isError },
+      );
+    },
+    [],
+  );
+
+  const handleSnapValueChange = (
+    snapId: string,
+    value: string,
+    mode: SnapChangeMode,
+    channel?: string,
+    confinement?: string,
+  ) => {
+    setSnapChangeConfigs((prev) => ({
+      ...prev,
+      [snapId]: { mode, value, channel, confinement },
+    }));
+  };
+
+  const handleSnapModeChange = (snapId: string, mode: SnapChangeMode) => {
+    setSnapChangeConfigs((prev) => ({
+      ...prev,
+      [snapId]: { mode, value: "" },
+    }));
+  };
+
+  const handleDeleteSnap = (snapId: string) => {
+    setSelectedSnaps((snaps) => snaps.filter(({ snap }) => snap.id !== snapId));
+    setSnapChangeConfigs((prev) =>
+      Object.fromEntries(Object.entries(prev).filter(([id]) => id !== snapId)),
+    );
+    setLoadingSnapIds((prev) =>
+      Object.fromEntries(Object.entries(prev).filter(([id]) => id !== snapId)),
+    );
+    setErrorSnapIds((prev) =>
+      Object.fromEntries(Object.entries(prev).filter(([id]) => id !== snapId)),
+    );
   };
 
   const buttonAppearance = action === "uninstall" ? "negative" : "positive";
@@ -84,7 +254,14 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   return (
     <>
       <div className={classes.container}>
-        {hasNotification(action) && <SnapNotification action={action} />}
+        {(hasNotification(action) || isRevisionNotificationAction(action)) && (
+          <Suspense fallback={<LoadingState />}>
+            <SnapNotification
+              action={action}
+              snapChangeConfigs={snapChangeConfigs}
+            />
+          </Suspense>
+        )}
         <SnapBulkSearch
           instanceIds={selectedInstances}
           selectedItems={selectedSnaps}
@@ -102,20 +279,41 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           <ul className="p-list u-no-margin--bottom">
             {selectedSnaps.map((item) => {
               const handleDelete = () => {
-                setSelectedSnaps((snaps) =>
-                  snaps.filter(({ snap }) => snap.id !== item.snap.id),
-                );
+                handleDeleteSnap(item.snap.id);
               };
 
               if (isChangeChannel) {
+                const config = snapChangeConfigs[item.snap.id] ?? {
+                  mode: "channel",
+                  value: "",
+                };
+
                 return (
                   <li className={classes.selectedItem} key={item.snap.id}>
                     <SnapChangeChannelItem
                       selectedSnap={item}
                       onDelete={handleDelete}
                       instanceIds={selectedInstances}
-                      onItemsUpdate={() => {
-                        // Update selected snaps
+                      mode={config.mode}
+                      value={config.value}
+                      hasAttemptedSubmit={hasAttemptedSubmit}
+                      onLoadingChange={(isLoading) => {
+                        handleSnapLoadingChange(item.snap.id, isLoading);
+                      }}
+                      onErrorChange={(isError) => {
+                        handleSnapErrorChange(item.snap.id, isError);
+                      }}
+                      onChange={(value, channel, confinement) => {
+                        handleSnapValueChange(
+                          item.snap.id,
+                          value,
+                          config.mode,
+                          channel,
+                          confinement,
+                        );
+                      }}
+                      onModeChange={(mode) => {
+                        handleSnapModeChange(item.snap.id, mode);
                       }}
                     />
                   </li>
@@ -151,21 +349,22 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
         submitButtonAppearance={buttonAppearance}
         submitButtonLoading={isSnapActionPending}
         onSubmit={checkSubmit}
-        formError={
-          hasNoSelectedSnaps && "You must add at least one snap to continue."
-        }
+        formError={getValidationError()}
       />
 
       {isModalOpen && (
-        <ConfirmSnapActionModal
-          actionVerb={action}
-          snaps={selectedSnaps}
-          instancesCount={selectedInstances.length}
-          onClose={closeModal}
-          onConfirm={onSubmit}
-          isSubmitting={isSnapActionPending}
-          submitText={submitText}
-        />
+        <Suspense fallback={<LoadingState />}>
+          <ConfirmSnapActionModal
+            actionVerb={action}
+            snaps={selectedSnaps}
+            changeModes={changeModes}
+            instancesCount={selectedInstances.length}
+            onClose={closeModal}
+            onConfirm={onSubmit}
+            isSubmitting={isSnapActionPending}
+            submitText={submitText}
+          />
+        </Suspense>
       )}
     </>
   );
