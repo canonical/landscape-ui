@@ -11,7 +11,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   downgradePackageVersions,
   getComputerPackageSearchResults,
-  upgradablePackages,
+  legacyPackages,
 } from "@/tests/mocks/packages";
 import { activities } from "@/tests/mocks/activity";
 import {
@@ -68,7 +68,40 @@ export default [
       const limit = body.limit ?? 10;
       const offset = body.offset ?? 0;
 
-      let results: PackageSearchResultPackage[] = [...upgradablePackages];
+      const computerQueryIds = body.computer_query
+        ? body.computer_query
+            .split(" OR ")
+            .map((part) => Number(part.replace("id:", "")))
+            .filter((id) => !Number.isNaN(id))
+        : [];
+
+      const selectedComputerIds =
+        computerQueryIds.length > 0
+          ? new Set(computerQueryIds)
+          : new Set(
+              legacyPackages.flatMap((pkg) => pkg.computers.map((c) => c.id)),
+            );
+
+      let results: PackageSearchResultPackage[] = legacyPackages
+        .filter((pkg) =>
+          pkg.computers.some(
+            (c) =>
+              selectedComputerIds.has(c.id) && c.available_version !== null,
+          ),
+        )
+        .map((pkg) => ({
+          id: pkg.id,
+          name: pkg.name,
+          summary: pkg.summary,
+          version: pkg.computers[0]?.current_version ?? "1.0.0",
+          computers: {
+            count: pkg.computers.filter(
+              (c) =>
+                selectedComputerIds.has(c.id) && c.available_version !== null,
+            ).length,
+          },
+        }));
+
       if (body.text) {
         results = generateFilteredResponse(results, body.text, ["name"]);
       }
