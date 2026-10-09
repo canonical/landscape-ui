@@ -24,7 +24,7 @@ describe("SnapNotification", () => {
     renderWithProviders(
       <SnapNotification
         action="install"
-        snapChangeConfigs={{
+        snapModeConfigs={{
           snap1: { mode: "revision", value: "123" },
         }}
       />,
