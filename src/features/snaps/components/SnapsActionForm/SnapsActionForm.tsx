@@ -1,5 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { type FC, lazy, Suspense, useState } from "react";
+import { type FC, useState } from "react";
 import { getRequestAction, hasNotification } from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import type { SnapAction, InstalledSnapWithCount } from "../../types";
@@ -14,12 +14,8 @@ import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import useNotify from "@/hooks/useNotify";
 import { useBoolean } from "usehooks-ts";
-import LoadingState from "@/components/layout/LoadingState";
-
-const ConfirmSnapActionModal = lazy(
-  () => import("./components/ConfirmSnapActionModal"),
-);
-const SnapNotification = lazy(() => import("./components/SnapNotification"));
+import SnapNotification from "./components/SnapNotification";
+import ConfirmSnapActionModal from "./components/ConfirmSnapActionModal";
 
 interface SnapsActionFormProps {
   readonly selectedInstances: number[];
@@ -88,11 +84,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   return (
     <>
       <div className={classes.container}>
-        {hasNotification(action) && (
-          <Suspense fallback={<LoadingState />}>
-            <SnapNotification action={action} />
-          </Suspense>
-        )}
+        {hasNotification(action) && <SnapNotification action={action} />}
         <SnapBulkSearch
           instanceIds={selectedInstances}
           selectedItems={selectedSnaps}
@@ -165,17 +157,15 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       />
 
       {isModalOpen && (
-        <Suspense fallback={<LoadingState />}>
-          <ConfirmSnapActionModal
-            actionVerb={action}
-            snaps={selectedSnaps}
-            instancesCount={selectedInstances.length}
-            onClose={closeModal}
-            onConfirm={onSubmit}
-            isSubmitting={isSnapActionPending}
-            submitText={submitText}
-          />
-        </Suspense>
+        <ConfirmSnapActionModal
+          actionVerb={action}
+          snaps={selectedSnaps}
+          instancesCount={selectedInstances.length}
+          onClose={closeModal}
+          onConfirm={onSubmit}
+          isSubmitting={isSnapActionPending}
+          submitText={submitText}
+        />
       )}
     </>
   );
