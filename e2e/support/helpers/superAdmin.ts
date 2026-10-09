@@ -71,6 +71,19 @@ const notFound = async (route: Route) =>
     json: { error: "NotFound", message: "Not found.", detail: null },
   });
 
+const FORBIDDEN_STATUS = 403;
+
+// Writing an account takes the account manager tier, as on the server.
+const forbidden = async (route: Route) =>
+  route.fulfill({
+    status: FORBIDDEN_STATUS,
+    json: {
+      error: "UnauthorizedAccess",
+      message: "You do not have permission to perform this action.",
+      detail: null,
+    },
+  });
+
 const paginate = <T>(items: T[], url: URL) => {
   const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
   const offset = Number(url.searchParams.get("offset")) || 0;
@@ -340,6 +353,11 @@ export async function mockStaffApi(
     }
 
     if (request.method() === "PATCH") {
+      if (!globalRoles.includes("AccountManager")) {
+        await forbidden(route);
+        return;
+      }
+
       const body = request.postDataJSON() as Partial<StaffAccount>;
 
       mock.patches.push(body);
@@ -361,6 +379,11 @@ export async function mockStaffApi(
       }
 
       if (request.method() === "POST") {
+        if (!globalRoles.includes("AccountManager")) {
+          await forbidden(route);
+          return;
+        }
+
         wslLimits[name] = request.postDataJSON() as WslFeatureLimits;
       }
 
