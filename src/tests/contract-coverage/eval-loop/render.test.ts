@@ -35,9 +35,9 @@ const gaps: GapEntry[] = [
     rank: 1,
   },
   {
-    routeId: "GET /debarchive/v1beta1/mirrors/{mirrorId}",
+    routeId: "GET /debarchive/v1/mirrors/{mirrorId}",
     method: "GET",
-    pattern: "/debarchive/v1beta1/mirrors/{mirrorId}",
+    pattern: "/debarchive/v1/mirrors/{mirrorId}",
     backend: "go",
     totalHits: 25,
     statuses: { "200": 25 },
@@ -55,10 +55,10 @@ const response: SuggestionsResponse = {
       notes: "Requires cleanup of the created mirror.",
     },
     {
-      route: "GET /debarchive/v1beta1/mirrors/{mirrorId}",
+      route: "GET /debarchive/v1/mirrors/{mirrorId}",
       title: "Cover mirror fetch",
       rationale: "Go service route exercised by the dashboard but untested.",
-      spec: 'import { expect, test } from "@playwright/test";\n\ntest("get mirror", async ({ request }) => {\n  const res = await request.get("/v1beta1/mirrors/mirror-1");\n  expect(res.ok()).toBeTruthy();\n});',
+      spec: 'import { expect, test } from "@playwright/test";\n\ntest("get mirror", async ({ request }) => {\n  const res = await request.get("/v1/mirrors/mirror-1");\n  expect(res.ok()).toBeTruthy();\n});',
       notes: "Depends on seeded mirror data.",
     },
   ],
@@ -88,8 +88,8 @@ describe("parseSuggestions", () => {
 describe("slugifyRoute", () => {
   it("slugifies route ids deterministically", () => {
     expect(slugifyRoute("POST /api/v2/mirrors")).toBe("post-api-v2-mirrors");
-    expect(slugifyRoute("GET /debarchive/v1beta1/mirrors/{mirrorId}")).toBe(
-      "get-debarchive-v1beta1-mirrors-mirrorid",
+    expect(slugifyRoute("GET /debarchive/v1/mirrors/{mirrorId}")).toBe(
+      "get-debarchive-v1-mirrors-mirrorid",
     );
   });
 });
@@ -102,7 +102,7 @@ describe("renderSuggestions", () => {
     expect(written).toHaveLength(2);
     expect(path.basename(written[0] ?? "")).toBe("01-post-api-v2-mirrors.md");
     expect(path.basename(written[1] ?? "")).toBe(
-      "02-get-debarchive-v1beta1-mirrors-mirrorid.md",
+      "02-get-debarchive-v1-mirrors-mirrorid.md",
     );
 
     const first = fs.readFileSync(written[0] ?? "", "utf-8");
@@ -184,7 +184,7 @@ describe("renderStepSummary", () => {
     const summary = renderStepSummary(response, gaps);
     expect(summary).toContain("POST /api/v2/mirrors");
     expect(summary).toContain("Cover mirror creation");
-    expect(summary).toContain("GET /debarchive/v1beta1/mirrors/{mirrorId}");
+    expect(summary).toContain("GET /debarchive/v1/mirrors/{mirrorId}");
   });
 
   it("appends to GITHUB_STEP_SUMMARY when the env var is set", () => {

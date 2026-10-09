@@ -30,8 +30,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: true,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-05-01T12:00:00Z"),
-    lastOperation: "operations/pppp-gggg-ssss",
   },
   {
     name: "mirrors/in-progress-standard-mirror",
@@ -91,7 +89,7 @@ export const mirrors = [
     },
     filter: "!package1, !package2",
     filterWithDeps: true,
-    lastDownloadDate: new Date("2024-05-02T12:00:00Z"),
+    lastDownloadDate: new Date("2026-05-02T12:00:00Z"),
     lastOperation: "operations/non-existent-operation",
   },
   {
@@ -107,7 +105,8 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-03-01T12:00:00Z"),
+    lastDownloadDate: new Date("2026-03-01T12:00:00Z"),
+    lastOperation: "operations/iiii-dddd-llll",
   },
   {
     name: "mirrors/focal-mirror",
@@ -123,6 +122,7 @@ export const mirrors = [
     downloadSources: true,
     downloadUdebs: false,
     lastDownloadDate: new Date("2024-03-15T12:00:00Z"),
+    lastOperation: "operations/ssss-cccc-dddd",
   },
   {
     name: "mirrors/noble-mirror",
@@ -137,7 +137,6 @@ export const mirrors = [
     downloadInstaller: true,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-06-10T12:00:00Z"),
   },
   {
     name: "mirrors/partner-mirror",
@@ -152,7 +151,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-05-20T12:00:00Z"),
   },
   {
     name: "mirrors/docker-mirror",
@@ -167,7 +165,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-06-05T12:00:00Z"),
     gpgKey: {
       armor: "-----BEGIN PGP PUBLIC KEY BLOCK-----",
       fingerprint: "9DC858229FC7DD38854AE2D88D81803C0EBFCD88",
@@ -186,7 +183,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-05-28T12:00:00Z"),
     gpgKey: {
       armor: "-----BEGIN PGP PUBLIC KEY BLOCK-----",
       fingerprint: "DE15B14486CD377B9E876E1A234654DA9A296436",
@@ -205,7 +201,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-04-20T12:00:00Z"),
   },
   {
     name: "mirrors/elasticsearch-mirror",
@@ -220,7 +215,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-04-15T12:00:00Z"),
   },
   {
     name: "mirrors/postgresql-mirror",
@@ -235,7 +229,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-04-10T12:00:00Z"),
   },
   {
     name: "mirrors/mongodb-mirror",
@@ -250,7 +243,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-03-30T12:00:00Z"),
   },
   {
     name: "mirrors/nginx-mirror",
@@ -265,7 +257,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-03-25T12:00:00Z"),
   },
   {
     name: "mirrors/rabbitmq-mirror",
@@ -280,7 +271,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-03-20T12:00:00Z"),
   },
   {
     name: "mirrors/redis-mirror",
@@ -295,7 +285,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-03-10T12:00:00Z"),
   },
   {
     name: "mirrors/influxdb-mirror",
@@ -310,7 +299,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-02-28T12:00:00Z"),
   },
   {
     name: "mirrors/nodejs-mirror",
@@ -325,7 +313,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-02-20T12:00:00Z"),
   },
   {
     name: "mirrors/puppet-mirror",
@@ -340,7 +327,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-02-15T12:00:00Z"),
   },
   {
     name: "mirrors/hashicorp-mirror",
@@ -355,7 +341,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-02-10T12:00:00Z"),
   },
   {
     name: "mirrors/ceph-mirror",
@@ -370,7 +355,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-02-05T12:00:00Z"),
   },
   {
     name: "mirrors/ansible-mirror",
@@ -385,7 +369,6 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-01-30T12:00:00Z"),
   },
 ] as const satisfies Mirror[];
 

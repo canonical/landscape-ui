@@ -108,7 +108,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
         columns={columns}
         data={pagedRepositories}
         emptyMsg={`No local repositories found with the search: "${search}"`}
-        minWidth={980}
+        minWidth={1024}
       />
       <TablePagination
         totalItems={repositories.length}

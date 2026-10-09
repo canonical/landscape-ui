@@ -6,10 +6,11 @@ import date from "@/libs/date";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { screen } from "@testing-library/react";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import type { Mirror } from "@canonical/landscape-openapi";
 
 describe("MirrorsList", () => {
   it("renders with data", () => {
-    const mirror = mirrors.find(
+    const mirror = (mirrors as Mirror[]).find(
       ({ name, lastDownloadDate }) => name && lastDownloadDate,
     );
 

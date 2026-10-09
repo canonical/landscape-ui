@@ -149,7 +149,7 @@ describe("SnapBulkSearch", () => {
     expect(screen.queryByText(firstSnap.snap.name)).not.toBeInTheDocument();
   });
 
-  it("reopens the closed dropdown when Enter is pressed", async () => {
+  it("reopens the closed dropdown when typing", async () => {
     renderWithProviders(<SnapBulkSearch {...props} />);
 
     await user.click(screen.getByRole("searchbox"));
@@ -159,28 +159,29 @@ describe("SnapBulkSearch", () => {
     await user.keyboard("{Escape}");
     expect(screen.queryByText(firstSnap.snap.name)).not.toBeInTheDocument();
 
-    await user.keyboard("{Enter}");
+    await user.keyboard("a");
 
     expect(await screen.findByText(firstSnap.snap.name)).toBeInTheDocument();
   });
 
-  it("scrolls the dropdown when using arrow keys", async () => {
+  it("reopens and scrolls the dropdown when using arrow keys", async () => {
     renderWithProviders(<SnapBulkSearch {...props} />);
 
+    // Start with the dropdown closed but focused
     await user.click(screen.getByRole("searchbox"));
+    await user.keyboard("{Escape}");
 
-    const firstSnapElement = await screen.findByRole("option", {
-      name: `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`,
-    });
-    const secondSnapElement = await screen.findByRole("option", {
+    await user.keyboard("{ArrowDown}");
+    await user.keyboard("{ArrowDown}");
+    const secondOption = await screen.findByRole("option", {
       name: `${secondSnap.snap.name} ${secondSnap.snap.publisher.username}`,
     });
-
-    await user.keyboard("{ArrowDown}");
-    await user.keyboard("{ArrowDown}");
-    expect(secondSnapElement).toHaveAttribute("aria-selected", "true");
+    expect(secondOption).toHaveAttribute("aria-selected", "true");
 
     await user.keyboard("{ArrowUp}");
-    expect(firstSnapElement).toHaveAttribute("aria-selected", "true");
+    const firstOption = await screen.findByRole("option", {
+      name: `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`,
+    });
+    expect(firstOption).toHaveAttribute("aria-selected", "true");
   });
 });

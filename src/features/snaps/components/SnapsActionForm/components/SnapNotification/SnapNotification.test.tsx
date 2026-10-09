@@ -20,6 +20,22 @@ describe("SnapNotification", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders the install revision notification", () => {
+    renderWithProviders(
+      <SnapNotification
+        action="install"
+        snapChangeConfigs={{
+          snap1: { mode: "revision", value: "123" },
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText(/revision doesn't set a tracked channel/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Visit Snapd documentation")).toBeInTheDocument();
+  });
+
   it("renders the revision notification when a snap is in revision mode", () => {
     renderWithProviders(
       <SnapNotification

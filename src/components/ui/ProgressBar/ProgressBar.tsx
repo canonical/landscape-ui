@@ -38,7 +38,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
             style={{ width: `${clampedProgress}%` }}
           />
         </div>
-        <span>{clampedProgress}%</span>
+        <span aria-hidden="true">{clampedProgress}%</span>
         {secondsRemaining !== undefined && (
           <span className={classes.eta}>{getEtaLabel(secondsRemaining)}</span>
         )}
