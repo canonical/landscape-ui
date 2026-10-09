@@ -273,7 +273,9 @@ describe("PeoplePage (integration)", () => {
     const { withAccounts } = await findJaneRows();
 
     await user.click(
-      withAccounts.getByRole("button", { name: "Jane Doe actions" }),
+      withAccounts.getByRole("button", {
+        name: "Jane Doe (jane@acme.com, #4821) actions",
+      }),
     );
     expect(
       screen.getAllByRole("menuitem").map((item) => item.textContent),
@@ -299,7 +301,9 @@ describe("PeoplePage (integration)", () => {
     const { duplicate } = await findJaneRows();
 
     await user.click(
-      duplicate.getByRole("button", { name: "Jane Doe actions" }),
+      duplicate.getByRole("button", {
+        name: "Jane Doe (jane@acme.com, #5107) actions",
+      }),
     );
 
     expect(
