@@ -96,7 +96,9 @@ describe("InstancesPageActions", () => {
   ])("shows the Deb management instance limit modal for %s", async (action) => {
     renderPageActions({ selectedInstances: overLimitSelection });
 
-    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[3] }));
+    await userEvent.click(
+      await screen.findByRole("button", { name: MENU_LABELS[3] }),
+    );
     await userEvent.click(screen.getByRole("menuitem", { name: action }));
 
     expect(
@@ -106,9 +108,38 @@ describe("InstancesPageActions", () => {
     );
   });
 
+  it.each(["package-change-plans", "package-search-rest-api"] as const)(
+    "hides Deb management when the %s feature is disabled",
+    async (disabledFeature) => {
+      server.use(
+        http.get(`${API_URL}features`, () =>
+          HttpResponse.json({
+            results: features.map((feature) =>
+              feature.key === disabledFeature
+                ? { ...feature, enabled: false }
+                : feature,
+            ),
+          }),
+        ),
+      );
+
+      renderPageActions();
+
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[0] }),
+      );
+      await screen.findByRole("menuitem", { name: /view report/i });
+
+      expect(
+        screen.queryByRole("button", { name: MENU_LABELS[3] }),
+      ).not.toBeInTheDocument();
+    },
+  );
+
   it("should render correct action groups", async () => {
     renderPageActions();
 
+    await screen.findByRole("button", { name: MENU_LABELS[3] });
     const buttons = screen.getAllByRole("button");
     expect(buttons).toHaveLength(MENU_LABELS.length);
 
@@ -134,9 +165,10 @@ describe("InstancesPageActions", () => {
   });
 
   describe("Disabled and visible states", () => {
-    it("should disable all groups when no instances are available to export", () => {
+    it("should disable all groups when no instances are available to export", async () => {
       renderPageActions({ selectedInstances: [] });
 
+      await screen.findByRole("button", { name: MENU_LABELS[3] });
       const buttons = screen.getAllByRole("button");
 
       expect(buttons).toHaveLength(MENU_LABELS.length);
@@ -146,12 +178,13 @@ describe("InstancesPageActions", () => {
       }
     });
 
-    it("should disable buttons while getting instances", () => {
+    it("should disable buttons while getting instances", async () => {
       renderPageActions({
         isGettingInstances: true,
         selectedInstances: [],
       });
 
+      await screen.findByRole("button", { name: MENU_LABELS[3] });
       const buttons = screen.getAllByRole("button");
 
       expect(buttons).toHaveLength(MENU_LABELS.length);
@@ -227,7 +260,7 @@ describe("InstancesPageActions", () => {
       });
 
       await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
+        await screen.findByRole("button", { name: MENU_LABELS[0] }),
       );
 
       const button = screen.getByRole("menuitem", { name: /^upgrade$/i });
@@ -245,7 +278,7 @@ describe("InstancesPageActions", () => {
       });
 
       await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
+        await screen.findByRole("button", { name: MENU_LABELS[0] }),
       );
 
       const button = screen.getByRole("menuitem", { name: /^upgrade$/i });
@@ -413,7 +446,7 @@ describe("InstancesPageActions", () => {
 
     it("'Upgrade' menu item", async () => {
       await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
+        await screen.findByRole("button", { name: MENU_LABELS[0] }),
       );
       await userEvent.click(
         screen.getByRole("menuitem", { name: /^upgrade$/i }),
