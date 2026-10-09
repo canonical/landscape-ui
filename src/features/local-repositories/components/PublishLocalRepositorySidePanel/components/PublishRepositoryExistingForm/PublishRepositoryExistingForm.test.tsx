@@ -229,12 +229,10 @@ describe("PublishRepositoryExistingForm", () => {
     );
 
     expect(
-      await screen.findByText(
-        /the selected publication is already being published/i,
-      ),
+      await screen.findByText(/publication is already being published/i),
     ).toBeInTheDocument();
     expect(
-      await screen.findByText(/it will be canceled and restarted/i),
+      await screen.findByText(/will be canceled and restarted/i),
     ).toBeInTheDocument();
 
     await user.click(

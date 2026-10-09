@@ -118,7 +118,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
   const warning =
     canCancelOperations && isInProgress
-      ? "The selected publication is already being published. If you proceed and it's still not done, it will be canceled and restarted."
+      ? "This publication is already being published. If you proceed and this is not yet complete, the ongoing publication will be canceled and restarted."
       : undefined;
 
   const getErrors = () => {
