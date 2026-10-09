@@ -32,12 +32,18 @@ export const useRestoreOwnAccount = () => {
   const currentAccount = user?.current_account ?? null;
   const needsRestoring = isInForeignAccount && !!ownAccount;
 
-  // Known from the first render when the user already is, so that the
-  // caller never shows the entered account's pages in between.
-  const [leavingAccount, setLeavingAccount] = useState<string | null>(() =>
-    needsRestoring && user ? user.current_account : null,
-  );
+  const [leavingAccount, setLeavingAccount] = useState<string | null>(null);
   const [restoreError, setRestoreError] = useState<RestoreError | null>(null);
+
+  // Known from the render the foreign account is noticed in, before the
+  // effect starts the switch, so that the caller never shows its pages in
+  // between. A refused switch is not pending: its error is shown instead.
+  const noticedAccount =
+    needsRestoring &&
+    !leavingAccount &&
+    restoreError?.account !== currentAccount
+      ? currentAccount
+      : null;
 
   const restore = (accountToLeave: string, ownAccountName: string) => {
     setLeavingAccount(accountToLeave);
@@ -76,5 +82,9 @@ export const useRestoreOwnAccount = () => {
     }
   };
 
-  return { leavingAccount, restoreError, retryRestore };
+  return {
+    leavingAccount: leavingAccount ?? noticedAccount,
+    restoreError,
+    retryRestore,
+  };
 };
