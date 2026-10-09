@@ -27,7 +27,7 @@ const ubuntuProInfo = {
   attached: true,
 } as unknown as UbuntuProInfo;
 
-const MENU_LABELS = ["Operations", "Grouping", "Ubuntu Pro"];
+const MENU_LABELS = ["Operations", "Grouping", "Ubuntu Pro", "Snap management"];
 
 const OPERATIONS_LABELS = [
   "Shut down",
@@ -43,6 +43,15 @@ const OPERATIONS_LABELS = [
 const GROUPING_LABELS = ["Assign access group", "Assign tag"];
 
 const UBUNTU_PRO_LABELS = ["Attach token", "Detach token"];
+
+const SNAP_MANAGEMENT_LABELS = [
+  "Install",
+  "Uninstall",
+  "Refresh",
+  "Hold",
+  "Unhold",
+  "Change channel",
+];
 
 const defaultProps: ComponentProps<typeof InstancesPageActions> = {
   isGettingInstances: false,
@@ -84,6 +93,11 @@ describe("InstancesPageActions", () => {
 
     await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[2] }));
     for (const label of UBUNTU_PRO_LABELS) {
+      expect(screen.getByRole("menuitem", { name: label })).toBeInTheDocument();
+    }
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[3] }));
+    for (const label of SNAP_MANAGEMENT_LABELS) {
       expect(screen.getByRole("menuitem", { name: label })).toBeInTheDocument();
     }
   });
@@ -228,7 +242,7 @@ describe("InstancesPageActions", () => {
     });
 
     it("'Run script' menu item should be disabled if script feature is disabled", async () => {
-      renderPageActions({ selectedInstances: [{ ...windowsInstance }] });
+      renderPageActions({ selectedInstances: [windowsInstance] });
 
       await userEvent.click(
         screen.getByRole("button", { name: MENU_LABELS[0] }),
@@ -269,6 +283,14 @@ describe("InstancesPageActions", () => {
       expect(
         screen.queryByRole("button", { name: /attach token/i }),
       ).not.toBeInTheDocument();
+    });
+
+    it("'Snap management' group should be disabled if snaps feature is disabled", async () => {
+      renderPageActions({ selectedInstances: [windowsInstance] });
+
+      expect(
+        screen.getByRole("button", { name: MENU_LABELS[3] }),
+      ).toHaveAttribute("aria-disabled", "true");
     });
   });
 
@@ -460,6 +482,76 @@ describe("InstancesPageActions", () => {
 
       expect(
         screen.getByRole("heading", { name: /detach Ubuntu Pro token/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Install' snap menu item", async () => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(screen.getByRole("menuitem", { name: "Install" }));
+
+      expect(
+        screen.getByRole("heading", { name: /install snap/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Uninstall' snap menu item", async () => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: "Uninstall" }),
+      );
+
+      expect(
+        screen.getByRole("heading", { name: /uninstall snap/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Refresh' snap menu item", async () => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(screen.getByRole("menuitem", { name: "Refresh" }));
+
+      expect(
+        screen.getByRole("heading", { name: /refresh snap/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Hold' snap menu item", async () => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(screen.getByRole("menuitem", { name: "Hold" }));
+
+      expect(
+        screen.getByRole("heading", { name: /hold snap/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Unhold' snap menu item", async () => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(screen.getByRole("menuitem", { name: "Unhold" }));
+
+      expect(
+        screen.getByRole("heading", { name: /unhold snap/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Change channel' snap menu item", async () => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: "Change channel" }),
+      );
+
+      expect(
+        screen.getByRole("heading", { name: /change snap channel/i }),
       ).toBeInTheDocument();
     });
   });
