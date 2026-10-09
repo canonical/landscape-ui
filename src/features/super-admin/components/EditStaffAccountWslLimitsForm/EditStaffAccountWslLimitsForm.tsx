@@ -39,10 +39,6 @@ const EditStaffAccountWslLimitsForm: FC<EditStaffAccountWslLimitsFormProps> = ({
     onSubmit: (values) => {
       const limits = getLimits(values);
 
-      if (!limits) {
-        return;
-      }
-
       if (!describeChanges(limits, wslLimits).length) {
         closeSidePanel();
         return;

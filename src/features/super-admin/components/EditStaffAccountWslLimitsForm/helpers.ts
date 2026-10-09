@@ -6,18 +6,12 @@ import type { FormProps, WslLimitChange } from "./types";
 
 const FIELD_NAMES = WSL_LIMIT_FIELDS.map(({ name }) => name);
 
-/** The limits as the server stores them; `null` while any field is empty. */
-export const getLimits = (values: FormProps): WslFeatureLimits | null => {
+/** The limits as the server stores them. */
+export const getLimits = (values: FormProps): WslFeatureLimits => {
   const limits: Partial<WslFeatureLimits> = {};
 
   for (const name of FIELD_NAMES) {
-    const value = values[name];
-
-    if (value === "") {
-      return null;
-    }
-
-    limits[name] = Number(value);
+    limits[name] = Number(values[name]);
   }
 
   // `WSL_LIMIT_FIELDS` names every limit, so each one was set above.

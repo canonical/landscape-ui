@@ -16,19 +16,10 @@ const getRejection = (data: unknown): AxiosError =>
 
 describe("EditStaffAccountWslLimitsForm helpers", () => {
   describe("getLimits", () => {
-    it("returns every limit when the form is complete", () => {
+    it("returns every limit", () => {
       expect(getLimits(defaultWslFeatureLimits)).toEqual(
         defaultWslFeatureLimits,
       );
-    });
-
-    it("is null while a field is empty", () => {
-      expect(
-        getLimits({
-          ...defaultWslFeatureLimits,
-          max_wsl_child_instances_per_host: "",
-        }),
-      ).toBeNull();
     });
   });
 
