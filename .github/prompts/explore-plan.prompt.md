@@ -15,7 +15,7 @@ Invoke the **@Architect** persona.
 # Process
 
 1. **Clarification (Pre-flight):** If the user's description is vague or missing API endpoints, you **MUST** ask for them before generating the plan.
-2. **Analysis:** Analyze the repo structure and `copilot-instructions.md`.
+2. **Analysis:** Analyze the repo structure and `AGENTS.md`.
 3. **Drafting:** Generate the markdown plan.
 
 # Strict Constraints
@@ -61,6 +61,6 @@ Create a file named `feature-plans/{{featureName}}.md`. If the `feature-plans/` 
 
 # Rules
 
-- Reference `copilot-instructions.md` for naming conventions and imports.
+- Reference `AGENTS.md` and `docs/FRONTEND.md` for naming conventions and imports.
 - Ensure all imports use the `@/` alias.
 - Use `Formik` + `Vanilla Framework` for all UI logic.
