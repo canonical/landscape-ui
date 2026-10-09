@@ -161,7 +161,6 @@ export default [
     return HttpResponse.json<Activity>(activities[0]);
   }),
 
-
   http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
     `${API_URL}packages\\:search`,
     async ({ request }) => {
