@@ -26,6 +26,7 @@ interface PackageSearchDowngradeItemProps {
   readonly selectedPackage: PackageWithVersions;
   readonly onDelete: () => void;
   readonly onItemsUpdate: (items: MultiSelectItem[]) => void;
+  readonly isOverLimit: boolean;
 }
 
 const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
@@ -33,6 +34,7 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
   selectedPackage,
   onDelete,
   onItemsUpdate,
+  isOverLimit,
 }) => {
   const { isDarkMode } = useTheme();
 
@@ -119,6 +121,11 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
       <MultiSelectField
         className={classNames(classes.multiSelect, { "is-paper": !isDarkMode })}
         items={items}
+        disabledItems={
+          isOverLimit
+            ? items.filter((item) => !selectedPackage[1].includes(item.value))
+            : []
+        }
         dropdownHeader={getDropdownHeader()}
         showDropdownFooter={hasNextPackagesPage}
         footerClassName={classes.footer}

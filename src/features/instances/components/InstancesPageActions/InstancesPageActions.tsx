@@ -12,7 +12,12 @@ import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
-import { Button, ContextualMenu, Icon } from "@canonical/react-components";
+import {
+  Button,
+  ContextualMenu,
+  Icon,
+  Modal,
+} from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import { getFeatures, hasUpgrades } from "../../helpers";
@@ -22,6 +27,7 @@ import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
 
 import { getActionFormTitle } from "@/features/packages";
+import { DEB_MANAGEMENT_INSTANCE_LIMIT } from "@/features/packages";
 const RunInstanceScriptForm = lazy(
   async () => import("@/features/scripts/components/RunInstanceScriptForm"),
 );
@@ -85,6 +91,12 @@ const InstancesPageActions = memo(function InstancesPageActions({
     value: removeModalOpen,
     setTrue: openRemoveModal,
     setFalse: closeRemoveModal,
+  } = useBoolean();
+
+  const {
+    value: debManagementLimitModalOpen,
+    setTrue: openDebManagementLimitModal,
+    setFalse: closeDebManagementLimitModal,
   } = useBoolean();
 
   const createInstanceCountString = (instances: Instance[]) => {
@@ -557,7 +569,16 @@ const InstancesPageActions = memo(function InstancesPageActions({
       disabled: noInstanceHasPackageFeature,
       hasIcon: true,
     },
-  ];
+  ].map((link) => ({
+    ...link,
+    onClick: () => {
+      if (selectedInstances.length > DEB_MANAGEMENT_INSTANCE_LIMIT) {
+        openDebManagementLimitModal();
+      } else {
+        link.onClick();
+      }
+    },
+  }));
 
   const snapLinks = [
     {
@@ -716,6 +737,26 @@ const InstancesPageActions = memo(function InstancesPageActions({
         isOpen={removeModalOpen}
         onSuccess={onRemoveSuccess}
       />
+      {debManagementLimitModalOpen && (
+        <Modal
+          close={closeDebManagementLimitModal}
+          title="Instance limit exceeded"
+          buttonRow={
+            <Button
+              appearance="positive"
+              onClick={closeDebManagementLimitModal}
+            >
+              OK
+            </Button>
+          }
+        >
+          <p className="u-margin--bottom">
+            Deb management features are only available for a selection of{" "}
+            {pluralize(DEB_MANAGEMENT_INSTANCE_LIMIT, ["instance"], "exact")} or
+            fewer. Please select fewer instances, then try again.
+          </p>
+        </Modal>
+      )}
     </>
   );
 });

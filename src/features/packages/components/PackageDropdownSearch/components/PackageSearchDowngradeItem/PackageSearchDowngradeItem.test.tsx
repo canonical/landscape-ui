@@ -1,10 +1,27 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import PackageSearchDowngradeItem from "./PackageSearchDowngradeItem";
 import { ICONS } from "@canonical/react-components";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
+import { API_URL } from "@/constants";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
+import type { Package } from "@/features/packages";
+
+const multiSelectFieldProps = vi.hoisted(() => vi.fn());
+
+vi.mock("@/components/form/MultiSelectField", () => ({
+  default: (props: {
+    readonly disabledItems?: { readonly value: number }[];
+    readonly items: { readonly label: string; readonly value: number }[];
+    readonly selectedItems?: { readonly value: number }[];
+  }) => {
+    multiSelectFieldProps(props);
+    return null;
+  },
+}));
 
 const props = {
   selectedPackage: [
@@ -22,6 +39,7 @@ const props = {
   onDelete: vi.fn(),
   onItemsUpdate: vi.fn(),
   instanceIds: [1, 2, 3, 4],
+  isOverLimit: false,
 } as const satisfies ComponentProps<typeof PackageSearchDowngradeItem>;
 
 window.HTMLElement.prototype.scrollIntoView = vi.fn();
@@ -47,5 +65,59 @@ describe("PackageSearchDowngradeItem", () => {
     });
     await user.click(deleteButton);
     expect(props.onDelete).toHaveBeenCalled();
+  });
+
+  it("disables unselected versions when the selection limit is reached", async () => {
+    const firstVersion: Package = {
+      ...props.selectedPackage[0],
+      id: 15,
+    };
+    const secondVersion: Package = {
+      ...props.selectedPackage[0],
+      id: 16,
+      version: "0.1.29-1",
+    };
+
+    server.use(
+      http.post(`${API_URL}packages\\:search`, () =>
+        HttpResponse.json({
+          packages: [firstVersion, secondVersion],
+          count: 2,
+          prev: null,
+          next: null,
+        }),
+      ),
+    );
+
+    renderWithProviders(
+      <PackageSearchDowngradeItem
+        {...props}
+        selectedPackage={[firstVersion, [firstVersion.id]]}
+        isOverLimit
+      />,
+    );
+
+    await screen.findByRole("button", {
+      name: `Delete ${firstVersion.name}`,
+    });
+
+    await waitFor(() => {
+      expect(multiSelectFieldProps).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          disabledItems: [
+            {
+              label: `${secondVersion.version} (4 instances)`,
+              value: secondVersion.id,
+            },
+          ],
+          selectedItems: [
+            {
+              label: `${firstVersion.version} (4 instances)`,
+              value: firstVersion.id,
+            },
+          ],
+        }),
+      );
+    });
   });
 });
