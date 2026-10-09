@@ -44,6 +44,7 @@ const OPERATIONS_LABELS = [
   "Shut down",
   "Restart",
   "Remove from Landscape",
+  "Upgrade",
   "Upgrade distributions",
   "Export selection as TSV",
   "View report",
@@ -157,7 +158,7 @@ describe("InstancesPageActions", () => {
       expect(screen.getByRole("menuitem", { name: label })).toBeInTheDocument();
     }
 
-    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[3] }));
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[4] }));
     for (const label of SNAP_MANAGEMENT_LABELS) {
       expect(screen.getByRole("menuitem", { name: label })).toBeInTheDocument();
     }
@@ -259,7 +260,7 @@ describe("InstancesPageActions", () => {
       });
 
       await userEvent.click(
-        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+        await screen.findByRole("button", { name: MENU_LABELS[0] }),
       );
 
       const button = screen.getByRole("menuitem", { name: /^upgrade$/i });
@@ -277,7 +278,7 @@ describe("InstancesPageActions", () => {
       });
 
       await userEvent.click(
-        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+        await screen.findByRole("button", { name: MENU_LABELS[0] }),
       );
 
       const button = screen.getByRole("menuitem", { name: /^upgrade$/i });
@@ -352,7 +353,7 @@ describe("InstancesPageActions", () => {
       renderPageActions({ selectedInstances: [windowsInstance] });
 
       expect(
-        screen.getByRole("button", { name: MENU_LABELS[3] }),
+        screen.getByRole("button", { name: MENU_LABELS[4] }),
       ).toHaveAttribute("aria-disabled", "true");
     });
   });
@@ -445,7 +446,7 @@ describe("InstancesPageActions", () => {
 
     it("'Upgrade' menu item", async () => {
       await userEvent.click(
-        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+        await screen.findByRole("button", { name: MENU_LABELS[0] }),
       );
       await userEvent.click(
         screen.getByRole("menuitem", { name: /^upgrade$/i }),
@@ -550,7 +551,7 @@ describe("InstancesPageActions", () => {
 
     it("'Install' snap menu item", async () => {
       await userEvent.click(
-        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+        await screen.findByRole("button", { name: MENU_LABELS[4] }),
       );
       await userEvent.click(screen.getByRole("menuitem", { name: "Install" }));
 
@@ -561,7 +562,7 @@ describe("InstancesPageActions", () => {
 
     it("'Uninstall' snap menu item", async () => {
       await userEvent.click(
-        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+        await screen.findByRole("button", { name: MENU_LABELS[4] }),
       );
       await userEvent.click(
         screen.getByRole("menuitem", { name: "Uninstall" }),
@@ -574,7 +575,7 @@ describe("InstancesPageActions", () => {
 
     it("'Refresh' snap menu item", async () => {
       await userEvent.click(
-        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+        await screen.findByRole("button", { name: MENU_LABELS[4] }),
       );
       await userEvent.click(screen.getByRole("menuitem", { name: "Refresh" }));
 
@@ -585,7 +586,7 @@ describe("InstancesPageActions", () => {
 
     it("'Hold' snap menu item", async () => {
       await userEvent.click(
-        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+        await screen.findByRole("button", { name: MENU_LABELS[4] }),
       );
       await userEvent.click(screen.getByRole("menuitem", { name: "Hold" }));
 
@@ -596,7 +597,7 @@ describe("InstancesPageActions", () => {
 
     it("'Unhold' snap menu item", async () => {
       await userEvent.click(
-        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+        await screen.findByRole("button", { name: MENU_LABELS[4] }),
       );
       await userEvent.click(screen.getByRole("menuitem", { name: "Unhold" }));
 
@@ -607,7 +608,7 @@ describe("InstancesPageActions", () => {
 
     it("'Change channel' snap menu item", async () => {
       await userEvent.click(
-        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+        await screen.findByRole("button", { name: MENU_LABELS[4] }),
       );
       await userEvent.click(
         screen.getByRole("menuitem", { name: "Change channel" }),
