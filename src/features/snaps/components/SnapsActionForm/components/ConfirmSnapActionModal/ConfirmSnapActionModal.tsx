@@ -64,7 +64,14 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
 
   const getTitle = () => {
     if (isInstallingClassicSnaps) {
-      return `${pluralize(snapsToShow.length, ["snap requires", "snaps require"], "exact")} classic confinement`;
+      return `${pluralize(
+        snapsToShow.length,
+        [
+          `of ${pluralize(snaps.length, ["snap"], "exact")} requires`,
+          `of ${pluralize(snaps.length, ["snap"], "exact")} require`,
+        ],
+        "exact",
+      )} classic confinement`;
     }
 
     const snapsText = pluralize(snaps.length, ["snap"], "exact");
