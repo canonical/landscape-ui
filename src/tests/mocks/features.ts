@@ -118,7 +118,7 @@ export const features: Feature[] = [
     description: "Search packages with the REST API.",
     key: "package-search-rest-api",
     database_key: 17,
-    enabled: false,
+    enabled: true,
     details: {
       configuration: false,
     },
