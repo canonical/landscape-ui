@@ -10,6 +10,7 @@ This directory is the repository knowledge base and the system of record for int
 - [testing/index.md](testing/index.md): automated test map covering unit/component tests, E2E tests, and coverage guidance
 - [verification/index.md](verification/index.md): implementation completion rules, TDD expectations, and closed-loop validation
 - [DOCUMENTATION.md](DOCUMENTATION.md): when and how to open companion PRs against the public docs repo (landscape-documentation)
+- [ci-workflows.md](ci-workflows.md): CI/CD workflow triggers, job order, and guardrails for `.github/workflows/` (see [integration-testing.md](integration-testing.md) for the Integration Tests workflow specifically)
 
 ## Existing Root Docs
 

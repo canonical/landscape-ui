@@ -33,7 +33,7 @@ describe("MirrorDetails", () => {
     );
 
     expect(
-      await screen.findByRole("heading", { name: "Update failed" }),
+      await screen.findByRole("heading", { name: /Update failed/i }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -60,7 +60,7 @@ describe("MirrorDetails", () => {
     await expectLoadingState();
 
     expect(
-      screen.getByRole("heading", { name: "Details" }),
+      await screen.findByRole("heading", { name: "Details" }),
     ).toBeInTheDocument();
 
     const tabs = within(screen.getByRole("navigation"));

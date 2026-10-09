@@ -54,10 +54,10 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
       query.unhold = action.package.id;
       break;
     case "change_version":
-      query.change_version = {
+      query.change_version = JSON.stringify({
         from_package_id: action.from_package.id,
         to_package_id: action.to_package.id,
-      };
+      });
       break;
     case "upgrade":
       query.upgrade = action.to_package.id;
