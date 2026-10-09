@@ -7,6 +7,7 @@ import { Button, Icon, Tooltip } from "@canonical/react-components";
 import RemoveLocalRepositoryModal from "../../../RemoveLocalRepositoryModal";
 import classes from "./ViewRepositoryActionsBlock.module.scss";
 import PublishLocalRepositoryGuard from "../../../PublishLocalRepositoryGuard";
+import RestartImportModal from "../../../RestartImportModal";
 
 interface ViewRepositoryActionsBlockProps {
   readonly repository: Local;
@@ -29,12 +30,20 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
     setFalse: closePublishGuard,
   } = useBoolean();
 
-  const { actions, destructiveAction } = useGetRepositoryActions({
-    repository,
-    isImporting,
-    openRemovalModal,
-    openPublishGuard,
-  });
+  const {
+    value: isCancelImportModalOpen,
+    setTrue: openCancelImportModal,
+    setFalse: closeCancelImportModal,
+  } = useBoolean();
+
+  const { actions, destructiveAction, openImportPackages } =
+    useGetRepositoryActions({
+      repository,
+      isImporting,
+      openCancelImportModal,
+      openRemovalModal,
+      openPublishGuard,
+    });
   const buttons = [...actions, destructiveAction];
 
   return (
@@ -84,6 +93,13 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
         close={closePublishGuard}
         isOpen={isPublishGuardOpen}
         repository={repository}
+      />
+
+      <RestartImportModal
+        close={closeCancelImportModal}
+        isOpen={isCancelImportModalOpen}
+        repository={repository}
+        onContinue={openImportPackages}
       />
     </>
   );

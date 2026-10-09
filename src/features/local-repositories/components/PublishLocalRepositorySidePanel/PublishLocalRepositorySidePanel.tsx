@@ -8,6 +8,7 @@ import PublishRepositoryExistingForm from "./components/PublishRepositoryExistin
 import { useBoolean } from "usehooks-ts";
 import usePageParams from "@/hooks/usePageParams/usePageParams";
 import { useGetLocalRepository } from "../../api";
+import { useGetPublicationTargets } from "@/features/publication-targets";
 
 const PublishLocalRepositorySidePanel: FC = () => {
   const { name } = usePageParams();
@@ -16,9 +17,16 @@ const PublishLocalRepositorySidePanel: FC = () => {
     repository?.name,
   );
 
+  const { publicationTargets, isGettingPublicationTargets } =
+    useGetPublicationTargets();
+
   const { value: useNewPublication, toggle } = useBoolean(true);
 
-  if (isGettingRepository || isGettingPublications) {
+  if (
+    isGettingRepository ||
+    isGettingPublications ||
+    isGettingPublicationTargets
+  ) {
     return <SidePanel.LoadingState />;
   }
   if (!repository) {
@@ -48,11 +56,15 @@ const PublishLocalRepositorySidePanel: FC = () => {
         )}
 
         {useNewPublication ? (
-          <PublishRepositoryNewForm repository={repository} />
+          <PublishRepositoryNewForm
+            repository={repository}
+            publicationTargets={publicationTargets}
+          />
         ) : (
           <PublishRepositoryExistingForm
             repository={repository}
             publications={publications}
+            publicationTargets={publicationTargets}
           />
         )}
       </SidePanel.Content>
