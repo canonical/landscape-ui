@@ -1,6 +1,7 @@
 import ListActions from "@/components/layout/ListActions";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
+import type { Mirror } from "@canonical/landscape-openapi";
 import { useBoolean } from "usehooks-ts";
 import UpdateMirrorModal from "../UpdateMirrorModal";
 import RemoveMirrorModal from "../RemoveMirrorModal";
@@ -8,26 +9,19 @@ import {
   NoPublicationTargetsModal,
   useGetPublicationTargets,
 } from "@/features/publication-targets";
-import { useOperation } from "@/features/operations";
+import { useCanCancelOperations, useOperation } from "@/features/operations";
 
 interface MirrorActionsProps {
-  readonly mirrorDisplayName: string;
-  readonly mirrorName: string;
-  readonly preserveSignatures?: boolean;
-  readonly operationName?: string;
+  readonly mirror: Mirror;
 }
 
-const MirrorActions: FC<MirrorActionsProps> = ({
-  mirrorDisplayName,
-  mirrorName,
-  preserveSignatures,
-  operationName,
-}) => {
+const MirrorActions: FC<MirrorActionsProps> = ({ mirror }) => {
   const { setPageParams, createPageParamsSetter } = usePageParams();
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
   const { isOperationInProgress } = useOperation();
-  const isUpdating = isOperationInProgress(operationName);
+  const isUpdating = isOperationInProgress(mirror.lastOperation);
+  const canCancelOperations = useCanCancelOperations();
 
   const {
     value: isUpdateModalOpen,
@@ -49,7 +43,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({
     if (publicationTargets.length) {
       setPageParams({
         sidePath: ["publish"],
-        name: mirrorName,
+        name: mirror.name,
       });
     } else {
       openNoPublicationTargetsModal();
@@ -59,14 +53,14 @@ const MirrorActions: FC<MirrorActionsProps> = ({
   return (
     <>
       <ListActions
-        toggleAriaLabel={`${mirrorDisplayName} mirror actions`}
+        toggleAriaLabel={`${mirror.displayName} mirror actions`}
         actions={[
           {
             icon: "show",
             label: "View details",
             onClick: createPageParamsSetter({
               sidePath: ["view"],
-              name: mirrorName,
+              name: mirror.name,
             }),
           },
           {
@@ -74,12 +68,12 @@ const MirrorActions: FC<MirrorActionsProps> = ({
             label: "Edit",
             onClick: createPageParamsSetter({
               sidePath: ["edit"],
-              name: mirrorName,
+              name: mirror.name,
             }),
           },
-          ...(!preserveSignatures
+          ...(!mirror.preserveSignatures
             ? [
-                isUpdating
+                !canCancelOperations && isUpdating
                   ? {
                       icon: "spinner u-animation--spin",
                       label: "Updating",
@@ -109,15 +103,15 @@ const MirrorActions: FC<MirrorActionsProps> = ({
       />
       <UpdateMirrorModal
         isOpen={isUpdateModalOpen}
+        isUpdating={isUpdating}
         close={closeUpdateModal}
-        mirrorDisplayName={mirrorDisplayName}
-        mirrorName={mirrorName}
+        mirror={mirror}
       />
       <RemoveMirrorModal
         isOpen={isRemoveModalOpen}
         close={closeRemoveModal}
-        mirrorDisplayName={mirrorDisplayName}
-        mirrorName={mirrorName}
+        mirrorDisplayName={mirror.displayName}
+        mirrorName={mirror.name ?? ""}
       />
       {isNoPublicationTargetsModalOpen && (
         <NoPublicationTargetsModal close={closeNoPublicationTargetsModal} />

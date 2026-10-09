@@ -4,6 +4,7 @@
 .radio {
   align-items: end;
   display: flex;
+  gap: $sph--x-large;
   margin-bottom: $spv--large;
 
   > label {
