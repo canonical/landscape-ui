@@ -2,6 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { describe, it, expect } from "vitest";
 import PublishRepositoryNewForm from "./PublishRepositoryNewForm";
 import { repositories } from "@/tests/mocks/localRepositories";
+import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
@@ -61,7 +62,12 @@ describe("PublishRepositoryNewForm", () => {
   });
 
   it("renders form with block-scoped fields and form buttons", async () => {
-    renderWithProviders(<PublishRepositoryNewForm repository={repository} />);
+    renderWithProviders(
+      <PublishRepositoryNewForm
+        repository={repository}
+        publicationTargets={publicationTargets}
+      />,
+    );
 
     expect(
       screen.getByRole("heading", { name: "Details" }),
@@ -99,7 +105,12 @@ describe("PublishRepositoryNewForm", () => {
 
   it("validates required fields on submit", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<PublishRepositoryNewForm repository={repository} />);
+    renderWithProviders(
+      <PublishRepositoryNewForm
+        repository={repository}
+        publicationTargets={publicationTargets}
+      />,
+    );
 
     const nameInput = screen.getByLabelText(/^publication name$/i);
     await user.click(nameInput);
@@ -111,7 +122,12 @@ describe("PublishRepositoryNewForm", () => {
   });
 
   it("submits manual installs and upgrades values", async () => {
-    renderWithProviders(<PublishRepositoryNewForm repository={repository} />);
+    renderWithProviders(
+      <PublishRepositoryNewForm
+        repository={repository}
+        publicationTargets={publicationTargets}
+      />,
+    );
 
     await fillFormAndSubmit(
       "Manual installs and upgrades",
@@ -138,7 +154,12 @@ describe("PublishRepositoryNewForm", () => {
   });
 
   it("submits automatic upgrades only values", async () => {
-    renderWithProviders(<PublishRepositoryNewForm repository={repository} />);
+    renderWithProviders(
+      <PublishRepositoryNewForm
+        repository={repository}
+        publicationTargets={publicationTargets}
+      />,
+    );
 
     await fillFormAndSubmit("Automatic upgrades only");
 
@@ -157,7 +178,12 @@ describe("PublishRepositoryNewForm", () => {
       new Error(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     );
 
-    renderWithProviders(<PublishRepositoryNewForm repository={repository} />);
+    renderWithProviders(
+      <PublishRepositoryNewForm
+        repository={repository}
+        publicationTargets={publicationTargets}
+      />,
+    );
 
     await fillFormAndSubmit();
 

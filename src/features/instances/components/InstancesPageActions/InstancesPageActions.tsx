@@ -25,6 +25,7 @@ import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModa
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
+
 import { getActionFormTitle } from "@/features/packages";
 import { DEB_MANAGEMENT_INSTANCE_LIMIT } from "@/features/packages";
 const RunInstanceScriptForm = lazy(
@@ -46,6 +47,9 @@ const AttachTokenForm = lazy(
 );
 const ReplaceTokenForm = lazy(
   async () => import("@/features/ubuntupro/components/ReplaceTokenForm"),
+);
+const SnapsActionForm = lazy(
+  async () => import("@/features/snaps/components/SnapsActionForm"),
 );
 
 interface InstancesPageActionsProps {
@@ -237,6 +241,78 @@ const InstancesPageActions = memo(function InstancesPageActions({
       instance.ubuntu_pro_info?.result === "success" &&
       instance.ubuntu_pro_info.attached,
   );
+
+  const handleSnapInstall = () => {
+    setSidePanelContent(
+      "Install snaps",
+      <Suspense fallback={<LoadingState />}>
+        <SnapsActionForm
+          selectedInstances={selectedInstances.map(({ id }) => id)}
+          action="install"
+        />
+      </Suspense>,
+    );
+  };
+
+  const handleSnapUninstall = () => {
+    setSidePanelContent(
+      "Uninstall snaps",
+      <Suspense fallback={<LoadingState />}>
+        <SnapsActionForm
+          selectedInstances={selectedInstances.map(({ id }) => id)}
+          action="uninstall"
+        />
+      </Suspense>,
+    );
+  };
+
+  const handleSnapRefresh = () => {
+    setSidePanelContent(
+      "Refresh snaps",
+      <Suspense fallback={<LoadingState />}>
+        <SnapsActionForm
+          selectedInstances={selectedInstances.map(({ id }) => id)}
+          action="refresh"
+        />
+      </Suspense>,
+    );
+  };
+
+  const handleSnapHold = () => {
+    setSidePanelContent(
+      "Hold snaps",
+      <Suspense fallback={<LoadingState />}>
+        <SnapsActionForm
+          selectedInstances={selectedInstances.map(({ id }) => id)}
+          action="hold"
+        />
+      </Suspense>,
+    );
+  };
+
+  const handleSnapUnhold = () => {
+    setSidePanelContent(
+      "Unhold snaps",
+      <Suspense fallback={<LoadingState />}>
+        <SnapsActionForm
+          selectedInstances={selectedInstances.map(({ id }) => id)}
+          action="unhold"
+        />
+      </Suspense>,
+    );
+  };
+
+  const handleSnapChangeChannel = () => {
+    setSidePanelContent(
+      "Change snap channel",
+      <Suspense fallback={<LoadingState />}>
+        <SnapsActionForm
+          selectedInstances={selectedInstances.map(({ id }) => id)}
+          action="change channel"
+        />
+      </Suspense>,
+    );
+  };
 
   const noInstanceHasUpgrades =
     !hasSelectedInstances ||
@@ -504,6 +580,69 @@ const InstancesPageActions = memo(function InstancesPageActions({
     },
   }));
 
+  const snapLinks = [
+    {
+      children: (
+        <>
+          <Icon name="import" />
+          <span>Install</span>
+        </>
+      ),
+      onClick: handleSnapInstall,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="close" />
+          <span>Uninstall</span>
+        </>
+      ),
+      onClick: handleSnapUninstall,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="restart" />
+          <span>Refresh</span>
+        </>
+      ),
+      onClick: handleSnapRefresh,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="pause" />
+          <span>Hold</span>
+        </>
+      ),
+      onClick: handleSnapHold,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="play" />
+          <span>Unhold</span>
+        </>
+      ),
+      onClick: handleSnapUnhold,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="change-version" />
+          <span>Change channel</span>
+        </>
+      ),
+      onClick: handleSnapChangeChannel,
+      hasIcon: true,
+    },
+  ];
+
   const isDebManagementEnabled = (
     ["package-change-plans", "package-search-rest-api"] as const
   ).every(isFeatureEnabled);
@@ -529,7 +668,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             position="right"
             toggleLabel="Grouping"
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={0 === selectedInstances.length}
+            toggleDisabled={!hasSelectedInstances}
             hasToggleIcon
           />,
           hasOneItem(proServicesLinks) ? (
@@ -538,7 +677,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               type="button"
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
-              disabled={0 === selectedInstances.length}
+              disabled={!hasSelectedInstances}
               hasIcon={proServicesLinks[0].hasIcon}
             >
               {proServicesLinks[0].children}
@@ -550,7 +689,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               links={proServicesLinks}
               toggleLabel="Ubuntu Pro"
               toggleClassName="u-no-margin--bottom"
-              toggleDisabled={0 === selectedInstances.length}
+              toggleDisabled={!hasSelectedInstances}
               hasToggleIcon
             />
           ),
@@ -567,6 +706,20 @@ const InstancesPageActions = memo(function InstancesPageActions({
                 />,
               ]
             : []),
+          <ContextualMenu
+            key="snap"
+            links={snapLinks}
+            position="right"
+            toggleLabel="Snap management"
+            toggleClassName="u-no-margin--bottom"
+            toggleDisabled={
+              !hasSelectedInstances ||
+              selectedInstances.every(
+                (instance) => !getFeatures(instance).snaps,
+              )
+            }
+            hasToggleIcon
+          />,
         ]}
       />
 
