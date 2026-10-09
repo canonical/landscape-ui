@@ -92,6 +92,23 @@ describe("GuestGuard", () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
+  it("should forward to the invitation if authorized but HAS NO accounts", async () => {
+    await setup(
+      {
+        ...authProps,
+        authorized: true,
+        authLoading: false,
+        hasAccounts: false,
+      },
+      { invitation_id: "abc123" },
+    );
+
+    expect(safeRedirect).toHaveBeenCalledWith("/accept-invitation/abc123", {
+      replace: true,
+    });
+    expect(screen.queryByText("Guest Content")).not.toBeInTheDocument();
+  });
+
   describe("when authorized and has accounts", () => {
     const authorizedState = {
       ...authProps,

@@ -16,12 +16,10 @@ export const GuestGuard: FC<Props> = ({ children }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  const invitationId = searchParams.get("invitation_id");
+
   useEffect(() => {
     if (!authorized || authLoading) return;
-    if (!hasAccounts) return;
-
-    const redirectTo = searchParams.get("redirect-to");
-    const invitationId = searchParams.get("invitation_id");
 
     if (invitationId) {
       safeRedirect(getInvitationPath(invitationId, searchParams), {
@@ -29,6 +27,10 @@ export const GuestGuard: FC<Props> = ({ children }) => {
       });
       return;
     }
+
+    if (!hasAccounts) return;
+
+    const redirectTo = searchParams.get("redirect-to");
 
     if (!redirectTo) {
       navigate(HOMEPAGE_PATH, { replace: true });
@@ -43,6 +45,7 @@ export const GuestGuard: FC<Props> = ({ children }) => {
     authorized,
     authLoading,
     hasAccounts,
+    invitationId,
     searchParams,
     navigate,
     safeRedirect,
@@ -50,5 +53,7 @@ export const GuestGuard: FC<Props> = ({ children }) => {
 
   if (authLoading) return <LoadingState />;
 
-  return !authorized || !hasAccounts ? <>{children}</> : <Redirecting />;
+  const isRedirecting = authorized && (hasAccounts || !!invitationId);
+
+  return isRedirecting ? <Redirecting /> : <>{children}</>;
 };
