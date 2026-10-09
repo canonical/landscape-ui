@@ -101,8 +101,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
             By installing these, you acknowledge that these snaps may have
             access to your files and system.
           </strong>{" "}
-          Only install snaps in classic confinement if you trust the
-          publisher.
+          Only install snaps in classic confinement if you trust the publisher.
         </>
       );
     }
@@ -154,9 +153,9 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
           classic confinement.
         </strong>{" "}
         By proceeding, you acknowledge that{" "}
-        {pluralize(classicSnaps.length, ["it", "they"], "none")} may have
-        access to your files and system. Only use classic confinement if you
-        trust the publisher.
+        {pluralize(classicSnaps.length, ["it", "they"], "none")} may have access
+        to your files and system. Only use classic confinement if you trust the
+        publisher.
       </Notification>
     ) : null;
 
@@ -164,7 +163,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
 
   return (
     <ConfirmationModal
-      close={onClose}
+      close={isSubmitting ? undefined : onClose}
       title={getTitle()}
       confirmButtonLabel={submitText}
       confirmButtonAppearance={buttonColor}

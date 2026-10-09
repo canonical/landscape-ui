@@ -1,11 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { type FC, lazy, Suspense, useCallback, useState } from "react";
-import {
-  getActionVerb,
-  getRequestAction,
-  hasNotification,
-  isRevisionNotificationAction,
-} from "./helpers";
+import { getActionVerb, getRequestAction, hasNotification } from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import type {
   SnapAction,
@@ -27,11 +22,11 @@ import LoadingState from "@/components/layout/LoadingState";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 import { isValidRevision } from "../../helpers";
 import { Notification } from "@canonical/react-components";
+import SnapNotification from "./components/SnapNotification";
 
 const ConfirmSnapActionModal = lazy(
   () => import("./components/ConfirmSnapActionModal"),
 );
-const SnapNotification = lazy(() => import("./components/SnapNotification"));
 
 interface SnapsActionFormProps {
   readonly selectedInstances: number[];
@@ -255,13 +250,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   return (
     <>
       <div className={classes.container}>
-        {(hasNotification(action) || isRevisionNotificationAction(action)) && (
-          <Suspense fallback={<LoadingState />}>
-            <SnapNotification
-              action={action}
-              snapChangeConfigs={snapChangeConfigs}
-            />
-          </Suspense>
+        {hasNotification(action) && (
+          <SnapNotification
+            action={action}
+            snapChangeConfigs={snapChangeConfigs}
+          />
         )}
         <SnapBulkSearch
           instanceIds={selectedInstances}

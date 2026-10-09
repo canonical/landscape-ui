@@ -4,7 +4,7 @@ import { pluralize } from "@/utils/_helpers";
 interface SnapItemSubtitleProps {
   readonly scope: string;
   readonly computerCount: number;
-  readonly instancesCount?: number;
+  readonly instancesCount: number;
 }
 
 const SnapItemSubtitle: FC<SnapItemSubtitleProps> = ({
@@ -14,9 +14,7 @@ const SnapItemSubtitle: FC<SnapItemSubtitleProps> = ({
 }) => {
   return (
     <span className="u-text--muted">
-      {instancesCount === undefined
-        ? `${scope} on ${pluralize(computerCount, ["instance"], "exact")}`
-        : `${scope} on ${computerCount} of ${pluralize(instancesCount, ["instance"], "exact")}`}
+      {`${scope} on ${computerCount} of ${pluralize(instancesCount, ["instance"], "exact")}`}
     </span>
   );
 };

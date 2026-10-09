@@ -57,7 +57,7 @@ describe("SnapChangeChannelItem", () => {
     expect(screen.getByText(snapWithChannels.snap.name)).toBeInTheDocument();
     expect(
       screen.getByText(
-        `Installed on ${snapWithChannels.computerCount} instances`,
+        `Installed on ${snapWithChannels.computerCount} of 1 instance`,
       ),
     ).toBeInTheDocument();
     expect(screen.getByText("Change to")).toBeInTheDocument();

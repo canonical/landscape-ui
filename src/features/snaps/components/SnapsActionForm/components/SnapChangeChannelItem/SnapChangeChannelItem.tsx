@@ -96,6 +96,7 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
       <SnapItemSubtitle
         scope="Installed"
         computerCount={selectedSnap.computerCount}
+        instancesCount={instanceIds.length}
       />
       <div className={classes.changeToLabel}>Change to</div>
       <SnapChannelRevisionFields

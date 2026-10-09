@@ -17,12 +17,8 @@ export const getRequestAction = (action: SnapAction) => {
 
 export const hasNotification = (
   action: SnapAction,
-): action is ActionWithNotification => action === "hold";
-
-export const isRevisionNotificationAction = (
-  action: SnapAction,
-): action is Extract<SnapAction, "install" | "change channel"> =>
-  action === "install" || action === "change channel";
+): action is ActionWithNotification =>
+  action === "hold" || action === "install" || action === "change channel";
 
 export const getChangeChannelVerb = (
   changeModes: SnapChangeMode[] = [],

@@ -1,7 +1,6 @@
 import type { FC } from "react";
 import { Notification } from "@canonical/react-components";
 import type { SnapAction, SnapChangeMode } from "../../../../types";
-import { hasNotification } from "../../helpers";
 
 interface SnapChangeConfig {
   mode: SnapChangeMode;
@@ -38,35 +37,42 @@ const SnapNotification: FC<SnapNotificationProps> = ({
   action,
   snapChangeConfigs,
 }) => {
+  if (action === "hold") {
+    return <HoldNotification />;
+  }
+
+  if (action !== "install" && action !== "change channel") {
+    return null;
+  }
+
   const hasRevision =
     snapChangeConfigs &&
     Object.values(snapChangeConfigs).some(
       (config) => config.mode === "revision",
     );
 
+  if (!hasRevision) {
+    return null;
+  }
+
   return (
-    <>
-      {hasNotification(action) && <HoldNotification />}
-      {hasRevision && (action === "install" || action === "change channel") && (
-        <Notification
-          severity="information"
-          actions={[
-            {
-              label: "Visit Snapd documentation",
-              onClick: () => {
-                window.open(
-                  "https://snapcraft.io/docs/reference/development/snapd-rest-api/#/Asynchronous/manageSnapByName",
-                  "_blank",
-                  "noopener,noreferrer",
-                );
-              },
-            },
-          ]}
-        >
-          {revisionMessages[action]}
-        </Notification>
-      )}
-    </>
+    <Notification
+      severity="information"
+      actions={[
+        {
+          label: "Visit Snapd documentation",
+          onClick: () => {
+            window.open(
+              "https://snapcraft.io/docs/reference/development/snapd-rest-api/#/Asynchronous/manageSnapByName",
+              "_blank",
+              "noopener,noreferrer",
+            );
+          },
+        },
+      ]}
+    >
+      {revisionMessages[action]}
+    </Notification>
   );
 };
 
