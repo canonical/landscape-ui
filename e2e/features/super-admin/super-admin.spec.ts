@@ -255,7 +255,11 @@ test.describe("@saas Canonical staff", () => {
 
       await expect(superAdmin.personRows).toHaveCount(2);
 
-      await janeRow.getByRole("button", { name: "Jane Doe actions" }).click();
+      await janeRow
+        .getByRole("button", {
+          name: "Jane Doe (jane@acme.com, #4821) actions",
+        })
+        .click();
       await page.getByRole("menuitem", { name: "Enter jane-free-1" }).click();
 
       await expect(page).toHaveURL(
