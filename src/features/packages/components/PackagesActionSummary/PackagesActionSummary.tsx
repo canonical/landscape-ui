@@ -26,6 +26,7 @@ import classes from "./PackagesActionSummary.module.scss";
 import classNames from "classnames";
 import { Icon } from "@canonical/react-components";
 import PackageActionExclusionsCount from "./components/PackagesActionExclusionsCount";
+import EmptyState from "@/components/layout/EmptyState";
 
 interface PackagesActionSummaryProps {
   readonly actionType: Exclude<PackageChangePlanActionType, "upgrade">;
@@ -195,45 +196,56 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
     }
   };
 
+  const isEmpty = !Object.keys(packagesByName).length;
+
   return (
     <>
-      <ul className={classNames("p-list", "u-no-margin--bottom", classes.list)}>
-        {Object.entries(packagesByName).map(([packageName, items]) => {
-          const exclusion = summaryResponse.data.exclusions.find(
-            ({ package_name }) => package_name === packageName,
-          );
+      {isEmpty ? (
+        <EmptyState title="No items" body="The package change plan is empty." />
+      ) : (
+        <ul
+          className={classNames("p-list", "u-no-margin--bottom", classes.list)}
+        >
+          {Object.entries(packagesByName).map(([packageName, items]) => {
+            const exclusion = summaryResponse.data.exclusions.find(
+              ({ package_name }) => package_name === packageName,
+            );
 
-          return (
-            <li key={packageName}>
-              <div>
-                <strong className={classNames("font-monospace", classes.name)}>
-                  {packageName}
-                </strong>
-              </div>
-              {items.map((item) => {
-                return (
-                  <div key={getKey(item.action)} className={classes.row}>
-                    {getRow(item)}
-                  </div>
-                );
-              })}
-              {!!exclusion?.computer_count && (
-                <div className={classes.row}>
-                  Will not be {mapActionTypeToPast(actionType)} on{" "}
-                  <PackageActionExclusionsCount
-                    count={exclusion.computer_count}
-                    id={packageChangePlanId}
-                    packageName={exclusion.package_name}
-                    actionType={actionType}
-                  />
+            return (
+              <li key={packageName}>
+                <div>
+                  <strong
+                    className={classNames("font-monospace", classes.name)}
+                  >
+                    {packageName}
+                  </strong>
                 </div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+                {items.map((item) => {
+                  return (
+                    <div key={getKey(item.action)} className={classes.row}>
+                      {getRow(item)}
+                    </div>
+                  );
+                })}
+                {!!exclusion?.computer_count && (
+                  <div className={classes.row}>
+                    Will not be {mapActionTypeToPast(actionType)} on{" "}
+                    <PackageActionExclusionsCount
+                      count={exclusion.computer_count}
+                      id={packageChangePlanId}
+                      packageName={exclusion.package_name}
+                      actionType={actionType}
+                    />
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
       <SidePanelFormButtons
         submitButtonLoading={isExecutingChangePlan}
+        submitButtonDisabled={isEmpty}
         submitButtonText={`${getActionSubmitButtonText(actionType)} ${pluralize(
           Object.keys(packagesByName).length,
           ["package"],
