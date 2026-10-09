@@ -110,7 +110,7 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
             onChange(
               newValue,
               undefined,
-              isClassicConfinement ? "classic" : "strict",
+              isClassicConfinement ? "classic" : selectedSnap.confinement,
             );
             return;
           }
