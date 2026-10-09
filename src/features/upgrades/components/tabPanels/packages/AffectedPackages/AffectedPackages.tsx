@@ -6,7 +6,11 @@ import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
 import SelectAllButton from "@/components/layout/SelectAllButton";
 import type { InstancePackagesToExclude, Package } from "@/features/packages";
-import { checkIsPackageUpdateRequired, getToggledPackage } from "../helpers";
+import {
+  checkIsPackageFullyIncluded,
+  checkIsPackageUpdateRequired,
+  getToggledPackage,
+} from "../helpers";
 import {
   checkIsUpdateRequired,
   checkIsUpdateRequiredForAllVisiblePackages,
@@ -102,20 +106,32 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
             onChange={handleAllPackagesToggle}
           />
         ),
-        Cell: ({ row: { original } }: CellProps<Package>) => (
-          <CheckboxInput
-            inline
-            label={
-              <span className="u-off-screen">
-                Toggle {original.name} package
-              </span>
-            }
-            checked={checkIsPackageUpdateRequired(excludedPackages, original)}
-            onChange={() => {
-              handlePackageToggle(original);
-            }}
-          />
-        ),
+        Cell: ({ row: { original } }: CellProps<Package>) => {
+          const isFullyIncluded = checkIsPackageFullyIncluded(
+            excludedPackages,
+            original,
+          );
+          const isPartiallyIncluded = checkIsPackageUpdateRequired(
+            excludedPackages,
+            original,
+          );
+
+          return (
+            <CheckboxInput
+              inline
+              label={
+                <span className="u-off-screen">
+                  Toggle {original.name} package
+                </span>
+              }
+              checked={isFullyIncluded}
+              indeterminate={!isFullyIncluded && isPartiallyIncluded}
+              onChange={() => {
+                handlePackageToggle(original);
+              }}
+            />
+          );
+        },
       },
       {
         accessor: "name",

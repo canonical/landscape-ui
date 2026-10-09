@@ -118,6 +118,30 @@ describe("AffectedPackages", () => {
       });
   });
 
+  it("shows indeterminate state when only some instances have excluded a package", () => {
+    const [firstExcluded, ...rest] = excludedPackages;
+    assert(firstExcluded);
+    const partiallyExcludedPackages = [
+      { id: firstExcluded.id, exclude_packages: [increasedPackage.id] },
+      ...rest,
+    ];
+
+    render(
+      <AffectedPackages
+        {...props}
+        excludedPackages={partiallyExcludedPackages}
+        packages={packages.slice(0, increasedLimit)}
+      />,
+    );
+
+    const [checkbox] = screen.getAllByLabelText<HTMLInputElement>(
+      `Toggle ${increasedPackage.name} package`,
+    );
+    assert(checkbox);
+    expect(checkbox).not.toBeChecked();
+    expect(checkbox.indeterminate).toBe(true);
+  });
+
   it("should render 'select all' button", async () => {
     render(
       <AffectedPackages {...props} excludedPackages={newExcludedPackages} />,
