@@ -542,6 +542,45 @@ describe("SnapsActionForm", () => {
     });
   });
 
+  it("shows a classic confinement notice when a classic channel is selected", async () => {
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: secondSnapOptionTitle,
+      }),
+    );
+
+    const channelSelect = await screen.findByRole("combobox", {
+      name: `Channel for ${secondSnap.snap.name}`,
+    });
+    await waitFor(() => {
+      expect(channelSelect).not.toBeDisabled();
+    });
+
+    expect(
+      screen.queryByText("This snap requires classic confinement"),
+    ).not.toBeInTheDocument();
+
+    await user.selectOptions(channelSelect, "latest/edge");
+
+    expect(
+      await screen.findByText("This snap requires classic confinement"),
+    ).toBeInTheDocument();
+
+    await user.selectOptions(channelSelect, "latest/stable");
+
+    expect(
+      screen.queryByText("This snap requires classic confinement"),
+    ).not.toBeInTheDocument();
+  });
+
   it("blocks submit and shows an error when the revision is not a positive integer", async () => {
     renderWithProviders(
       <SnapsActionForm

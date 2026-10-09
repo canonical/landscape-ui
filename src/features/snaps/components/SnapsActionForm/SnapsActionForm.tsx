@@ -26,6 +26,7 @@ import { useBoolean } from "usehooks-ts";
 import LoadingState from "@/components/layout/LoadingState";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 import { isValidRevision } from "../../helpers";
+import { Notification } from "@canonical/react-components";
 
 const ConfirmSnapActionModal = lazy(
   () => import("./components/ConfirmSnapActionModal"),
@@ -316,6 +317,18 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                         handleSnapModeChange(item.snap.id, mode);
                       }}
                     />
+                    {config.mode === "channel" &&
+                    config.confinement === "classic" ? (
+                      <Notification
+                        severity="caution"
+                        className={classNames(
+                          classes.classicNotification,
+                          "u-no-margin--bottom",
+                        )}
+                      >
+                        This snap requires classic confinement
+                      </Notification>
+                    ) : null}
                   </li>
                 );
               }
@@ -363,6 +376,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
             onConfirm={onSubmit}
             isSubmitting={isSnapActionPending}
             submitText={submitText}
+            snapChangeConfigs={snapChangeConfigs}
           />
         </Suspense>
       )}

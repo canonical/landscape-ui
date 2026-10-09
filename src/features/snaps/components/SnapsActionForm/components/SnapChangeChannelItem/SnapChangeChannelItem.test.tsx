@@ -6,6 +6,9 @@ import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { assert, beforeEach, describe, expect, it, vi } from "vitest";
 import SnapChangeChannelItem from "./SnapChangeChannelItem";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
+import { API_URL } from "@/constants";
 
 const snapWithChannels = installedSnaps.find((snap) => {
   const snapInfo = availableSnapInfo.find(
@@ -248,6 +251,28 @@ describe("SnapChangeChannelItem", () => {
       within(channelSelect).getByText("Default channel"),
     ).toBeInTheDocument();
     expect(screen.getByText("No channels were found")).toBeInTheDocument();
+  });
+
+  it("does not show 'No channels were found' alongside the load error", async () => {
+    server.use(
+      http.get(
+        `${API_URL}computers/:computerId/snaps/:name/info`,
+        () =>
+          HttpResponse.json(
+            { error: "InternalServerError", message: "Error response" },
+            { status: 500 },
+          ),
+      ),
+    );
+
+    renderWithProviders(<SnapChangeChannelItem {...props} />);
+
+    expect(
+      await screen.findByText("Failed to load channels for this snap"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("No channels were found"),
+    ).not.toBeInTheDocument();
   });
 
   it("calls onDelete when the delete button is clicked", async () => {

@@ -65,7 +65,9 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
             value={value}
             error={error}
             help={
-              channelOptions.length === 0 ? "No channels were found" : undefined
+              channelOptions.length === 0 && !error
+                ? "No channels were found"
+                : undefined
             }
             options={
               channelOptions.length > 0
