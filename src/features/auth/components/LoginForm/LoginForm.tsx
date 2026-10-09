@@ -1,20 +1,20 @@
-import { HOMEPAGE_PATH } from '@/constants';
-import { useInvitation, useLogin } from '@/features/auth';
-import useAuth from '@/hooks/useAuth';
-import useDebug from '@/hooks/useDebug';
+import { HOMEPAGE_PATH } from "@/constants";
+import { useInvitation, useLogin } from "@/features/auth";
+import useAuth from "@/hooks/useAuth";
+import useDebug from "@/hooks/useDebug";
 import {
   ActionButton,
   Form,
   Input,
   PasswordToggle,
-} from '@canonical/react-components';
-import { useFormik } from 'formik';
-import type { FC } from 'react';
-import { useSearchParams } from 'react-router';
-import * as Yup from 'yup';
-import classes from './LoginForm.module.scss';
-import { getFormikError } from '@/utils/formikErrors';
-import { ROUTES } from '@/libs/routes';
+} from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { useSearchParams } from "react-router";
+import * as Yup from "yup";
+import classes from "./LoginForm.module.scss";
+import { getFormikError } from "@/utils/formikErrors";
+import { ROUTES } from "@/libs/routes";
 
 interface FormProps {
   identifier: string;
@@ -34,25 +34,25 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
 
   const { safeRedirect, setUser } = useAuth();
 
-  const redirectTo = searchParams.get('redirect-to');
-  const isExternalRedirect = searchParams.has('external');
+  const redirectTo = searchParams.get("redirect-to");
+  const isExternalRedirect = searchParams.has("external");
 
   const formik = useFormik<FormProps>({
     initialValues: {
-      identifier: '',
-      password: '',
+      identifier: "",
+      password: "",
     },
     validationSchema: Yup.object().shape({
       identifier: isIdentityAvailable
-        ? Yup.string().required('This field is required')
+        ? Yup.string().required("This field is required")
         : Yup.string()
-            .required('This field is required')
+            .required("This field is required")
             .matches(
               /^[a-zA-Z0-9-_.]+@[a-zA-Z0-9-.]*[a-zA-Z]$/,
-              'Please provide a valid email address',
+              "Please provide a valid email address",
             )
             .test({
-              message: 'Please provide a valid email address',
+              message: "Please provide a valid email address",
               test: (value) => {
                 if (!value) {
                   return false;
@@ -62,16 +62,16 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
                   return false;
                 }
 
-                const [first, domain] = value.split('@');
+                const [first, domain] = value.split("@");
 
                 if (
                   !first ||
                   !domain ||
-                  first.startsWith('.') ||
-                  first.endsWith('.') ||
-                  !domain.includes('.') ||
-                  domain.startsWith('.') ||
-                  domain.startsWith('-') ||
+                  first.startsWith(".") ||
+                  first.endsWith(".") ||
+                  !domain.includes(".") ||
+                  domain.startsWith(".") ||
+                  domain.startsWith("-") ||
                   domain.match(/\.-/) ||
                   domain.match(/-\./)
                 ) {
@@ -81,7 +81,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
                 return true;
               },
             }),
-      password: Yup.string().required('This field is required'),
+      password: Yup.string().required("This field is required"),
     }),
     onSubmit: async (values) => {
       try {
@@ -91,20 +91,20 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
           : { email: identifier, password };
         const { data } = await login(credentials);
 
-        if ('current_account' in data) {
+        if ("current_account" in data) {
           setUser(data);
         }
 
         const invitationRedirectParams = new URLSearchParams();
         if (redirectTo) {
-          invitationRedirectParams.set('redirect-to', redirectTo);
+          invitationRedirectParams.set("redirect-to", redirectTo);
         }
         if (isExternalRedirect) {
-          invitationRedirectParams.set('external', 'true');
+          invitationRedirectParams.set("external", "true");
         }
         const invitationRedirectQuery = invitationRedirectParams.toString();
         const invitationDestination = invitationId
-          ? `${ROUTES.auth.invitation({ secureId: invitationId })}${invitationRedirectQuery ? `?${invitationRedirectQuery}` : ''}`
+          ? `${ROUTES.auth.invitation({ secureId: invitationId })}${invitationRedirectQuery ? `?${invitationRedirectQuery}` : ""}`
           : null;
         const destination =
           invitationDestination ?? redirectTo ?? HOMEPAGE_PATH;
@@ -121,28 +121,28 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
   return (
     <Form onSubmit={formik.handleSubmit}>
       <Input
-        type='text'
-        label={isIdentityAvailable ? 'Identity' : 'Email'}
-        error={getFormikError(formik, 'identifier')}
-        {...formik.getFieldProps('identifier')}
-        data-testid='identifier'
+        type="text"
+        label={isIdentityAvailable ? "Identity" : "Email"}
+        error={getFormikError(formik, "identifier")}
+        {...formik.getFieldProps("identifier")}
+        data-testid="identifier"
       />
 
       <PasswordToggle
-        id='password'
-        label='Password'
-        error={getFormikError(formik, 'password')}
-        {...formik.getFieldProps('password')}
-        data-testid='password'
+        id="password"
+        label="Password"
+        error={getFormikError(formik, "password")}
+        {...formik.getFieldProps("password")}
+        data-testid="password"
       />
 
       <div className={classes.buttonRow}>
         <ActionButton
-          type='submit'
-          appearance='positive'
+          type="submit"
+          appearance="positive"
           loading={formik.isSubmitting || isLoggingIn}
           disabled={formik.isSubmitting || !formik.isValid || isLoggingIn}
-          className='u-no-margin--bottom'
+          className="u-no-margin--bottom"
         >
           Sign in
         </ActionButton>
