@@ -1,6 +1,6 @@
 import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import type { ControllerStateAndHelpers } from "downshift";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -98,5 +98,101 @@ describe("SnapBulkSearchList", () => {
     });
 
     expect(screen.getByRole("status")).toBeInTheDocument();
+  });
+
+  it("shows the publisher display name when present", () => {
+    renderList({ queryResult: buildQueryResult([thirdSnap]) });
+
+    expect(screen.getByText("Canonical")).toBeInTheDocument();
+  });
+
+  describe("infinite scroll", () => {
+    const getList = (container: HTMLElement) => {
+      const list = container.querySelector("ul");
+      assert(list);
+      return list;
+    };
+
+    it("fetches the next page when scrolled near the bottom", () => {
+      const fetchNextPage = vi.fn();
+      const { container } = renderList({
+        queryResult: buildQueryResult(snaps, {
+          hasNextPage: true,
+          fetchNextPage,
+        }),
+      });
+
+      fireEvent.scroll(getList(container));
+
+      expect(fetchNextPage).toHaveBeenCalledOnce();
+    });
+
+    it("does not fetch the next page when not near the bottom", () => {
+      const fetchNextPage = vi.fn();
+      const { container } = renderList({
+        queryResult: buildQueryResult(snaps, {
+          hasNextPage: true,
+          fetchNextPage,
+        }),
+      });
+
+      const list = getList(container);
+      Object.defineProperty(list, "scrollHeight", {
+        value: 100,
+        configurable: true,
+      });
+      Object.defineProperty(list, "clientHeight", {
+        value: 50,
+        configurable: true,
+      });
+      Object.defineProperty(list, "scrollTop", {
+        value: 20,
+        configurable: true,
+      });
+
+      fireEvent.scroll(list);
+
+      expect(fetchNextPage).not.toHaveBeenCalled();
+    });
+
+    it("does not fetch the next page when there is no next page", () => {
+      const fetchNextPage = vi.fn();
+      const { container } = renderList({
+        queryResult: buildQueryResult(snaps, {
+          hasNextPage: false,
+          fetchNextPage,
+        }),
+      });
+
+      fireEvent.scroll(getList(container));
+
+      expect(fetchNextPage).not.toHaveBeenCalled();
+    });
+
+    it("does not fetch the next page while one is already loading", () => {
+      const fetchNextPage = vi.fn();
+      const { container } = renderList({
+        queryResult: buildQueryResult(snaps, {
+          hasNextPage: true,
+          isFetchingNextPage: true,
+          fetchNextPage,
+        }),
+      });
+
+      fireEvent.scroll(getList(container));
+
+      expect(fetchNextPage).not.toHaveBeenCalled();
+    });
+
+    it("shows a loading indicator while fetching the next page", () => {
+      renderList({
+        queryResult: buildQueryResult(snaps, {
+          hasNextPage: true,
+          isFetchingNextPage: true,
+        }),
+      });
+
+      expect(screen.getByRole("status")).toBeInTheDocument();
+    });
   });
 });

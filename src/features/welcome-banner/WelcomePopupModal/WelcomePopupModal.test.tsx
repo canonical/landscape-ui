@@ -11,9 +11,7 @@ describe("WelcomePopupModal", () => {
   });
 
   it("should render", async () => {
-    expect(
-      screen.getByText("Landscape web portal (Preview)"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Landscape web portal")).toBeInTheDocument();
   });
 
   it("should close by button", async () => {

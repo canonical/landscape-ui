@@ -77,7 +77,7 @@ describe("SidePanelFormButtons", () => {
     it("shows the form warning", () => {
       renderWithProviders(<SidePanelFormButtons formWarning={formWarning} />);
 
-      expect(screen.getByRole("alert")).toHaveTextContent(formWarning);
+      expect(screen.getByRole("status")).toHaveTextContent(formWarning);
     });
 
     it("shows the form error instead of the form warning after a submit attempt", async () => {

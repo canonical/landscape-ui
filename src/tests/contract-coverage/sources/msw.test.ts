@@ -10,7 +10,7 @@ const MANIFEST = [
   { method: "PUT", path: "/api/v2/administrators/:id", isRegExpPath: false },
   {
     method: "POST",
-    path: "/debarchive/v1beta1/mirrors/:mirrorId\\:sync",
+    path: "/debarchive/v1/mirrors/:mirrorId\\:sync",
     isRegExpPath: false,
   },
   // v1 catch-alls must be skipped (identity is the action param, not the path)
@@ -44,7 +44,7 @@ describe("createMswHandlerSource", () => {
     expect(byId.get("GET /api/v2/administrators")?.backend).toBe("v2");
     expect(byId.get("PUT /api/v2/administrators/{id}")?.backend).toBe("v2");
     expect(
-      byId.get("POST /debarchive/v1beta1/mirrors/{mirrorId}:sync")?.backend,
+      byId.get("POST /debarchive/v1/mirrors/{mirrorId}:sync")?.backend,
     ).toBe("go");
     expect(routes.every((route) => route.source === "msw-handlers")).toBe(true);
   });
@@ -66,9 +66,9 @@ describe("createMswHandlerSource", () => {
     expect(
       source.match(
         "POST",
-        new URL(`${base}/debarchive/v1beta1/mirrors/my-mirror:sync`),
+        new URL(`${base}/debarchive/v1/mirrors/my-mirror:sync`),
       )?.id,
-    ).toBe("POST /debarchive/v1beta1/mirrors/{mirrorId}:sync");
+    ).toBe("POST /debarchive/v1/mirrors/{mirrorId}:sync");
   });
 
   it("returns null for undeclared traffic", () => {

@@ -60,7 +60,7 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
         </div>
       ) : (
         formWarning && (
-          <div className={classes.formValidation} role="alert">
+          <div className={classes.formValidation} role="status">
             <Icon name="warning" />
             <span className="u-text--caution">{formWarning}</span>
           </div>

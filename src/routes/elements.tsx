@@ -44,6 +44,9 @@ export const PageNotFound = Loadable(
 );
 export const EnvError = Loadable(lazy(() => import("@/pages/EnvError")));
 export const DashboardPage = Loadable(lazy(() => import("@/pages/dashboard")));
+export const AboutPage = Loadable(
+  lazy(() => import("@/pages/dashboard/account/about")),
+);
 export const OverviewPage = Loadable(
   lazy(() => import("@/pages/dashboard/overview")),
 );

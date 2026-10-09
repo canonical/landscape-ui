@@ -63,6 +63,9 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
   const handleSearchBoxChange = (value: string) => {
     setInputValue(value);
     setSearch(value);
+    if (!isDropdownOpen) {
+      openDropdown();
+    }
   };
 
   const clearSearchBox = () => {
@@ -82,9 +85,10 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Escape") {
       closeDropdown();
-    } else if (!isDropdownOpen && event.key === "Enter") {
-      openDropdown();
     } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+      if (!isDropdownOpen) {
+        openDropdown();
+      }
       scrollFromKeyboard.current = true;
     }
   };
