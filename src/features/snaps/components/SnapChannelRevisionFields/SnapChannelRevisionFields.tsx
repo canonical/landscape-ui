@@ -58,7 +58,11 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
 
   const handleChange = (newValue: string, isClassic?: boolean) => {
     if (mode !== "channel") {
-      onChange(newValue, undefined, isClassic ? "classic" : "strict");
+      onChange(
+        newValue,
+        undefined,
+        isClassic ? "classic" : selectedSnap.confinement,
+      );
       return;
     }
 
