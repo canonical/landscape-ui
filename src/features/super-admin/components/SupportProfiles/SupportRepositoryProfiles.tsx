@@ -119,7 +119,8 @@ const SupportRepositoryProfiles: FC = () => {
     return <LoadingState />;
   }
 
-  if (!profiles.length && !search) {
+  // The count, not the page: a page past the last one is empty too.
+  if (!data?.data.count && !search) {
     return <EmptyState title="This account has no repository profiles." />;
   }
 

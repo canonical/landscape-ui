@@ -347,6 +347,15 @@ describe("SupportProfilesPage (integration)", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("keeps the search and pagination on a page past the last repository profile", async () => {
+    renderProfiles("repository", "?currentPage=99");
+
+    expect(await screen.findByRole("searchbox")).toBeInTheDocument();
+    expect(
+      screen.queryByText("This account has no repository profiles."),
+    ).not.toBeInTheDocument();
+  });
+
   it("opens the first profile page for an unknown type", async () => {
     renderProfiles("no-such-type");
 
