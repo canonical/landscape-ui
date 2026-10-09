@@ -46,8 +46,13 @@ const StaffPeopleListActions: FC<StaffPeopleListActionsProps> = ({
     },
   }));
 
+  // Duplicate records share a name and even an email, so the id is what
+  // tells their toggles apart.
   return (
-    <ListActions toggleAriaLabel={`${result.name} actions`} actions={actions} />
+    <ListActions
+      toggleAriaLabel={`${result.name} (${result.email}, #${result.id}) actions`}
+      actions={actions}
+    />
   );
 };
 
