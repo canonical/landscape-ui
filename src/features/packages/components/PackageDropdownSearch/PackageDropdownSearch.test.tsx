@@ -15,7 +15,8 @@ import PackageDropdownSearch from "./PackageDropdownSearch";
 
 const instanceId = 1;
 const instancePackages = getInstancePackages(instanceId);
-const computerPackageSearchResults = getComputerPackageSearchResults(instanceId);
+const computerPackageSearchResults =
+  getComputerPackageSearchResults(instanceId);
 
 const instancePageUrl = ROUTES.instances.details.single(instanceId);
 const instancePath = `${ROUTES.instances.root()}/:instanceId`;
