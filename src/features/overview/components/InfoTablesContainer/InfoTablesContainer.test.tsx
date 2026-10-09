@@ -4,7 +4,7 @@ import {
   manyDeliveredActivities,
 } from "@/tests/mocks/activity";
 import { instances } from "@/tests/mocks/instance";
-import { packages } from "@/tests/mocks/packages";
+import { packagesOld as packages } from "@/tests/mocks/packagesOld";
 import { usns } from "@/tests/mocks/usn";
 import { renderWithProviders } from "@/tests/render";
 import { setEndpointStatus } from "@/tests/controllers/controller";

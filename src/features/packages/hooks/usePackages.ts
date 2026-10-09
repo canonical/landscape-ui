@@ -10,7 +10,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type {
   DowngradePackageVersion,
   InstancePackage,
-  Package,
+  PackageOld as Package,
 } from "../types";
 
 export interface GetPackagesParams {

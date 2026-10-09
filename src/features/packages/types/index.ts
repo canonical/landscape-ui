@@ -1,12 +1,14 @@
+export * from "./Package";
+
 export type {
   DowngradePackageVersion,
   InstancePackage,
-  Package,
+  PackageOld,
   PackageObject,
   PackageDiff,
   PocketPackage,
   PocketPackagesList,
-} from "./Package";
+} from "./PackageOld";
 
 export type {
   InstalledPackageAction,

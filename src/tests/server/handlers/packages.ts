@@ -1,13 +1,20 @@
 import { delay, http, HttpResponse } from "msw";
 import { API_URL, API_URL_OLD } from "@/constants";
-import type { GetPackagesParams, Package } from "@/features/packages";
+import type {
+  SearchPackagesRequest,
+  SearchPackagesResponse,
+  SearchUpgradesRequest,
+  SearchUpgradesResponse,
+} from "@/features/packages";
+import type { GetPackagesParams, PackageOld } from "@/features/packages";
 import type { Activity } from "@/features/activities";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { packages } from "@/tests/mocks/packages";
 import {
   downgradePackageVersions,
   getInstancePackages,
-  packages,
-} from "@/tests/mocks/packages";
+  packagesOld,
+} from "@/tests/mocks/packagesOld";
 import { activities } from "@/tests/mocks/activity";
 import {
   generatePaginatedResponse,
@@ -52,13 +59,13 @@ export default [
         endpointStatus.path === "packages"
       ) {
         return HttpResponse.json(
-          generatePaginatedResponse<Package>({ data: [], limit, offset }),
+          generatePaginatedResponse<PackageOld>({ data: [], limit, offset }),
         );
       }
 
       return HttpResponse.json(
-        generatePaginatedResponse<Package>({
-          data: packages,
+        generatePaginatedResponse<PackageOld>({
+          data: packagesOld,
           limit,
           offset,
         }),
@@ -154,6 +161,65 @@ export default [
     return HttpResponse.json<Activity>(activities[0]);
   }),
 
+  http.post(`${API_URL}computers/upgrade-packages`, async () => {
+    return HttpResponse.json();
+  }),
+
+  http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
+    `${API_URL}packages\\:search`,
+    async ({ request }) => {
+      const body = await request.json();
+
+      const response = generatePaginatedResponse({
+        data: packages.filter((pkg) => {
+          if (body.names === undefined) {
+            return true;
+          }
+
+          return body.names.split(",").includes(pkg.name);
+        }),
+        limit: body.limit,
+        offset: body.offset,
+        search: body.text,
+        searchFields: ["name", "summary"],
+      });
+
+      return HttpResponse.json<SearchPackagesResponse>({
+        packages: response.results,
+        count: response.count,
+        next: response.next,
+        prev: response.previous,
+      });
+    },
+  ),
+
+  http.post<never, SearchUpgradesRequest, SearchUpgradesResponse>(
+    `${API_URL}packages\\:search-upgrades`,
+    async ({ request }) => {
+      const body = await request.json();
+
+      const response = generatePaginatedResponse({
+        data: packages.filter((pkg) => {
+          if (body.names === undefined) {
+            return true;
+          }
+
+          return body.names.split(",").includes(pkg.name);
+        }),
+        limit: body.limit,
+        offset: body.offset,
+        search: body.text,
+        searchFields: ["name", "summary"],
+      });
+
+      return HttpResponse.json<SearchUpgradesResponse>({
+        packages: response.results,
+        count: response.count,
+        next: response.next,
+        prev: response.previous,
+      });
+    },
+  ),
   http.get<never, never, Activity>(API_URL_OLD, async ({ request }) => {
     if (!isAction(request, "UpgradePackages")) {
       return;

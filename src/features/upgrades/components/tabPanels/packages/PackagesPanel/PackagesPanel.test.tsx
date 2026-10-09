@@ -7,7 +7,7 @@ import { usePackages } from "@/features/packages";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
 import { instances } from "@/tests/mocks/instance";
-import { packages } from "@/tests/mocks/packages";
+import { packagesOld as packages } from "@/tests/mocks/packagesOld";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import PackagesPanel from "./PackagesPanel";
