@@ -85,7 +85,9 @@ describe("InfoTablesContainer", () => {
       expect(
         screen.queryByRole("tab", { name: /packages/i }),
       ).not.toBeInTheDocument();
-      expect(screen.getByRole("tab", { name: /instances/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("tab", { name: /instances/i }),
+      ).toBeInTheDocument();
       expect(screen.getByRole("tab", { name: /usns/i })).toBeInTheDocument();
     });
 

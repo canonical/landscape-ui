@@ -11,11 +11,11 @@ export type {
   PackageObject,
   DowngradePackageVersion,
 } from "./types";
+export { FilterState } from "./types";
 export type {
   ComputerPackageSearchParams,
   ComputerPackageSearchGroupedResponse,
   ComputerPackageSearchGroupedResult,
-  FilterState,
   PackageInstallationCandidate,
   PackageSearchResultPackage,
   SearchPackagesResponse,
