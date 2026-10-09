@@ -7,11 +7,12 @@ import type {
 import type { AxiosResponse } from "axios";
 import classNames from "classnames";
 import type { ControllerStateAndHelpers } from "downshift";
-import type { FC } from "react";
-import { useIntersectionObserver } from "usehooks-ts";
+import type { FC, UIEvent } from "react";
 import classes from "./SnapBulkSearchList.module.scss";
 import type { InstalledSnapWithCount } from "../../../../types";
 import type { SearchSnapsResponse } from "../../../../api/useGetBulkInstalledSnaps";
+
+const NEAR_BOTTOM_THRESHOLD = 20; // in pixels
 
 interface SnapBulkSearchListProps {
   readonly downshiftOptions: ControllerStateAndHelpers<InstalledSnapWithCount>;
@@ -28,17 +29,23 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
   search,
   selectedSnaps,
 }) => {
-  const { ref: loadingRef } = useIntersectionObserver({
-    onChange: (isIntersecting) => {
-      if (isIntersecting && !queryResult.isFetchingNextPage) {
-        queryResult.fetchNextPage();
-      }
-    },
-  });
+  const { data, isPending, hasNextPage, isFetchingNextPage, fetchNextPage } =
+    queryResult;
+  const handleScroll = (event: UIEvent<HTMLUListElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+
+    const nearBottom =
+      scrollHeight - scrollTop - clientHeight < NEAR_BOTTOM_THRESHOLD;
+    const canFetchNextPage = hasNextPage && !isFetchingNextPage;
+
+    if (nearBottom && canFetchNextPage) {
+      fetchNextPage();
+    }
+  };
 
   const stylingClass = `p-card--highlighted ${classes.suggestionsContainer}`;
 
-  if (queryResult.isPending) {
+  if (isPending) {
     return (
       <div className={classNames(stylingClass, "u-align--center")}>
         <LoadingState inline />
@@ -46,7 +53,7 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
     );
   }
 
-  const results = queryResult.data.pages.flatMap((page) => page.data.results);
+  const results = data.pages.flatMap((page) => page.data.results);
   const filteredResults = results.filter(
     (item) => !selectedSnaps.some(({ snap }) => item.snap.id === snap.id),
   );
@@ -55,6 +62,7 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
     return (
       <ul
         className={classNames(stylingClass, "p-list u-no-margin u-no-padding")}
+        onScroll={handleScroll}
         {...downshiftOptions.getMenuProps()}
       >
         {filteredResults.map((item: InstalledSnapWithCount, index: number) => (
@@ -75,9 +83,9 @@ const SnapBulkSearchList: FC<SnapBulkSearchListProps> = ({
             </div>
           </li>
         ))}
-        {queryResult.hasNextPage && (
+        {isFetchingNextPage && (
           <li role="presentation">
-            <LoadingState ref={loadingRef} dense />
+            <LoadingState dense />
           </li>
         )}
       </ul>

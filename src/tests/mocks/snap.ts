@@ -157,7 +157,11 @@ export const installedSnaps = [
     snap: {
       id: "3",
       name: "Snap 3",
-      publisher: { username: "canonical", validation: "verified" },
+      publisher: {
+        username: "canonical",
+        "display-name": "Canonical",
+        validation: "verified",
+      },
       summary: "Daemon and tooling that enable snap packages",
     },
     computerCount: 8,
