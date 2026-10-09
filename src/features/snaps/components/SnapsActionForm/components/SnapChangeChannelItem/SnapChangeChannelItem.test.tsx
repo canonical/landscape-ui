@@ -217,6 +217,32 @@ describe("SnapChangeChannelItem", () => {
     expect(onChange).toHaveBeenLastCalledWith("123", undefined, "classic");
   });
 
+  it("uses the latest typed revision when the checkbox is toggled without blurring first", async () => {
+    const onChange = vi.fn();
+    renderWithProviders(
+      <SnapChangeChannelItem
+        {...props}
+        mode="revision"
+        value="123"
+        onChange={onChange}
+      />,
+    );
+
+    const revisionInput = await screen.findByRole("spinbutton", {
+      name: `Revision for ${snapWithChannels.snap.name}`,
+    });
+    await user.click(revisionInput);
+    await user.clear(revisionInput);
+    await user.keyboard("456");
+
+    const checkbox = screen.getByRole("checkbox", {
+      name: "Use classic confinement",
+    });
+    await user.click(checkbox);
+
+    expect(onChange).toHaveBeenLastCalledWith("456", undefined, "classic");
+  });
+
   it("shows an error for a non-positive-integer revision after submit is attempted", async () => {
     renderWithProviders(
       <SnapChangeChannelItem

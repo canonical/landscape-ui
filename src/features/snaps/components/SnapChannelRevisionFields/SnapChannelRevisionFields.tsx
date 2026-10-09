@@ -30,11 +30,18 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   onModeChange,
 }) => {
   const [isClassicConfinement, setIsClassicConfinement] = useState(false);
+  const [revisionValue, setRevisionValue] = useState(value);
 
   const [prevMode, setPrevMode] = useState(mode);
   if (mode !== prevMode) {
     setPrevMode(mode);
     setIsClassicConfinement(false);
+  }
+
+  const [prevValue, setPrevValue] = useState(value);
+  if (value !== prevValue) {
+    setPrevValue(value);
+    setRevisionValue(value);
   }
 
   useEffect(() => {
@@ -84,8 +91,11 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
             min={1}
             step={1}
             aria-label={`Revision for ${snapName}`}
-            defaultValue={value}
+            value={revisionValue}
             error={error}
+            onChange={(event) => {
+              setRevisionValue(event.currentTarget.value);
+            }}
             onBlur={(event) => {
               onChange(event.currentTarget.value, isClassicConfinement);
             }}
@@ -100,7 +110,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
           onChange={(event) => {
             const { checked } = event.currentTarget;
             setIsClassicConfinement(checked);
-            onChange(value, checked);
+            onChange(revisionValue, checked);
           }}
         />
       ) : null}
