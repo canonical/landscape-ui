@@ -19,7 +19,6 @@ const ViewLogsSidePanel: FC<ViewLogsSidePanelProps> = ({ resourceType }) => {
   const resource = useGetOperationResource(resourceIdentifier);
   const { operation, isGettingOperation } = useGetOperation(
     resource.lastOperation ?? "",
-    { enabled: !!resource.lastOperation },
   );
 
   const { error, metadata: { operationId } = {} } = operation ?? {};

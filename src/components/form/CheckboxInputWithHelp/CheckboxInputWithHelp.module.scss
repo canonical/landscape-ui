@@ -1,18 +1,9 @@
 @import "vanilla-framework/scss/settings_spacing";
 
-.container {
-  display: flex;
-  gap: $sph--x-small;
-}
-
 .tooltip {
-  padding-top: 0.375rem;
+  padding-left: $sph--x-small;
 }
 
 .tooltipPositionElement {
   display: inline !important;
-}
-
-.disabled {
-  opacity: 0.33;
 }

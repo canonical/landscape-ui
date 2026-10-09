@@ -18,7 +18,7 @@ export const useGetOperation = (
 
   const {
     data: response,
-    isPending,
+    isLoading,
     error,
   } = useQuery<
     AxiosResponse<Operation>,
@@ -27,6 +27,7 @@ export const useGetOperation = (
     queryKey: ["operation", name],
     queryFn: async () => authFetchDebArchive.get(name),
     ...config,
+    enabled: !!name && (config.enabled ?? true),
   });
 
   return {
@@ -35,6 +36,6 @@ export const useGetOperation = (
       response && !response.data
         ? new Error("The operation could not be found.")
         : error,
-    isGettingOperation: isPending,
+    isGettingOperation: isLoading,
   };
 };

@@ -1,0 +1,11 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.sizeField {
+  align-items: flex-start;
+  column-gap: $sph--large;
+  display: flex;
+}
+
+.sizeValue {
+  flex-grow: 1;
+}

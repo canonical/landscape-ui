@@ -13,9 +13,7 @@ test.describe("fully-covered fixture suite", () => {
     });
     expect(mirror.ok()).toBeTruthy();
 
-    const debarchive = await request.get(
-      "/debarchive/v1beta1/mirrors/mirror-1",
-    );
+    const debarchive = await request.get("/debarchive/v1/mirrors/mirror-1");
     expect(debarchive.ok()).toBeTruthy();
   });
 });
