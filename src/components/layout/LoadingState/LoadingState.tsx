@@ -6,12 +6,14 @@ import classNames from "classnames";
 interface LoadingStateProps {
   readonly centerOnScreen?: boolean;
   readonly inline?: boolean;
+  readonly dense?: boolean;
   readonly ref?: Ref<HTMLDivElement>;
 }
 
 const LoadingState: FC<LoadingStateProps> = ({
   centerOnScreen,
   inline,
+  dense,
   ref,
 }) => {
   const spinningElement = (
@@ -27,12 +29,10 @@ const LoadingState: FC<LoadingStateProps> = ({
 
   return (
     <div
-      className={classNames({
-        [classes.root as string]: centerOnScreen,
-      })}
       ref={ref}
+      className={classNames({ [classes.root as string]: centerOnScreen })}
     >
-      <div className="p-strip" role="status">
+      <div className={dense ? classes.dense : "p-strip"} role="status">
         <div className="u-align-text--center">{spinningElement}</div>
       </div>
     </div>

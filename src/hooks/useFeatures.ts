@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import axios from "axios";
 import type { ApiError } from "@/types/api/ApiError";
-import { API_URL, API_URL_DEB_ARCHIVE } from "@/constants";
+import { API_URL, API_URL_DEB_ARCHIVE, IS_DEV_ENV } from "@/constants";
 
 interface DebarchiveFeatureResponse {
   readonly features: DebarchiveFeature[];
@@ -25,7 +25,7 @@ export default function useFeatures(userEmail: string | null) {
 
   const {
     data: debarchiveFeatures = [],
-    isLoading: isGettingDebarchiveFeatures,
+    isPending: isGettingDebarchiveFeatures,
   } = useQuery<
     AxiosResponse<DebarchiveFeatureResponse>,
     AxiosError<ApiError>,
@@ -45,7 +45,7 @@ export default function useFeatures(userEmail: string | null) {
         debarchiveFeatures.find(({ featureId }) => featureId === featureKey);
 
       if (!match) {
-        if (!isLoading) {
+        if (IS_DEV_ENV && !isLoading) {
           console.warn(
             `Feature ${featureKey} not found in the features response.`,
           );
