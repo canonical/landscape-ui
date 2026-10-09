@@ -16,6 +16,11 @@ const props: ComponentProps<typeof ConfirmSnapActionModal> = {
   onConfirm: vi.fn(),
   isSubmitting: false,
   submitText: "Act on 2 snaps",
+  snapModeConfigs: {
+    [installedSnaps[5].snap.id]: {
+      confinement: "classic",
+    },
+  },
 };
 
 describe("ConfirmSnapActionModal", () => {
@@ -118,7 +123,7 @@ describe("ConfirmSnapActionModal", () => {
       <ConfirmSnapActionModal
         {...props}
         actionVerb="change channel"
-        changeModes={["channel"]}
+        snapModes={["channel"]}
       />,
     );
 
@@ -144,7 +149,7 @@ describe("ConfirmSnapActionModal", () => {
       <ConfirmSnapActionModal
         {...props}
         actionVerb="change channel"
-        changeModes={["revision"]}
+        snapModes={["revision"]}
       />,
     );
 
@@ -171,7 +176,7 @@ describe("ConfirmSnapActionModal", () => {
       <ConfirmSnapActionModal
         {...props}
         actionVerb="change channel"
-        changeModes={["channel", "revision"]}
+        snapModes={["channel", "revision"]}
       />,
     );
 
@@ -190,13 +195,19 @@ describe("ConfirmSnapActionModal", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders the install warning text", () => {
+  it("renders the install warning text when installing a classic snap", () => {
     renderWithProviders(
-      <ConfirmSnapActionModal {...props} actionVerb="install" />,
+      <ConfirmSnapActionModal
+        {...props}
+        snaps={installedSnaps.slice(0, 6)}
+        actionVerb="install"
+      />,
     );
 
     expect(
-      screen.getByRole("heading", { name: "Install 2 snaps on 3 instances" }),
+      screen.getByRole("heading", {
+        name: "1 of 6 snaps requires classic confinement",
+      }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(/may have access to your files and system/i),

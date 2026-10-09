@@ -678,6 +678,10 @@ describe("SnapsActionForm", () => {
       "123",
     );
 
+    await user.click(
+      screen.getByRole("checkbox", { name: "Use classic confinement" }),
+    );
+
     await user.click(screen.getByRole("button", { name: "Change channel" }));
     const modal = await screen.findByRole("dialog");
     await user.click(
@@ -830,5 +834,39 @@ describe("SnapsActionForm", () => {
         { name: firstSnap.snap.name },
       ],
     });
+  });
+
+  it("renders a notification when installing classic snaps", async () => {
+    renderWithProviders(
+      <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: `${installedSnaps[2].snap.name} ${installedSnaps[2].snap.publisher["display-name"] ?? installedSnaps[2].snap.publisher.username}`,
+      }),
+    );
+
+    expect(
+      await screen.findByText("This snap requires classic confinement"),
+    ).toBeInTheDocument();
+  });
+
+  it("doesn't render a notification when installing strict snaps", async () => {
+    renderWithProviders(
+      <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: firstSnapOptionTitle,
+      }),
+    );
+
+    expect(
+      screen.queryByText("This snap requires classic confinement"),
+    ).not.toBeInTheDocument();
   });
 });

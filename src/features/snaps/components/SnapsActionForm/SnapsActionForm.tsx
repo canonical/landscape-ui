@@ -7,17 +7,11 @@ import {
   isRevisionNotificationAction,
 } from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
-import type {
-  SnapAction,
-  InstalledSnapWithCount,
-  SnapChangeMode,
-} from "../../types";
+import type { SnapAction, InstalledSnapWithCount, SnapMode } from "../../types";
 import classes from "./SnapsActionForm.module.scss";
 import classNames from "classnames";
 import SnapBulkSearch from "./components/SnapBulkSearch";
-import SnapChangeChannelItem from "./components/SnapChangeChannelItem";
 import SnapInstalledItem from "./components/SnapInstalledItem";
-import SnapAvailableItem from "./components/SnapAvailableItem";
 import { useSnapAction } from "../../api";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -26,6 +20,10 @@ import { useBoolean } from "usehooks-ts";
 import LoadingState from "@/components/layout/LoadingState";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 import { isValidRevision } from "../../helpers";
+import SnapItemTitleRow from "./components/SnapItemTitleRow";
+import SnapItemSubtitle from "./components/SnapItemSubtitle";
+import SnapChannelRevisionFields from "../SnapChannelRevisionFields";
+import { Notification } from "@canonical/react-components";
 
 const ConfirmSnapActionModal = lazy(
   () => import("./components/ConfirmSnapActionModal"),
@@ -48,11 +46,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     {},
   );
   const [errorSnapIds, setErrorSnapIds] = useState<Record<string, boolean>>({});
-  const [snapChangeConfigs, setSnapChangeConfigs] = useState<
+  const [snapModeConfigs, setSnapModeConfigs] = useState<
     Record<
       string,
       {
-        mode: SnapChangeMode;
+        mode: SnapMode;
         value: string;
         channel?: string;
         confinement?: string;
@@ -73,27 +71,27 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const { snapAction, isSnapActionPending } = useSnapAction();
 
   const hasNoSelectedSnaps = selectedSnaps.length === 0;
-  const isChangeChannel = action === "change channel";
 
-  const changeModes = isChangeChannel
+  const snapModes = ["change channel", "install"].includes(action)
     ? Array.from(
         new Set(
           selectedSnaps.map(
-            (item) => snapChangeConfigs[item.snap.id]?.mode ?? "channel",
+            (item) => snapModeConfigs[item.snap.id]?.mode ?? "channel",
           ),
         ),
       )
     : [];
 
-  const actionVerb = getActionVerb(action, changeModes);
+  const actionVerb = getActionVerb(action, snapModes);
 
   const snapsText = hasNoSelectedSnaps
     ? "snaps"
     : pluralize(selectedSnaps.length, ["snap"], "exact");
 
-  const submitText = isChangeChannel
-    ? `${capitalize(action)}`
-    : `${capitalize(action)} ${snapsText}`;
+  const submitText =
+    action === "change channel"
+      ? `${capitalize(action)}`
+      : `${capitalize(action)} ${snapsText}`;
 
   const onSubmit = async () => {
     try {
@@ -101,11 +99,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
         action: getRequestAction(action),
         computer_ids: selectedInstances,
         snaps: selectedSnaps.map((item) => {
-          if (!isChangeChannel) {
+          if (action !== "change channel" && action !== "install") {
             return { name: item.snap.name };
           }
 
-          const config = snapChangeConfigs[item.snap.id];
+          const config = snapModeConfigs[item.snap.id];
           const channel = config?.channel?.trim() || undefined;
           const args =
             config?.mode === "revision"
@@ -146,36 +144,30 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     }
   };
 
-  const hasMissingRevisionValue =
-    isChangeChannel &&
-    selectedSnaps.some((item) => {
-      const config = snapChangeConfigs[item.snap.id];
+  const hasMissingRevisionValue = selectedSnaps.some((item) => {
+    const config = snapModeConfigs[item.snap.id];
 
-      return config?.mode === "revision" && !config.value;
-    });
+    return config?.mode === "revision" && !config.value;
+  });
 
-  const hasInvalidRevisionValue =
-    isChangeChannel &&
-    selectedSnaps.some((item) => {
-      const config = snapChangeConfigs[item.snap.id];
+  const hasInvalidRevisionValue = selectedSnaps.some((item) => {
+    const config = snapModeConfigs[item.snap.id];
 
-      return (
-        config?.mode === "revision" &&
-        !!config.value &&
-        !isValidRevision(config.value)
-      );
-    });
+    return (
+      config?.mode === "revision" &&
+      !!config.value &&
+      !isValidRevision(config.value)
+    );
+  });
 
-  const isAnySnapInfoLoading =
-    isChangeChannel &&
-    selectedSnaps.some((item) => loadingSnapIds[item.snap.id]);
+  const isAnySnapInfoLoading = selectedSnaps.some(
+    (item) => loadingSnapIds[item.snap.id],
+  );
 
-  const hasSnapInfoErrorInChannelMode =
-    isChangeChannel &&
-    selectedSnaps.some((item) => {
-      const mode = snapChangeConfigs[item.snap.id]?.mode ?? "channel";
-      return mode === "channel" && errorSnapIds[item.snap.id];
-    });
+  const hasSnapInfoError = selectedSnaps.some((item) => {
+    const mode = snapModeConfigs[item.snap.id]?.mode ?? "channel";
+    return mode === "channel" && errorSnapIds[item.snap.id];
+  });
 
   const getValidationError = () => {
     if (hasNoSelectedSnaps) {
@@ -190,7 +182,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     if (
       !getValidationError() &&
       !isAnySnapInfoLoading &&
-      !hasSnapInfoErrorInChannelMode &&
+      !hasSnapInfoError &&
       !hasMissingRevisionValue &&
       !hasInvalidRevisionValue
     ) {
@@ -219,26 +211,31 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const handleSnapValueChange = (
     snapId: string,
     value: string,
-    mode: SnapChangeMode,
+    mode: SnapMode,
     channel?: string,
     confinement?: string,
   ) => {
-    setSnapChangeConfigs((prev) => ({
+    setSnapModeConfigs((prev) => ({
       ...prev,
       [snapId]: { mode, value, channel, confinement },
     }));
   };
 
-  const handleSnapModeChange = (snapId: string, mode: SnapChangeMode) => {
-    setSnapChangeConfigs((prev) => ({
+  const handleSnapModeChange = (snapId: string, mode: SnapMode) => {
+    setSnapModeConfigs((prev) => ({
       ...prev,
-      [snapId]: { mode, value: "" },
+      [snapId]: {
+        mode,
+        value: "",
+        confinement:
+          mode === "revision" ? undefined : prev[snapId]?.confinement,
+      },
     }));
   };
 
   const handleDeleteSnap = (snapId: string) => {
     setSelectedSnaps((snaps) => snaps.filter(({ snap }) => snap.id !== snapId));
-    setSnapChangeConfigs((prev) =>
+    setSnapModeConfigs((prev) =>
       Object.fromEntries(Object.entries(prev).filter(([id]) => id !== snapId)),
     );
     setLoadingSnapIds((prev) =>
@@ -258,7 +255,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           <Suspense fallback={<LoadingState />}>
             <SnapNotification
               action={action}
-              snapChangeConfigs={snapChangeConfigs}
+              snapModeConfigs={snapModeConfigs}
             />
           </Suspense>
         )}
@@ -282,63 +279,92 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                 handleDeleteSnap(item.snap.id);
               };
 
-              if (isChangeChannel) {
-                const config = snapChangeConfigs[item.snap.id] ?? {
-                  mode: "channel",
-                  value: "",
-                };
+              const config = snapModeConfigs[item.snap.id] ?? {
+                mode: "channel",
+                value: "",
+              };
 
-                return (
-                  <li className={classes.selectedItem} key={item.snap.id}>
-                    <SnapChangeChannelItem
-                      selectedSnap={item}
-                      onDelete={handleDelete}
-                      instanceIds={selectedInstances}
-                      mode={config.mode}
-                      value={config.value}
-                      hasAttemptedSubmit={hasAttemptedSubmit}
-                      onLoadingChange={(isLoading) => {
-                        handleSnapLoadingChange(item.snap.id, isLoading);
-                      }}
-                      onErrorChange={(isError) => {
-                        handleSnapErrorChange(item.snap.id, isError);
-                      }}
-                      onChange={(value, channel, confinement) => {
-                        handleSnapValueChange(
-                          item.snap.id,
-                          value,
-                          config.mode,
-                          channel,
-                          confinement,
-                        );
-                      }}
-                      onModeChange={(mode) => {
-                        handleSnapModeChange(item.snap.id, mode);
-                      }}
-                    />
-                  </li>
-                );
-              }
-              if (action === "install") {
-                return (
-                  <li className={classes.selectedItem} key={item.snap.id}>
-                    <SnapAvailableItem
-                      selectedSnap={item}
-                      onDelete={handleDelete}
-                    />
-                  </li>
-                );
-              }
-              return (
-                <li className={classes.selectedItem} key={item.snap.id}>
-                  <SnapInstalledItem
-                    selectedSnap={item}
-                    onDelete={handleDelete}
-                    isUnhold={action === "unhold"}
-                    instancesCount={selectedInstances.length}
-                  />
-                </li>
+              const channelRevisionFields = (
+                <SnapChannelRevisionFields
+                  instanceIds={selectedInstances}
+                  selectedSnap={item}
+                  mode={config.mode}
+                  value={config.value}
+                  hasAttemptedSubmit={hasAttemptedSubmit}
+                  onLoadingChange={(isLoading) => {
+                    handleSnapLoadingChange(item.snap.id, isLoading);
+                  }}
+                  onErrorChange={(isError) => {
+                    handleSnapErrorChange(item.snap.id, isError);
+                  }}
+                  onChange={(value, channel, confinement) => {
+                    handleSnapValueChange(
+                      item.snap.id,
+                      value,
+                      config.mode,
+                      channel,
+                      confinement,
+                    );
+                  }}
+                  onModeChange={(mode) => {
+                    handleSnapModeChange(item.snap.id, mode);
+                  }}
+                />
               );
+
+              switch (action) {
+                case "change channel": {
+                  return (
+                    <li className={classes.selectedItem} key={item.snap.id}>
+                      <SnapItemTitleRow
+                        name={item.snap.name}
+                        onDelete={handleDelete}
+                      />
+                      <SnapItemSubtitle
+                        scope="Installed"
+                        computerCount={item.computerCount}
+                      />
+                      <div className={classes.changeToLabel}>Change to</div>
+                      {channelRevisionFields}
+                    </li>
+                  );
+                }
+                case "install": {
+                  return (
+                    <li className={classes.selectedItem} key={item.snap.id}>
+                      <SnapItemTitleRow
+                        name={item.snap.name}
+                        onDelete={handleDelete}
+                      />
+                      {channelRevisionFields}
+                      {config.confinement === "classic" &&
+                      config.mode === "channel" ? (
+                        <Notification
+                          severity="caution"
+                          className={classNames(
+                            classes.classicNotification,
+                            "u-no-margin--bottom",
+                          )}
+                        >
+                          This snap requires classic confinement
+                        </Notification>
+                      ) : null}
+                    </li>
+                  );
+                }
+                default: {
+                  return (
+                    <li className={classes.selectedItem} key={item.snap.id}>
+                      <SnapInstalledItem
+                        selectedSnap={item}
+                        onDelete={handleDelete}
+                        isUnhold={action === "unhold"}
+                        instancesCount={selectedInstances.length}
+                      />
+                    </li>
+                  );
+                }
+              }
             })}
           </ul>
         )}
@@ -357,12 +383,13 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           <ConfirmSnapActionModal
             actionVerb={action}
             snaps={selectedSnaps}
-            changeModes={changeModes}
+            snapModes={snapModes}
             instancesCount={selectedInstances.length}
             onClose={closeModal}
             onConfirm={onSubmit}
             isSubmitting={isSnapActionPending}
             submitText={submitText}
+            snapModeConfigs={snapModeConfigs}
           />
         </Suspense>
       )}
