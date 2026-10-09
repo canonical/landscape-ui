@@ -1,5 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { type FC, useState } from "react";
+import { getRequestAction, hasNotification } from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import type { SnapAction, InstalledSnapWithCount } from "../../types";
 import classes from "./SnapsActionForm.module.scss";
@@ -12,6 +13,9 @@ import { useSnapAction } from "../../api";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import useNotify from "@/hooks/useNotify";
+import { useBoolean } from "usehooks-ts";
+import SnapNotification from "./components/SnapNotification";
+import ConfirmSnapActionModal from "./components/ConfirmSnapActionModal";
 
 interface SnapsActionFormProps {
   readonly selectedInstances: number[];
@@ -25,22 +29,16 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const [selectedSnaps, setSelectedSnaps] = useState<InstalledSnapWithCount[]>(
     [],
   );
+  const {
+    value: isModalOpen,
+    setTrue: openModal,
+    setFalse: closeModal,
+  } = useBoolean(false);
 
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { snapAction, isSnapActionPending } = useSnapAction();
-
-  const getRequestAction = () => {
-    switch (action) {
-      case "uninstall":
-        return "remove";
-      case "change channel":
-        return "refresh";
-      default:
-        return action;
-    }
-  };
 
   const hasNoSelectedSnaps = selectedSnaps.length === 0;
   const isChangeChannel = action === "change channel";
@@ -54,13 +52,9 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     : `${capitalize(action)} ${snapsText}`;
 
   const onSubmit = async () => {
-    if (hasNoSelectedSnaps) {
-      return;
-    }
-
     try {
       await snapAction({
-        action: getRequestAction(),
+        action: getRequestAction(action),
         computer_ids: selectedInstances,
         snaps: selectedSnaps.map((item) => ({ name: item.snap.name })),
       });
@@ -68,17 +62,29 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `Snaps successfully set to ${action}`,
+        title: `Snaps successfully queued to ${action}`,
         message: `You can track the progress in the Activities page.`,
       });
     } catch (error) {
+      closeModal();
       debug(error);
     }
   };
 
+  const checkSubmit = () => {
+    if (hasNoSelectedSnaps) {
+      return;
+    }
+
+    openModal();
+  };
+
+  const buttonAppearance = action === "uninstall" ? "negative" : "positive";
+
   return (
     <>
       <div className={classes.container}>
+        {hasNotification(action) && <SnapNotification action={action} />}
         <SnapBulkSearch
           instanceIds={selectedInstances}
           selectedItems={selectedSnaps}
@@ -142,10 +148,25 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
       <SidePanelFormButtons
         submitButtonText={submitText}
-        submitButtonAppearance="positive"
+        submitButtonAppearance={buttonAppearance}
         submitButtonLoading={isSnapActionPending}
-        onSubmit={onSubmit}
+        onSubmit={checkSubmit}
+        formError={
+          hasNoSelectedSnaps && "You must add at least one snap to continue."
+        }
       />
+
+      {isModalOpen && (
+        <ConfirmSnapActionModal
+          actionVerb={action}
+          snaps={selectedSnaps}
+          instancesCount={selectedInstances.length}
+          onClose={closeModal}
+          onConfirm={onSubmit}
+          isSubmitting={isSnapActionPending}
+          submitText={submitText}
+        />
+      )}
     </>
   );
 };
