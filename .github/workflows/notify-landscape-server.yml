@@ -15,18 +15,9 @@ jobs:
     name: Trigger landscape-server snap build
     runs-on: ubuntu-latest
     steps:
-      - name: Generate App Token
-        id: app_token
-        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
-        with:
-          app-id: ${{ vars.LANDSCAPE_SERVER_APP_ID }}
-          private-key: ${{ secrets.LANDSCAPE_SERVER_APP_PRIVATE_KEY }}
-          owner: canonical
-          repositories: landscape-server
-
       - name: Send repository_dispatch
         env:
-          GH_TOKEN: ${{ steps.app_token.outputs.token }}
+          GH_TOKEN: ${{ secrets.LANDSCAPE_SERVER_DISPATCH_TOKEN }}
           COMMIT_SHA: ${{ github.sha }}
         run: |
           gh api repos/canonical/landscape-server/dispatches \
