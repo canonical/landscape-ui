@@ -13,7 +13,9 @@ concurrency:
 jobs:
   dispatch:
     name: Trigger landscape-server snap build
+    if: github.repository == 'canonical/landscape-ui'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Send repository_dispatch
         env:
