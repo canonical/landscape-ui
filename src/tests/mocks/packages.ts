@@ -354,9 +354,11 @@ export const upgradablePackages: (Package & PackageSearchResultPackage)[] =
       id: pkg.id,
       name: pkg.name,
       summary: pkg.summary,
-      version: pkg.computers[0]?.current_version ?? "1.0.0",
       computers: {
-        count: pkg.computers.length,
+        count: pkg.computers.filter(
+          ({ available_version }) => available_version !== null,
+        ).length,
+      }
       },
     }));
 
