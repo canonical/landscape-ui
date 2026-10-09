@@ -15,10 +15,7 @@ export interface ListPackageChangePlanItemsRequest {
   hold?: number;
   unhold?: number;
   upgrade?: number;
-  change_version?: {
-    from_package_id: number;
-    to_package_id: number;
-  };
+  change_version?: string;
   limit?: number;
   offset?: number;
 }
