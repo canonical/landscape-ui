@@ -116,6 +116,28 @@ describe("GuestGuard", () => {
       });
     });
 
+    it("should forward to the invitation when invitation_id is present", async () => {
+      await setup(authorizedState, {
+        invitation_id: "abc123",
+        "redirect-to": "/account/acme",
+        external: "",
+      });
+
+      expect(safeRedirect).toHaveBeenCalledWith(
+        "/accept-invitation/abc123?redirect-to=%2Faccount%2Facme&external=true",
+        { replace: true },
+      );
+      expect(navigate).not.toHaveBeenCalled();
+    });
+
+    it("should forward to the bare invitation URL when only invitation_id is present", async () => {
+      await setup(authorizedState, { invitation_id: "abc123" });
+
+      expect(safeRedirect).toHaveBeenCalledWith("/accept-invitation/abc123", {
+        replace: true,
+      });
+    });
+
     it("should request external redirect when external param is present", async () => {
       await setup(authorizedState, {
         "redirect-to": "https://google.com",

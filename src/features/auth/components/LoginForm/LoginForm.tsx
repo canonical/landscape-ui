@@ -1,5 +1,5 @@
 import { HOMEPAGE_PATH } from "@/constants";
-import { useInvitation, useLogin } from "@/features/auth";
+import { getInvitationPath, useInvitation, useLogin } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import {
@@ -14,7 +14,6 @@ import { useSearchParams } from "react-router";
 import * as Yup from "yup";
 import classes from "./LoginForm.module.scss";
 import { getFormikError } from "@/utils/formikErrors";
-import { ROUTES } from "@/libs/routes";
 
 interface FormProps {
   identifier: string;
@@ -95,21 +94,15 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
           setUser(data);
         }
 
-        const invitationRedirectParams = new URLSearchParams();
-        if (redirectTo) {
-          invitationRedirectParams.set("redirect-to", redirectTo);
+        if (invitationId) {
+          safeRedirect(getInvitationPath(invitationId, searchParams), {
+            replace: true,
+          });
+          return;
         }
-        if (isExternalRedirect) {
-          invitationRedirectParams.set("external", "true");
-        }
-        const invitationRedirectQuery = invitationRedirectParams.toString();
-        const invitationDestination = invitationId
-          ? `${ROUTES.auth.invitation({ secureId: invitationId })}${invitationRedirectQuery ? `?${invitationRedirectQuery}` : ""}`
-          : null;
-        const destination =
-          invitationDestination ?? redirectTo ?? HOMEPAGE_PATH;
-        safeRedirect(destination, {
-          external: !invitationId && isExternalRedirect,
+
+        safeRedirect(redirectTo ?? HOMEPAGE_PATH, {
+          external: isExternalRedirect,
           replace: true,
         });
       } catch (error) {

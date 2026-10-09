@@ -10,6 +10,7 @@ export { default as ProviderList } from "./components/ProviderList";
 export { default as ConsentBannerModal } from "./components/consent-banner/ConsentBannerModal";
 export {
   redirectToExternalUrl,
+  getInvitationPath,
   getSameOriginPath,
   getSameOriginUrl,
 } from "./helpers";
