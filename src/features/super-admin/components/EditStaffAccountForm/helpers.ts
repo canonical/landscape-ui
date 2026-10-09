@@ -121,7 +121,11 @@ export const getFieldErrors = (error: unknown): FormikErrors<FormProps> => {
     FIELD_NAMES,
   );
 
-  if (Object.keys(fieldErrors).length || !isAxiosError<ApiError>(error)) {
+  // A validation error's message is about the body as a whole, never a field.
+  if (
+    !isAxiosError<ApiError & { detail?: unknown }>(error) ||
+    Array.isArray(error.response?.data.detail)
+  ) {
     return fieldErrors;
   }
 
