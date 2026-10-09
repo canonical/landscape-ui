@@ -1,3 +1,5 @@
+import type { AuthContextProps } from "@/context/auth";
+import useAuth from "@/hooks/useAuth";
 import {
   activities,
   manyUnapprovedActivities,
@@ -8,11 +10,31 @@ import { packages } from "@/tests/mocks/packages";
 import { usns } from "@/tests/mocks/usn";
 import { renderWithProviders } from "@/tests/render";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { screen, waitFor, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import InfoTablesContainer from "./InfoTablesContainer";
 
 const LIST_LIMIT = 10;
+
+vi.mock("@/hooks/useAuth");
+
+const authContextValues: AuthContextProps = {
+  logout: vi.fn(),
+  authorized: true,
+  authLoading: false,
+  setUser: vi.fn(),
+  user: null,
+  redirectToExternalUrl: vi.fn(),
+  safeRedirect: vi.fn(),
+  isFeatureEnabled: () => true,
+  hasAccounts: true,
+  isSuperAdmin: false,
+  canManageAccounts: false,
+};
+
+beforeEach(() => {
+  vi.mocked(useAuth).mockReturnValue(authContextValues);
+});
 
 describe("InfoTablesContainer", () => {
   beforeEach(() => {
@@ -50,6 +72,21 @@ describe("InfoTablesContainer", () => {
         const packageName = await screen.findByText(singlePackage.name);
         expect(packageName).toBeInTheDocument();
       }
+    });
+
+    it("hides the packages tab when the package-search-rest-api feature flag is disabled", () => {
+      cleanup();
+      vi.mocked(useAuth).mockReturnValue({
+        ...authContextValues,
+        isFeatureEnabled: () => false,
+      });
+      renderWithProviders(<InfoTablesContainer />);
+
+      expect(
+        screen.queryByRole("tab", { name: /packages/i }),
+      ).not.toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /instances/i })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /usns/i })).toBeInTheDocument();
     });
 
     it("renders usn list", async () => {

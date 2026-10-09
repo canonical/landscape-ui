@@ -1,14 +1,33 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { AuthContextProps } from "@/context/auth";
+import useAuth from "@/hooks/useAuth";
 import { instances } from "@/tests/mocks/instance";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectErrorNotification } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import Upgrades from "./Upgrades";
 
+vi.mock("@/hooks/useAuth");
+
+const authContextValues: AuthContextProps = {
+  logout: vi.fn(),
+  authorized: true,
+  authLoading: false,
+  setUser: vi.fn(),
+  user: null,
+  redirectToExternalUrl: vi.fn(),
+  safeRedirect: vi.fn(),
+  isFeatureEnabled: () => true,
+  hasAccounts: true,
+  isSuperAdmin: false,
+  canManageAccounts: false,
+};
+
 describe("Upgrades", () => {
   beforeEach(() => {
+    vi.mocked(useAuth).mockReturnValue(authContextValues);
     setEndpointStatus("default");
   });
 
@@ -88,6 +107,21 @@ describe("Upgrades", () => {
     expect(
       await screen.findByText("You queued packages to be upgraded"),
     ).toBeInTheDocument();
+  });
+
+  it("hides the packages tab when the package-search-rest-api feature flag is disabled", () => {
+    vi.mocked(useAuth).mockReturnValue({
+      ...authContextValues,
+      isFeatureEnabled: () => false,
+    });
+
+    renderWithProviders(<Upgrades selectedInstances={instances} />);
+
+    expect(
+      screen.queryByRole("tab", { name: /packages/i }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /instances/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /usns/i })).toBeInTheDocument();
   });
 
   it("renders only instances and packages tabs when no security upgrades exist", () => {

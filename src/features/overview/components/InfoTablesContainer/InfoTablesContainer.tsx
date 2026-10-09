@@ -9,6 +9,7 @@ import { useGetInstances } from "@/features/instances";
 import type { Package } from "@/features/packages";
 import { usePackages } from "@/features/packages";
 import { useUsns } from "@/features/usns";
+import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
@@ -50,6 +51,8 @@ const InfoTablesContainer: FC = () => {
   const navigate = useNavigate();
   const debug = useDebug();
   const { notify } = useNotify();
+  const { isFeatureEnabled } = useAuth();
+  const isPackagesTabEnabled = isFeatureEnabled("package-search-rest-api");
   const { getPackageUpgradesQuery, upgradePackagesQuery } = usePackages();
   const { getUsnsQuery } = useUsns();
 
@@ -465,14 +468,18 @@ const InfoTablesContainer: FC = () => {
                 handleClickUpgradesTab("instances");
               },
             },
-            {
-              label: "Packages",
-              role: "tab",
-              active: "packages" === currentUpgradesTab,
-              onClick: (): void => {
-                handleClickUpgradesTab("packages");
-              },
-            },
+            ...(isPackagesTabEnabled
+              ? [
+                  {
+                    label: "Packages",
+                    role: "tab",
+                    active: "packages" === currentUpgradesTab,
+                    onClick: (): void => {
+                      handleClickUpgradesTab("packages");
+                    },
+                  },
+                ]
+              : []),
             {
               label: "USNs",
               role: "tab",
