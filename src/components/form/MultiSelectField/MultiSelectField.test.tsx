@@ -91,5 +91,4 @@ describe("MultiSelectField", () => {
         .closest(".is-caution"),
     ).toBeInTheDocument();
   });
-
 });
