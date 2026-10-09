@@ -1,4 +1,4 @@
-import type { Package } from "@/features/packages";
+import type { PackageOld as Package } from "@/features/packages";
 
 export const EMPTY_PACKAGE: Package = {
   name: "",

@@ -182,3 +182,7 @@ export const hasProperty = <T extends object>(
 ): prop is keyof T => {
   return prop in obj;
 };
+
+export const toInstanceQuery = (instanceIds: number[]) => {
+  return instanceIds.map((id) => `id:${id}`).join(" OR ");
+};
