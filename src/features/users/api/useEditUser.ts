@@ -19,7 +19,7 @@ export const useEditUser = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
-  const { isPending, mutateAsync } = useMutation<
+  const { mutateAsync } = useMutation<
     AxiosResponse<Activity>,
     AxiosError<ApiError>,
     EditUserParams
@@ -32,6 +32,5 @@ export const useEditUser = () => {
 
   return {
     editUser: mutateAsync,
-    isEditingUser: isPending,
   };
 };

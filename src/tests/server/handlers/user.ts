@@ -36,7 +36,14 @@ const userCredentials: UserCredentials = {
 export default [
   http.get(`${API_URL}users`, () => {
     const offset = 0;
-    const endpointStatus = getEndpointStatus();
+    const endpointStatus = getEndpointStatus("users");
+
+    if (
+      shouldApplyEndpointStatus("users") &&
+      endpointStatus.status === "variant"
+    ) {
+      return HttpResponse.json(endpointStatus.response);
+    }
 
     return HttpResponse.json(
       generatePaginatedResponse<User>({

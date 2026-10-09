@@ -1,6 +1,7 @@
 import { PATHS, ROUTES } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { setScreenSize } from "@/tests/helpers";
+import { usersWithPendingActivities } from "@/tests/mocks/user";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -24,6 +25,42 @@ const openEditForm = async (user: ReturnType<typeof userEvent.setup>) => {
 };
 
 describe("UserContainer", () => {
+  it("shows pending lock, unlock, and delete activities from the users API", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "users",
+      response: {
+        count: usersWithPendingActivities.length,
+        results: usersWithPendingActivities,
+        next: null,
+        previous: null,
+      },
+    });
+    renderUserContainer();
+
+    for (const pendingUser of usersWithPendingActivities) {
+      const { activity_id, operation } = pendingUser.pending_activity;
+      const row = (
+        await screen.findByRole("button", {
+          name: `Show details of user ${pendingUser.username}`,
+        })
+      ).closest("tr");
+      assert(row);
+
+      const statusCell = within(row).getByRole("cell", { name: "Status" });
+      expect(statusCell).toHaveIcon("spinner");
+      expect(
+        within(statusCell).getByRole("link", {
+          name: `View Pending activity to ${operation} for ${pendingUser.username}`,
+        }),
+      ).toHaveAttribute(
+        "href",
+        ROUTES.activities.root({ query: `id:${activity_id}` }),
+      );
+      expect(statusCell).toHaveTextContent(`Pending activity to ${operation}`);
+    }
+  });
+
   it("shows a partial-save error above the table alongside a separate success toast", async () => {
     const user = userEvent.setup();
     setEndpointStatus([

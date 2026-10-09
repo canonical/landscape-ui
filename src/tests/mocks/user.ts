@@ -97,6 +97,36 @@ export const users = [
   } satisfies User as User,
 ] as const satisfies User[];
 
+export const usersWithPendingActivities = [
+  {
+    ...users[0],
+    pending_activity: {
+      activity_id: 201,
+      activity_status: "undelivered",
+      summary: "Lock out user user1",
+      operation: "lock",
+    },
+  },
+  {
+    ...users[1],
+    pending_activity: {
+      activity_id: 202,
+      activity_status: "undelivered",
+      summary: "Unlock user user2",
+      operation: "unlock",
+    },
+  },
+  {
+    ...users[2],
+    pending_activity: {
+      activity_id: 203,
+      activity_status: "undelivered",
+      summary: "Remove user user3",
+      operation: "delete",
+    },
+  },
+] satisfies User[];
+
 const accountName = "test-account";
 const secondAccountName = "second-account";
 const email = "example@mail.com";

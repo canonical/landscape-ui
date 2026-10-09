@@ -4,7 +4,7 @@ import { ROUTES } from "@/libs/routes";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useNavigate } from "react-router";
-import type { UserActivityEvent } from "../../api";
+import type { UserActivityEvent } from "../../types";
 
 interface UserActivityLinkProps {
   readonly event: UserActivityEvent;

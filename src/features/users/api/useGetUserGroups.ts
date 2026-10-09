@@ -12,13 +12,10 @@ export interface GetUserGroupsParams {
 export const useGetUserGroups = (params: GetUserGroupsParams) => {
   const authFetch = useFetch();
 
-  const {
-    data: response,
-    isPending,
-    isFetching,
-    error,
-    refetch,
-  } = useQuery<AxiosResponse<GroupsResponse>, AxiosError<ApiError>>({
+  const { data: response } = useQuery<
+    AxiosResponse<GroupsResponse>,
+    AxiosError<ApiError>
+  >({
     queryKey: ["userGroups", params.computer_id, params.username],
     queryFn: async () =>
       authFetch.get(
@@ -28,9 +25,5 @@ export const useGetUserGroups = (params: GetUserGroupsParams) => {
 
   return {
     userGroups: response?.data?.groups ?? [],
-    isLoadingUserGroups: isPending,
-    isFetchingUserGroups: isFetching,
-    userGroupsError: error,
-    refetchUserGroups: refetch,
   };
 };

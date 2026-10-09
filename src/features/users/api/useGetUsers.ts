@@ -14,25 +14,17 @@ export interface GetUsersParams {
 export const useGetUsers = (params: GetUsersParams) => {
   const authFetch = useFetch();
 
-  const {
-    data: response,
-    isPending,
-    isFetching,
-    error,
-    refetch,
-  } = useQuery<AxiosResponse<ApiPaginatedResponse<User>>, AxiosError<ApiError>>(
-    {
-      queryKey: ["users", { ...params }],
-      queryFn: async () => authFetch.get("users", { params }),
-    },
-  );
+  const { data: response, isPending } = useQuery<
+    AxiosResponse<ApiPaginatedResponse<User>>,
+    AxiosError<ApiError>
+  >({
+    queryKey: ["users", { ...params }],
+    queryFn: async () => authFetch.get("users", { params }),
+  });
 
   return {
     users: response?.data?.results ?? [],
     usersCount: response?.data?.count ?? 0,
     isLoadingUsers: isPending,
-    isFetchingUsers: isFetching,
-    usersError: error,
-    refetchUsers: refetch,
   };
 };

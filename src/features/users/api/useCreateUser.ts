@@ -20,7 +20,7 @@ export const useCreateUser = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
-  const { isPending, mutateAsync } = useMutation<
+  const { mutateAsync } = useMutation<
     AxiosResponse<Activity>,
     AxiosError<ApiError>,
     CreateUserParams
@@ -33,6 +33,5 @@ export const useCreateUser = () => {
 
   return {
     createUser: mutateAsync,
-    isCreatingUser: isPending,
   };
 };

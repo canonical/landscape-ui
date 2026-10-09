@@ -14,7 +14,7 @@ export const useRemoveUserFromGroup = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
-  const { isPending, mutateAsync } = useMutation<
+  const { mutateAsync } = useMutation<
     AxiosResponse<Activity>,
     AxiosError<ApiError>,
     RemoveUserFromGroupParams
@@ -31,6 +31,5 @@ export const useRemoveUserFromGroup = () => {
 
   return {
     removeUserFromGroup: mutateAsync,
-    isRemovingUserFromGroup: isPending,
   };
 };

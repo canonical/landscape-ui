@@ -14,7 +14,7 @@ export const useAddUserToGroup = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
-  const { isPending, mutateAsync } = useMutation<
+  const { mutateAsync } = useMutation<
     AxiosResponse<Activity>,
     AxiosError<ApiError>,
     AddUserToGroupParams
@@ -31,6 +31,5 @@ export const useAddUserToGroup = () => {
 
   return {
     addUserToGroup: mutateAsync,
-    isAddingUserToGroup: isPending,
   };
 };

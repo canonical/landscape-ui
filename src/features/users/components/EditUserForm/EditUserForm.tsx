@@ -22,7 +22,7 @@ import {
   useGetUserGroups,
   useRemoveUserFromGroup,
 } from "../../api";
-import type { UserProfileField } from "../../api";
+import type { UserProfileField } from "../../types";
 import { getPendingUserActivityMessage } from "../../constants";
 import { editUserValidationSchema } from "./constants";
 import {
@@ -318,7 +318,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
         variant="condensed"
         placeholder="Select groups"
         label="Additional Groups"
-        caution={
+        warning={
           latestAdditionalGroupActivityEvent ? (
             <UserActivityLink event={latestAdditionalGroupActivityEvent} />
           ) : undefined
