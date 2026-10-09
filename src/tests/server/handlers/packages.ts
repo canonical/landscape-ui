@@ -161,9 +161,6 @@ export default [
     return HttpResponse.json<Activity>(activities[0]);
   }),
 
-  http.post(`${API_URL}computers/upgrade-packages`, async () => {
-    return HttpResponse.json();
-  }),
 
   http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
     `${API_URL}packages\\:search`,
