@@ -77,6 +77,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
       return;
     }
     setSearch(value);
+    open();
   };
 
   const clearSearchBox = () => {
@@ -146,6 +147,8 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
               onChange={handleSearchBoxChange}
               onClear={clearSearchBox}
               onClick={open}
+              onFocus={open}
+              onBlur={close}
               disabled={isOverLimit}
             />
             {isOverLimit && (
