@@ -7,10 +7,10 @@ import DesktopHeader from "./DesktopHeader";
 describe("DesktopHeader", () => {
   const user = userEvent.setup();
 
-  const renderComponent = (closeMenu = vi.fn()) =>
+  const renderComponent = (closeMenu = vi.fn(), logoPath?: string) =>
     render(
       <MemoryRouter>
-        <DesktopHeader closeMenu={closeMenu} />
+        <DesktopHeader closeMenu={closeMenu} logoPath={logoPath} />
       </MemoryRouter>,
     );
 
@@ -37,6 +37,14 @@ describe("DesktopHeader", () => {
 
   it("renders a link to the root route", () => {
     renderComponent();
-    expect(screen.getByRole("link")).toBeInTheDocument();
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/");
+  });
+
+  it("links the logo to the given path", () => {
+    renderComponent(vi.fn(), "/super-admin/accounts/acme/session");
+    expect(screen.getByRole("link")).toHaveAttribute(
+      "href",
+      "/super-admin/accounts/acme/session",
+    );
   });
 });

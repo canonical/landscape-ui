@@ -1,6 +1,7 @@
 import ListActions from "@/components/layout/ListActions";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
+import { useEnterAccount } from "../../hooks";
 import type { StaffAccountListItem } from "../../types";
 
 interface StaffAccountsListActionsProps {
@@ -10,13 +11,16 @@ interface StaffAccountsListActionsProps {
 const StaffAccountsListActions: FC<StaffAccountsListActionsProps> = ({
   staffAccount: { account },
 }) => {
+  const { enterAccount } = useEnterAccount();
+
   const actions: Action[] = [
-    // A placeholder: entering an account lands with LNDENG-5100.
     {
       icon: "switcher-environments",
       label: "Enter account",
       "aria-label": `Enter ${account}`,
-      disabled: true,
+      onClick: () => {
+        enterAccount(account);
+      },
     },
   ];
 

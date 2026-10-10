@@ -115,6 +115,51 @@ describe("AuthGuard", () => {
     expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
   });
 
+  it("sends staff without accounts to super admin mode", () => {
+    vi.mocked(useAuth).mockReturnValue({
+      ...authProps,
+      hasAccounts: false,
+      isSuperAdmin: true,
+    });
+
+    renderWithProviders(<AuthGuard>Protected Content</AuthGuard>);
+
+    expect(navigate).toHaveBeenCalledWith(ROUTES.superAdmin.root(), {
+      replace: true,
+    });
+    expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
+  });
+
+  it("sends staff whose session is in a support account to super admin mode", () => {
+    vi.mocked(useAuth).mockReturnValue({
+      ...authProps,
+      user: { ...authUser, current_account: "acme" },
+      isSuperAdmin: true,
+    });
+
+    renderWithProviders(<AuthGuard>Protected Content</AuthGuard>);
+
+    expect(navigate).toHaveBeenCalledWith(ROUTES.superAdmin.root(), {
+      replace: true,
+    });
+    expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
+  });
+
+  it("renders a route that needs no account for a user without accounts", () => {
+    vi.mocked(useAuth).mockReturnValue({
+      ...authProps,
+      hasAccounts: false,
+      isSuperAdmin: true,
+    });
+
+    renderWithProviders(
+      <AuthGuard requireAccount={false}>Protected Content</AuthGuard>,
+    );
+
+    expect(screen.getByText("Protected Content")).toBeInTheDocument();
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
   it("should render children if authorized and has accounts", () => {
     vi.mocked(useAuth).mockReturnValue({
       ...authProps,

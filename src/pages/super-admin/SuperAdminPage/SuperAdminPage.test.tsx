@@ -1,15 +1,45 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import type { FC, ReactNode } from "react";
 import { Navigate, Route, Routes } from "react-router";
+import { delay, http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
+import { API_URL } from "@/constants";
+import useAuth from "@/hooks/useAuth";
 import { ROUTES } from "@/libs/routes";
+import { authResponse, authUser } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
+import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
 import SuperAdminPage from "./SuperAdminPage";
 
 const ENTRY = "/enter";
+const SWITCH_DELAY_MS = 100;
+
+/** Puts the session into `account` the way a switch landing late would. */
+const LandIn: FC<{ readonly account: string }> = ({ account }) => {
+  const { user, setUser } = useAuth();
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        if (user) {
+          setUser({ ...user, current_account: account });
+        }
+      }}
+    >
+      Land in {account}
+    </button>
+  );
+};
 
 // Enters super admin mode the way the sidebar entry does: a navigation that
 // carries `returnTo` in the location state.
-const renderEnteringWith = (state: unknown) =>
+const renderEnteringWith = (
+  state: unknown,
+  child: ReactNode = <p>Child page</p>,
+) =>
   renderWithProviders(
     <Routes>
       <Route
@@ -20,7 +50,7 @@ const renderEnteringWith = (state: unknown) =>
         path={`${ROUTES.superAdmin.root()}/*`}
         element={<SuperAdminPage />}
       >
-        <Route index element={<p>Child page</p>} />
+        <Route index element={child} />
       </Route>
     </Routes>,
     undefined,
@@ -30,7 +60,41 @@ const renderEnteringWith = (state: unknown) =>
 const findBackLink = async () =>
   screen.findByRole("link", { name: "Back to main view" });
 
+/** Signs in as staff whose session is in `currentAccount`. */
+const signInAs = (currentAccount: string, accounts = authUser.accounts) => {
+  setStaffGlobalRoles(["SupportProvider"]);
+  server.use(
+    http.get(`${API_URL}me`, () =>
+      HttpResponse.json({
+        ...authResponse,
+        accounts,
+        current_account: currentAccount,
+        global_roles: ["SupportProvider"],
+      }),
+    ),
+  );
+};
+
+/**
+ * Records the body of every account switch, then lets the mock API handle
+ * it after `delayMs`, long enough for what is shown in between to be seen.
+ */
+const recordSwitches = (delayMs = 0): unknown[] => {
+  const bodies: unknown[] = [];
+
+  server.use(
+    http.post(`${API_URL}switch-account`, async ({ request }) => {
+      bodies.push(await request.clone().json());
+      await delay(delayMs);
+    }),
+  );
+
+  return bodies;
+};
+
 describe("SuperAdminPage", () => {
+  const user = userEvent.setup();
+
   it("renders the super admin layout around the child page", async () => {
     renderEnteringWith(null);
 
@@ -74,5 +138,102 @@ describe("SuperAdminPage", () => {
     renderEnteringWith({ returnTo: "/super-adminx" });
 
     expect(await findBackLink()).toHaveAttribute("href", "/super-adminx");
+  });
+
+  describe("after a support session", () => {
+    it("returns a session that lands in another account later", async () => {
+      signInAs(authUser.current_account);
+
+      const switches = recordSwitches();
+
+      renderEnteringWith(
+        null,
+        <>
+          <p>Child page</p>
+          <LandIn account="acme" />
+        </>,
+      );
+
+      expect(await screen.findByText("Child page")).toBeInTheDocument();
+      expect(switches).toEqual([]);
+
+      await user.click(screen.getByRole("button", { name: "Land in acme" }));
+
+      await waitFor(() => {
+        expect(switches).toEqual([{ account_name: authUser.current_account }]);
+      });
+      expect(await screen.findByText("Child page")).toBeInTheDocument();
+    });
+
+    it("returns the session to the person's own account", async () => {
+      signInAs("acme");
+
+      const switches = recordSwitches(SWITCH_DELAY_MS);
+
+      renderEnteringWith(null);
+
+      // The entered account's pages stay hidden until the session is back.
+      expect(await screen.findByText("Leaving acme…")).toBeInTheDocument();
+      expect(screen.queryByText("Child page")).not.toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(switches).toEqual([{ account_name: authUser.current_account }]);
+      });
+
+      expect(await screen.findByText("Child page")).toBeInTheDocument();
+      expect(screen.queryByText("Leaving acme…")).not.toBeInTheDocument();
+    });
+
+    it("offers to try again when the session could not be returned", async () => {
+      signInAs("acme");
+      const switches = recordSwitches();
+      server.use(
+        http.post(
+          `${API_URL}switch-account`,
+          () =>
+            HttpResponse.json(
+              { error: "Unavailable", message: "Try again later." },
+              { status: 503 },
+            ),
+          { once: true },
+        ),
+      );
+
+      renderEnteringWith(null);
+
+      // The entered account's pages stay hidden while the session is stuck.
+      expect(
+        await screen.findByText("Could not leave acme"),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Try again later.")).toBeInTheDocument();
+      expect(screen.queryByText("Child page")).not.toBeInTheDocument();
+
+      await user.click(screen.getByRole("button", { name: "Try again" }));
+
+      expect(await screen.findByText("Child page")).toBeInTheDocument();
+      expect(switches).toEqual([{ account_name: authUser.current_account }]);
+    });
+
+    it("leaves the session alone when it is in one of the person's accounts", async () => {
+      signInAs(authUser.current_account);
+
+      const switches = recordSwitches();
+
+      renderEnteringWith(null);
+
+      expect(await screen.findByText("Child page")).toBeInTheDocument();
+      expect(switches).toEqual([]);
+    });
+
+    it("leaves the session alone for staff without accounts of their own", async () => {
+      signInAs("acme", []);
+
+      const switches = recordSwitches();
+
+      renderEnteringWith(null);
+
+      expect(await screen.findByText("Child page")).toBeInTheDocument();
+      expect(switches).toEqual([]);
+    });
   });
 });

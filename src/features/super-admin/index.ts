@@ -29,6 +29,14 @@ export {
   useGetStaffPeople,
 } from "./api";
 
+export {
+  useEnterAccount,
+  useExitSupportSession,
+  useOwnAccount,
+  useRestoreOwnAccount,
+} from "./hooks";
+
 export { default as StaffAccountContainer } from "./components/StaffAccountContainer";
 export { isTableTab } from "./components/StaffAccountTabs";
 export { default as StaffAccountsContainer } from "./components/StaffAccountsContainer";
+export { default as SupportSessionContainer } from "./components/SupportSessionContainer";

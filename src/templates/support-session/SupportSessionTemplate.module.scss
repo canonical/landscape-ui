@@ -1,0 +1,76 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_breakpoints";
+
+/* A frame around the viewport: the whole app is someone else's account. */
+.frame {
+  border: 0.25rem solid $color-caution;
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: var(--z-navigation);
+}
+
+.bar {
+  align-items: center;
+  background-color: $colors--dark-theme--background-default;
+  border-radius: 0.25rem;
+  bottom: $spv--large;
+  box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 40%);
+  color: $colors--dark-theme--text-default;
+  color-scheme: dark;
+  display: flex;
+  gap: $sph--large;
+  left: 50%;
+  max-width: calc(100vw - 2 * #{$sph--large});
+  padding: $spv--small $sph--large;
+  position: fixed;
+  transform: translateX(-50%);
+  z-index: var(--z-navigation);
+}
+
+.icon {
+  flex-shrink: 0;
+  height: 1rem;
+  width: 1rem;
+}
+
+.title {
+  white-space: nowrap;
+}
+
+/* The dark base button's hover shade, kept on so it reads as a button. */
+.exit {
+  background-color: rgba($colors--dark-theme--text-default, 0.1);
+  margin: 0;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: rgba($colors--dark-theme--text-default, 0.15);
+  }
+}
+
+.organisation {
+  margin-bottom: $spv--large;
+  padding-left: $sph--small;
+}
+
+/* A navigation entry that is not available yet. */
+.placeholder {
+  cursor: default;
+  opacity: 0.5;
+}
+
+@media screen and (max-width: $breakpoint-small) {
+  .bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    left: $sph--large;
+    right: $sph--large;
+    transform: none;
+  }
+
+  .title {
+    white-space: normal;
+  }
+}

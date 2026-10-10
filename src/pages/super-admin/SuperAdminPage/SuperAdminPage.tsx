@@ -1,8 +1,11 @@
 import type { FC } from "react";
 import { Suspense, useState } from "react";
 import { Outlet, useLocation } from "react-router";
+import { Button } from "@canonical/react-components";
+import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { getSameOriginPath } from "@/features/auth";
+import { useRestoreOwnAccount } from "@/features/super-admin";
 import { ROUTES } from "@/libs/routes";
 import SuperAdminTemplate from "@/templates/super-admin";
 
@@ -29,12 +32,49 @@ const SuperAdminPage: FC = () => {
   // Read once on entry: navigating within super admin mode keeps the origin.
   const [returnTo] = useState(() => getReturnTo(state));
 
-  return (
-    <SuperAdminTemplate returnTo={returnTo}>
+  // A support session left by any other way than its exit control.
+  const { leavingAccount, restoreError, retryRestore } = useRestoreOwnAccount();
+
+  const getContent = () => {
+    if (leavingAccount) {
+      return (
+        <>
+          <LoadingState />
+          <p className="u-align-text--center u-text--muted">
+            Leaving {leavingAccount}…
+          </p>
+        </>
+      );
+    }
+
+    if (restoreError) {
+      return (
+        <EmptyState
+          title={`Could not leave ${restoreError.account}`}
+          body={restoreError.message}
+          cta={[
+            <Button
+              key="retry"
+              type="button"
+              appearance="positive"
+              onClick={retryRestore}
+            >
+              Try again
+            </Button>,
+          ]}
+        />
+      );
+    }
+
+    return (
       <Suspense fallback={<LoadingState />}>
         <Outlet />
       </Suspense>
-    </SuperAdminTemplate>
+    );
+  };
+
+  return (
+    <SuperAdminTemplate returnTo={returnTo}>{getContent()}</SuperAdminTemplate>
   );
 };
 
