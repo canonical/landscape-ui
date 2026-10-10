@@ -8,6 +8,7 @@ export interface CreateStandaloneAccountParams {
   email: string;
   name: string;
   password: string;
+  identity?: string;
 }
 
 export const useCreateStandaloneAccount = () => {
@@ -24,6 +25,7 @@ export const useCreateStandaloneAccount = () => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["standaloneAccount"],
+        refetchType: "none",
       });
     },
   });
