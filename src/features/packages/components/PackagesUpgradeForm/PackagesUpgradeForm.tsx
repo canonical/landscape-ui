@@ -6,8 +6,12 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
 import type { Instance } from "@/types/Instance";
-import { getSelectionLabel, toInstanceQuery } from "@/utils/_helpers";
-import { SearchBox } from "@canonical/react-components";
+import {
+  getSelectionLabel,
+  pluralize,
+  toInstanceQuery,
+} from "@/utils/_helpers";
+import { Button, Modal, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import { useState, type FC } from "react";
 import UpgradesList from "../PackagesUpgradeList";
@@ -15,11 +19,13 @@ import UpgradesSummary from "../PackagesUpgradeSummary";
 import classes from "./PackagesUpgradeForm.module.scss";
 import type { Package } from "@/features/packages";
 import {
+  DEB_MANAGEMENT_PACKAGE_LIMIT,
   useCreatePackageChangePlan,
   useDeletePackageChangePlan,
   useSearchUpgrades,
 } from "@/features/packages";
 import useDebug from "@/hooks/useDebug";
+import { useBoolean } from "usehooks-ts";
 
 interface UpgradesProps {
   readonly selectedInstances: Instance[];
@@ -43,6 +49,12 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
   const [packageChangePlanId, setPackageChangePlanId] = useState<number | null>(
     null,
   );
+
+  const {
+    value: limitModalOpen,
+    setTrue: openLimitModal,
+    setFalse: closeLimitModal,
+  } = useBoolean();
 
   const computerQuery = toInstanceQuery(
     selectedInstances.map((instance) => instance.id),
@@ -131,6 +143,11 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
             submitButtonDisabled={isPendingUpgrades || !selectedUpgrades.length}
             submitButtonLoading={isCreatingPackageChangePlan}
             onSubmit={async () => {
+              if (selectedUpgrades.length > DEB_MANAGEMENT_PACKAGE_LIMIT) {
+                openLimitModal();
+                return;
+              }
+
               try {
                 const config = {
                   upgrade_config: {
@@ -157,6 +174,23 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
               }
             }}
           />
+          {limitModalOpen && (
+            <Modal
+              close={closeLimitModal}
+              title="Upgrade limit exceeded"
+              buttonRow={
+                <Button appearance="positive" onClick={closeLimitModal}>
+                  OK
+                </Button>
+              }
+            >
+              <p className="u-margin--bottom">
+                Upgrades are only available for a selection of{" "}
+                {pluralize(DEB_MANAGEMENT_PACKAGE_LIMIT, ["package"], "exact")}{" "}
+                or fewer. Please select fewer packages, then try again.
+              </p>
+            </Modal>
+          )}
         </>
       );
 
