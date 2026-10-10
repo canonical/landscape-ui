@@ -119,7 +119,8 @@ describe("AccountDetailPage (integration)", () => {
       "Info",
       "Administrators",
       "Licenses",
-      "Feature flags",
+      "Features",
+      "WSL",
     ]);
     expect(screen.getByRole("tab", { name: "Info" })).toHaveAttribute(
       "aria-selected",
@@ -244,7 +245,7 @@ describe("AccountDetailPage (integration)", () => {
   it("takes the feature state from the account, not from the registry's enabled bit", async () => {
     const account = getAccount("acme");
 
-    renderAccount(account.account, "feature-flags");
+    renderAccount(account.account, "features");
 
     // Every registry entry is `enabled: true` for the caller's own account.
     for (const feature of features) {
@@ -264,7 +265,7 @@ describe("AccountDetailPage (integration)", () => {
     const account = getAccount("acme");
     const patches = recordPatches(account.account);
 
-    renderAccount(account.account, "feature-flags");
+    renderAccount(account.account, "features");
 
     const dialog = await requestChange(5);
 
@@ -281,7 +282,7 @@ describe("AccountDetailPage (integration)", () => {
   it("changes nothing when the confirmation is cancelled", async () => {
     const patches = recordPatches("acme");
 
-    renderAccount("acme", "feature-flags");
+    renderAccount("acme", "features");
 
     const dialog = await requestChange(4);
 
@@ -299,7 +300,7 @@ describe("AccountDetailPage (integration)", () => {
   it("sends the full replacement set when a feature is enabled", async () => {
     const patches = recordPatches("acme");
 
-    renderAccount("acme", "feature-flags");
+    renderAccount("acme", "features");
 
     await changeFeature(5, "Enable");
 
@@ -316,7 +317,7 @@ describe("AccountDetailPage (integration)", () => {
   it("sends the full replacement set when a feature is disabled", async () => {
     const patches = recordPatches("acme");
 
-    renderAccount("acme", "feature-flags");
+    renderAccount("acme", "features");
 
     await changeFeature(4, "Disable");
 
@@ -346,7 +347,7 @@ describe("AccountDetailPage (integration)", () => {
       }),
     );
 
-    renderAccount("acme", "feature-flags");
+    renderAccount("acme", "features");
 
     await changeFeature(5, "Enable");
 
@@ -365,7 +366,7 @@ describe("AccountDetailPage (integration)", () => {
       ),
     );
 
-    renderAccount("acme", "feature-flags");
+    renderAccount("acme", "features");
 
     await changeFeature(5, "Enable");
 
@@ -383,12 +384,10 @@ describe("AccountDetailPage (integration)", () => {
   it("disables the switches for read-tier staff", async () => {
     signInAs(["SupportProvider"]);
 
-    renderAccount("acme", "feature-flags");
+    renderAccount("acme", "features");
 
     expect(
-      await screen.findByText(
-        "Only account managers can change feature flags.",
-      ),
+      await screen.findByText("Only account managers can change features."),
     ).toBeInTheDocument();
 
     for (const feature of features) {

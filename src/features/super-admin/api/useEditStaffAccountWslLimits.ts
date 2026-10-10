@@ -23,10 +23,12 @@ export const useEditStaffAccountWslLimits = () => {
         `accounts/${encodeURIComponent(name)}/wsl-feature-limits`,
         limits,
       ),
-    onSuccess: async (_, { name }) =>
-      queryClient.invalidateQueries({
-        queryKey: ["staffAccountWslLimits", name],
-      }),
+    // The response is the saved set, so it replaces the cached one outright:
+    // a refetch straight after the first write has been seen to return the
+    // defaults the account had before it.
+    onSuccess: (response, { name }) => {
+      queryClient.setQueryData(["staffAccountWslLimits", name], response);
+    },
   });
 
   return {

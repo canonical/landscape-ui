@@ -150,7 +150,7 @@ const StaffAccountFeatures: FC<StaffAccountFeaturesProps> = ({
       <p className={classNames("u-text--muted", classes.description)}>
         {canManageAccounts
           ? "A change applies to this account as soon as you confirm it."
-          : "Only account managers can change feature flags."}
+          : "Only account managers can change features."}
       </p>
 
       <ResponsiveTable

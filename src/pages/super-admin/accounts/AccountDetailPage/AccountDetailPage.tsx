@@ -7,7 +7,6 @@ import { isTableTab, StaffAccountContainer } from "@/features/super-admin";
 import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 
-// The limits and WSL limits tabs land with LNDENG-5098 and 5099.
 const AccountDetailPage: FC = () => {
   const { name = "" } = useParams<{ name: string }>();
   const { tab } = usePageParams();

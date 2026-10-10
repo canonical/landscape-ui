@@ -147,6 +147,9 @@ const EditStaffAccountForm: FC<EditStaffAccountFormProps> = ({
 
       {pendingChanges && (
         <ConfirmationModal
+          // Out of the side panel's stacking context, so that `--z-modal`
+          // applies against the panel rather than inside it.
+          renderInPortal
           title={`Change ${staffAccount.company}`}
           confirmButtonLabel="Save changes"
           confirmButtonAppearance="positive"

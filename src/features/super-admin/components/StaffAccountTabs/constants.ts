@@ -7,12 +7,8 @@ export const TABS = [
     hasTable: true,
   },
   { label: "Licenses", id: "tab-link-licenses", role: "tab", hasTable: true },
-  {
-    label: "Feature flags",
-    id: "tab-link-feature-flags",
-    role: "tab",
-    hasTable: true,
-  },
+  { label: "Features", id: "tab-link-features", role: "tab", hasTable: true },
+  { label: "WSL", id: "tab-link-wsl", role: "tab", hasTable: false },
 ] as const;
 
 /** Whether the tab the `tab` page param names renders a table. */
