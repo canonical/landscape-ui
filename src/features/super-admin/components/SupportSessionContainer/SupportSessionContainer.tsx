@@ -8,7 +8,7 @@ import SupportSessionTemplate from "@/templates/support-session";
 import type { FC, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { useGetStaffAccount } from "../../api";
-import { getErrorMessage } from "../../helpers";
+import { getErrorMessage, getSupportSessionNavigation } from "../../helpers";
 import { useExitSupportSession } from "../../hooks";
 
 const NOT_FOUND_STATUS = 404;
@@ -118,8 +118,11 @@ const SupportSessionContainer: FC<SupportSessionContainerProps> = ({
 
   return (
     <SupportSessionTemplate
-      accountName={name}
       accountTitle={staffAccount.company}
+      navigation={getSupportSessionNavigation(name)}
+      // The logo stays inside the session: the dashboard root would show the
+      // entered account without the frame or the way out.
+      logoPath={ROUTES.superAdmin.session(name)}
       onExit={exitSupportSession}
     >
       {children}

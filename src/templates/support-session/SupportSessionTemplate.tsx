@@ -10,13 +10,16 @@ import type { FC, ReactNode } from "react";
 import { useId } from "react";
 import SupportSessionSidebar from "./SupportSessionSidebar";
 import sessionClasses from "./SupportSessionTemplate.module.scss";
+import type { SupportSessionNavItem } from "./types";
 
 const iconRootPath = getIconRootPath(ROOT_PATH);
 
 interface SupportSessionTemplateProps {
   readonly children: ReactNode;
-  readonly accountName: string;
   readonly accountTitle: string;
+  readonly navigation: SupportSessionNavItem[];
+  /** Where the logo leads: somewhere inside the session, not the dashboard. */
+  readonly logoPath: string;
   readonly onExit: () => void;
 }
 
@@ -26,8 +29,9 @@ interface SupportSessionTemplateProps {
  */
 const SupportSessionTemplate: FC<SupportSessionTemplateProps> = ({
   children,
-  accountName,
   accountTitle,
+  navigation,
+  logoPath,
   onExit,
 }) => {
   const applicationId = useId();
@@ -37,8 +41,9 @@ const SupportSessionTemplate: FC<SupportSessionTemplateProps> = ({
       <div className={sessionClasses.frame} aria-hidden />
       <SidePanelProvider>
         <SupportSessionSidebar
-          accountName={accountName}
           accountTitle={accountTitle}
+          navigation={navigation}
+          logoPath={logoPath}
         />
         <ApplicationIdContext value={applicationId}>
           <main className={classNames("l-main", classes.wrapper)}>

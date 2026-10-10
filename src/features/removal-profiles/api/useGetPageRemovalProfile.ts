@@ -9,11 +9,11 @@ export const useGetPageRemovalProfile = ():
     }
   | { removalProfile: undefined; isGettingRemovalProfile: true } => {
   const { name: removalProfileId } = usePageParams();
+  // The page param may hold another profile type's name: only a whole id is asked for.
+  const id = /^\d+$/.test(removalProfileId) ? Number(removalProfileId) : NaN;
 
   const { isGettingRemovalProfile, removalProfile, removalProfileError } =
-    useGetRemovalProfile(parseInt(removalProfileId), {
-      enabled: !!removalProfileId,
-    });
+    useGetRemovalProfile(id, { enabled: !Number.isNaN(id) });
 
   if (removalProfileError) {
     throw removalProfileError;

@@ -14,6 +14,7 @@ export const SUPER_ADMIN_PATHS = {
   session: "accounts/:name/session",
   sessionEventsLog: "events-log",
   sessionProfiles: "profiles",
+  sessionProfile: "profiles/:profileType",
   sessionSettings: "settings",
 } as const;
 
@@ -42,6 +43,11 @@ export const SUPER_ADMIN_ROUTES = {
   sessionProfiles: sessionRoute(
     buildSessionPath(SUPER_ADMIN_PATHS.sessionProfiles),
   ),
+  sessionProfile: (name: string, profileType: string) =>
+    createRouteWithParams(buildSessionPath(SUPER_ADMIN_PATHS.sessionProfile))({
+      name,
+      profileType,
+    }),
   sessionSettings: sessionRoute(
     buildSessionPath(SUPER_ADMIN_PATHS.sessionSettings),
   ),
