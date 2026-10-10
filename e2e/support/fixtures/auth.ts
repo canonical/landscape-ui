@@ -6,17 +6,27 @@ import { login } from "../helpers/auth";
 import { USER } from "../constants";
 import { closeWelcomeModal } from "../helpers/utils";
 import { mockStandaloneAccount } from "../helpers/standaloneAccount";
+import type { StaffApiMock, StaffApiMockOptions } from "../helpers/superAdmin";
+import { mockStaffApi } from "../helpers/superAdmin";
 
 interface AuthFixtures {
   authenticatedPage: Page;
+  /** The staff tier laid over the session; see `mockStaffApi`. */
+  staffApi: StaffApiMock;
+  /** A page logged in as Canonical staff, with `staffApi` installed. */
+  staffPage: Page;
 }
 
 type StandaloneAccountMockMode = "exists" | "missing" | "disabled";
 
-export const test = base.extend<
-  AuthFixtures & { standaloneAccountMock: StandaloneAccountMockMode }
->({
+interface AuthOptions {
+  standaloneAccountMock: StandaloneAccountMockMode;
+  staffApiMock: StaffApiMockOptions;
+}
+
+export const test = base.extend<AuthFixtures & AuthOptions>({
   standaloneAccountMock: ["exists", { option: true }],
+  staffApiMock: [{}, { option: true }],
   page: async ({ page, standaloneAccountMock }, use, testInfo: TestInfo) => {
     const logs: string[] = [];
 
@@ -60,6 +70,14 @@ export const test = base.extend<
     }
   },
   authenticatedPage: async ({ page }, use) => {
+    await login(page, USER.email, USER.password);
+    await closeWelcomeModal(page);
+    await use(page);
+  },
+  staffApi: async ({ page, staffApiMock }, use) => {
+    await use(await mockStaffApi(page, staffApiMock));
+  },
+  staffPage: async ({ page, staffApi: _staffApi }, use) => {
     await login(page, USER.email, USER.password);
     await closeWelcomeModal(page);
     await use(page);

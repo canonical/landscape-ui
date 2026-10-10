@@ -3,15 +3,20 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import type { FC } from "react";
 import { Route, Routes } from "react-router";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { API_URL } from "@/constants";
+import useEnv from "@/hooks/useEnv";
 import { ROUTES } from "@/libs/routes";
 import UserInfo from "@/templates/dashboard/UserInfo";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { authResponse } from "@/tests/mocks/auth";
+import { saasEnv, selfHostedEnv } from "@/tests/mocks/env";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { SuperAdminRoutes } from "./SuperAdminRoutes";
+
+// Super admin mode only exists on SaaS, which is where most of these run.
+vi.mock("@/hooks/useEnv");
 
 // A stand-in for the normal layout: the sidebar footer with the Super admin
 // entry, plus the current path so redirects and Back can be asserted.
@@ -54,6 +59,7 @@ const findSuperAdminNav = async () =>
 
 describe("super admin routes (integration)", () => {
   beforeEach(() => {
+    vi.mocked(useEnv).mockReturnValue(saasEnv);
     serveMe(["SupportProvider"]);
   });
 
@@ -99,6 +105,18 @@ describe("super admin routes (integration)", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("redirects staff to / on a self-hosted deployment", async () => {
+    vi.mocked(useEnv).mockReturnValue(selfHostedEnv);
+
+    renderAt(ROUTES.superAdmin.accounts());
+
+    expect(await screen.findByText("Normal view")).toBeInTheDocument();
+    expect(getLocationDisplay()).toHaveTextContent(/^\/$/);
+    expect(
+      screen.queryByRole("navigation", { name: "Super admin" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("sends unauthenticated users to the login page", async () => {
     server.use(http.get(`${API_URL}me`, () => HttpResponse.json({})));
 
@@ -119,6 +137,20 @@ describe("super admin routes (integration)", () => {
     expect(
       await screen.findByRole("link", { name: "Super admin" }),
     ).toBeInTheDocument();
+  });
+
+  it("hides the Super admin entry from staff on a self-hosted deployment", async () => {
+    vi.mocked(useEnv).mockReturnValue(selfHostedEnv);
+
+    renderAt(ROUTES.overview.root());
+
+    expect(await screen.findByText("Normal view")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /sign out/i })).toBeVisible();
+    });
+    expect(
+      screen.queryByRole("link", { name: "Super admin" }),
+    ).not.toBeInTheDocument();
   });
 
   it("hides the Super admin entry from everyone else", async () => {
