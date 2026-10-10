@@ -2,7 +2,7 @@ import { ROUTES } from "@/libs/routes";
 import type { SupportSessionNavItem } from "@/templates/support-session";
 import type { ApiError } from "@/types/api/ApiError";
 import { isAxiosError } from "axios";
-import { SUPPORT_PROFILE_PAGES } from "./constants";
+import { SUPPORT_PROFILE_PAGES, SUPPORT_SETTINGS_PAGES } from "./constants";
 
 /** The server's message for a failed request, or the error's own. */
 export const getErrorMessage = (error: unknown): string => {
@@ -77,6 +77,12 @@ export const getSupportSessionNavigation = (
       path: ROUTES.superAdmin.sessionProfile(name, slug),
     })),
   },
-  // A placeholder: org settings land with LNDENG-5321.
-  { label: "Org. settings", icon: "settings" },
+  {
+    label: "Org. settings",
+    icon: "settings",
+    items: SUPPORT_SETTINGS_PAGES.map(({ slug, label }) => ({
+      label,
+      path: ROUTES.superAdmin.sessionSetting(name, slug),
+    })),
+  },
 ];
