@@ -29,12 +29,10 @@ interface InstancePackageInfo extends Record<string, unknown> {
 
 export type InstancePackage = CommonPackageInfo & InstancePackageInfo;
 
-interface InstancePackageInfoWithInstanceId extends InstancePackageInfo {
-  id: number;
-}
-
 export interface Package extends CommonPackageInfo {
-  computers: InstancePackageInfoWithInstanceId[];
+  computers: {
+    count: number;
+  };
 }
 
 export interface PackageObject {

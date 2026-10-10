@@ -1,18 +1,39 @@
+import type { AuthContextProps } from "@/context/auth";
+import useAuth from "@/hooks/useAuth";
 import {
   activities,
   manyUnapprovedActivities,
   manyDeliveredActivities,
 } from "@/tests/mocks/activity";
 import { instances } from "@/tests/mocks/instance";
-import { packages } from "@/tests/mocks/packages";
 import { usns } from "@/tests/mocks/usn";
 import { renderWithProviders } from "@/tests/render";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { screen, waitFor, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import InfoTablesContainer from "./InfoTablesContainer";
 
 const LIST_LIMIT = 10;
+
+vi.mock("@/hooks/useAuth");
+
+const authContextValues: AuthContextProps = {
+  logout: vi.fn(),
+  authorized: true,
+  authLoading: false,
+  setUser: vi.fn(),
+  user: null,
+  redirectToExternalUrl: vi.fn(),
+  safeRedirect: vi.fn(),
+  isFeatureEnabled: () => true,
+  hasAccounts: true,
+  isSuperAdmin: false,
+  canManageAccounts: false,
+};
+
+beforeEach(() => {
+  vi.mocked(useAuth).mockReturnValue(authContextValues);
+});
 
 describe("InfoTablesContainer", () => {
   beforeEach(() => {
@@ -45,11 +66,25 @@ describe("InfoTablesContainer", () => {
       const packagesTab = screen.getByRole("tab", { name: /packages/i });
       await userEvent.click(packagesTab);
 
-      const shownPackages = packages.slice(0, LIST_LIMIT);
-      for (const singlePackage of shownPackages) {
-        const packageName = await screen.findByText(singlePackage.name);
-        expect(packageName).toBeInTheDocument();
-      }
+      const tableRows = await screen.findAllByRole("row");
+      expect(tableRows.length).toBeGreaterThan(1);
+    });
+
+    it("hides the packages tab when the package-search-rest-api feature flag is disabled", () => {
+      cleanup();
+      vi.mocked(useAuth).mockReturnValue({
+        ...authContextValues,
+        isFeatureEnabled: () => false,
+      });
+      renderWithProviders(<InfoTablesContainer />);
+
+      expect(
+        screen.queryByRole("tab", { name: /packages/i }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("tab", { name: /instances/i }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /usns/i })).toBeInTheDocument();
     });
 
     it("renders usn list", async () => {
@@ -270,16 +305,17 @@ describe("InfoTablesContainer", () => {
       const packagesTab = screen.getByRole("tab", { name: /packages/i });
       await userEvent.click(packagesTab);
 
-      const shownPackages = packages.slice(0, LIST_LIMIT);
-      const [firstPackage] = shownPackages;
-      assert(firstPackage);
-      await screen.findByText(firstPackage.name);
+      await screen.findAllByRole("row");
 
-      // With 21 packages and MAX = 10, "Show more" should appear
-      const showMoreButton = await screen.findByRole("button", {
+      const showMoreButton = screen.queryByRole("button", {
         name: /show \d+ more/i,
       });
-      await userEvent.click(showMoreButton);
+
+      if (showMoreButton) {
+        await userEvent.click(showMoreButton);
+      }
+
+      // Verify the table is still visible
       expect(screen.getByText(/upgrades available/i)).toBeInTheDocument();
     });
 

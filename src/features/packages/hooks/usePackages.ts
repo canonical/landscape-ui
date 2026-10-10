@@ -7,36 +7,20 @@ import type { QueryFnType } from "@/types/api/QueryFnType";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
+import { FilterState } from "../types";
 import type {
+  ComputerPackageSearchGroupedResponse,
+  ComputerPackageSearchParams,
   DowngradePackageVersion,
   InstancePackage,
   Package,
+  SearchPackagesResponse,
+  SearchUpgradesRequest,
 } from "../types";
+import { mapGroupedResultToInstancePackage } from "../helpers";
 
-export interface GetPackagesParams {
-  query: string;
-  available?: boolean;
-  held?: boolean;
-  installed?: boolean;
-  limit?: number;
-  names?: string[];
-  offset?: number;
-  search?: string;
-  security?: boolean;
-  upgrade?: boolean;
-}
-
-interface GetInstancePackagesParams {
+interface GetInstancePackagesParams extends ComputerPackageSearchParams {
   instance_id: number;
-  available?: boolean;
-  held?: boolean;
-  installed?: boolean;
-  limit?: number;
-  names?: string[];
-  offset?: number;
-  search?: string;
-  security?: boolean;
-  upgrade?: boolean;
 }
 
 export interface UpgradePackagesParams {
@@ -75,54 +59,123 @@ interface UpgradeInstancePackagesParams {
   computers: InstancePackagesToExclude[];
 }
 
+const sanitizeFilterState = (state?: FilterState): FilterState | undefined => {
+  if (!state || state === FilterState.UNSPECIFIED) {
+    return undefined;
+  }
+
+  return state;
+};
+
+const sanitizeSearchUpgradesRequest = (
+  request?: SearchUpgradesRequest,
+): SearchUpgradesRequest => {
+  const names = request?.names?.length ? request.names : undefined;
+  const text = request?.text || undefined;
+
+  return {
+    computer_query: request?.computer_query ?? "",
+    text,
+    names,
+    security: sanitizeFilterState(request?.security),
+    limit: request?.limit,
+    offset: request?.offset,
+  };
+};
+
+const mapSearchResponseToPaginatedPackages = (
+  response: SearchPackagesResponse,
+): ApiPaginatedResponse<Package> => ({
+  results: response.packages.map((pkg) => ({
+    id: pkg.id,
+    name: pkg.name,
+    summary: pkg.summary,
+    computers: {
+      count: pkg.computers.count,
+    },
+  })),
+  count: response.count,
+  next: response.next,
+  previous: response.prev,
+});
+
 export default function usePackages() {
   const queryClient = useQueryClient();
   const authFetchOld = useFetchOld();
   const authFetch = useFetch();
 
-  const getPackagesQuery: QueryFnType<
+  const getPackageUpgradesQuery: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<Package>>,
-    GetPackagesParams
-  > = (queryParams, config = {}) => {
-    const params = {
-      ...queryParams,
-      query: queryParams?.query || undefined,
-      search: queryParams?.search || undefined,
-      names: queryParams?.names?.length ? queryParams.names : undefined,
-    };
+    SearchUpgradesRequest
+  > = (request, config = {}) => {
+    const sanitizedRequest = sanitizeSearchUpgradesRequest(request);
+
     return useQuery<
       AxiosResponse<ApiPaginatedResponse<Package>>,
       AxiosError<ApiError>
     >({
-      queryKey: ["packages", params],
-      queryFn: async () =>
-        authFetch.get("packages", {
-          params,
-        }),
+      queryKey: ["packageUpgrades", sanitizedRequest],
+      queryFn: async () => {
+        const response = await authFetch.post<SearchPackagesResponse>(
+          "packages:search-upgrades",
+          sanitizedRequest,
+        );
+
+        return {
+          ...response,
+          data: mapSearchResponseToPaginatedPackages(response.data),
+        };
+      },
       ...config,
     });
   };
 
-  const getInstancePackagesQuery = (
-    { instance_id, ...queryParams }: GetInstancePackagesParams,
-    config: Omit<
+  const getInstancePackagesQuery = <
+    TData = AxiosResponse<ApiPaginatedResponse<InstancePackage>>,
+  >(
+    { instance_id, ...params }: GetInstancePackagesParams,
+    config?: Omit<
       UseQueryOptions<
         AxiosResponse<ApiPaginatedResponse<InstancePackage>>,
-        AxiosError<ApiError>
+        AxiosError<ApiError>,
+        TData
       >,
       "queryKey" | "queryFn"
-    > = {},
+    >,
   ) => {
-    const params = { ...queryParams, search: queryParams.search || undefined };
+    const searchParams = {
+      ...params,
+      search: params.search || undefined,
+      group_by_name: true,
+    };
+
     return useQuery<
       AxiosResponse<ApiPaginatedResponse<InstancePackage>>,
-      AxiosError<ApiError>
+      AxiosError<ApiError>,
+      TData
     >({
-      queryKey: ["packages", { instance_id, ...params }],
-      queryFn: async () =>
-        authFetch.get(`computers/${instance_id}/packages`, {
-          params,
-        }),
+      queryKey: ["instancePackages", instance_id, searchParams],
+      queryFn: async () => {
+        const response =
+          await authFetch.get<ComputerPackageSearchGroupedResponse>(
+            `computers/${instance_id}/packages/search`,
+            {
+              params: searchParams,
+            },
+          );
+
+        return {
+          ...response,
+          data: {
+            results: response.data.results.map(
+              mapGroupedResultToInstancePackage,
+            ),
+            count: response.data.count,
+            next: null,
+            previous: null,
+          },
+        };
+      },
       ...config,
     });
   };
@@ -135,7 +188,11 @@ export default function usePackages() {
     mutationFn: async (params) =>
       authFetchOld.get("UpgradePackages", { params }),
     onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["packages"] }),
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["packages"] }),
+        queryClient.invalidateQueries({ queryKey: ["packageUpgrades"] }),
+        queryClient.invalidateQueries({ queryKey: ["instancePackages"] }),
+      ]),
   });
 
   const upgradeInstancesPackagesQuery = useMutation<
@@ -148,6 +205,8 @@ export default function usePackages() {
     onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packages"] }),
+        queryClient.invalidateQueries({ queryKey: ["packageUpgrades"] }),
+        queryClient.invalidateQueries({ queryKey: ["instancePackages"] }),
         queryClient.invalidateQueries({ queryKey: ["instances"] }),
       ]),
   });
@@ -182,7 +241,11 @@ export default function usePackages() {
     mutationFn: async ({ instanceId, ...params }) =>
       authFetch.post(`computers/${instanceId}/packages/installed`, params),
     onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["packages"] }),
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["packages"] }),
+        queryClient.invalidateQueries({ queryKey: ["packageUpgrades"] }),
+        queryClient.invalidateQueries({ queryKey: ["instancePackages"] }),
+      ]),
   });
 
   const packagesActionQuery = useMutation<
@@ -192,11 +255,15 @@ export default function usePackages() {
   >({
     mutationFn: async (params) => authFetch.post("packages", params),
     onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["packages"] }),
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["packages"] }),
+        queryClient.invalidateQueries({ queryKey: ["packageUpgrades"] }),
+        queryClient.invalidateQueries({ queryKey: ["instancePackages"] }),
+      ]),
   });
 
   return {
-    getPackagesQuery,
+    getPackageUpgradesQuery,
     getInstancePackagesQuery,
     upgradePackagesQuery,
     getDowngradePackageVersionsQuery,

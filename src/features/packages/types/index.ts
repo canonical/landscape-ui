@@ -12,3 +12,18 @@ export type {
   InstalledPackageAction,
   InstalledPackageActionAppearance,
 } from "./InstalledPackageAction";
+
+export {
+  FilterState,
+  type SearchUpgradesRequest,
+  type PackageComputersResponse,
+  type PackageSearchResultPackage,
+  type SearchPackagesResponse,
+} from "./PackageSearch";
+
+export type {
+  ComputerPackageSearchParams,
+  PackageInstallationCandidate,
+  ComputerPackageSearchGroupedResult,
+  ComputerPackageSearchGroupedResponse,
+} from "./ComputerPackageSearch";
