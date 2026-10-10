@@ -1,0 +1,27 @@
+name: Notify landscape-server
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    name: Trigger landscape-server snap build
+    if: github.repository == 'canonical/landscape-ui'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send repository_dispatch
+        env:
+          GH_TOKEN: ${{ secrets.LANDSCAPE_SERVER_DISPATCH_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          gh api repos/canonical/landscape-server/dispatches \
+            -f event_type=landscape-ui-release \
+            -f "client_payload[landscape_ui_commit]=${COMMIT_SHA}"
