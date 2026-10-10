@@ -14,7 +14,7 @@ import { useNavigate } from "react-router";
 
 const InvitationPage: FC = () => {
   const navigate = useNavigate();
-  const { authorized } = useAuth();
+  const { authorized, authLoading } = useAuth();
   const [hasRejected, setHasRejected] = useState(false);
 
   const { invitationId, invitationAccount, isLoading } = useInvitation();
@@ -25,7 +25,7 @@ const InvitationPage: FC = () => {
     }
   }, [invitationId, navigate]);
 
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return <LoadingState />;
   }
 

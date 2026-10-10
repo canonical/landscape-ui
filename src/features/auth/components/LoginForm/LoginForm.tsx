@@ -1,5 +1,5 @@
 import { HOMEPAGE_PATH } from "@/constants";
-import { useLogin } from "@/features/auth";
+import { getInvitationPath, useInvitation, useLogin } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import {
@@ -29,6 +29,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
 
   const debug = useDebug();
   const { login, isLoggingIn } = useLogin();
+  const { invitationId } = useInvitation();
 
   const { safeRedirect, setUser } = useAuth();
 
@@ -91,6 +92,13 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
 
         if ("current_account" in data) {
           setUser(data);
+        }
+
+        if (invitationId) {
+          safeRedirect(getInvitationPath(invitationId, searchParams), {
+            replace: true,
+          });
+          return;
         }
 
         safeRedirect(redirectTo ?? HOMEPAGE_PATH, {

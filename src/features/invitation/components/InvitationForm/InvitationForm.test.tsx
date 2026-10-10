@@ -5,13 +5,20 @@ import type { ComponentProps } from "react";
 import { describe, vi, it, expect, beforeEach } from "vitest";
 import InvitationForm from "./InvitationForm";
 import useAuth from "@/hooks/useAuth";
+import { HOMEPAGE_PATH } from "@/constants";
 import { PATHS } from "@/libs/routes";
 import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
 import { invitationsSummary } from "@/tests/mocks/invitations";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 
+const routerState = vi.hoisted(() => ({ search: "" }));
+
 vi.mock("@/hooks/useAuth");
+vi.mock("react-router", async () => ({
+  ...(await vi.importActual("react-router")),
+  useSearchParams: () => [new URLSearchParams(routerState.search), vi.fn()],
+}));
 
 const authProps: AuthContextProps = {
   logout: vi.fn(),
@@ -36,6 +43,8 @@ const inviteId = invitationsSummary[0].secure_id;
 
 describe("InvitationForm", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
+    routerState.search = "";
     vi.mocked(useAuth).mockReturnValue(authProps);
   });
 
@@ -101,8 +110,49 @@ describe("InvitationForm", () => {
     await user.click(acceptButton);
 
     await waitFor(() => {
-      expect(acceptButton).not.toBeDisabled();
+      expect(authProps.safeRedirect).toHaveBeenCalledWith(HOMEPAGE_PATH, {
+        replace: true,
+        external: false,
+      });
     });
+  });
+
+  it("should redirect to redirect-to after accepting", async () => {
+    routerState.search = "redirect-to=%2Faccount%2Facme&external";
+    const user = userEvent.setup();
+    renderWithProviders(
+      <InvitationForm {...props} />,
+      {},
+      `/accept-invitation/${inviteId}`,
+      PATHS.auth.invitation,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Accept" }));
+
+    await waitFor(() => {
+      expect(authProps.safeRedirect).toHaveBeenCalledWith("/account/acme", {
+        replace: true,
+        external: true,
+      });
+    });
+  });
+
+  it("should not redirect when accepting fails", async () => {
+    setEndpointStatus({ status: "error", path: "accept-invitation" });
+    const user = userEvent.setup();
+    renderWithProviders(
+      <InvitationForm {...props} />,
+      {},
+      `/accept-invitation/${inviteId}`,
+      PATHS.auth.invitation,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Accept" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Accept" })).not.toBeDisabled();
+    });
+    expect(authProps.safeRedirect).not.toHaveBeenCalled();
   });
 
   it("should handle reject error gracefully", async () => {

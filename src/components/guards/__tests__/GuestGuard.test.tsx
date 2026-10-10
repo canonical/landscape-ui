@@ -92,6 +92,23 @@ describe("GuestGuard", () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
+  it("should forward to the invitation if authorized but HAS NO accounts", async () => {
+    await setup(
+      {
+        ...authProps,
+        authorized: true,
+        authLoading: false,
+        hasAccounts: false,
+      },
+      { invitation_id: "abc123" },
+    );
+
+    expect(safeRedirect).toHaveBeenCalledWith("/accept-invitation/abc123", {
+      replace: true,
+    });
+    expect(screen.queryByText("Guest Content")).not.toBeInTheDocument();
+  });
+
   describe("when authorized and has accounts", () => {
     const authorizedState = {
       ...authProps,
@@ -112,6 +129,28 @@ describe("GuestGuard", () => {
 
       expect(safeRedirect).toHaveBeenCalledWith("/dashboard/settings", {
         external: false,
+        replace: true,
+      });
+    });
+
+    it("should forward to the invitation when invitation_id is present", async () => {
+      await setup(authorizedState, {
+        invitation_id: "abc123",
+        "redirect-to": "/account/acme",
+        external: "",
+      });
+
+      expect(safeRedirect).toHaveBeenCalledWith(
+        "/accept-invitation/abc123?redirect-to=%2Faccount%2Facme&external=true",
+        { replace: true },
+      );
+      expect(navigate).not.toHaveBeenCalled();
+    });
+
+    it("should forward to the bare invitation URL when only invitation_id is present", async () => {
+      await setup(authorizedState, { invitation_id: "abc123" });
+
+      expect(safeRedirect).toHaveBeenCalledWith("/accept-invitation/abc123", {
         replace: true,
       });
     });
