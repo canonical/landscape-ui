@@ -1,5 +1,5 @@
 import { ROUTES } from "@/libs/routes";
-import { getInstancePackages } from "@/tests/mocks/packages";
+import { getInstancePackages } from "@/tests/mocks/packagesOld";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

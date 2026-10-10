@@ -1,4 +1,7 @@
-import type { InstancePackagesToExclude, Package } from "@/features/packages";
+import type {
+  InstancePackagesToExclude,
+  PackageOld as Package,
+} from "@/features/packages";
 
 export const checkIsPackageUpdateRequired = (
   excludedPackages: InstancePackagesToExclude[],

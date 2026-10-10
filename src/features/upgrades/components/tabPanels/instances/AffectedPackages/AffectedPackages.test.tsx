@@ -1,6 +1,6 @@
 import type { InstancePackagesToExclude } from "@/features/packages";
 import { instances } from "@/tests/mocks/instance";
-import { getInstancePackages } from "@/tests/mocks/packages";
+import { getInstancePackages } from "@/tests/mocks/packagesOld";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
