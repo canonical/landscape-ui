@@ -20,8 +20,13 @@ import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import type { UbuntuProInfo } from "@/types/Instance";
+import { DEB_MANAGEMENT_INSTANCE_LIMIT } from "@/features/packages";
 
 const selected = instances.slice(0, 2);
+const overLimitSelection = Array.from(
+  { length: DEB_MANAGEMENT_INSTANCE_LIMIT + 1 },
+  (_, index) => ({ ...ubuntuInstance, id: index + 1 }),
+);
 const ubuntuProInfo = {
   result: "success",
   attached: true,
@@ -79,6 +84,26 @@ describe("InstancesPageActions", () => {
   afterEach(() => {
     resetScreenSize();
     vi.restoreAllMocks();
+  });
+
+  it.each([
+    "Upgrade",
+    "Install",
+    "Uninstall",
+    "Change version",
+    "Hold",
+    "Unhold",
+  ])("shows the Deb management instance limit modal for %s", async (action) => {
+    renderPageActions({ selectedInstances: overLimitSelection });
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[3] }));
+    await userEvent.click(screen.getByRole("menuitem", { name: action }));
+
+    expect(
+      screen.getByRole("dialog", { name: "Instance limit exceeded" }),
+    ).toHaveTextContent(
+      `Deb management features are only available for a selection of ${DEB_MANAGEMENT_INSTANCE_LIMIT} instances or fewer.`,
+    );
   });
 
   it("should render correct action groups", async () => {

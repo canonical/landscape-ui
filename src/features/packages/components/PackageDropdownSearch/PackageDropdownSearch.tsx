@@ -1,4 +1,5 @@
 import { DEBOUNCE_DELAY } from "@/constants";
+import { DEB_MANAGEMENT_PACKAGE_LIMIT } from "../../constants";
 import { pluralize, toInstanceQuery } from "@/utils/_helpers";
 import { SearchBox, Switch } from "@canonical/react-components";
 import classNames from "classnames";
@@ -14,7 +15,7 @@ import type {
 import PackageDropdownSearchCount from "./components/PackageDropdownSearchCount";
 import PackageDropdownSearchItem from "./components/PackageDropdownSearchItem";
 import PackageDropdownSearchList from "./components/PackageDropdownSearchList";
-import { MAX_SELECTED_PACKAGES, QUERY_LIMIT } from "./constants";
+import { QUERY_LIMIT } from "./constants";
 import classes from "./PackageDropdownSearch.module.scss";
 import {
   mapActionTypeToQueryParams,
@@ -94,7 +95,11 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
     close();
   };
 
-  const isOverLimit = selectedItems.length >= MAX_SELECTED_PACKAGES;
+  const isOverLimit =
+    actionType === "change_version"
+      ? selectedItems.reduce((acc, [, versions]) => acc + versions.length, 0) >=
+        DEB_MANAGEMENT_PACKAGE_LIMIT
+      : selectedItems.length >= DEB_MANAGEMENT_PACKAGE_LIMIT;
 
   const getWarningVerb = () => {
     switch (actionType) {
@@ -153,8 +158,8 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
             {isOverLimit && (
               <span className="p-form-help-text">
                 You can {getWarningVerb()} a maximum of{" "}
-                {pluralize(MAX_SELECTED_PACKAGES, ["package"], "exact")} in one
-                single operation.
+                {pluralize(DEB_MANAGEMENT_PACKAGE_LIMIT, ["package"], "exact")}{" "}
+                in one single operation.
               </span>
             )}
 
@@ -223,6 +228,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                     ]),
                   );
                 }}
+                isOverLimit={isOverLimit}
               />
             ) : (
               <PackageDropdownSearchItem

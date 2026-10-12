@@ -4,13 +4,14 @@ import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import server from "@/tests/server";
 import { packages as availablePackages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PackageDropdownSearch from "./PackageDropdownSearch";
 import type { SearchPackagesRequest, SearchPackagesResponse } from "../../api";
+import { DEB_MANAGEMENT_PACKAGE_LIMIT } from "../../constants";
 
 const instanceId = 1;
 const instancePageUrl = ROUTES.instances.details.single(instanceId);
@@ -205,6 +206,73 @@ describe("PackageDropdownSearch", () => {
       await user.click(deleteButton);
 
       expect(props.setSelectedItems).toHaveBeenCalled();
+    });
+  });
+
+  describe("Change version selection limit", () => {
+    it("counts selected versions toward the package limit", () => {
+      cleanup();
+      const [selectedPackage] = availablePackages;
+      assert(selectedPackage);
+      const selectedItems: ComponentProps<
+        typeof PackageDropdownSearch
+      >["selectedItems"] = [
+        [
+          selectedPackage,
+          Array.from({ length: DEB_MANAGEMENT_PACKAGE_LIMIT }, (_, id) => id),
+        ],
+      ];
+
+      renderWithProviders(
+        <PackageDropdownSearch
+          {...props}
+          actionType="change_version"
+          selectedItems={selectedItems}
+        />,
+        undefined,
+        instancePageUrl,
+        instancePath,
+      );
+
+      expect(screen.getByRole("searchbox")).toBeDisabled();
+      expect(
+        screen.getByText(
+          `You can change version on a maximum of ${DEB_MANAGEMENT_PACKAGE_LIMIT} packages in one single operation.`,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it("keeps package version selection enabled below the limit", () => {
+      cleanup();
+      const [selectedPackage] = availablePackages;
+      assert(selectedPackage);
+      const selectedItems: ComponentProps<
+        typeof PackageDropdownSearch
+      >["selectedItems"] = [
+        [
+          selectedPackage,
+          Array.from(
+            { length: DEB_MANAGEMENT_PACKAGE_LIMIT - 1 },
+            (_, id) => id,
+          ),
+        ],
+      ];
+
+      renderWithProviders(
+        <PackageDropdownSearch
+          {...props}
+          actionType="change_version"
+          selectedItems={selectedItems}
+        />,
+        undefined,
+        instancePageUrl,
+        instancePath,
+      );
+
+      expect(screen.getByRole("searchbox")).toBeEnabled();
+      expect(
+        screen.queryByText(/maximum of \d+ packages in one single operation/i),
+      ).not.toBeInTheDocument();
     });
   });
 });
