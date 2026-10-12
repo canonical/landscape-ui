@@ -6,6 +6,13 @@ on:
   merge_group:
     types: [checks_requested]
 
+# PRs: cancel superseded runs on the same branch, so that a push does not
+# leave the previous commit's jobs queued on the self-hosted runners.
+# Merge queue: never cancel.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   eslint:
     name: ESLint
@@ -88,6 +95,7 @@ jobs:
   e2e-tests:
     name: Playwright (${{ matrix.name }})
     runs-on: [self-hosted, Linux, large]
+    timeout-minutes: 30
     container:
       image: mcr.microsoft.com/playwright:v1.60.0
     environment: dev
@@ -160,6 +168,7 @@ jobs:
   unit-tests:
     name: Vitest
     runs-on: [self-hosted, Linux, large]
+    timeout-minutes: 30
     permissions:
       contents: read
       pull-requests: write
