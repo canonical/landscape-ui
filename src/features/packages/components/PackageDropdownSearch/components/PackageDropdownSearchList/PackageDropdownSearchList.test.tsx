@@ -46,7 +46,7 @@ const mockQueryResult = {
   fetchNextPage: vi.fn(),
 } as unknown as QueryResultType;
 
-const [selectedPackage] = packages;
+const selectedPackage = packages[0]!;
 
 const props = {
   downshiftOptions: mockDownshift,
@@ -82,7 +82,7 @@ describe("PackageDropdownSearchList", () => {
   });
 
   it("renders bold text for searched term", () => {
-    const search = packages[1].name.substring(7);
+    const search = packages[1]!.name.substring(7);
 
     renderWithProviders(
       <PackageDropdownSearchList {...props} search={search} />,
@@ -91,7 +91,7 @@ describe("PackageDropdownSearchList", () => {
     const searchResult = screen.getByText(search);
     expect(searchResult).toHaveStyle("font-weight: bolder;");
     expect(searchResult.closest("div")?.textContent).toEqual(
-      `${packages[1].name} ${packages[1].version}`,
+      `${packages[1]!.name} ${packages[1]!.version}`,
     );
   });
 

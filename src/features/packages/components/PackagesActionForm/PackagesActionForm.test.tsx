@@ -7,7 +7,7 @@ import { packages } from "@/tests/mocks/packages";
 
 const instanceId = 1;
 
-const [firstPackage] = packages;
+const firstPackage = packages[0]!;
 
 describe("PackagesActionForm", () => {
   const user = userEvent.setup();
