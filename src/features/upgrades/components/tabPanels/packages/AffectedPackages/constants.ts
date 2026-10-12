@@ -4,5 +4,6 @@ export const EMPTY_PACKAGE: Package = {
   name: "",
   computers: { count: 0 },
   summary: "",
+  version: "",
   id: -1,
 };
