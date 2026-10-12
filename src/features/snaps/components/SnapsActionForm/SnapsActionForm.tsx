@@ -20,7 +20,6 @@ import SnapChannelRevisionFields from "../SnapChannelRevisionFields";
 import SnapNotification from "./components/SnapNotification";
 
 import ConfirmSnapActionModal from "./components/ConfirmSnapActionModal";
-
 interface SnapsActionFormProps {
   readonly selectedInstances: number[];
   readonly action: SnapAction;

@@ -104,7 +104,7 @@ describe("SnapChannelRevisionFields", () => {
       ).not.toBeInTheDocument();
     });
 
-    const revisionInput = screen.getByRole("spinbutton", {
+    const revisionInput = screen.getByRole("textbox", {
       name: `Revision for ${snapWithChannels.snap.name}`,
     });
     expect(revisionInput).toBeInTheDocument();
@@ -162,7 +162,7 @@ describe("SnapChannelRevisionFields", () => {
       />,
     );
 
-    const revisionInput = await screen.findByRole("spinbutton", {
+    const revisionInput = await screen.findByRole("textbox", {
       name: `Revision for ${snapWithChannels.snap.name}`,
     });
     await user.click(revisionInput);
@@ -222,7 +222,7 @@ describe("SnapChannelRevisionFields", () => {
       />,
     );
 
-    const revisionInput = await screen.findByRole("spinbutton", {
+    const revisionInput = await screen.findByRole("textbox", {
       name: `Revision for ${snapWithChannels.snap.name}`,
     });
     await user.click(revisionInput);
