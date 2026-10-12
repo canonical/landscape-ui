@@ -23,9 +23,7 @@ import { isValidRevision } from "../../helpers";
 import { Notification } from "@canonical/react-components";
 import SnapNotification from "./components/SnapNotification";
 
-const ConfirmSnapActionModal = lazy(
-  () => import("./components/ConfirmSnapActionModal"),
-);
+import ConfirmSnapActionModal from "./components/ConfirmSnapActionModal";
 
 interface SnapsActionFormProps {
   readonly selectedInstances: number[];
