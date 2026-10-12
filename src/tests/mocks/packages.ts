@@ -5,6 +5,7 @@ import type {
   Package,
   PackageSearchResultPackage,
 } from "@/features/packages";
+import { mapTuple } from "@/utils/_helpers";
 
 export const legacyPackages = [
   {
@@ -336,8 +337,9 @@ export const legacyPackages = [
   },
 ] as const;
 
-export const packages: (Package & PackageSearchResultPackage)[] =
-  legacyPackages.map((pkg) => ({
+export const packages = mapTuple(
+  legacyPackages,
+  (pkg): Package & PackageSearchResultPackage => ({
     id: pkg.id,
     name: pkg.name,
     summary: pkg.summary,
@@ -345,7 +347,8 @@ export const packages: (Package & PackageSearchResultPackage)[] =
     computers: {
       count: pkg.computers.length,
     },
-  }));
+  }),
+);
 
 export const upgradablePackages: (Package & PackageSearchResultPackage)[] =
   legacyPackages
