@@ -87,10 +87,19 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   };
 
   const getInfoText = () => {
+    const snapWord = pluralize(snapsToShow.length, ["snap"], "none");
+
     if (isInstallingClassicSnaps) {
-      return "The following snaps you selected for installation require classic confinement";
+      const requireWord = pluralize(
+        snapsToShow.length,
+        ["requires", "require"],
+        "none",
+      );
+      return `The following ${snapWord} you selected for installation ${requireWord} classic confinement`;
     }
-    return `The following snaps have been selected to ${isChangeChannel ? changeChannelVerb : actionVerb}`;
+
+    const hasWord = pluralize(snapsToShow.length, ["has", "have"], "none");
+    return `The following ${snapWord} ${hasWord} been selected to ${isChangeChannel ? changeChannelVerb : actionVerb}`;
   };
 
   const getWarningText = () => {

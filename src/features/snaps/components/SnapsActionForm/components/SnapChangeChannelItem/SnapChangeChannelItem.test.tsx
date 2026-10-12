@@ -281,13 +281,11 @@ describe("SnapChangeChannelItem", () => {
 
   it("does not show 'No channels were found' alongside the load error", async () => {
     server.use(
-      http.get(
-        `${API_URL}computers/:computerId/snaps/:name/info`,
-        () =>
-          HttpResponse.json(
-            { error: "InternalServerError", message: "Error response" },
-            { status: 500 },
-          ),
+      http.get(`${API_URL}computers/:computerId/snaps/:name/info`, () =>
+        HttpResponse.json(
+          { error: "InternalServerError", message: "Error response" },
+          { status: 500 },
+        ),
       ),
     );
 

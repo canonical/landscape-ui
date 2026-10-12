@@ -779,7 +779,7 @@ describe("SnapsActionForm", () => {
     ).toBeInTheDocument();
     expect(
       within(modal).getByText(
-        "The following snaps have been selected to change revision:",
+        "The following snap has been selected to change revision:",
       ),
     ).toBeInTheDocument();
     expect(

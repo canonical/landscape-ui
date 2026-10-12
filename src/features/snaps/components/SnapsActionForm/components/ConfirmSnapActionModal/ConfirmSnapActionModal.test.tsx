@@ -64,6 +64,16 @@ describe("ConfirmSnapActionModal", () => {
     ).toBeInTheDocument();
   });
 
+  it("uses singular 'has' phrasing for a single snap", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal {...props} snaps={[firstSnap]} />,
+    );
+
+    expect(
+      screen.getByText("The following snap has been selected to refresh:"),
+    ).toBeInTheDocument();
+  });
+
   it("uses specific phrasing and negative confirm button for uninstall", () => {
     renderWithProviders(
       <ConfirmSnapActionModal {...props} actionVerb="uninstall" />,
@@ -200,6 +210,25 @@ describe("ConfirmSnapActionModal", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(/may have access to your files and system/i),
+    ).toBeInTheDocument();
+  });
+
+  it("uses singular 'requires' phrasing for installing a single classic snap", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal
+        {...props}
+        snaps={[classicSnap]}
+        actionVerb="install"
+        snapChangeConfigs={{
+          [classicSnap.snap.id]: { confinement: "classic" },
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        "The following snap you selected for installation requires classic confinement:",
+      ),
     ).toBeInTheDocument();
   });
 
