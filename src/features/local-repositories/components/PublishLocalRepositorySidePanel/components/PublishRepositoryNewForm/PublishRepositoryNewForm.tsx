@@ -8,8 +8,7 @@ import { useFormik } from "formik";
 import { useMemo, type FC } from "react";
 import useNotify from "@/hooks/useNotify";
 import type { SelectOption } from "@/types/SelectOption";
-import { useGetPublicationTargets } from "@/features/publication-targets";
-import type { Local } from "@canonical/landscape-openapi";
+import type { Local, PublicationTarget } from "@canonical/landscape-openapi";
 import {
   getInitialValues,
   getInstallsAndUpgradesValues,
@@ -23,16 +22,16 @@ import type { PublishNewFormValues } from "@/features/publications";
 
 interface PublishRepositoryNewFormProps {
   readonly repository: Local;
+  readonly publicationTargets: PublicationTarget[];
 }
 
 const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
   repository,
+  publicationTargets,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { popSidePathUntilClear, closeSidePanel } = usePageParams();
-  const { publicationTargets, isGettingPublicationTargets } =
-    useGetPublicationTargets();
   const { createPublication, isCreatingPublication } = useCreatePublication();
   const { publishPublication, isPublishingPublication } =
     usePublishPublication();
@@ -106,7 +105,6 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
           <Select
             label="Publication target"
             required
-            disabled={isGettingPublicationTargets}
             options={publicationTargetOptions}
             error={getFormikError(formik, "publicationTarget")}
             {...formik.getFieldProps("publicationTarget")}

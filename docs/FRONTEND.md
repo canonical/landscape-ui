@@ -164,10 +164,13 @@ family used by Pragma's typography tokens. This is required even while vanilla-f
 in use because Vanilla's `Ubuntu variable` font family is registered under a different name.
 Pragma icon assets come from `@canonical/ds-assets/icons` and are served at `/icons` by
 `createPragmaIconsPlugin` in `vite.config.ts`; production builds copy the same assets to
-`dist/icons`, and Debian packaging includes that directory in the deployed dashboard files. When
-`VITE_ROOT_PATH` is not `/`, the plugin rewrites CSS icon references to that deployed base path;
-the production dashboard therefore loads them from `/portal/icons`. Pragma components that
-accept a `rootPath` prop must receive the same base-aware icons path during component migration.
+`dist/icons`, and Debian packaging includes that directory in the deployed dashboard files. The
+production backend serves them at site-root `/icons`, independently of `VITE_ROOT_PATH`
+(`/portal/` in production). Keep CSS icon URLs root-absolute and let Pragma components such as
+`TableIcon` use the default `rootPath="/icons"`; do not prepend the dashboard router base.
+
+For production verification, check SVG content and actual rendering, not just HTTP status.
+`/portal/icons/...` can redirect to a `200 text/html` SPA fallback instead of serving an SVG.
 
 When migrating components, import non-form components from `@canonical/react-ds-global` and form
 components from `@canonical/react-ds-global-form`. `vitest.config.ts` currently inlines

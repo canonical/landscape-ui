@@ -14,6 +14,7 @@ import { http, HttpResponse } from "msw";
 import { assert, describe, expect, it, beforeEach } from "vitest";
 import type { InstalledSnap, SnapActionParams } from "../../types";
 import SwitchSnapForm from "./SwitchSnapForm";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 
 const snapWithChannels = installedSnaps.find((snap) => {
   const snapInfo = availableSnapInfo.find(
@@ -243,7 +244,9 @@ describe("SwitchSnapForm", () => {
 
       await userEvent.click(screen.getByRole("button", { name: /switch/i }));
 
-      expect(await screen.findByText(/error response/i)).toBeInTheDocument();
+      expect(
+        await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+      ).toBeInTheDocument();
     });
   });
 });

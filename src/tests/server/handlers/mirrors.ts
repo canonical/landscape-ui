@@ -286,6 +286,14 @@ export default [
     async ({ params }) => {
       await delay();
 
+      if (shouldApplyEndpointStatus("mirrors/sync")) {
+        const endpointStatus = getEndpointStatus("mirrors/sync");
+
+        if (endpointStatus.status === "error") {
+          throw createEndpointStatusError();
+        }
+      }
+
       const mirror = mirrors.find(
         ({ mirrorId }) => mirrorId === params.mirrorId,
       );

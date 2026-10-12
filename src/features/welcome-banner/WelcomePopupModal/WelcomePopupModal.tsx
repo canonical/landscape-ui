@@ -10,7 +10,7 @@ const WelcomePopupModal: FC<WelcomeBannerProps> = ({ hideBanner }) => {
   return (
     <Modal
       close={hideBanner}
-      title="Landscape web portal (Preview)"
+      title="Landscape web portal"
       buttonRow={
         <Button
           appearance="positive"
@@ -21,12 +21,10 @@ const WelcomePopupModal: FC<WelcomeBannerProps> = ({ hideBanner }) => {
         </Button>
       }
     >
+      <p className="u-margin--bottom">Welcome to the Landscape web portal!</p>
       <p className="u-margin--bottom">
-        Welcome to the new Landscape web portal (Preview)!
-      </p>
-      <p className="u-margin--bottom">
-        This portal is still a work-in-progress. Some features may not be
-        available yet and you may encounter some bugs.
+        We are in the process of retiring the classic portal, and this is now
+        the default portal.
       </p>
       <p className="u-margin--bottom">
         You can switch back to the classic portal at any time and{" "}

@@ -28,7 +28,7 @@ const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 /**
  * Backend services reachable through the Vite dev proxy under a mount prefix
  * (see DEB_ARCHIVE_MOUNT in src/tests/aggregate-coverage.ts). A spec calling
- * `/v1beta1/locals` exercises the route declared as `/debarchive/v1beta1/locals`.
+ * `/v1/locals` exercises the route declared as `/debarchive/v1/locals`.
  */
 const MOUNT_PREFIXES = ["/debarchive"];
 
@@ -40,7 +40,7 @@ export function matchesPattern(url: string, pattern: string): boolean {
     ...MOUNT_PREFIXES.map((prefix) => `${prefix}${url}`),
   ];
   if (url === "/v1" || url.startsWith("/v1/")) {
-    candidates.push(`/debarchive/v1beta1${url.slice(3)}`);
+    candidates.push(`/debarchive/v1${url.slice(3)}`);
   }
   return candidates.some((candidate) => regex.test(candidate));
 }

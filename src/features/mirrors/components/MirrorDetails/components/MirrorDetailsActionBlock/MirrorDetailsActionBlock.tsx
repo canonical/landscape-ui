@@ -3,22 +3,22 @@ import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
 import type { Mirror } from "@canonical/landscape-openapi";
 import { useBoolean } from "usehooks-ts";
 import usePageParams from "@/hooks/usePageParams";
-import type { Operation } from "@/features/operations";
 import {
   NoPublicationTargetsModal,
   useGetPublicationTargets,
 } from "@/features/publication-targets";
 import UpdateMirrorModal from "../../../UpdateMirrorModal";
 import RemoveMirrorModal from "../../../RemoveMirrorModal";
+import { useCanCancelOperations } from "@/features/operations";
 
 interface MirrorDetailsActionBlockProps {
   readonly mirror: Mirror;
-  readonly operation?: Operation;
+  readonly isUpdating: boolean;
 }
 
 const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
   mirror,
-  operation,
+  isUpdating,
 }) => {
   const { name, updateModal, sidePath, setPageParams, createSidePathPusher } =
     usePageParams();
@@ -41,6 +41,7 @@ const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
 
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
+  const canCancelOperations = useCanCancelOperations();
 
   const tryPublish = () => {
     if (publicationTargets.length) {
@@ -52,23 +53,18 @@ const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
     }
   };
 
+  const isUpdateDisabled = isUpdating && !canCancelOperations;
+
   useEffect(() => {
-    if (!updateModal || !mirror) {
+    if (!updateModal) {
       return;
     }
-    if (mirror.preserveSignatures) {
-      setPageParams({ updateModal: false });
-    } else {
+    if (!isUpdateDisabled && !mirror.preserveSignatures) {
       openUpdateModal();
     }
-  }, [mirror, openUpdateModal, setPageParams, updateModal]);
 
-  const closeAndClearUpdateModal = () => {
-    closeUpdateModal();
-    setPageParams({
-      updateModal: false,
-    });
-  };
+    setPageParams({ updateModal: false });
+  }, [mirror, openUpdateModal, setPageParams, updateModal, isUpdateDisabled]);
 
   return (
     <>
@@ -83,7 +79,7 @@ const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
           <span>Edit</span>
         </Button>
         {!mirror.preserveSignatures &&
-          (operation && !operation.done ? (
+          (isUpdateDisabled ? (
             <Tooltip
               message="You must wait for this action to be completed to trigger a new update."
               position="btm-center"
@@ -131,9 +127,9 @@ const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
       </div>
       <UpdateMirrorModal
         isOpen={isUpdateModalOpen}
-        close={closeAndClearUpdateModal}
-        mirrorDisplayName={mirror.displayName}
-        mirrorName={name}
+        close={closeUpdateModal}
+        mirror={mirror}
+        isUpdating={isUpdating}
       />
       <RemoveMirrorModal
         isOpen={isRemoveModalOpen}

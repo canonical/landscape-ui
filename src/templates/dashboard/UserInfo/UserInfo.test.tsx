@@ -3,7 +3,6 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import UserInfo from "./UserInfo";
 import * as Constants from "@/constants";
-import { APP_COMMIT, APP_VERSION } from "@/constants";
 import { vi } from "vitest";
 import useAuth from "@/hooks/useAuth";
 import type { AuthContextProps } from "@/context/auth";
@@ -70,11 +69,6 @@ describe("UserInfo", () => {
   it("renders correctly", () => {
     renderWithProviders(<UserInfo />);
 
-    expect(
-      screen.getByText(
-        `v${APP_VERSION} (${APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"})`,
-      ),
-    ).toBeInTheDocument();
     labels.forEach((label) => {
       expect(screen.getByText(label)).toBeInTheDocument();
     });
@@ -155,12 +149,6 @@ describe("UserInfo", () => {
       "href",
       ROUTES.exports.root(),
     );
-  });
-
-  it("renders version info", () => {
-    renderWithProviders(<UserInfo />);
-    const versionText = `v${APP_VERSION} (${APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"})`;
-    expect(screen.getByText(versionText)).toBeInTheDocument();
   });
 
   it("renders the authenticated user name when user is set", () => {

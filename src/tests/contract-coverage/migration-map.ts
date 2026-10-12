@@ -4,7 +4,7 @@
  * Route ids must use the canonical form produced by the connectors:
  *   v1: "GET /api/?action=<ActionName>"
  *   v2: "<METHOD> /api/v2/<path with {param} placeholders>"
- *   go: "<METHOD> /debarchive/v1beta1/<path with {param} placeholders>"
+ *   go: "<METHOD> /debarchive/v1/<path with {param} placeholders>"
  *
  * Leave a layer undefined when the operation does not (yet) exist there.
  * The aggregator validates every id against the declared route universe and
@@ -35,7 +35,7 @@ export const MIGRATION_MAP: MigrationMapEntry[] = [
   {
     name: "Repository mirror — sync",
     v1: "GET /api/?action=SyncMirrorPocket",
-    go: "POST /debarchive/v1beta1/mirrors/{mirror}:sync",
+    go: "POST /debarchive/v1/mirrors/{mirror}:sync",
     notes:
       "Approximate equivalence: legacy sync is pocket-level, debarchive sync is mirror-level.",
   },

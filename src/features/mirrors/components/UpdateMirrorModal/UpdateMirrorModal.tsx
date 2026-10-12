@@ -5,26 +5,31 @@ import { useSyncMirror } from "../../api";
 import { useBoolean } from "usehooks-ts";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
+import { useCancelOperation } from "@/features/operations";
+import type { Mirror } from "@canonical/landscape-openapi";
 
 interface UpdateMirrorModalProps {
   readonly close: () => void;
   readonly isOpen: boolean;
-  readonly mirrorDisplayName: string;
-  readonly mirrorName: string;
+  readonly isUpdating: boolean;
+  readonly mirror: Mirror;
 }
 
 const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
   close,
   isOpen,
-  mirrorDisplayName,
-  mirrorName,
+  isUpdating,
+  mirror,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = usePageParams();
 
-  const { mutateAsync: syncMirror, isPending: isSyncingMirror } =
-    useSyncMirror(mirrorName);
+  const { mutateAsync: syncMirror, isPending: isSyncingMirror } = useSyncMirror(
+    mirror.name ?? "",
+  );
+
+  const { cancelOperation, isCancelingOperation } = useCancelOperation();
 
   const { value: ignoreChecksums, toggle: toggleIgnoreChecksums } =
     useBoolean();
@@ -35,8 +40,16 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
     useBoolean();
 
   if (!isOpen) {
-    return;
+    return null;
   }
+
+  const cancelUpdate = async () => {
+    try {
+      await cancelOperation(mirror.lastOperation ?? "");
+    } catch (error) {
+      debug(error);
+    }
+  };
 
   const tryUpdateMirror = async () => {
     try {
@@ -51,7 +64,7 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
       close();
 
       notify.success({
-        title: `You have marked ${mirrorDisplayName} to be updated`,
+        title: `You have marked ${mirror.displayName} to be updated`,
         message: "An activity has been queued to update the mirror contents.",
       });
     } catch (error) {
@@ -59,12 +72,36 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
     }
   };
 
+  if (isUpdating) {
+    return (
+      <ConfirmationModal
+        title={`${mirror.displayName} is already updating`}
+        confirmButtonLabel="Cancel update and continue"
+        confirmButtonAppearance="positive"
+        confirmButtonLoading={isCancelingOperation}
+        onConfirm={cancelUpdate}
+        close={close}
+        renderInPortal
+      >
+        <p className="u-margin--bottom">
+          You already have an ongoing mirror update. You can only have one
+          active update at a time.
+          <br />
+          <br />
+          <strong>
+            To start a new update, you must cancel the current one.
+          </strong>
+        </p>
+      </ConfirmationModal>
+    );
+  }
+
   return (
     <ConfirmationModal
       confirmButtonLabel="Update mirror"
       onConfirm={tryUpdateMirror}
       confirmButtonAppearance="positive"
-      title={`Update ${mirrorDisplayName}`}
+      title={`Update ${mirror.displayName}`}
       close={close}
       confirmButtonLoading={isSyncingMirror}
       renderInPortal

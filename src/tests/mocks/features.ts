@@ -1,4 +1,4 @@
-import type { Feature } from "@/types/Feature";
+import type { DebarchiveFeature, Feature } from "@/types/Feature";
 
 export const features: Feature[] = [
   {
@@ -112,5 +112,26 @@ export const features: Feature[] = [
     details: {
       configuration: true,
     },
+  },
+  {
+    name: "Package Search",
+    description: "Search packages with the REST API.",
+    key: "package-search-rest-api",
+    database_key: 17,
+    enabled: true,
+    details: {
+      configuration: true,
+    },
+  },
+];
+
+export const debarchiveFeatures: DebarchiveFeature[] = [
+  {
+    name: "features/temporal-lros",
+    featureId: "temporal-lros",
+    displayName: "Temporal long-running operations",
+    description:
+      "Run long-running operations on Temporal instead of in memory.",
+    enabled: true,
   },
 ];

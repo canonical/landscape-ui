@@ -1,0 +1,24 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.container {
+  position: relative;
+}
+
+.header {
+  border-top: 1px solid $colors--theme--border-default;
+  margin-bottom: $spv--x-large;
+  margin-top: $spv--x-large;
+  padding-top: $spv--small;
+}
+
+.selectedItem {
+  background-color: $colors--theme--background-alt;
+  margin-bottom: 0;
+  margin-top: $spv--small;
+  padding: $spv--small $sph--large $spv--large;
+
+  :global(.is-dark) & {
+    background-color: $colors--theme--background-default;
+  }
+}

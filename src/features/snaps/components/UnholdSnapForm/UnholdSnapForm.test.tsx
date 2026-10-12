@@ -7,6 +7,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, beforeEach } from "vitest";
 import type { InstalledSnap } from "../../types";
 import UnholdSnapForm from "./UnholdSnapForm";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 
 const heldSnap =
   installedSnaps.find((snap) => snap.held_until !== null) ?? installedSnaps[0];
@@ -79,7 +80,9 @@ describe("UnholdSnapForm", () => {
 
       await userEvent.click(screen.getByRole("button", { name: /unhold/i }));
 
-      expect(await screen.findByText(/error response/i)).toBeInTheDocument();
+      expect(
+        await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+      ).toBeInTheDocument();
     });
   });
 });

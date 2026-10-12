@@ -1,7 +1,5 @@
 import type { Publication } from "@canonical/landscape-openapi";
 
-export { publicationTargets } from "@/tests/mocks/publicationTargets";
-
 export const publications = [
   {
     name: "publications/7b1d5c2f-0c4e-4d8e-8f2f-99d4f2d9a123",
@@ -109,6 +107,24 @@ export const publications = [
     skipBz2: false,
     skipContents: false,
     publishTime: new Date("March 1, 2026"),
+    lastOperation: "operations/iiii-dddd-llll",
+  },
+  {
+    name: "publications/8l5b2w0x-2222-3333-4444-555555555555",
+    publicationId: "8l5b2w0x-2222-3333-4444-555555555555",
+    publicationTarget: "publicationTargets/dddddddd-0000-0000-0000",
+    source: "locals/bbbb-cccc-dddd",
+    displayName: "unpublished local publication",
+    distribution: "jammy",
+    label: "unpublished local publication",
+    origin: "Canonical",
+    architectures: ["amd64", "arm64"],
+    acquireByHash: false,
+    butAutomaticUpgrades: true,
+    notAutomatic: true,
+    multiDist: false,
+    skipBz2: false,
+    skipContents: false,
   },
   {
     name: "publications/9f3d7e0a-1111-2222-3333-444444444444",
@@ -127,6 +143,5 @@ export const publications = [
     multiDist: false,
     skipBz2: false,
     skipContents: false,
-    publishTime: new Date("May 1, 2026"),
   },
 ] as const satisfies Publication[];

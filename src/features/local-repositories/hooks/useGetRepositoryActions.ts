@@ -1,10 +1,12 @@
 import usePageParams from "@/hooks/usePageParams";
 import type { Local } from "@canonical/landscape-openapi";
 import type { Action } from "@/types/Action";
+import { useCanCancelOperations } from "@/features/operations";
 
 interface UseGetRepositoryActionsProps {
   readonly repository: Local;
   readonly openRemovalModal: () => void;
+  readonly openCancelImportModal: () => void;
   readonly openPublishGuard: () => void;
   readonly isImporting: boolean;
 }
@@ -13,10 +15,12 @@ export const useGetRepositoryActions = ({
   repository,
   isImporting,
   openRemovalModal,
+  openCancelImportModal,
   openPublishGuard,
 }: UseGetRepositoryActionsProps) => {
   const { sidePath, createSidePathPusher, createPageParamsSetter } =
     usePageParams();
+  const canCancelOperations = useCanCancelOperations();
 
   const openSidePanel = (action: string) => {
     if (!sidePath.length) {
@@ -27,6 +31,18 @@ export const useGetRepositoryActions = ({
     }
     return createSidePathPusher(action);
   };
+
+  const importingButton = canCancelOperations
+    ? {
+        icon: "import",
+        label: "Import packages",
+        onClick: openCancelImportModal,
+      }
+    : {
+        icon: "spinner u-animation--spin",
+        label: "Importing packages",
+        disabled: true,
+      };
 
   const viewAction: Action = {
     icon: "show",
@@ -41,11 +57,7 @@ export const useGetRepositoryActions = ({
       onClick: openSidePanel("edit"),
     },
     isImporting
-      ? {
-          icon: "spinner u-animation--spin",
-          label: "Importing packages",
-          disabled: true,
-        }
+      ? importingButton
       : {
           icon: "import",
           label: "Import packages",
@@ -70,5 +82,6 @@ export const useGetRepositoryActions = ({
     viewAction,
     actions,
     destructiveAction,
+    openImportPackages: openSidePanel("import-packages"),
   };
 };

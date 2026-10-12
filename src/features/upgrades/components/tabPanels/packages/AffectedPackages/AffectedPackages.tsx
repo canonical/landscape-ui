@@ -6,7 +6,10 @@ import { Button, CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
 import SelectAllButton from "@/components/layout/SelectAllButton";
-import type { InstancePackagesToExclude, Package } from "@/features/packages";
+import type {
+  InstancePackagesToExclude,
+  PackageOld as Package,
+} from "@/features/packages";
 import type { Instance } from "@/types/Instance";
 import AffectedInstances from "../AffectedInstances";
 import { checkIsPackageUpdateRequired, getToggledPackage } from "../helpers";

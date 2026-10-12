@@ -58,6 +58,7 @@
 @include vf-p-icon-security;
 @include vf-p-icon-filter;
 @include vf-p-icon-arrow-up;
+@include vf-p-icon-arrow-right;
 @include vf-p-icon-import;
 @include vf-p-icon-user-group;
 @include vf-p-icon-user;
@@ -338,6 +339,11 @@
   @include vf-icon-arrow-up($color-caution);
 }
 
+.p-icon--spinner--muted {
+  @extend %icon;
+  @include vf-icon-spinner($color-mid-dark);
+}
+
 @mixin vf-icon-sun($color) {
   background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke='#{vf-url-friendly-color($color)}' stroke-width='1.5'%3E%3Ccircle cx='8' cy='8' r='2.5'/%3E%3Cpath d='M8 1v2M8 13v2M15 8h-2M3 8H1'/%3E%3Cpath d='M8 1v2M8 13v2M15 8h-2M3 8H1' transform='rotate(45 8 8)'/%3E%3C/g%3E%3C/svg%3E");
 }
@@ -366,4 +372,9 @@
   &.is-dark {
     @include vf-icon-moon($color-mid-x-light);
   }
+}
+
+.p-icon--arrow-right--muted {
+  @extend %icon;
+  @include vf-icon-arrow-right($color-mid-dark);
 }

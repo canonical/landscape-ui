@@ -12,20 +12,16 @@ describe("WelcomePopup", () => {
     renderWithProviders(<WelcomePopup />);
 
     await waitFor(() => {
-      expect(
-        screen.queryByText("Landscape web portal (Preview)"),
-      ).toBeInTheDocument();
+      expect(screen.queryByText("Landscape web portal")).toBeInTheDocument();
     });
   });
 
   it("should not render if saved in local storage", async () => {
-    localStorage.setItem("_landscape_isWelcomePopupClosed", "true");
+    localStorage.setItem("_landscape_isDefaultPortalPopupClosed", "true");
 
     renderWithProviders(<WelcomePopup />);
 
-    expect(
-      screen.queryByText("Landscape web portal (Preview)"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Landscape web portal")).not.toBeInTheDocument();
   });
 
   it("should close and save in local storage", async () => {
@@ -39,11 +35,11 @@ describe("WelcomePopup", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Landscape web portal (Preview)"),
+        screen.queryByText("Landscape web portal"),
       ).not.toBeInTheDocument();
     });
 
-    expect(localStorage.getItem("_landscape_isWelcomePopupClosed")).toBe(
+    expect(localStorage.getItem("_landscape_isDefaultPortalPopupClosed")).toBe(
       "true",
     );
   });

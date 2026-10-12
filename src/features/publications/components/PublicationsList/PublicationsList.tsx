@@ -170,7 +170,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
         columns={columns}
         data={publications}
         emptyMsg={`No publications found with the search: "${query}"`}
-        minWidth={1250}
+        minWidth={1300}
       />
     </OperationProvider>
   );

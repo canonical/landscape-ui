@@ -9,7 +9,7 @@ export const idleOperation: UnfinishedOperation = {
   name: "operations/iiii-dddd-llll",
   metadata: {
     "@type":
-      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
+      "type.googleapis.com/canonical.landscape.debarchive.v1.TaskMetadata",
     description:
       "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
     operationId: "iiii-dddd-llll",
@@ -20,7 +20,7 @@ export const idleOperation: UnfinishedOperation = {
   done: false,
   response: {
     "@type":
-      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskCreatedResponse",
+      "type.googleapis.com/canonical.landscape.debarchive.v1.TaskCreatedResponse",
   },
 };
 
@@ -28,7 +28,7 @@ export const succeededOperation: SuccessfulOperation = {
   name: "operations/ssss-cccc-dddd",
   metadata: {
     "@type":
-      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
+      "type.googleapis.com/canonical.landscape.debarchive.v1.TaskMetadata",
     description:
       "Validate import into local repo test-local-3 (9c0b813f-6436-42e6-bd26-22b868f474cb)",
     operationId: "ssss-cccc-dddd",
@@ -39,7 +39,7 @@ export const succeededOperation: SuccessfulOperation = {
   done: true,
   response: {
     "@type":
-      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskResponse",
+      "type.googleapis.com/canonical.landscape.debarchive.v1.TaskResponse",
     output:
       "Would add: package1-0.2.1\nWould add: package2-1.0.0\nTotal packages that would be added: 2\n",
   },
@@ -49,7 +49,7 @@ export const failedOperation: FailedOperation = {
   name: "operations/ffff-llll-dddd",
   metadata: {
     "@type":
-      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
+      "type.googleapis.com/canonical.landscape.debarchive.v1.TaskMetadata",
     description:
       "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
     operationId: "ffff-llll-dddd",
@@ -100,7 +100,7 @@ export const timeoutOperation: FailedOperation = {
   name: "operations/tttt-mmmm-oooo",
   metadata: {
     "@type":
-      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
+      "type.googleapis.com/canonical.landscape.debarchive.v1.TaskMetadata",
     description:
       "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
     operationId: "tttt-mmmm-oooo",
@@ -121,7 +121,7 @@ export const inProgressOperation: UnfinishedOperation = {
   name: "operations/pppp-gggg-ssss",
   metadata: {
     "@type":
-      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
+      "type.googleapis.com/canonical.landscape.debarchive.v1.TaskMetadata",
     description:
       "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
     operationId: "pppp-gggg-ssss",
@@ -140,7 +140,7 @@ export const emptyOperation: SuccessfulOperation = {
   name: "operations/mmmm-pppp-tttt",
   metadata: {
     "@type":
-      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
+      "type.googleapis.com/canonical.landscape.debarchive.v1.TaskMetadata",
     description:
       "Validate import into local repo test-local-3 (9c0b813f-6436-42e6-bd26-22b868f474cb)",
     operationId: "mmmm-pppp-tttt",
@@ -151,7 +151,7 @@ export const emptyOperation: SuccessfulOperation = {
   done: true,
   response: {
     "@type":
-      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskResponse",
+      "type.googleapis.com/canonical.landscape.debarchive.v1.TaskResponse",
   },
 };
 
@@ -159,7 +159,7 @@ export const overCountOperation: SuccessfulOperation = {
   name: "operations/oooo-vvvv-cccc",
   metadata: {
     "@type":
-      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
+      "type.googleapis.com/canonical.landscape.debarchive.v1.TaskMetadata",
     description:
       "Validate import into local repo test-local-3 (9c0b813f-6436-42e6-bd26-22b868f474cb)",
     operationId: "oooo-vvvv-cccc",
@@ -170,7 +170,7 @@ export const overCountOperation: SuccessfulOperation = {
   done: true,
   response: {
     "@type":
-      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskResponse",
+      "type.googleapis.com/canonical.landscape.debarchive.v1.TaskResponse",
     output: [
       "Would add: package1-0.2.1",
       "Would add: package2-1.0.0",
@@ -282,7 +282,7 @@ export const failedMirrorOperation: FailedOperation = {
   name: "operations/mirror-ffff-llll-dddd",
   metadata: {
     "@type":
-      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
+      "type.googleapis.com/canonical.landscape.debarchive.v1.TaskMetadata",
     description:
       "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
     operationId: "mirror-ffff-llll-dddd",
@@ -307,7 +307,7 @@ export const failedPublicationOperation: FailedOperation = {
   name: "operations/publication-ffff-llll-dddd",
   metadata: {
     "@type":
-      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
+      "type.googleapis.com/canonical.landscape.debarchive.v1.TaskMetadata",
     description:
       "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
     operationId: "publication-ffff-llll-dddd",

@@ -72,7 +72,7 @@ test("should have disclaimer popup after login", async ({ page }) => {
   await expect(page).toHaveURL(/overview/);
 
   const welcomeModal = page.getByText(
-    /This portal is still a work-in-progress/i,
+    /We are in the process of retiring the classic portal/i,
   );
 
   await closeWelcomeModal(page);

@@ -1,4 +1,4 @@
-import { pluralize } from "@/utils/_helpers";
+import { pluralize, toInstanceQuery } from "@/utils/_helpers";
 import type { ExportJob } from "./types/ExportJob";
 
 export const buildExportQuery = ({
@@ -9,7 +9,7 @@ export const buildExportQuery = ({
   selectedIds?: number[];
 }): string => {
   if (selectedIds?.length) {
-    return selectedIds.map((id) => `id:${id}`).join(" OR ");
+    return toInstanceQuery(selectedIds);
   }
 
   return query?.trim() ?? "";

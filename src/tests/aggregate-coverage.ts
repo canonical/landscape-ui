@@ -13,7 +13,7 @@ import { createV1ActionSource } from "./contract-coverage/sources/v1-actions";
 import type { Observation } from "./contract-coverage/types";
 
 // The Go debarchive service is mounted under this prefix in front of the
-// spec's own /v1beta1 (VITE_API_URL_DEB_ARCHIVE = /debarchive/v1beta1/).
+// spec's own /v1 (VITE_API_URL_DEB_ARCHIVE = /debarchive/v1/).
 const DEB_ARCHIVE_MOUNT = "/debarchive";
 
 // Both inputs are produced by the test run: the registry by the traffic

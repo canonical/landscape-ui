@@ -9,7 +9,7 @@ import { useMediaQuery } from "usehooks-ts";
 import { ACCOUNT_SETTINGS } from "../SecondaryNavigation/constants";
 import { useAlertsSummary } from "@/features/alert-notifications";
 import { ROUTES } from "@/libs/routes";
-import { APP_COMMIT, APP_VERSION, TSV_EXPORTS_ENABLED } from "@/constants";
+import { TSV_EXPORTS_ENABLED } from "@/constants";
 import LogoutButton from "./LogoutButton";
 import useEnv from "@/hooks/useEnv";
 import { useSelfHostedLicense } from "@/context/selfHostedLicense";
@@ -241,9 +241,6 @@ const UserInfo: FC = () => {
           <LogoutButton />
         </li>
       </ul>
-      <span className={classes.versionInfo}>
-        v{APP_VERSION} ({APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"})
-      </span>
     </div>
   );
 };

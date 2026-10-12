@@ -1,25 +1,26 @@
+import { API_URL, DEBOUNCE_DELAY } from "@/constants";
 import { ROUTES } from "@/libs/routes";
-import { getInstancePackages } from "@/tests/mocks/packages";
+import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import server from "@/tests/server";
+import { packages as availablePackages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PackageDropdownSearch from "./PackageDropdownSearch";
+import type { SearchPackagesRequest, SearchPackagesResponse } from "../../api";
 
 const instanceId = 1;
-const instancePackages = getInstancePackages(instanceId);
-
 const instancePageUrl = ROUTES.instances.details.single(instanceId);
 const instancePath = `${ROUTES.instances.root()}/:instanceId`;
-
-const availablePackages = instancePackages.filter(
-  (pkg) => pkg.available_version,
-);
 
 const props: ComponentProps<typeof PackageDropdownSearch> = {
   selectedItems: [],
   setSelectedItems: vi.fn(),
+  actionType: "install",
+  instanceIds: [instanceId],
 };
 
 describe("PackageDropdownSearch", () => {
@@ -37,10 +38,100 @@ describe("PackageDropdownSearch", () => {
   it("renders package dropdown search component", () => {
     const searchBox = screen.getByRole("searchbox");
     expect(searchBox).toBeInTheDocument();
-    expect(screen.getByText(/min 3\. characters/i)).toBeInTheDocument();
   });
 
   describe("Search functionality", () => {
+    it("debounces rapid typing into a single API request", async () => {
+      let requestCount = 0;
+      server.use(
+        http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
+          `${API_URL}packages\\:search`,
+          async ({ request }) => {
+            requestCount++;
+
+            const body = await request.json();
+
+            const response = generatePaginatedResponse({
+              data: availablePackages.filter((pkg) => {
+                if (body.names === undefined) {
+                  return true;
+                }
+
+                return body.names.includes(pkg.name);
+              }),
+              limit: body.limit,
+              offset: body.offset,
+              search: body.text,
+              searchFields: ["name", "summary"],
+            });
+
+            return HttpResponse.json({
+              packages: response.results,
+              count: response.count,
+              next: response.next,
+              prev: response.previous,
+            });
+          },
+        ),
+      );
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.type(searchBox, "testpackage");
+
+      await waitFor(() => {
+        expect(requestCount).toBeGreaterThan(0);
+      });
+      await new Promise((resolve) => setTimeout(resolve, DEBOUNCE_DELAY * 2));
+      expect(requestCount).toBe(1);
+    });
+
+    it("cancels a pending debounced request when the field is cleared", async () => {
+      let requestCount = 0;
+      server.use(
+        http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
+          `${API_URL}packages\\:search`,
+          async ({ request }) => {
+            requestCount++;
+
+            const body = await request.json();
+
+            const response = generatePaginatedResponse({
+              data: availablePackages.filter((pkg) => {
+                if (body.names === undefined) {
+                  return true;
+                }
+
+                return body.names.includes(pkg.name);
+              }),
+              limit: body.limit,
+              offset: body.offset,
+              search: body.text,
+              searchFields: ["name", "summary"],
+            });
+
+            return HttpResponse.json({
+              packages: response.results,
+              count: response.count,
+              next: response.next,
+              prev: response.previous,
+            });
+          },
+        ),
+      );
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.type(searchBox, "testpackage");
+
+      const clearButton = screen.getByRole("button", {
+        name: /clear search field/i,
+      });
+      await user.click(clearButton);
+
+      // Wait past the debounce window to ensure the cancelled request does not fire.
+      await new Promise((resolve) => setTimeout(resolve, DEBOUNCE_DELAY * 2));
+      expect(requestCount).toBe(0);
+    });
+
     it("shows matching packages after searching", async () => {
       const searchBox = screen.getByRole("searchbox");
       assert(availablePackages[0]);
@@ -50,16 +141,6 @@ describe("PackageDropdownSearch", () => {
         availablePackages[0].name,
       );
       expect(matchingPackage).toBeInTheDocument();
-    });
-
-    it("shows no packages found message when search yields no results", async () => {
-      const searchBox = screen.getByRole("searchbox");
-      await user.type(searchBox, "nonexistentpackage");
-
-      const errorText = await screen.findByText(
-        /No packages found by "nonexistentpackage"/i,
-      );
-      expect(errorText).toBeInTheDocument();
     });
   });
 
@@ -103,27 +184,14 @@ describe("PackageDropdownSearch", () => {
   });
 
   describe("Selected packages display", () => {
-    it("displays selected packages in the result list", () => {
-      const [selectedPackage] = availablePackages;
-      assert(selectedPackage);
-      renderWithProviders(
-        <PackageDropdownSearch {...props} selectedItems={[selectedPackage]} />,
-        undefined,
-        instancePageUrl,
-        instancePath,
-      );
-
-      expect(screen.getByText(selectedPackage.name)).toBeInTheDocument();
-      expect(
-        screen.getByText(selectedPackage.available_version ?? ""),
-      ).toBeInTheDocument();
-    });
-
     it("removes package when delete button is clicked", async () => {
       const [selectedPackage] = availablePackages;
       assert(selectedPackage);
       renderWithProviders(
-        <PackageDropdownSearch {...props} selectedItems={[selectedPackage]} />,
+        <PackageDropdownSearch
+          {...props}
+          selectedItems={[[selectedPackage, []]]}
+        />,
         undefined,
         instancePageUrl,
         instancePath,

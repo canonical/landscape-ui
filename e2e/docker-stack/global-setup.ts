@@ -74,6 +74,10 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
     // spec reusing it skips the first-run popup without repeating this call.
     await page.evaluate(() => {
       window.localStorage.setItem("_landscape_isWelcomePopupClosed", "true");
+      window.localStorage.setItem(
+        "_landscape_isDefaultPortalPopupClosed",
+        "true",
+      );
     });
 
     await context.storageState({ path: STORAGE_STATE_PATH });

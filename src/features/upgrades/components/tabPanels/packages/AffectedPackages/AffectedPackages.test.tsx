@@ -1,5 +1,5 @@
 import { instances } from "@/tests/mocks/instance";
-import { packages } from "@/tests/mocks/packages";
+import { packagesOld as packages } from "@/tests/mocks/packagesOld";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";

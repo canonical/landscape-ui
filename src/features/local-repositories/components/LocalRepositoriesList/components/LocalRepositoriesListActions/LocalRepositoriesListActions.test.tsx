@@ -6,10 +6,15 @@ import { repositories } from "@/tests/mocks/localRepositories";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { OperationProvider } from "@/features/operations";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 
 const [repository, repositoryImporting] = repositories;
 
 describe("LocalRepositoriesListActions", () => {
+  beforeEach(() => {
+    setEndpointStatus("default");
+  });
+
   it("opens menu with repository actions", async () => {
     const user = userEvent.setup();
     renderWithProviders(
@@ -37,8 +42,10 @@ describe("LocalRepositoriesListActions", () => {
     ).toBeInTheDocument();
   });
 
-  it("disables import button while importing packages", async () => {
+  it("disables import button while importing packages if canceling LROs is disabled", async () => {
+    setEndpointStatus({ status: "empty", path: "debarchive/features" });
     const user = userEvent.setup();
+
     renderWithProviders(
       <OperationProvider operationNames={["operations/pppp-gggg-ssss"]}>
         <LocalRepositoriesListActions repository={repositoryImporting} />
@@ -52,12 +59,35 @@ describe("LocalRepositoriesListActions", () => {
     );
 
     expect(
-      screen.queryByRole("menuitem", { name: "Import packages" }),
-    ).not.toBeInTheDocument();
-
-    expect(
       screen.getByRole("menuitem", { name: "Importing packages" }),
     ).toHaveAttribute("aria-disabled", "true");
+
+    expect(
+      screen.queryByRole("menuitem", { name: "Import packages" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("opens cancel modal when clicking import button while importing packages", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <OperationProvider operationNames={["operations/pppp-gggg-ssss"]}>
+        <LocalRepositoriesListActions repository={repositoryImporting} />
+      </OperationProvider>,
+    );
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: `${repositoryImporting.displayName} actions`,
+      }),
+    );
+
+    await user.click(screen.getByRole("menuitem", { name: "Import packages" }));
+
+    expect(
+      await screen.findByRole("heading", {
+        name: `${repositoryImporting.displayName} is already importing packages`,
+      }),
+    ).toBeInTheDocument();
   });
 
   it("opens removal modal when remove is clicked", async () => {

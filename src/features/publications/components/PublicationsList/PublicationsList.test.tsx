@@ -63,7 +63,7 @@ describe("PublicationsList", () => {
       }),
     ).toBeInTheDocument();
 
-    expect(await screen.findByText("Publishing")).toBeInTheDocument();
+    expect(await screen.findAllByText("Publishing")).toHaveLength(2);
     expect(screen.getByText("Published")).toBeInTheDocument();
     expect(screen.getByText("Publishing failed")).toBeInTheDocument();
 

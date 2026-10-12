@@ -48,6 +48,16 @@ export const repositories = [
     defaultDistribution: "noble",
     defaultComponent: "multiverse",
   },
+  {
+    name: "locals/ffff-gggg-hhhh",
+    localId: "ffff-gggg-hhhh",
+    displayName: "Idle import local",
+    comment: "local with an idle package import",
+    defaultComponent: "universe",
+    defaultDistribution: "jammy",
+    lastOperation: "operations/iiii-dddd-llll",
+    lastImportTime: new Date("2026-09-20T12:30:10Z"),
+  },
 ] as const satisfies Local[];
 
 export const packages = Array.from(

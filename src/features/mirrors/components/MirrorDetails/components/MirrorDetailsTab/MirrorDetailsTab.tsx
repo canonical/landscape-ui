@@ -65,15 +65,15 @@ const MirrorDetailsTab: FC<MirrorDetailsTabProps> = ({ mirror, operation }) => {
             }
           />
           <InfoGrid.Item
-            label="Preserve upstream signing key"
-            value={boolToLabel(mirror.preserveSignatures)}
-          />
-          <InfoGrid.Item
             label="Last update"
             value={
               mirror.lastDownloadDate &&
               date(mirror.lastDownloadDate).format(DISPLAY_DATE_TIME_FORMAT)
             }
+          />
+          <InfoGrid.Item
+            label="Preserve upstream signing key"
+            value={boolToLabel(mirror.preserveSignatures)}
           />
           <InfoGrid.Item
             label="Packages"

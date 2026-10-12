@@ -127,7 +127,7 @@ describe("extractSpecCoverage scan roots", () => {
 
     expect(signatures).toContain("GET /api/v2/computers");
     expect(signatures).toContain("POST /api/v2/login");
-    expect(signatures).not.toContain("GET /debarchive/v1beta1/mirrors");
+    expect(signatures).not.toContain("GET /debarchive/v1/mirrors");
   });
 });
 
@@ -149,9 +149,7 @@ describe("matchesPattern", () => {
   });
 
   it("matches proxy-relative go URLs against the /debarchive mount", () => {
-    expect(
-      matchesPattern("/v1beta1/locals", "/debarchive/v1beta1/locals"),
-    ).toBe(true);
+    expect(matchesPattern("/v1/locals", "/debarchive/v1/locals")).toBe(true);
   });
 });
 
@@ -164,7 +162,7 @@ describe("computeGaps", () => {
     expect(gaps[0]?.routeId).toBe("POST /api/v2/mirrors");
     expect(gaps[0]?.rank).toBe(1);
     expect(gaps[0]?.contracts).toHaveLength(1);
-    expect(gaps[1]?.routeId).toBe("GET /debarchive/v1beta1/mirrors/{mirrorId}");
+    expect(gaps[1]?.routeId).toBe("GET /debarchive/v1/mirrors/{mirrorId}");
     expect(gaps[1]?.rank).toBe(2);
   });
 

@@ -19,7 +19,7 @@ describe("TableIcon", () => {
     expect(icon).toHaveClass("positive", "custom-icon");
     expect(icon?.querySelector("use")).toHaveAttribute(
       "href",
-      "/portal/icons/success.svg#success",
+      "/icons/success.svg#success",
     );
   });
 });

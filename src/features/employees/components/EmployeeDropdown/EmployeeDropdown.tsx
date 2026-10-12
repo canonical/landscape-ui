@@ -1,5 +1,6 @@
 import BoldSubstring from "@/components/form/BoldSubstring";
 import LoadingState from "@/components/layout/LoadingState";
+import { DEBOUNCE_DELAY } from "@/constants";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
@@ -9,7 +10,7 @@ import { useBoolean, useDebounceValue } from "usehooks-ts";
 import { useGetEmployeesInfinite } from "../../api";
 import type { Employee } from "../../types";
 import classes from "./EmployeeDropdown.module.scss";
-import { DEBOUNCE_DELAY, NEAR_BOTTOM_RATIO, QUERY_LIMIT } from "./constants";
+import { NEAR_BOTTOM_RATIO, QUERY_LIMIT } from "./constants";
 
 interface EmployeeDropdown {
   readonly employee: Employee | null;

@@ -1,5 +1,6 @@
 import BoldSubstring from "@/components/form/BoldSubstring";
 import LoadingState from "@/components/layout/LoadingState";
+import { DEBOUNCE_DELAY } from "@/constants";
 import {
   useGetScriptsInfinite,
   useGetSingleScript,
@@ -12,7 +13,7 @@ import type { FC } from "react";
 import React, { useEffect, useRef, useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 import classes from "./ScriptDropdown.module.scss";
-import { DEBOUNCE_DELAY, NEAR_BOTTOM_RATIO, QUERY_LIMIT } from "./constants";
+import { NEAR_BOTTOM_RATIO, QUERY_LIMIT } from "./constants";
 
 interface ScriptDropdownProps {
   readonly script: Script | null | undefined;

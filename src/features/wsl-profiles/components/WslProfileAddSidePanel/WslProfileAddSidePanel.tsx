@@ -225,6 +225,7 @@ const WslProfileAddSidePanel: FC = () => {
                 value: false,
                 label:
                   "Ignore WSL child instances that have not been created by Landscape",
+                help: "If an instance with this name already exists on a device, the profile will replace it, even if it was created outside Landscape and even if the profile is set to ignore such instances.",
               },
               {
                 key: "uninstall",

@@ -7,12 +7,12 @@ const WelcomePopup: FC = () => {
 
   const hideBanner = () => {
     setIsPopupVisible(false);
-    localStorage.setItem("_landscape_isWelcomePopupClosed", "true");
+    localStorage.setItem("_landscape_isDefaultPortalPopupClosed", "true");
   };
 
   useEffect(() => {
     const isPopupClosed = localStorage.getItem(
-      "_landscape_isWelcomePopupClosed",
+      "_landscape_isDefaultPortalPopupClosed",
     );
 
     setIsPopupVisible(!isPopupClosed);

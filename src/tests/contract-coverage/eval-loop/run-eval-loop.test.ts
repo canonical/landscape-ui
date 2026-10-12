@@ -56,7 +56,7 @@ const mockResponse: SuggestionsResponse = {
       notes: "",
     },
     {
-      route: "GET /debarchive/v1beta1/mirrors/{mirrorId}",
+      route: "GET /debarchive/v1/mirrors/{mirrorId}",
       title: "Cover mirror fetch",
       rationale: "Go route, second highest hits.",
       spec: "// spec 2",
@@ -129,7 +129,7 @@ describe("run", () => {
           notes: "",
         },
         {
-          route: "GET /debarchive/v1beta1/mirrors/{mirrorId}",
+          route: "GET /debarchive/v1/mirrors/{mirrorId}",
           title: "Cover mirror fetch",
           rationale: "Go route, second highest hits.",
           spec: "// spec 2",

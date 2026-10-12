@@ -15,8 +15,11 @@ export interface GetAvailableSnapInfoParams {
   name: string;
 }
 
+export type SnapRequestAction =
+  "install" | "remove" | "refresh" | "hold" | "unhold";
+
 export interface SnapActionParams {
-  action: string;
+  action: SnapRequestAction;
   computer_ids: number[];
   snaps: SnapChange[];
   deliver_after?: string;

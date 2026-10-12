@@ -32,7 +32,6 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
 
   const isPolling = !!operationName;
   const { operation } = useGetOperation(operationName, {
-    enabled: isPolling,
     refetchInterval: ({ state }) =>
       state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
   });

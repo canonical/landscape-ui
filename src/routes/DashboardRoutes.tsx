@@ -225,6 +225,7 @@ export const DashboardRoutes = (
             </SelfHostedLicenseGuard>
           }
         />
+        <Route path={PATHS.account.about} element={<Pages.AboutPage />} />
       </Route>
     </Route>
   </Route>

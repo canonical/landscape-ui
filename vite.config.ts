@@ -12,29 +12,19 @@ const PRAGMA_ICONS_DIR = path.join(
   "icons",
 );
 
-const normalizeRootPath = (rootPath = "/") => {
-  const absoluteRootPath = rootPath.startsWith("/") ? rootPath : `/${rootPath}`;
-
-  return absoluteRootPath.endsWith("/")
-    ? absoluteRootPath
-    : `${absoluteRootPath}/`;
-};
-
-const getRelativeIconPath = (
-  requestUrl: string | undefined,
-  iconsRoutes: string[],
-) => {
+const getRelativeIconPath = (requestUrl: string | undefined) => {
   const { pathname } = new URL(requestUrl ?? "", "http://localhost");
-  const iconsRoute = iconsRoutes.find((route) => pathname.startsWith(route));
 
-  if (!iconsRoute) {
+  if (!pathname.startsWith(PRAGMA_ICONS_ROUTE)) {
     return null;
   }
 
   let decodedIconPath: string;
 
   try {
-    decodedIconPath = decodeURIComponent(pathname.slice(iconsRoute.length));
+    decodedIconPath = decodeURIComponent(
+      pathname.slice(PRAGMA_ICONS_ROUTE.length),
+    );
   } catch (error) {
     if (error instanceof URIError) {
       return null;
@@ -74,11 +64,10 @@ const resolveIconFilePath = async (iconPath: string, appIconsDir: string) => {
 
 const servePragmaIcons = (
   server: ViteDevServer | PreviewServer,
-  iconsRoutes: string[],
   getAppIconsDir: () => string,
 ) => {
   server.middlewares.use((req, res, next) => {
-    const relativeIconPath = getRelativeIconPath(req.url, iconsRoutes);
+    const relativeIconPath = getRelativeIconPath(req.url);
 
     if (!relativeIconPath) {
       next();
@@ -111,11 +100,9 @@ const servePragmaIcons = (
   });
 };
 
-export const createPragmaIconsPlugin = (rootPath = "/"): Plugin => {
+export const createPragmaIconsPlugin = (): Plugin => {
   let root = process.cwd();
   let outDir = "dist";
-  const iconsRoute = `${normalizeRootPath(rootPath)}icons/`;
-  const iconsRoutes = [...new Set([PRAGMA_ICONS_ROUTE, iconsRoute])];
   const getAppIconsDir = () => path.resolve(root, "src/assets/icons");
 
   return {
@@ -125,28 +112,10 @@ export const createPragmaIconsPlugin = (rootPath = "/"): Plugin => {
       ({ outDir } = config.build);
     },
     configureServer(server) {
-      servePragmaIcons(server, iconsRoutes, getAppIconsDir);
+      servePragmaIcons(server, getAppIconsDir);
     },
     configurePreviewServer(server) {
-      servePragmaIcons(server, iconsRoutes, getAppIconsDir);
-    },
-    generateBundle(_options, bundle) {
-      if (iconsRoute === PRAGMA_ICONS_ROUTE) {
-        return;
-      }
-
-      Object.values(bundle).forEach((output) => {
-        if (
-          output.type === "asset" &&
-          output.fileName.endsWith(".css") &&
-          typeof output.source === "string"
-        ) {
-          output.source = output.source.replaceAll(
-            PRAGMA_ICONS_ROUTE,
-            iconsRoute,
-          );
-        }
-      });
+      servePragmaIcons(server, getAppIconsDir);
     },
     writeBundle() {
       const outputIconsDir = path.resolve(root, outDir, "icons");
@@ -179,7 +148,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       react(),
-      createPragmaIconsPlugin(env.VITE_ROOT_PATH),
+      createPragmaIconsPlugin(),
       {
         name: "exclude-msw",
         apply: "build",
