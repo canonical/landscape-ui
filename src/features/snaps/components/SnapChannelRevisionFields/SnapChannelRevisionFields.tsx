@@ -215,7 +215,10 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
           This snap requires classic confinement
         </Notification>
       ) : null}
-      {mode === "channel" && !channel ? (
+      {!isSnapInfoLoading &&
+      !isSnapInfoError &&
+      mode === "channel" &&
+      !channel ? (
         <Notification
           severity="caution"
           className={classNames(

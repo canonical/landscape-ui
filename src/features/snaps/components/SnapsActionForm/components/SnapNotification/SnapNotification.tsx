@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { Notification } from "@canonical/react-components";
 import { SNAPD_REST_API_DOCUMENTATION_URL } from "@/constants";
 import type {
@@ -30,10 +30,14 @@ const HoldNotification = () => (
 
 const revisionMessages: Record<
   Extract<SnapAction, "install" | "change channel">,
-  string
+  ReactNode
 > = {
-  install:
-    "Specifying a revision doesn't set a tracked channel, so future updates may replace it with the store's latest revision.",
+  install: (
+    <>
+      Specifying a revision tracks <code>latest/stable</code> by default, so
+      future updates may replace it with the store&apos;s latest revision.
+    </>
+  ),
   "change channel":
     "Specifying a revision doesn't change the tracked channel, so future updates may replace it with that channel's latest revision.",
 };
