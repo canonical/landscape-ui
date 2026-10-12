@@ -129,18 +129,6 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
       return "Changing the channel will update the snap to the latest revision on the new channel.";
     }
 
-    if (isInstallingClassicSnaps) {
-      return (
-        <>
-          <strong>
-            By installing these, you acknowledge that these snaps may have
-            access to your files and system.
-          </strong>{" "}
-          Only install snaps in classic confinement if you trust the publisher.
-        </>
-      );
-    }
-
     switch (actionVerb) {
       case "refresh":
         return "Landscape will check each of the selected instances for a newer revision on the channel that snap is currently tracking, and install it where one is found.";
