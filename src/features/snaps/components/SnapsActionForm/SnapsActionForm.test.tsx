@@ -14,6 +14,7 @@ import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
 import type { SnapActionParams } from "../../types";
+import { ICONS } from "@canonical/react-components/dist/components/Icon/Icon";
 
 const instanceId = 1;
 const [firstSnap, secondSnap, , , , classicSnap] = installedSnaps;
@@ -989,5 +990,39 @@ describe("SnapsActionForm", () => {
     expect(
       screen.queryByText("This snap requires classic confinement"),
     ).not.toBeInTheDocument();
+  });
+
+  it("renders the snap name, current channel, delete button, and Change to label", async () => {
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(screen.getByRole("searchbox"));
+    await user.click(
+      screen.getByRole("option", { name: firstSnapOptionTitle }),
+    );
+
+    await screen.findByLabelText(
+      `Snap channel or revision for ${firstSnap.snap.name}`,
+    );
+
+    expect(screen.getByText(firstSnap.snap.name)).toBeInTheDocument();
+    expect(
+      screen.getByText(`Installed on ${firstSnap.computerCount} of 1 instance`),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Change to")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(
+        `Snap channel or revision for ${firstSnap.snap.name}`,
+      ),
+    ).toBeInTheDocument();
+
+    const deleteButton = screen.getByRole("button", {
+      name: `Delete ${firstSnap.snap.name}`,
+    });
+    expect(deleteButton).toHaveIcon(ICONS.delete);
   });
 });
