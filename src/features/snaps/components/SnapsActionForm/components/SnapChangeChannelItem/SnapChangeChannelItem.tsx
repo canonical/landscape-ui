@@ -80,7 +80,7 @@ const SnapChangeChannelItem: FC<SnapChangeChannelItemProps> = ({
       return undefined;
     }
     if (mode === "revision" && !value) {
-      return "Select a revision for this snap to continue";
+      return "This field is required";
     }
     if (mode === "revision" && !isValidRevision(value)) {
       return "Revision must be a positive whole number";

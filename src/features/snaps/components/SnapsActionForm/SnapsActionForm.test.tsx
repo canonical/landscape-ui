@@ -265,7 +265,7 @@ describe("SnapsActionForm", () => {
     await user.click(screen.getByRole("button", { name: "Change channel" }));
 
     expect(
-      await screen.findByText("Select a revision for this snap to continue"),
+      await screen.findByText("This field is required"),
     ).toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
