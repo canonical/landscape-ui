@@ -6,7 +6,10 @@ import type {
   InfiniteData,
   UseInfiniteQueryOptions,
 } from "@tanstack/react-query";
-import { FilterState, type SearchPackagesResponse } from "../types";
+import { FilterState } from "../types";
+import type { SearchPackagesResponse } from "../types";
+
+export type { SearchPackagesResponse };
 
 export interface SearchPackagesRequest {
   computer_query: string;

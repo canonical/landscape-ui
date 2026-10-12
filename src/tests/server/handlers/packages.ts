@@ -214,7 +214,10 @@ export default [
         }));
 
       if (body.text) {
-        results = generateFilteredResponse(results, body.text, ["name"]);
+        results = generateFilteredResponse(results, body.text, [
+          "name",
+          "summary",
+        ]);
       }
 
       const totalCount = results.length;
@@ -375,7 +378,7 @@ export default [
       items: filteredInstances
         .slice(offset, offset + limit)
         .map<PackageChangePlanItem>((instance) => ({
-          action: getPackageChangePlanSummaryAction(params.id, packages[0]),
+          action: getPackageChangePlanSummaryAction(params.id, packages[0]!),
           computer: { id: instance.id, name: instance.title },
         })),
       count: filteredInstances.length,

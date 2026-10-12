@@ -1,3 +1,4 @@
+import { FilterState } from "./types";
 import type {
   ComputerPackageSearchGroupedResult,
   InstancePackage,
@@ -77,24 +78,24 @@ export const mapActionTypeToQueryParams = (
   switch (actionType) {
     case "install":
       return {
-        available: "true",
-        installed: "false",
-        held: "false",
-        upgrade: "false",
-      } as const;
+        available: FilterState.TRUE,
+        installed: FilterState.FALSE,
+        held: FilterState.FALSE,
+        upgrade: FilterState.FALSE,
+      };
 
     case "remove":
     case "change_version":
       return {
-        installed: "true",
-        held: "false",
-      } as const;
+        installed: FilterState.TRUE,
+        held: FilterState.FALSE,
+      };
 
     case "hold":
-      return { installed: "true", held: "false" } as const;
+      return { installed: FilterState.TRUE, held: FilterState.FALSE };
 
     case "unhold":
-      return { held: "true" } as const;
+      return { held: FilterState.TRUE };
   }
 };
 
