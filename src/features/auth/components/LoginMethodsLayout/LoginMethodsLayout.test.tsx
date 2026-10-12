@@ -1,4 +1,8 @@
-import { describe } from "vitest";
+import { describe, vi } from "vitest";
+import { http, HttpResponse } from "msw";
+import { API_URL } from "@/constants";
+import { authResponse } from "@/tests/mocks/auth";
+import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import LoginMethods from "./LoginMethodsLayout";
@@ -15,6 +19,81 @@ const emptyMessageNotBeInTheDocument = () => {
 };
 
 describe("LoginMethodsLayout", () => {
+  it("switches between PAM and local login and submits the selected credentials", async () => {
+    const submittedCredentials = vi.fn();
+    server.use(
+      http.post(`${API_URL}login`, async ({ request }) => {
+        submittedCredentials(await request.json());
+        return HttpResponse.json(authResponse);
+      }),
+    );
+    const user = userEvent.setup();
+    renderWithProviders(
+      <LoginMethods
+        methods={{
+          ...noneLoginMethods,
+          pam: { available: true, enabled: true },
+          password: { available: true, enabled: true },
+        }}
+      />,
+    );
+
+    await user.type(screen.getByLabelText("PAM identity"), "pam-user");
+    await user.type(screen.getByLabelText("PAM password"), "pam-password");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+    await waitFor(() => {
+      expect(submittedCredentials).toHaveBeenCalledWith({
+        identity: "pam-user",
+        password: "pam-password",
+      });
+    });
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Log in with email and password instead",
+      }),
+    );
+    expect(screen.queryByLabelText("PAM identity")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Email")).toHaveValue("");
+    expect(screen.getByLabelText("Password")).toHaveValue("");
+    await user.type(screen.getByLabelText("Email"), "local@example.com");
+    await user.type(screen.getByLabelText("Password"), "local-password");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+    await waitFor(() => {
+      expect(submittedCredentials).toHaveBeenCalledWith({
+        email: "local@example.com",
+        password: "local-password",
+      });
+    });
+
+    await user.click(
+      screen.getByRole("button", { name: "Log in with PAM instead" }),
+    );
+    expect(screen.getByLabelText("PAM identity")).toHaveValue("");
+    expect(screen.getByLabelText("PAM password")).toHaveValue("");
+  });
+
+  it.each([
+    { available: false, enabled: true },
+    { available: true, enabled: false },
+  ])("does not offer a disabled or unavailable local login", (password) => {
+    renderWithProviders(
+      <LoginMethods
+        methods={{
+          ...noneLoginMethods,
+          pam: { available: true, enabled: true },
+          password,
+        }}
+      />,
+    );
+    expect(screen.getByLabelText("PAM identity")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", {
+        name: "Log in with email and password instead",
+      }),
+    ).not.toBeInTheDocument();
+  });
+
   it("should render no sign in methods", async () => {
     renderWithProviders(<LoginMethods methods={noneLoginMethods} />);
 
@@ -41,6 +120,39 @@ describe("LoginMethodsLayout", () => {
     expect(octaButton).toBeInTheDocument();
 
     emptyMessageNotBeInTheDocument();
+  });
+
+  it("should show the no-methods message when OIDC is unavailable", () => {
+    const methods = {
+      ...noneLoginMethods,
+      oidc: {
+        available: false,
+        configurations: allLoginMethods.oidc.configurations,
+      },
+    };
+
+    renderWithProviders(<LoginMethods methods={methods} />);
+
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(screen.getByText(EMPTY_MESSAGE)).toBeInTheDocument();
+  });
+
+  it("should show the no-methods message when every OIDC provider is disabled", () => {
+    const methods = {
+      ...noneLoginMethods,
+      oidc: {
+        available: true,
+        configurations: allLoginMethods.oidc.configurations.map((provider) => ({
+          ...provider,
+          enabled: false,
+        })),
+      },
+    };
+
+    renderWithProviders(<LoginMethods methods={methods} />);
+
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(screen.getByText(EMPTY_MESSAGE)).toBeInTheDocument();
   });
 
   it("should render enterprise sign in method", async () => {

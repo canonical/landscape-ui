@@ -59,6 +59,14 @@ export const ubuntuOneOnlyLoginMethods: LoginMethods = {
   },
 };
 
+export const pamLoginMethods: LoginMethods = {
+  ...noneLoginMethods,
+  pam: {
+    available: true,
+    enabled: true,
+  },
+};
+
 export const oidcOnlyLoginMethods: LoginMethods = {
   ...noneLoginMethods,
   oidc: {

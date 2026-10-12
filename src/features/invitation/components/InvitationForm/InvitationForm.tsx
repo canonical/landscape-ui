@@ -42,29 +42,31 @@ const InvitationForm: FC<InvitationFormProps> = ({
     <AuthTemplate
       title={`You have been invited as an administrator for ${accountTitle}`}
     >
-      <p className="p-text--small">
-        Accepting this invitation will make you an administrator for the{" "}
-        {accountTitle} organization.
-      </p>
-      <ActionButton
-        appearance="positive"
-        className={classNames(classes.button, "u-no-margin--bottom")}
-        onClick={handleAccept}
-        type="button"
-        disabled={isAcceptingInvitation}
-        loading={isAcceptingInvitation}
-      >
-        Accept
-      </ActionButton>
-      <ActionButton
-        type="button"
-        className={classNames(classes.button, "u-no-margin--bottom")}
-        onClick={handleReject}
-        disabled={isRejectingInvitation}
-        loading={isRejectingInvitation}
-      >
-        Reject
-      </ActionButton>
+      <div className={classes.container}>
+        <p className="p-text--small">
+          Accepting this invitation will make you an administrator for the{" "}
+          {accountTitle} organization.
+        </p>
+        <ActionButton
+          appearance="positive"
+          className={classNames(classes.button, "u-no-margin--bottom")}
+          onClick={handleAccept}
+          type="button"
+          disabled={isAcceptingInvitation}
+          loading={isAcceptingInvitation}
+        >
+          Accept
+        </ActionButton>
+        <ActionButton
+          type="button"
+          className={classNames(classes.button, "u-no-margin--bottom")}
+          onClick={handleReject}
+          disabled={isRejectingInvitation}
+          loading={isRejectingInvitation}
+        >
+          Reject
+        </ActionButton>
+      </div>
     </AuthTemplate>
   );
 };

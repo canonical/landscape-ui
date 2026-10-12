@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Notification, NotificationHelper } from "@/types/Notification";
 
 const DEFAULT_NOTIFICATION_TIMEOUT = 5000;
 
 const useNotificationHelper = (): NotificationHelper => {
   const [notification, setNotification] = useState<Notification | null>(null);
+  const clear = useCallback(() => {
+    setNotification(null);
+  }, []);
 
   useEffect(() => {
     if (!notification?.duration) {
@@ -52,9 +55,7 @@ const useNotificationHelper = (): NotificationHelper => {
       });
     },
 
-    clear: () => {
-      setNotification(null);
-    },
+    clear,
   };
 };
 

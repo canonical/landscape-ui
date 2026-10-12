@@ -3,6 +3,7 @@ import Redirecting from "@/components/layout/Redirecting";
 import {
   AccountCreationSaaSForm,
   AccountCreationSelfHostedForm,
+  useGetStandaloneAccount,
 } from "@/features/account-creation";
 import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
@@ -15,20 +16,28 @@ import { ROUTES } from "@/libs/routes";
 const AccountCreationPage: FC = () => {
   const { authorized, authLoading, hasAccounts } = useAuth();
   const { isSelfHosted, envLoading } = useEnv();
+  const {
+    accountExists: standaloneAccountExists,
+    isLoading: standaloneAccountLoading,
+  } = useGetStandaloneAccount();
   const navigate = useNavigate();
+  const shouldRedirectToLogin =
+    (!isSelfHosted && !authorized) ||
+    (isSelfHosted && standaloneAccountExists && !hasAccounts);
 
   useEffect(() => {
-    if (authLoading || envLoading) {
+    if (authLoading || envLoading || standaloneAccountLoading) {
       return;
     }
 
-    if (!isSelfHosted && !authorized) {
+    if (shouldRedirectToLogin) {
       navigate(ROUTES.auth.login(), { replace: true });
       return;
     }
 
     if (hasAccounts) {
       navigate(HOMEPAGE_PATH, { replace: true });
+      return;
     }
   }, [
     authorized,
@@ -37,13 +46,16 @@ const AccountCreationPage: FC = () => {
     hasAccounts,
     isSelfHosted,
     navigate,
+    shouldRedirectToLogin,
+    standaloneAccountExists,
+    standaloneAccountLoading,
   ]);
 
-  if (authLoading || envLoading) {
+  if (authLoading || envLoading || standaloneAccountLoading) {
     return <LoadingState />;
   }
 
-  if (!isSelfHosted && !authorized) {
+  if (shouldRedirectToLogin) {
     return <Redirecting />;
   }
 

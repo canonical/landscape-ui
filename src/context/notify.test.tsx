@@ -3,6 +3,12 @@ import { describe, it, expect, vi } from "vitest";
 import { MemoryRouter, useNavigate } from "react-router";
 import { useContext } from "react";
 import NotifyProvider, { NotifyContext } from "./notify";
+import type * as Constants from "@/constants";
+
+vi.mock("@/constants", async (importOriginal) => ({
+  ...(await importOriginal<typeof Constants>()),
+  ROOT_PATH: "/portal/",
+}));
 
 const NavigateToLogin = () => {
   const navigate = useNavigate();
@@ -10,7 +16,7 @@ const NavigateToLogin = () => {
   return (
     <button
       onClick={() => {
-        navigate("/login");
+        navigate("/portal/login");
       }}
     >
       Go to login
@@ -73,6 +79,42 @@ const TestConsumer = () => (
 );
 
 describe("NotifyProvider", () => {
+  it.each([
+    ["/login", true],
+    ["/support/login", true],
+    ["/create-account", true],
+    ["/accept-invitation/test-invite", true],
+    ["/overview", false],
+    ["/handle-auth/oidc", false],
+    ["/handle-auth/ubuntu-one", false],
+  ])("sets inlineErrors on %s to %s", (route, expected) => {
+    render(
+      <MemoryRouter initialEntries={[route]}>
+        <NotifyProvider>
+          <NotifyContext.Consumer>
+            {({ inlineErrors }) => <span>{String(inlineErrors)}</span>}
+          </NotifyContext.Consumer>
+        </NotifyProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(String(expected))).toBeInTheDocument();
+  });
+
+  it("matches auth paths when the pathname includes the configured basename", () => {
+    render(
+      <MemoryRouter initialEntries={["/portal/create-account"]}>
+        <NotifyProvider>
+          <NotifyContext.Consumer>
+            {({ inlineErrors }) => <span>{String(inlineErrors)}</span>}
+          </NotifyContext.Consumer>
+        </NotifyProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("true")).toBeInTheDocument();
+  });
+
   it("shows success notification when notify.success is called", () => {
     render(<TestConsumer />);
 
@@ -109,7 +151,7 @@ describe("NotifyProvider", () => {
     expect(screen.getByText("Info msg")).toBeInTheDocument();
   });
 
-  it("does not clear notification when navigating to /login", () => {
+  it("does not clear notification when navigating to login under the basename", () => {
     render(<TestConsumer />);
 
     fireEvent.click(screen.getByText("Trigger Success A"));

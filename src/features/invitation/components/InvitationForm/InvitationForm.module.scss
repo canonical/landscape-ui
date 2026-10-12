@@ -3,3 +3,7 @@
 .button {
   margin-top: $spv--large;
 }
+
+:global(.ds.card):has(.container) {
+  min-height: 296px;
+}

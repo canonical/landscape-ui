@@ -5,10 +5,11 @@ import AppNotification from "@/components/layout/AppNotification";
 export const GlobalShell: FC<{ readonly children: ReactNode }> = ({
   children,
 }) => {
-  const { notify, sidePanel } = useNotify();
+  const { notify, sidePanel, inlineErrors } = useNotify();
 
   const showNotification =
-    !sidePanel.open || notify.notification?.type !== "negative";
+    !(sidePanel.open || inlineErrors) ||
+    notify.notification?.type !== "negative";
 
   return (
     <>

@@ -66,9 +66,12 @@ export const renderWithProviders = (
         <AppProviders>
           <SidePanelProvider>
             <NotifyContext.Consumer>
-              {({ notify }) => (
+              {({ notify, inlineErrors }) => (
                 <>
-                  <AppNotification notify={notify} />
+                  {(!inlineErrors ||
+                    notify.notification?.type !== "negative") && (
+                    <AppNotification notify={notify} />
+                  )}
                   {wrappedChildren}
                 </>
               )}

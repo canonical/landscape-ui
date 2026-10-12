@@ -1,12 +1,15 @@
-import type { FC } from "react";
+import { useState, type FC } from "react";
+import { Button } from "@canonical/react-components";
 import type { LoginMethods } from "@/features/auth";
 import { AvailableProviderList, LoginForm } from "@/features/auth";
+import classes from "./LoginMethodsLayout.module.scss";
 
 interface LoginMethodsProps {
   readonly methods: LoginMethods | null;
 }
 
 const LoginMethodsLayout: FC<LoginMethodsProps> = ({ methods }) => {
+  const [usePasswordLogin, setUsePasswordLogin] = useState(false);
   if (!methods) {
     return null;
   }
@@ -32,16 +35,21 @@ const LoginMethodsLayout: FC<LoginMethodsProps> = ({ methods }) => {
     : [];
 
   const loginFormAvailable = isPasswordEnabled || isIdentityAvailable;
+  const showPamLogin =
+    isIdentityAvailable && (!isPasswordEnabled || !usePasswordLogin);
 
   const providersAvailable =
     isUbuntuOneEnabled ||
     isStandaloneOidcEnabled ||
-    methods.oidc.configurations.length > 0;
+    availableOidcProviders.length > 0;
 
   return (
     <>
       {loginFormAvailable && (
-        <LoginForm isIdentityAvailable={isIdentityAvailable} />
+        <LoginForm
+          key={showPamLogin ? "pam" : "password"}
+          isIdentityAvailable={showPamLogin}
+        />
       )}
       {providersAvailable && (
         <AvailableProviderList
@@ -49,6 +57,22 @@ const LoginMethodsLayout: FC<LoginMethodsProps> = ({ methods }) => {
           isUbuntuOneEnabled={isUbuntuOneEnabled}
           oidcProviders={availableOidcProviders}
         />
+      )}
+      {isIdentityAvailable && isPasswordEnabled && (
+        <div className={classes.loginModeSwitch}>
+          <Button
+            type="button"
+            appearance="link"
+            className="u-no-margin--bottom"
+            onClick={() => {
+              setUsePasswordLogin((prev) => !prev);
+            }}
+          >
+            {showPamLogin
+              ? "Log in with email and password instead"
+              : "Log in with PAM instead"}
+          </Button>
+        </div>
       )}
       {!loginFormAvailable && !providersAvailable && (
         <span>

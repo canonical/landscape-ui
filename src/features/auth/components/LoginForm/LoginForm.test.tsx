@@ -44,6 +44,41 @@ const mockTestParams = (searchParams?: Record<string, string>) => {
 };
 
 describe("LoginForm", () => {
+  it.each([false, true])(
+    "returns to the invitation after sign-in (PAM: %s)",
+    async (isIdentityAvailable) => {
+      vi.doUnmock("react-router");
+      vi.doUnmock("@/hooks/useAuth");
+      vi.resetModules();
+      vi.clearAllMocks();
+      loginSpy.mockResolvedValue({ data: authUser });
+      mockTestParams({
+        invitation_id: "test-invite",
+        "redirect-to": "/dashboard",
+        external: "true",
+      });
+      const { default: Component } = await import("./LoginForm");
+      renderWithProviders(
+        <Component isIdentityAvailable={isIdentityAvailable} />,
+      );
+      await userEvent.type(
+        screen.getByTestId("identifier"),
+        isIdentityAvailable ? "john" : user.email,
+      );
+      await userEvent.type(screen.getByTestId("password"), user.password);
+      await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
+
+      expect(setUser).toHaveBeenCalledWith(authUser);
+      expect(safeRedirect).toHaveBeenCalledWith(
+        "/accept-invitation/test-invite?redirect-to=%2Fdashboard&external=true",
+        {
+          external: false,
+          replace: true,
+        },
+      );
+    },
+  );
+
   describe("without additional test params", () => {
     beforeEach(async ({ task: { id } }) => {
       vi.doUnmock("react-router");
@@ -113,6 +148,10 @@ describe("LoginForm", () => {
       await userEvent.type(screen.getByTestId("identifier"), "john");
       await userEvent.type(screen.getByTestId("password"), user.password);
       await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    });
+
+    it("labels the identifier field as PAM identity", () => {
+      expect(screen.getByLabelText("PAM identity")).toBeInTheDocument();
     });
 
     it("should sign in with identity field instead of email", async () => {

@@ -1,14 +1,12 @@
-import {
-  API_URL,
-  API_URL_DEB_ARCHIVE,
-  API_URL_OLD,
-  MSW_ENDPOINTS_TO_INTERCEPT,
-} from "@/constants";
-import type { AuthUser } from "@/features/auth";
-import type { RequestHandler } from "msw";
-import { http, HttpResponse, passthrough } from "msw";
 import { setupWorker } from "msw/browser";
-import fallbackHandlers from "./server/handlers";
+import {
+  createBrowserHandlers,
+  createRememberedSessionHandler,
+} from "./authTesting/browserHandlers";
+import { getAuthTestingConfig } from "./authTesting/config";
+import { ROOT_PATH } from "@/constants";
+import { MOCK_INVITATION_ID } from "./authTesting/handlers";
+import type { AuthUser } from "@/features/auth";
 import {
   setStaffGlobalRoles,
   staffState,
@@ -107,56 +105,23 @@ console.info(
     'window.msw.setGlobalRoles(["SupportProvider", "AccountManager"]) and reload.',
 );
 
-// --- Handlers ---
-
-const handlers: RequestHandler[] = [
-  http.all("*", ({ request }) => {
-    if (
-      !request.url.includes(API_URL) &&
-      !request.url.includes(API_URL_OLD) &&
-      !request.url.includes(API_URL_DEB_ARCHIVE)
-    ) {
-      return passthrough();
-    }
-
-    if (request.url.match(/\.(ts|tsx|scss)/)) {
-      return passthrough();
-    }
-
-    if (
-      MSW_ENDPOINTS_TO_INTERCEPT.some((url: string) =>
-        request.url.includes(url),
-      )
-    ) {
-      return;
-    }
-
-    return passthrough();
-  }),
-
-  // The remembered session, for the app's tokenless `GET /me`.
-  http.get(`${API_URL}me`, ({ request }) => {
-    const session = readJson<AuthUser>(SESSION_KEY);
-
-    if (request.headers.get("Authorization") || !session) {
-      return;
-    }
-
-    return HttpResponse.json({
-      ...session,
-      global_roles: [...staffState.globalRoles],
-    });
-  }),
-
-  ...fallbackHandlers,
-
-  http.all("*", ({ request }) => {
-    console.warn("MSW: No handler matched, passing through:", request.url);
-    return passthrough();
-  }),
-];
-
-export const worker = setupWorker(...handlers);
+const authTestingConfig = getAuthTestingConfig(import.meta.env);
+if (authTestingConfig?.invitationEnabled) {
+  console.info(
+    "MSW authentication testing invitation:",
+    new URL(
+      `${ROOT_PATH}accept-invitation/${MOCK_INVITATION_ID}`,
+      window.location.origin,
+    ).href,
+  );
+}
+export const worker = setupWorker(
+  createRememberedSessionHandler(
+    () => readJson<AuthUser>(SESSION_KEY),
+    () => [...staffState.globalRoles],
+  ),
+  ...createBrowserHandlers(authTestingConfig, readJson<AuthUser>(SESSION_KEY)),
+);
 
 worker.events.on("response:mocked", ({ request, response }) => {
   rememberSession(request, response).catch((error: unknown) => {
