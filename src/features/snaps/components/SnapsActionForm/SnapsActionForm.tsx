@@ -163,7 +163,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
   const isAnySnapInfoLoading =
     isChangeChannel &&
-    selectedSnaps.some((item) => loadingSnapIds[item.snap.id]);
+    selectedSnaps.some(
+      (item) =>
+        (snapChangeConfigs[item.snap.id]?.mode ?? "channel") === "channel" &&
+        !!loadingSnapIds[item.snap.id],
+    );
 
   const hasSnapInfoErrorInChannelMode =
     isChangeChannel &&
