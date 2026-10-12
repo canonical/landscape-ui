@@ -1,7 +1,11 @@
 import type { FC } from "react";
 import { Notification } from "@canonical/react-components";
 import { SNAPD_REST_API_DOCUMENTATION_URL } from "@/constants";
-import type { SnapAction, SnapChangeMode } from "../../../../types";
+import type {
+  ActionWithNotification,
+  SnapAction,
+  SnapChangeMode,
+} from "../../../../types";
 
 interface SnapChangeConfig {
   mode: SnapChangeMode;
@@ -10,7 +14,7 @@ interface SnapChangeConfig {
 }
 
 interface SnapNotificationProps {
-  readonly action: SnapAction;
+  readonly action: ActionWithNotification;
   readonly snapChangeConfigs?: Record<string, SnapChangeConfig>;
 }
 
@@ -40,10 +44,6 @@ const SnapNotification: FC<SnapNotificationProps> = ({
 }) => {
   if (action === "hold") {
     return <HoldNotification />;
-  }
-
-  if (action !== "install" && action !== "change channel") {
-    return null;
   }
 
   const hasRevision =

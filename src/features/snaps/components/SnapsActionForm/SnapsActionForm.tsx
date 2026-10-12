@@ -1,5 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { type FC, lazy, Suspense, useCallback, useState } from "react";
+import { type FC, lazy, useCallback, useState } from "react";
 import { getActionVerb, getRequestAction, hasNotification } from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import type {
@@ -18,7 +18,6 @@ import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import useNotify from "@/hooks/useNotify";
 import { useBoolean } from "usehooks-ts";
-import LoadingState from "@/components/layout/LoadingState";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 import { isValidRevision } from "../../helpers";
 import { Notification } from "@canonical/react-components";
@@ -359,19 +358,17 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       />
 
       {isModalOpen && (
-        <Suspense fallback={<LoadingState />}>
-          <ConfirmSnapActionModal
-            actionVerb={action}
-            snaps={selectedSnaps}
-            changeModes={changeModes}
-            instancesCount={selectedInstances.length}
-            onClose={closeModal}
-            onConfirm={onSubmit}
-            isSubmitting={isSnapActionPending}
-            submitText={submitText}
-            snapChangeConfigs={snapChangeConfigs}
-          />
-        </Suspense>
+        <ConfirmSnapActionModal
+          actionVerb={action}
+          snaps={selectedSnaps}
+          changeModes={changeModes}
+          instancesCount={selectedInstances.length}
+          onClose={closeModal}
+          onConfirm={onSubmit}
+          isSubmitting={isSnapActionPending}
+          submitText={submitText}
+          snapChangeConfigs={snapChangeConfigs}
+        />
       )}
     </>
   );
