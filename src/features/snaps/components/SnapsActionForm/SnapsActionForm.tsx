@@ -1,5 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { type FC, lazy, useCallback, useState } from "react";
+import { type FC, useCallback, useState } from "react";
 import { getActionVerb, getRequestAction, hasNotification } from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import type {
@@ -24,7 +24,6 @@ import { Notification } from "@canonical/react-components";
 import SnapNotification from "./components/SnapNotification";
 
 import ConfirmSnapActionModal from "./components/ConfirmSnapActionModal";
-
 interface SnapsActionFormProps {
   readonly selectedInstances: number[];
   readonly action: SnapAction;
