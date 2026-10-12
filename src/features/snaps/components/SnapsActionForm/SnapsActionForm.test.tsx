@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import SnapsActionForm from "./SnapsActionForm";
@@ -22,7 +22,7 @@ describe("SnapsActionForm", () => {
   const user = userEvent.setup();
 
   describe("Form rendering", () => {
-    it("renders form with searchbox, text, and buttons", () => {
+    it("renders form with searchbox, text, and buttons", async () => {
       renderWithProviders(
         <SnapsActionForm selectedInstances={[instanceId]} action="unhold" />,
       );
@@ -45,16 +45,31 @@ describe("SnapsActionForm", () => {
 
     it("includes count in submit button when snaps are selected", async () => {
       renderWithProviders(
-        <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+        <SnapsActionForm selectedInstances={[instanceId]} action="uninstall" />,
       );
 
       await user.click(screen.getByRole("searchbox"));
       await user.click(screen.getByRole("option", { name: snapTitle }));
 
-      expect(
-        screen.getByRole("button", { name: "Install 1 snap" }),
-      ).toBeInTheDocument();
+      const submitButton = screen.getByRole("button", {
+        name: "Uninstall 1 snap",
+      });
+      expect(submitButton).toHaveClass("p-button--negative");
     });
+  });
+
+  it("shows a form error when submitting without selecting a snap", async () => {
+    renderWithProviders(
+      <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+    );
+
+    await user.click(
+      await screen.findByRole("button", { name: "Install snaps" }),
+    );
+
+    expect(
+      await screen.findByText("You must add at least one snap to continue."),
+    ).toBeInTheDocument();
   });
 
   it("removes package when delete button is clicked", async () => {
@@ -90,6 +105,11 @@ describe("SnapsActionForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Hold 1 snap" }));
 
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Hold 1 snap" }),
+    );
+
     expect(
       await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
@@ -108,8 +128,13 @@ describe("SnapsActionForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Change channel" }));
 
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Change channel" }),
+    );
+
     expect(
-      await screen.findByText("Snaps successfully set to change channel"),
+      await screen.findByText("Snaps successfully queued to change channel"),
     ).toBeInTheDocument();
   });
 
@@ -131,8 +156,13 @@ describe("SnapsActionForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Uninstall 1 snap" }));
 
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Uninstall 1 snap" }),
+    );
+
     expect(
-      await screen.findByText("Snaps successfully set to uninstall"),
+      await screen.findByText("Snaps successfully queued to uninstall"),
     ).toBeInTheDocument();
     expect(requestBody).toMatchObject({
       action: "remove",
