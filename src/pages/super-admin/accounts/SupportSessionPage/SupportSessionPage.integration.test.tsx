@@ -434,6 +434,22 @@ describe("SupportSessionPage (integration)", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("sends an account manager without the support role to the account's page", async () => {
+    signInWith({ globalRoles: ["AccountManager"] });
+
+    const switches = recordSwitches();
+
+    renderApp(ROUTES.superAdmin.sessionEventsLog(ACME));
+
+    expect(
+      await screen.findByRole("heading", { name: ACME_TITLE, level: 2 }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("region", { name: "Support session" }),
+    ).not.toBeInTheDocument();
+    expect(switches).toEqual([]);
+  });
+
   it("handles an account that does not exist without switching", async () => {
     const switches = recordSwitches();
 
