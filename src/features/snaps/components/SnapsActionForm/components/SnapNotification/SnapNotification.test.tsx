@@ -32,9 +32,7 @@ describe("SnapNotification", () => {
       />,
     );
 
-    expect(
-      screen.getByText(/revision doesn't set a tracked channel/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/revision tracks/i)).toBeInTheDocument();
     expect(screen.getByText("Visit Snapd documentation")).toBeInTheDocument();
   });
 
