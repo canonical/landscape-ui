@@ -1,3 +1,4 @@
+import { ROUTES } from "@/libs/routes";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -21,19 +22,25 @@ describe("UserActivityLink", () => {
     expect(
       screen.queryByText(/This field is pending to be changed/),
     ).not.toBeInTheDocument();
-    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
 
     rerender(renderUserActivityLink(event));
 
-    expect(
-      screen.getByRole("button", { name: "View activity 103: Queued" }),
-    ).toHaveTextContent("Editing user(s): Queued");
+    const link = screen.getByRole("link", {
+      name: "View activity 103: Queued",
+    });
+    expect(link).toHaveTextContent("Editing user(s): Queued");
+    expect(link).toHaveAttribute(
+      "href",
+      ROUTES.activities.root({ query: `id:${event.activity_id}` }),
+    );
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
 
     rerender(renderUserActivityLink(undefined));
 
     expect(
       screen.queryByText(/This field is pending to be changed/),
     ).not.toBeInTheDocument();
-    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
 });

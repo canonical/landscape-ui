@@ -290,17 +290,17 @@ describe("EditUserForm", () => {
     renderEditUserForm();
 
     expect(
-      await screen.findByRole("button", {
+      await screen.findByRole("link", {
         name: "View activity 103: Queued",
       }),
     ).toHaveTextContent("Editing user(s): Queued");
     expect(
-      screen.getByRole("button", {
+      screen.getByRole("link", {
         name: "View activity 102: Unapproved",
       }),
     ).toHaveTextContent("Editing user(s): Unapproved");
     expect(
-      screen.getByRole("button", {
+      screen.getByRole("link", {
         name: "View activity 101: Queued",
       }),
     ).toHaveTextContent("Adding user(s) to group(s): Queued");
@@ -337,7 +337,7 @@ describe("EditUserForm", () => {
     );
 
     expect(
-      await screen.findByRole("button", {
+      await screen.findByRole("link", {
         name: "View activity 103: Queued",
       }),
     ).toBeInTheDocument();
@@ -362,7 +362,7 @@ describe("EditUserForm", () => {
     rendered.rerender(renderForm());
 
     expect(
-      screen.queryByRole("button", {
+      screen.queryByRole("link", {
         name: "View activity 103: Queued",
       }),
     ).not.toBeInTheDocument();
@@ -370,12 +370,12 @@ describe("EditUserForm", () => {
       screen.getByRole("form").querySelector(".p-form-validation.is-caution"),
     ).toBeNull();
     expect(
-      await screen.findByRole("button", {
+      await screen.findByRole("link", {
         name: "View activity 104: Queued",
       }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", {
+      screen.queryByRole("link", {
         name: "View activity 103: Queued",
       }),
     ).not.toBeInTheDocument();
@@ -420,7 +420,7 @@ describe("EditUserForm", () => {
     renderEditUserFormWithActivitiesPage();
 
     await user.click(
-      await screen.findByRole("button", {
+      await screen.findByRole("link", {
         name: `View activity ${childActivity.id}: Unapproved`,
       }),
     );
@@ -1005,7 +1005,7 @@ describe("EditUserForm", () => {
 
       await openEditUserSidePanel(user);
       expect(
-        await within(panel).findByRole("button", {
+        await within(panel).findByRole("link", {
           name: "View activity 103: Queued",
         }),
       ).toHaveTextContent("Update user group membership: Queued");
@@ -1097,7 +1097,7 @@ describe("EditUserForm", () => {
 
       await openEditUserSidePanel(user);
       expect(
-        await within(panel).findByRole("button", {
+        await within(panel).findByRole("link", {
           name: "View activity 103: Queued",
         }),
       ).toHaveTextContent("Edit user user1: Queued");
