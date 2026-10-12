@@ -1063,9 +1063,7 @@ describe("SnapsActionForm", () => {
 
     await user.type(await screen.findByRole("searchbox"), thirdSnap.snap.name);
     await user.click(
-      await screen.findByRole("option", {
-        name: thirdSnapOptionTitle,
-      }),
+      await screen.findByRole("option", { name: thirdSnapOptionTitle }),
     );
 
     expect(
@@ -1080,14 +1078,10 @@ describe("SnapsActionForm", () => {
 
     await user.type(await screen.findByRole("searchbox"), firstSnap.snap.name);
     await user.click(
-      await screen.findByRole("option", {
-        name: firstSnapOptionTitle,
-      }),
+      await screen.findByRole("option", { name: firstSnapOptionTitle }),
     );
 
-    expect(
-      screen.queryByText("This snap requires classic confinement"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/classic confinement/i)).not.toBeInTheDocument();
   });
 
   it("renders the snap name, current channel, delete button, and Change to label", async () => {
@@ -1109,7 +1103,9 @@ describe("SnapsActionForm", () => {
 
     expect(screen.getByText(firstSnap.snap.name)).toBeInTheDocument();
     expect(
-      screen.getByText(`Installed on ${firstSnap.computerCount} of 1 instance`),
+      screen.getByText(
+        `Installed on ${firstSnap.computer_count} of 1 instance`,
+      ),
     ).toBeInTheDocument();
     expect(screen.getByText("Change to")).toBeInTheDocument();
     expect(

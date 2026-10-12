@@ -3,12 +3,14 @@ import type {
   GetSnapsParams,
   InstalledSnap,
   SnapActionParams,
+  SnapWithCount,
 } from "@/features/snaps";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   availableSnapInfo,
   availableSnaps,
-  bulkSnaps,
+  bulkAvailableSnaps,
+  bulkInstalledSnaps,
   installedSnaps,
   successfulSnapInstallResponse,
 } from "@/tests/mocks/snap";
@@ -99,14 +101,14 @@ export default [
       throw createEndpointStatusError();
     }
 
-    const installed = bulkSnaps.filter(({ computer_count }) => computer_count !== null);
-    const available = bulkSnaps.filter(({ computer_count }) => computer_count === null);
-    
-    const filterResults = () => {
+    const filterResults = (): SnapWithCount[] => {
       switch (status) {
-        case "installed": return installed;
-        case "available": return available;
-        default: return installed.slice(3);
+        case "installed":
+          return bulkInstalledSnaps;
+        case "available":
+          return bulkAvailableSnaps;
+        default:
+          return bulkInstalledSnaps.slice(10);
       }
     };
 
