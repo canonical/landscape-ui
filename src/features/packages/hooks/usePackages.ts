@@ -43,7 +43,7 @@ interface DowngradePackageVersionParams {
 }
 
 interface PackagesActionParams {
-  action: "install" | "remove" | "hold" | "unhold";
+  action: "install" | "remove" | "hold" | "unhold" | "downgrade";
   computer_ids: number[];
   package_ids: number[];
   deliver_after?: string;
@@ -90,6 +90,7 @@ const mapSearchResponseToPaginatedPackages = (
     id: pkg.id,
     name: pkg.name,
     summary: pkg.summary,
+    version: pkg.version,
     computers: {
       count: pkg.computers.count,
     },
