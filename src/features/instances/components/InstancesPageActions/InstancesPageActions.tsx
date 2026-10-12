@@ -25,9 +25,9 @@ import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModa
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
-
 import { getActionFormTitle } from "@/features/packages";
 import { DEB_MANAGEMENT_INSTANCE_LIMIT } from "@/features/packages";
+
 const RunInstanceScriptForm = lazy(
   async () => import("@/features/scripts/components/RunInstanceScriptForm"),
 );

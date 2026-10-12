@@ -197,5 +197,17 @@ describe("EditStaffAccountForm helpers", () => {
       ).toEqual({});
       expect(getFieldErrors(new Error("Network down"))).toEqual({});
     });
+
+    it("leaves the message alone when validation details name no field", () => {
+      expect(
+        getFieldErrors(
+          getRejection({
+            error: "PydanticValidationError",
+            message: "Subdomain and Salesforce key cannot both change",
+            detail: [{ loc: ["body"], msg: "Value error" }],
+          }),
+        ),
+      ).toEqual({});
+    });
   });
 });
