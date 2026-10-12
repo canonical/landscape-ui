@@ -49,7 +49,7 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
   const snapsQueryResult = useGetBulkInstalledSnaps(
     {
       computer_ids: instanceIds,
-      search: search.trim() || undefined,
+      search: search || undefined,
       status: searchScope,
     },
     // isDropdownOpen stops re-sending all cached requests on submission
@@ -64,7 +64,7 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
 
   const handleSearchBoxChange = (value: string) => {
     setInputValue(value);
-    setSearch(value);
+    setSearch(value.trim());
     if (!isDropdownOpen) {
       openDropdown();
     }
