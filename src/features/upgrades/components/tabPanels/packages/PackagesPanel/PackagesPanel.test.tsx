@@ -7,7 +7,7 @@ import { usePackages } from "@/features/packages";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
 import { instances } from "@/tests/mocks/instance";
-import { packagesOld as packages } from "@/tests/mocks/packagesOld";
+import { packages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import PackagesPanel from "./PackagesPanel";
@@ -50,7 +50,7 @@ describe("usePackages request params", () => {
     setEndpointStatus("default");
 
     server.use(
-      http.post(`${API_URL}packages:search-upgrades`, async ({ request }) => {
+      http.post(`${API_URL}packages\\:search-upgrades`, async ({ request }) => {
         capturedBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({
           packages,

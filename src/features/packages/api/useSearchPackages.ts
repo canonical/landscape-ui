@@ -6,9 +6,7 @@ import type {
   InfiniteData,
   UseInfiniteQueryOptions,
 } from "@tanstack/react-query";
-import type { Package } from "../types/Package";
-
-export type FilterState = "unspecified" | "true" | "false";
+import { FilterState, type SearchPackagesResponse } from "../types";
 
 export interface SearchPackagesRequest {
   computer_query: string;
@@ -21,13 +19,6 @@ export interface SearchPackagesRequest {
   security?: FilterState;
   limit?: number;
   offset?: number;
-}
-
-export interface SearchPackagesResponse {
-  packages: Package[];
-  count: number;
-  prev: string | null;
-  next: string | null;
 }
 
 export default function useSearchPackages(

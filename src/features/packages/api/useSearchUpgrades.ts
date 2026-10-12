@@ -3,15 +3,7 @@ import type { ApiError } from "@/types/api/ApiError";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { Package } from "../types";
-
-export interface SearchUpgradesRequest {
-  computer_query: string;
-  text?: string;
-  names?: string;
-  limit?: number;
-  offset?: number;
-}
+import type { Package, SearchUpgradesRequest } from "../types";
 
 export interface SearchUpgradesResponse {
   packages: Package[];

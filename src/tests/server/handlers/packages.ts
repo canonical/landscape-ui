@@ -11,7 +11,6 @@ import type {
   ListPackageChangePlanItemsRequest,
   ListPackageChangePlanItemsResponse,
   SearchUpgradesRequest,
-  SearchUpgradesResponse,
   PackageChangePlanItem,
   Package,
   PackageChangePlanAction,
@@ -29,6 +28,7 @@ import {
 } from "@/tests/mocks/packages";
 import {
   generateFilteredResponse,
+  generatePaginatedResponse,
   isAction,
   shouldApplyEndpointStatus,
 } from "./_helpers";
@@ -147,7 +147,7 @@ const getPackageChangePlanActionType = (id: string) => {
 
 export default [
   http.post<never, SearchUpgradesRequest>(
-    `${API_URL}packages:search-upgrades`,
+    `${API_URL}packages\\:search-upgrades`,
     async ({ request }) => {
       if (
         shouldApplyEndpointStatus("package-upgrades") ||
@@ -192,11 +192,13 @@ export default [
             );
 
       let results: PackageSearchResultPackage[] = legacyPackages
-        .filter((pkg) =>
-          pkg.computers.some(
-            (c) =>
-              selectedComputerIds.has(c.id) && c.available_version !== null,
-          ),
+        .filter(
+          (pkg) =>
+            (!body.names?.length || body.names.includes(pkg.name)) &&
+            pkg.computers.some(
+              (c) =>
+                selectedComputerIds.has(c.id) && c.available_version !== null,
+            ),
         )
         .map((pkg) => ({
           id: pkg.id,
@@ -344,34 +346,6 @@ export default [
       });
 
       return HttpResponse.json<SearchPackagesResponse>({
-        packages: response.results,
-        count: response.count,
-        next: response.next,
-        prev: response.previous,
-      });
-    },
-  ),
-
-  http.post<never, SearchUpgradesRequest, SearchUpgradesResponse>(
-    `${API_URL}packages\\:search-upgrades`,
-    async ({ request }) => {
-      const body = await request.json();
-
-      const response = generatePaginatedResponse({
-        data: packages.filter((pkg) => {
-          if (body.names === undefined) {
-            return true;
-          }
-
-          return body.names.split(",").includes(pkg.name);
-        }),
-        limit: body.limit,
-        offset: body.offset,
-        search: body.text,
-        searchFields: ["name", "summary"],
-      });
-
-      return HttpResponse.json<SearchUpgradesResponse>({
         packages: response.results,
         count: response.count,
         next: response.next,
