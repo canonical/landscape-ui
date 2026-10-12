@@ -17,9 +17,10 @@ import type { SnapActionParams } from "../../types";
 import { ICONS } from "@canonical/react-components/dist/components/Icon/Icon";
 
 const instanceId = 1;
-const [firstSnap, secondSnap, , , , classicSnap] = installedSnaps;
+const [firstSnap, secondSnap, , fourthSnap, , classicSnap] = installedSnaps;
 const firstSnapOptionTitle = `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`;
 const secondSnapOptionTitle = `${secondSnap.snap.name} ${secondSnap.snap.publisher.username}`;
+const fourthSnapOptionTitle = `${fourthSnap.snap.name} ${fourthSnap.snap.publisher.username}`;
 const classicSnapOptionTitle = `${classicSnap.snap.name} ${classicSnap.snap.publisher.username}`;
 
 describe("SnapsActionForm", () => {
@@ -543,6 +544,53 @@ describe("SnapsActionForm", () => {
     });
   });
 
+  it("sends classic: true for a snap left on its default channel", async () => {
+    let requestBody: SnapActionParams | null = null;
+    server.use(
+      http.post(`${API_URL}snaps`, async ({ request }) => {
+        requestBody = (await request.json()) as SnapActionParams;
+        return HttpResponse.json(successfulSnapInstallResponse);
+      }),
+    );
+
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: firstSnapOptionTitle,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("combobox", {
+          name: `Channel for ${firstSnap.snap.name}`,
+        }),
+      ).toBeDisabled();
+    });
+
+    await user.click(screen.getByRole("button", { name: "Change channel" }));
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Change channel" }),
+    );
+
+    expect(
+      await screen.findByText("Snaps successfully queued to change channel"),
+    ).toBeInTheDocument();
+    expect(requestBody).toMatchObject({
+      action: "refresh",
+      computer_ids: [instanceId],
+      snaps: [{ name: firstSnap.snap.name, args: { classic: true } }],
+    });
+  });
+
   it("shows a classic confinement notice when a classic channel is selected", async () => {
     renderWithProviders(
       <SnapsActionForm
@@ -579,6 +627,46 @@ describe("SnapsActionForm", () => {
 
     expect(
       screen.queryByText("This snap requires classic confinement"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows a caution notification when a snap uses default channel and classic confinement cannot be confirmed", async () => {
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: firstSnapOptionTitle,
+      }),
+    );
+
+    const channelSelect = await screen.findByRole("combobox", {
+      name: `Channel for ${firstSnap.snap.name}`,
+    });
+    await waitFor(() => {
+      expect(channelSelect).toBeDisabled();
+    });
+
+    expect(
+      await screen.findByText(
+        "We couldn't confirm if this snap requires classic confinement. Check the default channel on the snap store to make sure.",
+      ),
+    ).toBeInTheDocument();
+
+    const modeSelect = screen.getByLabelText(
+      `Snap channel or revision for ${firstSnap.snap.name}`,
+    );
+    await user.selectOptions(modeSelect, "revision");
+
+    expect(
+      screen.queryByText(
+        "We couldn't confirm if this snap requires classic confinement. Check the default channel on the snap store to make sure.",
+      ),
     ).not.toBeInTheDocument();
   });
 
@@ -921,9 +1009,17 @@ describe("SnapsActionForm", () => {
     await user.click(screen.getByRole("searchbox"));
     await user.click(
       await screen.findByRole("option", {
-        name: firstSnapOptionTitle,
+        name: fourthSnapOptionTitle,
       }),
     );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("combobox", {
+          name: `Channel for ${fourthSnap.snap.name}`,
+        }),
+      ).not.toBeDisabled();
+    });
 
     await user.click(screen.getByRole("button", { name: "Change channel" }));
     const modal = await screen.findByRole("dialog");
@@ -953,7 +1049,7 @@ describe("SnapsActionForm", () => {
       computer_ids: [instanceId],
       snaps: [
         { name: secondSnap.snap.name, args: { revision: "123" } },
-        { name: firstSnap.snap.name },
+        { name: fourthSnap.snap.name },
       ],
     });
   });

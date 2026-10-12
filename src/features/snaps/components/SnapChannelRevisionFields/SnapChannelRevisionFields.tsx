@@ -9,10 +9,14 @@ import {
 import classNames from "classnames";
 import type { InstalledSnapWithCount, SnapMode } from "../../types";
 import classes from "./SnapChannelRevisionFields.module.scss";
-import { getChannelOptions, MODE_OPTIONS } from "./helpers";
+import { MODE_OPTIONS } from "./helpers";
 import { useTheme } from "@/context/theme";
 import { useGetSnapInfo } from "../../api";
-import { getChannelConfinement, isValidRevision } from "../../helpers";
+import {
+  getChannelConfinement,
+  getChannelOptions,
+  isValidRevision,
+} from "../../helpers";
 
 interface SnapChannelRevisionFieldsProps {
   readonly instanceIds: number[];
@@ -38,7 +42,7 @@ interface SnapChannelRevisionFieldsProps {
 const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   instanceIds,
   selectedSnap,
-  snapModeConfig: { mode, value, confinement },
+  snapModeConfig: { mode, value, channel, confinement },
   isLoading = false,
   hasAttemptedSubmit,
   onLoadingChange,
@@ -209,6 +213,18 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
           )}
         >
           This snap requires classic confinement
+        </Notification>
+      ) : null}
+      {mode === "channel" && !channel ? (
+        <Notification
+          severity="caution"
+          className={classNames(
+            classes.classicNotification,
+            "u-no-margin--bottom",
+          )}
+        >
+          We couldn&apos;t confirm if this snap requires classic confinement.
+          Check the default channel on the snap store to make sure.
         </Notification>
       ) : null}
     </>

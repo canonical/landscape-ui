@@ -2,16 +2,18 @@ import type {
   SnapAction,
   SnapMode,
   InstalledSnapWithCount,
-  InstalledSnap,
 } from "../../../../types";
 import { capitalize, pluralize } from "@/utils/_helpers";
-import { ConfirmationModal, Notification } from "@canonical/react-components";
+import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./ConfirmSnapActionModal.module.scss";
 import { getChangeChannelVerb } from "../../helpers";
 
-interface SnapChangeConfig {
+interface SnapModeConfig {
   confinement?: string;
+  mode: SnapMode;
+  value: string;
+  channel?: string;
 }
 
 interface ConfirmSnapActionModalProps {
@@ -23,7 +25,7 @@ interface ConfirmSnapActionModalProps {
   readonly onConfirm: () => void;
   readonly isSubmitting: boolean;
   readonly submitText: string;
-  readonly snapModeConfigs: Record<string, SnapChangeConfig>;
+  readonly snapModeConfigs?: Record<string, SnapModeConfig>;
 }
 
 const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
@@ -35,7 +37,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   onConfirm,
   isSubmitting,
   submitText,
-  snapModeConfigs,
+  snapModeConfigs = {},
 }) => {
   const isChangeChannel = actionVerb === "change channel";
   const hasChannelMode = snapModes.includes("channel");
@@ -43,28 +45,41 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   const isMixedChangeMode = hasChannelMode && hasRevisionMode;
   const changeChannelVerb = getChangeChannelVerb(snapModes);
 
-  const confinement = (snap: InstalledSnap) =>
-    snapModeConfigs[snap.snap.id]?.confinement;
+  // A missing config entry means the snap was never touched by the user.
+  // For change channel, that only happens when no channel data was
+  // available to pick a default from (the "Default channel" case, mirrored
+  // by the fallback default in SnapsActionForm.tsx), so it must default to
+  // channel mode with no channel selected rather than being read as
+  // "not classic". Other actions never populate snapChangeConfigs at all,
+  // so this default must stay scoped to change channel.
+  const isClassic = (snap: InstalledSnapWithCount) => {
+    const config = snapModeConfigs[snap.snap.id];
 
-  const isClassic = (snap: InstalledSnapWithCount) =>
-    confinement(snap) === "classic";
+    if (config?.confinement === "classic") {
+      return true;
+    }
+
+    return (
+      isChangeChannel &&
+      (config?.mode ?? "channel") === "channel" &&
+      !config?.channel
+    );
+  };
 
   const classicSnaps = snaps.filter(isClassic);
 
-  // Install mirrors the dedicated "requires classic confinement" modal
-  // treatment (filtered list + replaced copy) rather than the full
-  // install summary. Change channel keeps showing the full batch and its
-  // mode-specific guidance (revision vs. channel tracking behavior) and
-  // only adds a classic-confinement notice on top, since hiding non-classic
-  // snaps or that guidance would mislead the user about what they're
-  // confirming.
-  const isInstallingClassicSnaps =
-    actionVerb === "install" && classicSnaps.length > 0;
+  // Whenever any selected snap requires classic confinement, that takes
+  // over the title, summary list, and info text regardless of action
+  // (install, change channel, etc.), since it is the dominant concern for
+  // the user to confirm. Change channel additionally keeps its
+  // mode-specific guidance (revision vs. channel tracking behavior) below
+  // the classic-confinement warning.
+  const hasClassicSnaps = classicSnaps.length > 0;
 
-  const snapsToShow = isInstallingClassicSnaps ? classicSnaps : snaps;
+  const snapsToShow = hasClassicSnaps ? classicSnaps : snaps;
 
   const getTitle = () => {
-    if (isInstallingClassicSnaps) {
+    if (hasClassicSnaps) {
       return `${pluralize(
         snapsToShow.length,
         [
@@ -93,40 +108,45 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   const getInfoText = () => {
     const snapWord = pluralize(snapsToShow.length, ["snap"], "none");
 
-    if (isInstallingClassicSnaps) {
+    if (hasClassicSnaps) {
       const requireWord = pluralize(
         snapsToShow.length,
         ["requires", "require"],
         "none",
       );
-      return `The following ${snapWord} you selected for installation ${requireWord} classic confinement`;
+      return `The following ${snapWord} you selected ${requireWord} classic confinement`;
     }
 
     const hasWord = pluralize(snapsToShow.length, ["has", "have"], "none");
     return `The following ${snapWord} ${hasWord} been selected to ${isChangeChannel ? changeChannelVerb : actionVerb}`;
   };
 
+  const getChangeChannelModeText = () => {
+    if (isMixedChangeMode) {
+      return "Snaps set to a channel will update to that channel's latest revision. Snaps set to a specific revision will keep tracking their current channel, so a future refresh may replace it with that channel's latest revision.";
+    }
+    if (hasRevisionMode) {
+      return "Installing the specified revision will not change the snap's tracked channel, so a future refresh may replace it with that channel's latest revision.";
+    }
+    return "Changing the channel will update the snap to the latest revision on the new channel.";
+  };
+
   const getWarningText = () => {
-    if (isInstallingClassicSnaps) {
+    if (hasClassicSnaps) {
       return (
         <>
           <strong>
-            By installing these, you acknowledge that these snaps may have
+            By proceeding, you acknowledge that{" "}
+            {pluralize(classicSnaps.length, ["it", "they"], "none")} may have
             access to your files and system.
           </strong>{" "}
-          Only install snaps in classic confinement if you trust the publisher.
+          Only use classic confinement if you trust the publisher.
         </>
       );
     }
 
     if (isChangeChannel) {
-      if (isMixedChangeMode) {
-        return "Snaps set to a channel will update to that channel's latest revision. Snaps set to a specific revision will keep tracking their current channel, so a future refresh may replace it with that channel's latest revision.";
-      }
-      if (hasRevisionMode) {
-        return "Installing the specified revision will not change the snap's tracked channel, so a future refresh may replace it with that channel's latest revision.";
-      }
-      return "Changing the channel will update the snap to the latest revision on the new channel.";
+      return getChangeChannelModeText();
     }
 
     switch (actionVerb) {
@@ -146,31 +166,6 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
         return "Each refresh will now update the snap to the latest revision on the current channel.";
     }
   };
-
-  const classicConfinementNotice =
-    isChangeChannel && classicSnaps.length > 0 ? (
-      <Notification
-        severity="caution"
-        borderless
-        className={classes.classicNotification}
-      >
-        <strong>
-          {pluralize(
-            classicSnaps.length,
-            [
-              `of ${pluralize(snaps.length, ["snap"], "exact")} requires`,
-              `of ${pluralize(snaps.length, ["snap"], "exact")} require`,
-            ],
-            "exact",
-          )}{" "}
-          classic confinement.
-        </strong>{" "}
-        By proceeding, you acknowledge that{" "}
-        {pluralize(classicSnaps.length, ["it", "they"], "none")} may have access
-        to your files and system. Only use classic confinement if you trust the
-        publisher.
-      </Notification>
-    ) : null;
 
   const buttonColor = actionVerb === "uninstall" ? "negative" : "positive";
 
@@ -192,7 +187,9 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
         ))}
       </ul>
       <p className={classes.warning}>{getWarningText()}</p>
-      {classicConfinementNotice}
+      {hasClassicSnaps && isChangeChannel ? (
+        <p className={classes.warning}>{getChangeChannelModeText()}</p>
+      ) : null}
     </ConfirmationModal>
   );
 };
