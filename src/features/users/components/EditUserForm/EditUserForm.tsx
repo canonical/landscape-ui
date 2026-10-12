@@ -230,7 +230,9 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
                   }
                   navigate(
                     ROUTES.activities.root({
-                      query: `id:${activities.map(({ activity }) => activity.id).join(" OR id:")}`,
+                      query: activities
+                        .map(({ activity }) => `parent-id:${activity.id}`)
+                        .join(" OR "),
                     }),
                   );
                 },

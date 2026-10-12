@@ -120,6 +120,11 @@ export default [
     const activityIds = /^id:\d+(?: OR id:\d+)*$/.test(searchQuery)
       ? searchQuery.split(" OR ").map((term) => Number(term.slice(3)))
       : undefined;
+    const parentIds = /^parent-id:\d+(?: OR parent-id:\d+)*$/.test(searchQuery)
+      ? searchQuery
+          .split(" OR ")
+          .map((term) => Number(term.slice("parent-id:".length)))
+      : undefined;
     const filteredActivities = activities.filter((activity) => {
       if (status && activity.activity_status !== status) {
         return false;
@@ -133,6 +138,13 @@ export default [
         return false;
       }
 
+      if (
+        parentIds &&
+        (activity.parent_id === null || !parentIds.includes(activity.parent_id))
+      ) {
+        return false;
+      }
+
       return true;
     });
 
@@ -141,7 +153,7 @@ export default [
         data: filteredActivities,
         limit,
         offset,
-        search: activityIds ? undefined : searchQuery,
+        search: activityIds || parentIds ? undefined : searchQuery,
         searchFields: ["summary"],
       }),
     );

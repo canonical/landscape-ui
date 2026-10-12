@@ -22,6 +22,21 @@ import EditUserForm from "./EditUserForm";
 
 const routePattern = `/${PATHS.instances.root}/${PATHS.instances.single}`;
 
+const activityGroups = activities.slice(0, 3).map((activity): Activity => {
+  assert(activity.parent_id !== null);
+  return {
+    ...activity,
+    id: activity.parent_id,
+    parent_id: null,
+    type: "ActivityGroup",
+    summary: `Queued ${activity.summary}`,
+    deliver_delay_window: 0,
+    children: activities.filter(
+      ({ parent_id }) => parent_id === activity.parent_id,
+    ),
+  };
+});
+
 const renderEditUserForm = (user: User = users[0]) =>
   renderWithProviders(
     <EditUserForm user={user} />,
@@ -751,6 +766,13 @@ describe("EditUserForm", () => {
         ...(removeSucceeds ? [activities[2]] : []),
         ...(profileSucceeds ? [activities[0]] : []),
       ];
+      const queuedActivityGroups = queuedActivities.map((activity) => {
+        const activityGroup = activityGroups.find(
+          ({ id }) => id === activity.parent_id,
+        );
+        assert(activityGroup);
+        return activityGroup;
+      });
       setEndpointStatus([
         {
           status: "variant",
@@ -760,18 +782,27 @@ describe("EditUserForm", () => {
         {
           status: profileSucceeds ? "variant" : "error",
           path: "editUser",
-          response: activities[0],
+          response: activityGroups[0],
         },
         {
           status: addSucceeds ? "variant" : "error",
           path: "userGroups/add",
-          response: activities[1],
+          response: activityGroups[1],
         },
         {
           status: removeSucceeds ? "variant" : "error",
           path: "userGroups/remove",
-          response: activities[2],
+          response: activityGroups[2],
         },
+        ...(queuedActivityGroups.length === 1
+          ? [
+              {
+                status: "variant" as const,
+                path: "activities/:id",
+                response: queuedActivityGroups[0],
+              },
+            ]
+          : []),
       ]);
       const user = userEvent.setup();
       renderEditUserSidePanel();
@@ -842,7 +873,7 @@ describe("EditUserForm", () => {
 
         await user.click(action);
         if (successCount === 1) {
-          const [activity] = queuedActivities;
+          const [activity] = queuedActivityGroups;
           assert(activity);
           expect(
             await screen.findByRole("heading", {
@@ -856,18 +887,21 @@ describe("EditUserForm", () => {
             name: "Activities",
           });
           expect(screen.getByPlaceholderText("Search")).toHaveValue(
-            queuedActivities
-              .map((activity) => `id:${activity.id}`)
+            queuedActivityGroups
+              .map((activity) => `parent-id:${activity.id}`)
               .join(" OR "),
           );
           const table = await screen.findByRole("table");
-          for (const activity of queuedActivities) {
+          const queuedChildren = queuedActivityGroups.flatMap(
+            ({ children }) => children ?? [],
+          );
+          for (const activity of queuedChildren) {
             expect(
               within(table).getByRole("button", { name: activity.summary }),
             ).toBeInTheDocument();
           }
           expect(within(table).getAllByRole("row")).toHaveLength(
-            successCount + 1,
+            queuedChildren.length + 1,
           );
         }
       } else {
