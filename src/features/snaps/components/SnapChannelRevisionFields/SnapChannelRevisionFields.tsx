@@ -176,7 +176,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
             value={revisionValue}
             error={error}
             onChange={(event) => {
-              setRevisionValue(event.currentTarget.value);
+              setRevisionValue(event.currentTarget.value.replace(/\D/g, ""));
             }}
             onBlur={(event) => {
               handleChange(

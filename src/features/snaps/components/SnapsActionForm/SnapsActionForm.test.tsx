@@ -623,7 +623,43 @@ describe("SnapsActionForm", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("shows the invalid-revision error, not the required error, for non-numeric input", async () => {
+  it("blocks non-numeric characters and whitespace from the revision field", async () => {
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: secondSnapOptionTitle,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("combobox", {
+          name: `Channel for ${secondSnap.snap.name}`,
+        }),
+      ).not.toBeDisabled();
+    });
+
+    const modeSelect = screen.getByLabelText(
+      `Snap channel or revision for ${secondSnap.snap.name}`,
+    );
+    await user.selectOptions(modeSelect, "revision");
+
+    const revisionInput = screen.getByRole("textbox", {
+      name: `Revision for ${secondSnap.snap.name}`,
+    });
+    await user.type(revisionInput, " a1b 2-c3.4d ");
+
+    expect(revisionInput).toHaveValue("1234");
+  });
+
+  it("shows the required error, not the invalid-format error, when only blocked characters are typed", async () => {
     renderWithProviders(
       <SnapsActionForm
         selectedInstances={[instanceId]}
@@ -655,16 +691,16 @@ describe("SnapsActionForm", () => {
       name: `Revision for ${secondSnap.snap.name}`,
     });
     await user.type(revisionInput, "aaaa");
-    expect(revisionInput).toHaveValue("aaaa");
+    expect(revisionInput).toHaveValue("");
     await user.tab();
 
     await user.click(screen.getByRole("button", { name: "Change channel" }));
 
     expect(
-      await screen.findByText("Revision must be a positive whole number"),
+      await screen.findByText("This field is required"),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText("This field is required"),
+      screen.queryByText("Revision must be a positive whole number"),
     ).not.toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
