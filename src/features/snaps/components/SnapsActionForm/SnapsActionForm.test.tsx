@@ -14,7 +14,7 @@ import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
 import type { SnapActionParams } from "../../types";
-import { ICONS } from "@canonical/react-components/dist/components/Icon/Icon";
+import { ICONS } from "@canonical/react-components";
 
 const instanceId = 1;
 const [firstSnap, secondSnap, thirdSnap, fourthSnap, , classicSnap] =
