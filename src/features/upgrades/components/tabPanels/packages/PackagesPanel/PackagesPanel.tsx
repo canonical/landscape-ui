@@ -1,7 +1,10 @@
 import type { FC } from "react";
 import { useEffect, useRef, useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
-import type { InstancePackagesToExclude, Package } from "@/features/packages";
+import type {
+  InstancePackagesToExclude,
+  PackageOld as Package,
+} from "@/features/packages";
 import { usePackages } from "@/features/packages";
 import type { Instance } from "@/types/Instance";
 import AffectedPackages from "../AffectedPackages";

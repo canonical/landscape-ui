@@ -8,6 +8,7 @@ import StaffAccountAdministrators from "../StaffAccountAdministrators";
 import StaffAccountFeatures from "../StaffAccountFeatures";
 import StaffAccountInfo from "../StaffAccountInfo";
 import StaffAccountLicenses from "../StaffAccountLicenses";
+import StaffAccountWslLimits from "../StaffAccountWslLimits";
 import { TABS } from "./constants";
 
 interface StaffAccountTabsProps {
@@ -52,8 +53,11 @@ const StaffAccountTabs: FC<StaffAccountTabsProps> = ({ staffAccount }) => {
           {"tab-link-licenses" === currentTab && (
             <StaffAccountLicenses licenses={staffAccount.licenses} />
           )}
-          {"tab-link-feature-flags" === currentTab && (
+          {"tab-link-features" === currentTab && (
             <StaffAccountFeatures staffAccount={staffAccount} />
+          )}
+          {"tab-link-wsl" === currentTab && (
+            <StaffAccountWslLimits staffAccount={staffAccount} />
           )}
         </AppErrorBoundary>
       </div>
