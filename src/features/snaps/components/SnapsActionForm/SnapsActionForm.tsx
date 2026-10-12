@@ -322,6 +322,19 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                         This snap requires classic confinement
                       </Notification>
                     ) : null}
+                    {config.mode === "channel" && !config.channel ? (
+                      <Notification
+                        severity="caution"
+                        className={classNames(
+                          classes.classicNotification,
+                          "u-no-margin--bottom",
+                        )}
+                      >
+                        We couldn&apos;t confirm if this snap requires classic
+                        confinement. Check the default channel on the snap store
+                        to make sure.
+                      </Notification>
+                    ) : null}
                   </li>
                 );
               }

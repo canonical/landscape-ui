@@ -16,9 +16,10 @@ import { API_URL } from "@/constants";
 import type { SnapActionParams } from "../../types";
 
 const instanceId = 1;
-const [firstSnap, secondSnap, , , , classicSnap] = installedSnaps;
+const [firstSnap, secondSnap, , fourthSnap, , classicSnap] = installedSnaps;
 const firstSnapOptionTitle = `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`;
 const secondSnapOptionTitle = `${secondSnap.snap.name} ${secondSnap.snap.publisher.username}`;
+const fourthSnapOptionTitle = `${fourthSnap.snap.name} ${fourthSnap.snap.publisher.username}`;
 const classicSnapOptionTitle = `${classicSnap.snap.name} ${classicSnap.snap.publisher.username}`;
 
 describe("SnapsActionForm", () => {
@@ -581,6 +582,46 @@ describe("SnapsActionForm", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("shows a caution notification when a snap uses default channel and classic confinement cannot be confirmed", async () => {
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: firstSnapOptionTitle,
+      }),
+    );
+
+    const channelSelect = await screen.findByRole("combobox", {
+      name: `Channel for ${firstSnap.snap.name}`,
+    });
+    await waitFor(() => {
+      expect(channelSelect).toBeDisabled();
+    });
+
+    expect(
+      await screen.findByText(
+        "We couldn't confirm if this snap requires classic confinement. Check the default channel on the snap store to make sure.",
+      ),
+    ).toBeInTheDocument();
+
+    const modeSelect = screen.getByLabelText(
+      `Snap channel or revision for ${firstSnap.snap.name}`,
+    );
+    await user.selectOptions(modeSelect, "revision");
+
+    expect(
+      screen.queryByText(
+        "We couldn't confirm if this snap requires classic confinement. Check the default channel on the snap store to make sure.",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
   it("blocks submit and shows an error when the revision is not a positive integer", async () => {
     renderWithProviders(
       <SnapsActionForm
@@ -916,9 +957,17 @@ describe("SnapsActionForm", () => {
     await user.click(screen.getByRole("searchbox"));
     await user.click(
       await screen.findByRole("option", {
-        name: firstSnapOptionTitle,
+        name: fourthSnapOptionTitle,
       }),
     );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("combobox", {
+          name: `Channel for ${fourthSnap.snap.name}`,
+        }),
+      ).not.toBeDisabled();
+    });
 
     await user.click(screen.getByRole("button", { name: "Change channel" }));
     const modal = await screen.findByRole("dialog");
@@ -948,7 +997,7 @@ describe("SnapsActionForm", () => {
       computer_ids: [instanceId],
       snaps: [
         { name: secondSnap.snap.name, args: { revision: "123" } },
-        { name: firstSnap.snap.name },
+        { name: fourthSnap.snap.name },
       ],
     });
   });

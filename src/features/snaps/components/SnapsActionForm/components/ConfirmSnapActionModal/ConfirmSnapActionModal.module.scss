@@ -7,11 +7,3 @@
 .warning {
   padding-bottom: $spv--large;
 }
-
-.classicNotification {
-  margin-top: $spv--small;
-
-  :global(.p-notification__message) {
-    max-width: $text-max-width;
-  }
-}
