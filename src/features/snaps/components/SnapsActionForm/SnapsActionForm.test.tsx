@@ -1061,7 +1061,7 @@ describe("SnapsActionForm", () => {
       <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
     );
 
-    await user.click(await screen.findByRole("searchbox"));
+    await user.type(await screen.findByRole("searchbox"), thirdSnap.snap.name);
     await user.click(
       await screen.findByRole("option", {
         name: thirdSnapOptionTitle,
@@ -1078,7 +1078,7 @@ describe("SnapsActionForm", () => {
       <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
     );
 
-    await user.click(await screen.findByRole("searchbox"));
+    await user.type(await screen.findByRole("searchbox"), firstSnap.snap.name);
     await user.click(
       await screen.findByRole("option", {
         name: firstSnapOptionTitle,

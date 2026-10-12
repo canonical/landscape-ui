@@ -235,7 +235,7 @@ describe("ConfirmSnapActionModal", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: "1 of 6 snaps requires classic confinement",
+        name: "6 of 6 snaps require classic confinement",
       }),
     ).toBeInTheDocument();
     expect(
