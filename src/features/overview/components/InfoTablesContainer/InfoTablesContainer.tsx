@@ -6,7 +6,7 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Activity, ActivityCommon } from "@/features/activities";
 import { useApproveActivities, useGetActivities } from "@/features/activities";
 import { useGetInstances } from "@/features/instances";
-import type { Package } from "@/features/packages";
+import type { PackageOld as Package } from "@/features/packages";
 import { usePackages } from "@/features/packages";
 import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";

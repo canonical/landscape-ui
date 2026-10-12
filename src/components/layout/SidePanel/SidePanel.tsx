@@ -15,7 +15,7 @@ import classes from "./SidePanel.module.scss";
 import type { SuspenseProps } from "./Suspense";
 import Suspense from "./Suspense";
 
-interface SidePanelProps extends SidePanelBaseProps {
+export interface SidePanelProps extends SidePanelBaseProps {
   readonly children: ReactNode;
   readonly onClose: () => void;
   readonly size?: "small" | "medium" | "large";

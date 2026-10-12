@@ -4,7 +4,10 @@ import type { CellProps, Column } from "react-table";
 import { CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import SelectAllButton from "@/components/layout/SelectAllButton";
-import type { InstancePackagesToExclude, Package } from "@/features/packages";
+import type {
+  InstancePackagesToExclude,
+  PackageOld as Package,
+} from "@/features/packages";
 import type { Instance } from "@/types/Instance";
 import { getToggledPackage } from "../helpers";
 import {

@@ -1,7 +1,7 @@
 import {
   downgradePackageVersions,
   getInstancePackages,
-} from "@/tests/mocks/packages";
+} from "@/tests/mocks/packagesOld";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
