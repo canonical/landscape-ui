@@ -2,10 +2,12 @@ import type { FC } from "react";
 import { useEffect, useMemo, useRef } from "react";
 import type { InstalledSnapWithCount, SnapChangeMode } from "../../../../types";
 import { useGetSnapInfo } from "../../../../api";
-import { isValidRevision, getChannelConfinement } from "../../../../helpers";
-import SnapChannelRevisionFields, {
+import {
+  isValidRevision,
+  getChannelConfinement,
   getChannelOptions,
-} from "../../../SnapChannelRevisionFields";
+} from "../../../../helpers";
+import SnapChannelRevisionFields from "../../../SnapChannelRevisionFields";
 import SnapItemTitleRow from "../SnapItemTitleRow";
 import SnapItemSubtitle from "../SnapItemSubtitle";
 import classes from "./SnapChangeChannelItem.module.scss";

@@ -108,7 +108,8 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                 }
               : {
                   ...(channel ? { channel } : {}),
-                  classic: config?.confinement === "classic",
+                  classic:
+                    (config?.confinement ?? item.confinement) === "classic",
                 };
 
           return {
