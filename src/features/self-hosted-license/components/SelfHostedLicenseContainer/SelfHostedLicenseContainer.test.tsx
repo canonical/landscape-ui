@@ -199,6 +199,7 @@ describe("SelfHostedLicenseContainer", () => {
             hasAccounts: true,
             isSuperAdmin: false,
             canManageAccounts: false,
+            canEnterAccounts: false,
             isFeatureEnabled: () => true,
             logout: vi.fn(),
             redirectToExternalUrl: vi.fn(),

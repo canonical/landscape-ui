@@ -86,6 +86,7 @@ describe("SingleInstanceContainer", () => {
             value={{
               isSuperAdmin: false,
               canManageAccounts: false,
+              canEnterAccounts: false,
               authLoading: false,
               authorized: true,
               hasAccounts: true,

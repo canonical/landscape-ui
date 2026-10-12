@@ -22,6 +22,7 @@ const mockAuth: AuthContextProps = {
   hasAccounts: true,
   isSuperAdmin: true,
   canManageAccounts: false,
+  canEnterAccounts: false,
 };
 
 const RETURN_TO = "/instances?tab=all";

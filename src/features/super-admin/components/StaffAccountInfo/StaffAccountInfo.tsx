@@ -16,7 +16,7 @@ interface StaffAccountInfoProps {
 }
 
 const StaffAccountInfo: FC<StaffAccountInfoProps> = ({ staffAccount }) => {
-  const { canManageAccounts } = useAuth();
+  const { canManageAccounts, canEnterAccounts } = useAuth();
   const { setSidePanelContent } = useSidePanel();
   const { enterAccount } = useEnterAccount();
 
@@ -49,6 +49,7 @@ const StaffAccountInfo: FC<StaffAccountInfoProps> = ({ staffAccount }) => {
               onClick: () => {
                 enterAccount(staffAccount.account);
               },
+              excluded: !canEnterAccounts,
             },
           ],
         }}

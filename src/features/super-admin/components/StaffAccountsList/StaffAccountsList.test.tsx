@@ -1,10 +1,16 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useAuth from "@/hooks/useAuth";
 import date from "@/libs/date";
 import { ROUTES } from "@/libs/routes";
 import { createStaffAccounts } from "@/tests/mocks/staffAccounts";
 import { renderWithProviders } from "@/tests/render";
-import { screen, within } from "@testing-library/react";
+import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
+import { API_URL } from "@/constants";
+import { authResponse } from "@/tests/mocks/auth";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
+import { screen, waitFor, within } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
 import StaffAccountsList from "./StaffAccountsList";
@@ -21,29 +27,70 @@ const accountWithoutSubdomain = staffAccounts.find(
   ({ subdomain }) => !subdomain,
 );
 
+/** Renders once the signed-in user's roles have loaded. */
+const AuthReady = () => {
+  const { user } = useAuth();
+
+  return user ? <span>auth ready</span> : null;
+};
+
 const getRow = (name: string) =>
   screen.getByRole("row", { name: `${name} account row` });
 
 const getStatusCell = (name: string) =>
   within(getRow(name)).getByRole("cell", { name: "status" });
 
+/** Signs in a staff member with `globalRoles`, for the app and for the mock API. */
+const signInAs = (globalRoles: string[]) => {
+  setStaffGlobalRoles(globalRoles);
+  server.use(
+    http.get(`${API_URL}me`, () =>
+      HttpResponse.json({ ...authResponse, global_roles: globalRoles }),
+    ),
+  );
+};
+
 describe("StaffAccountsList", () => {
   assert(activeAccount);
   assert(disabledAccount);
   assert(accountWithoutSubdomain);
 
-  it("renders the columns", () => {
+  it("renders the columns", async () => {
+    signInAs(["SupportProvider"]);
+
     const { container } = renderWithProviders(<StaffAccountsList {...props} />);
 
-    expect(container).toHaveTexts([
-      "Name",
-      "Title",
-      "Subdomain",
-      "Instances",
-      "Status",
-      "Created",
-      "Actions",
-    ]);
+    await waitFor(() => {
+      expect(container).toHaveTexts([
+        "Name",
+        "Title",
+        "Subdomain",
+        "Instances",
+        "Status",
+        "Created",
+        "Actions",
+      ]);
+    });
+  });
+
+  it("hides the actions column from an account manager without the support role", async () => {
+    signInAs(["AccountManager"]);
+
+    renderWithProviders(
+      <>
+        <StaffAccountsList {...props} />
+        <AuthReady />
+      </>,
+    );
+
+    await screen.findByText("auth ready");
+
+    expect(screen.queryByText("Actions")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", {
+        name: `${activeAccount.account} actions`,
+      }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders a row per account", () => {

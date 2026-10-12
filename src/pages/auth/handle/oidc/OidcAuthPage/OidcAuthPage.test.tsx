@@ -65,6 +65,7 @@ const mockAuthContext: AuthContextProps = {
   hasAccounts: true,
   isSuperAdmin: false,
   canManageAccounts: false,
+  canEnterAccounts: false,
   logout: vi.fn(),
   redirectToExternalUrl: vi.fn(),
   safeRedirect,

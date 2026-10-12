@@ -20,6 +20,7 @@ const mockAuth: AuthContextProps = {
   hasAccounts: true,
   isSuperAdmin: false,
   canManageAccounts: false,
+  canEnterAccounts: false,
 };
 
 describe("DashboardPage", () => {

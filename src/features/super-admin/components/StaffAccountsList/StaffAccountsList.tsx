@@ -4,6 +4,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
 import { TableIcon } from "@/components/ui";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useAuth from "@/hooks/useAuth";
 import date from "@/libs/date";
 import { ROUTES } from "@/libs/routes";
 import type { FC, ReactNode } from "react";
@@ -18,6 +19,8 @@ interface StaffAccountsListProps {
 }
 
 const StaffAccountsList: FC<StaffAccountsListProps> = ({ staffAccounts }) => {
+  const { canEnterAccounts } = useAuth();
+
   const columns = useMemo<Column<StaffAccountListItem>[]>(
     () => [
       {
@@ -76,16 +79,22 @@ const StaffAccountsList: FC<StaffAccountsListProps> = ({ staffAccounts }) => {
           </span>
         ),
       },
-      {
-        ...LIST_ACTIONS_COLUMN_PROPS,
-        Cell: ({
-          row: { original },
-        }: CellProps<StaffAccountListItem>): ReactNode => (
-          <StaffAccountsListActions staffAccount={original} />
-        ),
-      },
+      // Entering an account is the only row action, so the column goes
+      // with it.
+      ...(canEnterAccounts
+        ? [
+            {
+              ...LIST_ACTIONS_COLUMN_PROPS,
+              Cell: ({
+                row: { original },
+              }: CellProps<StaffAccountListItem>): ReactNode => (
+                <StaffAccountsListActions staffAccount={original} />
+              ),
+            },
+          ]
+        : []),
     ],
-    [],
+    [canEnterAccounts],
   );
 
   return (

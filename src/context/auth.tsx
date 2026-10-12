@@ -33,6 +33,11 @@ export interface AuthContextProps {
   isSuperAdmin: boolean;
   /** Whether the user can edit any account in super admin mode. */
   canManageAccounts: boolean;
+  /**
+   * Whether the user can enter any account in a support session. Only
+   * `SupportProvider` may switch into an account it is not a member of.
+   */
+  canEnterAccounts: boolean;
   logout: () => void;
   redirectToExternalUrl: (url: string, options?: { replace: boolean }) => void;
   safeRedirect: (
@@ -50,6 +55,7 @@ const initialState: AuthContextProps = {
   hasAccounts: false,
   isSuperAdmin: false,
   canManageAccounts: false,
+  canEnterAccounts: false,
   logout: () => undefined,
   redirectToExternalUrl: () => undefined,
   safeRedirect: () => undefined,
@@ -83,8 +89,8 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const globalRoles = user?.global_roles ?? [];
   const canManageAccounts = globalRoles.includes(ACCOUNT_MANAGER);
-  const isSuperAdmin =
-    canManageAccounts || globalRoles.includes(SUPPORT_PROVIDER);
+  const canEnterAccounts = globalRoles.includes(SUPPORT_PROVIDER);
+  const isSuperAdmin = canManageAccounts || canEnterAccounts;
 
   const handleLogout = useCallback(() => {
     queryClient.setQueryData(AUTH_QUERY_KEY, null);
@@ -149,6 +155,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         hasAccounts: !!user?.accounts.length,
         isSuperAdmin,
         canManageAccounts,
+        canEnterAccounts,
         logout: handleLogout,
         redirectToExternalUrl: handleExternalRedirect,
         safeRedirect: handleSafeRedirect,
