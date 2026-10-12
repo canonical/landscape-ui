@@ -17,9 +17,11 @@ import type { SnapActionParams } from "../../types";
 import { ICONS } from "@canonical/react-components/dist/components/Icon/Icon";
 
 const instanceId = 1;
-const [firstSnap, secondSnap, , fourthSnap, , classicSnap] = installedSnaps;
+const [firstSnap, secondSnap, thirdSnap, fourthSnap, , classicSnap] =
+  installedSnaps;
 const firstSnapOptionTitle = `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`;
 const secondSnapOptionTitle = `${secondSnap.snap.name} ${secondSnap.snap.publisher.username}`;
+const thirdSnapOptionTitle = `${thirdSnap.snap.name} ${thirdSnap.snap.publisher["display-name"] ?? thirdSnap.snap.publisher.username}`;
 const fourthSnapOptionTitle = `${fourthSnap.snap.name} ${fourthSnap.snap.publisher.username}`;
 const classicSnapOptionTitle = `${classicSnap.snap.name} ${classicSnap.snap.publisher.username}`;
 
@@ -1062,7 +1064,7 @@ describe("SnapsActionForm", () => {
     await user.click(await screen.findByRole("searchbox"));
     await user.click(
       await screen.findByRole("option", {
-        name: `${installedSnaps[2].snap.name} ${installedSnaps[2].snap.publisher["display-name"] ?? installedSnaps[2].snap.publisher.username}`,
+        name: thirdSnapOptionTitle,
       }),
     );
 
