@@ -1,6 +1,8 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { SNAPD_REST_API_DOCUMENTATION_URL } from "@/constants";
 import SnapNotification from "./SnapNotification";
 
 const changeChannelRevisionMessage =
@@ -63,5 +65,28 @@ describe("SnapNotification", () => {
     expect(
       screen.queryByText(changeChannelRevisionMessage),
     ).not.toBeInTheDocument();
+  });
+
+  it("opens the snapd documentation URL when the documentation link is clicked", async () => {
+    const user = userEvent.setup();
+    global.window.open = vi.fn();
+
+    renderWithProviders(
+      <SnapNotification
+        action="install"
+        snapChangeConfigs={{
+          snap1: { mode: "revision", value: "123" },
+        }}
+      />,
+    );
+
+    const docsLink = screen.getByText("Visit Snapd documentation");
+    await user.click(docsLink);
+
+    expect(window.open).toHaveBeenCalledWith(
+      SNAPD_REST_API_DOCUMENTATION_URL,
+      "_blank",
+      "noopener,noreferrer",
+    );
   });
 });

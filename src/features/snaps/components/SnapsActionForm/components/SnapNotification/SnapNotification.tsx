@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { Notification } from "@canonical/react-components";
+import { SNAPD_REST_API_DOCUMENTATION_URL } from "@/constants";
 import type { SnapAction, SnapChangeMode } from "../../../../types";
 
 interface SnapChangeConfig {
@@ -63,7 +64,7 @@ const SnapNotification: FC<SnapNotificationProps> = ({
           label: "Visit Snapd documentation",
           onClick: () => {
             window.open(
-              "https://snapcraft.io/docs/reference/development/snapd-rest-api/#/Asynchronous/manageSnapByName",
+              SNAPD_REST_API_DOCUMENTATION_URL,
               "_blank",
               "noopener,noreferrer",
             );
