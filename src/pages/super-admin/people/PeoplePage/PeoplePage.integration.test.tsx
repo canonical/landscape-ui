@@ -202,7 +202,7 @@ describe("PeoplePage (integration)", () => {
     ).toBeInTheDocument();
     expect(withAccounts.queryByText("No accounts")).not.toBeInTheDocument();
     expect(duplicate.getByText("Duplicate")).toBeInTheDocument();
-    expect(duplicate.getByText("No accounts")).toBeInTheDocument();
+    expect(duplicate.queryByText("No accounts")).not.toBeInTheDocument();
 
     await search("milton");
 

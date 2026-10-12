@@ -100,9 +100,11 @@ const StaffPeopleList: FC<StaffPeopleListProps> = ({ staffPeople }) => {
                   title="Another user on this page has the same email"
                 />
               )}
-            {original.type === "person" && !original.accounts.length && (
-              <Chip value="No accounts" />
-            )}
+            {original.type === "person" &&
+              !original.accounts.length &&
+              !original.pending_invitations.length && (
+                <Chip value="No accounts" />
+              )}
           </span>
         ),
       },
