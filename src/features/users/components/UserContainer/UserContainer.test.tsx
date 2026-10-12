@@ -3,6 +3,7 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { setScreenSize } from "@/tests/helpers";
 import { usersWithPendingActivities } from "@/tests/mocks/user";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
@@ -102,7 +103,7 @@ describe("UserContainer", () => {
     expect(toast.closest('[class*="container"]')).not.toBeNull();
     expect(toast.closest("aside")).toBeNull();
     expect(
-      within(toastNotification).getByRole("button", { name: "View details" }),
+      within(toastNotification).getByRole("button", { name: "View activity" }),
     ).toBeInTheDocument();
 
     await user.click(
@@ -139,7 +140,7 @@ describe("UserContainer", () => {
     expect(toast.closest("aside")).toBeNull();
   });
 
-  it("shows only a page error when group changes fail without any queued changes", async () => {
+  it("keeps a group-only failure in the edit panel with the standard error notification", async () => {
     const user = userEvent.setup();
     setEndpointStatus([
       { status: "empty", path: "users/groups" },
@@ -154,16 +155,21 @@ describe("UserContainer", () => {
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
     const notification = await screen.findByText(
-      "Group changes for user user1 could not be queued. Please try again.",
+      ENDPOINT_STATUS_API_ERROR_MESSAGE,
     );
-    expect(notification.closest('[class*="container"]')).toBeNull();
+    const form = screen.getByRole("form");
+    expect(notification.closest("aside")).toBe(form.closest("aside"));
+    expect(notification.closest("form")).toBeNull();
+    expect(screen.getAllByText(ENDPOINT_STATUS_API_ERROR_MESSAGE)).toHaveLength(
+      1,
+    );
     expect(screen.queryByText(/were queued/)).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "View details" }),
+      screen.queryByRole("button", { name: "View activity" }),
     ).not.toBeInTheDocument();
   });
 
-  it("shows the page error when editing from the user details panel", async () => {
+  it("keeps a total failure in the form opened from the user details panel", async () => {
     const user = userEvent.setup();
     setScreenSize("lg");
     setEndpointStatus([
@@ -183,11 +189,15 @@ describe("UserContainer", () => {
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
     const notification = await screen.findByText(
-      "Group changes for user user1 could not be queued. Please try again.",
+      ENDPOINT_STATUS_API_ERROR_MESSAGE,
     );
-    expect(notification.closest("aside")).toBeNull();
-    expect(notification.closest('[class*="container"]')).toBeNull();
-    expect(screen.queryByRole("form")).not.toBeInTheDocument();
+    const form = screen.getByRole("form");
+    expect(notification.closest("aside")).toBe(form.closest("aside"));
+    expect(notification.closest("form")).toBeNull();
+    expect(screen.getAllByText(ENDPOINT_STATUS_API_ERROR_MESSAGE)).toHaveLength(
+      1,
+    );
+    expect(screen.queryByText(/were queued/)).not.toBeInTheDocument();
   });
 
   it("does not render a stray zero when no users are returned with an active search", async () => {

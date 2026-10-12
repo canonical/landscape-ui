@@ -117,12 +117,19 @@ export default [
       );
     }
 
+    const activityIds = /^id:\d+(?: OR id:\d+)*$/.test(searchQuery)
+      ? searchQuery.split(" OR ").map((term) => Number(term.slice(3)))
+      : undefined;
     const filteredActivities = activities.filter((activity) => {
       if (status && activity.activity_status !== status) {
         return false;
       }
 
       if (type && activity.type !== type) {
+        return false;
+      }
+
+      if (activityIds && !activityIds.includes(activity.id)) {
         return false;
       }
 
@@ -134,7 +141,7 @@ export default [
         data: filteredActivities,
         limit,
         offset,
-        search: searchQuery,
+        search: activityIds ? undefined : searchQuery,
         searchFields: ["summary"],
       }),
     );

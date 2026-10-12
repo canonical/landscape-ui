@@ -45,36 +45,6 @@ describe("UserDeleteModal", () => {
     ).toBeInTheDocument();
   });
 
-  it("links to a pending deletion activity", () => {
-    const userWithPendingDeletion = {
-      ...users[0],
-      pending_activity: {
-        activity_id: 201,
-        activity_status: "undelivered" as const,
-        summary: "Delete user user1",
-        operation: "delete" as const,
-      },
-    };
-
-    renderWithProviders(
-      <UserDeleteModal
-        close={vi.fn()}
-        selectedUsers={[userWithPendingDeletion]}
-      />,
-      undefined,
-      routePath,
-      routePattern,
-    );
-
-    expect(screen.getByRole("link", { name: "View activity" })).toHaveAttribute(
-      "href",
-      ROUTES.activities.root({ query: "id:201" }),
-    );
-    expect(screen.getByRole("dialog")).toHaveTextContent(
-      "This user has a pending activity to be deleted. View activity. If you proceed, a new activity will be queued for this user.",
-    );
-  });
-
   it("renders multiple users delete modal", () => {
     renderWithProviders(
       <UserDeleteModal close={vi.fn()} selectedUsers={users.slice(0, 3)} />,

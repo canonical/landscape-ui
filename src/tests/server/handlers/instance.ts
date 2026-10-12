@@ -414,13 +414,22 @@ export default [
     return HttpResponse.json(instances[0]);
   }),
 
-  http.post(
+  http.post<never, { action: "add" | "remove" }>(
     `${API_URL}computers/:computerId/usergroups/update_bulk`,
-    async () => {
-      if (shouldApplyEndpointStatus("userGroups")) {
-        const { status } = getEndpointStatus("userGroups");
+    async ({ request }) => {
+      const { action } = await request.json();
+      const actionPath = `userGroups/${action}`;
+      const path = shouldApplyEndpointStatus(actionPath)
+        ? actionPath
+        : "userGroups";
+      if (shouldApplyEndpointStatus(path)) {
+        const { status, response } = getEndpointStatus(path);
         if (status === "error") {
           throw createEndpointStatusError();
+        }
+
+        if (status === "variant") {
+          return HttpResponse.json(response);
         }
       }
 
@@ -440,7 +449,9 @@ export default [
     GetUserGroupsParams,
     GroupsResponse
   >(`${API_URL}computers/:computerId/users/:username/groups`, () => {
-    const endpointStatus = getEndpointStatus();
+    const endpointStatus = shouldApplyEndpointStatus("user-groups")
+      ? getEndpointStatus("user-groups")
+      : getEndpointStatus("users/groups");
     const shouldReturnEmptyGroups =
       endpointStatus.status === "empty" &&
       (!endpointStatus.path || endpointStatus.path === "users/groups");

@@ -1,17 +1,15 @@
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount/PluralizeWithBoldCount";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { ROUTES } from "@/libs/routes";
-import { getSelectionLabel, hasOneItem, pluralize } from "@/utils/_helpers";
+import { getSelectionLabel, hasOneItem } from "@/utils/_helpers";
 import type { UrlParams } from "@/types/UrlParams";
 import type { User } from "@/types/User";
 import { useUnlockUser } from "../../api";
-import { getPendingUserActivityMessage } from "../../constants";
 import {
   getSelectedUsernames,
   getUserLockStatusCounts,
@@ -44,58 +42,6 @@ const UserUnlockModal: FC<UserUnlockModalProps> = ({
   );
   const { locked: lockedCount, unlocked: unlockedCount } =
     getUserLockStatusCounts(selectedUsers);
-  const usersWithPendingActivity = selectedUsers.filter((selectedUser) =>
-    Boolean(selectedUser.pending_activity),
-  );
-
-  const renderPendingNotice = () => {
-    if (user?.pending_activity) {
-      const { operation, activity_id, summary } = user.pending_activity;
-      return (
-        <p>
-          {getPendingUserActivityMessage(operation)}{" "}
-          <Link
-            to={ROUTES.activities.root({ query: `id:${activity_id}` })}
-            state={{ activity: { id: activity_id, summary } }}
-            onClick={() => {
-              close();
-              closeSidePanel();
-            }}
-          >
-            View activity
-          </Link>
-          . If you proceed, a new activity will be queued for this user.
-        </p>
-      );
-    }
-
-    if (usersWithPendingActivity.length > 0) {
-      const activityQuery = usersWithPendingActivity
-        .map(
-          (selectedUser) => `id:${selectedUser.pending_activity?.activity_id}`,
-        )
-        .join(" OR ");
-      return (
-        <p>
-          {pluralize(
-            usersWithPendingActivity.length,
-            ["user has", "users have"],
-            "exact",
-          )}{" "}
-          <Link to={ROUTES.activities.root({ query: activityQuery })}>
-            {pluralize(usersWithPendingActivity.length, [
-              "a pending activity",
-              "pending activities",
-            ])}
-          </Link>
-          . If you proceed, a new activity will be queued for each selected
-          user.
-        </p>
-      );
-    }
-
-    return null;
-  };
 
   const handleUnlockUser = async () => {
     try {
@@ -137,13 +83,21 @@ const UserUnlockModal: FC<UserUnlockModalProps> = ({
       renderInPortal
     >
       <>
-        {user && <p>This will restore login access for the user.</p>}
+        {user && (
+          <p className="u-margin--bottom">
+            This will restore login access for the user.
+          </p>
+        )}
         {!user && unlockedCount === 0 && (
-          <p>This will restore login access for the users of these accounts.</p>
+          <p className="u-margin--bottom">
+            This will restore login access for the users of these accounts.
+          </p>
         )}
         {!user && unlockedCount > 0 && (
           <>
-            <p>Unlocking users restores their login access.</p>
+            <p className="u-margin--bottom">
+              Unlocking these users will restore their login access.
+            </p>
             You selected{" "}
             <PluralizeWithBoldCount
               count={selectedUsers.length}
@@ -163,7 +117,6 @@ const UserUnlockModal: FC<UserUnlockModalProps> = ({
             </ul>
           </>
         )}
-        {renderPendingNotice()}
       </>
     </ConfirmationModal>
   );

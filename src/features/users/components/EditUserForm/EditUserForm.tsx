@@ -13,7 +13,7 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Notification, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import {
   useAddUserToGroup,
   useEditUser,
@@ -31,10 +31,10 @@ import {
   getGroupDifferences,
   getGroupNamesByGids,
   hasEditUserChanges,
+  renderUserActivityLink,
 } from "./helpers";
 import classes from "./EditUserForm.module.scss";
 import type { EditUserFormValues } from "./types";
-import UserActivityLink from "./UserActivityLink";
 
 interface EditUserFormProps {
   readonly user: User;
@@ -46,6 +46,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
+  const navigate = useNavigate();
   const openActivityDetails = useOpenActivityDetailsPanel();
   const { editUser } = useEditUser();
   const { addUserToGroup } = useAddUserToGroup();
@@ -119,13 +120,11 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
       const usernames = [user.username];
       try {
         const activityRequests: {
-          label: string;
           description: string;
           request: ReturnType<typeof editUser>;
         }[] = [];
         if (groupsToBeAdded.length) {
           activityRequests.push({
-            label: "View added groups",
             description: "group changes",
             request: addUserToGroup({
               computer_id: instanceId,
@@ -136,7 +135,6 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
         }
         if (groupsToBeRemoved.length) {
           activityRequests.push({
-            label: "View removed groups",
             description: "group changes",
             request: removeUserFromGroup({
               computer_id: instanceId,
@@ -154,7 +152,6 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
         );
         if (hasEditUserChanges(editUserPayload)) {
           activityRequests.push({
-            label: "View profile changes",
             description: "user details",
             request: editUser(editUserPayload),
           });
@@ -164,9 +161,9 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
           return;
         }
         const results = await Promise.allSettled(
-          activityRequests.map(async ({ label, description, request }) => {
+          activityRequests.map(async ({ description, request }) => {
             const { data: activity } = await request;
-            return { activity, label, description };
+            return { activity, description };
           }),
         );
         const activities = results
@@ -180,8 +177,11 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
               .map(({ description }) => description),
           ),
         ];
-        closeSidePanel();
         if (failure) {
+          if (!activities.length) {
+            debug(failure.reason);
+            return;
+          }
           let failedChangesMessage = `Group changes for user ${user.username}`;
           if (failedChanges.includes("user details")) {
             failedChangesMessage = failedChanges.includes("group changes")
@@ -192,11 +192,12 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
           if (onError) {
             onError(message);
           } else {
-            debug(new Error(message, { cause: failure.reason }));
-            return;
+            debug(failure.reason);
           }
         }
-        if (activities.length) {
+        closeSidePanel();
+        const [firstActivity] = activities;
+        if (firstActivity) {
           const queuedChanges = [
             ...new Set(activities.map(({ description }) => description)),
           ]
@@ -218,16 +219,26 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
             message: failure
               ? `${capitalize(queuedChanges)} for user ${user.username} ${queuedOperation}.`
               : `An activity is queued to edit ${user.username}.`,
-            actions: activities.map(({ activity, label }) => ({
-              label: activities.length === 1 ? "View details" : label,
-              onClick: () => {
-                openActivityDetails(activity);
+            actions: [
+              {
+                label:
+                  activities.length === 1 ? "View activity" : "View activities",
+                onClick: () => {
+                  if (activities.length === 1) {
+                    openActivityDetails(firstActivity.activity);
+                    return;
+                  }
+                  navigate(
+                    ROUTES.activities.root({
+                      query: `id:${activities.map(({ activity }) => activity.id).join(" OR id:")}`,
+                    }),
+                  );
+                },
               },
-            })),
+            ],
           });
         }
       } catch (error) {
-        closeSidePanel();
         debug(error);
       }
     },
@@ -271,11 +282,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
       <Input
         type="text"
         label="Name"
-        caution={
-          latestProfileActivityEvents.name ? (
-            <UserActivityLink event={latestProfileActivityEvents.name} />
-          ) : undefined
-        }
+        caution={renderUserActivityLink(latestProfileActivityEvents.name)}
         error={getFormikError(formik, "name")}
         {...formik.getFieldProps("name")}
       />
@@ -283,11 +290,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
         type="password"
         label="Password"
         autoComplete="new-password"
-        caution={
-          latestProfileActivityEvents.password ? (
-            <UserActivityLink event={latestProfileActivityEvents.password} />
-          ) : undefined
-        }
+        caution={renderUserActivityLink(latestProfileActivityEvents.password)}
         error={getFormikError(formik, "password")}
         {...formik.getFieldProps("password")}
       />
@@ -304,13 +307,9 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
         required
         disabled={isLoadingGroups}
         options={groups}
-        caution={
-          latestProfileActivityEvents.primaryGroup ? (
-            <UserActivityLink
-              event={latestProfileActivityEvents.primaryGroup}
-            />
-          ) : undefined
-        }
+        caution={renderUserActivityLink(
+          latestProfileActivityEvents.primaryGroup,
+        )}
         {...formik.getFieldProps("primaryGroupValue")}
         error={getFormikError(formik, "primaryGroupValue")}
       />
@@ -318,11 +317,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
         variant="condensed"
         placeholder="Select groups"
         label="Additional Groups"
-        warning={
-          latestAdditionalGroupActivityEvent ? (
-            <UserActivityLink event={latestAdditionalGroupActivityEvent} />
-          ) : undefined
-        }
+        warning={renderUserActivityLink(latestAdditionalGroupActivityEvent)}
         items={groups}
         selectedItems={groups.filter(({ value }) =>
           formik.values.additionalGroupValue.includes(value),
@@ -338,33 +333,21 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
       <Input
         type="text"
         label="Location"
-        caution={
-          latestProfileActivityEvents.location ? (
-            <UserActivityLink event={latestProfileActivityEvents.location} />
-          ) : undefined
-        }
+        caution={renderUserActivityLink(latestProfileActivityEvents.location)}
         error={getFormikError(formik, "location")}
         {...formik.getFieldProps("location")}
       />
       <Input
         type="text"
         label="Home phone"
-        caution={
-          latestProfileActivityEvents.homePhone ? (
-            <UserActivityLink event={latestProfileActivityEvents.homePhone} />
-          ) : undefined
-        }
+        caution={renderUserActivityLink(latestProfileActivityEvents.homePhone)}
         error={getFormikError(formik, "homePhoneNumber")}
         {...formik.getFieldProps("homePhoneNumber")}
       />
       <Input
         type="text"
         label="Work phone"
-        caution={
-          latestProfileActivityEvents.workPhone ? (
-            <UserActivityLink event={latestProfileActivityEvents.workPhone} />
-          ) : undefined
-        }
+        caution={renderUserActivityLink(latestProfileActivityEvents.workPhone)}
         error={getFormikError(formik, "workPhoneNumber")}
         {...formik.getFieldProps("workPhoneNumber")}
       />

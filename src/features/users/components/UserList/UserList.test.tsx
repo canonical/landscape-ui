@@ -68,7 +68,12 @@ describe("UserList", () => {
     it("shows locked and unlocked user icon in the user table", async () => {
       assert(lockedUser);
       assert(unlockedUser);
-      renderWithProviders(<UserList {...props} />);
+      renderWithProviders(
+        <UserList
+          {...props}
+          users={users.map((user) => ({ ...user, pending_activity: null }))}
+        />,
+      );
 
       const unlockedRow = screen
         .getByRole("button", {

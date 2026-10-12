@@ -64,7 +64,7 @@ describe("UserUnlockModal", () => {
 
     const dialog = screen.getByRole("dialog");
     expect(dialog).toHaveTextContent(
-      "Unlocking users restores their login access.",
+      "Unlocking these users will restore their login access.",
     );
     expect(dialog).toHaveTextContent("You selected 4 users.");
     expect(dialog).toHaveTextContent("unlock 1 user");
@@ -85,77 +85,6 @@ describe("UserUnlockModal", () => {
     expect(
       screen.getByText(/restore login access for the users of these accounts/i),
     ).toBeInTheDocument();
-  });
-
-  it("links to a pending activity for one user", () => {
-    const userWithPendingActivity = {
-      ...users[0],
-      pending_activity: {
-        activity_id: 201,
-        activity_status: "undelivered" as const,
-        summary: "Lock out user user1",
-        operation: "lock" as const,
-      },
-    };
-
-    renderWithProviders(
-      <UserUnlockModal
-        close={vi.fn()}
-        selectedUsers={[userWithPendingActivity]}
-      />,
-      undefined,
-      routePath,
-      routePattern,
-    );
-
-    expect(screen.getByRole("link", { name: "View activity" })).toHaveAttribute(
-      "href",
-      ROUTES.activities.root({ query: "id:201" }),
-    );
-    expect(screen.getByRole("dialog")).toHaveTextContent(
-      "This user has a pending activity to be locked. View activity. If you proceed, a new activity will be queued for this user.",
-    );
-  });
-
-  it("links to pending activities for multiple users", () => {
-    const selectedUsers = [
-      {
-        ...users[0],
-        pending_activity: {
-          activity_id: 201,
-          activity_status: "undelivered" as const,
-          summary: "Lock out user user1",
-          operation: "lock" as const,
-        },
-      },
-      {
-        ...users[1],
-        pending_activity: {
-          activity_id: 202,
-          activity_status: "delivered" as const,
-          summary: "Unlock user user2",
-          operation: "unlock" as const,
-        },
-      },
-      users[2],
-    ];
-
-    renderWithProviders(
-      <UserUnlockModal close={vi.fn()} selectedUsers={selectedUsers} />,
-      undefined,
-      routePath,
-      routePattern,
-    );
-
-    expect(
-      screen.getByRole("link", { name: "pending activities" }),
-    ).toHaveAttribute(
-      "href",
-      ROUTES.activities.root({ query: "id:201 OR id:202" }),
-    );
-    expect(screen.getByRole("dialog")).toHaveTextContent(
-      "2 users have pending activities. If you proceed, a new activity will be queued for each selected user.",
-    );
   });
 
   it("calls close when clicking Cancel button", async () => {

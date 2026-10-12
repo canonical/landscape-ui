@@ -473,39 +473,5 @@ describe("UserPanelActionButtons", () => {
         screen.queryByRole("heading", { name: "Delete users" }),
       ).not.toBeInTheDocument();
     });
-
-    it("displays existing activity warning in modal when user has a pending activity", async () => {
-      const user = userEvent.setup();
-      const userWithPendingActivity = {
-        ...users[0],
-        enabled: true,
-        pending_activity: {
-          activity_id: 103,
-          activity_status: "undelivered" as const,
-          summary: "Lock out user john (UID 1000)",
-          operation: "lock" as const,
-        },
-      };
-
-      renderWithProviders(
-        <UserPanelActionButtons
-          selectedUsers={[userWithPendingActivity]}
-          sidePanel
-        />,
-        undefined,
-        routePath,
-        routePattern,
-      );
-
-      await user.click(screen.getByRole("button", { name: "Lock" }));
-      expect(
-        within(screen.getByRole("dialog")).getByRole("link", {
-          name: "View activity",
-        }),
-      ).toHaveAttribute("href", ROUTES.activities.root({ query: "id:103" }));
-      expect(screen.getByRole("dialog")).toHaveTextContent(
-        "This user has a pending activity to be locked. View activity. If you proceed, a new activity will be queued for this user.",
-      );
-    });
   });
 });

@@ -10,7 +10,12 @@ export const users = [
     username: "user1",
     home_phone: "1234567890",
     location: "location1",
-    pending_activity: null,
+    pending_activity: {
+      activity_id: 201,
+      activity_status: "undelivered",
+      summary: "Lock out user user1",
+      operation: "lock",
+    },
     work_phone: "1234567890",
   } satisfies User as User,
   {
@@ -21,7 +26,12 @@ export const users = [
     username: "user2",
     home_phone: "1234567890",
     location: "location2",
-    pending_activity: null,
+    pending_activity: {
+      activity_id: 202,
+      activity_status: "undelivered",
+      summary: "Unlock user user2",
+      operation: "unlock",
+    },
     work_phone: "1234567890",
   } satisfies User as User,
   {

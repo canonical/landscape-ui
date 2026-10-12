@@ -71,11 +71,16 @@ export default [
   }),
 
   http.put(`${API_URL}users`, async () => {
-    if (shouldApplyEndpointStatus("users")) {
-      const endpointStatus = getEndpointStatus("users");
+    const path = shouldApplyEndpointStatus("editUser") ? "editUser" : "users";
+    if (shouldApplyEndpointStatus(path)) {
+      const endpointStatus = getEndpointStatus(path);
 
       if (endpointStatus.status === "error") {
         throw createEndpointStatusError();
+      }
+
+      if (endpointStatus.status === "variant" && path === "editUser") {
+        return HttpResponse.json(endpointStatus.response);
       }
     }
 

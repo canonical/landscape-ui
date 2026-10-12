@@ -1,6 +1,8 @@
 import type { Group, User } from "@/types/User";
 import type { EditUserParams } from "../../api/useEditUser";
 import type { EditUserFormValues } from "./types";
+import type { UserActivityEvent } from "../../types";
+import UserActivityLink from "./UserActivityLink";
 
 export const getEditUserInitialValues = (
   user: User,
@@ -76,3 +78,6 @@ export const hasEditUserChanges = (payload: EditUserParams): boolean =>
   Object.keys(payload).some(
     (key) => key !== "computer_ids" && key !== "username",
   );
+
+export const renderUserActivityLink = (event: UserActivityEvent | undefined) =>
+  event ? <UserActivityLink event={event} /> : undefined;
