@@ -33,6 +33,7 @@ export { useOpenActivityDetails, useOpenActivityDetailsPanel } from "./hooks";
 export type {
   Activity,
   ActivityCommon,
+  ActivityGroup,
   GetActivitiesParams,
   ActivityStatus,
 } from "./types";
