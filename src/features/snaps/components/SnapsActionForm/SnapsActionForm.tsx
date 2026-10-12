@@ -108,8 +108,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                 }
               : {
                   ...(channel ? { channel } : {}),
-                  classic:
-                    (config?.confinement ?? item.confinement) === "classic",
+                  // The classic flag is safely ignored by snapd when not
+                  // required, so default to classic for the unresolved
+                  // "default channel" case, or when the selected channel
+                  // requires classic on at least one architecture.
+                  classic: !channel || config?.confinement === "classic",
                 };
 
           return {
