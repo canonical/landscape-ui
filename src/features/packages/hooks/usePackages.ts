@@ -115,7 +115,7 @@ export default function usePackages() {
       AxiosResponse<ApiPaginatedResponse<Package>>,
       AxiosError<ApiError>
     >({
-      queryKey: ["packageUpgrades", sanitizedRequest],
+      queryKey: ["packageUpgradesList", sanitizedRequest],
       queryFn: async () => {
         const response = await authFetch.post<SearchPackagesResponse>(
           "packages:search-upgrades",
@@ -191,7 +191,7 @@ export default function usePackages() {
     onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packages"] }),
-        queryClient.invalidateQueries({ queryKey: ["packageUpgrades"] }),
+        queryClient.invalidateQueries({ queryKey: ["packageUpgradesList"] }),
         queryClient.invalidateQueries({ queryKey: ["instancePackages"] }),
       ]),
   });
@@ -206,7 +206,7 @@ export default function usePackages() {
     onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packages"] }),
-        queryClient.invalidateQueries({ queryKey: ["packageUpgrades"] }),
+        queryClient.invalidateQueries({ queryKey: ["packageUpgradesList"] }),
         queryClient.invalidateQueries({ queryKey: ["instancePackages"] }),
         queryClient.invalidateQueries({ queryKey: ["instances"] }),
       ]),
@@ -244,7 +244,7 @@ export default function usePackages() {
     onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packages"] }),
-        queryClient.invalidateQueries({ queryKey: ["packageUpgrades"] }),
+        queryClient.invalidateQueries({ queryKey: ["packageUpgradesList"] }),
         queryClient.invalidateQueries({ queryKey: ["instancePackages"] }),
       ]),
   });
@@ -258,7 +258,7 @@ export default function usePackages() {
     onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packages"] }),
-        queryClient.invalidateQueries({ queryKey: ["packageUpgrades"] }),
+        queryClient.invalidateQueries({ queryKey: ["packageUpgradesList"] }),
         queryClient.invalidateQueries({ queryKey: ["instancePackages"] }),
       ]),
   });

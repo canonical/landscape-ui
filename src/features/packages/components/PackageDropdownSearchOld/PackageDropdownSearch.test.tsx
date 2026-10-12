@@ -61,9 +61,7 @@ describe("PackageDropdownSearch", () => {
           );
           return HttpResponse.json({
             count: results.length,
-            results: limit
-              ? results.slice(offset, offset + limit)
-              : results,
+            results: limit ? results.slice(offset, offset + limit) : results,
           });
         }),
       );
@@ -92,9 +90,7 @@ describe("PackageDropdownSearch", () => {
           );
           return HttpResponse.json({
             count: results.length,
-            results: limit
-              ? results.slice(offset, offset + limit)
-              : results,
+            results: limit ? results.slice(offset, offset + limit) : results,
           });
         }),
       );
