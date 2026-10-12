@@ -1,11 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { type FC, lazy, Suspense, useCallback, useState } from "react";
-import {
-  getActionVerb,
-  getRequestAction,
-  hasNotification,
-  isRevisionNotificationAction,
-} from "./helpers";
+import { type FC, useCallback, useState } from "react";
+import { getActionVerb, getRequestAction, hasNotification } from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import type { SnapAction, InstalledSnapWithCount, SnapMode } from "../../types";
 import classes from "./SnapsActionForm.module.scss";
@@ -17,18 +12,14 @@ import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import useNotify from "@/hooks/useNotify";
 import { useBoolean } from "usehooks-ts";
-import LoadingState from "@/components/layout/LoadingState";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 import { isValidRevision } from "../../helpers";
 import SnapItemTitleRow from "./components/SnapItemTitleRow";
 import SnapItemSubtitle from "./components/SnapItemSubtitle";
 import SnapChannelRevisionFields from "../SnapChannelRevisionFields";
-import { Notification } from "@canonical/react-components";
+import SnapNotification from "./components/SnapNotification";
 
-const ConfirmSnapActionModal = lazy(
-  () => import("./components/ConfirmSnapActionModal"),
-);
-const SnapNotification = lazy(() => import("./components/SnapNotification"));
+import ConfirmSnapActionModal from "./components/ConfirmSnapActionModal";
 
 interface SnapsActionFormProps {
   readonly selectedInstances: number[];
@@ -161,7 +152,9 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   });
 
   const isAnySnapInfoLoading = selectedSnaps.some(
-    (item) => loadingSnapIds[item.snap.id],
+    (item) =>
+      (snapModeConfigs[item.snap.id]?.mode ?? "channel") === "channel" &&
+      !!loadingSnapIds[item.snap.id],
   );
 
   const hasSnapInfoError = selectedSnaps.some((item) => {
@@ -251,13 +244,8 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   return (
     <>
       <div className={classes.container}>
-        {(hasNotification(action) || isRevisionNotificationAction(action)) && (
-          <Suspense fallback={<LoadingState />}>
-            <SnapNotification
-              action={action}
-              snapModeConfigs={snapModeConfigs}
-            />
-          </Suspense>
+        {hasNotification(action) && (
+          <SnapNotification action={action} snapModeConfigs={snapModeConfigs} />
         )}
         <SnapBulkSearch
           instanceIds={selectedInstances}
@@ -288,8 +276,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                 <SnapChannelRevisionFields
                   instanceIds={selectedInstances}
                   selectedSnap={item}
-                  mode={config.mode}
-                  value={config.value}
+                  snapModeConfig={config}
                   hasAttemptedSubmit={hasAttemptedSubmit}
                   onLoadingChange={(isLoading) => {
                     handleSnapLoadingChange(item.snap.id, isLoading);
@@ -323,6 +310,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                       <SnapItemSubtitle
                         scope="Installed"
                         computerCount={item.computerCount}
+                        instancesCount={selectedInstances.length}
                       />
                       <div className={classes.changeToLabel}>Change to</div>
                       {channelRevisionFields}
@@ -337,18 +325,6 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                         onDelete={handleDelete}
                       />
                       {channelRevisionFields}
-                      {config.confinement === "classic" &&
-                      config.mode === "channel" ? (
-                        <Notification
-                          severity="caution"
-                          className={classNames(
-                            classes.classicNotification,
-                            "u-no-margin--bottom",
-                          )}
-                        >
-                          This snap requires classic confinement
-                        </Notification>
-                      ) : null}
                     </li>
                   );
                 }
@@ -379,19 +355,17 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       />
 
       {isModalOpen && (
-        <Suspense fallback={<LoadingState />}>
-          <ConfirmSnapActionModal
-            actionVerb={action}
-            snaps={selectedSnaps}
-            snapModes={snapModes}
-            instancesCount={selectedInstances.length}
-            onClose={closeModal}
-            onConfirm={onSubmit}
-            isSubmitting={isSnapActionPending}
-            submitText={submitText}
-            snapModeConfigs={snapModeConfigs}
-          />
-        </Suspense>
+        <ConfirmSnapActionModal
+          actionVerb={action}
+          snaps={selectedSnaps}
+          snapModes={snapModes}
+          instancesCount={selectedInstances.length}
+          onClose={closeModal}
+          onConfirm={onSubmit}
+          isSubmitting={isSnapActionPending}
+          submitText={submitText}
+          snapModeConfigs={snapModeConfigs}
+        />
       )}
     </>
   );

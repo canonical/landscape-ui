@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
-import { pluralize } from "@/utils/_helpers";
+import { pluralize, toInstanceQuery } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import { type FC } from "react";
 import type { Profile } from "../../types";
@@ -65,10 +65,11 @@ const ProfileAssociatedInstancesLink: FC<
     return undefined;
   };
 
-  const formattedQuery =
-    getPackageComplianceIds()
-      ?.map((id) => `id:${id}`)
-      .join(" OR ") ?? `profile:${query.toLowerCase()}`;
+  const packageComplianceIds = getPackageComplianceIds();
+
+  const formattedQuery = packageComplianceIds
+    ? toInstanceQuery(packageComplianceIds)
+    : `profile:${query.toLowerCase()}`;
 
   if (isWslProfile(profile) && query.endsWith(":noncompliant")) {
     return (

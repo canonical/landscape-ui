@@ -5,6 +5,9 @@ import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { assert, beforeEach, describe, expect, it, vi } from "vitest";
 import SnapChannelRevisionFields from "./SnapChannelRevisionFields";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
+import { API_URL } from "@/constants";
 
 const snapWithChannels = installedSnaps.find((snap) => {
   const snapInfo = availableSnapInfo.find(
@@ -29,8 +32,10 @@ assert(snapWithNoChannels, "No installed snap has zero available channels.");
 const props: ComponentProps<typeof SnapChannelRevisionFields> = {
   instanceIds: [1],
   selectedSnap: snapWithChannels,
-  mode: "channel",
-  value: "",
+  snapModeConfig: {
+    mode: "channel",
+    value: "",
+  },
   onChange: vi.fn(),
   onModeChange: vi.fn(),
 };
@@ -87,7 +92,10 @@ describe("SnapChannelRevisionFields", () => {
 
   it("shows a revision input when mode is revision", async () => {
     renderWithProviders(
-      <SnapChannelRevisionFields {...props} mode="revision" />,
+      <SnapChannelRevisionFields
+        {...props}
+        snapModeConfig={{ ...props.snapModeConfig, mode: "revision" }}
+      />,
     );
 
     await waitFor(() => {
@@ -149,7 +157,7 @@ describe("SnapChannelRevisionFields", () => {
     renderWithProviders(
       <SnapChannelRevisionFields
         {...props}
-        mode="revision"
+        snapModeConfig={{ ...props.snapModeConfig, mode: "revision" }}
         onChange={onChange}
       />,
     );
@@ -165,7 +173,10 @@ describe("SnapChannelRevisionFields", () => {
 
   it("shows an unchecked 'Use classic confinement' checkbox in revision mode", async () => {
     renderWithProviders(
-      <SnapChannelRevisionFields {...props} mode="revision" />,
+      <SnapChannelRevisionFields
+        {...props}
+        snapModeConfig={{ ...props.snapModeConfig, mode: "revision" }}
+      />,
     );
 
     const checkbox = await screen.findByRole("checkbox", {
@@ -179,8 +190,11 @@ describe("SnapChannelRevisionFields", () => {
     renderWithProviders(
       <SnapChannelRevisionFields
         {...props}
-        mode="revision"
-        value="123"
+        snapModeConfig={{
+          ...props.snapModeConfig,
+          mode: "revision",
+          value: "123",
+        }}
         onChange={onChange}
       />,
     );
@@ -194,12 +208,44 @@ describe("SnapChannelRevisionFields", () => {
     expect(onChange).toHaveBeenLastCalledWith("123", undefined, "classic");
   });
 
+  it("uses the latest typed revision when the checkbox is toggled without blurring first", async () => {
+    const onChange = vi.fn();
+    renderWithProviders(
+      <SnapChannelRevisionFields
+        {...props}
+        snapModeConfig={{
+          ...props.snapModeConfig,
+          mode: "revision",
+          value: "123",
+        }}
+        onChange={onChange}
+      />,
+    );
+
+    const revisionInput = await screen.findByRole("spinbutton", {
+      name: `Revision for ${snapWithChannels.snap.name}`,
+    });
+    await user.click(revisionInput);
+    await user.clear(revisionInput);
+    await user.keyboard("456");
+
+    const checkbox = screen.getByRole("checkbox", {
+      name: "Use classic confinement",
+    });
+    await user.click(checkbox);
+
+    expect(onChange).toHaveBeenLastCalledWith("456", undefined, "classic");
+  });
+
   it("shows an error for a non-positive-integer revision after submit is attempted", async () => {
     renderWithProviders(
       <SnapChannelRevisionFields
         {...props}
-        mode="revision"
-        value="0"
+        snapModeConfig={{
+          ...props.snapModeConfig,
+          mode: "revision",
+          value: "0",
+        }}
         hasAttemptedSubmit
       />,
     );
@@ -231,5 +277,25 @@ describe("SnapChannelRevisionFields", () => {
       within(channelSelect).getByText("Default channel"),
     ).toBeInTheDocument();
     expect(screen.getByText("No channels were found")).toBeInTheDocument();
+  });
+
+  it("does not show 'No channels were found' alongside the load error", async () => {
+    server.use(
+      http.get(`${API_URL}computers/:computerId/snaps/:name/info`, () =>
+        HttpResponse.json(
+          { error: "InternalServerError", message: "Error response" },
+          { status: 500 },
+        ),
+      ),
+    );
+
+    renderWithProviders(<SnapChannelRevisionFields {...props} />);
+
+    expect(
+      await screen.findByText("Failed to load channels for this snap"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("No channels were found"),
+    ).not.toBeInTheDocument();
   });
 });

@@ -265,7 +265,7 @@ describe("SnapsActionForm", () => {
     await user.click(screen.getByRole("button", { name: "Change channel" }));
 
     expect(
-      await screen.findByText("Select a revision for this snap to continue"),
+      await screen.findByText("This field is required"),
     ).toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
@@ -542,6 +542,45 @@ describe("SnapsActionForm", () => {
     });
   });
 
+  it("shows a classic confinement notice when a classic channel is selected", async () => {
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: secondSnapOptionTitle,
+      }),
+    );
+
+    const channelSelect = await screen.findByRole("combobox", {
+      name: `Channel for ${secondSnap.snap.name}`,
+    });
+    await waitFor(() => {
+      expect(channelSelect).not.toBeDisabled();
+    });
+
+    expect(
+      screen.queryByText("This snap requires classic confinement"),
+    ).not.toBeInTheDocument();
+
+    await user.selectOptions(channelSelect, "latest/edge");
+
+    expect(
+      await screen.findByText("This snap requires classic confinement"),
+    ).toBeInTheDocument();
+
+    await user.selectOptions(channelSelect, "latest/stable");
+
+    expect(
+      screen.queryByText("This snap requires classic confinement"),
+    ).not.toBeInTheDocument();
+  });
+
   it("blocks submit and shows an error when the revision is not a positive integer", async () => {
     renderWithProviders(
       <SnapsActionForm
@@ -744,7 +783,7 @@ describe("SnapsActionForm", () => {
     ).toBeInTheDocument();
     expect(
       within(modal).getByText(
-        "The following snaps have been selected to change revision:",
+        "The following snap has been selected to change revision:",
       ),
     ).toBeInTheDocument();
     expect(

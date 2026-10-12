@@ -1,7 +1,11 @@
 import type { FC } from "react";
 import { Notification } from "@canonical/react-components";
-import type { SnapAction, SnapMode } from "../../../../types";
-import { hasNotification } from "../../helpers";
+import { SNAPD_REST_API_DOCUMENTATION_URL } from "@/constants";
+import type {
+  ActionWithNotification,
+  SnapAction,
+  SnapMode,
+} from "../../../../types";
 
 interface SnapChangeConfig {
   mode: SnapMode;
@@ -10,7 +14,7 @@ interface SnapChangeConfig {
 }
 
 interface SnapNotificationProps {
-  readonly action: SnapAction;
+  readonly action: ActionWithNotification;
   readonly snapModeConfigs?: Record<string, SnapChangeConfig>;
 }
 
@@ -38,33 +42,36 @@ const SnapNotification: FC<SnapNotificationProps> = ({
   action,
   snapModeConfigs,
 }) => {
+  if (action === "hold") {
+    return <HoldNotification />;
+  }
+
   const hasRevision =
     snapModeConfigs &&
     Object.values(snapModeConfigs).some((config) => config.mode === "revision");
 
+  if (!hasRevision) {
+    return null;
+  }
+
   return (
-    <>
-      {hasNotification(action) && <HoldNotification />}
-      {hasRevision && (action === "install" || action === "change channel") && (
-        <Notification
-          severity="information"
-          actions={[
-            {
-              label: "Visit Snapd documentation",
-              onClick: () => {
-                window.open(
-                  "https://snapcraft.io/docs/reference/development/snapd-rest-api/#/Asynchronous/manageSnapByName",
-                  "_blank",
-                  "noopener,noreferrer",
-                );
-              },
-            },
-          ]}
-        >
-          {revisionMessages[action]}
-        </Notification>
-      )}
-    </>
+    <Notification
+      severity="information"
+      actions={[
+        {
+          label: "Visit Snapd documentation",
+          onClick: () => {
+            window.open(
+              SNAPD_REST_API_DOCUMENTATION_URL,
+              "_blank",
+              "noopener,noreferrer",
+            );
+          },
+        },
+      ]}
+    >
+      {revisionMessages[action]}
+    </Notification>
   );
 };
 

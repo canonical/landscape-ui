@@ -5,7 +5,7 @@ description: Review guidance for pull requests in the landscape-ui repository. A
 
 # Code review: landscape-ui
 
-Architectural and CI rules already live in `.github/copilot-instructions.md`; read it first and don't re-flag what it already covers (import aliases, forms, styling, lint/prettier/tsc). Also skip the changeset check — CI's Validate workflow blocks any PR missing a `.changeset/*.md` file (an empty one satisfies it), so it's mechanically gated like lint. This skill covers what isn't caught automatically.
+Architectural and CI rules already live in `AGENTS.md` and `docs/` (see `docs/FRONTEND.md`, `docs/API.md`, `docs/ci-workflows.md`); read them first and don't re-flag what they already cover (import aliases, forms, styling, lint/prettier/tsc). Also skip the changeset check — CI's Validate workflow blocks any PR missing a `.changeset/*.md` file (an empty one satisfies it), so it's mechanically gated like lint. This skill covers what isn't caught automatically.
 
 ## What to check
 
@@ -17,7 +17,7 @@ Architectural and CI rules already live in `.github/copilot-instructions.md`; re
 
 ## How to review
 
-- Treat `.github/copilot-instructions.md` as the authoritative, CI-matched contract; where other comments or docs disagree with it, trust that file and flag the stale text.
+- Treat `AGENTS.md` and `docs/` as the authoritative, CI-matched contract; where other comments or docs disagree with them, trust the docs and flag the stale text.
 - Reserve comments for correctness, security, and the invariants above — ESLint/Prettier/Stylelint/tsc already gate style and types, so don't duplicate them.
 
 ## Review depth

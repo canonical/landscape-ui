@@ -1,6 +1,11 @@
 import type { FC } from "react";
 import { useEffect, useState, useMemo, useRef } from "react";
-import { CheckboxInput, Input, Select } from "@canonical/react-components";
+import {
+  CheckboxInput,
+  Input,
+  Notification,
+  Select,
+} from "@canonical/react-components";
 import classNames from "classnames";
 import type { InstalledSnapWithCount, SnapMode } from "../../types";
 import classes from "./SnapChannelRevisionFields.module.scss";
@@ -12,8 +17,12 @@ import { getChannelConfinement, isValidRevision } from "../../helpers";
 interface SnapChannelRevisionFieldsProps {
   readonly instanceIds: number[];
   readonly selectedSnap: InstalledSnapWithCount;
-  readonly mode: SnapMode;
-  readonly value: string;
+  readonly snapModeConfig: {
+    mode: SnapMode;
+    value: string;
+    channel?: string;
+    confinement?: string;
+  };
   readonly isLoading?: boolean;
   readonly hasAttemptedSubmit?: boolean;
   readonly onLoadingChange?: (isLoading: boolean) => void;
@@ -29,8 +38,7 @@ interface SnapChannelRevisionFieldsProps {
 const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   instanceIds,
   selectedSnap,
-  mode,
-  value,
+  snapModeConfig: { mode, value, confinement },
   isLoading = false,
   hasAttemptedSubmit,
   onLoadingChange,
@@ -39,11 +47,18 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   onModeChange,
 }) => {
   const [isClassicConfinement, setIsClassicConfinement] = useState(false);
+  const [revisionValue, setRevisionValue] = useState(value);
 
   const [prevMode, setPrevMode] = useState(mode);
   if (mode !== prevMode) {
     setPrevMode(mode);
     setIsClassicConfinement(false);
+  }
+
+  const [prevValue, setPrevValue] = useState(value);
+  if (value !== prevValue) {
+    setPrevValue(value);
+    setRevisionValue(value);
   }
 
   const { snapInfo, isSnapInfoLoading, isSnapInfoError } = useGetSnapInfo({
@@ -112,7 +127,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
       return undefined;
     }
     if (mode === "revision" && !value) {
-      return "Select a revision for this snap to continue";
+      return "This field is required";
     }
     if (mode === "revision" && !isValidRevision(value)) {
       return "Revision must be a positive whole number";
@@ -140,7 +155,9 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
             value={value}
             error={error}
             help={
-              channelOptions.length === 0 ? "No channels were found" : undefined
+              channelOptions.length === 0 && !error
+                ? "No channels were found"
+                : undefined
             }
             options={
               channelOptions.length > 0
@@ -157,8 +174,11 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
             min={1}
             step={1}
             aria-label={`Revision for ${selectedSnap.snap.name}`}
-            defaultValue={value}
+            value={revisionValue}
             error={error}
+            onChange={(event) => {
+              setRevisionValue(event.currentTarget.value);
+            }}
             onBlur={(event) => {
               handleChange(
                 event.currentTarget.value,
@@ -177,9 +197,20 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
           onChange={(event) => {
             const { checked } = event.currentTarget;
             setIsClassicConfinement(checked);
-            onChange(value, undefined, checked ? "classic" : "strict");
+            onChange(revisionValue, undefined, checked ? "classic" : "strict");
           }}
         />
+      ) : null}
+      {confinement === "classic" && mode === "channel" ? (
+        <Notification
+          severity="caution"
+          className={classNames(
+            classes.classicNotification,
+            "u-no-margin--bottom",
+          )}
+        >
+          This snap requires classic confinement
+        </Notification>
       ) : null}
     </>
   );
