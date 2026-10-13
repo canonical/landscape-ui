@@ -44,16 +44,18 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
   };
   const searchScope = getSearchScope();
 
+  const isQueryEnabled = isDropdownOpen && (action !== "install" || !!search);
+
   const snapsQueryResult = useGetBulkInstalledSnaps(
     {
       computer_ids: instanceIds,
-      search: search.trim() || undefined,
+      search: search || undefined,
       status: searchScope,
     },
     // isDropdownOpen stops re-sending all cached requests on submission
     // staleTime stops refetching every time the dropdown is reopened
     // gcTime ensures it does refetch when a new form is opened
-    { enabled: isDropdownOpen, gcTime: 0, staleTime: Infinity },
+    { enabled: isQueryEnabled, gcTime: 0, staleTime: Infinity },
   );
 
   if (snapsQueryResult.isError) {
@@ -62,7 +64,7 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
 
   const handleSearchBoxChange = (value: string) => {
     setInputValue(value);
-    setSearch(value);
+    setSearch(value.trim());
     if (!isDropdownOpen) {
       openDropdown();
     }
@@ -114,7 +116,11 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
         <div>
           <SearchBox
             {...downshiftOptions.getInputProps({ onKeyDown })}
-            placeholder={`Search ${searchScope} snaps`}
+            placeholder={
+              action === "install"
+                ? `Start typing to search ${searchScope} snaps`
+                : `Search ${searchScope} snaps`
+            }
             className="u-no-margin--bottom"
             shouldRefocusAfterReset
             externallyControlled
@@ -137,7 +143,7 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
             </div>
           )}
 
-          {isDropdownOpen && (
+          {isQueryEnabled && (
             <SnapBulkSearchList
               downshiftOptions={downshiftOptions}
               queryResult={snapsQueryResult}

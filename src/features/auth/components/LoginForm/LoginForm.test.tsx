@@ -1,5 +1,6 @@
 import { HOMEPAGE_PATH } from "@/constants";
 import { authUser } from "@/tests/mocks/auth";
+import { ROUTES } from "@/libs/routes";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -44,6 +45,57 @@ const mockTestParams = (searchParams?: Record<string, string>) => {
 };
 
 describe("LoginForm", () => {
+  it.each([false, true])(
+    "returns to the invitation after sign-in (identity: %s)",
+    async (isIdentityAvailable) => {
+      vi.doUnmock("react-router");
+      vi.doUnmock("@/hooks/useAuth");
+      vi.resetModules();
+      vi.clearAllMocks();
+      loginSpy.mockResolvedValue({ data: authUser });
+      mockTestParams({
+        invitation_id: "test-invite",
+        "redirect-to": "/dashboard",
+        external: "true",
+      });
+      const { default: Component } = await import("./LoginForm");
+      renderWithProviders(
+        <Component isIdentityAvailable={isIdentityAvailable} />,
+      );
+      await userEvent.type(
+        screen.getByTestId("identifier"),
+        isIdentityAvailable ? "john" : user.email,
+      );
+      await userEvent.type(screen.getByTestId("password"), user.password);
+      await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
+
+      expect(setUser).toHaveBeenCalledWith(authUser);
+      expect(safeRedirect).toHaveBeenCalledWith(
+        `${ROUTES.auth.invitation({ secureId: "test-invite" })}?redirect-to=%2Fdashboard&external=true`,
+        { replace: true },
+      );
+    },
+  );
+
+  it("returns to the bare invitation URL when there are no redirect params", async () => {
+    vi.doUnmock("react-router");
+    vi.doUnmock("@/hooks/useAuth");
+    vi.resetModules();
+    vi.clearAllMocks();
+    loginSpy.mockResolvedValue({ data: authUser });
+    mockTestParams({ invitation_id: "test-invite" });
+    const { default: Component } = await import("./LoginForm");
+    renderWithProviders(<Component isIdentityAvailable={false} />);
+    await userEvent.type(screen.getByTestId("identifier"), user.email);
+    await userEvent.type(screen.getByTestId("password"), user.password);
+    await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
+
+    expect(safeRedirect).toHaveBeenCalledWith(
+      ROUTES.auth.invitation({ secureId: "test-invite" }),
+      { replace: true },
+    );
+  });
+
   describe("without additional test params", () => {
     beforeEach(async ({ task: { id } }) => {
       vi.doUnmock("react-router");

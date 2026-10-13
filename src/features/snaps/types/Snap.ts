@@ -63,7 +63,7 @@ export type ActionWithNotification = Extract<
   "hold" | "install" | "change channel"
 >;
 
-export type SnapChangeMode = "channel" | "revision";
+export type SnapMode = "channel" | "revision";
 
 export interface InstalledSnapWithCount extends InstalledSnap {
   computerCount: number;

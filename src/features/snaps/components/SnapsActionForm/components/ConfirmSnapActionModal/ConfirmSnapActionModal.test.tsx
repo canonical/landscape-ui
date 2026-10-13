@@ -128,8 +128,8 @@ describe("ConfirmSnapActionModal", () => {
       <ConfirmSnapActionModal
         {...props}
         actionVerb="change channel"
-        changeModes={["channel"]}
-        snapChangeConfigs={{
+        snapModes={["channel"]}
+        snapModeConfigs={{
           [firstSnap.snap.id]: {
             mode: "channel",
             value: "",
@@ -166,8 +166,8 @@ describe("ConfirmSnapActionModal", () => {
       <ConfirmSnapActionModal
         {...props}
         actionVerb="change channel"
-        changeModes={["revision"]}
-        snapChangeConfigs={{
+        snapModes={["revision"]}
+        snapModeConfigs={{
           [firstSnap.snap.id]: { mode: "revision", value: "123" },
           [secondSnap.snap.id]: { mode: "revision", value: "456" },
         }}
@@ -197,8 +197,8 @@ describe("ConfirmSnapActionModal", () => {
       <ConfirmSnapActionModal
         {...props}
         actionVerb="change channel"
-        changeModes={["channel", "revision"]}
-        snapChangeConfigs={{
+        snapModes={["channel", "revision"]}
+        snapModeConfigs={{
           [firstSnap.snap.id]: {
             mode: "channel",
             value: "",
@@ -224,13 +224,19 @@ describe("ConfirmSnapActionModal", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders the install warning text", () => {
+  it("renders the install warning text when installing a classic snap", () => {
     renderWithProviders(
-      <ConfirmSnapActionModal {...props} actionVerb="install" />,
+      <ConfirmSnapActionModal
+        {...props}
+        snaps={installedSnaps.slice(0, 6)}
+        actionVerb="install"
+      />,
     );
 
     expect(
-      screen.getByRole("heading", { name: "Install 2 snaps on 3 instances" }),
+      screen.getByRole("heading", {
+        name: "6 of 6 snaps require classic confinement",
+      }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(/may have access to your files and system/i),
@@ -243,7 +249,7 @@ describe("ConfirmSnapActionModal", () => {
         {...props}
         snaps={[classicSnap]}
         actionVerb="install"
-        snapChangeConfigs={{
+        snapModeConfigs={{
           [classicSnap.snap.id]: {
             mode: "channel",
             value: "",
@@ -267,8 +273,8 @@ describe("ConfirmSnapActionModal", () => {
         {...props}
         snaps={[firstSnap, secondSnap, classicSnap]}
         actionVerb="change channel"
-        changeModes={["channel"]}
-        snapChangeConfigs={{
+        snapModes={["channel"]}
+        snapModeConfigs={{
           [firstSnap.snap.id]: {
             mode: "channel",
             value: "",
@@ -318,8 +324,8 @@ describe("ConfirmSnapActionModal", () => {
         {...props}
         snaps={[firstSnap, secondSnap, classicSnap]}
         actionVerb="change channel"
-        changeModes={["channel", "revision"]}
-        snapChangeConfigs={{
+        snapModes={["channel", "revision"]}
+        snapModeConfigs={{
           [firstSnap.snap.id]: {
             mode: "channel",
             value: "",
@@ -352,8 +358,8 @@ describe("ConfirmSnapActionModal", () => {
         {...props}
         snaps={[firstSnap, secondSnap]}
         actionVerb="change channel"
-        changeModes={["channel"]}
-        snapChangeConfigs={{
+        snapModes={["channel"]}
+        snapModeConfigs={{
           [firstSnap.snap.id]: { mode: "channel", value: "", channel: "" },
           [secondSnap.snap.id]: {
             mode: "channel",
@@ -379,8 +385,8 @@ describe("ConfirmSnapActionModal", () => {
         {...props}
         snaps={[firstSnap, secondSnap]}
         actionVerb="change channel"
-        changeModes={["channel"]}
-        snapChangeConfigs={{
+        snapModes={["channel"]}
+        snapModeConfigs={{
           [secondSnap.snap.id]: {
             mode: "channel",
             value: "",
@@ -404,8 +410,8 @@ describe("ConfirmSnapActionModal", () => {
       <ConfirmSnapActionModal
         {...props}
         actionVerb="change channel"
-        changeModes={["channel"]}
-        snapChangeConfigs={{
+        snapModes={["channel"]}
+        snapModeConfigs={{
           [firstSnap.snap.id]: {
             mode: "channel",
             value: "",

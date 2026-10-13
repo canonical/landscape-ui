@@ -125,7 +125,7 @@ describe("SnapBulkSearch", () => {
     renderWithProviders(<SnapBulkSearch {...props} action="install" />);
 
     expect(
-      screen.getByPlaceholderText("Search available snaps"),
+      screen.getByPlaceholderText("Start typing to search available snaps"),
     ).toBeInTheDocument();
   });
 

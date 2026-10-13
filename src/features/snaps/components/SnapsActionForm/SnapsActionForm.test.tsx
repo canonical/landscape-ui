@@ -14,11 +14,14 @@ import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
 import type { SnapActionParams } from "../../types";
+import { ICONS } from "@canonical/react-components";
 
 const instanceId = 1;
-const [firstSnap, secondSnap, , fourthSnap, , classicSnap] = installedSnaps;
+const [firstSnap, secondSnap, thirdSnap, fourthSnap, , classicSnap] =
+  installedSnaps;
 const firstSnapOptionTitle = `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`;
 const secondSnapOptionTitle = `${secondSnap.snap.name} ${secondSnap.snap.publisher.username}`;
+const thirdSnapOptionTitle = `${thirdSnap.snap.name} ${thirdSnap.snap.publisher["display-name"] ?? thirdSnap.snap.publisher.username}`;
 const fourthSnapOptionTitle = `${fourthSnap.snap.name} ${fourthSnap.snap.publisher.username}`;
 const classicSnapOptionTitle = `${classicSnap.snap.name} ${classicSnap.snap.publisher.username}`;
 
@@ -887,6 +890,10 @@ describe("SnapsActionForm", () => {
       "123",
     );
 
+    await user.click(
+      screen.getByRole("checkbox", { name: "Use classic confinement" }),
+    );
+
     await user.click(screen.getByRole("button", { name: "Change channel" }));
     const modal = await screen.findByRole("dialog");
     await user.click(
@@ -1047,5 +1054,73 @@ describe("SnapsActionForm", () => {
         { name: fourthSnap.snap.name },
       ],
     });
+  });
+
+  it("renders a notification when installing classic snaps", async () => {
+    renderWithProviders(
+      <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+    );
+
+    await user.type(await screen.findByRole("searchbox"), thirdSnap.snap.name);
+    await user.click(
+      await screen.findByRole("option", {
+        name: thirdSnapOptionTitle,
+      }),
+    );
+
+    expect(
+      await screen.findByText("This snap requires classic confinement"),
+    ).toBeInTheDocument();
+  });
+
+  it("doesn't render a notification when installing strict snaps", async () => {
+    renderWithProviders(
+      <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+    );
+
+    await user.type(await screen.findByRole("searchbox"), firstSnap.snap.name);
+    await user.click(
+      await screen.findByRole("option", {
+        name: firstSnapOptionTitle,
+      }),
+    );
+
+    expect(
+      screen.queryByText("This snap requires classic confinement"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the snap name, current channel, delete button, and Change to label", async () => {
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(screen.getByRole("searchbox"));
+    await user.click(
+      screen.getByRole("option", { name: firstSnapOptionTitle }),
+    );
+
+    await screen.findByLabelText(
+      `Snap channel or revision for ${firstSnap.snap.name}`,
+    );
+
+    expect(screen.getByText(firstSnap.snap.name)).toBeInTheDocument();
+    expect(
+      screen.getByText(`Installed on ${firstSnap.computerCount} of 1 instance`),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Change to")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(
+        `Snap channel or revision for ${firstSnap.snap.name}`,
+      ),
+    ).toBeInTheDocument();
+
+    const deleteButton = screen.getByRole("button", {
+      name: `Delete ${firstSnap.snap.name}`,
+    });
+    expect(deleteButton).toHaveIcon(ICONS.delete);
   });
 });
