@@ -135,6 +135,7 @@ const SupportRepositoryProfiles: FC = () => {
       <TablePagination
         totalItems={data?.data.count}
         currentItemCount={profiles.length}
+        pageSizeLabel="Profiles per page"
       />
       <SidePanel onClose={popSidePathUntilClear} isOpen={isViewing}>
         {isViewing && (

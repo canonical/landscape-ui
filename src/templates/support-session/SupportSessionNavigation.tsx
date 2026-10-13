@@ -20,8 +20,8 @@ const SupportSessionNavigation: FC<SupportSessionNavigationProps> = ({
 }) => {
   const { pathname } = useLocation();
 
-  // The group of the current page, expanded whenever the page moves into
-  // one; collapsing it by hand holds until then.
+  // The group of the current page, expanded whenever the page moves within
+  // or into one; collapsing it by hand holds until the next move.
   const currentGroup =
     items.find(({ items: subItems }) =>
       subItems?.some(({ path }) => isBelow(pathname, path)),
@@ -33,7 +33,7 @@ const SupportSessionNavigation: FC<SupportSessionNavigationProps> = ({
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setExpanded(currentGroup);
     }
-  }, [currentGroup]);
+  }, [currentGroup, pathname]);
 
   return (
     <div className="p-side-navigation--icons is-dark">

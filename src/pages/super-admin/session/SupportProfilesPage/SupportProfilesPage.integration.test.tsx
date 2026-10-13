@@ -1,3 +1,5 @@
+import { AuthGuard } from "@/components/guards/AuthGuard";
+import { SuperAdminGuard } from "@/components/guards/SuperAdminGuard";
 import { API_URL } from "@/constants";
 import { PATHS, ROUTES } from "@/libs/routes";
 import SupportSessionPage from "@/pages/super-admin/accounts/SupportSessionPage";
@@ -16,7 +18,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import type { FC, ReactNode } from "react";
-import { Route, Routes, useNavigate } from "react-router";
+import { Outlet, Route, Routes, useNavigate } from "react-router";
 import { beforeEach, describe, expect, it } from "vitest";
 import SupportProfilesPage from "./SupportProfilesPage";
 
@@ -66,18 +68,29 @@ const renderProfiles = (
   renderWithProviders(
     <ErrorBoundary fallback={<p>Something went wrong</p>}>
       <Routes>
+        {/* The guards mount the session once the user is known, as the app does. */}
         <Route
-          path={`/${PATHS.superAdmin.root}/${PATHS.superAdmin.session}`}
-          element={<SupportSessionPage />}
+          element={
+            <AuthGuard requireAccount={false}>
+              <SuperAdminGuard>
+                <Outlet />
+              </SuperAdminGuard>
+            </AuthGuard>
+          }
         >
           <Route
-            path={PATHS.superAdmin.sessionProfiles}
-            element={<SupportProfilesPage />}
-          />
-          <Route
-            path={PATHS.superAdmin.sessionProfile}
-            element={<SupportProfilesPage />}
-          />
+            path={`/${PATHS.superAdmin.root}/${PATHS.superAdmin.session}`}
+            element={<SupportSessionPage />}
+          >
+            <Route
+              path={PATHS.superAdmin.sessionProfiles}
+              element={<SupportProfilesPage />}
+            />
+            <Route
+              path={PATHS.superAdmin.sessionProfile}
+              element={<SupportProfilesPage />}
+            />
+          </Route>
         </Route>
       </Routes>
       {extra}
@@ -186,6 +199,33 @@ describe("SupportProfilesPage (integration)", () => {
         name: 'Open "web-profile" profile details',
       }),
     ).toBeInTheDocument();
+  });
+
+  it("expands Profiles again when history moves to another profile type", async () => {
+    renderProfiles(
+      "package",
+      "",
+      <GoTo to={ROUTES.superAdmin.sessionProfile(ACME, "reboot")} />,
+    );
+
+    const sidebar = within(await screen.findByRole("banner"));
+    const profiles = sidebar.getByRole("button", { name: "Profiles" });
+
+    expect(profiles).toHaveAttribute("aria-expanded", "true");
+
+    await user.click(profiles);
+
+    expect(profiles).toHaveAttribute("aria-expanded", "false");
+
+    await user.click(screen.getByRole("button", { name: /^Go to/ }));
+
+    expect(
+      await screen.findByRole("heading", { name: "Reboot profiles" }),
+    ).toBeInTheDocument();
+    expect(profiles).toHaveAttribute("aria-expanded", "true");
+    expect(
+      sidebar.getByRole("link", { name: "Reboot profiles" }),
+    ).toHaveAttribute("aria-current", "page");
   });
 
   it("lists the upgrade profiles and opens one with its schedule", async () => {
