@@ -7,7 +7,7 @@ export const expectLoadingState = async (): Promise<void> => {
   expect(loadingSpinner).toHaveTextContent("Loading...");
   // Suspense can hide its fallback without removing it from the DOM.
   await waitFor(() => {
-    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(loadingSpinner).not.toBeVisible();
   });
 };
 

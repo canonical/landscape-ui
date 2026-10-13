@@ -32,10 +32,6 @@ describe("ViewLogsSidePanel", () => {
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => undefined);
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it("renders loading state when fetching", () => {
     renderWithProviders(
       <Suspense fallback={<LoadingState />}>

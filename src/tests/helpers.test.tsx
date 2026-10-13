@@ -8,7 +8,7 @@ describe("expectLoadingState", () => {
     const loadingFinished = expectLoadingState();
     await screen.findByRole("status");
 
-    rerender(<div>Loaded</div>);
+    rerender(<p>Loaded</p>);
 
     await loadingFinished;
     expect(screen.getByText("Loaded")).toBeInTheDocument();
@@ -28,5 +28,13 @@ describe("expectLoadingState", () => {
     await loadingFinished;
     expect(spinner).toBeInTheDocument();
     expect(spinner).not.toBeVisible();
+  });
+
+  it("times out when the loading spinner remains visible", async () => {
+    render(<div role="status">Loading...</div>);
+
+    await expect(expectLoadingState()).rejects.toThrow(/not\.toBeVisible/);
+
+    expect(screen.getByRole("status")).toBeVisible();
   });
 });
