@@ -57,3 +57,31 @@ export const SUPPORT_PROFILE_PAGES: readonly [
   { slug: "reboot", type: ProfileTypes.reboot, label: "Reboot profiles" },
   { slug: "removal", type: ProfileTypes.removal, label: "Removal profiles" },
 ];
+
+/** The `setting` route segment of a settings page. */
+export type SupportSettingSlug =
+  "general" | "administrators" | "roles" | "access-groups";
+
+export interface SupportSettingsPage {
+  slug: SupportSettingSlug;
+  label: string;
+  /** Whether the page is a table, laid out as one. */
+  hasTable: boolean;
+}
+
+/**
+ * The org settings a support session can read: account preferences
+ * (`ViewAccount`), administrators and invitations (`ViewPerson`,
+ * `ViewInvitations`), roles (`ViewRole`) and access groups
+ * (`ViewAccessContext`). Employees, identity providers and licenses need
+ * grants support staff do not hold.
+ */
+export const SUPPORT_SETTINGS_PAGES: readonly [
+  SupportSettingsPage,
+  ...SupportSettingsPage[],
+] = [
+  { slug: "general", label: "General", hasTable: false },
+  { slug: "administrators", label: "Administrators", hasTable: true },
+  { slug: "roles", label: "Roles", hasTable: true },
+  { slug: "access-groups", label: "Access groups", hasTable: true },
+];
