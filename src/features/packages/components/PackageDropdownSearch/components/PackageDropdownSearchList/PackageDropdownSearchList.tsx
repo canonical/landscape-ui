@@ -48,9 +48,10 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
     return <LoadingState />;
   }
 
-  const results = queryResult.data.pages
+  const results: Package[] = queryResult.data.pages
     .flatMap((page) => page.data.packages)
-    .filter((item) => !selectedPackages.some(({ id }) => item.id === id));
+    .filter((item) => !selectedPackages.some(({ id }) => item.id === id))
+    .map((item) => ({ ...item }));
 
   if (results.length) {
     return (
@@ -61,7 +62,7 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
           )}
           {...downshiftOptions.getMenuProps()}
         >
-          {results.map((item: Package, index: number) => {
+          {results.map((item, index) => {
             return (
               <li
                 className={classNames("p-list__item", classes.listItem, {

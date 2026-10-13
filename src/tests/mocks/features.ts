@@ -120,7 +120,7 @@ export const features: Feature[] = [
     database_key: 17,
     enabled: true,
     details: {
-      configuration: true,
+      configuration: false,
     },
   },
 ];

@@ -1,4 +1,76 @@
-import type { PackageChangePlanActionType } from "./types";
+import { FilterState } from "./types";
+import type {
+  ComputerPackageSearchGroupedResult,
+  InstancePackage,
+  PackageChangePlanActionType,
+  PackageInstallationCandidate,
+} from "./types";
+
+const SYNTHETIC_ID_PREFIX = -900000;
+
+let syntheticIdCounter = 0;
+
+const getSyntheticId = (): number => {
+  syntheticIdCounter -= 1;
+
+  return SYNTHETIC_ID_PREFIX + syntheticIdCounter;
+};
+
+const pickAvailableCandidate = (
+  candidates: PackageInstallationCandidate[],
+): PackageInstallationCandidate | undefined => {
+  const securityCandidate = candidates.find(({ security }) => security);
+
+  if (securityCandidate) {
+    return securityCandidate;
+  }
+
+  const upgradeCandidate = candidates.find(({ upgrade }) => upgrade);
+
+  if (upgradeCandidate) {
+    return upgradeCandidate;
+  }
+
+  return candidates[0];
+};
+
+const resolvePackageStatus = (
+  result: ComputerPackageSearchGroupedResult,
+  candidate?: PackageInstallationCandidate,
+): "available" | "installed" | "held" | "security" => {
+  if (result.held) {
+    return "held";
+  }
+
+  if (result.security || candidate?.security) {
+    return "security";
+  }
+
+  if (result.installed_version) {
+    return "installed";
+  }
+
+  if (candidate) {
+    return "available";
+  }
+
+  return "installed";
+};
+
+export const mapGroupedResultToInstancePackage = (
+  result: ComputerPackageSearchGroupedResult,
+): InstancePackage => {
+  const candidate = pickAvailableCandidate(result.installation_candidates);
+
+  return {
+    id: result.installed_id ?? candidate?.id ?? getSyntheticId(),
+    name: result.name,
+    summary: result.summary ?? "",
+    current_version: result.installed_version,
+    available_version: candidate?.version ?? null,
+    status: resolvePackageStatus(result, candidate),
+  };
+};
 
 export const mapActionTypeToQueryParams = (
   actionType: Exclude<PackageChangePlanActionType, "upgrade">,
@@ -6,24 +78,24 @@ export const mapActionTypeToQueryParams = (
   switch (actionType) {
     case "install":
       return {
-        available: "true",
-        installed: "false",
-        held: "false",
-        upgrade: "false",
-      } as const;
+        available: FilterState.TRUE,
+        installed: FilterState.FALSE,
+        held: FilterState.FALSE,
+        upgrade: FilterState.FALSE,
+      };
 
     case "remove":
     case "change_version":
       return {
-        installed: "true",
-        held: "false",
-      } as const;
+        installed: FilterState.TRUE,
+        held: FilterState.FALSE,
+      };
 
     case "hold":
-      return { installed: "true", held: "false" } as const;
+      return { installed: FilterState.TRUE, held: FilterState.FALSE };
 
     case "unhold":
-      return { held: "true" } as const;
+      return { held: FilterState.TRUE };
   }
 };
 
