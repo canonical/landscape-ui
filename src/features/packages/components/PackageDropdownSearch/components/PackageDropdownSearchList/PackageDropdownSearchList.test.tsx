@@ -89,7 +89,7 @@ describe("PackageDropdownSearchList", () => {
     );
 
     const searchResult = screen.getByText(search);
-    expect(searchResult).toHaveStyle("font-weight: bolder;");
+    expect(searchResult).toHaveRole("strong");
     expect(searchResult.closest("div")?.textContent).toEqual(
       `${packages[1].name} ${packages[1].version}`,
     );

@@ -39,6 +39,8 @@ const baseActivity: Activity = {
 describe("USGProfileDownloadAuditForm", () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test-audit");
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => undefined);
   });
 
   afterEach(() => {

@@ -1,11 +1,14 @@
 import { expect, vi } from "vitest";
-import { screen, waitForElementToBeRemoved } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { BREAKPOINT_PX } from "@/constants";
 
 export const expectLoadingState = async (): Promise<void> => {
   const loadingSpinner = await screen.findByRole("status");
   expect(loadingSpinner).toHaveTextContent("Loading...");
-  await waitForElementToBeRemoved(loadingSpinner);
+  // Suspense can hide its fallback without removing it from the DOM.
+  await waitFor(() => {
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
 };
 
 export const expectErrorNotification = async (): Promise<void> => {

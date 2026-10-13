@@ -8,7 +8,7 @@ import {
 } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import type { Instance } from "@/types/Instance";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe } from "vitest";
 import SingleInstanceTabs from "./SingleInstanceTabs";
@@ -28,11 +28,12 @@ const validateTabs = (instance: Instance, tabNames: string[]) => {
     />,
   );
 
-  const tabs = screen.getByRole("list");
+  const tabs = within(screen.getByRole("tablist")).getAllByRole("tab");
 
-  for (const index in [...tabs.childNodes]) {
+  expect(tabs).toHaveLength(tabNames.length);
+  for (const index in tabs) {
     assert(tabNames[index] !== undefined);
-    expect(tabs.childNodes[index]).toHaveTextContent(tabNames[index]);
+    expect(tabs[index]).toHaveTextContent(tabNames[index]);
   }
 };
 
