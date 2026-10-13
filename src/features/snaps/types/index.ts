@@ -13,6 +13,6 @@ export type {
   SelectedSnaps,
   SnapStatus,
   SnapAction,
-  SnapChangeMode,
+  SnapMode,
   InstalledSnapWithCount,
 } from "./Snap";

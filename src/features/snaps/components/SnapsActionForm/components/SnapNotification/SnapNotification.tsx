@@ -1,21 +1,21 @@
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { Notification } from "@canonical/react-components";
 import { SNAPD_REST_API_DOCUMENTATION_URL } from "@/constants";
 import type {
   ActionWithNotification,
   SnapAction,
-  SnapChangeMode,
+  SnapMode,
 } from "../../../../types";
 
 interface SnapChangeConfig {
-  mode: SnapChangeMode;
+  mode: SnapMode;
   value: string;
   channel?: string;
 }
 
 interface SnapNotificationProps {
   readonly action: ActionWithNotification;
-  readonly snapChangeConfigs?: Record<string, SnapChangeConfig>;
+  readonly snapModeConfigs?: Record<string, SnapChangeConfig>;
 }
 
 const HoldNotification = () => (
@@ -30,27 +30,29 @@ const HoldNotification = () => (
 
 const revisionMessages: Record<
   Extract<SnapAction, "install" | "change channel">,
-  string
+  ReactNode
 > = {
-  install:
-    "Specifying a revision doesn't set a tracked channel, so future updates may replace it with the store's latest revision.",
+  install: (
+    <>
+      Specifying a revision tracks <code>latest/stable</code> by default, so
+      future updates may replace it with the store&apos;s latest revision.
+    </>
+  ),
   "change channel":
     "Specifying a revision doesn't change the tracked channel, so future updates may replace it with that channel's latest revision.",
 };
 
 const SnapNotification: FC<SnapNotificationProps> = ({
   action,
-  snapChangeConfigs,
+  snapModeConfigs,
 }) => {
   if (action === "hold") {
     return <HoldNotification />;
   }
 
   const hasRevision =
-    snapChangeConfigs &&
-    Object.values(snapChangeConfigs).some(
-      (config) => config.mode === "revision",
-    );
+    snapModeConfigs &&
+    Object.values(snapModeConfigs).some((config) => config.mode === "revision");
 
   if (!hasRevision) {
     return null;

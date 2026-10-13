@@ -1,8 +1,4 @@
-import type {
-  SnapAction,
-  ActionWithNotification,
-  SnapChangeMode,
-} from "../../types";
+import type { SnapAction, ActionWithNotification, SnapMode } from "../../types";
 
 export const getRequestAction = (action: SnapAction) => {
   switch (action) {
@@ -20,9 +16,7 @@ export const hasNotification = (
 ): action is ActionWithNotification =>
   action === "hold" || action === "install" || action === "change channel";
 
-export const getChangeChannelVerb = (
-  changeModes: SnapChangeMode[] = [],
-): string => {
+export const getChangeChannelVerb = (changeModes: SnapMode[] = []): string => {
   const hasChannelMode = changeModes.includes("channel");
   const hasRevisionMode = changeModes.includes("revision");
 
@@ -37,7 +31,7 @@ export const getChangeChannelVerb = (
 
 export const getActionVerb = (
   action: SnapAction,
-  changeModes: SnapChangeMode[] = [],
+  changeModes: SnapMode[] = [],
 ): string => {
   if (action === "change channel") {
     return getChangeChannelVerb(changeModes);

@@ -1,31 +1,52 @@
 import type { FC } from "react";
-import { useEffect, useState } from "react";
-import { CheckboxInput, Input, Select } from "@canonical/react-components";
+import { useEffect, useState, useMemo, useRef } from "react";
+import {
+  CheckboxInput,
+  Input,
+  Notification,
+  Select,
+} from "@canonical/react-components";
 import classNames from "classnames";
-import type { SelectOption } from "@/types/SelectOption";
-import type { SnapChangeMode } from "../../types";
+import type { InstalledSnapWithCount, SnapMode } from "../../types";
 import classes from "./SnapChannelRevisionFields.module.scss";
 import { MODE_OPTIONS } from "./helpers";
 import { useTheme } from "@/context/theme";
+import { useGetSnapInfo } from "../../api";
+import {
+  getChannelConfinement,
+  getChannelOptions,
+  isValidRevision,
+} from "../../helpers";
 
 interface SnapChannelRevisionFieldsProps {
-  readonly mode: SnapChangeMode;
-  readonly value: string;
-  readonly channelOptions: SelectOption[];
-  readonly snapName: string;
-  readonly error?: string;
+  readonly instanceIds: number[];
+  readonly selectedSnap: InstalledSnapWithCount;
+  readonly snapModeConfig: {
+    mode: SnapMode;
+    value: string;
+    channel?: string;
+    confinement?: string;
+  };
   readonly isLoading?: boolean;
-  readonly onChange: (value: string, isClassicConfinement?: boolean) => void;
-  readonly onModeChange: (mode: SnapChangeMode) => void;
+  readonly hasAttemptedSubmit?: boolean;
+  readonly onLoadingChange?: (isLoading: boolean) => void;
+  readonly onErrorChange?: (isError: boolean) => void;
+  readonly onChange: (
+    value: string,
+    channel?: string,
+    confinement?: string,
+  ) => void;
+  readonly onModeChange: (mode: SnapMode) => void;
 }
 
 const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
-  mode,
-  value,
-  channelOptions,
-  snapName,
-  error,
+  instanceIds,
+  selectedSnap,
+  snapModeConfig: { mode, value, channel, confinement },
   isLoading = false,
+  hasAttemptedSubmit,
+  onLoadingChange,
+  onErrorChange,
   onChange,
   onModeChange,
 }) => {
@@ -44,30 +65,96 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
     setRevisionValue(value);
   }
 
+  const { snapInfo, isSnapInfoLoading, isSnapInfoError } = useGetSnapInfo({
+    instance_id: instanceIds[0] ?? 0,
+    name: selectedSnap.snap.name,
+  });
+
+  const channelOptions = useMemo(
+    () => getChannelOptions(snapInfo?.["channel-map"]),
+    [snapInfo],
+  );
+
+  const handleChange = (newValue: string, isClassic?: boolean) => {
+    if (mode !== "channel") {
+      onChange(
+        newValue,
+        undefined,
+        isClassic ? "classic" : selectedSnap.confinement,
+      );
+      return;
+    }
+
+    const channelMap = snapInfo?.["channel-map"];
+
+    onChange(newValue, newValue, getChannelConfinement(channelMap, newValue));
+  };
+
   useEffect(() => {
     const [firstChannel] = channelOptions;
-    if (mode === "channel" && !value && firstChannel) {
-      onChange(firstChannel.value);
+    if (mode === "channel" && !value) {
+      handleChange(firstChannel?.value ?? "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelOptions, mode, value]);
 
+  const onLoadingChangeRef = useRef(onLoadingChange);
+  const onErrorChangeRef = useRef(onErrorChange);
+
+  useEffect(() => {
+    onLoadingChangeRef.current = onLoadingChange;
+    onErrorChangeRef.current = onErrorChange;
+  });
+
+  useEffect(() => {
+    onLoadingChangeRef.current?.(isSnapInfoLoading);
+  }, [isSnapInfoLoading]);
+
+  useEffect(() => {
+    onErrorChangeRef.current?.(isSnapInfoError);
+  }, [isSnapInfoError]);
+
+  useEffect(() => {
+    return () => {
+      onLoadingChangeRef.current?.(false);
+      onErrorChangeRef.current?.(false);
+    };
+  }, []);
+
   const { isDarkMode } = useTheme();
+
+  const getError = () => {
+    if (mode === "channel" && isSnapInfoError) {
+      return "Failed to load channels for this snap";
+    }
+    if (!hasAttemptedSubmit) {
+      return undefined;
+    }
+    if (mode === "revision" && !value) {
+      return "This field is required";
+    }
+    if (mode === "revision" && !isValidRevision(value)) {
+      return "Revision must be a positive whole number";
+    }
+    return undefined;
+  };
+
+  const error = getError();
 
   return (
     <>
       <div className={classNames(classes.fieldsRow, !isDarkMode && "is-paper")}>
         <Select
-          aria-label={`Snap channel or revision for ${snapName}`}
+          aria-label={`Snap channel or revision for ${selectedSnap.snap.name}`}
           options={MODE_OPTIONS}
           value={mode}
           onChange={(event) => {
-            onModeChange(event.currentTarget.value as SnapChangeMode);
+            onModeChange(event.currentTarget.value as SnapMode);
           }}
         />
         {mode === "channel" ? (
           <Select
-            aria-label={`Channel for ${snapName}`}
+            aria-label={`Channel for ${selectedSnap.snap.name}`}
             disabled={isLoading || channelOptions.length === 0}
             value={value}
             error={error}
@@ -82,21 +169,25 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
                 : [{ label: "Default channel", value: "" }]
             }
             onChange={(event) => {
-              onChange(event.currentTarget.value);
+              handleChange(event.currentTarget.value);
             }}
           />
         ) : (
           <Input
             type="text"
             inputMode="numeric"
-            aria-label={`Revision for ${snapName}`}
+            aria-label={`Revision for ${selectedSnap.snap.name}`}
             value={revisionValue}
             error={error}
             onChange={(event) => {
               setRevisionValue(event.currentTarget.value.replace(/\D/g, ""));
             }}
             onBlur={(event) => {
-              onChange(event.currentTarget.value, isClassicConfinement);
+              handleChange(
+                event.currentTarget.value,
+
+                isClassicConfinement,
+              );
             }}
           />
         )}
@@ -109,9 +200,35 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
           onChange={(event) => {
             const { checked } = event.currentTarget;
             setIsClassicConfinement(checked);
-            onChange(revisionValue, checked);
+            onChange(revisionValue, undefined, checked ? "classic" : "strict");
           }}
         />
+      ) : null}
+      {confinement === "classic" && mode === "channel" ? (
+        <Notification
+          severity="caution"
+          className={classNames(
+            classes.classicNotification,
+            "u-no-margin--bottom",
+          )}
+        >
+          This snap requires classic confinement
+        </Notification>
+      ) : null}
+      {!isSnapInfoLoading &&
+      !isSnapInfoError &&
+      mode === "channel" &&
+      !channel ? (
+        <Notification
+          severity="caution"
+          className={classNames(
+            classes.classicNotification,
+            "u-no-margin--bottom",
+          )}
+        >
+          We couldn&apos;t confirm if this snap requires classic confinement.
+          Check the default channel on the snap store to make sure.
+        </Notification>
       ) : null}
     </>
   );

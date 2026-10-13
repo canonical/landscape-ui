@@ -1,11 +1,10 @@
 import { availableSnapInfo, installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
-import { ICONS } from "@canonical/react-components";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { assert, beforeEach, describe, expect, it, vi } from "vitest";
-import SnapChangeChannelItem from "./SnapChangeChannelItem";
+import SnapChannelRevisionFields from "./SnapChannelRevisionFields";
 import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
@@ -30,51 +29,26 @@ assert(
 );
 assert(snapWithNoChannels, "No installed snap has zero available channels.");
 
-const props: ComponentProps<typeof SnapChangeChannelItem> = {
+const props: ComponentProps<typeof SnapChannelRevisionFields> = {
   instanceIds: [1],
   selectedSnap: snapWithChannels,
-  onDelete: vi.fn(),
-  mode: "channel",
-  value: "",
+  snapModeConfig: {
+    mode: "channel",
+    value: "",
+  },
   onChange: vi.fn(),
   onModeChange: vi.fn(),
 };
 
-describe("SnapChangeChannelItem", () => {
+describe("SnapChannelRevisionFields", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("renders the snap name, current channel, delete button, and Change to label", async () => {
-    renderWithProviders(<SnapChangeChannelItem {...props} />);
-
-    await screen.findByLabelText(
-      `Snap channel or revision for ${snapWithChannels.snap.name}`,
-    );
-
-    expect(screen.getByText(snapWithChannels.snap.name)).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        `Installed on ${snapWithChannels.computerCount} of 1 instance`,
-      ),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Change to")).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(
-        `Snap channel or revision for ${snapWithChannels.snap.name}`,
-      ),
-    ).toBeInTheDocument();
-
-    const deleteButton = screen.getByRole("button", {
-      name: `Delete ${snapWithChannels.snap.name}`,
-    });
-    expect(deleteButton).toHaveIcon(ICONS.delete);
-  });
-
   it("renders a mode dropdown with Channel and Revision options defaulting to Channel", async () => {
-    renderWithProviders(<SnapChangeChannelItem {...props} />);
+    renderWithProviders(<SnapChannelRevisionFields {...props} />);
 
     const modeSelect = await screen.findByLabelText(
       `Snap channel or revision for ${snapWithChannels.snap.name}`,
@@ -92,7 +66,7 @@ describe("SnapChangeChannelItem", () => {
   it("calls onModeChange when the mode dropdown is changed", async () => {
     const onModeChange = vi.fn();
     renderWithProviders(
-      <SnapChangeChannelItem {...props} onModeChange={onModeChange} />,
+      <SnapChannelRevisionFields {...props} onModeChange={onModeChange} />,
     );
 
     const modeSelect = await screen.findByLabelText(
@@ -104,7 +78,7 @@ describe("SnapChangeChannelItem", () => {
   });
 
   it("shows a channel dropdown when mode is channel", async () => {
-    renderWithProviders(<SnapChangeChannelItem {...props} />);
+    renderWithProviders(<SnapChannelRevisionFields {...props} />);
 
     const channelSelect = await screen.findByLabelText(
       `Channel for ${snapWithChannels.snap.name}`,
@@ -117,7 +91,12 @@ describe("SnapChangeChannelItem", () => {
   });
 
   it("shows a revision input when mode is revision", async () => {
-    renderWithProviders(<SnapChangeChannelItem {...props} mode="revision" />);
+    renderWithProviders(
+      <SnapChannelRevisionFields
+        {...props}
+        snapModeConfig={{ ...props.snapModeConfig, mode: "revision" }}
+      />,
+    );
 
     await waitFor(() => {
       expect(
@@ -132,7 +111,7 @@ describe("SnapChangeChannelItem", () => {
   });
 
   it("populates the channel dropdown and auto-selects the first channel", async () => {
-    renderWithProviders(<SnapChangeChannelItem {...props} />);
+    renderWithProviders(<SnapChannelRevisionFields {...props} />);
 
     const channelSelect = await screen.findByLabelText(
       `Channel for ${snapWithChannels.snap.name}`,
@@ -154,7 +133,7 @@ describe("SnapChangeChannelItem", () => {
   it("calls onChange when a channel is selected", async () => {
     const onChange = vi.fn();
     renderWithProviders(
-      <SnapChangeChannelItem {...props} onChange={onChange} />,
+      <SnapChannelRevisionFields {...props} onChange={onChange} />,
     );
 
     const channelSelect = await screen.findByLabelText(
@@ -176,7 +155,11 @@ describe("SnapChangeChannelItem", () => {
   it("calls onChange when a revision is entered", async () => {
     const onChange = vi.fn();
     renderWithProviders(
-      <SnapChangeChannelItem {...props} mode="revision" onChange={onChange} />,
+      <SnapChannelRevisionFields
+        {...props}
+        snapModeConfig={{ ...props.snapModeConfig, mode: "revision" }}
+        onChange={onChange}
+      />,
     );
 
     const revisionInput = await screen.findByRole("textbox", {
@@ -189,7 +172,12 @@ describe("SnapChangeChannelItem", () => {
   });
 
   it("shows an unchecked 'Use classic confinement' checkbox in revision mode", async () => {
-    renderWithProviders(<SnapChangeChannelItem {...props} mode="revision" />);
+    renderWithProviders(
+      <SnapChannelRevisionFields
+        {...props}
+        snapModeConfig={{ ...props.snapModeConfig, mode: "revision" }}
+      />,
+    );
 
     const checkbox = await screen.findByRole("checkbox", {
       name: "Use classic confinement",
@@ -200,10 +188,13 @@ describe("SnapChangeChannelItem", () => {
   it("calls onChange with classic confinement when the checkbox is checked", async () => {
     const onChange = vi.fn();
     renderWithProviders(
-      <SnapChangeChannelItem
+      <SnapChannelRevisionFields
         {...props}
-        mode="revision"
-        value="123"
+        snapModeConfig={{
+          ...props.snapModeConfig,
+          mode: "revision",
+          value: "123",
+        }}
         onChange={onChange}
       />,
     );
@@ -220,10 +211,13 @@ describe("SnapChangeChannelItem", () => {
   it("uses the latest typed revision when the checkbox is toggled without blurring first", async () => {
     const onChange = vi.fn();
     renderWithProviders(
-      <SnapChangeChannelItem
+      <SnapChannelRevisionFields
         {...props}
-        mode="revision"
-        value="123"
+        snapModeConfig={{
+          ...props.snapModeConfig,
+          mode: "revision",
+          value: "123",
+        }}
         onChange={onChange}
       />,
     );
@@ -245,10 +239,13 @@ describe("SnapChangeChannelItem", () => {
 
   it("shows an error for a non-positive-integer revision after submit is attempted", async () => {
     renderWithProviders(
-      <SnapChangeChannelItem
+      <SnapChannelRevisionFields
         {...props}
-        mode="revision"
-        value="0"
+        snapModeConfig={{
+          ...props.snapModeConfig,
+          mode: "revision",
+          value: "0",
+        }}
         hasAttemptedSubmit
       />,
     );
@@ -264,7 +261,10 @@ describe("SnapChangeChannelItem", () => {
 
   it("displays Default channel as disabled with help text when the snap has no available channels", async () => {
     renderWithProviders(
-      <SnapChangeChannelItem {...props} selectedSnap={snapWithNoChannels} />,
+      <SnapChannelRevisionFields
+        {...props}
+        selectedSnap={snapWithNoChannels}
+      />,
     );
 
     const channelSelect = await screen.findByLabelText(
@@ -289,7 +289,7 @@ describe("SnapChangeChannelItem", () => {
       ),
     );
 
-    renderWithProviders(<SnapChangeChannelItem {...props} />);
+    renderWithProviders(<SnapChannelRevisionFields {...props} />);
 
     expect(
       await screen.findByText("Failed to load channels for this snap"),
@@ -297,21 +297,5 @@ describe("SnapChangeChannelItem", () => {
     expect(
       screen.queryByText("No channels were found"),
     ).not.toBeInTheDocument();
-  });
-
-  it("calls onDelete when the delete button is clicked", async () => {
-    renderWithProviders(<SnapChangeChannelItem {...props} />);
-
-    await screen.findByLabelText(
-      `Snap channel or revision for ${snapWithChannels.snap.name}`,
-    );
-
-    await user.click(
-      screen.getByRole("button", {
-        name: `Delete ${snapWithChannels.snap.name}`,
-      }),
-    );
-
-    expect(props.onDelete).toHaveBeenCalled();
   });
 });

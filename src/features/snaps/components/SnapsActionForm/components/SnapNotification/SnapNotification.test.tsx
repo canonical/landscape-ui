@@ -26,15 +26,13 @@ describe("SnapNotification", () => {
     renderWithProviders(
       <SnapNotification
         action="install"
-        snapChangeConfigs={{
+        snapModeConfigs={{
           snap1: { mode: "revision", value: "123" },
         }}
       />,
     );
 
-    expect(
-      screen.getByText(/revision doesn't set a tracked channel/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/revision tracks/i)).toBeInTheDocument();
     expect(screen.getByText("Visit Snapd documentation")).toBeInTheDocument();
   });
 
@@ -42,7 +40,7 @@ describe("SnapNotification", () => {
     renderWithProviders(
       <SnapNotification
         action="change channel"
-        snapChangeConfigs={{
+        snapModeConfigs={{
           snap1: { mode: "revision", value: "123" },
         }}
       />,
@@ -56,7 +54,7 @@ describe("SnapNotification", () => {
     renderWithProviders(
       <SnapNotification
         action="change channel"
-        snapChangeConfigs={{
+        snapModeConfigs={{
           snap1: { mode: "channel", value: "latest/stable" },
         }}
       />,
@@ -74,7 +72,7 @@ describe("SnapNotification", () => {
     renderWithProviders(
       <SnapNotification
         action="install"
-        snapChangeConfigs={{
+        snapModeConfigs={{
           snap1: { mode: "revision", value: "123" },
         }}
       />,
