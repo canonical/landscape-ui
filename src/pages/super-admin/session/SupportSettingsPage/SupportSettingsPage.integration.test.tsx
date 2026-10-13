@@ -1,3 +1,5 @@
+import { AuthGuard } from "@/components/guards/AuthGuard";
+import { SuperAdminGuard } from "@/components/guards/SuperAdminGuard";
 import { API_URL } from "@/constants";
 import { PATHS, ROUTES } from "@/libs/routes";
 import SupportSessionPage from "@/pages/super-admin/accounts/SupportSessionPage";
@@ -15,7 +17,7 @@ import { ErrorBoundary } from "@sentry/react";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { Route, Routes } from "react-router";
+import { Outlet, Route, Routes } from "react-router";
 import { beforeEach, describe, expect, it } from "vitest";
 import SupportSettingsPage from "./SupportSettingsPage";
 
@@ -44,18 +46,29 @@ const renderSettings = (setting: string) =>
   renderWithProviders(
     <ErrorBoundary fallback={<p>Something went wrong</p>}>
       <Routes>
+        {/* The guards mount the session once the user is known, as the app does. */}
         <Route
-          path={`/${PATHS.superAdmin.root}/${PATHS.superAdmin.session}`}
-          element={<SupportSessionPage />}
+          element={
+            <AuthGuard requireAccount={false}>
+              <SuperAdminGuard>
+                <Outlet />
+              </SuperAdminGuard>
+            </AuthGuard>
+          }
         >
           <Route
-            path={PATHS.superAdmin.sessionSettings}
-            element={<SupportSettingsPage />}
-          />
-          <Route
-            path={PATHS.superAdmin.sessionSetting}
-            element={<SupportSettingsPage />}
-          />
+            path={`/${PATHS.superAdmin.root}/${PATHS.superAdmin.session}`}
+            element={<SupportSessionPage />}
+          >
+            <Route
+              path={PATHS.superAdmin.sessionSettings}
+              element={<SupportSettingsPage />}
+            />
+            <Route
+              path={PATHS.superAdmin.sessionSetting}
+              element={<SupportSettingsPage />}
+            />
+          </Route>
         </Route>
       </Routes>
     </ErrorBoundary>,

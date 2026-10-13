@@ -3,6 +3,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import {
   type Administrator,
+  formatInvitationExpiration,
   type Invitation,
   useAdministrators,
 } from "@/features/administrators";
@@ -12,8 +13,6 @@ import { Badge } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
-
-const INVITATION_LIFETIME_DAYS = 14;
 
 const ADMINISTRATOR_COLUMNS: Column<Administrator>[] = [
   { accessor: "name", Header: "Name" },
@@ -39,9 +38,7 @@ const INVITATION_COLUMNS: Column<Invitation>[] = [
     id: "expiration_time",
     Header: "Expires",
     Cell: ({ row: { original } }: CellProps<Invitation>) =>
-      date(original.creation_time)
-        .add(INVITATION_LIFETIME_DAYS, "days")
-        .format(DISPLAY_DATE_TIME_FORMAT),
+      formatInvitationExpiration(original),
   },
 ];
 
@@ -63,7 +60,10 @@ const SupportAdministrators: FC = () => {
 
   const [tabId, setTabId] = useState<TabId>("administrators");
 
-  const administrators = administratorsData?.data ?? [];
+  const administrators = useMemo(
+    () => administratorsData?.data ?? [],
+    [administratorsData],
+  );
   // The list is one page; the badge counts them all.
   const invitationsCount = invitationsData?.data.count ?? 0;
   const invitations = useMemo(

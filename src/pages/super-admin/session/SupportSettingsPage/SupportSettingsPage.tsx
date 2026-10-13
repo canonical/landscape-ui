@@ -32,7 +32,7 @@ const SupportSettingsPage: FC = () => {
   return (
     <PageMain>
       <PageHeader title={page.label} />
-      <PageContent hasTable={page.slug !== "general"}>
+      <PageContent hasTable={page.hasTable}>
         <SupportSettings key={page.slug} setting={page.slug} />
       </PageContent>
     </PageMain>

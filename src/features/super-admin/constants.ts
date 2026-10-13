@@ -62,6 +62,8 @@ export interface SupportSettingsPage {
   /** The `setting` route segment. */
   slug: string;
   label: string;
+  /** Whether the page is a table, laid out as one. */
+  hasTable: boolean;
 }
 
 /**
@@ -72,8 +74,8 @@ export interface SupportSettingsPage {
  * grants support staff do not hold.
  */
 export const SUPPORT_SETTINGS_PAGES: readonly SupportSettingsPage[] = [
-  { slug: "general", label: "General" },
-  { slug: "administrators", label: "Administrators" },
-  { slug: "roles", label: "Roles" },
-  { slug: "access-groups", label: "Access groups" },
+  { slug: "general", label: "General", hasTable: false },
+  { slug: "administrators", label: "Administrators", hasTable: true },
+  { slug: "roles", label: "Roles", hasTable: true },
+  { slug: "access-groups", label: "Access groups", hasTable: true },
 ];
