@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import useAuth from "@/hooks/useAuth";
 import { HOMEPAGE_PATH } from "@/constants";
+import { getInvitationPath } from "@/features/auth";
 import LoadingState from "@/components/layout/LoadingState";
 import Redirecting from "@/components/layout/Redirecting";
 
@@ -15,8 +16,18 @@ export const GuestGuard: FC<Props> = ({ children }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  const invitationId = searchParams.get("invitation_id");
+
   useEffect(() => {
     if (!authorized || authLoading) return;
+
+    if (invitationId) {
+      safeRedirect(getInvitationPath(invitationId, searchParams), {
+        replace: true,
+      });
+      return;
+    }
+
     if (!hasAccounts) return;
 
     const redirectTo = searchParams.get("redirect-to");
@@ -34,6 +45,7 @@ export const GuestGuard: FC<Props> = ({ children }) => {
     authorized,
     authLoading,
     hasAccounts,
+    invitationId,
     searchParams,
     navigate,
     safeRedirect,
@@ -41,5 +53,7 @@ export const GuestGuard: FC<Props> = ({ children }) => {
 
   if (authLoading) return <LoadingState />;
 
-  return !authorized || !hasAccounts ? <>{children}</> : <Redirecting />;
+  const isRedirecting = authorized && (hasAccounts || !!invitationId);
+
+  return isRedirecting ? <Redirecting /> : <>{children}</>;
 };

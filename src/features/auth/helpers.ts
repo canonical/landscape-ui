@@ -1,3 +1,4 @@
+import { ROUTES } from "@/libs/routes";
 import { hasProperty } from "@/utils/_helpers";
 import { SUPPORTED_PROVIDERS } from "./constants";
 
@@ -38,6 +39,26 @@ export const getSameOriginPath = (input?: string | null) => {
   }
 
   return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+};
+
+export const getInvitationPath = (
+  secureId: string,
+  searchParams: URLSearchParams,
+) => {
+  const forwarded = new URLSearchParams();
+  const redirectTo = searchParams.get("redirect-to");
+
+  if (redirectTo) {
+    forwarded.set("redirect-to", redirectTo);
+  }
+  if (searchParams.has("external")) {
+    forwarded.set("external", "true");
+  }
+
+  const path = ROUTES.auth.invitation({ secureId });
+  const query = forwarded.toString();
+
+  return query ? `${path}?${query}` : path;
 };
 
 export const getProviderIcon = (slug: string) => {

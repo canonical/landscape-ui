@@ -1,7 +1,10 @@
 import { ActionButton } from "@canonical/react-components";
 import type { FC } from "react";
+import { useSearchParams } from "react-router";
 import AuthTemplate from "@/templates/auth/AuthTemplate";
+import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
+import { HOMEPAGE_PATH } from "@/constants";
 import { useInvitation } from "@/features/auth";
 import { useAcceptInvitation, useRejectInvitation } from "../../api";
 import classNames from "classnames";
@@ -17,6 +20,8 @@ const InvitationForm: FC<InvitationFormProps> = ({
   onReject,
 }) => {
   const debug = useDebug();
+  const { safeRedirect } = useAuth();
+  const [searchParams] = useSearchParams();
   const { invitationId } = useInvitation();
   const { acceptInvitation, isAcceptingInvitation } = useAcceptInvitation();
   const { rejectInvitation, isRejectingInvitation } = useRejectInvitation();
@@ -33,6 +38,10 @@ const InvitationForm: FC<InvitationFormProps> = ({
   const handleAccept = async () => {
     try {
       await acceptInvitation({ invitation_id: invitationId });
+      safeRedirect(searchParams.get("redirect-to") ?? HOMEPAGE_PATH, {
+        replace: true,
+        external: searchParams.has("external"),
+      });
     } catch (error) {
       debug(error);
     }
