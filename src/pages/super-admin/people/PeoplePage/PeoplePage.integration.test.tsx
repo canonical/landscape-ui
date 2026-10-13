@@ -1,8 +1,10 @@
 import { API_URL, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { StaffPersonResult } from "@/features/super-admin";
+import useAuth from "@/hooks/useAuth";
 import date from "@/libs/date";
 import { PATHS, ROUTES } from "@/libs/routes";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
+import { authResponse } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
@@ -75,6 +77,23 @@ const serveManyPeople = (): URLSearchParams[] => {
   return queries;
 };
 
+/** Signs in a staff member with `globalRoles`, for the app and for the mock API. */
+const signInAs = (globalRoles: string[]) => {
+  setStaffGlobalRoles(globalRoles);
+  server.use(
+    http.get(`${API_URL}me`, () =>
+      HttpResponse.json({ ...authResponse, global_roles: globalRoles }),
+    ),
+  );
+};
+
+/** Renders once the signed-in user's roles have loaded. */
+const AuthReady = () => {
+  const { user } = useAuth();
+
+  return user ? <span>auth ready</span> : null;
+};
+
 /** The people page among the super admin routes, with stand-ins for where it leads. */
 const renderPeople = (initialPath = ROUTES.superAdmin.people()) =>
   renderWithProviders(
@@ -93,6 +112,7 @@ const renderPeople = (initialPath = ROUTES.superAdmin.people()) =>
         </Route>
       </Routes>
       <LocationDisplay />
+      <AuthReady />
     </>,
     undefined,
     initialPath,
@@ -126,7 +146,7 @@ describe("PeoplePage (integration)", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
-    setStaffGlobalRoles(["SupportProvider"]);
+    signInAs(["SupportProvider"]);
   });
 
   it("asks for a search instead of requesting anything under 3 characters", async () => {
@@ -273,7 +293,7 @@ describe("PeoplePage (integration)", () => {
     const { withAccounts } = await findJaneRows();
 
     await user.click(
-      withAccounts.getByRole("button", {
+      await withAccounts.findByRole("button", {
         name: "Jane Doe (jane@acme.com, #4821) actions",
       }),
     );
@@ -301,7 +321,7 @@ describe("PeoplePage (integration)", () => {
     const { duplicate } = await findJaneRows();
 
     await user.click(
-      duplicate.getByRole("button", {
+      await duplicate.findByRole("button", {
         name: "Jane Doe (jane@acme.com, #5107) actions",
       }),
     );
@@ -323,6 +343,20 @@ describe("PeoplePage (integration)", () => {
     assert(milton);
     expect(
       within(milton).queryByRole("button", { name: "Milton Waddams actions" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("offers no row actions to an account manager, who cannot enter accounts", async () => {
+    signInAs(["AccountManager"]);
+    renderPeople();
+
+    await search("jane");
+
+    const { withAccounts } = await findJaneRows();
+    await screen.findByText("auth ready");
+
+    expect(
+      withAccounts.queryByRole("button", { name: /actions$/ }),
     ).not.toBeInTheDocument();
   });
 

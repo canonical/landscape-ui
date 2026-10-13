@@ -5,6 +5,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
 import { TableIcon } from "@/components/ui";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useAuth from "@/hooks/useAuth";
 import { ROUTES } from "@/libs/routes";
 import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
@@ -65,6 +66,8 @@ const PersonAccounts: FC<{ readonly person: StaffPersonResult }> = ({
 };
 
 const StaffPeopleList: FC<StaffPeopleListProps> = ({ staffPeople }) => {
+  const { canEnterAccounts } = useAuth();
+
   const duplicateEmails = useMemo(
     () => getDuplicateEmails(staffPeople),
     [staffPeople],
@@ -172,18 +175,24 @@ const StaffPeopleList: FC<StaffPeopleListProps> = ({ staffPeople }) => {
             <NoData />
           ),
       },
-      {
-        ...LIST_ACTIONS_COLUMN_PROPS,
-        Cell: ({
-          row: {
-            original: { result: original },
-          },
-        }: CellProps<StaffPeopleRow>): ReactNode => (
-          <StaffPeopleListActions result={original} />
-        ),
-      },
+      // Entering an account is the only row action, so the column goes
+      // with it.
+      ...(canEnterAccounts
+        ? [
+            {
+              ...LIST_ACTIONS_COLUMN_PROPS,
+              Cell: ({
+                row: {
+                  original: { result: original },
+                },
+              }: CellProps<StaffPeopleRow>): ReactNode => (
+                <StaffPeopleListActions result={original} />
+              ),
+            },
+          ]
+        : []),
     ],
-    [duplicateEmails],
+    [canEnterAccounts, duplicateEmails],
   );
 
   return (
