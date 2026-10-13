@@ -9,12 +9,11 @@ const useGetPageRebootProfile = ():
     }
   | { rebootProfile: undefined; isGettingRebootProfile: true } => {
   const { name: rebootProfileId } = usePageParams();
+  // The page param may hold another profile type's name: only a whole id is asked for.
+  const id = /^\d+$/.test(rebootProfileId) ? Number(rebootProfileId) : NaN;
 
   const { isGettingRebootProfile, rebootProfile, rebootProfileError } =
-    useGetRebootProfile(
-      { id: parseInt(rebootProfileId) },
-      { enabled: !!rebootProfileId },
-    );
+    useGetRebootProfile({ id }, { enabled: !Number.isNaN(id) });
 
   if (rebootProfileError) {
     throw rebootProfileError;
