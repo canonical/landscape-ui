@@ -123,6 +123,16 @@ export const features: Feature[] = [
       configuration: false,
     },
   },
+  {
+    name: "Package Change Plans",
+    description: "Manage package change plans with the REST API.",
+    key: "package-change-plans",
+    database_key: 14,
+    enabled: true,
+    details: {
+      configuration: true,
+    },
+  },
 ];
 
 export const debarchiveFeatures: DebarchiveFeature[] = [

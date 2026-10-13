@@ -3,6 +3,7 @@ export type ServerFeatureKey =
   | "employee-management"
   | "instance-reports"
   | "oidc-configuration"
+  | "package-change-plans"
   | "package-search-rest-api"
   | "script-profiles"
   | "spa-dashboard"
