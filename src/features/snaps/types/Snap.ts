@@ -53,7 +53,7 @@ export interface SelectedSnaps extends AvailableSnap {
   confinement: string;
 }
 
-export interface SnapWithCount extends Record<string, unknown> {
+export interface SnapWithCount {
   snap: Snap;
   computer_count: number | null;
 }

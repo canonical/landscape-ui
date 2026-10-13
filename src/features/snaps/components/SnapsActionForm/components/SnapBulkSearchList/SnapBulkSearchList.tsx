@@ -10,7 +10,7 @@ import type { ControllerStateAndHelpers } from "downshift";
 import type { FC, UIEvent } from "react";
 import classes from "./SnapBulkSearchList.module.scss";
 import type { SnapWithCount } from "../../../../types";
-import type { SearchSnapsResponse } from "../../../../api/useGetBulkInstalledSnaps";
+import type { SearchSnapsResponse } from "../../../../api/useGetBulkSnaps";
 
 const NEAR_BOTTOM_THRESHOLD = 20; // in pixels
 

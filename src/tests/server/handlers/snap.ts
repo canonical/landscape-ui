@@ -93,7 +93,7 @@ export default [
     const DEFAULT_PAGE_SIZE = 20;
     const url = new URL(request.url);
     const search = url.searchParams.get("search") ?? "";
-    const status = url.searchParams.get("status") ?? "";
+    const status = url.searchParams.get("status") ?? "installed";
     const offset = Number(url.searchParams.get("offset")) || 0;
     const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
 
