@@ -35,6 +35,7 @@ const mockAuth: AuthContextProps = {
   hasAccounts: false,
   isSuperAdmin: false,
   canManageAccounts: false,
+  canEnterAccounts: false,
 };
 
 describe("InvitationPage", () => {

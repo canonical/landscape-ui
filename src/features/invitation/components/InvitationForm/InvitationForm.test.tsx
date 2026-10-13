@@ -25,6 +25,7 @@ const authProps: AuthContextProps = {
   hasAccounts: true,
   isSuperAdmin: false,
   canManageAccounts: false,
+  canEnterAccounts: false,
 };
 
 const props: ComponentProps<typeof InvitationForm> = {

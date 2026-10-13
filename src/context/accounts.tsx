@@ -1,5 +1,5 @@
 import type { FC, ReactNode } from "react";
-import { createContext, useMemo } from "react";
+import { createContext, useEffect, useMemo, useRef } from "react";
 import type { SelectOption } from "@/types/SelectOption";
 import useAuth from "@/hooks/useAuth";
 import type { Account } from "@/features/auth";
@@ -33,18 +33,24 @@ interface AccountsProviderProps {
 const AccountsProvider: FC<AccountsProviderProps> = ({ children }) => {
   const { user, setUser } = useAuth();
 
+  // The session as it is when a switch lands, not when it started: one
+  // landing after sign-out must not sign the person back in.
+  const latestUser = useRef(user);
+
+  useEffect(() => {
+    latestUser.current = user;
+  }, [user]);
+
   const handleAccountSwitch = (newToken: string, newAccount: string) => {
-    if (!user) {
+    if (!latestUser.current) {
       return;
     }
 
-    const newUser = {
-      ...user,
+    setUser({
+      ...latestUser.current,
       current_account: newAccount,
       token: newToken,
-    };
-
-    setUser(newUser);
+    });
   };
 
   const currentAccount = useMemo<AccountsContextProps["currentAccount"]>(() => {

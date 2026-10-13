@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import type { FC } from "react";
@@ -11,26 +11,27 @@ import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { authResponse } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
+import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
 import { SuperAdminRoutes } from "./SuperAdminRoutes";
 
 // A stand-in for the normal layout: the sidebar footer with the Super admin
-// entry, plus the current path so redirects and Back can be asserted.
+// entry.
 const NormalView: FC = () => (
   <>
     <p>Normal view</p>
-    <LocationDisplay />
     <UserInfo />
   </>
 );
 
-const LoginPage: FC = () => (
-  <>
-    <p>Login page</p>
-    <LocationDisplay />
-  </>
-);
+const LoginPage: FC = () => <p>Login page</p>;
 
+// The mock "acme" account: the signed-in user is not a member of it.
+const ACME = "acme";
+const ACME_TITLE = "ACME Corp";
+
+/** Signs in with `globalRoles`, for the app and for the mock API. */
 const serveMe = (globalRoles: string[]) => {
+  setStaffGlobalRoles(globalRoles);
   server.use(
     http.get(`${API_URL}me`, () =>
       HttpResponse.json({ ...authResponse, global_roles: globalRoles }),
@@ -38,16 +39,33 @@ const serveMe = (globalRoles: string[]) => {
   );
 };
 
+/** Renders the routes at `path`, with the current path so redirects and Back can be asserted. */
 const renderAt = (path: string) =>
   renderWithProviders(
-    <Routes>
-      {SuperAdminRoutes}
-      <Route path={ROUTES.auth.login()} element={<LoginPage />} />
-      <Route path="*" element={<NormalView />} />
-    </Routes>,
+    <>
+      <Routes>
+        {SuperAdminRoutes}
+        <Route path={ROUTES.auth.login()} element={<LoginPage />} />
+        <Route path="*" element={<NormalView />} />
+      </Routes>
+      <LocationDisplay />
+    </>,
     undefined,
     path,
   );
+
+/** Records the body of every account switch, then lets the mock API handle it. */
+const recordSwitches = (): unknown[] => {
+  const bodies: unknown[] = [];
+
+  server.use(
+    http.post(`${API_URL}switch-account`, async ({ request }) => {
+      bodies.push(await request.clone().json());
+    }),
+  );
+
+  return bodies;
+};
 
 const findSuperAdminNav = async () =>
   screen.findByRole("navigation", { name: "Super admin" });
@@ -73,6 +91,46 @@ describe("super admin routes (integration)", () => {
     expect(
       await screen.findByRole("heading", { name: "acme" }),
     ).toBeInTheDocument();
+  });
+
+  it("serves a support session in its own shell, opening on the events log", async () => {
+    const switches = recordSwitches();
+
+    renderAt(ROUTES.superAdmin.session(ACME));
+
+    const bar = within(
+      await screen.findByRole("region", { name: "Support session" }),
+    );
+
+    expect(bar.getByText(ACME_TITLE)).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Events log" }),
+    ).toBeInTheDocument();
+    expect(getLocationDisplay()).toHaveTextContent(
+      ROUTES.superAdmin.sessionEventsLog(ACME),
+    );
+    expect(switches).toEqual([{ account_name: ACME }]);
+    expect(
+      screen.queryByRole("navigation", { name: "Super admin" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("sends an account manager without the support role to the account's page", async () => {
+    serveMe(["AccountManager"]);
+    const switches = recordSwitches();
+
+    renderAt(ROUTES.superAdmin.session(ACME));
+
+    expect(
+      await screen.findByRole("heading", { name: ACME }),
+    ).toBeInTheDocument();
+    expect(getLocationDisplay()).toHaveTextContent(
+      ROUTES.superAdmin.account(ACME),
+    );
+    expect(
+      screen.queryByRole("region", { name: "Support session" }),
+    ).not.toBeInTheDocument();
+    expect(switches).toEqual([]);
   });
 
   it("serves the people page", async () => {

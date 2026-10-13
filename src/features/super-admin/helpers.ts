@@ -1,6 +1,15 @@
 import type { ApiError } from "@/types/api/ApiError";
 import { isAxiosError } from "axios";
 
+/** The server's message for a failed request, or the error's own. */
+export const getErrorMessage = (error: unknown): string => {
+  if (isAxiosError<ApiError>(error) && error.response?.data.message) {
+    return error.response.data.message;
+  }
+
+  return error instanceof Error ? error.message : "Unknown error";
+};
+
 interface ValidationErrorDetail {
   loc: (string | number)[];
   msg: string;

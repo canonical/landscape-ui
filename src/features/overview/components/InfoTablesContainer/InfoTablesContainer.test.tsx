@@ -29,6 +29,7 @@ const authContextValues: AuthContextProps = {
   hasAccounts: true,
   isSuperAdmin: false,
   canManageAccounts: false,
+  canEnterAccounts: false,
 };
 
 beforeEach(() => {

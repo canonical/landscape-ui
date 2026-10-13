@@ -33,21 +33,29 @@ const renderAuth = async () => {
 
 describe("AuthProvider super admin gating (integration)", () => {
   it.each([
-    ["no staff role", [], { isSuperAdmin: false, canManageAccounts: false }],
+    [
+      "no staff role",
+      [],
+      {
+        isSuperAdmin: false,
+        canManageAccounts: false,
+        canEnterAccounts: false,
+      },
+    ],
     [
       "SupportProvider",
       ["SupportProvider"],
-      { isSuperAdmin: true, canManageAccounts: false },
+      { isSuperAdmin: true, canManageAccounts: false, canEnterAccounts: true },
     ],
     [
       "AccountManager",
       ["AccountManager"],
-      { isSuperAdmin: true, canManageAccounts: true },
+      { isSuperAdmin: true, canManageAccounts: true, canEnterAccounts: false },
     ],
     [
       "both staff roles",
       ["AccountManager", "SupportProvider"],
-      { isSuperAdmin: true, canManageAccounts: true },
+      { isSuperAdmin: true, canManageAccounts: true, canEnterAccounts: true },
     ],
   ])("derives the gates for %s", async (_, globalRoles, expected) => {
     serveMe(globalRoles);
@@ -65,6 +73,7 @@ describe("AuthProvider super admin gating (integration)", () => {
     expect(result.current).toMatchObject({
       isSuperAdmin: false,
       canManageAccounts: false,
+      canEnterAccounts: false,
     });
   });
 
@@ -77,6 +86,7 @@ describe("AuthProvider super admin gating (integration)", () => {
     expect(result.current).toMatchObject({
       isSuperAdmin: false,
       canManageAccounts: false,
+      canEnterAccounts: false,
     });
   });
 });

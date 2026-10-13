@@ -32,6 +32,7 @@ describe("EditOrganisationPreferencesForm", () => {
       hasAccounts: true,
       isSuperAdmin: false,
       canManageAccounts: false,
+      canEnterAccounts: false,
     });
   });
 
@@ -186,6 +187,7 @@ describe("EditOrganisationPreferencesForm", () => {
       hasAccounts: true,
       isSuperAdmin: false,
       canManageAccounts: false,
+      canEnterAccounts: false,
     });
 
     renderWithProviders(<EditOrganisationPreferencesForm {...props} />);
@@ -219,6 +221,7 @@ describe("EditOrganisationPreferencesForm", () => {
       hasAccounts: true,
       isSuperAdmin: false,
       canManageAccounts: false,
+      canEnterAccounts: false,
     });
 
     renderWithProviders(<EditOrganisationPreferencesForm {...props} />);

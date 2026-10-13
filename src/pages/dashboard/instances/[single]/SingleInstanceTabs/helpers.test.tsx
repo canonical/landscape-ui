@@ -22,6 +22,7 @@ const mockUseAuth = () => {
     hasAccounts: true,
     isSuperAdmin: false,
     canManageAccounts: false,
+    canEnterAccounts: false,
   });
 };
 

@@ -51,6 +51,7 @@ describe("SingleInstanceTabs", () => {
         hasAccounts: true,
         isSuperAdmin: false,
         canManageAccounts: false,
+        canEnterAccounts: false,
       });
     });
 
@@ -115,6 +116,7 @@ describe("SingleInstanceTabs", () => {
         hasAccounts: true,
         isSuperAdmin: false,
         canManageAccounts: false,
+        canEnterAccounts: false,
       });
     });
 
@@ -275,6 +277,7 @@ describe("SingleInstanceTabs", () => {
         hasAccounts: true,
         isSuperAdmin: false,
         canManageAccounts: false,
+        canEnterAccounts: false,
       });
     });
 
