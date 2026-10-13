@@ -1,10 +1,14 @@
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Feature } from "@/types/Feature";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { FeatureRegistryEntry } from "../types";
+
+/** `GET features` lists the whole registry at once, without the paginated envelope's `count` and links. */
+interface FeatureRegistryResponse {
+  results: Feature[];
+}
 
 /**
  * Gets the registry metadata of every feature, sorted by name. The endpoint
@@ -18,7 +22,7 @@ export const useGetFeatureRegistry = () => {
     isLoading,
     error,
   } = useQuery<
-    AxiosResponse<ApiPaginatedResponse<Feature>>,
+    AxiosResponse<FeatureRegistryResponse>,
     AxiosError<ApiError>,
     FeatureRegistryEntry[]
   >({

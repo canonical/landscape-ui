@@ -5,9 +5,10 @@ import classes from "./Chip.module.scss";
 interface ChipProps {
   readonly value: string;
   readonly className?: string;
+  readonly title?: string;
 }
 
-const Chip: FC<ChipProps> = ({ className, value }) => {
+const Chip: FC<ChipProps> = ({ className, value, title }) => {
   return (
     <span
       className={classNames(
@@ -15,6 +16,7 @@ const Chip: FC<ChipProps> = ({ className, value }) => {
         classes.chip,
         className,
       )}
+      title={title}
     >
       <span className="p-chip__value">{value}</span>
     </span>

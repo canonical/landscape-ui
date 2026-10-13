@@ -1,4 +1,18 @@
-import type { WslFeatureLimits } from "./types";
+import { ProfileTypes } from "@/features/profiles";
+import type { SelectOption } from "@/types/SelectOption";
+import type { StaffPeopleResultType, WslFeatureLimits } from "./types";
+
+/** The shortest people search the server accepts. */
+export const STAFF_PEOPLE_SEARCH_MIN_LENGTH = 3;
+
+/** The `type` filter of the people search; the empty value asks for both. */
+export const STAFF_PEOPLE_TYPE_OPTIONS: readonly (SelectOption & {
+  value: StaffPeopleResultType | "";
+})[] = [
+  { label: "All", value: "" },
+  { label: "Users", value: "person" },
+  { label: "Invitations", value: "invitation" },
+];
 
 type WslLimitName = keyof WslFeatureLimits;
 
@@ -29,3 +43,58 @@ const WSL_LIMIT_DETAILS: Record<WslLimitName, Omit<WslLimitField, "name">> = {
 export const WSL_LIMIT_FIELDS: readonly WslLimitField[] = (
   Object.keys(WSL_LIMIT_DETAILS) as WslLimitName[]
 ).map((name) => ({ name, ...WSL_LIMIT_DETAILS[name] }));
+
+export interface SupportProfilePage {
+  /** The `profileType` route segment. */
+  slug: string;
+  type: ProfileTypes;
+  label: string;
+}
+
+/**
+ * The profile pages a support session can read: the ones whose endpoints
+ * only need `ViewAccount`. WSL and USG profiles need grants support staff
+ * do not hold inside an account they are not a member of.
+ */
+export const SUPPORT_PROFILE_PAGES: readonly [
+  SupportProfilePage,
+  ...SupportProfilePage[],
+] = [
+  {
+    slug: "repository",
+    type: ProfileTypes.repository,
+    label: "Repository profiles",
+  },
+  { slug: "package", type: ProfileTypes.package, label: "Package profiles" },
+  { slug: "upgrade", type: ProfileTypes.upgrade, label: "Upgrade profiles" },
+  { slug: "reboot", type: ProfileTypes.reboot, label: "Reboot profiles" },
+  { slug: "removal", type: ProfileTypes.removal, label: "Removal profiles" },
+];
+
+/** The `setting` route segment of a settings page. */
+export type SupportSettingSlug =
+  "general" | "administrators" | "roles" | "access-groups";
+
+export interface SupportSettingsPage {
+  slug: SupportSettingSlug;
+  label: string;
+  /** Whether the page is a table, laid out as one. */
+  hasTable: boolean;
+}
+
+/**
+ * The org settings a support session can read: account preferences
+ * (`ViewAccount`), administrators and invitations (`ViewPerson`,
+ * `ViewInvitations`), roles (`ViewRole`) and access groups
+ * (`ViewAccessContext`). Employees, identity providers and licenses need
+ * grants support staff do not hold.
+ */
+export const SUPPORT_SETTINGS_PAGES: readonly [
+  SupportSettingsPage,
+  ...SupportSettingsPage[],
+] = [
+  { slug: "general", label: "General", hasTable: false },
+  { slug: "administrators", label: "Administrators", hasTable: true },
+  { slug: "roles", label: "Roles", hasTable: true },
+  { slug: "access-groups", label: "Access groups", hasTable: true },
+];

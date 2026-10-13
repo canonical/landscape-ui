@@ -4,10 +4,8 @@ import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
+import { STAFF_PEOPLE_SEARCH_MIN_LENGTH } from "../constants";
 import type { StaffPeopleResult, StaffPeopleResultType } from "../types";
-
-/** The shortest search the server accepts. */
-const STAFF_PEOPLE_SEARCH_MIN_LENGTH = 3;
 
 export interface GetStaffPeopleParams {
   search: string;

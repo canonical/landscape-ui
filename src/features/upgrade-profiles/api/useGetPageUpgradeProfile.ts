@@ -12,9 +12,11 @@ export const useGetPageUpgradeProfile = ():
       isGettingUpgradeProfile: true;
     } => {
   const { name: upgradeProfileId } = usePageParams();
+  // The page param may hold another profile type's name: only a whole id is asked for.
+  const id = /^\d+$/.test(upgradeProfileId) ? Number(upgradeProfileId) : NaN;
 
   const { isGettingUpgradeProfile, upgradeProfile, upgradeProfileError } =
-    useGetUpgradeProfile(parseInt(upgradeProfileId));
+    useGetUpgradeProfile(id);
 
   if (upgradeProfileError) {
     throw upgradeProfileError;

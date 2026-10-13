@@ -143,7 +143,12 @@ export default defineConfig(
   },
 
   {
-    files: ["**/tests/**", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
+    files: [
+      "**/tests/**",
+      "**/*.test.{ts,tsx}",
+      "**/*.spec.{ts,tsx}",
+      "e2e/support/**",
+    ],
     rules: {
       "no-restricted-imports": [
         "error",
