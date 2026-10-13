@@ -1,0 +1,15 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.title {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $sph--small;
+}
+
+// Memberships and pending invitations, comma separated.
+.accounts {
+  > :not(:last-child)::after {
+    content: ", ";
+  }
+}

@@ -1,5 +1,18 @@
 import { ProfileTypes } from "@/features/profiles";
-import type { WslFeatureLimits } from "./types";
+import type { SelectOption } from "@/types/SelectOption";
+import type { StaffPeopleResultType, WslFeatureLimits } from "./types";
+
+/** The shortest people search the server accepts. */
+export const STAFF_PEOPLE_SEARCH_MIN_LENGTH = 3;
+
+/** The `type` filter of the people search; the empty value asks for both. */
+export const STAFF_PEOPLE_TYPE_OPTIONS: readonly (SelectOption & {
+  value: StaffPeopleResultType | "";
+})[] = [
+  { label: "All", value: "" },
+  { label: "Users", value: "person" },
+  { label: "Invitations", value: "invitation" },
+];
 
 type WslLimitName = keyof WslFeatureLimits;
 
