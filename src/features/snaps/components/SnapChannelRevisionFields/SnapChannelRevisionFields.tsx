@@ -7,7 +7,7 @@ import {
   Select,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import type { InstalledSnapWithCount, SnapMode } from "../../types";
+import type { SnapWithCount, SnapMode } from "../../types";
 import classes from "./SnapChannelRevisionFields.module.scss";
 import { MODE_OPTIONS } from "./helpers";
 import { useTheme } from "@/context/theme";
@@ -20,7 +20,7 @@ import {
 
 interface SnapChannelRevisionFieldsProps {
   readonly instanceIds: number[];
-  readonly selectedSnap: InstalledSnapWithCount;
+  readonly selectedSnap: SnapWithCount;
   readonly snapModeConfig: {
     mode: SnapMode;
     value: string;
@@ -77,11 +77,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
 
   const handleChange = (newValue: string, isClassic?: boolean) => {
     if (mode !== "channel") {
-      onChange(
-        newValue,
-        undefined,
-        isClassic ? "classic" : selectedSnap.confinement,
-      );
+      onChange(newValue, undefined, isClassic ? "classic" : "strict");
       return;
     }
 
@@ -159,14 +155,21 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
             value={value}
             error={error}
             help={
-              channelOptions.length === 0 && !error
+              channelOptions.length === 0 && !isSnapInfoLoading && !error
                 ? "No channels were found"
                 : undefined
             }
             options={
               channelOptions.length > 0
                 ? channelOptions
-                : [{ label: "Default channel", value: "" }]
+                : [
+                    {
+                      label: isSnapInfoLoading
+                        ? "Loading..."
+                        : "Default channel",
+                      value: "",
+                    },
+                  ]
             }
             onChange={(event) => {
               handleChange(event.currentTarget.value);
@@ -183,11 +186,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
               setRevisionValue(event.currentTarget.value.replace(/\D/g, ""));
             }}
             onBlur={(event) => {
-              handleChange(
-                event.currentTarget.value,
-
-                isClassicConfinement,
-              );
+              handleChange(event.currentTarget.value, isClassicConfinement);
             }}
           />
         )}

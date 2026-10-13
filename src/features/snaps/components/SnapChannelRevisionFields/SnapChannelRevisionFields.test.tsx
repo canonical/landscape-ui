@@ -259,6 +259,18 @@ describe("SnapChannelRevisionFields", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows loading in the channel dropdown while the snap info is loading", async () => {
+    renderWithProviders(<SnapChannelRevisionFields {...props} />);
+
+    const channelSelect = await screen.findByLabelText(
+      `Channel for ${snapWithChannels.snap.name}`,
+    );
+    expect(within(channelSelect).getByText("Loading...")).toBeInTheDocument();
+    expect(
+      within(channelSelect).queryByText("Default channel"),
+    ).not.toBeInTheDocument();
+  });
+
   it("displays Default channel as disabled with help text when the snap has no available channels", async () => {
     renderWithProviders(
       <SnapChannelRevisionFields

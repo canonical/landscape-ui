@@ -1,8 +1,4 @@
-import type {
-  SnapAction,
-  SnapMode,
-  InstalledSnapWithCount,
-} from "../../../../types";
+import type { SnapAction, SnapMode, SnapWithCount } from "../../../../types";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
@@ -18,8 +14,8 @@ interface SnapModeConfig {
 
 interface ConfirmSnapActionModalProps {
   readonly actionVerb: SnapAction;
-  readonly snaps: InstalledSnapWithCount[];
   readonly snapModes?: SnapMode[];
+  readonly snaps: SnapWithCount[];
   readonly instancesCount: number;
   readonly onClose: () => void;
   readonly onConfirm: () => void;
@@ -54,7 +50,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   // channel mode with no channel selected rather than being read as
   // "not classic". Other actions never populate snapChangeConfigs at all,
   // so this default must stay scoped to change channel.
-  const isClassic = (snap: InstalledSnapWithCount) => {
+  const isClassic = (snap: SnapWithCount) => {
     const config = snapModeConfigs[snap.snap.id];
 
     if (config?.confinement === "classic") {
@@ -63,7 +59,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
 
     return (
       isChangeChannelOrInstall &&
-      (config?.mode ?? "channel") === "channel" &&
+      config?.mode !== "revision" &&
       !config?.channel
     );
   };
@@ -81,18 +77,16 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   const snapsToShow = hasClassicSnaps ? classicSnaps : snaps;
 
   const getTitle = () => {
+    const snapsText = pluralize(snaps.length, ["snap"], "exact");
+
     if (hasClassicSnaps) {
       return `${pluralize(
         snapsToShow.length,
-        [
-          `of ${pluralize(snaps.length, ["snap"], "exact")} requires`,
-          `of ${pluralize(snaps.length, ["snap"], "exact")} require`,
-        ],
+        [`of ${snapsText} requires`, `of ${snapsText} require`],
         "exact",
       )} classic confinement`;
     }
 
-    const snapsText = pluralize(snaps.length, ["snap"], "exact");
     const instancesText = pluralize(instancesCount, ["instance"], "exact");
 
     switch (actionVerb) {
@@ -106,18 +100,17 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   };
 
   const getInfoText = () => {
-    const snapWord = pluralize(snapsToShow.length, ["snap"], "none");
+    const snapWord = pluralize(snapsToShow.length, ["snap"]);
 
     if (hasClassicSnaps) {
-      const requireWord = pluralize(
-        snapsToShow.length,
-        ["requires", "require"],
-        "none",
-      );
+      const requireWord = pluralize(snapsToShow.length, [
+        "requires",
+        "require",
+      ]);
       return `The following ${snapWord} you selected ${requireWord} classic confinement`;
     }
 
-    const hasWord = pluralize(snapsToShow.length, ["has", "have"], "none");
+    const hasWord = pluralize(snapsToShow.length, ["has", "have"]);
     return `The following ${snapWord} ${hasWord} been selected to ${actionVerb === "change channel" ? changeChannelVerb : actionVerb}`;
   };
 
@@ -158,8 +151,8 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
       <>
         <strong>
           By proceeding, you acknowledge that{" "}
-          {pluralize(classicSnaps.length, ["it", "they"], "none")} may have
-          access to your files and system.
+          {pluralize(classicSnaps.length, ["it", "they"])} may have access to
+          your files and system.
         </strong>{" "}
         Only use classic confinement if you trust the publisher.
       </>
@@ -206,7 +199,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
           <li key={snap.name}>{snap.name}</li>
         ))}
       </ul>
-      {hasClassicSnaps && ["install", "change channel"].includes(actionVerb) ? (
+      {hasClassicSnaps ? (
         <p className={classes.warning}>{getClassicWarningText()}</p>
       ) : null}
       <p className={classes.warning}>{getWarningText()}</p>

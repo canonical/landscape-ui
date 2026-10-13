@@ -6,13 +6,13 @@ import { useRef, useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 import SnapBulkSearchList from "../SnapBulkSearchList";
 import { DEBOUNCE_DELAY, MAX_SELECTED_SNAPS } from "./constants";
-import type { InstalledSnapWithCount, SnapAction } from "../../../../types";
-import { useGetBulkInstalledSnaps } from "../../../../api";
+import type { SnapWithCount, SnapAction } from "../../../../types";
+import { useGetBulkSnaps } from "../../../../api";
 
 interface SnapBulkSearchProps {
   readonly instanceIds: number[];
-  readonly selectedItems: InstalledSnapWithCount[];
-  readonly setSelectedItems: (snaps: InstalledSnapWithCount[]) => void;
+  readonly selectedItems: SnapWithCount[];
+  readonly setSelectedItems: (snaps: SnapWithCount[]) => void;
   readonly action: SnapAction;
 }
 
@@ -46,7 +46,7 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
 
   const isQueryEnabled = isDropdownOpen && (action !== "install" || !!search);
 
-  const snapsQueryResult = useGetBulkInstalledSnaps(
+  const snapsQueryResult = useGetBulkSnaps(
     {
       computer_ids: instanceIds,
       search: search || undefined,
@@ -74,7 +74,7 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
     handleSearchBoxChange("");
   };
 
-  const handleSelectItem = (item: InstalledSnapWithCount | null) => {
+  const handleSelectItem = (item: SnapWithCount | null) => {
     if (!item) {
       return;
     }

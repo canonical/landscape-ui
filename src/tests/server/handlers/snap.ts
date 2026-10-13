@@ -3,11 +3,14 @@ import type {
   GetSnapsParams,
   InstalledSnap,
   SnapActionParams,
+  SnapWithCount,
 } from "@/features/snaps";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   availableSnapInfo,
   availableSnaps,
+  bulkAvailableSnaps,
+  bulkInstalledSnaps,
   installedSnaps,
   successfulSnapInstallResponse,
 } from "@/tests/mocks/snap";
@@ -74,7 +77,7 @@ export default [
     },
   ),
 
-  http.get(`${API_URL}snaps/installed`, async ({ request }) => {
+  http.get(`${API_URL}snaps`, async ({ request }) => {
     if (shouldApplyEndpointStatus("snaps")) {
       const endpointStatus = getEndpointStatus();
 
@@ -90,18 +93,28 @@ export default [
     const DEFAULT_PAGE_SIZE = 20;
     const url = new URL(request.url);
     const search = url.searchParams.get("search") ?? "";
-    const status = url.searchParams.get("status") ?? "";
+    const status = url.searchParams.get("status") ?? "installed";
     const offset = Number(url.searchParams.get("offset")) || 0;
     const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
 
-    const results =
-      status === "held"
-        ? installedSnaps.filter((snap) => snap.held_until)
-        : installedSnaps;
+    if (!["installed", "available", "held"].includes(status)) {
+      throw createEndpointStatusError();
+    }
+
+    const filterResults = (): SnapWithCount[] => {
+      switch (status) {
+        case "installed":
+          return bulkInstalledSnaps;
+        case "available":
+          return bulkAvailableSnaps;
+        default:
+          return bulkInstalledSnaps.slice(10);
+      }
+    };
 
     return HttpResponse.json(
       generatePaginatedResponse({
-        data: results,
+        data: filterResults(),
         limit,
         offset,
         search,
