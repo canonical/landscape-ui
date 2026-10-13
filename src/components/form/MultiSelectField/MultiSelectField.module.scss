@@ -4,36 +4,36 @@
 .container {
   &:global(.is-error) {
     :global(.multi-select__select-button) {
-      border-bottom-color: $color-negative;
+      border-bottom-color: $colors--theme--border-negative;
 
       &:not(:hover, [aria-expanded="true"]) {
-        background-color: $color-negative-background;
+        background-color: $colors--theme--background-negative-default;
       }
 
       &:hover:not([aria-expanded="true"]) {
-        background-color: $color-negative-background--hover;
+        background-color: $colors--theme--background-negative-hover;
       }
 
       &[aria-expanded="true"] {
-        background-color: $color-negative-background--focus;
+        background-color: $colors--theme--background-negative-active;
       }
     }
   }
 
   &:global(.is-caution) {
     :global(.multi-select__select-button) {
-      border-bottom-color: $color-caution;
+      border-bottom-color: $colors--theme--border-caution;
 
       &:not(:hover, [aria-expanded="true"]) {
-        background-color: $color-caution-background;
+        background-color: $colors--theme--background-caution-default;
       }
 
       &:hover:not([aria-expanded="true"]) {
-        background-color: $color-caution-background--hover;
+        background-color: $colors--theme--background-caution-hover;
       }
 
       &[aria-expanded="true"] {
-        background-color: $color-caution-background--focus;
+        background-color: $colors--theme--background-caution-active;
       }
     }
   }

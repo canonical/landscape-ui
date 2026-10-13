@@ -117,12 +117,31 @@ export default [
       );
     }
 
+    const activityIds = /^id:\d+(?: OR id:\d+)*$/.test(searchQuery)
+      ? searchQuery.split(" OR ").map((term) => Number(term.slice(3)))
+      : undefined;
+    const parentIds = /^parent-id:\d+(?: OR parent-id:\d+)*$/.test(searchQuery)
+      ? searchQuery
+          .split(" OR ")
+          .map((term) => Number(term.slice("parent-id:".length)))
+      : undefined;
     const filteredActivities = activities.filter((activity) => {
       if (status && activity.activity_status !== status) {
         return false;
       }
 
       if (type && activity.type !== type) {
+        return false;
+      }
+
+      if (activityIds && !activityIds.includes(activity.id)) {
+        return false;
+      }
+
+      if (
+        parentIds &&
+        (activity.parent_id === null || !parentIds.includes(activity.parent_id))
+      ) {
         return false;
       }
 
@@ -134,7 +153,7 @@ export default [
         data: filteredActivities,
         limit,
         offset,
-        search: searchQuery,
+        search: activityIds || parentIds ? undefined : searchQuery,
         searchFields: ["summary"],
       }),
     );
@@ -142,6 +161,14 @@ export default [
 
   http.get(`${API_URL}activities/:id`, async ({ params: { id } }) => {
     if (shouldApplyEndpointStatus("activities/:id")) {
+      const { status, response } = getEndpointStatus("activities/:id");
+      if (status === "variant") {
+        const activity = response as Activity;
+        return activity.id === Number(id)
+          ? HttpResponse.json(activity)
+          : new HttpResponse(null, { status: 404 });
+      }
+
       throw createEndpointStatusNetworkError();
     }
 

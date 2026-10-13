@@ -1,0 +1,46 @@
+import { ROUTES } from "@/libs/routes";
+import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import type { UserActivityEvent } from "../../types";
+import { renderUserActivityLink } from "./helpers";
+
+const event: UserActivityEvent = {
+  activity_id: 103,
+  activity_status: "undelivered",
+  summary: "Editing user(s)",
+  creation_time: "2026-08-17T10:00:00Z",
+  completion_time: null,
+  changes: [{ kind: "profile", field: "name" }],
+};
+
+describe("UserActivityLink", () => {
+  it("renders nothing for undefined events through the helper and supports activity updates", () => {
+    const { rerender } = renderWithProviders(renderUserActivityLink(undefined));
+    expect(renderUserActivityLink(undefined)).toBeUndefined();
+
+    expect(
+      screen.queryByText(/This field is pending to be changed/),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+
+    rerender(renderUserActivityLink(event));
+
+    const link = screen.getByRole("link", {
+      name: "View activity 103: Queued",
+    });
+    expect(link).toHaveTextContent("Editing user(s): Queued");
+    expect(link).toHaveAttribute(
+      "href",
+      ROUTES.activities.root({ query: `id:${event.activity_id}` }),
+    );
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+
+    rerender(renderUserActivityLink(undefined));
+
+    expect(
+      screen.queryByText(/This field is pending to be changed/),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+});
