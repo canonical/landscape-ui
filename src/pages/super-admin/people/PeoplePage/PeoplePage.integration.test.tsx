@@ -12,8 +12,11 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { Route, Routes } from "react-router";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import PeoplePage from "./PeoplePage";
+
+// Super admin mode only exists on SaaS deployments.
+vi.mock("@/hooks/useEnv", () => import("@/tests/mocks/env"));
 
 const PAGE_SIZE = 20;
 const MANY_PEOPLE_COUNT = 45;

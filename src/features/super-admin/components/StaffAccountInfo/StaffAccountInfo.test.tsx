@@ -11,8 +11,11 @@ import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import { screen } from "@testing-library/react";
 import type { FC, ReactNode } from "react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import StaffAccountInfo from "./StaffAccountInfo";
+
+// Super admin mode only exists on SaaS deployments.
+vi.mock("@/hooks/useEnv", () => import("@/tests/mocks/env"));
 
 const MISSING_VALUES = 3;
 const ADMINISTRATOR_LIMIT = 37;
