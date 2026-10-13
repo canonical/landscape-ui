@@ -80,7 +80,8 @@ export const getValidationErrors = <F extends string>(
 export const toStaffPeopleResultType = (
   type: string,
 ): StaffPeopleResultType | undefined =>
-  STAFF_PEOPLE_TYPE_OPTIONS.some((option) => option.value === type && type)
+  type !== "" &&
+  STAFF_PEOPLE_TYPE_OPTIONS.some((option) => option.value === type)
     ? (type as StaffPeopleResultType)
     : undefined;
 
