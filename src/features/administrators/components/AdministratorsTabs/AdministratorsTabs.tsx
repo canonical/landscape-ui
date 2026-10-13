@@ -2,11 +2,12 @@ import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import AdministratorsPanel from "../AdministratorsPanel";
 import InvitesPanel from "../InvitesPanel";
-import { Badge, Tabs } from "@canonical/react-components";
+import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
 import { Suspense, useState } from "react";
 import classes from "./AdministratorsTabs.module.scss";
 import type { Administrator } from "../../types";
+import { Badge } from "@canonical/react-ds-global";
 
 interface AdministratorsTabsProps {
   readonly administrators: Administrator[];
