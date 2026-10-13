@@ -1,4 +1,3 @@
-import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import AdministratorList from "../AdministratorList";
@@ -48,12 +47,6 @@ const AdministratorsPanelContent: FC<AdministratorsPanelContentProps> = ({
         administrators={filteredAdministrators}
         roles={getRolesQueryResult?.data ?? []}
       />
-      {filteredAdministrators.length > 0 && (
-        <TablePagination
-          totalItems={searchedAdministrators.length}
-          currentItemCount={filteredAdministrators.length}
-        />
-      )}
     </>
   );
 };
