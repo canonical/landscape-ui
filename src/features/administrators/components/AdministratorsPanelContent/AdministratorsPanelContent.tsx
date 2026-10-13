@@ -12,7 +12,7 @@ interface AdministratorsPanelContentProps {
 const AdministratorsPanelContent: FC<AdministratorsPanelContentProps> = ({
   administrators,
 }) => {
-  const { search: searchText, pageSize, currentPage } = usePageParams();
+  const { search: searchText } = usePageParams();
   const { getRolesQuery } = useRoles();
 
   const { data: getRolesQueryResult } = getRolesQuery();
@@ -32,19 +32,11 @@ const AdministratorsPanelContent: FC<AdministratorsPanelContentProps> = ({
     );
   };
 
-  const searchedAdministrators = getSearchedAdministrators();
-
-  const filteredAdministrators =
-    searchedAdministrators.filter(
-      (_, index) =>
-        index >= (currentPage - 1) * pageSize && index < currentPage * pageSize,
-    ) ?? [];
-
   return (
     <>
       <AdministratorsPanelHeader />
       <AdministratorList
-        administrators={filteredAdministrators}
+        administrators={getSearchedAdministrators()}
         roles={getRolesQueryResult?.data ?? []}
       />
     </>
