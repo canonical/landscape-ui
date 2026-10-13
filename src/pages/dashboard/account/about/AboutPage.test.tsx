@@ -29,15 +29,19 @@ describe("AboutPage", () => {
     );
     const user = userEvent.setup();
 
-    renderWithProviders(<AboutPage />);
+    const { container } = renderWithProviders(<AboutPage />);
 
     expect(
       await screen.findByText("Server information is unavailable"),
     ).toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("Loading...");
+    // The environment settles even when it cannot be read, so the page
+    // renders with the server details it does not have.
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("heading", { name: "UI version" }),
-    ).not.toBeInTheDocument();
+      screen.getByRole("heading", { name: "UI version" }),
+    ).toBeInTheDocument();
+    expect(container).toHaveInfoItem("Package version", "unknown");
+    expect(container).toHaveInfoItem("Revision", "unknown");
 
     await user.click(
       screen.getByRole("button", { name: "Close notification" }),
@@ -46,6 +50,8 @@ describe("AboutPage", () => {
     expect(
       screen.queryByText("Server information is unavailable"),
     ).not.toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("Loading...");
+    expect(
+      screen.getByRole("heading", { name: "Server version" }),
+    ).toBeInTheDocument();
   });
 });

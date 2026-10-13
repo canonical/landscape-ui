@@ -7,8 +7,12 @@ import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import AccountDetailPage from "./AccountDetailPage";
+
+// Super admin mode only exists on SaaS; the deployment mode is not under
+// test here.
+vi.mock("@/hooks/useEnv", () => import("@/tests/mocks/env"));
 
 const KB = 1024;
 const MB = KB * KB;

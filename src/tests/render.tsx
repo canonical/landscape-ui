@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppProviders } from "@/providers/AppProviders";
 import { GlobalShell } from "@/components/layout/GlobalShell";
 import AuthProvider from "@/context/auth";
+import EnvProvider from "@/context/env";
 import SidePanelProvider from "@/context/sidePanel";
 
 export interface TestProviderProps {
@@ -29,9 +30,11 @@ export function renderHookWithProviders() {
   return function Wrapper({ children }: { readonly children: ReactNode }) {
     return (
       <MemoryRouter>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>{children}</AuthProvider>
-        </QueryClientProvider>
+        <EnvProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>{children}</AuthProvider>
+          </QueryClientProvider>
+        </EnvProvider>
       </MemoryRouter>
     );
   };

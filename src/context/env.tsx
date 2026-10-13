@@ -59,6 +59,16 @@ const EnvProvider: FC<EnvProviderProps> = ({ children }) => {
         });
       } catch (error) {
         debug(error);
+        // Settled all the same: staff wait for the mode before their gates
+        // decide, and an unknown mode must not keep them waiting. Without a
+        // build-time override it counts as neither, so super admin mode
+        // stays closed.
+        setState({
+          ...initialState,
+          envLoading: false,
+          isSaas: ["false", "0"].includes(IS_SELF_HOSTED_ENV ?? ""),
+          isSelfHosted: ["true", "1"].includes(IS_SELF_HOSTED_ENV ?? ""),
+        });
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps

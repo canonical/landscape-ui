@@ -19,8 +19,11 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import type { FC, ReactNode } from "react";
 import { Outlet, Route, Routes, useNavigate } from "react-router";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import SupportProfilesPage from "./SupportProfilesPage";
+
+// Super admin mode only exists on SaaS deployments.
+vi.mock("@/hooks/useEnv", () => import("@/tests/mocks/env"));
 
 const ACME = "acme";
 
