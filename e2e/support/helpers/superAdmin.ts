@@ -303,8 +303,11 @@ export async function mockStaffApi(
     mock.switches.push(name);
 
     // One of the person's own accounts, or none the deployment knows: the
-    // real server switches, or refuses.
-    if (mock.ownAccounts.includes(name) || !findAccount(name)) {
+    // real server switches, or refuses. Hidden own accounts count as
+    // foreign, so a fixture of the same name takes the support tier too.
+    const ownAccounts = withoutOwnAccounts ? [] : mock.ownAccounts;
+
+    if (ownAccounts.includes(name) || !findAccount(name)) {
       enteredAccount = null;
       await route.continue();
       return;
