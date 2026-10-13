@@ -58,9 +58,12 @@ export const SUPPORT_PROFILE_PAGES: readonly [
   { slug: "removal", type: ProfileTypes.removal, label: "Removal profiles" },
 ];
 
+/** The `setting` route segment of a settings page. */
+export type SupportSettingSlug =
+  "general" | "administrators" | "roles" | "access-groups";
+
 export interface SupportSettingsPage {
-  /** The `setting` route segment. */
-  slug: string;
+  slug: SupportSettingSlug;
   label: string;
   /** Whether the page is a table, laid out as one. */
   hasTable: boolean;
@@ -73,7 +76,10 @@ export interface SupportSettingsPage {
  * (`ViewAccessContext`). Employees, identity providers and licenses need
  * grants support staff do not hold.
  */
-export const SUPPORT_SETTINGS_PAGES: readonly SupportSettingsPage[] = [
+export const SUPPORT_SETTINGS_PAGES: readonly [
+  SupportSettingsPage,
+  ...SupportSettingsPage[],
+] = [
   { slug: "general", label: "General", hasTable: false },
   { slug: "administrators", label: "Administrators", hasTable: true },
   { slug: "roles", label: "Roles", hasTable: true },

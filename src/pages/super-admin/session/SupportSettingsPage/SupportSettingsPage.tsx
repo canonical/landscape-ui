@@ -4,13 +4,12 @@ import PageMain from "@/components/layout/PageMain";
 import {
   SUPPORT_SETTINGS_PAGES,
   SupportSettings,
-  type SupportSettingsPage as SettingsPage,
 } from "@/features/super-admin";
 import { ROUTES } from "@/libs/routes";
 import type { FC } from "react";
 import { Navigate, useParams } from "react-router";
 
-const [FIRST_SETTINGS_PAGE] = SUPPORT_SETTINGS_PAGES as [SettingsPage];
+const [FIRST_SETTINGS_PAGE] = SUPPORT_SETTINGS_PAGES;
 
 const SupportSettingsPage: FC = () => {
   const { name = "", setting = "" } = useParams<{

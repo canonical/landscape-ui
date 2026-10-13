@@ -10,7 +10,7 @@ import {
 import date from "@/libs/date";
 import { Tabs } from "@canonical/react-components";
 import { Badge } from "@canonical/react-ds-global";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 
@@ -84,7 +84,7 @@ const SupportAdministrators: FC = () => {
     return <LoadingState />;
   }
 
-  const tabs: { id: TabId; label: React.ReactNode }[] = [
+  const tabs: { id: TabId; label: ReactNode }[] = [
     { id: "administrators", label: "Administrators" },
     {
       id: "invites",
