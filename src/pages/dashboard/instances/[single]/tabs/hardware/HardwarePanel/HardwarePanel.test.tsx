@@ -20,4 +20,17 @@ describe("HardwarePanel", () => {
     expect(screen.getByRole("heading", { name: "System" })).toBeInTheDocument();
     expect(screen.getByText("ThinkPad X1")).toBeInTheDocument();
   });
+
+  it("shows CPU architecture as a word width under the Architecture label", () => {
+    renderWithProviders(<HardwarePanel instance={instanceWithHardware} />);
+
+    expect(screen.getByText("Architecture")).toBeInTheDocument();
+    expect(screen.getByText("64 bits")).toBeInTheDocument();
+  });
+
+  it("shows memory size as reported by the backend", () => {
+    renderWithProviders(<HardwarePanel instance={instanceWithHardware} />);
+
+    expect(screen.getByText("16 GiB RAM")).toBeInTheDocument();
+  });
 });
