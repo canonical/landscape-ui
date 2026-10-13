@@ -6,14 +6,18 @@ import type { UpgradesFormProps } from "./types";
 export const getTabLinks = ({
   activeTabLinkId,
   onTabLinkClick,
+  withPackagesTab,
   withUsnsTab,
 }: {
   activeTabLinkId: string;
   onTabLinkClick: (id: string) => void;
+  withPackagesTab: boolean;
   withUsnsTab: boolean;
 }) => {
   return TAB_LINKS.filter(
-    ({ id }) => withUsnsTab || id !== "tab-link-usns",
+    ({ id }) =>
+      (withPackagesTab || id !== "tab-link-packages") &&
+      (withUsnsTab || id !== "tab-link-usns"),
   ).map(({ id, label }): TabsProps["links"][number] => ({
     id,
     label,

@@ -14,8 +14,7 @@ const SnapItemSubtitle: FC<SnapItemSubtitleProps> = ({
 }) => {
   return (
     <span className="u-text--muted">
-      {scope} on {computerCount} of{" "}
-      {pluralize(instancesCount, ["instance"], "exact")}
+      {`${scope} on ${computerCount} of ${pluralize(instancesCount, ["instance"], "exact")}`}
     </span>
   );
 };

@@ -43,3 +43,6 @@ export const INSTALLED_PACKAGE_ACTIONS: Record<
     order: 5,
   },
 };
+
+export const DEB_MANAGEMENT_INSTANCE_LIMIT = 100;
+export const DEB_MANAGEMENT_PACKAGE_LIMIT = 500;

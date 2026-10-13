@@ -14,3 +14,6 @@ import { EXTERNAL_PATHS } from "@/libs/routes/external";
 export const ADMINISTRATORS_DOCUMENTATION_URL = `${EXTERNAL_PATHS.documentation}/how-to-guides/web-portal/web-portal-24-04-or-later/manage-administrators-and-roles/`;
 
 export const MANAGE_INSTANCES_DOCUMENTATION_URL = `${EXTERNAL_PATHS.documentation}/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/`;
+
+export const SNAPD_REST_API_DOCUMENTATION_URL =
+  "https://snapcraft.io/docs/reference/development/snapd-rest-api/#/Asynchronous/manageSnapByName";
