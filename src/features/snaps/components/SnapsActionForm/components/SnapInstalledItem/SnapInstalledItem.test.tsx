@@ -1,4 +1,4 @@
-import { installedSnaps } from "@/tests/mocks/snap";
+import { bulkInstalledSnaps, bulkAvailableSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import { ICONS } from "@canonical/react-components";
 import { screen } from "@testing-library/react";
@@ -7,7 +7,7 @@ import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SnapInstalledItem from "./SnapInstalledItem";
 
-const [selectedSnap] = installedSnaps;
+const [selectedSnap] = bulkInstalledSnaps;
 
 const props: ComponentProps<typeof SnapInstalledItem> = {
   selectedSnap,
@@ -54,6 +54,16 @@ describe("SnapInstalledItem", () => {
       screen.getByText(
         `Held on ${selectedSnap.computer_count} of ${props.instancesCount} instances`,
       ),
+    ).toBeInTheDocument();
+  });
+
+  it("renders zero count when computer_count is null", async () => {
+    renderWithProviders(
+      <SnapInstalledItem {...props} selectedSnap={bulkAvailableSnaps[0]} />,
+    );
+
+    expect(
+      screen.getByText(`Installed on 0 of ${props.instancesCount} instances`),
     ).toBeInTheDocument();
   });
 });

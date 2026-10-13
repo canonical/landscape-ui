@@ -153,13 +153,13 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
   const isAnySnapInfoLoading = selectedSnaps.some(
     (item) =>
-      (snapModeConfigs[item.snap.id]?.mode ?? "channel") === "channel" &&
+      snapModeConfigs[item.snap.id]?.mode !== "revision" &&
       !!loadingSnapIds[item.snap.id],
   );
 
   const hasSnapInfoError = selectedSnaps.some((item) => {
-    const mode = snapModeConfigs[item.snap.id]?.mode ?? "channel";
-    return mode === "channel" && errorSnapIds[item.snap.id];
+    const mode = snapModeConfigs[item.snap.id]?.mode;
+    return mode !== "revision" && errorSnapIds[item.snap.id];
   });
 
   const getValidationError = () => {

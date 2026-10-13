@@ -44,8 +44,7 @@ const SnapBulkSearch: FC<SnapBulkSearchProps> = ({
   };
   const searchScope = getSearchScope();
 
-  const isQueryEnabled =
-    isDropdownOpen && (action !== "install" || search.trim() !== "");
+  const isQueryEnabled = isDropdownOpen && (action !== "install" || !!search);
 
   const snapsQueryResult = useGetBulkSnaps(
     {
