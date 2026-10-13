@@ -1,3 +1,4 @@
+import { ProfileTypes } from "@/features/profiles";
 import type { WslFeatureLimits } from "./types";
 
 type WslLimitName = keyof WslFeatureLimits;
@@ -29,3 +30,30 @@ const WSL_LIMIT_DETAILS: Record<WslLimitName, Omit<WslLimitField, "name">> = {
 export const WSL_LIMIT_FIELDS: readonly WslLimitField[] = (
   Object.keys(WSL_LIMIT_DETAILS) as WslLimitName[]
 ).map((name) => ({ name, ...WSL_LIMIT_DETAILS[name] }));
+
+export interface SupportProfilePage {
+  /** The `profileType` route segment. */
+  slug: string;
+  type: ProfileTypes;
+  label: string;
+}
+
+/**
+ * The profile pages a support session can read: the ones whose endpoints
+ * only need `ViewAccount`. WSL and USG profiles need grants support staff
+ * do not hold inside an account they are not a member of.
+ */
+export const SUPPORT_PROFILE_PAGES: readonly [
+  SupportProfilePage,
+  ...SupportProfilePage[],
+] = [
+  {
+    slug: "repository",
+    type: ProfileTypes.repository,
+    label: "Repository profiles",
+  },
+  { slug: "package", type: ProfileTypes.package, label: "Package profiles" },
+  { slug: "upgrade", type: ProfileTypes.upgrade, label: "Upgrade profiles" },
+  { slug: "reboot", type: ProfileTypes.reboot, label: "Reboot profiles" },
+  { slug: "removal", type: ProfileTypes.removal, label: "Removal profiles" },
+];

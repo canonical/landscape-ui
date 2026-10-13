@@ -1,38 +1,27 @@
 import InfoItem from "@/components/layout/InfoItem";
-import { ROUTES } from "@/libs/routes";
 import DesktopHeader from "@/templates/dashboard/DesktopHeader";
 import MobileHeader from "@/templates/dashboard/MobileHeader";
-import navigationClasses from "@/templates/dashboard/Navigation/Navigation.module.scss";
-import NavigationRoute from "@/templates/dashboard/Navigation/components/NavigationRoute";
 import sidebarClasses from "@/templates/dashboard/Sidebar.module.scss";
 import classNames from "classnames";
 import type { FC } from "react";
 import { useState } from "react";
-import { useLocation } from "react-router";
+import SupportSessionNavigation from "./SupportSessionNavigation";
 import classes from "./SupportSessionTemplate.module.scss";
+import type { SupportSessionNavItem } from "./types";
 
 interface SupportSessionSidebarProps {
-  readonly accountName: string;
   readonly accountTitle: string;
+  readonly navigation: SupportSessionNavItem[];
+  /** Where the logo leads: somewhere inside the session, not the dashboard. */
+  readonly logoPath: string;
 }
 
-/** Placeholders: profiles and org settings land with the next tickets. */
-const PLACEHOLDERS = [
-  { label: "Profiles", icon: "cluster" },
-  { label: "Org. settings", icon: "settings" },
-];
-
 const SupportSessionSidebar: FC<SupportSessionSidebarProps> = ({
-  accountName,
   accountTitle,
+  navigation,
+  logoPath,
 }) => {
   const [menuClosed, setMenuClosed] = useState(true);
-  const { pathname } = useLocation();
-
-  const eventsLogPath = ROUTES.superAdmin.sessionEventsLog(accountName);
-  // The logo stays inside the session: the dashboard root would show the
-  // entered account without the frame or the way out.
-  const sessionPath = ROUTES.superAdmin.session(accountName);
 
   return (
     <>
@@ -42,7 +31,7 @@ const SupportSessionSidebar: FC<SupportSessionSidebarProps> = ({
             toggleMenu={() => {
               setMenuClosed((prevValue) => !prevValue);
             }}
-            logoPath={sessionPath}
+            logoPath={logoPath}
           />
         </div>
       </div>
@@ -56,7 +45,7 @@ const SupportSessionSidebar: FC<SupportSessionSidebarProps> = ({
                 closeMenu={() => {
                   setMenuClosed(true);
                 }}
-                logoPath={sessionPath}
+                logoPath={logoPath}
               />
 
               <div className={sidebarClasses.navigation}>
@@ -66,49 +55,7 @@ const SupportSessionSidebar: FC<SupportSessionSidebarProps> = ({
                   className={classes.organisation}
                 />
 
-                <div className="p-side-navigation--icons is-dark">
-                  <nav aria-label="Main">
-                    <ul className="u-no-margin--bottom u-no-margin--left u-no-padding--left">
-                      <li className="p-side-navigation__item">
-                        <NavigationRoute
-                          item={{
-                            label: "Events log",
-                            path: eventsLogPath,
-                            icon: "status",
-                          }}
-                          current={pathname === eventsLogPath}
-                        />
-                      </li>
-                      {PLACEHOLDERS.map(({ label, icon }) => (
-                        <li key={label} className="p-side-navigation__item">
-                          <span
-                            className={classNames(
-                              "p-side-navigation__link",
-                              navigationClasses.link,
-                              classes.placeholder,
-                            )}
-                            aria-disabled="true"
-                          >
-                            <i
-                              className={classNames(
-                                `p-icon--${icon} is-light p-side-navigation__icon`,
-                                navigationClasses.icon,
-                              )}
-                            />
-                            <span
-                              className={classNames(
-                                "p-side-navigation__label",
-                                navigationClasses.label,
-                              )}
-                            >
-                              {label}
-                            </span>
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </nav>
-                </div>
+                <SupportSessionNavigation items={navigation} />
               </div>
             </div>
           </div>

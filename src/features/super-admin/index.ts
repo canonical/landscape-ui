@@ -40,3 +40,6 @@ export { default as StaffAccountContainer } from "./components/StaffAccountConta
 export { isTableTab } from "./components/StaffAccountTabs";
 export { default as StaffAccountsContainer } from "./components/StaffAccountsContainer";
 export { default as SupportSessionContainer } from "./components/SupportSessionContainer";
+export { default as SupportProfiles } from "./components/SupportProfiles";
+export { SUPPORT_PROFILE_PAGES } from "./constants";
+export type { SupportProfilePage } from "./constants";

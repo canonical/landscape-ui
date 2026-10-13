@@ -302,14 +302,21 @@ describe("SupportSessionPage (integration)", () => {
       "aria-current",
       "page",
     );
-    for (const placeholder of ["Profiles", "Org. settings"]) {
-      expect(
-        sidebar.getByText(placeholder).closest("[aria-disabled]"),
-      ).toHaveAttribute("aria-disabled", "true");
-      expect(
-        sidebar.queryByRole("link", { name: placeholder }),
-      ).not.toBeInTheDocument();
-    }
+    expect(
+      sidebar.getByRole("button", { name: "Profiles" }),
+    ).toBeInTheDocument();
+    expect(
+      sidebar.getByRole("link", { name: "Package profiles" }),
+    ).toHaveAttribute(
+      "href",
+      ROUTES.superAdmin.sessionProfile(ACME, "package"),
+    );
+    expect(
+      sidebar.getByText("Org. settings").closest("[aria-disabled]"),
+    ).toHaveAttribute("aria-disabled", "true");
+    expect(
+      sidebar.queryByRole("link", { name: "Org. settings" }),
+    ).not.toBeInTheDocument();
 
     // Nothing about the staff member.
     expect(
