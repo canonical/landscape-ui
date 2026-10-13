@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import SnapsActionForm from "./SnapsActionForm";
 import { SNAP_ACTION_ACTIVITY } from "@/tests/mocks/activity";
 import {
-  installedSnaps,
+  bulkInstalledSnaps,
   successfulSnapInstallResponse,
 } from "@/tests/mocks/snap";
 import { setEndpointStatus } from "@/tests/controllers/controller";
@@ -17,11 +17,9 @@ import type { SnapActionParams } from "../../types";
 import { ICONS } from "@canonical/react-components";
 
 const instanceId = 1;
-const [firstSnap, secondSnap, thirdSnap, fourthSnap, , classicSnap] =
-  installedSnaps;
+const [firstSnap, secondSnap, , fourthSnap, , classicSnap] = bulkInstalledSnaps;
 const firstSnapOptionTitle = `${firstSnap.snap.name} ${firstSnap.snap.publisher.username}`;
 const secondSnapOptionTitle = `${secondSnap.snap.name} ${secondSnap.snap.publisher.username}`;
-const thirdSnapOptionTitle = `${thirdSnap.snap.name} ${thirdSnap.snap.publisher["display-name"] ?? thirdSnap.snap.publisher.username}`;
 const fourthSnapOptionTitle = `${fourthSnap.snap.name} ${fourthSnap.snap.publisher.username}`;
 const classicSnapOptionTitle = `${classicSnap.snap.name} ${classicSnap.snap.publisher.username}`;
 
@@ -1061,9 +1059,12 @@ describe("SnapsActionForm", () => {
       <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
     );
 
-    await user.type(await screen.findByRole("searchbox"), thirdSnap.snap.name);
+    await user.type(
+      await screen.findByRole("searchbox"),
+      classicSnap.snap.name,
+    );
     await user.click(
-      await screen.findByRole("option", { name: thirdSnapOptionTitle }),
+      await screen.findByRole("option", { name: classicSnapOptionTitle }),
     );
 
     expect(
@@ -1076,12 +1077,36 @@ describe("SnapsActionForm", () => {
       <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
     );
 
+    await user.type(await screen.findByRole("searchbox"), secondSnap.snap.name);
+    await user.click(
+      await screen.findByRole("option", { name: secondSnapOptionTitle }),
+    );
+
+    const channelSelect = await screen.findByRole("combobox", {
+      name: `Channel for ${secondSnap.snap.name}`,
+    });
+    await waitFor(() => {
+      expect(channelSelect).not.toBeDisabled();
+    });
+
+    expect(screen.queryByText(/classic confinement/i)).not.toBeInTheDocument();
+  });
+
+  it("renders a preemptive notification when installing snaps with no channels", async () => {
+    renderWithProviders(
+      <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
+    );
+
     await user.type(await screen.findByRole("searchbox"), firstSnap.snap.name);
     await user.click(
       await screen.findByRole("option", { name: firstSnapOptionTitle }),
     );
 
-    expect(screen.queryByText(/classic confinement/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        /couldn't confirm if this snap requires classic confinement/i,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("renders the snap name, current channel, delete button, and Change to label", async () => {

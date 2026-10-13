@@ -717,10 +717,10 @@ export const bulkAvailableSnaps = [
   },
   {
     snap: {
-      id: "5",
-      name: "Snap 5",
+      id: "2",
+      name: "Snap 2",
       publisher: { username: "canonical", validation: "verified" },
-      summary: "Example snap for testing",
+      summary: "LXD - container and VM manager",
     },
     computer_count: null,
   },
@@ -817,35 +817,6 @@ export const bulkAvailableSnaps = [
 ] as const satisfies SnapWithCount[];
 
 export const availableSnapInfo = [
-  {
-    name: "Snap 6",
-    "snap-id": "6",
-    "channel-map": [
-      {
-        channel: {
-          architecture: "amd64",
-          name: "latest/stable",
-          "released-at": "2023-02-01T00:00:00Z",
-          risk: "stable",
-          track: "latest",
-        },
-        confinement: "classic",
-        revision: 1,
-        version: "3.2.1",
-      },
-    ],
-    "default-track": "latest",
-    snap: {
-      id: "6",
-      name: "snap6",
-      publisher: {
-        username: "publisher6",
-        validation: "verified",
-        "display-name": "Publisher 6",
-        id: "6",
-      },
-    },
-  },
   {
     name: "Snap 1",
     "snap-id": "1",
@@ -1018,6 +989,35 @@ export const availableSnapInfo = [
         validation: "verified",
         "display-name": "Canonical",
         id: "1",
+      },
+    },
+  },
+  {
+    name: "Snap 6",
+    "snap-id": "6",
+    "channel-map": [
+      {
+        channel: {
+          architecture: "amd64",
+          name: "latest/stable",
+          "released-at": "2023-02-01T00:00:00Z",
+          risk: "stable",
+          track: "latest",
+        },
+        confinement: "classic",
+        revision: 1,
+        version: "3.2.1",
+      },
+    ],
+    "default-track": "latest",
+    snap: {
+      id: "6",
+      name: "snap6",
+      publisher: {
+        username: "publisher6",
+        validation: "verified",
+        "display-name": "Publisher 6",
+        id: "6",
       },
     },
   },
