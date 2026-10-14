@@ -220,6 +220,7 @@ describe("EditUserForm", () => {
     renderEditUserForm();
 
     await screen.findByRole("option", { name: "daemon" });
+    expect(screen.getByLabelText("Name")).toBeRequired();
     await user.clear(screen.getByLabelText("Name"));
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
