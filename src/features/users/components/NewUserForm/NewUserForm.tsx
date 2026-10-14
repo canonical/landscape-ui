@@ -41,9 +41,9 @@ const NewUserForm: FC = () => {
           username: values.username,
           password: values.password,
           require_password_reset: values.requirePasswordReset,
-          location: values.location,
-          home_phone: values.homePhoneNumber,
-          work_phone: values.workPhoneNumber,
+          location: values.location || undefined,
+          home_phone: values.homePhoneNumber || undefined,
+          work_phone: values.workPhoneNumber || undefined,
           primary_groupname: values.primaryGroupValue,
         });
         closeSidePanel();
