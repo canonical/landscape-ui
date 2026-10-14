@@ -25,10 +25,13 @@ const SwitchChannelButton: FC<SwitchChannelButtonProps> = ({
   const { setSidePanelContent } = useSidePanel();
   const instanceId = Number(urlInstanceId);
 
-  const { snapInfo, isSnapInfoLoading } = useGetSnapInfo({
-    instance_id: instanceId,
-    name: snap.snap.name,
-  });
+  const { snapInfo, isSnapInfoLoading } = useGetSnapInfo(
+    {
+      instance_id: instanceId,
+      name: snap.snap.name,
+    },
+    { enabled: !Number.isNaN(instanceId) },
+  );
 
   const hasNoAvailableChannels =
     !!snapInfo && snapInfo["channel-map"].length === 0;
