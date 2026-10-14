@@ -719,9 +719,7 @@ describe("SnapsActionForm", () => {
         name: `Channel for ${firstSnap.snap.name}`,
       }),
     ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("checkbox", { name: "Use classic confinement" }),
-    ).not.toBeChecked();
+    expect(screen.getByLabelText(/Use classic confinement/)).not.toBeChecked();
   });
 
   it("blocks submit and shows an error when the revision is not a positive integer", async () => {
@@ -942,9 +940,7 @@ describe("SnapsActionForm", () => {
       "123",
     );
 
-    await user.click(
-      screen.getByRole("checkbox", { name: "Use classic confinement" }),
-    );
+    await user.click(screen.getByLabelText(/Use classic confinement/));
 
     await user.click(screen.getByRole("button", { name: "Change channel" }));
     const modal = await screen.findByRole("dialog");

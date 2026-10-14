@@ -179,9 +179,7 @@ describe("SnapChannelRevisionFields", () => {
       />,
     );
 
-    const checkbox = await screen.findByRole("checkbox", {
-      name: "Use classic confinement",
-    });
+    const checkbox = await screen.findByLabelText(/Use classic confinement/);
     expect(checkbox).not.toBeChecked();
   });
 
@@ -199,9 +197,7 @@ describe("SnapChannelRevisionFields", () => {
       />,
     );
 
-    const checkbox = await screen.findByRole("checkbox", {
-      name: "Use classic confinement",
-    });
+    const checkbox = await screen.findByLabelText(/Use classic confinement/);
     await user.click(checkbox);
 
     expect(checkbox).toBeChecked();
@@ -229,9 +225,7 @@ describe("SnapChannelRevisionFields", () => {
     await user.clear(revisionInput);
     await user.keyboard("456");
 
-    const checkbox = screen.getByRole("checkbox", {
-      name: "Use classic confinement",
-    });
+    const checkbox = screen.getByLabelText(/Use classic confinement/);
     await user.click(checkbox);
 
     expect(onChange).toHaveBeenLastCalledWith("456", undefined, "classic");

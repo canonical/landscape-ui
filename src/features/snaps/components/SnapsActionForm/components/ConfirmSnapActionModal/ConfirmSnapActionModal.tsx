@@ -40,10 +40,10 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   const isMixedChangeMode = hasChannelMode && hasRevisionMode;
   const changeChannelVerb = getChangeChannelVerb(snapModes);
 
-  // Classic confinement is now always an explicit user choice (a checkbox,
-  // for both the revision field and the unresolved/default-channel case in
-  // the channel field), captured in config.confinement, so there is no
-  // "unknown, assume classic" fallback to apply here.
+  // confinement is "classic" either because the channel-map data forces it
+  // (selected channel requires classic on some
+  // architecture) or because the user opted in via a checkbox (revision
+  // mode, or default-channel case)
   const isClassic = (snap: SnapWithCount) =>
     snapModeConfigs[snap.snap.id]?.confinement === "classic";
 
