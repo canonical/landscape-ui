@@ -1,11 +1,30 @@
-name: Vulnerability Scan
+name: Security Scan
 
+# SSDLC evidence for the shipped product (SEC0025 vulnerability scanning,
+# SEC0027 SBOM). The product is the landscape-dashboard .deb (the package name
+# from debian/control): static assets bundled from the npm dependency tree in
+# pnpm-lock.yaml. The deb itself carries no package metadata, so the SBOM and
+# the vulnerability report come from the lockfile at the same commit
+# (production dependencies only), and the deb is what gets submitted to the
+# central secscan service.
+#
+# Outputs per run:
+#   - sbom artifact, and on release/point refs a commit of the SBOM to the
+#     branch so it outlives GitHub's artifact retention and can be diffed
+#     between versions.
+#   - trivy vulnerability report (all severities, unfiltered) for the SSDLC
+#     vulnerability tracker.
+#   - secscan submission of the built .deb with SSDLC product metadata
+#     (release/point refs only).
 on:
   workflow_dispatch:
   push:
-    branches: ["release/**"]
+    branches: ["release/**", "point/**"]
     paths-ignore:
       - "security/sbom/**"
+  # Weekly scan of main for early signal; SEC0025 asks for weekly or daily.
+  schedule:
+    - cron: "0 3 * * 1"
 
 permissions:
   contents: write
@@ -15,144 +34,108 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-image:
-    name: Build Docker Image
+  meta:
+    name: Resolve SSDLC metadata
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      cycle: ${{ steps.meta.outputs.cycle }}
+      channel: ${{ steps.meta.outputs.channel }}
+      is_release_ref: ${{ steps.meta.outputs.is_release_ref }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
 
-      - name: Build image (no push)
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: false
-          load: true
-          tags: landscape-ui:scan
-
-      - name: Save image to a tar file
-        run: docker save landscape-ui:scan -o image.tar
-
-      - name: Upload image artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-tar
-          path: image.tar
-          retention-days: 1
-
-  scan-and-report:
-    name: Vulnerability Scan
-    needs: build-image
-    runs-on:
-      [self-hosted, self-hosted-linux-amd64-jammy-private-endpoint-medium]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Download image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: image-tar
-
-      - name: Install secscan client
-        run: |
-          sudo snap install canonical-secscan-client
-          sudo snap connect canonical-secscan-client:home system:home
-
-      - name: Determine SSDLC metadata
+      - name: Determine version, cycle and channel
         id: meta
+        env:
+          RELEASED_BRANCHES: ${{ vars.RELEASED_BRANCHES }}
         run: |
           VERSION=$(node scripts/calculate-version.cjs)
           BRANCH="${GITHUB_REF_NAME}"
-          if [[ "$BRANCH" =~ ^release/([0-9]{2}\.(04|10))$ ]]; then
-            CYCLE="${BASH_REMATCH[1]}"
+
+          # release/YY.MM and point/YY.MM.N pin the cycle by name; anything
+          # else (main on the weekly schedule) uses the calendar rule from
+          # calculate-version.cjs.
+          IS_RELEASE_REF=false
+          if [[ "$BRANCH" =~ ^(release|point)/([0-9]{2}\.(04|10))(\.[0-9]+)?$ ]]; then
+            CYCLE="${BASH_REMATCH[2]}"
+            IS_RELEASE_REF=true
           else
-            # workflow_dispatch from a non-release branch: fall back to the
-            # current calendar cycle (same rule as calculate-version.cjs).
             CYCLE=$(node -e "const m=new Date().getMonth()+1,y=new Date().getFullYear();console.log(m<=4?String(y).slice(-2)+'.04':m<=10?String(y).slice(-2)+'.10':String(y+1).slice(-2)+'.04')")
           fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "cycle=$CYCLE" >> "$GITHUB_OUTPUT"
-          echo "Submitting as version=$VERSION cycle=$CYCLE"
 
-      - name: Run security scan
-        id: scan
-        run: |
-          set +e
-          secscan-client --batch submit \
-            --ssdlc-product-name 'landscape-ui' \
-            --ssdlc-cycle '${{ steps.meta.outputs.cycle }}' \
-            --ssdlc-product-version '${{ steps.meta.outputs.version }}' \
-            --ssdlc-product-channel 'edge' \
-            --scanner trivy \
-            --type container-image \
-            --format oci \
-            image.tar \
-            --wait-and-print | tee secscan-results.txt
-          EXIT_CODE=${PIPESTATUS[0]}
-          echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
-          exit "$EXIT_CODE"
+          # secscan channel is the risk level only: candidate until the branch
+          # is listed in RELEASED_BRANCHES, stable after; main is edge.
+          if [[ "$IS_RELEASE_REF" != "true" ]]; then
+            CHANNEL=edge
+          elif [[ "$VERSION" == *-rc ]]; then
+            CHANNEL=candidate
+          else
+            CHANNEL=stable
+          fi
 
-      - name: Upload scan results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: secscan-results
-          path: secscan-results.txt
+          {
+            echo "version=$VERSION"
+            echo "cycle=$CYCLE"
+            echo "channel=$CHANNEL"
+            echo "is_release_ref=$IS_RELEASE_REF"
+          } >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION cycle=$CYCLE channel=$CHANNEL release_ref=$IS_RELEASE_REF"
 
-  generate-and-commit-sbom:
+  sbom:
     name: Generate SBOM
-    needs: build-image
+    needs: meta
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: image-tar
-
-      - name: Generate SBOM via Trivy
+      # Source SBOM from pnpm-lock.yaml. Trivy excludes devDependencies for
+      # pnpm lockfiles by default, which matches what ends up in the bundle.
+      - name: Generate SPDX SBOM from the lockfile
         uses: aquasecurity/trivy-action@v0.35.0
         with:
-          input: image.tar
-          format: "spdx-json"
-          output: "dependency-results.sbom.json"
+          scan-type: fs
+          scan-ref: .
+          format: spdx-json
+          output: landscape-ui-${{ needs.meta.outputs.version }}.spdx.json
           github-pat: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload SBOM as artifact
+      - name: Upload SBOM artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sbom-report-json
-          path: "dependency-results.sbom.json"
-          retention-days: 30
+          name: sbom-${{ needs.meta.outputs.version }}
+          path: landscape-ui-${{ needs.meta.outputs.version }}.spdx.json
+          retention-days: 90
 
-      - name: Commit SBOM to release branch
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')
+      # Persist on the branch: GitHub artifacts expire, and the SSDLC review
+      # wants to diff SBOMs between versions to see when a vulnerability was
+      # introduced. One file per branch keeps the git history diffable.
+      - name: Commit SBOM to the release branch
+        if: needs.meta.outputs.is_release_ref == 'true'
+        env:
+          VERSION: ${{ needs.meta.outputs.version }}
         run: |
           set -e
           mkdir -p security/sbom
-          mv dependency-results.sbom.json security/sbom/release.spdx.json
+          mv "landscape-ui-${VERSION}.spdx.json" security/sbom/landscape-ui.spdx.json
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if git diff --quiet -- security/sbom/release.spdx.json; then
+          if git diff --quiet -- security/sbom/landscape-ui.spdx.json \
+             && git ls-files --error-unmatch security/sbom/landscape-ui.spdx.json >/dev/null 2>&1; then
             echo "SBOM unchanged; nothing to commit."
             exit 0
           fi
 
-          VERSION=$(node scripts/calculate-version.cjs)
-          git add security/sbom/release.spdx.json
+          git add security/sbom/landscape-ui.spdx.json
           git commit -m "chore(sbom): refresh for ${VERSION} [skip ci]"
 
           # Race protection: if another commit lands between scan and push,
@@ -167,3 +150,158 @@ jobs:
           done
           echo "Failed to push SBOM after 3 attempts" >&2
           exit 1
+
+  vulnerability-report:
+    name: Vulnerability report (Trivy)
+    needs: meta
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # Full, unfiltered report for the SSDLC vulnerability tracker: every
+      # severity, fixed or not. SEC0025 says do not delete any finding.
+      - name: Scan lockfile (full report)
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln
+          format: json
+          output: trivy-report-${{ needs.meta.outputs.version }}.json
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload vulnerability report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report-${{ needs.meta.outputs.version }}
+          path: trivy-report-${{ needs.meta.outputs.version }}.json
+          retention-days: 90
+
+      # Gate: high and critical findings with an available fix must be
+      # remediated before the cycle ends, so they fail the job here.
+      - name: Fail on fixable HIGH/CRITICAL findings
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          skip-setup-trivy: true
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
+
+  build-deb:
+    name: Build .deb for scanning
+    needs: meta
+    if: needs.meta.outputs.is_release_ref == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 10 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Same build inputs as release-and-build.yml so the scanned deb matches
+      # what the release workflow publishes for this commit.
+      - name: Production build
+        run: pnpm run build
+        env:
+          VITE_APP_VERSION: ${{ needs.meta.outputs.version }}
+          VITE_APP_COMMIT: ${{ github.sha }}
+          VITE_API_URL: /api/v2/
+          VITE_API_URL_OLD: /api/
+          VITE_ROOT_PATH: /portal/
+
+      - name: Install packaging tools
+        run: sudo apt-get update && sudo apt-get install -y build-essential debhelper devscripts
+
+      - name: Build .deb package
+        env:
+          DEBFULLNAME: Landscape Team
+          DEBEMAIL: landscape-team@canonical.com
+          VERSION: ${{ needs.meta.outputs.version }}
+        run: |
+          # debian/rules expects assets/, icons/, index.html, favicon.svg at root.
+          cp -r dist/assets .
+          cp -r dist/icons .
+          cp dist/index.html dist/favicon.svg .
+          rm -rf dist
+
+          dch --newversion "${VERSION}-0landscape0" \
+              --distribution jammy \
+              "Release ${VERSION} for jammy"
+
+          tar czf "../landscape-dashboard_${VERSION}.orig.tar.gz" \
+            assets favicon.svg index.html icons
+
+          dpkg-buildpackage -us -uc -b
+          cp ../landscape-dashboard_*.deb .
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb-for-scan
+          path: landscape-dashboard_*.deb
+          retention-days: 1
+
+  secscan:
+    name: Submit .deb to secscan
+    needs: [meta, build-deb]
+    if: needs.meta.outputs.is_release_ref == 'true'
+    runs-on:
+      [self-hosted, self-hosted-linux-amd64-jammy-private-endpoint-medium]
+    timeout-minutes: 30
+    steps:
+      - name: Download .deb artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deb-for-scan
+
+      - name: Install secscan client
+        run: |
+          sudo snap install canonical-secscan-client
+          sudo snap connect canonical-secscan-client:home system:home
+
+      - name: Run security scan
+        id: scan
+        env:
+          VERSION: ${{ needs.meta.outputs.version }}
+          CYCLE: ${{ needs.meta.outputs.cycle }}
+          CHANNEL: ${{ needs.meta.outputs.channel }}
+        run: |
+          set +e
+          DEB=$(ls landscape-dashboard_*.deb | head -n1)
+          echo "Submitting $DEB as version=$VERSION cycle=$CYCLE channel=$CHANNEL"
+          secscan-client --batch submit \
+            --ssdlc-product-name 'landscape-ui' \
+            --ssdlc-cycle "$CYCLE" \
+            --ssdlc-product-version "$VERSION" \
+            --ssdlc-product-channel "$CHANNEL" \
+            --scanner trivy \
+            --format deb \
+            --type package \
+            --base jammy \
+            --base-arch amd64 \
+            "$DEB" \
+            --wait-and-print | tee secscan-results.txt
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit "$EXIT_CODE"
+
+      - name: Upload scan results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: secscan-results-${{ needs.meta.outputs.version }}
+          path: secscan-results.txt
+          retention-days: 90

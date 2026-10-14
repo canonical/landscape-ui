@@ -34,15 +34,21 @@ Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual
 
 **Rule:** do not change branch selection, the `should_build` tag guard, or the tag-after-deploy ordering.
 
-## Vulnerability Scan (`security.yaml`)
+## Security Scan (`security.yaml`)
 
-**Trigger:** `workflow_dispatch`; push → `release/**` (ignoring `security/sbom/**`, to avoid a commit loop).
+**Trigger:** push → `release/**` or `point/**` (ignoring `security/sbom/**`, to avoid a commit loop); `workflow_dispatch`; weekly cron on `main` (`0 3 * * 1`).
 
-- **build-image** — builds the OCI image, uploads it as the `image-tar` artifact.
-- **scan-and-report** (self-hosted) — runs `canonical-secscan-client` against `image.tar`; the scanner's exit code becomes the job's exit code.
-- **generate-and-commit-sbom** — Trivy SBOM (`spdx-json`) → artifact, and on a `release/**` push commits it to `security/sbom/release.spdx.json`, with a rebase-and-retry loop (3 attempts) in case another commit lands first.
+SSDLC evidence for the shipped product (SEC0025 vulnerability scanning, SEC0027 SBOM). The product is the `landscape-dashboard` `.deb` (the package name from `debian/control`) of bundled static assets, which carries no package metadata of its own, so the SBOM and the vulnerability report come from `pnpm-lock.yaml` at the same commit (production dependencies only) and the `.deb` is what goes to the central scanner.
 
-**Rule:** preserve exit-code propagation and the SBOM commit race protection.
+- **meta** — version (`scripts/calculate-version.cjs`), SSDLC cycle (from the `release/YY.MM` or `point/YY.MM.N` branch name, calendar fallback elsewhere), secscan channel (`candidate` while `-rc`, `stable` once the branch is in `RELEASED_BRANCHES`, `edge` off release refs) and whether the ref is a release/point branch.
+- **sbom** — Trivy `fs` scan of the lockfile → SPDX JSON artifact (90 days), and on release/point refs commits it to `security/sbom/landscape-ui.spdx.json` with a rebase-and-retry loop (3 attempts). One file per branch so the git history is diffable between versions; GitHub artifact retention alone is not enough for the SSDLC review.
+- **vulnerability-report** — Trivy `fs` scan → full unfiltered JSON report artifact (every severity, fixed or not, for the SSDLC vulnerability tracker), then a gating pass that fails on fixable HIGH/CRITICAL findings.
+- **build-deb** (release/point refs only) — same production build inputs and `dpkg-buildpackage` steps as `release-and-build.yml`, so the scanned `.deb` matches what that workflow publishes for the commit.
+- **secscan** (self-hosted, release/point refs only, 30-minute timeout) — submits the `.deb` to `canonical-secscan-client` (`--format deb --type package --base jammy`) with the SSDLC metadata; the scanner's exit code becomes the job's exit code.
+
+**Rule:** preserve exit-code propagation, the unfiltered report (SEC0025 says do not delete findings), and the SBOM commit race protection. Keep the deb build steps in sync with `release-and-build.yml`.
+
+**Per cycle, by hand:** download the SBOM, the Trivy report and the secscan results from the release-branch run and file them in the SSDLC Artifacts folder for the cycle; copy findings into the vulnerability tracker with the team's assessment.
 
 ## Full TICS report (`tics-full.yml`)
 
