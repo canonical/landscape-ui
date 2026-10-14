@@ -1,22 +1,21 @@
 import type { FC } from "react";
 import { useEffect, useState, useMemo, useRef } from "react";
-import {
-  CheckboxInput,
-  Input,
-  Notification,
-  Select,
-} from "@canonical/react-components";
+import { Input, Notification, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import type { SnapWithCount, SnapMode } from "../../types";
 import classes from "./SnapChannelRevisionFields.module.scss";
 import { MODE_OPTIONS } from "./helpers";
 import { useTheme } from "@/context/theme";
+import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 import { useGetSnapInfo } from "../../api";
 import {
   getChannelConfinement,
   getChannelOptions,
   isValidRevision,
 } from "../../helpers";
+
+const CLASSIC_CONFINEMENT_TOOLTIP_MESSAGE =
+  "Check the snap store if you're not sure whether this snap requires classic confinement.";
 
 interface SnapChannelRevisionFieldsProps {
   readonly instanceIds: number[];
@@ -192,9 +191,10 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
         )}
       </div>
       {mode === "revision" ? (
-        <CheckboxInput
+        <CheckboxInputWithHelp
           label="Use classic confinement"
           className={classes.classicConfinementCheckbox}
+          tooltipMessage={CLASSIC_CONFINEMENT_TOOLTIP_MESSAGE}
           checked={isClassicConfinement}
           onChange={(event) => {
             const { checked } = event.currentTarget;
@@ -203,7 +203,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
           }}
         />
       ) : null}
-      {confinement === "classic" && mode === "channel" ? (
+      {confinement === "classic" && mode === "channel" && channel ? (
         <Notification
           severity="caution"
           className={classNames(
@@ -218,16 +218,16 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
       !isSnapInfoError &&
       mode === "channel" &&
       !channel ? (
-        <Notification
-          severity="caution"
-          className={classNames(
-            classes.classicNotification,
-            "u-no-margin--bottom",
-          )}
-        >
-          We couldn&apos;t confirm if this snap requires classic confinement.
-          Check the default channel on the snap store to make sure.
-        </Notification>
+        <CheckboxInputWithHelp
+          label="Use classic confinement"
+          className={classes.classicConfinementCheckbox}
+          tooltipMessage={CLASSIC_CONFINEMENT_TOOLTIP_MESSAGE}
+          checked={confinement === "classic"}
+          onChange={(event) => {
+            const { checked } = event.currentTarget;
+            onChange(value, channel, checked ? "classic" : "strict");
+          }}
+        />
       ) : null}
     </>
   );
