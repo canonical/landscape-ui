@@ -208,6 +208,27 @@ describe("EditUserForm", () => {
     expect(await screen.findByText("Passwords must match")).toBeInTheDocument();
   });
 
+  it("requires a name", async () => {
+    let requestSent = false;
+    server.use(
+      http.put(`${API_URL}users`, () => {
+        requestSent = true;
+        return HttpResponse.json({});
+      }),
+    );
+    const user = userEvent.setup();
+    renderEditUserForm();
+
+    await screen.findByRole("option", { name: "daemon" });
+    await user.clear(screen.getByLabelText("Name"));
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(
+      await screen.findByText("This field is required"),
+    ).toBeInTheDocument();
+    expect(requestSent).toBe(false);
+  });
+
   it("submits and opens the single queued activity from the notification", async () => {
     setEndpointStatus({
       status: "variant",
@@ -458,7 +479,6 @@ describe("EditUserForm", () => {
       profile: "blank",
       userToEdit: {
         ...users[8],
-        name: undefined,
         location: undefined,
         home_phone: undefined,
         work_phone: undefined,

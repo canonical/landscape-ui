@@ -2,4 +2,4 @@
 "landscape-ui": patch
 ---
 
-Blank optional fields (location, home phone, work phone) are no longer sent when creating a user
+Blank optional fields are no longer sent when creating a user; name required in edit form.
