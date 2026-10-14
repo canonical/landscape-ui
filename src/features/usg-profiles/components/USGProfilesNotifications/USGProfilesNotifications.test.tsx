@@ -63,6 +63,8 @@ describe("USGProfilesNotifications", () => {
   beforeEach(() => {
     localStorage.clear();
     setEndpointStatus("default");
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test-audit");
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => undefined);
   });
 
   afterEach(() => {
