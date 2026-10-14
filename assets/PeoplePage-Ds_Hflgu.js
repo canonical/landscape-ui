@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-BOrZKZpZ.js";import{n as t,r as n,t as r}from"./PageMain-DyvggzB1.js";import{i}from"./super-admin-CvPP-1gv.js";var a=e(),o=()=>(0,a.jsxs)(r,{children:[(0,a.jsx)(t,{title:`People`}),(0,a.jsx)(n,{hasTable:!0,children:(0,a.jsx)(i,{})})]});export{o as default};

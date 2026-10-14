@@ -1,0 +1,1 @@
+import{c as e,r as t}from"./jsx-runtime-BOrZKZpZ.js";import{h as n}from"./index-C_diCXxQ.js";var r=e(t(),1);function i(){let e=(0,r.useContext)(n);if(!e)throw Error(`useFetchDebArchive must be used within FetchDebArchiveProvider`);return e}export{i as t};

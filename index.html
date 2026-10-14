@@ -10,15 +10,32 @@
     <link href="/assets/d5fc1819-UbuntuMono[wght]-latin-v0.869.woff2" />
     <link href="/assets/f1ea362b-Ubuntu[wdth,wght]-latin-v0.896a.woff2" />
     <title>Landscape</title>
-    <script type="module" crossorigin src="/assets/index-D7pT9DnD.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/chunk-CMxvf4Kt.js">
-    <link rel="modulepreload" crossorigin href="/assets/preload-helper-zJ_50EbN.js">
-    <link rel="modulepreload" crossorigin href="/assets/jsx-runtime-BGORY6w-.js">
-    <link rel="modulepreload" crossorigin href="/assets/dist-D4JZc7R4.js">
-    <link rel="modulepreload" crossorigin href="/assets/chunk-QUQL4437-DMe0uX2Q.js">
-    <link rel="modulepreload" crossorigin href="/assets/constants-CrKnaGyp.js">
-    <link rel="stylesheet" crossorigin href="/assets/dist-1XkBqRBD.css">
-    <link rel="stylesheet" crossorigin href="/assets/index-CnrxjDS2.css">
+    <script type="module" crossorigin src="/assets/index-C_diCXxQ.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/jsx-runtime-BOrZKZpZ.js">
+    <link rel="modulepreload" crossorigin href="/assets/dist-mO5vyAPj.js">
+    <link rel="modulepreload" crossorigin href="/assets/routes-DkyU5tlH.js">
+    <link rel="modulepreload" crossorigin href="/assets/constants-DG2nPHQU.js">
+    <link rel="modulepreload" crossorigin href="/assets/AppErrorBoundary-BjKvgvPu.js">
+    <link rel="modulepreload" crossorigin href="/assets/hooks-BXcjFCkU.js">
+    <link rel="modulepreload" crossorigin href="/assets/preload-helper-Czpn1I53.js">
+    <link rel="modulepreload" crossorigin href="/assets/lib-BdzxRHgT.js">
+    <link rel="modulepreload" crossorigin href="/assets/LoadingState-C5x3fcmo.js">
+    <link rel="modulepreload" crossorigin href="/assets/_helpers-DDUe_Cya.js">
+    <link rel="modulepreload" crossorigin href="/assets/useEnv-Cqc5bQpG.js">
+    <link rel="modulepreload" crossorigin href="/assets/EmptyState-DxdMLLYz.js">
+    <link rel="modulepreload" crossorigin href="/assets/dist-Ff3LG0zu.js">
+    <link rel="modulepreload" crossorigin href="/assets/Truncated-DmxCg_gk.js">
+    <link rel="modulepreload" crossorigin href="/assets/date-DHUwr0fV.js">
+    <link rel="modulepreload" crossorigin href="/assets/esm-DqIF5M0n.js">
+    <link rel="modulepreload" crossorigin href="/assets/auth-BfiYmkJt.js">
+    <link rel="stylesheet" crossorigin href="/assets/dist-BaBU5-Hu.css">
+    <link rel="stylesheet" crossorigin href="/assets/AppErrorBoundary-BxAfFH0R.css">
+    <link rel="stylesheet" crossorigin href="/assets/LoadingState-DjLO8OYT.css">
+    <link rel="stylesheet" crossorigin href="/assets/EmptyState-DU9fKUEF.css">
+    <link rel="stylesheet" crossorigin href="/assets/Truncated-BGWusYxz.css">
+    <link rel="stylesheet" crossorigin href="/assets/esm-CC8eR4nk.css">
+    <link rel="stylesheet" crossorigin href="/assets/auth-C3nmrHUZ.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-HO7akG_d.css">
   </head>
   <body>
     <div id="root"></div>
@@ -28,7 +45,11 @@
         const systemDark = window.matchMedia(
           "(prefers-color-scheme: dark)",
         ).matches;
-        const shouldDark = saved === "true" || (!saved && systemDark);
+        // "true"/"false" are legacy values of the dark mode switch
+        const shouldDark =
+          saved === "dark" ||
+          saved === "true" ||
+          (saved !== "light" && saved !== "false" && systemDark);
         if (shouldDark) {
           document.body.classList.add("is-dark");
           document.body.style.colorScheme = "dark";
