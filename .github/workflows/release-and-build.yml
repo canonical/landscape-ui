@@ -190,15 +190,15 @@ jobs:
       # When this build represents the current "latest stable" cycle (the
       # highest release/YY.MM on origin, or whatever STABLE_RELEASE_BRANCH
       # overrides it to), also publish to ppa-build-stable so consumers
-      # tracking the stable channel pick it up automatically.
+      # tracking the stable channel pick it up automatically. The artifact is
+      # already committed on the ppa-build-* branch by the Deploy step, so this
+      # is a plain ref push: a second auto-commit would find a clean tree and
+      # push nothing.
       - name: Promote to ppa-build-stable
         if: steps.calver.outputs.should_build == 'true' && steps.calver.outputs.publish_stable == 'true'
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          branch: ppa-build-stable
-          create_branch: true
-          push_options: "--force"
-          commit_message: "Build v${{ steps.calver.outputs.version }} from ${{ github.ref_name }} [${{ github.sha }}] (promoted to stable)"
+        env:
+          DEST_BRANCH: ${{ steps.calver.outputs.dest_branch }}
+        run: git push --force origin "refs/heads/${DEST_BRANCH}:refs/heads/ppa-build-stable"
 
   build-deb:
     needs: process-release
