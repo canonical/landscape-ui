@@ -41,9 +41,8 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   const changeChannelVerb = getChangeChannelVerb(snapModes);
 
   // confinement is "classic" either because the channel-map data forces it
-  // (selected channel requires classic on some
-  // architecture) or because the user opted in via a checkbox (revision
-  // mode, or default-channel case)
+  // (selected channel requires classic on some architecture) or because the
+  // user opted in via a checkbox (revision mode, or default-channel case)
   const isClassic = (snap: SnapWithCount) =>
     snapModeConfigs[snap.snap.id]?.confinement === "classic";
 
