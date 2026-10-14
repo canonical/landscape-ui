@@ -11,6 +11,7 @@ import type { SnapWithCount, SnapMode } from "../../types";
 import classes from "./SnapChannelRevisionFields.module.scss";
 import { MODE_OPTIONS } from "./helpers";
 import { useTheme } from "@/context/theme";
+import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 import { useGetSnapInfo } from "../../api";
 import {
   getChannelConfinement,
@@ -203,7 +204,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
           }}
         />
       ) : null}
-      {confinement === "classic" && mode === "channel" ? (
+      {confinement === "classic" && mode === "channel" && channel ? (
         <Notification
           severity="caution"
           className={classNames(
@@ -218,16 +219,16 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
       !isSnapInfoError &&
       mode === "channel" &&
       !channel ? (
-        <Notification
-          severity="caution"
-          className={classNames(
-            classes.classicNotification,
-            "u-no-margin--bottom",
-          )}
-        >
-          We couldn&apos;t confirm if this snap requires classic confinement.
-          Check the default channel on the snap store to make sure.
-        </Notification>
+        <CheckboxInputWithHelp
+          label="Use classic confinement"
+          className={classes.classicConfinementCheckbox}
+          tooltipMessage="Check the snap store if you're not sure whether this snap requires classic confinement."
+          checked={confinement === "classic"}
+          onChange={(event) => {
+            const { checked } = event.currentTarget;
+            onChange(value, channel, checked ? "classic" : "strict");
+          }}
+        />
       ) : null}
     </>
   );

@@ -291,6 +291,22 @@ describe("SnapChannelRevisionFields", () => {
     expect(screen.getByText("No channels were found")).toBeInTheDocument();
   });
 
+  it("does not show the classic confinement notification for a snap with no available channels even when confinement is classic", async () => {
+    renderWithProviders(
+      <SnapChannelRevisionFields
+        {...props}
+        selectedSnap={snapWithNoChannels}
+        snapModeConfig={{ ...props.snapModeConfig, confinement: "classic" }}
+      />,
+    );
+
+    const checkbox = await screen.findByLabelText(/Use classic confinement/);
+    expect(checkbox).toBeChecked();
+    expect(
+      screen.queryByText("This snap requires classic confinement"),
+    ).not.toBeInTheDocument();
+  });
+
   it("does not show 'No channels were found' alongside the load error", async () => {
     server.use(
       http.get(`${API_URL}computers/:computerId/snaps/:name/info`, () =>
