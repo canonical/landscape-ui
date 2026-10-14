@@ -35,34 +35,16 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   submitText,
   snapModeConfigs = {},
 }) => {
-  const isChangeChannelOrInstall = ["install", "change channel"].includes(
-    actionVerb,
-  );
   const hasChannelMode = snapModes.includes("channel");
   const hasRevisionMode = snapModes.includes("revision");
   const isMixedChangeMode = hasChannelMode && hasRevisionMode;
   const changeChannelVerb = getChangeChannelVerb(snapModes);
 
-  // A missing config entry means the snap was never touched by the user.
-  // For change channel, that only happens when no channel data was
-  // available to pick a default from (the "Default channel" case, mirrored
-  // by the fallback default in SnapsActionForm.tsx), so it must default to
-  // channel mode with no channel selected rather than being read as
-  // "not classic". Other actions never populate snapChangeConfigs at all,
-  // so this default must stay scoped to change channel.
-  const isClassic = (snap: SnapWithCount) => {
-    const config = snapModeConfigs[snap.snap.id];
-
-    if (config?.confinement === "classic") {
-      return true;
-    }
-
-    return (
-      isChangeChannelOrInstall &&
-      config?.mode !== "revision" &&
-      !config?.channel
-    );
-  };
+  // confinement is "classic" either because the channel-map data forces it
+  // (selected channel requires classic on some architecture) or because the
+  // user opted in via a checkbox (revision mode, or default-channel case)
+  const isClassic = (snap: SnapWithCount) =>
+    snapModeConfigs[snap.snap.id]?.confinement === "classic";
 
   const classicSnaps = snaps.filter(isClassic);
 

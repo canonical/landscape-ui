@@ -225,11 +225,18 @@ describe("ConfirmSnapActionModal", () => {
   });
 
   it("renders the install warning text when installing a classic snap", () => {
+    const snaps = installedSnaps.slice(0, 6);
     renderWithProviders(
       <ConfirmSnapActionModal
         {...props}
-        snaps={installedSnaps.slice(0, 6)}
+        snaps={snaps}
         actionVerb="install"
+        snapModeConfigs={Object.fromEntries(
+          snaps.map(({ snap }) => [
+            snap.id,
+            { mode: "channel" as const, value: "", confinement: "classic" },
+          ]),
+        )}
       />,
     );
 
@@ -352,7 +359,7 @@ describe("ConfirmSnapActionModal", () => {
     ).toBeInTheDocument();
   });
 
-  it("treats a snap left on its default channel (no channel selected) as requiring classic confinement", () => {
+  it("does not require classic confinement for a snap left on its default channel when the classic checkbox is left unchecked", () => {
     renderWithProviders(
       <ConfirmSnapActionModal
         {...props}
@@ -372,6 +379,41 @@ describe("ConfirmSnapActionModal", () => {
 
     expect(
       screen.getByRole("heading", {
+        name: "Change channel of 2 snaps on 3 instances",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(firstSnap.snap.name)).toBeInTheDocument();
+    expect(screen.getByText(secondSnap.snap.name)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/requires classic confinement/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("treats a snap left on its default channel as requiring classic confinement once the classic checkbox is checked", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal
+        {...props}
+        snaps={[firstSnap, secondSnap]}
+        actionVerb="change channel"
+        snapModes={["channel"]}
+        snapModeConfigs={{
+          [firstSnap.snap.id]: {
+            mode: "channel",
+            value: "",
+            channel: "",
+            confinement: "classic",
+          },
+          [secondSnap.snap.id]: {
+            mode: "channel",
+            value: "",
+            channel: "latest/stable",
+          },
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", {
         name: "1 of 2 snaps requires classic confinement",
       }),
     ).toBeInTheDocument();
@@ -379,7 +421,7 @@ describe("ConfirmSnapActionModal", () => {
     expect(screen.queryByText(secondSnap.snap.name)).not.toBeInTheDocument();
   });
 
-  it("treats a snap with no config entry at all (channel data never resolved) as requiring classic confinement", () => {
+  it("does not treat a snap with no config entry at all (never touched by the user) as requiring classic confinement", () => {
     renderWithProviders(
       <ConfirmSnapActionModal
         {...props}
@@ -398,11 +440,14 @@ describe("ConfirmSnapActionModal", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: "1 of 2 snaps requires classic confinement",
+        name: "Change channel of 2 snaps on 3 instances",
       }),
     ).toBeInTheDocument();
     expect(screen.getByText(firstSnap.snap.name)).toBeInTheDocument();
-    expect(screen.queryByText(secondSnap.snap.name)).not.toBeInTheDocument();
+    expect(screen.getByText(secondSnap.snap.name)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/requires classic confinement/i),
+    ).not.toBeInTheDocument();
   });
 
   it("does not call out classic confinement for change channel when no snaps resolved to classic confinement", () => {
