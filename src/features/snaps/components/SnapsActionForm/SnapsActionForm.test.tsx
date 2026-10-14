@@ -614,8 +614,9 @@ describe("SnapsActionForm", () => {
       }),
     );
 
-    const classicCheckbox =
-      await screen.findByLabelText(/Use classic confinement/);
+    const classicCheckbox = await screen.findByLabelText(
+      /Use classic confinement/,
+    );
     await waitFor(() => {
       expect(
         screen.getByRole("combobox", {
@@ -703,8 +704,9 @@ describe("SnapsActionForm", () => {
       expect(channelSelect).toBeDisabled();
     });
 
-    const classicCheckbox =
-      await screen.findByLabelText(/Use classic confinement/);
+    const classicCheckbox = await screen.findByLabelText(
+      /Use classic confinement/,
+    );
     expect(classicCheckbox).not.toBeChecked();
 
     const modeSelect = screen.getByLabelText(
