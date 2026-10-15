@@ -31,10 +31,14 @@ on:
 permissions:
   contents: read
 
-# One scan per branch at a time. Scans triggered by a release publish queue
-# rather than cancel: each published build is SSDLC evidence in its own
-# right, and the SBOM job already orders overlapping results. Manual and
-# scheduled scans are repeatable, so a newer one cancels an older one.
+# One scan per branch and trigger at a time. Scans triggered by a release
+# publish queue rather than cancel, so a scan already describing a build
+# finishes its evidence run instead of being thrown away. This is not a
+# guarantee that every build gets its own scan: GitHub keeps at most one
+# pending run per group, and `meta` reads the ppa-build-* tip anyway, so a
+# build superseded before its scan reads the record is described by the
+# next scan, exactly as the PPA only ever ships the latest build. Manual
+# and scheduled scans are repeatable, so a newer one cancels an older one.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch || inputs.ref || github.ref_name }}-${{ github.event_name }}
   cancel-in-progress: ${{ github.event_name != 'workflow_run' }}
