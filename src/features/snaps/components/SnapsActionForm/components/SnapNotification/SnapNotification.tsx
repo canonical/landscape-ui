@@ -63,16 +63,15 @@ const SnapNotification: FC<SnapNotificationProps> = ({
     <Notification
       severity="information"
       actions={[
-        {
-          label: "Snap documentation: Revisions",
-          onClick: () => {
-            window.open(
-              SNAP_REVISIONS_DOCUMENTATION_URL,
-              "_blank",
-              "noopener,noreferrer",
-            );
-          },
-        },
+        <a
+          key="snap-revisions-documentation"
+          className="p-notification__action"
+          href={SNAP_REVISIONS_DOCUMENTATION_URL}
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+        >
+          Snap documentation: Revisions
+        </a>,
       ]}
     >
       {revisionMessages[action]}

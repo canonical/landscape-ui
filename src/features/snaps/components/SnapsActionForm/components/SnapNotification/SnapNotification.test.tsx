@@ -1,7 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { SNAP_REVISIONS_DOCUMENTATION_URL } from "@/constants";
 import SnapNotification from "./SnapNotification";
 
@@ -65,10 +64,7 @@ describe("SnapNotification", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("opens the snap revisions documentation URL when the documentation link is clicked", async () => {
-    const user = userEvent.setup();
-    global.window.open = vi.fn();
-
+  it("links to the snap revisions documentation in a new tab", () => {
     renderWithProviders(
       <SnapNotification
         action="install"
@@ -78,13 +74,12 @@ describe("SnapNotification", () => {
       />,
     );
 
-    const docsLink = screen.getByText("Snap documentation: Revisions");
-    await user.click(docsLink);
+    const docsLink = screen.getByRole("link", {
+      name: "Snap documentation: Revisions",
+    });
 
-    expect(window.open).toHaveBeenCalledWith(
-      SNAP_REVISIONS_DOCUMENTATION_URL,
-      "_blank",
-      "noopener,noreferrer",
-    );
+    expect(docsLink).toHaveAttribute("href", SNAP_REVISIONS_DOCUMENTATION_URL);
+    expect(docsLink).toHaveAttribute("target", "_blank");
+    expect(docsLink).toHaveAttribute("rel", "nofollow noopener noreferrer");
   });
 });
