@@ -117,6 +117,9 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ needs.meta.outputs.scan_sha }}
+          # Full history so the commit step can tell whether the SBOM already
+          # on the sbom branch comes from a newer commit than this one.
+          fetch-depth: 0
 
       # Source SBOM from pnpm-lock.yaml. Trivy excludes devDependencies for
       # pnpm lockfiles by default, which matches what ends up in the bundle.
@@ -140,17 +143,23 @@ jobs:
       # diff SBOMs between versions to see when a vulnerability was introduced.
       # The file goes to the `sbom` branch under the release branch's name
       # (release/26.10/landscape-ui.spdx.json), so each release branch has its
-      # own diffable history there.
+      # own diffable history there. A `commit` file next to it records the
+      # scanned commit: scans of the same ref can overlap (a weekly run and a
+      # push), so a run only writes when its commit is newer than the one
+      # already recorded. Newest wins regardless of which run finishes last,
+      # and reruns of an unchanged release do not add noise commits.
       - name: Commit SBOM to the sbom branch
         if: needs.meta.outputs.is_release_ref == 'true'
         env:
           VERSION: ${{ needs.meta.outputs.version }}
           BRANCH: ${{ inputs.ref }}
+          SCAN_SHA: ${{ needs.meta.outputs.scan_sha }}
           SBOM_BRANCH: sbom
         run: |
           set -e
           SRC="$RUNNER_TEMP/landscape-ui.spdx.json"
           DEST="${BRANCH}/landscape-ui.spdx.json"
+          COMMIT_FILE="${BRANCH}/commit"
           mv "landscape-ui-${VERSION}.spdx.json" "$SRC"
 
           git config user.name "github-actions[bot]"
@@ -171,17 +180,24 @@ jobs:
               git switch --orphan "$SBOM_BRANCH"
             fi
 
-            mkdir -p "$(dirname "$DEST")"
-            cp "$SRC" "$DEST"
-
-            if git ls-files --error-unmatch "$DEST" >/dev/null 2>&1 \
-               && git diff --quiet -- "$DEST"; then
-              echo "SBOM unchanged; nothing to commit."
-              exit 0
+            if [[ -f "$COMMIT_FILE" ]]; then
+              EXISTING=$(cat "$COMMIT_FILE")
+              if [[ "$EXISTING" == "$SCAN_SHA" ]]; then
+                echo "SBOM for ${SCAN_SHA} is already on ${SBOM_BRANCH}; nothing to commit."
+                exit 0
+              fi
+              if git merge-base --is-ancestor "$SCAN_SHA" "$EXISTING" 2>/dev/null; then
+                echo "SBOM on ${SBOM_BRANCH} is from ${EXISTING}, newer than ${SCAN_SHA}; not overwriting."
+                exit 0
+              fi
             fi
 
-            git add "$DEST"
-            git commit -m "sbom: ${BRANCH} at ${VERSION}"
+            mkdir -p "$(dirname "$DEST")"
+            cp "$SRC" "$DEST"
+            echo "$SCAN_SHA" > "$COMMIT_FILE"
+
+            git add "$DEST" "$COMMIT_FILE"
+            git commit -m "sbom: ${BRANCH} at ${VERSION} (${SCAN_SHA:0:7})"
 
             if git push origin "$SBOM_BRANCH"; then
               exit 0

@@ -57,7 +57,7 @@ jobs:
                   | sed 's|^[ *]*origin/||' \
                   | grep -E '^release/[0-9]{2}\.(04|10)$' \
                   | sort -V \
-                  | tail -n1)
+                  | tail -n1 || true)
                 echo "SUPPORTED_RELEASE_BRANCHES unset; falling back to ${SUPPORTED:-<none>}"
               fi
               REFS="main $(echo "$SUPPORTED" | tr ',' ' ')"
