@@ -2,4 +2,4 @@
 "landscape-ui": patch
 ---
 
-Fix licenses table expiration date so it doesnt change by timezone
+Fix licenses table expiration date so it doesn't change by timezone
