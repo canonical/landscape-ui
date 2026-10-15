@@ -254,18 +254,19 @@ jobs:
                   || true
               fi
 
-              # 0 = ours is an ancestor of the recorded commit (theirs is
-              # newer), 1 = it is not, anything else = git could not compare.
-              # An error must not read as "ours is newer": that is exactly how
-              # an older scan would overwrite a newer SBOM.
-              ANCESTOR_RC=0
-              git merge-base --is-ancestor "$SCAN_SHA" "$EXISTING" || ANCESTOR_RC=$?
-              if [[ "$ANCESTOR_RC" -eq 0 ]]; then
+              # Ours is newer only if the recorded commit is an ancestor of
+              # it. Everything else (ours is the ancestor, the two have
+              # diverged, or git cannot compare them) must not read as "ours
+              # is newer": that is exactly how an older or unrelated scan
+              # would overwrite a newer SBOM.
+              if git merge-base --is-ancestor "$SCAN_SHA" "$EXISTING"; then
                 echo "SBOM on ${SBOM_BRANCH} is from ${EXISTING}, newer than ${SCAN_SHA}; not overwriting."
                 exit 0
               fi
-              if [[ "$ANCESTOR_RC" -ne 1 ]]; then
-                echo "::error::Cannot tell whether ${EXISTING} on ${SBOM_BRANCH} is newer than ${SCAN_SHA} (git merge-base exit ${ANCESTOR_RC}); refusing to overwrite it."
+              ANCESTOR_RC=0
+              git merge-base --is-ancestor "$EXISTING" "$SCAN_SHA" || ANCESTOR_RC=$?
+              if [[ "$ANCESTOR_RC" -ne 0 ]]; then
+                echo "::error::Recorded commit ${EXISTING} on ${SBOM_BRANCH} is not an ancestor of ${SCAN_SHA} (git merge-base exit ${ANCESTOR_RC}), so the two cannot be ordered; refusing to overwrite. If ${BRANCH} was rewritten on purpose, fix ${COMMIT_FILE} on ${SBOM_BRANCH} by hand."
                 exit 1
               fi
             fi
