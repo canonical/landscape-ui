@@ -18,7 +18,6 @@ const SelfHostedLicensePage: FC = () => {
             This page is for self-hosted Landscape deployments that use the
             legacy <code>license.txt</code> licensing method.{" "}
             <Link
-              className={classes.externalLink}
               href={SELF_HOSTED_LANDSCAPE_DOCUMENTATION_URL}
               target="_blank"
               rel="nofollow noopener noreferrer"
