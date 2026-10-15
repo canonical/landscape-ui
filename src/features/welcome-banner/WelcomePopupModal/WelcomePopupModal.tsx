@@ -23,7 +23,7 @@ const WelcomePopupModal: FC<WelcomeBannerProps> = ({ hideBanner }) => {
     >
       <p className="u-margin--bottom">Welcome to the Landscape web portal!</p>
       <p className="u-margin--bottom">
-        The web portal is now the default interface for Landscape. Our legacy
+        This web portal is now the default interface for Landscape. Our legacy
         web portal is being retired, but remains available for now if you’d like
         to switch back.
       </p>
