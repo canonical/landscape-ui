@@ -109,7 +109,15 @@ const PageHeader: FC<PageHeaderProps> = ({
           </div>
         )}
       </div>
-      {subtitle && <div className={classes.subtitle}>{subtitle}</div>}
+      {subtitle && (
+        <div
+          className={classNames("p-text--small", classes.subtitle, {
+            [classes.subtitleWithActions]: actions && actions.length > 0,
+          })}
+        >
+          {subtitle}
+        </div>
+      )}
     </div>
   );
 };
