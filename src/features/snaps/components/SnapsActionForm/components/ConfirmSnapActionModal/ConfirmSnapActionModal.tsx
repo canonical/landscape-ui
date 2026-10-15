@@ -66,7 +66,11 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     if (config?.mode === "revision" && config.value) {
       return `revision ${config.value}`;
     }
-    if (config?.mode === "channel" && config.channel) {
+    if (
+      config?.mode === "channel" &&
+      config.channel &&
+      config.channel !== "latest/stable"
+    ) {
       return config.channel;
     }
     return undefined;
