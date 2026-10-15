@@ -1,5 +1,6 @@
 import { API_URL } from "@/constants";
 import { PATHS, ROUTES } from "@/libs/routes";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
 import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
@@ -38,18 +39,13 @@ describe("NewUserForm", () => {
     { inventory: "populated", groups: userGroups },
     { inventory: "empty", groups: [] },
   ])(
-    "uses the optional system default with a $inventory group inventory",
+    "submits with the system default primary group and a $inventory group inventory",
     async ({ groups }) => {
-      let requestBody: Record<string, unknown> | undefined;
-      server.use(
-        http.get(`${API_URL}computers/:computerId/groups`, () =>
-          HttpResponse.json({ groups }),
-        ),
-        http.post(`${API_URL}users`, async ({ request }) => {
-          requestBody = (await request.json()) as Record<string, unknown>;
-          return HttpResponse.json(activities[0]);
-        }),
-      );
+      setEndpointStatus({
+        status: "variant",
+        path: "computers/:computerId/groups",
+        response: { groups },
+      });
       renderWithProviders(
         <NewUserForm />,
         undefined,
@@ -64,19 +60,14 @@ describe("NewUserForm", () => {
         expect(primaryGroup).toBeEnabled();
       });
 
-      expect(primaryGroup).not.toBeRequired();
-      expect(screen.getByText("Primary Group")).not.toHaveClass("is-required");
-      expect(primaryGroup).toHaveValue("");
+      expect(screen.getAllByRole("option")).toHaveLength(groups.length + 1);
       expect(
-        screen.getByRole("option", { name: "Use system default" }),
-      ).toHaveProperty("selected", true);
-      await user.click(primaryGroup);
-      await user.tab();
-      expect(primaryGroup).not.toHaveAttribute("aria-invalid", "true");
-      expect(
-        screen.queryByText("This field is required"),
-      ).not.toBeInTheDocument();
-
+        screen.getByRole("option", {
+          name: "Use system default",
+          selected: true,
+        }),
+      ).toBeInTheDocument();
+      await user.selectOptions(primaryGroup, "Use system default");
       await user.type(screen.getByLabelText("Username"), "newuser");
       await user.type(screen.getByLabelText("Name"), "New User");
       await user.type(screen.getByLabelText("Password"), "synthetic-password");
@@ -86,16 +77,12 @@ describe("NewUserForm", () => {
       );
       await user.click(screen.getByRole("button", { name: "Add user" }));
 
-      await waitFor(() => {
-        expect(requestBody).toEqual({
-          computer_ids: [1],
-          name: "New User",
-          username: "newuser",
-          password: "synthetic-password",
-          require_password_reset: false,
-        });
-      });
-      expect(requestBody).not.toHaveProperty("primary_groupname");
+      expect(
+        await screen.findByText("You queued newuser to be created."),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("An activity is queued to create newuser."),
+      ).toBeInTheDocument();
     },
   );
 

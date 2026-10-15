@@ -2,7 +2,9 @@ import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { useParams } from "react-router";
 import type { UrlParams } from "@/types/UrlParams";
@@ -19,8 +21,10 @@ import { useCreateUser, useGetGroups } from "../../api";
 const NewUserForm: FC = () => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
+  const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { createUser } = useCreateUser();
+  const openActivityDetails = useOpenActivityDetailsPanel();
 
   const instanceId = Number(childInstanceId ?? urlInstanceId);
 
@@ -35,7 +39,7 @@ const NewUserForm: FC = () => {
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       try {
-        await createUser({
+        const { data: activity } = await createUser({
           computer_ids: [instanceId],
           name: values.name,
           username: values.username,
@@ -47,6 +51,18 @@ const NewUserForm: FC = () => {
           primary_groupname: values.primaryGroupValue || undefined,
         });
         closeSidePanel();
+        notify.success({
+          title: `You queued ${values.username} to be created.`,
+          message: `An activity is queued to create ${values.username}.`,
+          actions: [
+            {
+              label: "View activity",
+              onClick: () => {
+                openActivityDetails(activity);
+              },
+            },
+          ],
+        });
       } catch (error) {
         debug(error);
       }
