@@ -4,6 +4,7 @@ import {
   getChannelConfinement,
   getChannelMapEntry,
   getChannelOptions,
+  isRevisionTooLarge,
   isValidRevision,
 } from "./helpers";
 import type { AvailableSnapInfo } from "./types";
@@ -164,6 +165,22 @@ describe("snaps helpers", () => {
       expect(isValidRevision("abc")).toBe(false);
       expect(isValidRevision("")).toBe(false);
       expect(isValidRevision("   ")).toBe(false);
+    });
+
+    it("returns false for values above the snapd int64 maximum", () => {
+      expect(isValidRevision("9223372036854775807")).toBe(true);
+      expect(isValidRevision("9223372036854775808")).toBe(false);
+      expect(isValidRevision("9999999999999999999")).toBe(false);
+    });
+  });
+
+  describe("isRevisionTooLarge", () => {
+    it("returns true only for whole numbers above the snapd int64 maximum", () => {
+      expect(isRevisionTooLarge("9223372036854775808")).toBe(true);
+      expect(isRevisionTooLarge("9223372036854775807")).toBe(false);
+      expect(isRevisionTooLarge("123")).toBe(false);
+      expect(isRevisionTooLarge("abc")).toBe(false);
+      expect(isRevisionTooLarge("")).toBe(false);
     });
   });
 });

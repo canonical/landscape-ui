@@ -58,6 +58,20 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
 
   const snapsToShow = hasClassicSnaps ? classicSnaps : snaps;
 
+  // Restate what was chosen for each snap so the user can verify the
+  // revision or channel before queueing the activity.
+  const getSnapDetail = (snap: SnapWithCount) => {
+    const config = snapModeConfigs[snap.snap.id];
+
+    if (config?.mode === "revision" && config.value) {
+      return `revision ${config.value}`;
+    }
+    if (config?.mode === "channel" && config.channel) {
+      return config.channel;
+    }
+    return undefined;
+  };
+
   const getTitle = () => {
     const snapsText = pluralize(snaps.length, ["snap"], "exact");
 
@@ -177,9 +191,19 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     >
       <p className={classes.summary}>{getInfoText()}:</p>
       <ul>
-        {snapsToShow.map(({ snap }) => (
-          <li key={snap.name}>{snap.name}</li>
-        ))}
+        {snapsToShow.map((snapWithCount) => {
+          const { name } = snapWithCount.snap;
+          const detail = getSnapDetail(snapWithCount);
+
+          return (
+            <li key={name}>
+              <span>{name}</span>
+              {detail ? (
+                <span className="u-text--muted"> ({detail})</span>
+              ) : null}
+            </li>
+          );
+        })}
       </ul>
       {hasClassicSnaps ? (
         <p className={classes.warning}>{getClassicWarningText()}</p>

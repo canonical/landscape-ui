@@ -11,6 +11,7 @@ import { useGetSnapInfo } from "../../api";
 import {
   getChannelConfinement,
   getChannelOptions,
+  isRevisionTooLarge,
   isValidRevision,
 } from "../../helpers";
 
@@ -127,6 +128,9 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
     }
     if (mode === "revision" && !value) {
       return "This field is required";
+    }
+    if (mode === "revision" && isRevisionTooLarge(value)) {
+      return "Revision number is too large";
     }
     if (mode === "revision" && !isValidRevision(value)) {
       return "Revision must be a positive whole number";

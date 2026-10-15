@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { SNAPD_REST_API_DOCUMENTATION_URL } from "@/constants";
+import { SNAP_REVISIONS_DOCUMENTATION_URL } from "@/constants";
 import SnapNotification from "./SnapNotification";
 
 const changeChannelRevisionMessage =
@@ -32,8 +32,8 @@ describe("SnapNotification", () => {
       />,
     );
 
-    expect(screen.getByText(/revision tracks/i)).toBeInTheDocument();
-    expect(screen.getByText("Visit Snapd documentation")).toBeInTheDocument();
+    expect(screen.getByText(/doesn.t change the default tracking/i)).toBeInTheDocument();
+    expect(screen.getByText("Snap documentation: Revisions")).toBeInTheDocument();
   });
 
   it("renders the revision notification when a snap is in revision mode", () => {
@@ -47,7 +47,7 @@ describe("SnapNotification", () => {
     );
 
     expect(screen.getByText(changeChannelRevisionMessage)).toBeInTheDocument();
-    expect(screen.getByText("Visit Snapd documentation")).toBeInTheDocument();
+    expect(screen.getByText("Snap documentation: Revisions")).toBeInTheDocument();
   });
 
   it("does not render the revision notification when no snap is in revision mode", () => {
@@ -65,7 +65,7 @@ describe("SnapNotification", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("opens the snapd documentation URL when the documentation link is clicked", async () => {
+  it("opens the snap revisions documentation URL when the documentation link is clicked", async () => {
     const user = userEvent.setup();
     global.window.open = vi.fn();
 
@@ -78,11 +78,11 @@ describe("SnapNotification", () => {
       />,
     );
 
-    const docsLink = screen.getByText("Visit Snapd documentation");
+    const docsLink = screen.getByText("Snap documentation: Revisions");
     await user.click(docsLink);
 
     expect(window.open).toHaveBeenCalledWith(
-      SNAPD_REST_API_DOCUMENTATION_URL,
+      SNAP_REVISIONS_DOCUMENTATION_URL,
       "_blank",
       "noopener,noreferrer",
     );

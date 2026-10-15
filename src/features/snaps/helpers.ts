@@ -72,7 +72,19 @@ export const getChannelConfinement = (
   return classicEntry?.confinement ?? entries?.[0]?.confinement;
 };
 
+// snapd parses revisions as positive 64-bit integers, so anything above
+// the int64 maximum is rejected by every instance.
+const MAX_REVISION = 9223372036854775807n;
+
 // Snap revisions are numeric identifiers (ChannelMap.revision is a number),
-// so a manually entered revision must be a positive whole number.
-export const isValidRevision = (value: string): boolean =>
-  /^[1-9]\d*$/.test(value.trim());
+// so a manually entered revision must be a positive whole number that snapd
+// can parse.
+export const isValidRevision = (value: string): boolean => {
+  const trimmed = value.trim();
+  return /^[1-9]\d*$/.test(trimmed) && BigInt(trimmed) <= MAX_REVISION;
+};
+
+export const isRevisionTooLarge = (value: string): boolean => {
+  const trimmed = value.trim();
+  return /^\d+$/.test(trimmed) && BigInt(trimmed) > MAX_REVISION;
+};
