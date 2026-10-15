@@ -12,20 +12,19 @@ export const isValidDebLine = (line: string): boolean => {
   }
 
   if (tokens[0]?.startsWith("[")) {
-    const end = tokens.findIndex((token) => token.endsWith("]"));
-    const closing = end === -1 ? undefined : tokens[end];
+    const end = tokens.findIndex((token) => token.includes("]"));
+    const closing = tokens[end];
 
-    if (
-      end === -1 ||
-      !closing ||
-      closing.indexOf("]") !== closing.length - 1 ||
-      tokens.slice(0, end).some((token) => token.includes("]"))
-    ) {
+    // The first "]" must exist and must end its token: rejects "]foo" and "a]b]".
+    if (!closing || closing.indexOf("]") !== closing.length - 1) {
       return false;
     }
 
     tokens.splice(0, end + 1);
   }
+
+  const [uri, suite] = tokens;
+
   return !!uri && URI_PATTERN.test(uri) && !!suite;
 };
 
