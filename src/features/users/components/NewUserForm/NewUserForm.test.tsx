@@ -33,6 +33,72 @@ describe("NewUserForm", () => {
     const addUserButton = screen.getByRole("button", { name: /add user/i });
     expect(addUserButton).toBeInTheDocument();
   });
+
+  it.each([
+    { inventory: "populated", groups: userGroups },
+    { inventory: "empty", groups: [] },
+  ])(
+    "uses the optional system default with a $inventory group inventory",
+    async ({ groups }) => {
+      let requestBody: Record<string, unknown> | undefined;
+      server.use(
+        http.get(`${API_URL}computers/:computerId/groups`, () =>
+          HttpResponse.json({ groups }),
+        ),
+        http.post(`${API_URL}users`, async ({ request }) => {
+          requestBody = (await request.json()) as Record<string, unknown>;
+          return HttpResponse.json(activities[0]);
+        }),
+      );
+      renderWithProviders(
+        <NewUserForm />,
+        undefined,
+        ROUTES.instances.details.single(1),
+        `/${PATHS.instances.root}/${PATHS.instances.single}`,
+      );
+      const user = userEvent.setup();
+      const primaryGroup = screen.getByRole("combobox", {
+        name: "Primary Group",
+      });
+      await waitFor(() => {
+        expect(primaryGroup).toBeEnabled();
+      });
+
+      expect(primaryGroup).not.toBeRequired();
+      expect(screen.getByText("Primary Group")).not.toHaveClass("is-required");
+      expect(primaryGroup).toHaveValue("");
+      expect(
+        screen.getByRole("option", { name: "Use system default" }),
+      ).toHaveProperty("selected", true);
+      await user.click(primaryGroup);
+      await user.tab();
+      expect(primaryGroup).not.toHaveAttribute("aria-invalid", "true");
+      expect(
+        screen.queryByText("This field is required"),
+      ).not.toBeInTheDocument();
+
+      await user.type(screen.getByLabelText("Username"), "newuser");
+      await user.type(screen.getByLabelText("Name"), "New User");
+      await user.type(screen.getByLabelText("Password"), "synthetic-password");
+      await user.type(
+        screen.getByLabelText("Confirm password"),
+        "synthetic-password",
+      );
+      await user.click(screen.getByRole("button", { name: "Add user" }));
+
+      await waitFor(() => {
+        expect(requestBody).toEqual({
+          computer_ids: [1],
+          name: "New User",
+          username: "newuser",
+          password: "synthetic-password",
+          require_password_reset: false,
+        });
+      });
+      expect(requestBody).not.toHaveProperty("primary_groupname");
+    },
+  );
+
   it("loads groups and creates a user on the child instance", async () => {
     let requestedComputerId: number | undefined;
     let requestBody: Record<string, unknown> | undefined;

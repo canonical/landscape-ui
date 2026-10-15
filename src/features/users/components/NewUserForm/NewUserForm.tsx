@@ -10,7 +10,7 @@ import { getFormikError } from "@/utils/formikErrors";
 import {
   NEW_USER_INITIAL_VALUES,
   VALIDATION_SCHEMA,
-  PRIMARY_GROUP_PLACEHOLDER_OPTION,
+  PRIMARY_GROUP_DEFAULT_OPTION,
 } from "./constants";
 import { mapGroupsToOptions } from "./helpers";
 import type { NewUserFormValues } from "./types";
@@ -44,7 +44,7 @@ const NewUserForm: FC = () => {
           location: values.location || undefined,
           home_phone: values.homePhoneNumber || undefined,
           work_phone: values.workPhoneNumber || undefined,
-          primary_groupname: values.primaryGroupValue,
+          primary_groupname: values.primaryGroupValue || undefined,
         });
         closeSidePanel();
       } catch (error) {
@@ -96,7 +96,7 @@ const NewUserForm: FC = () => {
       <Select
         label="Primary Group"
         disabled={isLoadingGroups}
-        options={[PRIMARY_GROUP_PLACEHOLDER_OPTION, ...groupOptions]}
+        options={[PRIMARY_GROUP_DEFAULT_OPTION, ...groupOptions]}
         {...formik.getFieldProps("primaryGroupValue")}
         error={getFormikError(formik, "primaryGroupValue")}
       />
