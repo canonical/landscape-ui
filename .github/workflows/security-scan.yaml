@@ -174,8 +174,9 @@ jobs:
               git switch -C "$SBOM_BRANCH" FETCH_HEAD
             else
               echo "No $SBOM_BRANCH branch yet; creating it."
-              # A failed first push leaves the local branch behind; drop it
-              # so --orphan can recreate it on retry.
+              # A failed first push leaves the local branch behind, checked
+              # out; detach so it can be deleted and --orphan can recreate it.
+              git switch --detach 2>/dev/null || true
               git branch -D "$SBOM_BRANCH" 2>/dev/null || true
               git switch --orphan "$SBOM_BRANCH"
             fi
