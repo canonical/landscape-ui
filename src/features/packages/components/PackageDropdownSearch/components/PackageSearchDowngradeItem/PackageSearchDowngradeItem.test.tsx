@@ -138,6 +138,14 @@ describe("PackageSearchDowngradeItem", () => {
 
     renderWithProviders(<PackageSearchDowngradeItem {...props} />);
 
-    expect(screen.getByText("No versions were found")).toBeInTheDocument();
+    // should initially not show the error message during fetch
+    expect(
+      screen.queryByText("No versions were found"),
+    ).not.toBeInTheDocument();
+
+    // should appear after the search returns no packages
+    expect(
+      await screen.findByText("No versions were found"),
+    ).toBeInTheDocument();
   });
 });
