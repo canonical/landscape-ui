@@ -60,8 +60,13 @@ export default [
         }
       }
 
-      if (Number.isNaN(Number(params.computerId))) {
-        throw createEndpointStatusError();
+      const id = Number(params.computerId);
+      if (!Number.isFinite(id)) {
+        throw createEndpointStatusError({
+          status: 400,
+          error: "Bad Request",
+          message: "Computer id must be a valid number",
+        });
       }
 
       return HttpResponse.json(

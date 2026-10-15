@@ -30,7 +30,7 @@ const SwitchChannelButton: FC<SwitchChannelButtonProps> = ({
       instance_id: instanceId,
       name: snap.snap.name,
     },
-    { enabled: !Number.isNaN(instanceId) },
+    { enabled: Number.isFinite(instanceId) },
   );
 
   const hasNoAvailableChannels =
