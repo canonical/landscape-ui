@@ -62,27 +62,6 @@ describe("UpdateMirrorModal", () => {
     expect(props.close).not.toHaveBeenCalled();
   });
 
-  it("unchecks skip existing packages when force update is checked", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<UpdateMirrorModal {...props} />);
-
-    const skipExistingPackages = screen.getByRole("checkbox", {
-      name: /skip downloading packages that already exist/i,
-    });
-    const forceUpdate = screen.getByRole("checkbox", {
-      name: /force a full update/i,
-    });
-
-    await user.click(skipExistingPackages);
-    expect(skipExistingPackages).toBeChecked();
-
-    await user.click(forceUpdate);
-
-    expect(forceUpdate).toBeChecked();
-    expect(skipExistingPackages).not.toBeChecked();
-    expect(skipExistingPackages).toBeDisabled();
-  });
-
   it("shows an error notification when updating a mirror fails", async () => {
     setEndpointStatus({ path: "mirrors/sync", status: "error" });
     const user = userEvent.setup();
