@@ -276,6 +276,13 @@ jobs:
         with:
           ref: ${{ needs.meta.outputs.scan_sha }}
 
+      # Trivy honours a .trivyignore in the scanned tree by default, which
+      # would let the release branch decide what the SSDLC tracker gets to
+      # see. Point both scans at an empty ignore file outside the checkout
+      # instead. (The action insists the file exists, so /dev/null won't do.)
+      - name: Disable repository ignore files
+        run: ': > "$RUNNER_TEMP/empty.trivyignore"'
+
       # Full, unfiltered report for the SSDLC vulnerability tracker: every
       # severity, fixed or not. SEC0025 says do not delete any finding.
       - name: Scan lockfile (full report)
@@ -286,6 +293,7 @@ jobs:
           scanners: vuln
           format: json
           output: trivy-report-${{ needs.meta.outputs.version }}.json
+          trivyignores: ${{ runner.temp }}/empty.trivyignore
           github-pat: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload vulnerability report
@@ -308,6 +316,7 @@ jobs:
           ignore-unfixed: true
           exit-code: "1"
           skip-setup-trivy: true
+          trivyignores: ${{ runner.temp }}/empty.trivyignore
           github-pat: ${{ secrets.GITHUB_TOKEN }}
 
   build-deb:
