@@ -133,7 +133,7 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
         footerClassName={classes.footer}
         dropdownFooter={<LoadingState ref={loadingStateRef} />}
         variant="condensed"
-        placeholder="Version"
+        placeholder={isPendingPackages ? "Loading..." : "Version"}
         onItemsUpdate={onItemsUpdate}
         selectedItems={selectedPackage[1]
           .map((id) => items.find((item) => item.value === id))

@@ -10,6 +10,7 @@ import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import type { Package } from "@/features/packages";
 import type MultiSelectField from "@/components/form/MultiSelectField";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 
 const multiSelectFieldProps = vi.hoisted(() => vi.fn());
 
@@ -125,16 +126,7 @@ describe("PackageSearchDowngradeItem", () => {
   });
 
   it("shows an error when no versions are found", async () => {
-    server.use(
-      http.post(`${API_URL}packages\\:search`, () =>
-        HttpResponse.json({
-          packages: [],
-          count: 0,
-          prev: null,
-          next: null,
-        }),
-      ),
-    );
+    setEndpointStatus({ status: "empty", path: "packages:search" });
 
     renderWithProviders(<PackageSearchDowngradeItem {...props} />);
 
