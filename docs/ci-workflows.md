@@ -40,7 +40,7 @@ Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual
 
 SSDLC evidence for the shipped product (SEC0025 vulnerability scanning, SEC0027 SBOM). The product is the `landscape-dashboard` `.deb` (the package name from `debian/control`) of bundled static assets, which carries no package metadata of its own, so the SBOM and the vulnerability report come from `pnpm-lock.yaml` (production dependencies only) and the `.deb` is what goes to the central scanner.
 
-`security.yaml` only picks branches and fans out; `security-scan.yaml` is the reusable `workflow_call` that scans one branch (`ref` input).
+`security.yaml` only picks branches and fans out; `security-scan.yaml` is the reusable `workflow_call` that scans one branch (`ref` input). One scan per branch and trigger runs at a time: release-triggered scans queue behind each other so every published build gets its evidence run, while manual and scheduled scans cancel an older in-progress one.
 
 - **targets** — the branch list: the branch a release just published, the dispatch `ref`, or on the weekly schedule `main` plus every branch in the `SUPPORTED_RELEASE_BRANCHES` repo variable (fallback: the highest `release/YY.MM` on origin). Shipped releases are therefore rechecked for newly disclosed CVEs without anyone pushing to them. The scan hangs off the release workflow rather than the push that triggered it because on a push the build has not been published yet, so the scan would still describe the previous release.
 - **scan** — matrix over that list calling `security-scan.yaml` with `contents: write` as the cap; `fail-fast: false` so one red branch does not cancel the others.

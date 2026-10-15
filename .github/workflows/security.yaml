@@ -31,9 +31,13 @@ on:
 permissions:
   contents: read
 
+# One scan per branch at a time. Scans triggered by a release publish queue
+# rather than cancel: each published build is SSDLC evidence in its own
+# right, and the SBOM job already orders overlapping results. Manual and
+# scheduled scans are repeatable, so a newer one cancels an older one.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch || inputs.ref || github.ref_name }}-${{ github.event_name }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name != 'workflow_run' }}
 
 jobs:
   targets:
