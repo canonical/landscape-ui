@@ -284,6 +284,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
       <Input
         type="text"
         label="Name"
+        required
         caution={renderUserActivityLink(latestProfileActivityEvents.name)}
         error={getFormikError(formik, "name")}
         {...formik.getFieldProps("name")}

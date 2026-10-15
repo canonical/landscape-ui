@@ -5,11 +5,9 @@ import { BREAKPOINT_PX } from "@/constants";
 export const expectLoadingState = async (): Promise<void> => {
   const loadingSpinner = await screen.findByRole("status");
   expect(loadingSpinner).toHaveTextContent("Loading...");
-  // Checked against the document, not the spinner's ancestors: a render
-  // between the two steps can detach the spinner's whole subtree, which
-  // `waitForElementToBeRemoved` would then watch forever.
+  // Suspense can hide its fallback without removing it from the DOM.
   await waitFor(() => {
-    expect(loadingSpinner).not.toBeInTheDocument();
+    expect(loadingSpinner).not.toBeVisible();
   });
 };
 

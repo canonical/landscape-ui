@@ -544,7 +544,7 @@ describe("SnapsActionForm", () => {
     });
   });
 
-  it("sends classic: true for a snap left on its default channel", async () => {
+  it("sends classic: false for a snap left on its default channel when the classic checkbox is left unchecked", async () => {
     let requestBody: SnapActionParams | null = null;
     server.use(
       http.post(`${API_URL}snaps`, async ({ request }) => {
@@ -574,6 +574,58 @@ describe("SnapsActionForm", () => {
         }),
       ).toBeDisabled();
     });
+
+    await user.click(screen.getByRole("button", { name: "Change channel" }));
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Change channel" }),
+    );
+
+    expect(
+      await screen.findByText("Snaps successfully queued to change channel"),
+    ).toBeInTheDocument();
+    expect(requestBody).toMatchObject({
+      action: "refresh",
+      computer_ids: [instanceId],
+      snaps: [{ name: firstSnap.snap.name, args: { classic: false } }],
+    });
+  });
+
+  it("sends classic: true for a snap left on its default channel when the classic checkbox is checked", async () => {
+    let requestBody: SnapActionParams | null = null;
+    server.use(
+      http.post(`${API_URL}snaps`, async ({ request }) => {
+        requestBody = (await request.json()) as SnapActionParams;
+        return HttpResponse.json(successfulSnapInstallResponse);
+      }),
+    );
+
+    renderWithProviders(
+      <SnapsActionForm
+        selectedInstances={[instanceId]}
+        action="change channel"
+      />,
+    );
+
+    await user.click(await screen.findByRole("searchbox"));
+    await user.click(
+      await screen.findByRole("option", {
+        name: firstSnapOptionTitle,
+      }),
+    );
+
+    const classicCheckbox = await screen.findByLabelText(
+      /Use classic confinement/,
+    );
+    await waitFor(() => {
+      expect(
+        screen.getByRole("combobox", {
+          name: `Channel for ${firstSnap.snap.name}`,
+        }),
+      ).toBeDisabled();
+    });
+    await user.click(classicCheckbox);
+    expect(classicCheckbox).toBeChecked();
 
     await user.click(screen.getByRole("button", { name: "Change channel" }));
     const modal = await screen.findByRole("dialog");
@@ -630,7 +682,7 @@ describe("SnapsActionForm", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows a caution notification when a snap uses default channel and classic confinement cannot be confirmed", async () => {
+  it("shows an unchecked 'Use classic confinement' checkbox when a snap uses default channel and classic confinement cannot be confirmed", async () => {
     renderWithProviders(
       <SnapsActionForm
         selectedInstances={[instanceId]}
@@ -652,11 +704,10 @@ describe("SnapsActionForm", () => {
       expect(channelSelect).toBeDisabled();
     });
 
-    expect(
-      await screen.findByText(
-        "We couldn't confirm if this snap requires classic confinement. Check the default channel on the snap store to make sure.",
-      ),
-    ).toBeInTheDocument();
+    const classicCheckbox = await screen.findByLabelText(
+      /Use classic confinement/,
+    );
+    expect(classicCheckbox).not.toBeChecked();
 
     const modeSelect = screen.getByLabelText(
       `Snap channel or revision for ${firstSnap.snap.name}`,
@@ -664,10 +715,11 @@ describe("SnapsActionForm", () => {
     await user.selectOptions(modeSelect, "revision");
 
     expect(
-      screen.queryByText(
-        "We couldn't confirm if this snap requires classic confinement. Check the default channel on the snap store to make sure.",
-      ),
+      screen.queryByRole("combobox", {
+        name: `Channel for ${firstSnap.snap.name}`,
+      }),
     ).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/Use classic confinement/)).not.toBeChecked();
   });
 
   it("blocks submit and shows an error when the revision is not a positive integer", async () => {
@@ -888,9 +940,7 @@ describe("SnapsActionForm", () => {
       "123",
     );
 
-    await user.click(
-      screen.getByRole("checkbox", { name: "Use classic confinement" }),
-    );
+    await user.click(screen.getByLabelText(/Use classic confinement/));
 
     await user.click(screen.getByRole("button", { name: "Change channel" }));
     const modal = await screen.findByRole("dialog");
@@ -1092,7 +1142,7 @@ describe("SnapsActionForm", () => {
     expect(screen.queryByText(/classic confinement/i)).not.toBeInTheDocument();
   });
 
-  it("renders a preemptive notification when installing snaps with no channels", async () => {
+  it("shows a 'Use classic confinement' checkbox when installing a snap with no channels", async () => {
     renderWithProviders(
       <SnapsActionForm selectedInstances={[instanceId]} action="install" />,
     );
@@ -1103,10 +1153,8 @@ describe("SnapsActionForm", () => {
     );
 
     expect(
-      screen.queryByText(
-        /couldn't confirm if this snap requires classic confinement/i,
-      ),
-    ).toBeInTheDocument();
+      await screen.findByLabelText(/Use classic confinement/),
+    ).not.toBeChecked();
   });
 
   it("renders the snap name, current channel, delete button, and Change to label", async () => {

@@ -650,7 +650,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
   return (
     <>
       <ResponsiveButtons
-        collapseFrom="sm"
+        collapseFrom="xl"
         className={classes.buttons}
         buttons={[
           <ContextualMenu

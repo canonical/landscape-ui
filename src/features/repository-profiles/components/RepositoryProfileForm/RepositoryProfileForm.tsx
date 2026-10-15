@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Button, Form, Icon } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import AssociationBlock from "@/components/form/AssociationBlock";
@@ -138,13 +138,19 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.aptSources]);
 
-  const handleRemoveSource = (source: APTSource) => {
-    props.onAptSourcesChange(
-      props.aptSources.filter((s) =>
-        s.id !== 0 ? s.id !== source.id : s.name !== source.name,
-      ),
-    );
-  };
+  const { aptSources, onAptSourcesChange } = props;
+
+  // Keep table cell components mounted across Formik rerenders.
+  const handleRemoveSource = useCallback(
+    (source: APTSource) => {
+      onAptSourcesChange(
+        aptSources.filter((s) =>
+          s.id !== 0 ? s.id !== source.id : s.name !== source.name,
+        ),
+      );
+    },
+    [aptSources, onAptSourcesChange],
+  );
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>

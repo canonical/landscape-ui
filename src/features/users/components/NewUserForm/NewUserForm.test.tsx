@@ -76,4 +76,83 @@ describe("NewUserForm", () => {
     });
     expect(requestedComputerId).toBe(2);
   });
+
+  describe("optional fields", () => {
+    const submitForm = async (
+      optionalFields: Partial<
+        Record<"Location" | "Home phone" | "Work phone", string>
+      > = {},
+    ) => {
+      let requestBody: Record<string, unknown> | undefined;
+      server.use(
+        http.get(`${API_URL}computers/:computerId/groups`, () =>
+          HttpResponse.json({ groups: userGroups }),
+        ),
+        http.post(`${API_URL}users`, async ({ request }) => {
+          requestBody = (await request.json()) as Record<string, unknown>;
+          return HttpResponse.json(activities[0]);
+        }),
+      );
+      renderWithProviders(
+        <NewUserForm />,
+        undefined,
+        ROUTES.instances.details.single(1),
+        `/${PATHS.instances.root}/${PATHS.instances.single}`,
+      );
+      const user = userEvent.setup();
+      await screen.findByRole("option", { name: "daemon" });
+      await user.type(screen.getByLabelText("Username"), "a");
+      await user.type(screen.getByLabelText("Name"), "A");
+      await user.type(screen.getByLabelText("Password"), "x");
+      await user.type(screen.getByLabelText("Confirm password"), "x");
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: "Primary Group" }),
+        "daemon",
+      );
+      for (const [label, value] of Object.entries(optionalFields)) {
+        await user.type(screen.getByLabelText(label), value);
+      }
+      await user.click(screen.getByRole("button", { name: "Add user" }));
+
+      await waitFor(() => {
+        expect(requestBody).toBeDefined();
+      });
+      return requestBody;
+    };
+
+    it("omits blank location and phone numbers from the request", async () => {
+      const requestBody = await submitForm();
+
+      expect(requestBody).toEqual({
+        computer_ids: [1],
+        name: "A",
+        username: "a",
+        password: "x",
+        require_password_reset: false,
+        primary_groupname: "daemon",
+      });
+    });
+
+    it("sends location and phone numbers when filled", async () => {
+      const requestBody = await submitForm({
+        Location: "Office",
+        "Home phone": "111",
+        "Work phone": "222",
+      });
+
+      expect(requestBody).toMatchObject({
+        location: "Office",
+        home_phone: "111",
+        work_phone: "222",
+      });
+    });
+
+    it("sends only the filled optional fields", async () => {
+      const requestBody = await submitForm({ Location: "Office" });
+
+      expect(requestBody).toMatchObject({ location: "Office" });
+      expect(requestBody).not.toHaveProperty("home_phone");
+      expect(requestBody).not.toHaveProperty("work_phone");
+    });
+  });
 });

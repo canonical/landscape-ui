@@ -77,7 +77,6 @@ describe("PackageProfilesPage", () => {
       `/?sidePath=edit-constraints&name=${packageProfiles[0].name}`,
     );
 
-    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Change "${packageProfiles[0].title}" profile's constraints`,

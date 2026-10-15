@@ -17,3 +17,5 @@ docker-compose.yml
 # IDE and environment files
 .vscode
 .env
+.env.local
+.env.*.local

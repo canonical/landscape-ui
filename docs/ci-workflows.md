@@ -34,15 +34,29 @@ Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual
 
 **Rule:** do not change branch selection, the `should_build` tag guard, or the tag-after-deploy ordering.
 
-## Vulnerability Scan (`security.yaml`)
+## Security Scan (`security.yaml` + `security-scan.yaml`)
 
-**Trigger:** `workflow_dispatch`; push → `release/**` (ignoring `security/sbom/**`, to avoid a commit loop).
+**Trigger (`security.yaml`):** completion of a **Release and PPA Build** run, whatever its conclusion, → the branch it published (the record is force-pushed before the tag and deb steps, so a run that failed afterwards still shipped a build; `meta` fails when nothing was published); `workflow_dispatch` (optional `ref` input, defaults to the dispatching branch); weekly cron (`0 3 * * 1`).
 
-- **build-image** — builds the OCI image, uploads it as the `image-tar` artifact.
-- **scan-and-report** (self-hosted) — runs `canonical-secscan-client` against `image.tar`; the scanner's exit code becomes the job's exit code.
-- **generate-and-commit-sbom** — Trivy SBOM (`spdx-json`) → artifact, and on a `release/**` push commits it to `security/sbom/release.spdx.json`, with a rebase-and-retry loop (3 attempts) in case another commit lands first.
+SSDLC evidence for the shipped product (SEC0025 vulnerability scanning, SEC0027 SBOM). The product is the `landscape-dashboard` `.deb` (the package name from `debian/control`) of bundled static assets, which carries no package metadata of its own, so the SBOM and the vulnerability report come from `pnpm-lock.yaml` (production dependencies only) and the `.deb` is what goes to the central scanner.
 
-**Rule:** preserve exit-code propagation and the SBOM commit race protection.
+`security.yaml` only picks branches and fans out; `security-scan.yaml` is the reusable `workflow_call` that scans one branch (`ref` input). One scan per branch and trigger runs at a time: release-triggered scans queue rather than cancel, so a scan already in progress finishes its evidence run, while manual and scheduled scans cancel an older in-progress one. Builds published faster than they can be scanned are not each scanned individually: GitHub keeps one pending run per group and `meta` reads the `ppa-build-*` tip, so the next scan describes the latest build, which is also the only one the PPA ships.
+
+- **targets** — the branch list: the branch a release just published, the dispatch `ref`, or on the weekly schedule `main` plus every branch in the `SUPPORTED_RELEASE_BRANCHES` repo variable (fallback: the highest `release/YY.MM` on origin). Shipped releases are therefore rechecked for newly disclosed CVEs without anyone pushing to them. The scan hangs off the release workflow rather than the push that triggered it because on a push the build has not been published yet, so the scan would still describe the previous release.
+- **scan** — matrix over that list calling `security-scan.yaml` with `contents: write` as the cap; `fail-fast: false` so one red branch does not cancel the others.
+
+Inside `security-scan.yaml`:
+
+- **meta** — the published version and the commit it was built from, read out of the branch's `ppa-build-*` tip, whose subject `release-and-build.yml` writes as `Build v<version> from <branch> [<sha>]`; plus the SSDLC cycle (from the `release/YY.MM` or `point/YY.MM.N` name, calendar fallback elsewhere) and the secscan channel (`candidate` while the published version is `-rc`, `stable` after, `edge` off release refs). The publish record is the authority here rather than `scripts/calculate-version.cjs`: the script is resolved from the scanned branch, and the oldest release branches do not carry it while older ones derive the build number from `GITHUB_RUN_NUMBER`, which in this workflow is this run's number rather than the release build's. A branch with no `ppa-build-*` record has shipped nothing and fails the scan with that message. Off release refs (`main`) nothing is published, so the tip is scanned and labelled `<branch>-<short sha>`.
+- **sbom** — Trivy `fs` scan of the lockfile → SPDX JSON artifact (90 days). Read-only.
+- **persist-sbom** (release/point refs only) — downloads that artifact and commits it to the unprotected `sbom` branch as `<release branch>/landscape-ui.spdx.json` (e.g. `release/26.10/landscape-ui.spdx.json`), next to a `commit` file holding the scanned SHA, with a fetch-reapply-retry loop (3 attempts) so concurrent pushes from different release branches never need a rebase. Overlapping scans of the same ref (a weekly run and a release publish) are safe too: a run only writes when its commit is newer than the one in the `commit` file, so the newest scan wins whichever finishes last and reruns of an unchanged release add no commits. The recorded commit is fetched before that comparison, since it can come from a run that started after this one checked out, and the overwrite happens only when the recorded commit is an ancestor of the scanned one; if the two cannot be ordered (diverged history, or git cannot compare them) the job fails rather than defaulting to an overwrite. Release and point branches are ruleset-protected and refuse direct pushes, so the SBOM cannot live next to the code. One file per branch keeps the history diffable between versions; GitHub artifact retention alone is not enough for the SSDLC review. The only job with `contents: write`, kept apart from the Trivy step so the third-party action never runs with a token that can push.
+- **vulnerability-report** — Trivy `fs` scan → full unfiltered JSON report artifact (every severity, fixed or not, for the SSDLC vulnerability tracker), then a gating pass that fails on fixable HIGH/CRITICAL findings. Both scans are pointed at an empty ignore file outside the checkout, so a `.trivyignore` on the scanned branch cannot hide findings from either.
+- **build-deb** (release/point refs only) — same production build inputs and `dpkg-buildpackage` steps as `release-and-build.yml`, at the anchored commit, so the scanned `.deb` matches what that workflow published.
+- **secscan** (self-hosted, release/point refs only, 30-minute timeout) — submits the `.deb` to `canonical-secscan-client` (`--format deb --type package --base jammy`) with the SSDLC metadata; the scanner's exit code becomes the job's exit code.
+
+**Rule:** preserve the publish-record anchor in `meta`, exit-code propagation in `secscan` and `vulnerability-report`, the unfiltered report (SEC0025 says do not delete findings), the SBOM commit race protection, and the read-only default token. Keep the deb build steps in sync with `release-and-build.yml`.
+
+**Per cycle, by hand:** download the SBOM, the Trivy report and the secscan results from the release-branch run and file them in the SSDLC Artifacts folder for the cycle; copy findings into the vulnerability tracker with the team's assessment. Keep `SUPPORTED_RELEASE_BRANCHES` current when a release goes out of support.
 
 ## Full TICS report (`tics-full.yml`)
 
@@ -70,5 +84,5 @@ Runs `pnpm coverage:full` to produce the MSW contract-coverage report, determini
 - Suggest `npm`/`yarn` commands or change Node/pnpm versions.
 - Add a build or publish step to `changeset-version.yml` — `main` does not ship.
 - Change branch selection or the `should_build` tag guard in `release-and-build.yml`.
-- Alter exit-code propagation in `security.yaml`'s `scan-and-report` job.
+- Alter the publish-record anchor or exit-code propagation in `security-scan.yaml`'s `meta`, `secscan` or `vulnerability-report` jobs, or widen its default token beyond `contents: read`.
 - Treat `api-contract-eval.yml` as a required merge check — it isn't one.
