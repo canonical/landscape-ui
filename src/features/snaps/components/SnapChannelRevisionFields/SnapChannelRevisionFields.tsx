@@ -197,7 +197,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
       {mode === "revision" ? (
         <CheckboxInputWithHelp
           label="Use classic confinement"
-          className={classes.classicConfinementCheckbox}
+          wrapperClassName={classes.classicConfinementCheckbox}
           tooltipMessage={CLASSIC_CONFINEMENT_TOOLTIP_MESSAGE}
           checked={isClassicConfinement}
           onChange={(event) => {
@@ -224,7 +224,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
       !channel ? (
         <CheckboxInputWithHelp
           label="Use classic confinement"
-          className={classes.classicConfinementCheckbox}
+          wrapperClassName={classes.classicConfinementCheckbox}
           tooltipMessage={CLASSIC_CONFINEMENT_TOOLTIP_MESSAGE}
           checked={confinement === "classic"}
           onChange={(event) => {

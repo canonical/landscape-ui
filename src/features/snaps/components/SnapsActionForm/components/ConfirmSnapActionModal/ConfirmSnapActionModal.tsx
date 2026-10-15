@@ -66,12 +66,15 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     if (config?.mode === "revision" && config.value) {
       return `revision ${config.value}`;
     }
-    if (
-      config?.mode === "channel" &&
-      config.channel &&
-      config.channel !== "latest/stable"
-    ) {
-      return config.channel;
+    if (config?.mode === "channel") {
+      // an empty channel means no channels were found, so the snap
+      // installs from its default channel
+      if (!config.channel) {
+        return "default";
+      }
+      if (config.channel !== "latest/stable") {
+        return config.channel;
+      }
     }
     return undefined;
   };

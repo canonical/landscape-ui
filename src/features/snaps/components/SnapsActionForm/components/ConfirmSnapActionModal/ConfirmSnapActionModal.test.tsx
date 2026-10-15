@@ -500,7 +500,7 @@ describe("ConfirmSnapActionModal", () => {
     expect(screen.getByText("(revision 456)")).toBeInTheDocument();
   });
 
-  it("shows the chosen revision or channel per snap in mixed mode and nothing for the default channel", () => {
+  it("shows the chosen revision or channel per snap in mixed mode and a default label when no channel was found", () => {
     renderWithProviders(
       <ConfirmSnapActionModal
         {...props}
@@ -525,7 +525,36 @@ describe("ConfirmSnapActionModal", () => {
     const classicSnapItem = screen
       .getByText(classicSnap.snap.name)
       .closest("li");
-    expect(classicSnapItem?.textContent).toBe(classicSnap.snap.name);
+    expect(classicSnapItem?.textContent).toBe(
+      `${classicSnap.snap.name} (default)`,
+    );
+  });
+
+  it("shows a default label only for a snap with no channels found, not for latest/stable", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal
+        {...props}
+        actionVerb="install"
+        snapModes={["channel"]}
+        snapModeConfigs={{
+          [firstSnap.snap.id]: { mode: "channel", value: "", channel: "" },
+          [secondSnap.snap.id]: {
+            mode: "channel",
+            value: "latest/stable",
+            channel: "latest/stable",
+          },
+        }}
+      />,
+    );
+
+    const firstSnapItem = screen.getByText(firstSnap.snap.name).closest("li");
+    const secondSnapItem = screen
+      .getByText(secondSnap.snap.name)
+      .closest("li");
+
+    expect(firstSnapItem?.textContent).toBe(`${firstSnap.snap.name} (default)`);
+    expect(secondSnapItem?.textContent).toBe(secondSnap.snap.name);
+    expect(screen.getAllByText("(default)")).toHaveLength(1);
   });
 
   it("shows the chosen revision next to snaps that require classic confinement", () => {
