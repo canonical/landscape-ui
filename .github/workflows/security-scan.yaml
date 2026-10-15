@@ -61,12 +61,12 @@ jobs:
         id: meta
         env:
           BRANCH: ${{ inputs.ref }}
-          # calculate-version.cjs reads the branch name from GITHUB_REF_NAME,
-          # which in a called workflow would be the caller's ref.
-          GITHUB_REF_NAME: ${{ inputs.ref }}
           RELEASED_BRANCHES: ${{ vars.RELEASED_BRANCHES }}
         run: |
-          VERSION=$(node scripts/calculate-version.cjs)
+          # calculate-version.cjs reads the branch from GITHUB_REF_NAME, which
+          # in a called workflow is the caller's ref. The runner ignores
+          # GITHUB_* in an env block, so override it on the process instead.
+          VERSION=$(GITHUB_REF_NAME="$BRANCH" node scripts/calculate-version.cjs)
 
           # release/YY.MM and point/YY.MM.N pin the cycle by name; anything
           # else (main) uses the calendar rule from calculate-version.cjs.
