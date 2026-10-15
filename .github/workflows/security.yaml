@@ -3,7 +3,9 @@ name: Security Scan
 # Decides which branches get the SSDLC scan and hands each one to
 # security-scan.yaml (the reusable workflow that does the work).
 #
-#   push to release/** or point/**  -> that branch
+#   release publish finishes        -> the branch it published, once
+#                                      release-and-build.yml has recorded the
+#                                      version and commit the scan reads
 #   workflow_dispatch               -> the `ref` input, or the branch it was
 #                                      dispatched from
 #   weekly schedule                 -> main plus every supported release
@@ -17,8 +19,12 @@ on:
         description: Branch to scan (defaults to the branch this is dispatched from)
         required: false
         type: string
-  push:
-    branches: ["release/**", "point/**"]
+  # Not `push`: the scan describes the published build, and on a push the
+  # release workflow has not published it yet, so the scan would still be
+  # looking at the previous one.
+  workflow_run:
+    workflows: ["Release and PPA Build"]
+    types: [completed]
   schedule:
     - cron: "0 3 * * 1"
 
@@ -26,12 +32,16 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch || inputs.ref || github.ref_name }}-${{ github.event_name }}
   cancel-in-progress: true
 
 jobs:
   targets:
     name: Pick branches to scan
+    # A release that failed or was cancelled published nothing to scan.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     outputs:
       refs: ${{ steps.pick.outputs.refs }}
@@ -44,6 +54,7 @@ jobs:
         env:
           EVENT: ${{ github.event_name }}
           DISPATCH_REF: ${{ inputs.ref }}
+          PUBLISHED_REF: ${{ github.event.workflow_run.head_branch }}
           # Comma/space-separated release/point branches still under
           # support, e.g. "release/26.10,release/26.04,point/26.04.2".
           # Unset: only the highest release/YY.MM on origin is scanned.
@@ -64,6 +75,9 @@ jobs:
               ;;
             workflow_dispatch)
               REFS="${DISPATCH_REF:-$GITHUB_REF_NAME}"
+              ;;
+            workflow_run)
+              REFS="$PUBLISHED_REF"
               ;;
             *)
               REFS="$GITHUB_REF_NAME"

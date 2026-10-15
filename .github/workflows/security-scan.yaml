@@ -9,11 +9,12 @@ name: Security Scan (reusable)
 # the vulnerability report come from the lockfile (production dependencies
 # only), and the deb is what gets submitted to the central secscan service.
 #
-# Everything is anchored to what shipped: `meta` computes the version at the
-# branch tip and, when the `v<version>` tag already exists, every other job
-# checks out that tag instead of the tip. A chore(deps) push does not bump
-# the version and the release workflow skips publishing for it, so without
-# the anchor the scan would describe dependencies that never shipped.
+# Everything is anchored to what shipped: `meta` reads the version and the
+# commit out of the branch's ppa-build-* publish record, which
+# release-and-build.yml writes when it publishes, and every other job checks
+# out that commit. A chore(deps) push does not bump the version and the
+# release workflow skips publishing for it, so without the anchor the scan
+# would describe dependencies that never shipped.
 #
 # Outputs per run:
 #   - sbom artifact, and on release/point refs a commit of the SBOM to the
@@ -52,50 +53,88 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.ref }}
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v4
-        with: { node-version: 24 }
+          fetch-depth: 1
 
       - name: Determine version, cycle, channel and the commit to scan
         id: meta
         env:
           BRANCH: ${{ inputs.ref }}
-          RELEASED_BRANCHES: ${{ vars.RELEASED_BRANCHES }}
         run: |
-          # calculate-version.cjs reads the branch from GITHUB_REF_NAME, which
-          # in a called workflow is the caller's ref. The runner ignores
-          # GITHUB_* in an env block, so override it on the process instead.
-          VERSION=$(GITHUB_REF_NAME="$BRANCH" node scripts/calculate-version.cjs)
+          set -euo pipefail
 
           # release/YY.MM and point/YY.MM.N pin the cycle by name; anything
-          # else (main) uses the calendar rule from calculate-version.cjs.
+          # else (main) falls back to the calendar rule.
           IS_RELEASE_REF=false
           if [[ "$BRANCH" =~ ^(release|point)/([0-9]{2}\.(04|10))(\.[0-9]+)?$ ]]; then
             CYCLE="${BASH_REMATCH[2]}"
             IS_RELEASE_REF=true
           else
-            CYCLE=$(node -e "const m=new Date().getMonth()+1,y=new Date().getFullYear();console.log(m<=4?String(y).slice(-2)+'.04':m<=10?String(y).slice(-2)+'.10':String(y+1).slice(-2)+'.04')")
+            read -r YY MM <<<"$(date -u +'%y %m')"
+            MM=$((10#$MM))
+            if (( MM <= 4 )); then
+              CYCLE="${YY}.04"
+            elif (( MM <= 10 )); then
+              CYCLE="${YY}.10"
+            else
+              CYCLE="$(printf '%02d' $((10#$YY + 1))).04"
+            fi
           fi
 
-          # secscan channel is the risk level only: candidate until the branch
-          # is listed in RELEASED_BRANCHES, stable after; main is edge.
           if [[ "$IS_RELEASE_REF" != "true" ]]; then
-            CHANNEL=edge
-          elif [[ "$VERSION" == *-rc ]]; then
-            CHANNEL=candidate
-          else
-            CHANNEL=stable
-          fi
-
-          # Scan the tagged commit when this version already shipped; the
-          # branch tip otherwise (a fresh push that the release workflow is
-          # about to tag at this same commit).
-          if git rev-parse -q --verify "refs/tags/v${VERSION}^{commit}" >/dev/null; then
-            SCAN_SHA=$(git rev-parse "refs/tags/v${VERSION}^{commit}")
-            echo "v${VERSION} is tagged; scanning ${SCAN_SHA} instead of the branch tip."
-          else
+            # main never ships, so there is no published version to describe:
+            # scan the tip and label the artifacts with the commit.
             SCAN_SHA=$(git rev-parse HEAD)
+            VERSION="${BRANCH//\//-}-${SCAN_SHA:0:7}"
+            CHANNEL=edge
+          else
+            # What actually shipped from this branch. release-and-build.yml
+            # publishes every build to its own ppa-build-* branch with
+            #   Build v<version> from <branch> [<sha>]
+            # as the commit subject, so that tip is the authoritative
+            # version <-> commit record, written at publish time by the run
+            # that did the publishing.
+            #
+            # Recomputing it with scripts/calculate-version.cjs would instead
+            # read whichever copy of the script lives on the scanned branch:
+            # the oldest release branches do not carry it at all, and older
+            # ones derive the build number from GITHUB_RUN_NUMBER, which here
+            # is this workflow's run number rather than the release build's —
+            # a version that was never published.
+            case "$BRANCH" in
+              release/*) DEST="ppa-build-${BRANCH#release/}" ;;
+              point/*) DEST="ppa-build-${BRANCH#point/}" ;;
+            esac
+
+            if ! git fetch --depth=1 --no-tags origin \
+                "+refs/heads/${DEST}:refs/remotes/origin/${DEST}"; then
+              echo "::error::No publish record for ${BRANCH}: origin/${DEST} does not exist. Nothing has been released from this branch, so there is nothing to scan."
+              exit 1
+            fi
+
+            SUBJECT=$(git log -1 --format=%s "refs/remotes/origin/${DEST}")
+            if [[ ! "$SUBJECT" =~ ^Build\ v(.+)\ from\ (.+)\ \[([0-9a-f]{40})\]$ ]]; then
+              echo "::error::Could not read a version and commit from the ${DEST} tip: '${SUBJECT}'. Expected 'Build v<version> from <branch> [<sha>]'."
+              exit 1
+            fi
+            VERSION="${BASH_REMATCH[1]}"
+            FROM_BRANCH="${BASH_REMATCH[2]}"
+            SCAN_SHA="${BASH_REMATCH[3]}"
+
+            if [[ "$FROM_BRANCH" != "$BRANCH" ]]; then
+              echo "::error::${DEST} was last published from ${FROM_BRANCH}, not ${BRANCH}; refusing to describe one branch's release as another's."
+              exit 1
+            fi
+
+            # secscan channel is the risk level only. The release workflow
+            # already suffixes -rc until the branch is promoted in
+            # RELEASED_BRANCHES, so the published version carries the answer.
+            if [[ "$VERSION" == *-rc ]]; then
+              CHANNEL=candidate
+            else
+              CHANNEL=stable
+            fi
+
+            echo "${DEST} last published v${VERSION} from ${SCAN_SHA}."
           fi
 
           {
@@ -187,9 +226,29 @@ jobs:
                 echo "SBOM for ${SCAN_SHA} is already on ${SBOM_BRANCH}; nothing to commit."
                 exit 0
               fi
-              if git merge-base --is-ancestor "$SCAN_SHA" "$EXISTING" 2>/dev/null; then
+              # The recorded commit may come from a scan that started after
+              # this one checked out, so it is not necessarily here yet;
+              # without the object the comparison below cannot run at all.
+              if ! git cat-file -e "${EXISTING}^{commit}" 2>/dev/null; then
+                echo "Recorded commit ${EXISTING} is not present locally; fetching it."
+                git fetch --no-tags origin "$EXISTING" \
+                  || git fetch --no-tags origin "$BRANCH" \
+                  || true
+              fi
+
+              # 0 = ours is an ancestor of the recorded commit (theirs is
+              # newer), 1 = it is not, anything else = git could not compare.
+              # An error must not read as "ours is newer": that is exactly how
+              # an older scan would overwrite a newer SBOM.
+              ANCESTOR_RC=0
+              git merge-base --is-ancestor "$SCAN_SHA" "$EXISTING" || ANCESTOR_RC=$?
+              if [[ "$ANCESTOR_RC" -eq 0 ]]; then
                 echo "SBOM on ${SBOM_BRANCH} is from ${EXISTING}, newer than ${SCAN_SHA}; not overwriting."
                 exit 0
+              fi
+              if [[ "$ANCESTOR_RC" -ne 1 ]]; then
+                echo "::error::Cannot tell whether ${EXISTING} on ${SBOM_BRANCH} is newer than ${SCAN_SHA} (git merge-base exit ${ANCESTOR_RC}); refusing to overwrite it."
+                exit 1
               fi
             fi
 
