@@ -8,6 +8,11 @@ describe("isValidDebLine", () => {
     "deb [arch=amd64 signed-by=/k.gpg] https://example.com/ubuntu focal main",
     "deb http://example.com/repo ./",
     "deb http://example.com/ubuntu focal main # comment",
+    "deb [ arch=amd64,arm64 signed-by=/k.gpg ] https://example.com/ubuntu focal main",
+    "deb s3://bucket/ubuntu focal main",
+    "deb mirror+http://example.com/mirrors.txt focal main",
+    "deb file:/srv/repo focal main",
+    "deb file:///srv/repo focal main",
   ])("accepts %s", (line) => {
     expect(isValidDebLine(line)).toBe(true);
   });
@@ -17,6 +22,11 @@ describe("isValidDebLine", () => {
     "deb garbage",
     "deb http://example.com/ubuntu",
     "deb [arch=amd64] http://example.com/ubuntu",
+    "deb [arch=amd64 http://example.com/ubuntu focal main",
+    "deb focal main",
+    "deb example.com/ubuntu focal main",
+    "deb http: focal main",
+    "# deb http://example.com/ubuntu focal main",
     "rpm http://example.com/ubuntu focal main",
     "debhttp://example.com/ubuntu focal main",
   ])("rejects %s", (line) => {

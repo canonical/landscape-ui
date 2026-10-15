@@ -1,12 +1,29 @@
 import * as Yup from "yup";
 
-// Mirrors the server's python-apt check: type, optional [options], URI, suite.
-export const isValidDebLine = (line: string): boolean => {
-  const [withoutComment = ""] = line.split("#");
-  const withoutOptions = withoutComment.replace(/^(\s*\S+)\s+\[[^\]]*\]/, "$1");
-  const [type, ...rest] = withoutOptions.trim().split(/\s+/);
+// Stricter than the server, which does not check that the URI has a scheme.
+const URI_PATTERN = /^[a-z][a-z0-9+.-]*:\S+$/i;
 
-  return (type === "deb" || type === "deb-src") && rest.length >= 2;
+export const isValidDebLine = (line: string): boolean => {
+  const [content = ""] = line.split("#");
+  const [type, ...tokens] = content.trim().split(/\s+/);
+
+  if (type !== "deb" && type !== "deb-src") {
+    return false;
+  }
+
+  if (tokens[0]?.startsWith("[")) {
+    const end = tokens.findIndex((token) => token.includes("]"));
+
+    if (end === -1) {
+      return false;
+    }
+
+    tokens.splice(0, end + 1);
+  }
+
+  const [uri, suite] = tokens;
+
+  return !!uri && URI_PATTERN.test(uri) && !!suite;
 };
 
 export const getValidationSchema = () =>
@@ -21,7 +38,7 @@ export const getValidationSchema = () =>
       .required("This field is required.")
       .test(
         "valid-deb-line",
-        'Must be a valid APT line: "deb" or "deb-src", a URL, and a suite (e.g. deb http://example.com/ubuntu focal main).',
+        'Must be a valid APT line: "deb" or "deb-src", a repository URI with a scheme (e.g. https://, s3://), and a suite.',
         (value) => !value || isValidDebLine(value),
       ),
     gpg_key_name: Yup.string(),
