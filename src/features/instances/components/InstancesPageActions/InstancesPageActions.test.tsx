@@ -86,6 +86,37 @@ describe("InstancesPageActions", () => {
     vi.restoreAllMocks();
   });
 
+  it.each(MENU_LABELS.filter((label) => label !== "Snap management"))(
+    "opens %s rightward on large screens",
+    async (label) => {
+      renderPageActions();
+
+      const toggle = await screen.findByRole("button", { name: label });
+      expect(toggle.closest(".p-contextual-menu")).toHaveClass(
+        "p-contextual-menu--left",
+      );
+      await userEvent.click(toggle);
+
+      expect(
+        screen.getByRole("menu").closest(".p-contextual-menu"),
+      ).toHaveClass("p-contextual-menu--left");
+    },
+  );
+
+  it("opens the collapsed Actions submenus leftward", async () => {
+    setScreenSize("sm");
+    renderPageActions();
+
+    await userEvent.click(screen.getByRole("button", { name: "Actions" }));
+    await screen.findByRole("button", { name: "Deb management" });
+
+    for (const label of MENU_LABELS) {
+      expect(screen.getByRole("button", { name: label })).toHaveIcon(
+        "chevron-left",
+      );
+    }
+  });
+
   it.each([
     "Upgrade",
     "Install",
