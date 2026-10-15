@@ -115,6 +115,7 @@ describe("SwitchChannelButton", () => {
       />,
       undefined,
       `/${PATHS.instances.root}/NaN?tab=snaps`,
+      `/${PATHS.instances.root}/${PATHS.instances.single}`,
     );
 
     await waitFor(() => {
