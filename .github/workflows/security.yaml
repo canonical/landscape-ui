@@ -38,10 +38,13 @@ concurrency:
 jobs:
   targets:
     name: Pick branches to scan
-    # A release that failed or was cancelled published nothing to scan.
-    if: >-
-      github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
+    # No gate on the release run's conclusion: release-and-build.yml
+    # force-pushes the ppa-build-* record before it tags the commit and
+    # before its deb job runs, so a run that failed or was cancelled after
+    # that point still shipped a build Launchpad will pick up. The scan
+    # anchors to the publish record and `meta` fails when there is none, so
+    # a run that published nothing costs one redundant rescan of the
+    # previous release, and one that published is never left unscanned.
     runs-on: ubuntu-latest
     outputs:
       refs: ${{ steps.pick.outputs.refs }}

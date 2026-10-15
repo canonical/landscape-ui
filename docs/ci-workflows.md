@@ -36,7 +36,7 @@ Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual
 
 ## Security Scan (`security.yaml` + `security-scan.yaml`)
 
-**Trigger (`security.yaml`):** completion of a successful **Release and PPA Build** run → the branch it published; `workflow_dispatch` (optional `ref` input, defaults to the dispatching branch); weekly cron (`0 3 * * 1`).
+**Trigger (`security.yaml`):** completion of a **Release and PPA Build** run, whatever its conclusion, → the branch it published (the record is force-pushed before the tag and deb steps, so a run that failed afterwards still shipped a build; `meta` fails when nothing was published); `workflow_dispatch` (optional `ref` input, defaults to the dispatching branch); weekly cron (`0 3 * * 1`).
 
 SSDLC evidence for the shipped product (SEC0025 vulnerability scanning, SEC0027 SBOM). The product is the `landscape-dashboard` `.deb` (the package name from `debian/control`) of bundled static assets, which carries no package metadata of its own, so the SBOM and the vulnerability report come from `pnpm-lock.yaml` (production dependencies only) and the `.deb` is what goes to the central scanner.
 
