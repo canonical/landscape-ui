@@ -31,8 +31,12 @@ describe("SnapNotification", () => {
       />,
     );
 
-    expect(screen.getByText(/doesn.t change the default tracking/i)).toBeInTheDocument();
-    expect(screen.getByText("Snap documentation: Revisions")).toBeInTheDocument();
+    expect(
+      screen.getByText(/doesn.t change the default tracking/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Snap documentation: Revisions"),
+    ).toBeInTheDocument();
   });
 
   it("renders the revision notification when a snap is in revision mode", () => {
@@ -46,7 +50,9 @@ describe("SnapNotification", () => {
     );
 
     expect(screen.getByText(changeChannelRevisionMessage)).toBeInTheDocument();
-    expect(screen.getByText("Snap documentation: Revisions")).toBeInTheDocument();
+    expect(
+      screen.getByText("Snap documentation: Revisions"),
+    ).toBeInTheDocument();
   });
 
   it("does not render the revision notification when no snap is in revision mode", () => {
