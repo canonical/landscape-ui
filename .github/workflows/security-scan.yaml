@@ -34,8 +34,9 @@ on:
         required: true
         type: string
 
-# Read-only by default; only the SBOM job needs to push, and it gets write
-# access on its own.
+# Read-only by default. Only the job that commits the SBOM needs to push,
+# and it gets write access on its own; the Trivy steps never see a token
+# that can write.
 permissions:
   contents: read
 
@@ -150,15 +151,10 @@ jobs:
     name: Generate SBOM
     needs: meta
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v5
         with:
           ref: ${{ needs.meta.outputs.scan_sha }}
-          # Full history so the commit step can tell whether the SBOM already
-          # on the sbom branch comes from a newer commit than this one.
-          fetch-depth: 0
 
       # Source SBOM from pnpm-lock.yaml. Trivy excludes devDependencies for
       # pnpm lockfiles by default, which matches what ends up in the bundle.
@@ -178,17 +174,40 @@ jobs:
           path: landscape-ui-${{ needs.meta.outputs.version }}.spdx.json
           retention-days: 90
 
-      # Persist in git: GitHub artifacts expire, and the SSDLC review wants to
-      # diff SBOMs between versions to see when a vulnerability was introduced.
-      # The file goes to the `sbom` branch under the release branch's name
-      # (release/26.10/landscape-ui.spdx.json), so each release branch has its
-      # own diffable history there. A `commit` file next to it records the
-      # scanned commit: scans of the same ref can overlap (a weekly run and a
-      # push), so a run only writes when its commit is newer than the one
-      # already recorded. Newest wins regardless of which run finishes last,
-      # and reruns of an unchanged release do not add noise commits.
+  # Persist in git: GitHub artifacts expire, and the SSDLC review wants to
+  # diff SBOMs between versions to see when a vulnerability was introduced.
+  # The file goes to the `sbom` branch under the release branch's name
+  # (release/26.10/landscape-ui.spdx.json), so each release branch has its
+  # own diffable history there. A `commit` file next to it records the
+  # scanned commit: scans of the same ref can overlap (a weekly run and a
+  # push), so a run only writes when its commit is newer than the one
+  # already recorded. Newest wins regardless of which run finishes last,
+  # and reruns of an unchanged release do not add noise commits.
+  #
+  # Its own job so that the write token exists only here, around plain git,
+  # and never in the job that runs the third-party Trivy action.
+  persist-sbom:
+    name: Commit SBOM to the sbom branch
+    needs: [meta, sbom]
+    if: needs.meta.outputs.is_release_ref == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.meta.outputs.scan_sha }}
+          # Full history so the commit step can tell whether the SBOM already
+          # on the sbom branch comes from a newer commit than this one.
+          fetch-depth: 0
+
+      - name: Download SBOM artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sbom-${{ needs.meta.outputs.version }}
+          path: ${{ runner.temp }}/sbom
+
       - name: Commit SBOM to the sbom branch
-        if: needs.meta.outputs.is_release_ref == 'true'
         env:
           VERSION: ${{ needs.meta.outputs.version }}
           BRANCH: ${{ inputs.ref }}
@@ -196,10 +215,9 @@ jobs:
           SBOM_BRANCH: sbom
         run: |
           set -e
-          SRC="$RUNNER_TEMP/landscape-ui.spdx.json"
+          SRC="$RUNNER_TEMP/sbom/landscape-ui-${VERSION}.spdx.json"
           DEST="${BRANCH}/landscape-ui.spdx.json"
           COMMIT_FILE="${BRANCH}/commit"
-          mv "landscape-ui-${VERSION}.spdx.json" "$SRC"
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
