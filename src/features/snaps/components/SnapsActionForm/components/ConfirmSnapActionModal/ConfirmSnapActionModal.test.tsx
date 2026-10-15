@@ -548,9 +548,7 @@ describe("ConfirmSnapActionModal", () => {
     );
 
     const firstSnapItem = screen.getByText(firstSnap.snap.name).closest("li");
-    const secondSnapItem = screen
-      .getByText(secondSnap.snap.name)
-      .closest("li");
+    const secondSnapItem = screen.getByText(secondSnap.snap.name).closest("li");
 
     expect(firstSnapItem?.textContent).toBe(`${firstSnap.snap.name} (default)`);
     expect(secondSnapItem?.textContent).toBe(secondSnap.snap.name);
