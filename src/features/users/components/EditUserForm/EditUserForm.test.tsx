@@ -211,7 +211,7 @@ describe("EditUserForm", () => {
   it("requires a name", async () => {
     let requestSent = false;
     server.use(
-      http.put(`${API_URL}users`, () => {
+      http.patch(`${API_URL}users`, () => {
         requestSent = true;
         return HttpResponse.json({});
       }),
@@ -490,7 +490,7 @@ describe("EditUserForm", () => {
     async ({ userToEdit }) => {
       let requestBody: Record<string, unknown> | undefined;
       server.use(
-        http.put(`${API_URL}users`, async ({ request }) => {
+        http.patch(`${API_URL}users`, async ({ request }) => {
           requestBody = (await request.json()) as Record<string, unknown>;
           return HttpResponse.json({});
         }),
@@ -564,7 +564,7 @@ describe("EditUserForm", () => {
           return HttpResponse.json({ count: 0, results: [] });
         },
       ),
-      http.put(`${API_URL}users`, async ({ request }) => {
+      http.patch(`${API_URL}users`, async ({ request }) => {
         profileRequest = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json(activities[0]);
       }),
@@ -614,7 +614,7 @@ describe("EditUserForm", () => {
   it("only sends changed profile fields in the edit request", async () => {
     let requestBody: Record<string, unknown> | undefined;
     server.use(
-      http.put(`${API_URL}users`, async ({ request }) => {
+      http.patch(`${API_URL}users`, async ({ request }) => {
         requestBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({});
       }),
@@ -631,16 +631,71 @@ describe("EditUserForm", () => {
     await waitFor(() => {
       expect(requestBody).toBeDefined();
     });
-    expect(requestBody).toHaveProperty("location", "new location");
-    expect(requestBody).toHaveProperty("username", users[0].username);
-    expect(requestBody).not.toHaveProperty("name");
-    expect(requestBody).not.toHaveProperty("primary_groupname");
+    expect(requestBody).toEqual({
+      computer_ids: [1],
+      username: users[0].username,
+      location: "new location",
+    });
+  });
+
+  it("sends null for a cleared location in a PATCH request", async () => {
+    let requestBody: Record<string, unknown> | undefined;
+    server.use(
+      http.patch(`${API_URL}users`, async ({ request }) => {
+        requestBody = (await request.json()) as Record<string, unknown>;
+        return HttpResponse.json({});
+      }),
+    );
+    const user = userEvent.setup();
+    renderEditUserForm();
+
+    await screen.findByRole("option", { name: "daemon" });
+    await user.clear(screen.getByLabelText("Location"));
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    await waitFor(() => {
+      expect(requestBody).toBeDefined();
+    });
+    expect(requestBody).toEqual({
+      computer_ids: [1],
+      username: users[0].username,
+      location: null,
+    });
+  });
+
+  it("sends a set work phone and null for a cleared home phone", async () => {
+    let requestBody: Record<string, unknown> | undefined;
+    server.use(
+      http.patch(`${API_URL}users`, async ({ request }) => {
+        requestBody = (await request.json()) as Record<string, unknown>;
+        return HttpResponse.json({});
+      }),
+    );
+    const user = userEvent.setup();
+    renderEditUserForm();
+
+    await screen.findByRole("option", { name: "daemon" });
+    await user.clear(screen.getByLabelText("Home phone"));
+    const workPhoneInput = screen.getByLabelText("Work phone");
+    await user.clear(workPhoneInput);
+    await user.type(workPhoneInput, "555-0100");
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    await waitFor(() => {
+      expect(requestBody).toBeDefined();
+    });
+    expect(requestBody).toEqual({
+      computer_ids: [1],
+      username: users[0].username,
+      home_phone: null,
+      work_phone: "555-0100",
+    });
   });
 
   it("includes a non-empty password in the edit request", async () => {
     let requestBody: Record<string, unknown> | undefined;
     server.use(
-      http.put(`${API_URL}users`, async ({ request }) => {
+      http.patch(`${API_URL}users`, async ({ request }) => {
         requestBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({});
       }),
@@ -661,7 +716,7 @@ describe("EditUserForm", () => {
   it("sends the changed primary group name instead of its GID", async () => {
     let requestBody: Record<string, unknown> | undefined;
     server.use(
-      http.put(`${API_URL}users`, async ({ request }) => {
+      http.patch(`${API_URL}users`, async ({ request }) => {
         requestBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({});
       }),
@@ -1133,7 +1188,7 @@ describe("EditUserForm", () => {
     assert(binGroup);
     let profileUpdateRequests = 0;
     server.use(
-      http.put(`${API_URL}users`, () => {
+      http.patch(`${API_URL}users`, () => {
         profileUpdateRequests += 1;
         return HttpResponse.json({});
       }),

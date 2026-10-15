@@ -55,20 +55,20 @@ export const buildEditUserPayload = (
   ) {
     payload.primary_groupname = primaryGroupName;
   }
-  if (values.name !== initialValues.name) {
+  if (values.name && values.name !== initialValues.name) {
     payload.name = values.name;
   }
   if (values.password) {
     payload.password = values.password;
   }
   if (values.location !== initialValues.location) {
-    payload.location = values.location;
+    payload.location = values.location || null;
   }
   if (values.homePhoneNumber !== initialValues.homePhoneNumber) {
-    payload.home_phone = values.homePhoneNumber;
+    payload.home_phone = values.homePhoneNumber || null;
   }
   if (values.workPhoneNumber !== initialValues.workPhoneNumber) {
-    payload.work_phone = values.workPhoneNumber;
+    payload.work_phone = values.workPhoneNumber || null;
   }
 
   return payload;

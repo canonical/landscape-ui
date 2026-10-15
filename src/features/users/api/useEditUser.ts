@@ -7,12 +7,12 @@ import type { AxiosError, AxiosResponse } from "axios";
 export interface EditUserParams {
   computer_ids: number[];
   username: string;
-  home_phone?: string;
-  location?: string;
+  home_phone?: string | null;
+  location?: string | null;
   name?: string;
   password?: string;
   primary_groupname?: string;
-  work_phone?: string;
+  work_phone?: string | null;
 }
 
 export const useEditUser = () => {
@@ -25,7 +25,7 @@ export const useEditUser = () => {
     EditUserParams
   >({
     mutationKey: ["users", "edit"],
-    mutationFn: async (params) => authFetch.put("users", params),
+    mutationFn: async (params) => authFetch.patch("users", params),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
