@@ -72,7 +72,7 @@ test("should have disclaimer popup after login", async ({ page }) => {
   await expect(page).toHaveURL(/overview/);
 
   const welcomeModal = page.getByText(
-    /The web portal is now the default interface for Landscape/i,
+    /This web portal is now the default interface for Landscape/i,
   );
 
   await closeWelcomeModal(page);
