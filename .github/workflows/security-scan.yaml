@@ -351,10 +351,12 @@ jobs:
           DEBEMAIL: landscape-team@canonical.com
           VERSION: ${{ needs.meta.outputs.version }}
         run: |
-          # debian/rules expects assets/, icons/, index.html, favicon.svg at root.
+          # debian/rules at this commit expects the vite output at the root:
+          # assets/, index.html, favicon.svg, and from 26.10 on icons/. Only
+          # move what this build produced so older release branches package.
           cp -r dist/assets .
-          cp -r dist/icons .
           cp dist/index.html dist/favicon.svg .
+          if [ -d dist/icons ]; then cp -r dist/icons .; fi
           rm -rf dist
 
           dch --newversion "${VERSION}-0landscape0" \
@@ -362,7 +364,7 @@ jobs:
               "Release ${VERSION} for jammy"
 
           tar czf "../landscape-dashboard_${VERSION}.orig.tar.gz" \
-            assets favicon.svg index.html icons
+            assets favicon.svg index.html $( [ -d icons ] && echo icons )
 
           dpkg-buildpackage -us -uc -b
           cp ../landscape-dashboard_*.deb .
