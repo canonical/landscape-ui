@@ -9,19 +9,22 @@ import { API_URL } from "@/constants";
 import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import type { Package } from "@/features/packages";
+import type MultiSelectField from "@/components/form/MultiSelectField";
 
 const multiSelectFieldProps = vi.hoisted(() => vi.fn());
 
-vi.mock("@/components/form/MultiSelectField", () => ({
-  default: (props: {
-    readonly disabledItems?: { readonly value: number }[];
-    readonly items: { readonly label: string; readonly value: number }[];
-    readonly selectedItems?: { readonly value: number }[];
-  }) => {
-    multiSelectFieldProps(props);
-    return null;
-  },
-}));
+vi.mock("@/components/form/MultiSelectField", async (importOriginal) => {
+  const { default: ActualMultiSelectField } = await importOriginal<{
+    default: typeof MultiSelectField;
+  }>();
+
+  return {
+    default: (props: ComponentProps<typeof MultiSelectField>) => {
+      multiSelectFieldProps(props);
+      return <ActualMultiSelectField {...props} />;
+    },
+  };
+});
 
 const props = {
   selectedPackage: [
@@ -119,5 +122,22 @@ describe("PackageSearchDowngradeItem", () => {
         }),
       );
     });
+  });
+
+  it("shows an error when no versions are found", async () => {
+    server.use(
+      http.post(`${API_URL}packages\\:search`, () =>
+        HttpResponse.json({
+          packages: [],
+          count: 0,
+          prev: null,
+          next: null,
+        }),
+      ),
+    );
+
+    renderWithProviders(<PackageSearchDowngradeItem {...props} />);
+
+    expect(screen.getByText("No versions were found")).toBeInTheDocument();
   });
 });

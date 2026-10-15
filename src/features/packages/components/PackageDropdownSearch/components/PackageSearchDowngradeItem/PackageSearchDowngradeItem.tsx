@@ -136,6 +136,8 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
         selectedItems={selectedPackage[1]
           .map((id) => items.find((item) => item.value === id))
           .filter((item) => item !== undefined)}
+        disabled={!items.length}
+        error={!items.length ? "No versions were found" : undefined}
       />
     </li>
   );
