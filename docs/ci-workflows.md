@@ -34,21 +34,28 @@ Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual
 
 **Rule:** do not change branch selection, the `should_build` tag guard, or the tag-after-deploy ordering.
 
-## Security Scan (`security.yaml`)
+## Security Scan (`security.yaml` + `security-scan.yaml`)
 
-**Trigger:** push → `release/**` or `point/**`; `workflow_dispatch`; weekly cron on `main` (`0 3 * * 1`).
+**Trigger (`security.yaml`):** push → `release/**` or `point/**`; `workflow_dispatch` (optional `ref` input, defaults to the dispatching branch); weekly cron (`0 3 * * 1`).
 
-SSDLC evidence for the shipped product (SEC0025 vulnerability scanning, SEC0027 SBOM). The product is the `landscape-dashboard` `.deb` (the package name from `debian/control`) of bundled static assets, which carries no package metadata of its own, so the SBOM and the vulnerability report come from `pnpm-lock.yaml` at the same commit (production dependencies only) and the `.deb` is what goes to the central scanner.
+SSDLC evidence for the shipped product (SEC0025 vulnerability scanning, SEC0027 SBOM). The product is the `landscape-dashboard` `.deb` (the package name from `debian/control`) of bundled static assets, which carries no package metadata of its own, so the SBOM and the vulnerability report come from `pnpm-lock.yaml` (production dependencies only) and the `.deb` is what goes to the central scanner.
 
-- **meta** — version (`scripts/calculate-version.cjs`), SSDLC cycle (from the `release/YY.MM` or `point/YY.MM.N` branch name, calendar fallback elsewhere), secscan channel (`candidate` while `-rc`, `stable` once the branch is in `RELEASED_BRANCHES`, `edge` off release refs) and whether the ref is a release/point branch.
-- **sbom** — Trivy `fs` scan of the lockfile → SPDX JSON artifact (90 days), and on release/point refs commits it to the unprotected `sbom` branch as `<release branch>/landscape-ui.spdx.json` (e.g. `release/26.10/landscape-ui.spdx.json`), with a fetch-reapply-retry loop (3 attempts) so concurrent pushes from different release branches never need a rebase. Release and point branches are ruleset-protected and refuse direct pushes, so the SBOM cannot live next to the code. One file per branch keeps the history diffable between versions; GitHub artifact retention alone is not enough for the SSDLC review. The job is the only one with `contents: write`.
+`security.yaml` only picks branches and fans out; `security-scan.yaml` is the reusable `workflow_call` that scans one branch (`ref` input).
+
+- **targets** — the branch list: the pushed branch, the dispatch `ref`, or on the weekly schedule `main` plus every branch in the `SUPPORTED_RELEASE_BRANCHES` repo variable (fallback: the highest `release/YY.MM` on origin). Shipped releases are therefore rechecked for newly disclosed CVEs without anyone pushing to them.
+- **scan** — matrix over that list calling `security-scan.yaml` with `contents: write` as the cap; `fail-fast: false` so one red branch does not cancel the others.
+
+Inside `security-scan.yaml`:
+
+- **meta** — version at the branch tip (`scripts/calculate-version.cjs`, with `GITHUB_REF_NAME` overridden to the input branch), SSDLC cycle (from the `release/YY.MM` or `point/YY.MM.N` name, calendar fallback elsewhere), secscan channel (`candidate` while `-rc`, `stable` once the branch is in `RELEASED_BRANCHES`, `edge` off release refs), and the commit to scan: the `v<version>` tag when it exists, otherwise the tip. A `chore(deps)` push does not bump the version and the release workflow skips publishing for it, so the tag anchor keeps every job on the commit that actually shipped.
+- **sbom** — Trivy `fs` scan of the lockfile → SPDX JSON artifact (90 days), and on release/point refs commits it to the unprotected `sbom` branch as `<release branch>/landscape-ui.spdx.json` (e.g. `release/26.10/landscape-ui.spdx.json`), with a fetch-reapply-retry loop (3 attempts) so concurrent pushes from different release branches never need a rebase. Release and point branches are ruleset-protected and refuse direct pushes, so the SBOM cannot live next to the code. One file per branch keeps the history diffable between versions; GitHub artifact retention alone is not enough for the SSDLC review. The only job with `contents: write`.
 - **vulnerability-report** — Trivy `fs` scan → full unfiltered JSON report artifact (every severity, fixed or not, for the SSDLC vulnerability tracker), then a gating pass that fails on fixable HIGH/CRITICAL findings.
-- **build-deb** (release/point refs only) — same production build inputs and `dpkg-buildpackage` steps as `release-and-build.yml`, so the scanned `.deb` matches what that workflow publishes for the commit.
+- **build-deb** (release/point refs only) — same production build inputs and `dpkg-buildpackage` steps as `release-and-build.yml`, at the anchored commit, so the scanned `.deb` matches what that workflow published.
 - **secscan** (self-hosted, release/point refs only, 30-minute timeout) — submits the `.deb` to `canonical-secscan-client` (`--format deb --type package --base jammy`) with the SSDLC metadata; the scanner's exit code becomes the job's exit code.
 
-**Rule:** preserve exit-code propagation in `secscan` and `vulnerability-report`, the unfiltered report (SEC0025 says do not delete findings), the SBOM commit race protection, and the read-only default token. Keep the deb build steps in sync with `release-and-build.yml`.
+**Rule:** preserve the tag anchor in `meta`, exit-code propagation in `secscan` and `vulnerability-report`, the unfiltered report (SEC0025 says do not delete findings), the SBOM commit race protection, and the read-only default token. Keep the deb build steps in sync with `release-and-build.yml`.
 
-**Per cycle, by hand:** download the SBOM, the Trivy report and the secscan results from the release-branch run and file them in the SSDLC Artifacts folder for the cycle; copy findings into the vulnerability tracker with the team's assessment.
+**Per cycle, by hand:** download the SBOM, the Trivy report and the secscan results from the release-branch run and file them in the SSDLC Artifacts folder for the cycle; copy findings into the vulnerability tracker with the team's assessment. Keep `SUPPORTED_RELEASE_BRANCHES` current when a release goes out of support.
 
 ## Full TICS report (`tics-full.yml`)
 
@@ -76,5 +83,5 @@ Runs `pnpm coverage:full` to produce the MSW contract-coverage report, determini
 - Suggest `npm`/`yarn` commands or change Node/pnpm versions.
 - Add a build or publish step to `changeset-version.yml` — `main` does not ship.
 - Change branch selection or the `should_build` tag guard in `release-and-build.yml`.
-- Alter exit-code propagation in `security.yaml`'s `secscan` or `vulnerability-report` jobs, or widen its default token beyond `contents: read`.
+- Alter the tag anchor or exit-code propagation in `security-scan.yaml`'s `meta`, `secscan` or `vulnerability-report` jobs, or widen its default token beyond `contents: read`.
 - Treat `api-contract-eval.yml` as a required merge check — it isn't one.

@@ -1,0 +1,351 @@
+name: Security Scan (reusable)
+
+# SSDLC evidence for one branch (SEC0025 vulnerability scanning, SEC0027
+# SBOM). Called by security.yaml, which decides which branches to scan.
+#
+# The product is the landscape-dashboard .deb (the package name from
+# debian/control): static assets bundled from the npm dependency tree in
+# pnpm-lock.yaml. The deb itself carries no package metadata, so the SBOM and
+# the vulnerability report come from the lockfile (production dependencies
+# only), and the deb is what gets submitted to the central secscan service.
+#
+# Everything is anchored to what shipped: `meta` computes the version at the
+# branch tip and, when the `v<version>` tag already exists, every other job
+# checks out that tag instead of the tip. A chore(deps) push does not bump
+# the version and the release workflow skips publishing for it, so without
+# the anchor the scan would describe dependencies that never shipped.
+#
+# Outputs per run:
+#   - sbom artifact, and on release/point refs a commit of the SBOM to the
+#     unprotected `sbom` branch (one file per release branch) so it outlives
+#     GitHub's artifact retention and can be diffed between versions. Release
+#     and point branches themselves are ruleset-protected and refuse direct
+#     pushes, which is why the SBOM does not live next to the code.
+#   - trivy vulnerability report (all severities, unfiltered) for the SSDLC
+#     vulnerability tracker.
+#   - secscan submission of the built .deb with SSDLC product metadata
+#     (release/point refs only).
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: Branch to scan (release/YY.MM, point/YY.MM.N or main)
+        required: true
+        type: string
+
+# Read-only by default; only the SBOM job needs to push, and it gets write
+# access on its own.
+permissions:
+  contents: read
+
+jobs:
+  meta:
+    name: Resolve SSDLC metadata
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      cycle: ${{ steps.meta.outputs.cycle }}
+      channel: ${{ steps.meta.outputs.channel }}
+      is_release_ref: ${{ steps.meta.outputs.is_release_ref }}
+      scan_sha: ${{ steps.meta.outputs.scan_sha }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+
+      - name: Determine version, cycle, channel and the commit to scan
+        id: meta
+        env:
+          BRANCH: ${{ inputs.ref }}
+          # calculate-version.cjs reads the branch name from GITHUB_REF_NAME,
+          # which in a called workflow would be the caller's ref.
+          GITHUB_REF_NAME: ${{ inputs.ref }}
+          RELEASED_BRANCHES: ${{ vars.RELEASED_BRANCHES }}
+        run: |
+          VERSION=$(node scripts/calculate-version.cjs)
+
+          # release/YY.MM and point/YY.MM.N pin the cycle by name; anything
+          # else (main) uses the calendar rule from calculate-version.cjs.
+          IS_RELEASE_REF=false
+          if [[ "$BRANCH" =~ ^(release|point)/([0-9]{2}\.(04|10))(\.[0-9]+)?$ ]]; then
+            CYCLE="${BASH_REMATCH[2]}"
+            IS_RELEASE_REF=true
+          else
+            CYCLE=$(node -e "const m=new Date().getMonth()+1,y=new Date().getFullYear();console.log(m<=4?String(y).slice(-2)+'.04':m<=10?String(y).slice(-2)+'.10':String(y+1).slice(-2)+'.04')")
+          fi
+
+          # secscan channel is the risk level only: candidate until the branch
+          # is listed in RELEASED_BRANCHES, stable after; main is edge.
+          if [[ "$IS_RELEASE_REF" != "true" ]]; then
+            CHANNEL=edge
+          elif [[ "$VERSION" == *-rc ]]; then
+            CHANNEL=candidate
+          else
+            CHANNEL=stable
+          fi
+
+          # Scan the tagged commit when this version already shipped; the
+          # branch tip otherwise (a fresh push that the release workflow is
+          # about to tag at this same commit).
+          if git rev-parse -q --verify "refs/tags/v${VERSION}^{commit}" >/dev/null; then
+            SCAN_SHA=$(git rev-parse "refs/tags/v${VERSION}^{commit}")
+            echo "v${VERSION} is tagged; scanning ${SCAN_SHA} instead of the branch tip."
+          else
+            SCAN_SHA=$(git rev-parse HEAD)
+          fi
+
+          {
+            echo "version=$VERSION"
+            echo "cycle=$CYCLE"
+            echo "channel=$CHANNEL"
+            echo "is_release_ref=$IS_RELEASE_REF"
+            echo "scan_sha=$SCAN_SHA"
+          } >> "$GITHUB_OUTPUT"
+          echo "ref=$BRANCH version=$VERSION cycle=$CYCLE channel=$CHANNEL release_ref=$IS_RELEASE_REF sha=$SCAN_SHA"
+
+  sbom:
+    name: Generate SBOM
+    needs: meta
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.meta.outputs.scan_sha }}
+
+      # Source SBOM from pnpm-lock.yaml. Trivy excludes devDependencies for
+      # pnpm lockfiles by default, which matches what ends up in the bundle.
+      - name: Generate SPDX SBOM from the lockfile
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: spdx-json
+          output: landscape-ui-${{ needs.meta.outputs.version }}.spdx.json
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ needs.meta.outputs.version }}
+          path: landscape-ui-${{ needs.meta.outputs.version }}.spdx.json
+          retention-days: 90
+
+      # Persist in git: GitHub artifacts expire, and the SSDLC review wants to
+      # diff SBOMs between versions to see when a vulnerability was introduced.
+      # The file goes to the `sbom` branch under the release branch's name
+      # (release/26.10/landscape-ui.spdx.json), so each release branch has its
+      # own diffable history there.
+      - name: Commit SBOM to the sbom branch
+        if: needs.meta.outputs.is_release_ref == 'true'
+        env:
+          VERSION: ${{ needs.meta.outputs.version }}
+          BRANCH: ${{ inputs.ref }}
+          SBOM_BRANCH: sbom
+        run: |
+          set -e
+          SRC="$RUNNER_TEMP/landscape-ui.spdx.json"
+          DEST="${BRANCH}/landscape-ui.spdx.json"
+          mv "landscape-ui-${VERSION}.spdx.json" "$SRC"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Race protection: another release branch may push to the sbom
+          # branch at the same time. Each attempt starts from the branch tip
+          # and reapplies the generated file, so there is never a rebase that
+          # can conflict.
+          for attempt in 1 2 3; do
+            if git fetch origin "$SBOM_BRANCH"; then
+              git switch -C "$SBOM_BRANCH" FETCH_HEAD
+            else
+              echo "No $SBOM_BRANCH branch yet; creating it."
+              # A failed first push leaves the local branch behind; drop it
+              # so --orphan can recreate it on retry.
+              git branch -D "$SBOM_BRANCH" 2>/dev/null || true
+              git switch --orphan "$SBOM_BRANCH"
+            fi
+
+            mkdir -p "$(dirname "$DEST")"
+            cp "$SRC" "$DEST"
+
+            if git ls-files --error-unmatch "$DEST" >/dev/null 2>&1 \
+               && git diff --quiet -- "$DEST"; then
+              echo "SBOM unchanged; nothing to commit."
+              exit 0
+            fi
+
+            git add "$DEST"
+            git commit -m "sbom: ${BRANCH} at ${VERSION}"
+
+            if git push origin "$SBOM_BRANCH"; then
+              exit 0
+            fi
+            echo "Push attempt $attempt failed; refetching and retrying."
+          done
+          echo "Failed to push SBOM after 3 attempts" >&2
+          exit 1
+
+  vulnerability-report:
+    name: Vulnerability report (Trivy)
+    needs: meta
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.meta.outputs.scan_sha }}
+
+      # Full, unfiltered report for the SSDLC vulnerability tracker: every
+      # severity, fixed or not. SEC0025 says do not delete any finding.
+      - name: Scan lockfile (full report)
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln
+          format: json
+          output: trivy-report-${{ needs.meta.outputs.version }}.json
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload vulnerability report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report-${{ needs.meta.outputs.version }}
+          path: trivy-report-${{ needs.meta.outputs.version }}.json
+          retention-days: 90
+
+      # Gate: high and critical findings with an available fix must be
+      # remediated before the cycle ends, so they fail the job here.
+      - name: Fail on fixable HIGH/CRITICAL findings
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          skip-setup-trivy: true
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
+
+  build-deb:
+    name: Build .deb for scanning
+    needs: meta
+    if: needs.meta.outputs.is_release_ref == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.meta.outputs.scan_sha }}
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 10 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Same build inputs as release-and-build.yml, at the commit the release
+      # workflow built, so the scanned deb matches what was published.
+      - name: Production build
+        run: pnpm run build
+        env:
+          VITE_APP_VERSION: ${{ needs.meta.outputs.version }}
+          VITE_APP_COMMIT: ${{ needs.meta.outputs.scan_sha }}
+          VITE_API_URL: /api/v2/
+          VITE_API_URL_OLD: /api/
+          VITE_ROOT_PATH: /portal/
+
+      - name: Install packaging tools
+        run: sudo apt-get update && sudo apt-get install -y build-essential debhelper devscripts
+
+      - name: Build .deb package
+        env:
+          DEBFULLNAME: Landscape Team
+          DEBEMAIL: landscape-team@canonical.com
+          VERSION: ${{ needs.meta.outputs.version }}
+        run: |
+          # debian/rules expects assets/, icons/, index.html, favicon.svg at root.
+          cp -r dist/assets .
+          cp -r dist/icons .
+          cp dist/index.html dist/favicon.svg .
+          rm -rf dist
+
+          dch --newversion "${VERSION}-0landscape0" \
+              --distribution jammy \
+              "Release ${VERSION} for jammy"
+
+          tar czf "../landscape-dashboard_${VERSION}.orig.tar.gz" \
+            assets favicon.svg index.html icons
+
+          dpkg-buildpackage -us -uc -b
+          cp ../landscape-dashboard_*.deb .
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb-for-scan-${{ needs.meta.outputs.version }}
+          path: landscape-dashboard_*.deb
+          retention-days: 1
+
+  secscan:
+    name: Submit .deb to secscan
+    needs: [meta, build-deb]
+    if: needs.meta.outputs.is_release_ref == 'true'
+    runs-on:
+      [self-hosted, self-hosted-linux-amd64-jammy-private-endpoint-medium]
+    timeout-minutes: 30
+    steps:
+      - name: Download .deb artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deb-for-scan-${{ needs.meta.outputs.version }}
+
+      - name: Install secscan client
+        run: |
+          sudo snap install canonical-secscan-client
+          sudo snap connect canonical-secscan-client:home system:home
+
+      - name: Run security scan
+        id: scan
+        env:
+          VERSION: ${{ needs.meta.outputs.version }}
+          CYCLE: ${{ needs.meta.outputs.cycle }}
+          CHANNEL: ${{ needs.meta.outputs.channel }}
+        run: |
+          set +e
+          DEB=$(ls landscape-dashboard_*.deb | head -n1)
+          echo "Submitting $DEB as version=$VERSION cycle=$CYCLE channel=$CHANNEL"
+          secscan-client --batch submit \
+            --ssdlc-product-name 'landscape-ui' \
+            --ssdlc-cycle "$CYCLE" \
+            --ssdlc-product-version "$VERSION" \
+            --ssdlc-product-channel "$CHANNEL" \
+            --scanner trivy \
+            --format deb \
+            --type package \
+            --base jammy \
+            --base-arch amd64 \
+            "$DEB" \
+            --wait-and-print | tee secscan-results.txt
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit "$EXIT_CODE"
+
+      - name: Upload scan results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: secscan-results-${{ needs.meta.outputs.version }}
+          path: secscan-results.txt
+          retention-days: 90
