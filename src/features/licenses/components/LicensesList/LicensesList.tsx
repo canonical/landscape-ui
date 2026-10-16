@@ -29,7 +29,7 @@ const LicensesList: FC<LicensesListProps> = ({ licenses }) => {
         Header: "Expiration date",
         Cell: ({ row: { original: license } }: CellProps<License>) =>
           license.expiration_date
-            ? date(license.expiration_date).utc().format(DISPLAY_DATE_FORMAT)
+            ? date(license.expiration_date).format(DISPLAY_DATE_FORMAT)
             : "Never",
       },
       {
