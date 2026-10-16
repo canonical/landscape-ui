@@ -7,6 +7,10 @@ import UpdateMirrorModal from "./UpdateMirrorModal";
 import { mirrors } from "@/tests/mocks/mirrors";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
+import { API_URL_DEB_ARCHIVE } from "@/constants";
+import type { SyncMirrorRequest } from "@canonical/landscape-openapi";
 
 describe("UpdateMirrorModal", () => {
   const close = vi.fn();
@@ -42,6 +46,55 @@ describe("UpdateMirrorModal", () => {
       ),
     ).toBeInTheDocument();
     expect(close).toHaveBeenCalled();
+  });
+
+  it("checks all update options when their checkboxes are selected", async () => {
+    const user = userEvent.setup();
+    let capturedBody: Omit<SyncMirrorRequest, "name"> | undefined;
+    server.use(
+      http.post(
+        `${API_URL_DEB_ARCHIVE}mirrors/:mirrorId\\:sync`,
+        async ({ request }) => {
+          capturedBody = (await request.json()) as Omit<
+            SyncMirrorRequest,
+            "name"
+          >;
+          return HttpResponse.json({});
+        },
+      ),
+    );
+
+    renderWithProviders(<UpdateMirrorModal {...props} />);
+
+    const options = [
+      "Ignore checksum mismatches",
+      "Ignore signature verification failures",
+      "Override blockers and force the update",
+      "Skip downloading packages that already exist",
+    ];
+
+    for (const option of options) {
+      const checkbox = screen.getByRole("checkbox", { name: option });
+      expect(checkbox).not.toBeChecked();
+
+      await user.click(checkbox);
+
+      expect(checkbox).toBeChecked();
+    }
+
+    await user.click(screen.getByRole("button", { name: /update mirror/i }));
+
+    expect(
+      await screen.findByText(
+        `You have marked ${props.mirror.displayName} to be updated`,
+      ),
+    ).toBeInTheDocument();
+    expect(capturedBody).toEqual({
+      ignoreChecksums: true,
+      ignoreSignatures: true,
+      forceUpdate: true,
+      skipExistingPackages: true,
+    });
   });
 
   it("confirms cancelling an ongoing update before showing the update form", async () => {
