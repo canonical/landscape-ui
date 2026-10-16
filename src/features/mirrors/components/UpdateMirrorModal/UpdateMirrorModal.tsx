@@ -121,15 +121,14 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
         checked={ignoreSignatures}
       />
       <CheckboxInput
-        label="Force a full update"
+        label="Override blockers and force the update"
         onChange={toggleForceUpdate}
         checked={forceUpdate}
       />
       <CheckboxInput
         label="Skip downloading packages that already exist"
         onChange={toggleSkipExistingPackages}
-        checked={skipExistingPackages && !forceUpdate}
-        disabled={forceUpdate}
+        checked={skipExistingPackages}
       />
     </ConfirmationModal>
   );
