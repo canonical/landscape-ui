@@ -211,7 +211,7 @@ describe("EditUserForm", () => {
   it("requires a name", async () => {
     let requestSent = false;
     server.use(
-      http.post(`${API_URL}users:edit`, () => {
+      http.post(`${API_URL}users\\:edit`, () => {
         requestSent = true;
         return HttpResponse.json({});
       }),
@@ -490,7 +490,7 @@ describe("EditUserForm", () => {
     async ({ userToEdit }) => {
       let requestBody: Record<string, unknown> | undefined;
       server.use(
-        http.post(`${API_URL}users:edit`, async ({ request }) => {
+        http.post(`${API_URL}users\\:edit`, async ({ request }) => {
           requestBody = (await request.json()) as Record<string, unknown>;
           return HttpResponse.json({});
         }),
@@ -564,7 +564,7 @@ describe("EditUserForm", () => {
           return HttpResponse.json({ count: 0, results: [] });
         },
       ),
-      http.post(`${API_URL}users:edit`, async ({ request }) => {
+      http.post(`${API_URL}users\\:edit`, async ({ request }) => {
         profileRequest = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json(activities[0]);
       }),
@@ -614,7 +614,7 @@ describe("EditUserForm", () => {
   it("only sends changed profile fields in the edit request", async () => {
     let requestBody: Record<string, unknown> | undefined;
     server.use(
-      http.post(`${API_URL}users:edit`, async ({ request }) => {
+      http.post(`${API_URL}users\\:edit`, async ({ request }) => {
         requestBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({});
       }),
@@ -641,7 +641,7 @@ describe("EditUserForm", () => {
   it("sends null for a cleared location in a POST request", async () => {
     let requestBody: Record<string, unknown> | undefined;
     server.use(
-      http.post(`${API_URL}users:edit`, async ({ request }) => {
+      http.post(`${API_URL}users\\:edit`, async ({ request }) => {
         requestBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({});
       }),
@@ -666,7 +666,7 @@ describe("EditUserForm", () => {
   it("sends a set work phone and null for a cleared home phone", async () => {
     let requestBody: Record<string, unknown> | undefined;
     server.use(
-      http.post(`${API_URL}users:edit`, async ({ request }) => {
+      http.post(`${API_URL}users\\:edit`, async ({ request }) => {
         requestBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({});
       }),
@@ -695,7 +695,7 @@ describe("EditUserForm", () => {
   it("includes a non-empty password in the edit request", async () => {
     let requestBody: Record<string, unknown> | undefined;
     server.use(
-      http.post(`${API_URL}users:edit`, async ({ request }) => {
+      http.post(`${API_URL}users\\:edit`, async ({ request }) => {
         requestBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({});
       }),
@@ -716,7 +716,7 @@ describe("EditUserForm", () => {
   it("sends the changed primary group name instead of its GID", async () => {
     let requestBody: Record<string, unknown> | undefined;
     server.use(
-      http.post(`${API_URL}users:edit`, async ({ request }) => {
+      http.post(`${API_URL}users\\:edit`, async ({ request }) => {
         requestBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({});
       }),
@@ -1188,7 +1188,7 @@ describe("EditUserForm", () => {
     assert(binGroup);
     let profileUpdateRequests = 0;
     server.use(
-      http.post(`${API_URL}users:edit`, () => {
+      http.post(`${API_URL}users\\:edit`, () => {
         profileUpdateRequests += 1;
         return HttpResponse.json({});
       }),
