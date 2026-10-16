@@ -12,4 +12,8 @@
 .radioGroup {
   column-gap: $sph--x-large;
   display: flex;
+
+  :global(.p-radio-wrapper + .p-radio-wrapper) {
+    margin-top: 0;
+  }
 }
