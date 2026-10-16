@@ -4,10 +4,11 @@ import { getAuthToken } from "../helpers/auth";
 const HTTP_BAD_REQUEST = 400;
 const HTTP_UNPROCESSABLE_CONTENT = 422;
 
-// POST /users:edit only queues an activity, and the docker stack has no client
-// to deliver it, so these tests assert the request contract and response shape
-// rather than the resulting user record. Nothing changes server-side state that
-// later tests read, so no restore step is needed.
+// POST /users:edit queues an activity, and the docker stack has no client to
+// deliver it, so these tests assert the request contract and response shape
+// rather than the resulting user record. The queued activities stay on the
+// backend undelivered. No later suite reads activities or user state, and CI
+// tears the stack down after each run, so they are left in place.
 test.describe("Users API Contract", () => {
   let token = "";
   let computerId = 0;
