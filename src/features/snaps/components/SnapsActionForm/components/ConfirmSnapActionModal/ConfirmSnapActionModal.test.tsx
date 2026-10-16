@@ -530,7 +530,7 @@ describe("ConfirmSnapActionModal", () => {
     );
   });
 
-  it("shows a default label only for a snap with no channels found, not for latest/stable", () => {
+  it("shows a default label for a snap with no channels found and the channel name for latest/stable", () => {
     renderWithProviders(
       <ConfirmSnapActionModal
         {...props}
@@ -551,7 +551,9 @@ describe("ConfirmSnapActionModal", () => {
     const secondSnapItem = screen.getByText(secondSnap.snap.name).closest("li");
 
     expect(firstSnapItem?.textContent).toBe(`${firstSnap.snap.name} (default)`);
-    expect(secondSnapItem?.textContent).toBe(secondSnap.snap.name);
+    expect(secondSnapItem?.textContent).toBe(
+      `${secondSnap.snap.name} (latest/stable)`,
+    );
     expect(screen.getAllByText("(default)")).toHaveLength(1);
   });
 

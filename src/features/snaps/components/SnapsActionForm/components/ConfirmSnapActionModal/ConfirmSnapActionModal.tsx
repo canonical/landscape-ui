@@ -72,7 +72,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
       if (!config.channel) {
         return "default";
       }
-      return config.channel
+      return config.channel;
     }
     return undefined;
   };
