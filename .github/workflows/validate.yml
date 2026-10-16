@@ -6,6 +6,10 @@ on:
   merge_group:
     types: [checks_requested]
 
+# Read-only token by default; jobs that need more declare it themselves.
+permissions:
+  contents: read
+
 # PRs: cancel superseded runs on the same branch, so that a push does not
 # leave the previous commit's jobs queued on the self-hosted runners.
 # Merge queue: never cancel.
