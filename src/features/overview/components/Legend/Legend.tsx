@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import type { FC } from "react";
 import { Link } from "react-router";
-import { ALERT_STATUSES } from "@/features/instances";
+import { ALERT_STATUSES, getStatusRouteParams } from "@/features/instances";
 import { ROUTES } from "@/libs/routes";
 import { pluralize } from "@/utils/_helpers";
 import classes from "./Legend.module.scss";
@@ -77,7 +77,7 @@ const Legend: FC<LegendProps> = ({
               </span>
             ) : (
               <Link
-                to={ROUTES.instances.root({ status: statusItem.filterValue })}
+                to={ROUTES.instances.root(getStatusRouteParams(statusItem))}
                 className="u-no-margin u-no-padding"
               >
                 {pluralize(item.count, ["instance"], "exact")}

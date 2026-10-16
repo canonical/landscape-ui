@@ -115,6 +115,13 @@ export const STATUS_FILTERS = {
   },
 } satisfies Record<string, Status>;
 
+// Package/security upgrades are filtered through the multi-select "Upgrades"
+// filter rather than the single-select "Status" filter.
+export const UPGRADE_ALERT_TYPES: readonly string[] = [
+  STATUS_FILTERS.PackageUpgradesAlert.alertType,
+  STATUS_FILTERS.SecurityUpgradesAlert.alertType,
+];
+
 export const ALERT_STATUSES = {
   ...STATUS_FILTERS,
   PendingComputersAlert: {
@@ -185,12 +192,7 @@ export const FILTERS = {
       ...Object.values(STATUS_FILTERS)
         // Package/security upgrades have their own "Upgrades" filter, so they
         // are excluded from the status filter to avoid duplication.
-        .filter(
-          ({ alertType }) =>
-            !["PackageUpgradesAlert", "SecurityUpgradesAlert"].includes(
-              alertType,
-            ),
-        )
+        .filter(({ alertType }) => !UPGRADE_ALERT_TYPES.includes(alertType))
         .sort((a, b) => a.label.localeCompare(b.label))
         .map(({ label, filterValue, query }) => ({
           label,
