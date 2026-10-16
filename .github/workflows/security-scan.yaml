@@ -455,6 +455,21 @@ jobs:
             echo "::error::secscan did not complete; see secscan-results.txt"
             exit 1
           fi
+          # Exit code 100 also counts the CVEs of the jammy environment the
+          # package is installed into (listed under "Baseline
+          # vulnerabilities:"), which are never empty and not ours. Only the
+          # "Target vulnerabilities:" list belongs to the package, so the job
+          # passes when that list is empty.
+          TARGET_CVES=$(sed -n '/^  Target vulnerabilities:/,$p' secscan-results.txt | grep -c 'CVE-' || true)
+          BASELINE_CVES=$(sed -n '/^  Baseline vulnerabilities:/,/^  Target vulnerabilities:/p' secscan-results.txt | grep -c 'CVE-' || true)
+          echo "target_cves=$TARGET_CVES" >> "$GITHUB_OUTPUT"
+          if [[ "$EXIT_CODE" -eq 100 && "$TARGET_CVES" -eq 0 ]]; then
+            echo "No vulnerabilities in the package; the $BASELINE_CVES baseline CVEs belong to the jammy environment."
+            exit 0
+          fi
+          if [[ "$TARGET_CVES" -gt 0 ]]; then
+            echo "::error::secscan found $TARGET_CVES vulnerabilities in the package; see secscan-results.txt"
+          fi
           exit "$EXIT_CODE"
 
       - name: Upload scan results
