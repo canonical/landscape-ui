@@ -13,7 +13,10 @@ export const NEW_USER_INITIAL_VALUES: NewUserFormValues = {
   primaryGroupValue: "",
 };
 
-export const PRIMARY_GROUP_PLACEHOLDER_OPTION = { label: "Select", value: "" };
+export const PRIMARY_GROUP_DEFAULT_OPTION = {
+  label: "Use system default",
+  value: "",
+};
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
   name: Yup.string().required("This field is required"),
@@ -26,5 +29,5 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
   location: Yup.string(),
   homePhoneNumber: Yup.string(),
   workPhoneNumber: Yup.string(),
-  primaryGroupValue: Yup.string().required("This field is required"),
+  primaryGroupValue: Yup.string(),
 });
