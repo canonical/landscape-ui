@@ -65,4 +65,25 @@ describe("LicensesList", () => {
 
     expect(screen.getByText("No licenses found.")).toBeInTheDocument();
   });
+
+  it.each(["Pacific/Kiritimati", "Asia/Kolkata", "America/New_York", "UTC"])(
+    "renders the same expiration date regardless of timezone (%s)",
+    (timezone) => {
+      const originalTimezone = process.env.TZ;
+      process.env.TZ = timezone;
+
+      try {
+        renderWithProviders(<LicensesList licenses={[unusedLicensed]} />);
+
+        expect(unusedLicensed.expiration_date).toBe("2026-11-30");
+        expect(screen.getByText("Nov 30, 2026")).toBeInTheDocument();
+      } finally {
+        if (originalTimezone === undefined) {
+          delete process.env.TZ;
+        } else {
+          process.env.TZ = originalTimezone;
+        }
+      }
+    },
+  );
 });
