@@ -45,7 +45,10 @@ const WslInstanceRemoveFromLandscapeModal: FC<
 
       notify.success({
         title: `You have successfully removed ${title} from Landscape.`,
-        message: `${pluralize(instances.length, [`${title} has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`, `${title} have been removed from Landscape. To manage them again, you will need to re-register them in Landscape.`])}`,
+        message: `${pluralize(instances.length, [
+          `${title} has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
+          `${title} have been removed from Landscape. To manage them again, you will need to re-register them in Landscape.`,
+        ])}`,
       });
 
       onSuccess?.();
@@ -70,8 +73,8 @@ const WslInstanceRemoveFromLandscapeModal: FC<
     >
       <p className="u-margin--bottom">
         {pluralize(instances.length, [
-          "This will delete all associated data and free up one license slot for another computer to be registered. It will remain on the parent machine. You can re-register it to Landscape at any time.",
-          "This will delete all associated data and free up license slots for other computers to be registered. They will remain on the parent machine. You can re-register them to Landscape at any time.",
+          "This will delete all data associated with this instance. It will remain on the parent machine. You can re-register it to Landscape at any time.",
+          "This will delete all data associated with these instances. They will remain on the parent machine. You can re-register them to Landscape at any time.",
         ])}
       </p>
     </TextConfirmationModal>

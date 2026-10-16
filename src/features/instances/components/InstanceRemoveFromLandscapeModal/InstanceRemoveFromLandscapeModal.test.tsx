@@ -24,7 +24,7 @@ describe("InstanceRemoveFromLandscapeModal", () => {
     expect(modalTitle).toBeInTheDocument();
 
     const modalBody = screen.getByText(
-      /this will delete all associated data and free up one license slot/i,
+      /this will delete all data associated with this instance/i,
     );
     expect(modalBody).toBeInTheDocument();
   });
