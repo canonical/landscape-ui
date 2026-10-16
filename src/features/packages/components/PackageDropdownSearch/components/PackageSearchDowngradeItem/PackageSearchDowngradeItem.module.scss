@@ -33,8 +33,15 @@
   }
 }
 
-.multiSelect :global(.p-contextual-menu) {
-  margin: 0;
+.multiSelect {
+  :global(.p-contextual-menu) {
+    margin: 0;
+  }
+
+  :global(.p-form-validation__message) {
+    margin-bottom: 0;
+    margin-top: 10px;
+  }
 }
 
 .deleteButton {
