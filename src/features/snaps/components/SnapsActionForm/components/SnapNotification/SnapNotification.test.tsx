@@ -1,8 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
-import { SNAPD_REST_API_DOCUMENTATION_URL } from "@/constants";
+import { describe, expect, it } from "vitest";
+import { SNAP_REVISIONS_DOCUMENTATION_URL } from "@/constants";
 import SnapNotification from "./SnapNotification";
 
 const changeChannelRevisionMessage =
@@ -32,8 +31,12 @@ describe("SnapNotification", () => {
       />,
     );
 
-    expect(screen.getByText(/revision tracks/i)).toBeInTheDocument();
-    expect(screen.getByText("Visit Snapd documentation")).toBeInTheDocument();
+    expect(
+      screen.getByText(/doesn.t change the default tracking/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Snap documentation: Revisions"),
+    ).toBeInTheDocument();
   });
 
   it("renders the revision notification when a snap is in revision mode", () => {
@@ -47,7 +50,9 @@ describe("SnapNotification", () => {
     );
 
     expect(screen.getByText(changeChannelRevisionMessage)).toBeInTheDocument();
-    expect(screen.getByText("Visit Snapd documentation")).toBeInTheDocument();
+    expect(
+      screen.getByText("Snap documentation: Revisions"),
+    ).toBeInTheDocument();
   });
 
   it("does not render the revision notification when no snap is in revision mode", () => {
@@ -65,10 +70,7 @@ describe("SnapNotification", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("opens the snapd documentation URL when the documentation link is clicked", async () => {
-    const user = userEvent.setup();
-    global.window.open = vi.fn();
-
+  it("links to the snap revisions documentation in a new tab", () => {
     renderWithProviders(
       <SnapNotification
         action="install"
@@ -78,13 +80,12 @@ describe("SnapNotification", () => {
       />,
     );
 
-    const docsLink = screen.getByText("Visit Snapd documentation");
-    await user.click(docsLink);
+    const docsLink = screen.getByRole("link", {
+      name: "Snap documentation: Revisions",
+    });
 
-    expect(window.open).toHaveBeenCalledWith(
-      SNAPD_REST_API_DOCUMENTATION_URL,
-      "_blank",
-      "noopener,noreferrer",
-    );
+    expect(docsLink).toHaveAttribute("href", SNAP_REVISIONS_DOCUMENTATION_URL);
+    expect(docsLink).toHaveAttribute("target", "_blank");
+    expect(docsLink).toHaveAttribute("rel", "nofollow noopener noreferrer");
   });
 });
