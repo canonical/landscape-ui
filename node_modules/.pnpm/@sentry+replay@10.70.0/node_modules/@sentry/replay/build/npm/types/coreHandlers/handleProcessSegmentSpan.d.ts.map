@@ -1,0 +1,1 @@
+{"version":3,"file":"handleProcessSegmentSpan.d.ts","sourceRoot":"","sources":["../../../../src/coreHandlers/handleProcessSegmentSpan.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,gBAAgB,EAAE,MAAM,cAAc,CAAC;AACrD,OAAO,KAAK,EAAE,eAAe,EAAE,MAAM,UAAU,CAAC;AAGhD,KAAK,0BAA0B,GAAG,CAAC,QAAQ,EAAE,gBAAgB,KAAK,IAAI,CAAC;AAEvE,wBAAgB,wBAAwB,CAAC,MAAM,EAAE,eAAe,GAAG,0BAA0B,CAQ5F"}

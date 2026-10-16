@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="/assets/90b59210-Ubuntu-Italic[wdth,wght]-latin-v0.896a.woff2"
+    />
+    <link href="/assets/d5fc1819-UbuntuMono[wght]-latin-v0.869.woff2" />
+    <link href="/assets/f1ea362b-Ubuntu[wdth,wght]-latin-v0.896a.woff2" />
+    <title>Landscape</title>
+    <script type="module" crossorigin src="/assets/index-30V4Vcwp.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/jsx-runtime-BOrZKZpZ.js">
+    <link rel="modulepreload" crossorigin href="/assets/dist-mO5vyAPj.js">
+    <link rel="modulepreload" crossorigin href="/assets/routes-DkyU5tlH.js">
+    <link rel="modulepreload" crossorigin href="/assets/constants-BWYX7UhH.js">
+    <link rel="modulepreload" crossorigin href="/assets/AppErrorBoundary-Doup-q7O.js">
+    <link rel="modulepreload" crossorigin href="/assets/hooks-BXcjFCkU.js">
+    <link rel="modulepreload" crossorigin href="/assets/preload-helper-Czpn1I53.js">
+    <link rel="modulepreload" crossorigin href="/assets/lib-BdzxRHgT.js">
+    <link rel="modulepreload" crossorigin href="/assets/LoadingState-C5x3fcmo.js">
+    <link rel="modulepreload" crossorigin href="/assets/_helpers-o0pn7e_S.js">
+    <link rel="modulepreload" crossorigin href="/assets/useEnv-DyIwG34J.js">
+    <link rel="modulepreload" crossorigin href="/assets/EmptyState-DxdMLLYz.js">
+    <link rel="modulepreload" crossorigin href="/assets/dist-Ff3LG0zu.js">
+    <link rel="modulepreload" crossorigin href="/assets/Truncated-DmxCg_gk.js">
+    <link rel="modulepreload" crossorigin href="/assets/date-DHUwr0fV.js">
+    <link rel="modulepreload" crossorigin href="/assets/esm-DqIF5M0n.js">
+    <link rel="modulepreload" crossorigin href="/assets/auth-Bkk1l_jv.js">
+    <link rel="stylesheet" crossorigin href="/assets/dist-BaBU5-Hu.css">
+    <link rel="stylesheet" crossorigin href="/assets/AppErrorBoundary-BxAfFH0R.css">
+    <link rel="stylesheet" crossorigin href="/assets/LoadingState-DjLO8OYT.css">
+    <link rel="stylesheet" crossorigin href="/assets/EmptyState-DU9fKUEF.css">
+    <link rel="stylesheet" crossorigin href="/assets/Truncated-BGWusYxz.css">
+    <link rel="stylesheet" crossorigin href="/assets/esm-CC8eR4nk.css">
+    <link rel="stylesheet" crossorigin href="/assets/auth-C3nmrHUZ.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-HO7akG_d.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      (() => {
+        const saved = localStorage.getItem("_landscape_dark_theme");
+        const systemDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        // "true"/"false" are legacy values of the dark mode switch
+        const shouldDark =
+          saved === "dark" ||
+          saved === "true" ||
+          (saved !== "light" && saved !== "false" && systemDark);
+        if (shouldDark) {
+          document.body.classList.add("is-dark");
+          document.body.style.colorScheme = "dark";
+        }
+      })();
+    </script>
+  </body>
+</html>

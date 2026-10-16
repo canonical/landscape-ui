@@ -1,0 +1,250 @@
+Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+
+const browser = require('@sentry/core/browser');
+const browserUtils = require('@sentry/browser-utils');
+const debugBuild = require('../debug-build.js');
+
+const INTEGRATION_NAME = "HttpClient";
+const _httpClientIntegration = ((options = {}) => {
+  const _options = {
+    failedRequestStatusCodes: [[500, 599]],
+    failedRequestTargets: [/.*/],
+    ...options
+  };
+  return {
+    name: INTEGRATION_NAME,
+    setup(client) {
+      _wrapFetch(client, _options);
+      _wrapXHR(client, _options);
+    }
+  };
+});
+const httpClientIntegration = browser.defineIntegration(_httpClientIntegration);
+function _fetchResponseHandler(options, requestInfo, response, requestInit, error) {
+  if (_shouldCaptureResponse(options, response.status, response.url)) {
+    const request = _getRequest(requestInfo, requestInit);
+    let requestHeaders, responseHeaders, requestCookies, responseCookies;
+    const dc = _getDataCollectionSettings();
+    if (dc.requestHeaders !== false) {
+      requestHeaders = browser._INTERNAL_filterKeyValueData(_extractFetchHeaders(request.headers), dc.requestHeaders);
+    }
+    if (dc.responseHeaders !== false) {
+      responseHeaders = browser._INTERNAL_filterKeyValueData(_extractFetchHeaders(response.headers), dc.responseHeaders);
+    }
+    if (dc.cookies !== false) {
+      const reqCookieStr = request.headers.get("Cookie") || void 0;
+      if (reqCookieStr) {
+        const filtered = browser._INTERNAL_filterCookies(reqCookieStr, dc.cookies);
+        if (typeof filtered === "object") {
+          requestCookies = filtered;
+        }
+      }
+      const resCookieStr = response.headers.get("Set-Cookie") || void 0;
+      if (resCookieStr) {
+        const filtered = browser._INTERNAL_filterCookies(resCookieStr, dc.cookies);
+        if (typeof filtered === "object") {
+          responseCookies = filtered;
+        }
+      }
+    }
+    const event = _createEvent({
+      url: request.url,
+      method: request.method,
+      status: response.status,
+      requestHeaders,
+      responseHeaders,
+      requestCookies,
+      responseCookies,
+      error,
+      type: "fetch"
+    });
+    browser.captureEvent(event);
+  }
+}
+function _xhrResponseHandler(options, xhr, method, headers, error) {
+  if (_shouldCaptureResponse(options, xhr.status, xhr.responseURL)) {
+    let requestHeaders, responseCookies, responseHeaders;
+    const dc = _getDataCollectionSettings();
+    if (dc.cookies !== false) {
+      try {
+        const cookieString = xhr.getResponseHeader("Set-Cookie") || xhr.getResponseHeader("set-cookie") || void 0;
+        if (cookieString) {
+          const filtered = browser._INTERNAL_filterCookies(cookieString, dc.cookies);
+          if (typeof filtered === "object") {
+            responseCookies = filtered;
+          }
+        }
+      } catch {
+      }
+    }
+    if (dc.responseHeaders !== false) {
+      try {
+        responseHeaders = browser._INTERNAL_filterKeyValueData(_getXHRResponseHeaders(xhr), dc.responseHeaders);
+      } catch {
+      }
+    }
+    if (dc.requestHeaders !== false) {
+      requestHeaders = browser._INTERNAL_filterKeyValueData(headers, dc.requestHeaders);
+    }
+    const event = _createEvent({
+      url: xhr.responseURL,
+      method,
+      status: xhr.status,
+      requestHeaders,
+      // Can't access request cookies from XHR
+      responseHeaders,
+      responseCookies,
+      error,
+      type: "xhr"
+    });
+    browser.captureEvent(event);
+  }
+}
+function _getResponseSizeFromHeaders(headers) {
+  if (headers) {
+    const contentLength = headers["Content-Length"] || headers["content-length"];
+    if (contentLength) {
+      return parseInt(contentLength, 10);
+    }
+  }
+  return void 0;
+}
+function _extractFetchHeaders(headers) {
+  const result = {};
+  headers.forEach((value, key) => {
+    result[key] = value;
+  });
+  return result;
+}
+function _getXHRResponseHeaders(xhr) {
+  const headers = xhr.getAllResponseHeaders();
+  if (!headers) {
+    return {};
+  }
+  return headers.split("\r\n").reduce((acc, line) => {
+    const [key, value] = line.split(": ");
+    if (key && value) {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+}
+function _isInGivenRequestTargets(failedRequestTargets, target) {
+  return failedRequestTargets.some((givenRequestTarget) => {
+    if (typeof givenRequestTarget === "string") {
+      return target.includes(givenRequestTarget);
+    }
+    return givenRequestTarget.test(target);
+  });
+}
+function _isInGivenStatusRanges(failedRequestStatusCodes, status) {
+  return failedRequestStatusCodes.some((range) => {
+    if (typeof range === "number") {
+      return range === status;
+    }
+    return status >= range[0] && status <= range[1];
+  });
+}
+function _wrapFetch(client, options) {
+  if (!browser.supportsNativeFetch()) {
+    return;
+  }
+  browser.addFetchInstrumentationHandler((handlerData) => {
+    if (browser.getClient() !== client) {
+      return;
+    }
+    const { response, args, error, virtualError } = handlerData;
+    const [requestInfo, requestInit] = args;
+    if (!response) {
+      return;
+    }
+    _fetchResponseHandler(options, requestInfo, response, requestInit, error || virtualError);
+  }, false);
+}
+function _wrapXHR(client, options) {
+  if (!("XMLHttpRequest" in browser.GLOBAL_OBJ)) {
+    return;
+  }
+  browserUtils.addXhrInstrumentationHandler((handlerData) => {
+    if (browser.getClient() !== client) {
+      return;
+    }
+    const { error, virtualError } = handlerData;
+    const xhr = handlerData.xhr;
+    const sentryXhrData = xhr[browserUtils.SENTRY_XHR_DATA_KEY];
+    if (!sentryXhrData) {
+      return;
+    }
+    const { method, request_headers: headers } = sentryXhrData;
+    try {
+      _xhrResponseHandler(options, xhr, method, headers, error || virtualError);
+    } catch (e) {
+      debugBuild.DEBUG_BUILD && browser.debug.warn("Error while extracting response event form XHR response", e);
+    }
+  });
+}
+function _shouldCaptureResponse(options, status, url) {
+  return _isInGivenStatusRanges(options.failedRequestStatusCodes, status) && _isInGivenRequestTargets(options.failedRequestTargets, url) && !browser.isSentryRequestUrl(url, browser.getClient());
+}
+function _createEvent(data) {
+  const client = browser.getClient();
+  const virtualStackTrace = client && data.error && data.error instanceof Error ? data.error.stack : void 0;
+  const stack = virtualStackTrace && client ? client.getOptions().stackParser(virtualStackTrace, 0, 1) : void 0;
+  const message = `HTTP Client Error with status code: ${data.status}`;
+  const event = {
+    message,
+    exception: {
+      values: [
+        {
+          type: "Error",
+          value: message,
+          stacktrace: stack ? { frames: stack } : void 0
+        }
+      ]
+    },
+    request: {
+      url: data.url,
+      method: data.method,
+      headers: data.requestHeaders,
+      cookies: data.requestCookies
+    },
+    contexts: {
+      response: {
+        status_code: data.status,
+        headers: data.responseHeaders,
+        cookies: data.responseCookies,
+        body_size: _getResponseSizeFromHeaders(data.responseHeaders)
+      }
+    }
+  };
+  browser.addExceptionMechanism(event, {
+    type: `auto.http.client.${data.type}`,
+    handled: false
+  });
+  return event;
+}
+function _getRequest(requestInfo, requestInit) {
+  if (!requestInit && requestInfo instanceof Request) {
+    return requestInfo;
+  }
+  if (requestInfo instanceof Request && requestInfo.bodyUsed) {
+    return requestInfo;
+  }
+  return new Request(requestInfo, requestInit);
+}
+function _getDataCollectionSettings() {
+  const client = browser.getClient();
+  if (!client) {
+    return { cookies: false, requestHeaders: false, responseHeaders: false };
+  }
+  const options = client.getOptions();
+  if (options.dataCollection == null) {
+    const enabled = Boolean(options.sendDefaultPii);
+    return { cookies: enabled, requestHeaders: enabled, responseHeaders: enabled };
+  }
+  const { cookies, httpHeaders } = client.getDataCollectionOptions();
+  return { cookies, requestHeaders: httpHeaders.request, responseHeaders: httpHeaders.response };
+}
+
+exports.httpClientIntegration = httpClientIntegration;
+//# sourceMappingURL=httpclient.js.map

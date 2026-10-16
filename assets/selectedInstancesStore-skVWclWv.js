@@ -1,0 +1,1 @@
+var e=[],t=new Set,n=n=>{let r=Object.freeze([...n]),i=e;i.length===r.length&&i.every((e,t)=>e===r[t])||(e=r,t.forEach(e=>{e()}))},r=()=>e,i=e=>(t.add(e),()=>{t.delete(e)});export{n,i as r,r as t};

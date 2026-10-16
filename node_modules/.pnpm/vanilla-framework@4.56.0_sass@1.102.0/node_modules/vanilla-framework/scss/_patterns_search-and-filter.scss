@@ -1,0 +1,210 @@
+@import 'settings';
+
+@mixin vf-p-search-and-filter {
+  @include vf-search-and-filter;
+  @include vf-filter-panel-section;
+}
+
+@mixin vf-search-and-filter {
+  // we need to prevent the focus outline of the input element
+  // being obscured in certain situations, so this variable
+  // references the weight of that outline
+  $focus-outline-offset: $bar-thickness;
+
+  // this is the total width occupied by the search input clear button:
+  // the buttons left and right padding, plus the width of the icon,
+  // and finally the width of the focus outline defined above
+  $search-filter-actions-width: 2 * $sph--small + map-get($icon-sizes, default) + $focus-outline-offset;
+
+  // When the search and filter is not expanded, but is overflowing with chips, we need to
+  // specify a height that matches that of a standard input element. This height is a combination
+  // of an input's line-height, its vertical padding, and the (top transparent) border.
+  $input-height: calc(map-get($settings-text-default, line-height) + $input-vertical-padding + $input-vertical-padding + $input-border-thickness);
+
+  .p-search-and-filter {
+    border-bottom: $input-border-thickness solid $colors--theme--border-high-contrast;
+    position: relative;
+
+    .p-search-and-filter__search-container {
+      align-items: flex-start;
+      background-color: $colors--theme--background-inputs;
+      display: flex;
+      flex-wrap: wrap;
+      height: auto;
+      margin: 0;
+      overflow: hidden;
+      padding-left: $sph--small;
+      padding-right: $search-filter-actions-width;
+      position: relative;
+
+      &[data-active='true'] {
+        height: auto;
+      }
+
+      &[data-empty='false'],
+      &[aria-expanded='false'] {
+        height: $input-height;
+      }
+
+      .p-chip {
+        margin-bottom: 0;
+        margin-top: $spv--x-small;
+      }
+
+      .p-search-and-filter__selected-count {
+        color: $colors--theme--link-default;
+        cursor: pointer;
+        position: absolute;
+        right: 0.5rem;
+        top: 0.3rem;
+      }
+
+      &[aria-expanded='true'] {
+        height: auto;
+        max-height: 100%;
+
+        .p-search-and-filter__selected-count {
+          display: none;
+        }
+      }
+    }
+
+    .p-search-and-filter__panel {
+      @include vf-transition(opacity, fast);
+
+      background-color: $colors--theme--background-inputs;
+      box-shadow: $box-shadow;
+      opacity: 1;
+      padding: $input-vertical-padding $sph--large 0;
+      position: absolute;
+      width: 100%;
+      z-index: 9999;
+
+      &[aria-hidden='true'] {
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+
+    .p-search-and-filter__search-prompt {
+      background: $colors--theme--background-inputs;
+      cursor: pointer;
+      margin-left: -1rem;
+      margin-right: -1rem;
+      overflow: hidden;
+      padding: 1rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .p-search-and-filter__clear {
+      @extend %vf-button-has-icon;
+      background-color: $colors--theme--background-inputs;
+
+      border: none;
+      bottom: $focus-outline-offset;
+      line-height: map-get($settings-text-small, line-height);
+      margin: 0;
+      position: absolute;
+      right: $focus-outline-offset;
+      top: $focus-outline-offset;
+      z-index: 9999;
+    }
+
+    .p-search-and-filter__search-query {
+      @extend %bold;
+    }
+
+    .p-search-and-filter__box {
+      align-items: center;
+      display: inline-flex;
+      flex: 1;
+      height: 100%;
+      margin: 0;
+      position: relative;
+    }
+
+    // tab-selectable search button
+    .p-search-and-filter__search-button {
+      // Hide the search button unless it is focused
+      @extend %u-off-screen;
+      // Prevents the bottom margin of the search button from growing the height of the search container
+      @extend %u-no-margin--bottom;
+      // Make the button dense to ensure it fits vertically in the search box
+      @extend %vf-button-dense-vertical-padding;
+
+      // Make sure the hidden search button appears on top of the input field
+      &:focus {
+        z-index: 1;
+      }
+    }
+
+    .p-search-and-filter__input {
+      border-bottom: 0; // only remove bottom border (replaced by component border), as the top transparent border is still needed for correct alignment
+      box-shadow: none;
+      flex-grow: 1;
+      margin-bottom: 0;
+      margin-left: -$sph--small; // compensate for the left padding of the container
+      margin-right: -$search-filter-actions-width; // compensate for the space reserved for counter
+      min-width: 6rem;
+      position: relative;
+
+      &::-webkit-search-cancel-button {
+        -webkit-appearance: none; // stylelint-disable-line property-no-vendor-prefix
+      }
+    }
+
+    .p-chip + .p-search-and-filter__box {
+      margin-left: $sph--small;
+    }
+  }
+}
+
+@mixin vf-filter-panel-section {
+  .p-filter-panel-section {
+    border-bottom: 1px solid $colors--theme--border-low-contrast;
+    margin: 0;
+    padding-bottom: $spv--large;
+
+    &:last-child {
+      border: 0;
+    }
+
+    .p-chip {
+      margin-bottom: $spv--small;
+
+      // hide chips lead when there are in panel
+      // FIXME: this should be handled in HTML/React, not CSS
+      .p-chip__lead {
+        display: none;
+      }
+
+      .p-chip__lead + .p-chip__value::before {
+        display: none;
+      }
+    }
+
+    .p-filter-panel-section__heading {
+      @extend %vf-heading-5;
+      color: $colors--theme--text-muted;
+    }
+
+    .p-filter-panel-section__chips {
+      overflow: hidden;
+      padding-right: 1.25rem;
+      position: relative;
+
+      &[aria-expanded='false'] {
+        max-height: 5rem; // 2 rows of chips
+      }
+    }
+
+    .p-filter-panel-section__counter {
+      bottom: 0;
+      color: $colors--theme--link-default;
+      cursor: pointer;
+      position: absolute;
+      right: 0.25rem;
+    }
+  }
+}

@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-BOrZKZpZ.js";import{n as t,r as n,t as r}from"./PageMain-Bd2NiQyW.js";import{a as i}from"./super-admin-BpPI11Mu.js";var a=e(),o=()=>(0,a.jsxs)(r,{children:[(0,a.jsx)(t,{title:`Accounts`}),(0,a.jsx)(n,{hasTable:!0,children:(0,a.jsx)(i,{})})]});export{o as default};

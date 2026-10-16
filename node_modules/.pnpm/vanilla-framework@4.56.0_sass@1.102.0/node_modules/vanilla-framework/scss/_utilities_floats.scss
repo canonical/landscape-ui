@@ -1,0 +1,48 @@
+@import 'settings';
+
+// Float utilities
+@mixin vf-u-floats {
+  .u-float-right {
+    float: right !important;
+
+    &--small {
+      @media (width < $breakpoint-small) {
+        float: right !important;
+      }
+    }
+
+    &--medium {
+      @media ($breakpoint-small <= width < $breakpoint-large) {
+        float: right !important;
+      }
+    }
+
+    &--large {
+      @media ($breakpoint-large <= width) {
+        float: right !important;
+      }
+    }
+  }
+
+  .u-float-left {
+    float: left !important;
+
+    &--small {
+      @media (width < $breakpoint-small) {
+        float: left !important;
+      }
+    }
+
+    &--medium {
+      @media ($breakpoint-small <= width < $breakpoint-large) {
+        float: left !important;
+      }
+    }
+
+    &--large {
+      @media ($breakpoint-large <= width) {
+        float: left !important;
+      }
+    }
+  }
+}
