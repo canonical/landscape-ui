@@ -332,6 +332,15 @@ export default [
   http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
     `${API_URL}packages\\:search`,
     async ({ request }) => {
+      if (getEndpointStatus("packages:search").status === "empty") {
+        return HttpResponse.json<SearchPackagesResponse>({
+          packages: [],
+          count: 0,
+          next: null,
+          prev: null,
+        });
+      }
+
       const body = await request.json();
 
       const response = generatePaginatedResponse({

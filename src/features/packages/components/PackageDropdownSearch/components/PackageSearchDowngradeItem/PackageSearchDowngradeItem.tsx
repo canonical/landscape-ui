@@ -90,6 +90,8 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
     }
   };
 
+  const hasNoVersions = !isPendingPackages && !items.length;
+
   return (
     <li className={classes.selectedContainer}>
       <div className={classes.topRow}>
@@ -131,11 +133,13 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
         footerClassName={classes.footer}
         dropdownFooter={<LoadingState ref={loadingStateRef} />}
         variant="condensed"
-        placeholder="Version"
+        placeholder={isPendingPackages ? "Loading..." : "Version"}
         onItemsUpdate={onItemsUpdate}
         selectedItems={selectedPackage[1]
           .map((id) => items.find((item) => item.value === id))
           .filter((item) => item !== undefined)}
+        disabled={isPendingPackages || hasNoVersions}
+        error={hasNoVersions ? "No versions were found" : undefined}
       />
     </li>
   );

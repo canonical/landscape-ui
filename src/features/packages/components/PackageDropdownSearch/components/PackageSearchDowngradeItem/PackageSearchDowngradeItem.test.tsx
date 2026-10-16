@@ -9,19 +9,23 @@ import { API_URL } from "@/constants";
 import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import type { Package } from "@/features/packages";
+import type MultiSelectField from "@/components/form/MultiSelectField";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 
 const multiSelectFieldProps = vi.hoisted(() => vi.fn());
 
-vi.mock("@/components/form/MultiSelectField", () => ({
-  default: (props: {
-    readonly disabledItems?: { readonly value: number }[];
-    readonly items: { readonly label: string; readonly value: number }[];
-    readonly selectedItems?: { readonly value: number }[];
-  }) => {
-    multiSelectFieldProps(props);
-    return null;
-  },
-}));
+vi.mock("@/components/form/MultiSelectField", async (importOriginal) => {
+  const { default: ActualMultiSelectField } = await importOriginal<{
+    default: typeof MultiSelectField;
+  }>();
+
+  return {
+    default: (props: ComponentProps<typeof MultiSelectField>) => {
+      multiSelectFieldProps(props);
+      return <ActualMultiSelectField {...props} />;
+    },
+  };
+});
 
 const props = {
   selectedPackage: [
@@ -119,5 +123,21 @@ describe("PackageSearchDowngradeItem", () => {
         }),
       );
     });
+  });
+
+  it("shows an error when no versions are found", async () => {
+    setEndpointStatus({ status: "empty", path: "packages:search" });
+
+    renderWithProviders(<PackageSearchDowngradeItem {...props} />);
+
+    // should initially not show the error message during fetch
+    expect(
+      screen.queryByText("No versions were found"),
+    ).not.toBeInTheDocument();
+
+    // should appear after the search returns no packages
+    expect(
+      await screen.findByText("No versions were found"),
+    ).toBeInTheDocument();
   });
 });
