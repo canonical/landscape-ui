@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: "0 3 1 * *"
 
+# Read-only token by default; jobs that need more declare it themselves.
+permissions:
+  contents: read
+
 jobs:
   unit-tests:
     runs-on: [self-hosted, Linux, large]
