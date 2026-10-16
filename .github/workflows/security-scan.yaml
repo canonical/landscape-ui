@@ -454,9 +454,33 @@ jobs:
             --base jammy \
             --base-arch amd64 \
             "$DEB" \
-            --wait-and-print | tee secscan-results.txt
+            --wait-and-print 2>&1 | tee secscan-results.txt
           EXIT_CODE=${PIPESTATUS[0]}
           echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
+          # The client exits 0 when the scan itself breaks: it prints
+          # "Scan has failed.", dumps the scan log on stderr (merged into the
+          # results file above) and returns. Only a scan that reports
+          # "Scan has succeeded." may pass on its exit code: 0 means no
+          # findings, 100 means findings remain, 101 means stale exclusions.
+          if ! grep -qx 'Scan has succeeded.' secscan-results.txt; then
+            echo "::error::secscan did not complete; see secscan-results.txt"
+            exit 1
+          fi
+          # Exit code 100 also counts the CVEs of the jammy environment the
+          # package is installed into (listed under "Baseline
+          # vulnerabilities:"), which are never empty and not ours. Only the
+          # "Target vulnerabilities:" list belongs to the package, so the job
+          # passes when that list is empty.
+          TARGET_CVES=$(sed -n '/^  Target vulnerabilities:/,$p' secscan-results.txt | grep -c 'CVE-' || true)
+          BASELINE_CVES=$(sed -n '/^  Baseline vulnerabilities:/,/^  Target vulnerabilities:/p' secscan-results.txt | grep -c 'CVE-' || true)
+          echo "target_cves=$TARGET_CVES" >> "$GITHUB_OUTPUT"
+          if [[ "$EXIT_CODE" -eq 100 && "$TARGET_CVES" -eq 0 ]]; then
+            echo "No vulnerabilities in the package; the $BASELINE_CVES baseline CVEs belong to the jammy environment."
+            exit 0
+          fi
+          if [[ "$TARGET_CVES" -gt 0 ]]; then
+            echo "::error::secscan found $TARGET_CVES vulnerabilities in the package; see secscan-results.txt"
+          fi
           exit "$EXIT_CODE"
 
       - name: Upload scan results
