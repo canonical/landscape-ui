@@ -440,6 +440,12 @@ export default [
   http.get<Record<"computerId", string>, GetGroupsParams, GroupsResponse>(
     `${API_URL}computers/:computerId/groups`,
     () => {
+      const endpointStatus = getEndpointStatus("computers/:computerId/groups");
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json(endpointStatus.response as GroupsResponse);
+      }
+
       return HttpResponse.json({ groups: userGroups });
     },
   ),

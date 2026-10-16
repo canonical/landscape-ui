@@ -3,7 +3,7 @@ import { API_URL } from "@/constants";
 import { generatePaginatedResponse } from "./_helpers";
 import type { User } from "@/types/User";
 import { userDetails, users } from "@/tests/mocks/user";
-import { RELEASE_UPGRADE_ACTIVITY } from "@/tests/mocks/activity";
+import { activities, RELEASE_UPGRADE_ACTIVITY } from "@/tests/mocks/activity";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 // Import the constant leaf directly. A value import from `@/features/users`
 // would evaluate the feature barrel (including UserContainer → react-router)
@@ -67,7 +67,7 @@ export default [
       }
     }
 
-    return HttpResponse.json(userDetails);
+    return HttpResponse.json(activities[0]);
   }),
 
   http.put(`${API_URL}users`, async () => {
