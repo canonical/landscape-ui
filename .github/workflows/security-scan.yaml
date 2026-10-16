@@ -185,7 +185,10 @@ jobs:
   # and reruns of an unchanged release do not add noise commits.
   #
   # Its own job so that the write token exists only here, around plain git,
-  # and never in the job that runs the third-party Trivy action.
+  # and never in the job that runs the third-party Trivy action. It checks
+  # out the workflow's own ref, not the scanned commit: the scanned commit
+  # is fetched for the ancestry comparison, but the job holding the write
+  # token never has release-branch code on disk.
   persist-sbom:
     name: Commit SBOM to the sbom branch
     needs: [meta, sbom]
@@ -196,9 +199,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ needs.meta.outputs.scan_sha }}
-          # Full history so the commit step can tell whether the SBOM already
-          # on the sbom branch comes from a newer commit than this one.
+          # Full history of every branch so the commit step can tell whether
+          # the SBOM already on the sbom branch comes from a newer commit
+          # than the scanned one.
           fetch-depth: 0
 
       - name: Download SBOM artifact
@@ -221,6 +224,12 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # The scanned commit is not checked out in this job; make sure it
+          # is present for the ancestry comparison below.
+          if ! git cat-file -e "${SCAN_SHA}^{commit}" 2>/dev/null; then
+            git fetch --no-tags origin "$SCAN_SHA"
+          fi
 
           # Race protection: another release branch may push to the sbom
           # branch at the same time. Each attempt starts from the branch tip
@@ -351,10 +360,12 @@ jobs:
       - uses: pnpm/action-setup@v4
         with: { version: 10 }
 
+      # No dependency cache here: the install runs against the scanned
+      # commit, and a cache written by this job would be served to runs on
+      # main as well.
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
