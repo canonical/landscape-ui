@@ -320,7 +320,9 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                         name={item.snap.name}
                         onDelete={handleDelete}
                       />
-                      {channelRevisionFields}
+                      <div className={classes.installFields}>
+                        {channelRevisionFields}
+                      </div>
                     </li>
                   );
                 }

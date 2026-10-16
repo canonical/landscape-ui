@@ -15,5 +15,5 @@ export const ADMINISTRATORS_DOCUMENTATION_URL = `${EXTERNAL_PATHS.documentation}
 
 export const MANAGE_INSTANCES_DOCUMENTATION_URL = `${EXTERNAL_PATHS.documentation}/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/`;
 
-export const SNAPD_REST_API_DOCUMENTATION_URL =
-  "https://snapcraft.io/docs/reference/development/snapd-rest-api/#/Asynchronous/manageSnapByName";
+export const SNAP_REVISIONS_DOCUMENTATION_URL =
+  "https://snapcraft.io/docs/explanation/how-snaps-work/revisions/";

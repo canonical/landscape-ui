@@ -253,6 +253,28 @@ describe("SnapChannelRevisionFields", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows an error for a revision above the snapd maximum after submit is attempted", async () => {
+    renderWithProviders(
+      <SnapChannelRevisionFields
+        {...props}
+        snapModeConfig={{
+          ...props.snapModeConfig,
+          mode: "revision",
+          value: "9999999999999999999",
+        }}
+        hasAttemptedSubmit
+      />,
+    );
+
+    await screen.findByLabelText(
+      `Snap channel or revision for ${snapWithChannels.snap.name}`,
+    );
+
+    expect(
+      screen.getByText("Revision number is too large"),
+    ).toBeInTheDocument();
+  });
+
   it("shows loading in the channel dropdown while the snap info is loading", async () => {
     renderWithProviders(<SnapChannelRevisionFields {...props} />);
 

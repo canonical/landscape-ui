@@ -483,6 +483,102 @@ describe("ConfirmSnapActionModal", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("shows the chosen revision next to each snap in revision mode", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal
+        {...props}
+        actionVerb="install"
+        snapModes={["revision"]}
+        snapModeConfigs={{
+          [firstSnap.snap.id]: { mode: "revision", value: "123" },
+          [secondSnap.snap.id]: { mode: "revision", value: "456" },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("(revision 123)")).toBeInTheDocument();
+    expect(screen.getByText("(revision 456)")).toBeInTheDocument();
+  });
+
+  it("shows the chosen revision or channel per snap in mixed mode and a default label when no channel was found", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal
+        {...props}
+        snaps={[firstSnap, secondSnap, classicSnap]}
+        actionVerb="change channel"
+        snapModes={["channel", "revision"]}
+        snapModeConfigs={{
+          [firstSnap.snap.id]: {
+            mode: "channel",
+            value: "latest/edge",
+            channel: "latest/edge",
+          },
+          [secondSnap.snap.id]: { mode: "revision", value: "123" },
+          [classicSnap.snap.id]: { mode: "channel", value: "", channel: "" },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("(latest/edge)")).toBeInTheDocument();
+    expect(screen.getByText("(revision 123)")).toBeInTheDocument();
+
+    const classicSnapItem = screen
+      .getByText(classicSnap.snap.name)
+      .closest("li");
+    expect(classicSnapItem?.textContent).toBe(
+      `${classicSnap.snap.name} (default)`,
+    );
+  });
+
+  it("shows a default label for a snap with no channels found and the channel name for latest/stable", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal
+        {...props}
+        actionVerb="install"
+        snapModes={["channel"]}
+        snapModeConfigs={{
+          [firstSnap.snap.id]: { mode: "channel", value: "", channel: "" },
+          [secondSnap.snap.id]: {
+            mode: "channel",
+            value: "latest/stable",
+            channel: "latest/stable",
+          },
+        }}
+      />,
+    );
+
+    const firstSnapItem = screen.getByText(firstSnap.snap.name).closest("li");
+    const secondSnapItem = screen.getByText(secondSnap.snap.name).closest("li");
+
+    expect(firstSnapItem?.textContent).toBe(`${firstSnap.snap.name} (default)`);
+    expect(secondSnapItem?.textContent).toBe(
+      `${secondSnap.snap.name} (latest/stable)`,
+    );
+    expect(screen.getAllByText("(default)")).toHaveLength(1);
+  });
+
+  it("shows the chosen revision next to snaps that require classic confinement", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal
+        {...props}
+        snaps={[firstSnap, classicSnap]}
+        actionVerb="install"
+        snapModes={["revision"]}
+        snapModeConfigs={{
+          [firstSnap.snap.id]: { mode: "revision", value: "123" },
+          [classicSnap.snap.id]: {
+            mode: "revision",
+            value: "789",
+            confinement: "classic",
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("(revision 789)")).toBeInTheDocument();
+    expect(screen.queryByText("(revision 123)")).not.toBeInTheDocument();
+  });
+
   it("shows the confirm button in a loading state while submitting", () => {
     renderWithProviders(<ConfirmSnapActionModal {...props} isSubmitting />);
 
