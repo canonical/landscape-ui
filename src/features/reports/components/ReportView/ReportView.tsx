@@ -354,9 +354,7 @@ const ReportView: FC<ReportViewProps> = ({
           </Notification>
         )}
         <section className={classes.section}>
-          <p
-            className={classNames("p-heading--5 u-no-margin", classes.heading)}
-          >
+          <p className={classNames("p-heading--5", classes.statusHeading)}>
             Status
           </p>
           <MetricBarTable
