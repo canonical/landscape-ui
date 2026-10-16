@@ -25,7 +25,7 @@ export const useEditUser = () => {
     EditUserParams
   >({
     mutationKey: ["users", "edit"],
-    mutationFn: async (params) => authFetch.patch("users", params),
+    mutationFn: async (params) => authFetch.post("users:edit", params),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["users"] }),
   });

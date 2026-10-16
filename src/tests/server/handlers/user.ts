@@ -70,7 +70,7 @@ export default [
     return HttpResponse.json(activities[0]);
   }),
 
-  http.patch(`${API_URL}users`, async () => {
+  http.post(`${API_URL}users:edit`, async () => {
     const path = shouldApplyEndpointStatus("editUser") ? "editUser" : "users";
     if (shouldApplyEndpointStatus(path)) {
       const endpointStatus = getEndpointStatus(path);
