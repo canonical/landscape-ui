@@ -7,7 +7,7 @@ import { pendingInstances } from "@/tests/mocks/instance";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { authUser } from "@/tests/mocks/auth";
 import useAuth from "@/hooks/useAuth";
-import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "./constants";
+import { AUTO_REGISTER_NEW_COMPUTERS_DOCUMENTATION_URL } from "./constants";
 import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 
@@ -66,7 +66,7 @@ describe("PendingInstancesForm", () => {
 
     expect(learnMoreLink).toHaveAttribute(
       "href",
-      MANAGING_COMPUTERS_DOCUMENTATION_URL,
+      AUTO_REGISTER_NEW_COMPUTERS_DOCUMENTATION_URL,
     );
 
     expect(await screen.findByRole("table")).toBeInTheDocument();

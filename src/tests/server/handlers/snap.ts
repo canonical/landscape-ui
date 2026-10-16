@@ -48,25 +48,25 @@ export default [
     },
   ),
 
-  http.get<{ name: string }>(
+  http.get<{ computerId: string; name: string }>(
     `${API_URL}computers/:computerId/snaps/:name/info`,
     async ({ params }) => {
-      const endpointStatus = getEndpointStatus(
-        "computers/:computerId/snaps/:name/info",
-      );
-      if (
-        shouldApplyEndpointStatus("computers/:computerId/snaps/:name/info") &&
-        endpointStatus.status === "error"
-      ) {
-        return HttpResponse.json(
-          {
-            error: "InternalServerError",
-            message: "Error response",
-          },
-          {
-            status: 500,
-          },
+      if (shouldApplyEndpointStatus("computers/:computerId/snaps/:name/info")) {
+        const endpointStatus = getEndpointStatus(
+          "computers/:computerId/snaps/:name/info",
         );
+        if (endpointStatus.status === "error") {
+          throw createEndpointStatusError();
+        }
+      }
+
+      const id = Number(params.computerId);
+      if (!Number.isFinite(id)) {
+        throw createEndpointStatusError({
+          status: 400,
+          error: "Bad Request",
+          message: "Computer id must be a valid number",
+        });
       }
 
       return HttpResponse.json(
