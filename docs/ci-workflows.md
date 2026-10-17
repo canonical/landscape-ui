@@ -34,15 +34,9 @@ Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual
 
 **Rule:** do not change branch selection, the `should_build` tag guard, or the tag-after-deploy ordering.
 
-## Vulnerability Scan (`security.yaml`)
+## Security Scan
 
-**Trigger:** `workflow_dispatch`; push → `release/**` (ignoring `security/sbom/**`, to avoid a commit loop).
-
-- **build-image** — builds the OCI image, uploads it as the `image-tar` artifact.
-- **scan-and-report** (self-hosted) — runs `canonical-secscan-client` against `image.tar`; the scanner's exit code becomes the job's exit code.
-- **generate-and-commit-sbom** — Trivy SBOM (`spdx-json`) → artifact, and on a `release/**` push commits it to `security/sbom/release.spdx.json`, with a rebase-and-retry loop (3 attempts) in case another commit lands first.
-
-**Rule:** preserve exit-code propagation and the SBOM commit race protection.
+This branch carries no security workflow of its own. The Security Scan workflow on `main` (`security.yaml` and `security-scan.yaml` there) scans this branch after every "Release and PPA Build" run completes, on its weekly schedule, and on dispatch with `ref: release/26.10`. It reads the published version from `ppa-build-26.10`, stores the Trivy report and secscan result as run artifacts, and commits the SBOM to the `sbom` branch under `release/26.10/`. See `docs/ci-workflows.md` on `main` for the details.
 
 ## Full TICS report (`tics-full.yml`)
 
@@ -70,5 +64,4 @@ Runs `pnpm coverage:full` to produce the MSW contract-coverage report, determini
 - Suggest `npm`/`yarn` commands or change Node/pnpm versions.
 - Add a build or publish step to `changeset-version.yml` — `main` does not ship.
 - Change branch selection or the `should_build` tag guard in `release-and-build.yml`.
-- Alter exit-code propagation in `security.yaml`'s `scan-and-report` job.
 - Treat `api-contract-eval.yml` as a required merge check — it isn't one.
