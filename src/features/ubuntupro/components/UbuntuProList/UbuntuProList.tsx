@@ -11,7 +11,7 @@ interface UbuntuProServicesListProps {
 }
 
 const UbuntuProList: FC<UbuntuProServicesListProps> = ({ services }) => {
-  const servicesData = useMemo(() => services, [services.length]) ?? [];
+  const servicesData = useMemo(() => services, [services]);
   const columns = useMemo<Column<UbuntuProService>[]>(
     () => [
       {
