@@ -116,9 +116,9 @@ jobs:
             self_hosted_env: "true"
             msw_enabled: "false"
     env:
-      VITE_API_URL: ${{ vars.API_URL }}
-      VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
-      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE }}
+      VITE_API_URL: ${{ vars.API_URL || '/api/v2/' }}
+      VITE_API_URL_OLD: ${{ vars.API_URL_OLD || '/api/' }}
+      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE || '/debarchive/v1beta1/' }}
       VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
       VITE_APP_TITLE: Landscape
       VITE_ROOT_PATH: /
@@ -178,9 +178,9 @@ jobs:
       pull-requests: write
     environment: dev
     env:
-      VITE_API_URL: ${{ vars.API_URL }}
-      VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
-      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE }}
+      VITE_API_URL: ${{ vars.API_URL || '/api/v2/' }}
+      VITE_API_URL_OLD: ${{ vars.API_URL_OLD || '/api/' }}
+      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE || '/debarchive/v1beta1/' }}
       VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
       VITE_APP_TITLE: Landscape
       VITE_ROOT_PATH: /portal/
