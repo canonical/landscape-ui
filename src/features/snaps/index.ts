@@ -2,7 +2,6 @@ export { default as SnapsHeader } from "./components/SnapsHeader";
 export { default as SnapsList } from "./components/SnapsList";
 export {
   useGetInstalledSnaps,
-  useGetAvailableSnaps,
   useGetSnapInfo,
   useSnapAction,
 } from "./api";

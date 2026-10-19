@@ -8,7 +8,6 @@ import type {
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   availableSnapInfo,
-  availableSnaps,
   bulkAvailableSnaps,
   bulkInstalledSnaps,
   installedSnaps,
@@ -17,7 +16,6 @@ import {
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { delay, http, HttpResponse } from "msw";
 import {
-  generateFilteredResponse,
   generatePaginatedResponse,
   shouldApplyEndpointStatus,
 } from "./_helpers";
@@ -25,29 +23,6 @@ import { createEndpointStatusError } from "./_constants";
 import { capitalize, pluralize } from "@/utils/_helpers";
 
 export default [
-  http.get(
-    `${API_URL}computers/:computerId/snaps/available`,
-    async ({ request }) => {
-      const endpointStatus = getEndpointStatus();
-      const url = new URL(request.url);
-      const search = url.searchParams.get("name_startswith") ?? "";
-      if (endpointStatus.status === "error") {
-        return HttpResponse.json(
-          {
-            error: "InternalServerError",
-            message: "Error response",
-          },
-          {
-            status: 500,
-          },
-        );
-      }
-      return HttpResponse.json({
-        results: generateFilteredResponse(availableSnaps, search, ["name"]),
-      });
-    },
-  ),
-
   http.get<{ computerId: string; name: string }>(
     `${API_URL}computers/:computerId/snaps/:name/info`,
     async ({ params }) => {

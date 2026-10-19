@@ -1,16 +1,14 @@
-import type { SnapAction, SnapMode, SnapWithCount } from "../../../../types";
+import type {
+  SnapAction,
+  SnapMode,
+  SnapModeConfig,
+  SnapWithCount,
+} from "../../../../types";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./ConfirmSnapActionModal.module.scss";
 import { getChangeChannelVerb } from "../../helpers";
-
-interface SnapModeConfig {
-  confinement?: string;
-  mode: SnapMode;
-  value: string;
-  channel?: string;
-}
 
 interface ConfirmSnapActionModalProps {
   readonly actionVerb: SnapAction;

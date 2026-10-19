@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { Input, Notification, Select } from "@canonical/react-components";
 import classNames from "classnames";
-import type { SnapWithCount, SnapMode } from "../../types";
+import type { SnapMode, SnapModeConfig } from "../../types";
 import classes from "./SnapChannelRevisionFields.module.scss";
 import { MODE_OPTIONS } from "./helpers";
 import { useTheme } from "@/context/theme";
@@ -20,13 +20,8 @@ const CLASSIC_CONFINEMENT_TOOLTIP_MESSAGE =
 
 interface SnapChannelRevisionFieldsProps {
   readonly instanceIds: number[];
-  readonly selectedSnap: SnapWithCount;
-  readonly snapModeConfig: {
-    mode: SnapMode;
-    value: string;
-    channel?: string;
-    confinement?: string;
-  };
+  readonly snapName: string;
+  readonly snapModeConfig: SnapModeConfig;
   readonly isLoading?: boolean;
   readonly hasAttemptedSubmit?: boolean;
   readonly onLoadingChange?: (isLoading: boolean) => void;
@@ -41,7 +36,7 @@ interface SnapChannelRevisionFieldsProps {
 
 const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   instanceIds,
-  selectedSnap,
+  snapName,
   snapModeConfig: { mode, value, channel, confinement },
   isLoading = false,
   hasAttemptedSubmit,
@@ -67,7 +62,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
 
   const { snapInfo, isSnapInfoLoading, isSnapInfoError } = useGetSnapInfo({
     instance_id: instanceIds[0] ?? 0,
-    name: selectedSnap.snap.name,
+    name: snapName,
   });
 
   const channelOptions = useMemo(
@@ -144,7 +139,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
     <>
       <div className={classNames(classes.fieldsRow, !isDarkMode && "is-paper")}>
         <Select
-          aria-label={`Snap channel or revision for ${selectedSnap.snap.name}`}
+          aria-label={`Snap channel or revision for ${snapName}`}
           options={MODE_OPTIONS}
           value={mode}
           onChange={(event) => {
@@ -153,7 +148,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
         />
         {mode === "channel" ? (
           <Select
-            aria-label={`Channel for ${selectedSnap.snap.name}`}
+            aria-label={`Channel for ${snapName}`}
             disabled={isLoading || channelOptions.length === 0}
             value={value}
             error={error}
@@ -182,7 +177,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
           <Input
             type="text"
             inputMode="numeric"
-            aria-label={`Revision for ${selectedSnap.snap.name}`}
+            aria-label={`Revision for ${snapName}`}
             value={revisionValue}
             error={error}
             onChange={(event) => {

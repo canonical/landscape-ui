@@ -7,31 +7,28 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { UrlParams } from "@/types/UrlParams";
-import { pluralize } from "@/utils/_helpers";
-import { getFormikError } from "@/utils/formikErrors";
-import { Form, Select } from "@canonical/react-components";
+import { Form } from "@canonical/react-components";
+import classNames from "classnames";
 import { useFormik } from "formik";
 import date from "@/libs/date";
 import type { FC } from "react";
-import { useMemo } from "react";
 import { useParams } from "react-router";
 import { useSnapAction } from "../../api";
-import type { AvailableSnapInfo, InstalledSnap } from "../../types";
-import { getChannelConfinement, getChannelOptions } from "../../helpers";
+import { getSnapActionArgs } from "../../helpers";
+import type { AvailableSnapInfo, InstalledSnap, SnapMode } from "../../types";
+import SnapChannelRevisionFields from "../SnapChannelRevisionFields";
 import { VALIDATION_SCHEMA } from "./constants";
 import type { SwitchFormValues } from "./types";
 import { getInitialValues } from "./helpers";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
+import classes from "./SwitchSnapForm.module.scss";
 
 interface SwitchSnapFormProps {
-  readonly installedSnaps: InstalledSnap[];
+  readonly snap: InstalledSnap;
   readonly snapInfo: AvailableSnapInfo | null;
 }
 
-const SwitchSnapForm: FC<SwitchSnapFormProps> = ({
-  installedSnaps,
-  snapInfo,
-}) => {
+const SwitchSnapForm: FC<SwitchSnapFormProps> = ({ snap, snapInfo }) => {
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
@@ -41,16 +38,8 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({
 
   const instanceId = Number(urlInstanceId);
 
-  const channelOptions = useMemo(
-    () => getChannelOptions(snapInfo?.["channel-map"]),
-    [snapInfo],
-  );
-
-  const hasNoAvailableChannels =
-    !!snapInfo && snapInfo["channel-map"].length === 0;
-
   const formik = useFormik<SwitchFormValues>({
-    initialValues: getInitialValues(channelOptions),
+    initialValues: getInitialValues(snapInfo?.["channel-map"]),
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       try {
@@ -61,17 +50,7 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({
         const { data: activity } = await snapAction({
           computer_ids: [instanceId],
           action: "refresh",
-          snaps: installedSnaps.map((snap) => ({
-            name: snap.snap.name,
-            args: {
-              channel: values.release,
-              classic:
-                getChannelConfinement(
-                  snapInfo?.["channel-map"],
-                  values.release,
-                ) === "classic",
-            },
-          })),
+          snaps: [{ name: snap.snap.name, args: getSnapActionArgs(values) }],
           deliver_after: deliverAfter,
           deliver_after_window: !values.randomize_delivery
             ? undefined
@@ -79,7 +58,7 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({
         });
         closeSidePanel();
         notify.success({
-          message: `You queued ${pluralize(installedSnaps.length, ["snap"], "exact")} to be switched.`,
+          message: `You queued ${snap.snap.name} to be switched.`,
           actions: [
             {
               label: "View details",
@@ -95,27 +74,53 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({
     },
   });
 
+  const handleValueChange = (
+    value: string,
+    channel?: string,
+    confinement?: string,
+  ) => {
+    formik.setValues((prev) => ({ ...prev, value, channel, confinement }));
+  };
+
+  const handleModeChange = (mode: SnapMode) => {
+    formik.setValues((prev) => ({
+      ...prev,
+      mode,
+      value: "",
+      channel: undefined,
+      confinement: mode === "revision" ? undefined : prev.confinement,
+    }));
+  };
+
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <Select
-        label="release"
-        labelClassName="p-text--small p-text--small-caps"
-        options={channelOptions}
-        disabled={channelOptions.length === 0}
-        error={getFormikError(formik, "release")}
-        help={
-          hasNoAvailableChannels
-            ? "No available channels to switch to."
-            : undefined
-        }
-        {...formik.getFieldProps("release")}
-      />
+      <div className={classes.fields}>
+        <div
+          className={classNames(
+            "p-text--small p-text--small-caps",
+            classes.label,
+          )}
+        >
+          Switch to
+        </div>
+        <SnapChannelRevisionFields
+          instanceIds={[instanceId]}
+          snapName={snap.snap.name}
+          snapModeConfig={formik.values}
+          hasAttemptedSubmit={formik.submitCount > 0}
+          onChange={handleValueChange}
+          onModeChange={handleModeChange}
+        />
+      </div>
       <DeliveryBlock formik={formik} />
       <RandomizationBlock formik={formik} />
       <SidePanelFormButtons
         submitButtonText="Switch"
         submitButtonAppearance="positive"
         submitButtonLoading={formik.isSubmitting}
+        formError={
+          formik.values.mode === "channel" ? formik.errors.value : undefined
+        }
       />
     </Form>
   );

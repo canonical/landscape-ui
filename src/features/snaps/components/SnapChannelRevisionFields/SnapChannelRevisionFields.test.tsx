@@ -31,7 +31,7 @@ assert(snapWithNoChannels, "No installed snap has zero available channels.");
 
 const props: ComponentProps<typeof SnapChannelRevisionFields> = {
   instanceIds: [1],
-  selectedSnap: snapWithChannels,
+  snapName: snapWithChannels.snap.name,
   snapModeConfig: {
     mode: "channel",
     value: "",
@@ -311,7 +311,7 @@ describe("SnapChannelRevisionFields", () => {
     renderWithProviders(
       <SnapChannelRevisionFields
         {...props}
-        selectedSnap={snapWithNoChannels}
+        snapName={snapWithNoChannels.snap.name}
       />,
     );
 
@@ -331,7 +331,7 @@ describe("SnapChannelRevisionFields", () => {
     renderWithProviders(
       <SnapChannelRevisionFields
         {...props}
-        selectedSnap={snapWithNoChannels}
+        snapName={snapWithNoChannels.snap.name}
         snapModeConfig={{ ...props.snapModeConfig, confinement: "classic" }}
       />,
     );

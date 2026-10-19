@@ -1,5 +1,6 @@
-export interface SwitchFormValues {
-  release: string;
+import type { SnapModeConfig } from "../../types";
+
+export interface SwitchFormValues extends SnapModeConfig {
   deliver_immediately: boolean;
   randomize_delivery: boolean;
   deliver_delay_window: number;

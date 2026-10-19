@@ -9,7 +9,7 @@ import {
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { assert, describe, expect, it, beforeEach } from "vitest";
@@ -55,18 +55,48 @@ const renderSwitchSnapForm = (
   snapInfo = snapInfoWithChannels,
 ) =>
   renderWithProviders(
-    <SwitchSnapForm installedSnaps={[snap]} snapInfo={snapInfo} />,
+    <SwitchSnapForm snap={snap} snapInfo={snapInfo} />,
     {},
     "/instances/1",
     `/${PATHS.instances.root}/${PATHS.instances.single}`,
   );
 
+const captureRequest = () => {
+  const captured: { body: SnapActionParams | null } = { body: null };
+  server.use(
+    http.post(`${API_URL}snaps`, async ({ request }) => {
+      captured.body = (await request.json()) as SnapActionParams;
+      return HttpResponse.json(successfulSnapInstallResponse);
+    }),
+  );
+  return captured;
+};
+
+const getModeSelect = (snap: InstalledSnap = snapWithChannels) =>
+  screen.getByRole("combobox", {
+    name: `Snap channel or revision for ${snap.snap.name}`,
+  });
+
+const getChannelSelect = (snap: InstalledSnap = snapWithChannels) =>
+  screen.getByRole("combobox", { name: `Channel for ${snap.snap.name}` });
+
+// SnapChannelRevisionFields fetches snap info itself; in the app it is already
+// cached by SwitchChannelButton, but tests must wait for the channels to load.
+const waitForChannels = async () =>
+  waitFor(() => {
+    expect(getChannelSelect()).toBeEnabled();
+  });
+
+const getRevisionInput = (snap: InstalledSnap = snapWithChannels) =>
+  screen.getByRole("textbox", { name: `Revision for ${snap.snap.name}` });
+
 describe("SwitchSnapForm", () => {
   describe("rendering", () => {
-    it("renders the channel select and submit button", () => {
+    it("renders the channel or revision fields and submit button", () => {
       renderSwitchSnapForm();
 
-      expect(screen.getByRole("combobox")).toBeInTheDocument();
+      expect(getModeSelect()).toHaveValue("channel");
+      expect(getChannelSelect()).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: /switch/i }),
       ).toBeInTheDocument();
@@ -79,57 +109,74 @@ describe("SwitchSnapForm", () => {
       expect(screen.getByLabelText("No")).toBeInTheDocument();
     });
 
-    it("populates channel options from snap info", () => {
+    it("populates channel options from snap info", async () => {
       renderSwitchSnapForm();
+      await waitForChannels();
 
-      const options = screen.getAllByRole("option");
+      const options = within(getChannelSelect()).getAllByRole("option");
       expect(options.length).toBeGreaterThan(0);
     });
 
-    it("pre-selects the first available channel", () => {
+    it("pre-selects the first available channel", async () => {
       renderSwitchSnapForm();
+      await waitForChannels();
 
-      const select = screen.getByRole("combobox");
-      const options = screen.getAllByRole("option");
+      const select = getChannelSelect();
+      const options = within(select).getAllByRole("option");
 
       expect(select).toHaveValue(options[0]?.getAttribute("value") ?? "");
     });
   });
 
   describe("no available channels", () => {
-    it("disables the channel select when no channels are available", () => {
+    it("defaults to revision mode when no channels are available", () => {
       renderSwitchSnapForm(snapWithNoChannels, snapInfoWithNoChannels);
 
-      expect(screen.getByRole("combobox")).toBeDisabled();
+      expect(getModeSelect(snapWithNoChannels)).toHaveValue("revision");
+      expect(getRevisionInput(snapWithNoChannels)).toBeInTheDocument();
     });
 
-    it("shows the no available channels help text", () => {
-      renderSwitchSnapForm(snapWithNoChannels, snapInfoWithNoChannels);
-
-      expect(
-        screen.getByText("No available channels to switch to."),
-      ).toBeInTheDocument();
-    });
-
-    it("shows the release required error when submitting without a channel", async () => {
+    it("requires a revision when submitting without one", async () => {
+      const captured = captureRequest();
       renderSwitchSnapForm(snapWithNoChannels, snapInfoWithNoChannels);
 
       await userEvent.click(screen.getByRole("button", { name: /switch/i }));
 
       expect(
-        await screen.findByText("Release is required"),
+        await screen.findByText("This field is required"),
       ).toBeInTheDocument();
+      expect(captured.body).toBeNull();
+    });
+
+    it("requires a channel or revision when switching to channel mode", async () => {
+      const captured = captureRequest();
+      renderSwitchSnapForm(snapWithNoChannels, snapInfoWithNoChannels);
+
+      await userEvent.selectOptions(
+        getModeSelect(snapWithNoChannels),
+        "channel",
+      );
+      await userEvent.click(screen.getByRole("button", { name: /switch/i }));
+
+      expect(
+        await screen.findByText(
+          "Select a channel or specify a revision to switch to",
+        ),
+      ).toBeInTheDocument();
+      expect(captured.body).toBeNull();
     });
   });
 
   describe("channel selection", () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       renderSwitchSnapForm();
+      await waitForChannels();
     });
 
     it("allows switching between channel options", async () => {
-      const releaseSelect = screen.getByRole("combobox");
-      const options: HTMLOptionElement[] = screen.getAllByRole("option");
+      const releaseSelect = getChannelSelect();
+      const options: HTMLOptionElement[] =
+        within(releaseSelect).getAllByRole("option");
 
       assert(options[0]);
       assert(options[1]);
@@ -141,17 +188,6 @@ describe("SwitchSnapForm", () => {
   });
 
   describe("form submission", () => {
-    const captureRequest = () => {
-      const captured: { body: SnapActionParams | null } = { body: null };
-      server.use(
-        http.post(`${API_URL}snaps`, async ({ request }) => {
-          captured.body = (await request.json()) as SnapActionParams;
-          return HttpResponse.json(successfulSnapInstallResponse);
-        }),
-      );
-      return captured;
-    };
-
     const channelMap = snapInfoWithChannels?.["channel-map"] ?? [];
     const strictChannel = channelMap.find(
       (channel) => channel.confinement === "strict",
@@ -193,8 +229,9 @@ describe("SwitchSnapForm", () => {
       const captured = captureRequest();
       renderSwitchSnapForm({ ...snapWithChannels, confinement: "classic" });
 
+      await waitForChannels();
       await userEvent.selectOptions(
-        screen.getByRole("combobox"),
+        getChannelSelect(),
         releaseValue(strictChannel),
       );
       await userEvent.click(screen.getByRole("button", { name: /switch/i }));
@@ -215,8 +252,9 @@ describe("SwitchSnapForm", () => {
       const captured = captureRequest();
       renderSwitchSnapForm({ ...snapWithChannels, confinement: "strict" });
 
+      await waitForChannels();
       await userEvent.selectOptions(
-        screen.getByRole("combobox"),
+        getChannelSelect(),
         releaseValue(classicChannel),
       );
       await userEvent.click(screen.getByRole("button", { name: /switch/i }));
@@ -229,6 +267,23 @@ describe("SwitchSnapForm", () => {
             channel: classicChannel.channel.name,
             classic: true,
           },
+        },
+      ]);
+    });
+
+    it("sends the revision when switching to a specific revision", async () => {
+      const captured = captureRequest();
+      renderSwitchSnapForm();
+
+      await userEvent.selectOptions(getModeSelect(), "revision");
+      await userEvent.type(getRevisionInput(), "42");
+      await userEvent.click(screen.getByRole("button", { name: /switch/i }));
+
+      expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
+      expect(captured.body?.snaps).toEqual([
+        {
+          name: snapWithChannels.snap.name,
+          args: { revision: "42", classic: false },
         },
       ]);
     });
