@@ -4,6 +4,7 @@ import {
   INPUT_DATE_TIME_FORMAT,
 } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { usgProfiles } from "@/tests/mocks/usgProfiles";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { act, screen, waitFor } from "@testing-library/react";
@@ -12,6 +13,7 @@ import date from "@/libs/date";
 import { http, HttpResponse } from "msw";
 import { type ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { getInitialValues } from "../../helpers";
 import USGProfileForm from "./USGProfileForm";
 
 const getProps = (): ComponentProps<typeof USGProfileForm> => ({
@@ -194,6 +196,47 @@ describe("USGProfileForm", () => {
       ).toBeInTheDocument();
     });
   });
+
+  describe.each(["add", "edit"] as const)(
+    "saved end dates (%s)",
+    (formMode) => {
+      it.each([
+        ["20271231T120000Z", "2027-12-31T12:00"],
+        ["20270328T023000Z", "2027-03-28T02:30"],
+      ])("preserves UNTIL=%s on submission", async (until, endDate) => {
+        const profile = {
+          ...usgProfiles[1],
+          schedule: `FREQ=DAILY;INTERVAL=7;UNTIL=${until}`,
+          next_run_time: "2027-01-01T00:00:00Z",
+        };
+        const mutate = vi
+          .fn<ComponentProps<typeof USGProfileForm>["mutate"]>()
+          .mockResolvedValue(undefined);
+
+        renderWithProviders(
+          <USGProfileForm
+            {...props}
+            formMode={formMode}
+            initialValues={getInitialValues(profile)}
+            mutate={mutate}
+            getConfirmationStepDisabled={() => true}
+          />,
+        );
+
+        expect(screen.getByLabelText("End date")).toHaveValue(endDate);
+
+        await userEvent.click(
+          await screen.findByRole("button", { name: props.submitButtonText }),
+        );
+
+        await waitFor(() => {
+          expect(mutate).toHaveBeenCalledWith(
+            expect.objectContaining({ schedule: profile.schedule }),
+          );
+        });
+      });
+    },
+  );
 
   describe("USGProfileForm instances request params", () => {
     const props = getProps();

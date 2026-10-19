@@ -177,7 +177,7 @@ const useUsgProfileForm = ({
 
         if (values.end_type == "on-a-date") {
           scheduleRuleParts.push(
-            `UNTIL=${date(values.end_date).format("YYYYMMDDTHHmmss")}Z`,
+            `UNTIL=${date(`${values.end_date}Z`).utc().format("YYYYMMDDTHHmmss[Z]")}`,
           );
         }
       } else {

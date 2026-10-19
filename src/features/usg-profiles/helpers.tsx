@@ -199,7 +199,7 @@ export const getInitialValues = (profile: USGProfile): USGProfileFormValues => {
         : [],
     delivery_time: profile.restart_deliver_delay ? "delayed" : "asap",
     end_date: schedule.UNTIL
-      ? date(schedule.UNTIL).format(INPUT_DATE_TIME_FORMAT)
+      ? date(schedule.UNTIL).utc().format(INPUT_DATE_TIME_FORMAT)
       : date().format(INPUT_DATE_TIME_FORMAT),
     end_type: schedule.UNTIL ? "on-a-date" : "never",
     every: schedule.INTERVAL,

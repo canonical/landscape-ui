@@ -215,14 +215,15 @@ describe("getUsgSchedule", () => {
     ).toBe("Recurring, every year in May and September");
   });
 
-  it("appends an until clause when provided", () => {
-    const result = getUsgSchedule(
-      makeProfile({ schedule: "FREQ=DAILY;UNTIL=2024-12-31T00:00:00Z" }),
-    );
-    expect(result).toContain("Recurring, every day until");
-    expect(result).toContain("Dec 31, 2024");
-    expect(result).toContain("UTC");
-  });
+  it.each(["20271231T120000Z", "2027-12-31T12:00:00Z"])(
+    "appends the exact UTC end date for UNTIL=%s",
+    (until) => {
+      const result = getUsgSchedule(
+        makeProfile({ schedule: `FREQ=DAILY;INTERVAL=1;UNTIL=${until}` }),
+      );
+      expect(result).toBe("Recurring, every day until Dec 31, 2027, 12:00 UTC");
+    },
+  );
 });
 
 describe("getStatus", () => {
@@ -302,15 +303,17 @@ describe("getInitialValues", () => {
     expect(values.months).toEqual([5, 9]);
   });
 
-  it("maps an end date when the schedule has an until clause", () => {
+  it.each([
+    ["20271231T120000Z", "2027-12-31T12:00:00"],
+    ["2027-12-31T12:00:00Z", "2027-12-31T12:00:00"],
+    ["20270328T023000Z", "2027-03-28T02:30:00"],
+  ])("maps UNTIL=%s to UTC end-date fields", (until, expected) => {
     const values = getInitialValues(
-      makeProfile({ schedule: "FREQ=DAILY;UNTIL=2024-12-31T00:00:00Z" }),
+      makeProfile({ schedule: `FREQ=DAILY;UNTIL=${until}` }),
     );
 
     expect(values.end_type).toBe("on-a-date");
-    expect(values.end_date).toBe(
-      date("2024-12-31T00:00:00Z").format(INPUT_DATE_TIME_FORMAT),
-    );
+    expect(values.end_date).toBe(expected);
   });
 
   it("uses asap delivery and no randomization without delays", () => {

@@ -1,4 +1,5 @@
 import { usgProfiles } from "@/tests/mocks/usgProfiles";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -48,5 +49,28 @@ describe("USGProfileEditSidePanel", () => {
         `You have successfully saved changes for ${usgProfile.title} USG profile.`,
       ),
     ).toBeInTheDocument();
+  });
+
+  it("populates the end date from a saved compact UTC UNTIL", async () => {
+    const profile = {
+      ...usgProfile,
+      schedule: "FREQ=DAILY;INTERVAL=7;UNTIL=20271231T120000Z",
+    };
+    setEndpointStatus({
+      path: "usg-profiles",
+      status: "variant",
+      response: [profile],
+    });
+
+    renderWithProviders(
+      <USGProfileEditSidePanel />,
+      undefined,
+      `/?name=${profile.id}`,
+    );
+
+    expect(await screen.findByLabelText("End date")).toHaveValue(
+      "2027-12-31T12:00",
+    );
+    expect(screen.getByLabelText("Ends")).toHaveValue("on-a-date");
   });
 });
