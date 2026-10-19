@@ -11,7 +11,7 @@ import { Form } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
 import date from "@/libs/date";
-import type { FC } from "react";
+import { type FC, useState } from "react";
 import { useParams } from "react-router";
 import { useSnapAction } from "../../api";
 import { getSnapActionArgs } from "../../helpers";
@@ -35,6 +35,8 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({ snap, snapInfo }) => {
   const openActivityDetails = useOpenActivityDetailsPanel();
   const { closeSidePanel } = useSidePanel();
   const { snapAction } = useSnapAction();
+  const [isChannelInfoLoading, setIsChannelInfoLoading] = useState(false);
+  const [isChannelInfoError, setIsChannelInfoError] = useState(false);
 
   const instanceId = Number(urlInstanceId);
 
@@ -42,6 +44,14 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({ snap, snapInfo }) => {
     initialValues: getInitialValues(snapInfo?.["channel-map"]),
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
+      // The fields show the loading or error state, so only block submission.
+      if (
+        values.mode === "channel" &&
+        (isChannelInfoLoading || isChannelInfoError)
+      ) {
+        return;
+      }
+
       try {
         const deliverAfter =
           !values.deliver_immediately && values.deliver_after
@@ -108,6 +118,8 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({ snap, snapInfo }) => {
           snapName={snap.snap.name}
           snapModeConfig={formik.values}
           hasAttemptedSubmit={formik.submitCount > 0}
+          onLoadingChange={setIsChannelInfoLoading}
+          onErrorChange={setIsChannelInfoError}
           onChange={handleValueChange}
           onModeChange={handleModeChange}
         />

@@ -311,6 +311,44 @@ describe("SwitchSnapForm", () => {
       expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
     });
 
+    it("blocks a channel switch when channel info fails to load", async () => {
+      const captured = captureRequest();
+      setEndpointStatus({
+        path: "computers/:computerId/snaps/:name/info",
+        status: "error",
+      });
+      renderSwitchSnapForm();
+
+      expect(
+        await screen.findByText("Failed to load channels for this snap"),
+      ).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: /switch/i }));
+
+      expect(screen.queryByText(/you queued/i)).not.toBeInTheDocument();
+      expect(captured.body).toBeNull();
+    });
+
+    it("allows a revision switch when channel info fails to load", async () => {
+      const captured = captureRequest();
+      setEndpointStatus({
+        path: "computers/:computerId/snaps/:name/info",
+        status: "error",
+      });
+      renderSwitchSnapForm();
+
+      await userEvent.selectOptions(getModeSelect(), "revision");
+      await userEvent.type(getRevisionInput(), "42");
+      await userEvent.click(screen.getByRole("button", { name: /switch/i }));
+
+      expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
+      expect(captured.body?.snaps).toEqual([
+        {
+          name: snapWithChannels.snap.name,
+          args: { revision: "42", classic: false },
+        },
+      ]);
+    });
+
     it("shows an error notification on API failure", async () => {
       setEndpointStatus("error");
       renderSwitchSnapForm();
