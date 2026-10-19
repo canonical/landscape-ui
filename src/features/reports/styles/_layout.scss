@@ -1,0 +1,11 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+$report-chart-size: 192px;
+$report-chart-gap: $sp-medium;
+$report-dot-column-width: 1.5rem;
+// Everything left of the donut legend's label column (chart, gap and dot
+// column). The bar table's marker column uses the same width so the label
+// columns of both report tables line up.
+$report-marker-column-width: calc(
+  #{$report-chart-size} + #{$report-chart-gap} + #{$report-dot-column-width}
+);
