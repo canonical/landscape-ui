@@ -4,6 +4,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { hasSecurityUpgrades, hasUpgrades } from "@/features/instances";
 import { usePackages } from "@/features/packages";
 import { useUsns } from "@/features/usns";
+import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -38,6 +39,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
+  const { isFeatureEnabled } = useAuth();
   const { upgradeInstancesPackagesQuery } = usePackages();
   const { upgradeUsnsQuery } = useUsns();
 
@@ -91,6 +93,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
           onTabLinkClick: (id) => {
             setActiveTabLinkId(id);
           },
+          withPackagesTab: isFeatureEnabled("package-search-rest-api"),
           withUsnsTab: instancesWithUsn.length > 0,
         })}
       />

@@ -1,20 +1,28 @@
 import { API_URL } from "@/constants";
-import type { GetSnapsParams, InstalledSnap } from "@/features/snaps";
+import type {
+  GetSnapsParams,
+  InstalledSnap,
+  SnapActionParams,
+  SnapWithCount,
+} from "@/features/snaps";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   availableSnapInfo,
   availableSnaps,
+  bulkAvailableSnaps,
+  bulkInstalledSnaps,
   installedSnaps,
   successfulSnapInstallResponse,
 } from "@/tests/mocks/snap";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import {
   generateFilteredResponse,
   generatePaginatedResponse,
   shouldApplyEndpointStatus,
 } from "./_helpers";
-import { createEndpointStatusNetworkError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
+import { capitalize, pluralize } from "@/utils/_helpers";
 
 export default [
   http.get(
@@ -40,20 +48,25 @@ export default [
     },
   ),
 
-  http.get<{ name: string }>(
+  http.get<{ computerId: string; name: string }>(
     `${API_URL}computers/:computerId/snaps/:name/info`,
     async ({ params }) => {
-      const endpointStatus = getEndpointStatus();
-      if (endpointStatus.status === "error") {
-        return HttpResponse.json(
-          {
-            error: "InternalServerError",
-            message: "Error response",
-          },
-          {
-            status: 500,
-          },
+      if (shouldApplyEndpointStatus("computers/:computerId/snaps/:name/info")) {
+        const endpointStatus = getEndpointStatus(
+          "computers/:computerId/snaps/:name/info",
         );
+        if (endpointStatus.status === "error") {
+          throw createEndpointStatusError();
+        }
+      }
+
+      const id = Number(params.computerId);
+      if (!Number.isFinite(id)) {
+        throw createEndpointStatusError({
+          status: 400,
+          error: "Bad Request",
+          message: "Computer id must be a valid number",
+        });
       }
 
       return HttpResponse.json(
@@ -63,20 +76,73 @@ export default [
       );
     },
   ),
-  http.post(`${API_URL}snaps`, async () => {
-    const endpointStatus = getEndpointStatus();
-    if (endpointStatus.status === "error") {
-      return HttpResponse.json(
-        {
-          error: "InternalServerError",
-          message: "Error response",
-        },
-        {
-          status: 500,
-        },
-      );
+
+  http.get(`${API_URL}snaps`, async ({ request }) => {
+    if (shouldApplyEndpointStatus("snaps")) {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      if (endpointStatus.status === "loading") {
+        await delay("infinite");
+      }
     }
-    return HttpResponse.json(successfulSnapInstallResponse);
+
+    const DEFAULT_PAGE_SIZE = 20;
+    const url = new URL(request.url);
+    const search = url.searchParams.get("search") ?? "";
+    const status = url.searchParams.get("status") ?? "installed";
+    const offset = Number(url.searchParams.get("offset")) || 0;
+    const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
+
+    if (!["installed", "available", "held"].includes(status)) {
+      throw createEndpointStatusError();
+    }
+
+    const filterResults = (): SnapWithCount[] => {
+      switch (status) {
+        case "installed":
+          return bulkInstalledSnaps;
+        case "available":
+          return bulkAvailableSnaps;
+        default:
+          return bulkInstalledSnaps.slice(10);
+      }
+    };
+
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: filterResults(),
+        limit,
+        offset,
+        search,
+        searchFields: ["snap.name"],
+      }),
+    );
+  }),
+
+  http.post<never, SnapActionParams>(`${API_URL}snaps`, async ({ request }) => {
+    if (shouldApplyEndpointStatus("snaps")) {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      if (endpointStatus.status === "loading") {
+        await delay("infinite");
+      }
+    }
+
+    const { action, computer_ids } = await request.json();
+    const computers = pluralize(computer_ids.length, ["computer"], "exact");
+
+    return HttpResponse.json({
+      ...successfulSnapInstallResponse,
+      summary: `${capitalize(action)} snaps on ${computers}`,
+    });
   }),
 
   http.get<never, GetSnapsParams, ApiPaginatedResponse<InstalledSnap>>(
@@ -93,7 +159,7 @@ export default [
         shouldApplyEndpointStatus("computers/:computerId/snaps/installed") &&
         endpointStatus.status === "error"
       ) {
-        throw createEndpointStatusNetworkError();
+        throw createEndpointStatusError();
       }
 
       return HttpResponse.json(

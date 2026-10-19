@@ -2,7 +2,7 @@ import { API_URL } from "@/constants";
 import type { ComplianceReport } from "@/features/reports";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { http, HttpResponse } from "msw";
-import { createEndpointStatusNetworkError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 import { shouldApplyEndpointStatus } from "./_helpers";
 
 const OTHER_INSTANCE_ID = 11;
@@ -52,7 +52,7 @@ export default [
       const { status } = getEndpointStatus("computers/compliance-report");
 
       if (status === "error") {
-        throw createEndpointStatusNetworkError();
+        throw createEndpointStatusError();
       }
 
       if (status === "empty") {

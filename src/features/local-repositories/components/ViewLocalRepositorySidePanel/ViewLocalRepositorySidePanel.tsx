@@ -8,7 +8,7 @@ import ViewRepositoryPackagesTab from "./components/ViewRepositoryPackagesTab";
 import { useGetLocalRepository } from "../../api";
 import { DEFAULT_POLLING_INTERVAL } from "@/constants";
 import {
-  OperationErrorNotification,
+  OperationStatusNotification,
   useGetOperation,
 } from "@/features/operations";
 import usePageParams from "@/hooks/usePageParams";
@@ -21,7 +21,6 @@ const ViewLocalRepositorySidePanel: FC = () => {
   const { operation, isGettingOperation } = useGetOperation(
     repository?.lastOperation ?? "",
     {
-      enabled: !!repository?.lastOperation,
       refetchInterval: ({ state }) =>
         state.error || state.data?.data.done ? false : DEFAULT_POLLING_INTERVAL,
     },
@@ -57,11 +56,7 @@ const ViewLocalRepositorySidePanel: FC = () => {
     <>
       <SidePanel.Header>{repository.displayName}</SidePanel.Header>
       <SidePanel.Content>
-        <OperationErrorNotification
-          isVisible={!!operation?.error}
-          title="Package import failed"
-          message="Your last package import was not completed successfully."
-        />
+        <OperationStatusNotification operation={operation} type="import" />
         <ViewRepositoryActionsBlock
           repository={repository}
           isImporting={isImporting}

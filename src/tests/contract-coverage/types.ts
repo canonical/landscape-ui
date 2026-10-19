@@ -2,7 +2,7 @@
  * The three API generations the frontend talks to:
  * - v1: legacy Python RPC API (`/api/?action=...`), route identity = action name
  * - v2: current Python REST API (`/api/v2/...`)
- * - go: new Go services (`/debarchive/v1beta1/...`), specced by
+ * - go: new Go services (`/debarchive/v1/...`), specced by
  *   `@canonical/landscape-openapi`
  */
 export type Backend = "v1" | "v2" | "go" | "unknown";
@@ -17,7 +17,7 @@ export interface Observation {
 }
 
 export interface RouteDefinition {
-  /** Canonical identity, e.g. "GET /debarchive/v1beta1/mirrors/{mirrorId}". */
+  /** Canonical identity, e.g. "GET /debarchive/v1/mirrors/{mirrorId}". */
   id: string;
   method: string;
   /** Canonical path pattern using {param} placeholders; {param...} may span segments. */

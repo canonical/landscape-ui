@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ROUTES } from "@/libs/routes";
 import {
+  getInvitationPath,
   getProviderIcon,
   getSameOriginPath,
   getSameOriginUrl,
@@ -72,5 +73,24 @@ describe("auth helpers", () => {
   it("falls back to the default provider icon for unknown providers", () => {
     expect(getProviderIcon("okta")).toBe("okta");
     expect(getProviderIcon("unknown-provider")).toBe("connected");
+  });
+
+  describe("getInvitationPath", () => {
+    const base = ROUTES.auth.invitation({ secureId: "abc" });
+
+    it("returns the bare invitation path without redirect params", () => {
+      expect(getInvitationPath("abc", new URLSearchParams())).toBe(base);
+    });
+
+    it("carries redirect-to and external over", () => {
+      const params = new URLSearchParams({
+        "redirect-to": "/account/acme",
+        external: "",
+      });
+
+      expect(getInvitationPath("abc", params)).toBe(
+        `${base}?redirect-to=%2Faccount%2Facme&external=true`,
+      );
+    });
   });
 });

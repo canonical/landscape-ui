@@ -23,6 +23,7 @@ const mockAuth: AuthContextProps = {
   hasAccounts: false,
   isSuperAdmin: false,
   canManageAccounts: false,
+  canEnterAccounts: false,
 };
 
 const mockEnv: EnvContextState = {

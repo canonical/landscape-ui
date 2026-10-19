@@ -22,6 +22,7 @@ const authProps: AuthContextProps = {
   hasAccounts: true,
   isSuperAdmin: false,
   canManageAccounts: false,
+  canEnterAccounts: false,
 };
 
 vi.mock("react-router", async () => {

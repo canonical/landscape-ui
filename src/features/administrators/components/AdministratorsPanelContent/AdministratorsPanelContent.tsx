@@ -1,4 +1,3 @@
-import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import AdministratorList from "../AdministratorList";
@@ -13,7 +12,7 @@ interface AdministratorsPanelContentProps {
 const AdministratorsPanelContent: FC<AdministratorsPanelContentProps> = ({
   administrators,
 }) => {
-  const { search: searchText, pageSize, currentPage } = usePageParams();
+  const { search: searchText } = usePageParams();
   const { getRolesQuery } = useRoles();
 
   const { data: getRolesQueryResult } = getRolesQuery();
@@ -33,27 +32,13 @@ const AdministratorsPanelContent: FC<AdministratorsPanelContentProps> = ({
     );
   };
 
-  const searchedAdministrators = getSearchedAdministrators();
-
-  const filteredAdministrators =
-    searchedAdministrators.filter(
-      (_, index) =>
-        index >= (currentPage - 1) * pageSize && index < currentPage * pageSize,
-    ) ?? [];
-
   return (
     <>
       <AdministratorsPanelHeader />
       <AdministratorList
-        administrators={filteredAdministrators}
+        administrators={getSearchedAdministrators()}
         roles={getRolesQueryResult?.data ?? []}
       />
-      {filteredAdministrators.length > 0 && (
-        <TablePagination
-          totalItems={searchedAdministrators.length}
-          currentItemCount={filteredAdministrators.length}
-        />
-      )}
     </>
   );
 };

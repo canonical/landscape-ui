@@ -1,9 +1,12 @@
+import { API_URL } from "@/constants";
 import { PATHS, ROUTES } from "@/libs/routes";
+import server from "@/tests/server";
 import { availableSnapInfo, installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { assert, describe, expect, it } from "vitest";
+import { http, HttpResponse } from "msw";
+import { assert, describe, expect, it, vi } from "vitest";
 import SwitchChannelButton from "./SwitchChannelButton";
 
 const INSTANCE_ID = 11;
@@ -93,5 +96,34 @@ describe("SwitchChannelButton", () => {
         name: /Switch .*'s channel/i,
       }),
     ).toBeInTheDocument();
+  });
+
+  it("does not request snap info with a NaN instance id", async () => {
+    const snapInfoResolver = vi.fn(() => HttpResponse.json({}));
+
+    server.use(
+      http.get(
+        `${API_URL}computers/:computerId/snaps/:name/info`,
+        snapInfoResolver,
+      ),
+    );
+
+    renderWithProviders(
+      <SwitchChannelButton
+        snap={snapWithChannels}
+        selectedSnaps={[snapWithChannels]}
+      />,
+      undefined,
+      `/${PATHS.instances.root}/NaN?tab=snaps`,
+      `/${PATHS.instances.root}/${PATHS.instances.single}`,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Switch channel" }),
+      ).toHaveAttribute("aria-disabled");
+    });
+
+    expect(snapInfoResolver).not.toHaveBeenCalled();
   });
 });

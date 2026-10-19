@@ -108,12 +108,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.name ? (
             <Suspense fallback={<LoadingState inline />}>
-              <MirrorActions
-                mirrorDisplayName={mirror.displayName}
-                mirrorName={mirror.name}
-                preserveSignatures={mirror.preserveSignatures}
-                operationName={mirror.lastOperation}
-              />
+              <MirrorActions mirror={mirror} />
             </Suspense>
           ) : (
             <NoData />
@@ -131,7 +126,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
         emptyMsg={
           emptyMsg ?? "No mirrors found according to your search parameters."
         }
-        minWidth={1120}
+        minWidth={1190}
       />
       <TablePagination
         totalItems={mirrors.length}

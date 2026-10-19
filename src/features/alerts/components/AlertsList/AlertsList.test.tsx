@@ -28,6 +28,7 @@ const authProps: AuthContextProps = {
   hasAccounts: true,
   isSuperAdmin: false,
   canManageAccounts: false,
+  canEnterAccounts: false,
 };
 
 describe("AlertsList", () => {

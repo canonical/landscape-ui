@@ -34,6 +34,7 @@ Start here, then follow the smallest relevant link:
 - For frontend implementation and placement conventions, read [docs/FRONTEND.md](docs/FRONTEND.md).
 - For automated test strategy, read [docs/testing/index.md](docs/testing/index.md).
 - For completion criteria and closed-loop validation, read [docs/verification/index.md](docs/verification/index.md).
+- For CI/CD workflow behavior and guardrails, read [docs/ci-workflows.md](docs/ci-workflows.md).
 
 ## Source-of-Truth Rule
 

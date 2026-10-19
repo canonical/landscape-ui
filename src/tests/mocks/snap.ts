@@ -2,6 +2,7 @@ import type {
   AvailableSnap,
   AvailableSnapInfo,
   InstalledSnap,
+  SnapWithCount,
 } from "@/features/snaps";
 
 export const availableSnaps: AvailableSnap[] = [
@@ -132,6 +133,7 @@ export const installedSnaps = [
       publisher: { username: "canonical", validation: "verified" },
       summary: "Runtime environment based on Ubuntu 20.04",
     },
+    computer_count: 23,
   },
   {
     version: "5.0.2-838e1b2",
@@ -145,6 +147,7 @@ export const installedSnaps = [
       publisher: { username: "canonical", validation: "verified" },
       summary: "LXD - container and VM manager",
     },
+    computer_count: 15,
   },
   {
     version: "2.60.4",
@@ -155,9 +158,14 @@ export const installedSnaps = [
     snap: {
       id: "3",
       name: "Snap 3",
-      publisher: { username: "canonical", validation: "verified" },
+      publisher: {
+        username: "canonical",
+        "display-name": "Canonical",
+        validation: "verified",
+      },
       summary: "Daemon and tooling that enable snap packages",
     },
+    computer_count: null,
   },
   {
     version: "2.61.6",
@@ -171,6 +179,7 @@ export const installedSnaps = [
       publisher: { username: "canonical", validation: "verified" },
       summary: "Extra tooling for helpful actions",
     },
+    computer_count: 12,
   },
   {
     version: "1.0.0",
@@ -184,6 +193,7 @@ export const installedSnaps = [
       publisher: { username: "canonical", validation: "verified" },
       summary: "Example snap for testing",
     },
+    computer_count: 5,
   },
   {
     version: "3.2.1",
@@ -197,6 +207,7 @@ export const installedSnaps = [
       publisher: { username: "publisher6", validation: "verified" },
       summary: "Development tools and utilities",
     },
+    computer_count: 7,
   },
   {
     version: "5.4.3",
@@ -210,6 +221,7 @@ export const installedSnaps = [
       publisher: { username: "publisher7", validation: "unverified" },
       summary: "Monitoring and metrics collection",
     },
+    computer_count: null,
   },
   {
     version: "1.9.2",
@@ -223,6 +235,7 @@ export const installedSnaps = [
       publisher: { username: "canonical", validation: "verified" },
       summary: "Container runtime environment",
     },
+    computer_count: 4,
   },
   {
     version: "7.1.0",
@@ -236,6 +249,7 @@ export const installedSnaps = [
       publisher: { username: "publisher9", validation: "verified" },
       summary: "Database server and tools",
     },
+    computer_count: 9,
   },
   {
     version: "2.3.4",
@@ -249,6 +263,7 @@ export const installedSnaps = [
       publisher: { username: "publisher10", validation: "verified" },
       summary: "Web server and reverse proxy",
     },
+    computer_count: 11,
   },
   {
     version: "4.0.0",
@@ -262,6 +277,7 @@ export const installedSnaps = [
       publisher: { username: "publisher11", validation: "unverified" },
       summary: "Message queue and streaming platform",
     },
+    computer_count: 10,
   },
   {
     version: "1.5.6",
@@ -275,6 +291,7 @@ export const installedSnaps = [
       publisher: { username: "canonical", validation: "verified" },
       summary: "Logging and analysis framework",
     },
+    computer_count: null,
   },
   {
     version: "3.7.2",
@@ -288,6 +305,7 @@ export const installedSnaps = [
       publisher: { username: "publisher13", validation: "verified" },
       summary: "API gateway and management",
     },
+    computer_count: 15,
   },
   {
     version: "2.1.8",
@@ -301,6 +319,7 @@ export const installedSnaps = [
       publisher: { username: "publisher14", validation: "unverified" },
       summary: "System monitoring dashboard",
     },
+    computer_count: 12,
   },
   {
     version: "6.2.0",
@@ -314,6 +333,7 @@ export const installedSnaps = [
       publisher: { username: "canonical", validation: "verified" },
       summary: "Configuration management tool",
     },
+    computer_count: 9,
   },
   {
     version: "1.8.3",
@@ -327,6 +347,7 @@ export const installedSnaps = [
       publisher: { username: "publisher16", validation: "verified" },
       summary: "Container orchestration system",
     },
+    computer_count: 16,
   },
   {
     version: "4.5.1",
@@ -340,6 +361,7 @@ export const installedSnaps = [
       publisher: { username: "publisher17", validation: "verified" },
       summary: "Service discovery and registry",
     },
+    computer_count: 14,
   },
   {
     version: "2.9.7",
@@ -353,6 +375,7 @@ export const installedSnaps = [
       publisher: { username: "publisher18", validation: "unverified" },
       summary: "Event processing engine",
     },
+    computer_count: null,
   },
   {
     version: "3.3.5",
@@ -366,6 +389,7 @@ export const installedSnaps = [
       publisher: { username: "canonical", validation: "verified" },
       summary: "Load balancing and routing",
     },
+    computer_count: 10,
   },
   {
     version: "5.0.2",
@@ -379,6 +403,7 @@ export const installedSnaps = [
       publisher: { username: "publisher20", validation: "verified" },
       summary: "Cloud storage integration",
     },
+    computer_count: 9,
   },
   {
     version: "1.4.9",
@@ -392,6 +417,7 @@ export const installedSnaps = [
       publisher: { username: "publisher21", validation: "verified" },
       summary: "Authentication and authorization",
     },
+    computer_count: 7,
   },
   {
     version: "7.3.0",
@@ -405,6 +431,7 @@ export const installedSnaps = [
       publisher: { username: "publisher22", validation: "unverified" },
       summary: "Data pipeline orchestration",
     },
+    computer_count: 6,
   },
   {
     version: "2.6.4",
@@ -418,6 +445,7 @@ export const installedSnaps = [
       publisher: { username: "canonical", validation: "verified" },
       summary: "Performance profiling suite",
     },
+    computer_count: 5,
   },
   {
     version: "4.2.8",
@@ -431,6 +459,7 @@ export const installedSnaps = [
       publisher: { username: "publisher24", validation: "verified" },
       summary: "Distributed tracing system",
     },
+    computer_count: null,
   },
   {
     version: "3.1.1",
@@ -444,8 +473,348 @@ export const installedSnaps = [
       publisher: { username: "publisher25", validation: "verified" },
       summary: "Machine learning framework",
     },
+    computer_count: 3,
   },
 ] as const satisfies InstalledSnap[];
+
+export const bulkInstalledSnaps = [
+  {
+    snap: {
+      id: "1",
+      name: "Snap 1",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "Runtime environment based on Ubuntu 20.04",
+    },
+    computer_count: 20,
+  },
+  {
+    snap: {
+      id: "2",
+      name: "Snap 2",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "LXD - container and VM manager",
+    },
+    computer_count: 15,
+  },
+  {
+    snap: {
+      id: "3",
+      name: "Snap 3",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "Daemon and tooling that enable snap packages",
+    },
+    computer_count: 8,
+  },
+  {
+    snap: {
+      id: "4",
+      name: "Snap 4",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "Extra tooling for helpful actions",
+    },
+    computer_count: 12,
+  },
+  {
+    snap: {
+      id: "5",
+      name: "Snap 5",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "Example snap for testing",
+    },
+    computer_count: 5,
+  },
+  {
+    snap: {
+      id: "6",
+      name: "Snap 6",
+      publisher: { username: "publisher6", validation: "verified" },
+      summary: "Development tools and utilities",
+    },
+    computer_count: 7,
+  },
+  {
+    snap: {
+      id: "7",
+      name: "Snap 7",
+      publisher: { username: "publisher7", validation: "unverified" },
+      summary: "Monitoring and metrics collection",
+    },
+    computer_count: 6,
+  },
+  {
+    snap: {
+      id: "8",
+      name: "Snap 8",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "Container runtime environment",
+    },
+    computer_count: 4,
+  },
+  {
+    snap: {
+      id: "9",
+      name: "Snap 9",
+      publisher: { username: "publisher9", validation: "verified" },
+      summary: "Database server and tools",
+    },
+    computer_count: 9,
+  },
+  {
+    snap: {
+      id: "10",
+      name: "Snap 10",
+      publisher: { username: "publisher10", validation: "verified" },
+      summary: "Web server and reverse proxy",
+    },
+    computer_count: 11,
+  },
+  {
+    snap: {
+      id: "11",
+      name: "Snap 11",
+      publisher: { username: "publisher11", validation: "unverified" },
+      summary: "Message queue and streaming platform",
+    },
+    computer_count: 10,
+  },
+  {
+    snap: {
+      id: "12",
+      name: "Snap 12",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "Logging and analysis framework",
+    },
+    computer_count: 14,
+  },
+  {
+    snap: {
+      id: "13",
+      name: "Snap 13",
+      publisher: { username: "publisher13", validation: "verified" },
+      summary: "API gateway and management",
+    },
+    computer_count: 15,
+  },
+  {
+    snap: {
+      id: "14",
+      name: "Snap 14",
+      publisher: { username: "publisher14", validation: "unverified" },
+      summary: "System monitoring dashboard",
+    },
+    computer_count: 12,
+  },
+  {
+    snap: {
+      id: "15",
+      name: "Snap 15",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "Configuration management tool",
+    },
+    computer_count: 9,
+  },
+  {
+    snap: {
+      id: "16",
+      name: "Snap 16",
+      publisher: { username: "publisher16", validation: "verified" },
+      summary: "Container orchestration system",
+    },
+    computer_count: 16,
+  },
+  {
+    snap: {
+      id: "17",
+      name: "Snap 17",
+      publisher: { username: "publisher17", validation: "verified" },
+      summary: "Service discovery and registry",
+    },
+    computer_count: 18,
+  },
+  {
+    snap: {
+      id: "18",
+      name: "Snap 18",
+      publisher: { username: "publisher18", validation: "unverified" },
+      summary: "Event processing engine",
+    },
+    computer_count: 11,
+  },
+  {
+    snap: {
+      id: "19",
+      name: "Snap 19",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "Load balancing and routing",
+    },
+    computer_count: 10,
+  },
+  {
+    snap: {
+      id: "20",
+      name: "Snap 20",
+      publisher: { username: "publisher20", validation: "verified" },
+      summary: "Cloud storage integration",
+    },
+    computer_count: 9,
+  },
+  {
+    snap: {
+      id: "21",
+      name: "Snap 21",
+      publisher: { username: "publisher21", validation: "verified" },
+      summary: "Authentication and authorization",
+    },
+    computer_count: 7,
+  },
+  {
+    snap: {
+      id: "22",
+      name: "Snap 22",
+      publisher: { username: "publisher22", validation: "unverified" },
+      summary: "Data pipeline orchestration",
+    },
+    computer_count: 6,
+  },
+  {
+    snap: {
+      id: "23",
+      name: "Snap 23",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "Performance profiling suite",
+    },
+    computer_count: 5,
+  },
+  {
+    snap: {
+      id: "24",
+      name: "Snap 24",
+      publisher: { username: "publisher24", validation: "verified" },
+      summary: "Distributed tracing system",
+    },
+    computer_count: 4,
+  },
+  {
+    snap: {
+      id: "25",
+      name: "Snap 25",
+      publisher: { username: "publisher25", validation: "verified" },
+      summary: "Machine learning framework",
+    },
+    computer_count: 3,
+  },
+] as const satisfies SnapWithCount[];
+
+export const bulkAvailableSnaps = [
+  {
+    snap: {
+      id: "1",
+      name: "Snap 1",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "Runtime environment based on Ubuntu 20.04",
+    },
+    computer_count: null,
+  },
+  {
+    snap: {
+      id: "2",
+      name: "Snap 2",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "LXD - container and VM manager",
+    },
+    computer_count: null,
+  },
+  {
+    snap: {
+      id: "6",
+      name: "Snap 6",
+      publisher: { username: "publisher6", validation: "verified" },
+      summary: "Development tools and utilities",
+    },
+    computer_count: null,
+  },
+  {
+    snap: {
+      id: "10",
+      name: "Snap 10",
+      publisher: { username: "publisher10", validation: "verified" },
+      summary: "Web server and reverse proxy",
+    },
+    computer_count: null,
+  },
+  {
+    snap: {
+      id: "11",
+      name: "Snap 11",
+      publisher: { username: "publisher11", validation: "unverified" },
+      summary: "Message queue and streaming platform",
+    },
+    computer_count: null,
+  },
+  {
+    snap: {
+      id: "12",
+      name: "Snap 12",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "Logging and analysis framework",
+    },
+    computer_count: null,
+  },
+  {
+    snap: {
+      id: "20",
+      name: "Snap 20",
+      publisher: { username: "publisher20", validation: "verified" },
+      summary: "Cloud storage integration",
+    },
+    computer_count: null,
+  },
+  {
+    snap: {
+      id: "24",
+      name: "Snap 24",
+      publisher: { username: "publisher24", validation: "verified" },
+      summary: "Distributed tracing system",
+    },
+    computer_count: null,
+  },
+  {
+    snap: {
+      id: "26",
+      name: "Snap 26",
+      publisher: { username: "publisher26", validation: "verified" },
+      summary: "Secrets management vault",
+    },
+    computer_count: null,
+  },
+  {
+    snap: {
+      id: "27",
+      name: "Snap 27",
+      publisher: { username: "publisher27", validation: "unverified" },
+      summary: "Continuous integration runner",
+    },
+    computer_count: null,
+  },
+  {
+    snap: {
+      id: "28",
+      name: "Snap 28",
+      publisher: { username: "canonical", validation: "verified" },
+      summary: "Object storage gateway",
+    },
+    computer_count: null,
+  },
+  {
+    snap: {
+      id: "29",
+      name: "Snap 29",
+      publisher: { username: "publisher29", validation: "verified" },
+      summary: "Edge computing runtime",
+    },
+    computer_count: null,
+  },
+] as const satisfies SnapWithCount[];
 
 export const availableSnapInfo = [
   {
@@ -471,7 +840,7 @@ export const availableSnapInfo = [
       {
         channel: {
           architecture: "amd64",
-          name: "latest",
+          name: "latest/stable",
           "released-at": "2021-08-01T00:00:00Z",
           risk: "stable",
           track: "latest",
@@ -482,15 +851,39 @@ export const availableSnapInfo = [
       },
       {
         channel: {
-          architecture: "amd86",
-          name: "latest",
-          "released-at": "2022-07-01T00:00:00Z",
-          risk: "stable",
+          architecture: "amd64",
+          name: "latest/candidate",
+          "released-at": "2022-01-01T00:00:00Z",
+          risk: "candidate",
+          track: "latest",
+        },
+        confinement: "strict",
+        revision: 3,
+        version: "1.1.0",
+      },
+      {
+        channel: {
+          architecture: "amd64",
+          name: "latest/beta",
+          "released-at": "2022-03-01T00:00:00Z",
+          risk: "beta",
+          track: "latest",
+        },
+        confinement: "strict",
+        revision: 4,
+        version: "1.2.0-beta",
+      },
+      {
+        channel: {
+          architecture: "amd64",
+          name: "latest/edge",
+          "released-at": "2022-06-01T00:00:00Z",
+          risk: "edge",
           track: "latest",
         },
         confinement: "classic",
-        revision: 2,
-        version: "2.0.0",
+        revision: 5,
+        version: "1.3.0-edge",
       },
     ],
     "default-track": "latest",
@@ -553,7 +946,7 @@ export const availableSnapInfo = [
       {
         channel: {
           architecture: "amd64",
-          name: "latest",
+          name: "latest/stable",
           "released-at": "2021-08-01T00:00:00Z",
           risk: "stable",
           track: "latest",
@@ -564,15 +957,27 @@ export const availableSnapInfo = [
       },
       {
         channel: {
-          architecture: "amd86",
-          name: "latest",
-          "released-at": "2022-07-01T00:00:00Z",
-          risk: "stable",
+          architecture: "amd64",
+          name: "latest/candidate",
+          "released-at": "2023-01-01T00:00:00Z",
+          risk: "candidate",
           track: "latest",
         },
+        confinement: "strict",
+        revision: 3,
+        version: "1.1.0",
+      },
+      {
+        channel: {
+          architecture: "amd64",
+          name: "5.0/stable",
+          "released-at": "2023-05-01T00:00:00Z",
+          risk: "stable",
+          track: "5.0",
+        },
         confinement: "classic",
-        revision: 2,
-        version: "2.0.0",
+        revision: 10,
+        version: "5.0.0",
       },
     ],
     "default-track": "latest",
@@ -584,6 +989,35 @@ export const availableSnapInfo = [
         validation: "verified",
         "display-name": "Canonical",
         id: "1",
+      },
+    },
+  },
+  {
+    name: "Snap 6",
+    "snap-id": "6",
+    "channel-map": [
+      {
+        channel: {
+          architecture: "amd64",
+          name: "latest/stable",
+          "released-at": "2023-02-01T00:00:00Z",
+          risk: "stable",
+          track: "latest",
+        },
+        confinement: "classic",
+        revision: 1,
+        version: "3.2.1",
+      },
+    ],
+    "default-track": "latest",
+    snap: {
+      id: "6",
+      name: "snap6",
+      publisher: {
+        username: "publisher6",
+        validation: "verified",
+        "display-name": "Publisher 6",
+        id: "6",
       },
     },
   },

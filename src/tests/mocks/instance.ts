@@ -1856,7 +1856,7 @@ export const instanceWithHardware: Instance = {
   ...ubuntuInstance,
   grouped_hardware: {
     system: {
-      bios_capabilities: [],
+      bios_capabilities: [{ code: "pci", title: "[PCI is supported]" }],
       model: "ThinkPad X1",
       vendor: "Lenovo",
       bios_vendor: "LENOVO",
@@ -1870,12 +1870,15 @@ export const instanceWithHardware: Instance = {
         vendor: "Intel",
         clock_speed: "3.0 GHz",
         model: "Core i7",
-        architecture: "x86_64",
-        cache: {},
-        flags: [],
+        architecture: "64 bits",
+        cache: { "L1 cache": "64 KiB", "L2 cache": "1 MiB" },
+        flags: [
+          { code: "sse2", title: "sse2" },
+          { code: "x86-64", title: "[64bits extensions (x86-64)]" },
+        ],
       },
     ],
-    memory: { size: "16 GB" },
+    memory: { size: "16 GiB RAM" },
     network: [
       {
         ip: "192.168.1.1",
@@ -1886,8 +1889,22 @@ export const instanceWithHardware: Instance = {
       },
     ],
     multimedia: { model: "HD Audio", vendor: "Realtek" },
-    storage: [],
-    display: { model: "", vendor: "" },
+    storage: [
+      {
+        description: "NVMe disk",
+        product: "SSD 970 EVO",
+        vendor: "Samsung",
+        size: "512 GiB",
+        partitions: [
+          {
+            description: "EXT4 volume",
+            filesystem: "ext4",
+            size: "511 GiB",
+          },
+        ],
+      },
+    ],
+    display: { model: "Not available", vendor: "Not available" },
     pci: [],
     scsi: [],
     usb: [],

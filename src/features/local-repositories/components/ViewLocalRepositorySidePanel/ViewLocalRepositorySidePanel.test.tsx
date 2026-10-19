@@ -76,7 +76,7 @@ describe("ViewLocalRepositorySidePanel", () => {
     renderComponent(failedRepository.localId ?? "");
 
     expect(
-      await screen.findByRole("heading", { name: "Package import failed" }),
+      await screen.findByRole("heading", { name: /Package import failed/i }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(

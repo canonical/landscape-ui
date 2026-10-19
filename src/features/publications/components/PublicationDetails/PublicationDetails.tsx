@@ -16,7 +16,8 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 import {
   OperationStatusContent,
   useGetOperation,
-  OperationErrorNotification,
+  OperationStatusNotification,
+  useCanCancelOperations,
 } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
 import MissingSourceLabel from "../MissingSourceLabel";
@@ -49,7 +50,6 @@ const PublicationDetails = ({
   const { operation, isGettingOperation } = useGetOperation(
     publication.lastOperation ?? "",
     {
-      enabled: !!publication.lastOperation,
       refetchInterval: ({ state }) =>
         state.error || state.data?.data?.done
           ? false
@@ -57,20 +57,19 @@ const PublicationDetails = ({
     },
   );
 
+  const canCancelOperations = useCanCancelOperations();
+  const isPublishing = !!operation && !operation.done;
+
   if (publication.lastOperation && isGettingOperation) {
     return <LoadingState />;
   }
 
   return (
     <>
-      <OperationErrorNotification
-        isVisible={!!operation?.error}
-        title="Publishing failed"
-        message="Your last publication was not completed successfully."
-      />
+      <OperationStatusNotification operation={operation} type="publishing" />
       <div className="p-segmented-control u-sv2">
         <div className="p-segmented-control__list">
-          {!!operation && !operation.done ? (
+          {!canCancelOperations && isPublishing ? (
             <Tooltip
               message="You must wait for this action to be completed to republish it."
               position="btm-center"
@@ -203,6 +202,7 @@ const PublicationDetails = ({
 
       <RepublishPublicationModal
         isOpen={isRepublishModalOpen}
+        isPublishing={isPublishing}
         close={closeRepublishModal}
         publication={publication}
       />

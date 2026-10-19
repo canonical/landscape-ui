@@ -13,8 +13,8 @@ const SelfHostedLicensePage: FC = () => {
       <PageHeader
         title="Legacy license file"
         className={classes.header}
-        helperContent={
-          <p className={`${classes.description} p-text--small u-text--muted`}>
+        subtitle={
+          <span>
             This page is for self-hosted Landscape deployments that use the
             legacy <code>license.txt</code> licensing method.{" "}
             <Link
@@ -24,7 +24,7 @@ const SelfHostedLicensePage: FC = () => {
             >
               Learn more about Landscape licensing
             </Link>
-          </p>
+          </span>
         }
       />
       <PageContent>

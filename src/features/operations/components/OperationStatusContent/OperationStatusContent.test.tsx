@@ -140,7 +140,7 @@ describe("OperationStatusContent", () => {
     ).toBeInTheDocument();
   });
 
-  it("hides cancel button in table cell if persistent LROs are disabled", () => {
+  it("hides cancel button in table cell if canceling LROs is disabled", () => {
     setEndpointStatus({ status: "empty", path: "debarchive/features" });
 
     renderWithProviders(

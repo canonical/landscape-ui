@@ -1,4 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
+import { setScreenSize } from "@/tests/helpers";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
@@ -73,4 +74,38 @@ describe("InstancesHeader", () => {
     });
     expect(searchHelpDialog).toBeInTheDocument();
   });
+
+  it("opens the filter menu and its submenus rightward on wide screens", async () => {
+    setScreenSize("xl");
+    const user = userEvent.setup();
+    renderWithProviders(<InstancesHeader {...props} />);
+
+    await user.click(screen.getByRole("button", { name: /filters/i }));
+
+    const statusFilter = screen.getByRole("button", { name: /^status$/i });
+    expect(statusFilter).toHaveIcon("chevron-right");
+    expect(statusFilter.closest(".p-contextual-menu")).toHaveClass(
+      "p-contextual-menu--left",
+    );
+
+    await user.click(statusFilter);
+
+    expect(
+      screen.getByRole("button", { name: "Online instances" }),
+    ).toBeInTheDocument();
+  });
+
+  it.each(["sm", "lg"] as const)(
+    "opens the filter menu and its submenus leftward on %s screens",
+    async (screenSize) => {
+      setScreenSize(screenSize);
+      const user = userEvent.setup();
+      renderWithProviders(<InstancesHeader {...props} />);
+
+      await user.click(screen.getByRole("button", { name: /filters/i }));
+
+      const statusFilter = screen.getByRole("button", { name: /^status$/i });
+      expect(statusFilter).toHaveIcon("chevron-left");
+    },
+  );
 });

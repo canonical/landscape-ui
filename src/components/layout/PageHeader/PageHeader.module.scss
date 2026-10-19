@@ -20,10 +20,13 @@
 
 .subtitle {
   color: $colors--theme--text-muted;
+  max-width: 42.25rem;
+  padding-bottom: $spv--small;
+}
 
+.subtitleWithActions {
   /* Leave space so the text doesn't extend under the header action */
   max-width: calc(100% - 10rem);
-  padding-bottom: $spv--small;
 
   @media (width <= 619px) {
     max-width: 100%;

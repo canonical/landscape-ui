@@ -18,7 +18,7 @@ export const useGetOperation = (
 
   const {
     data: response,
-    isPending,
+    isLoading,
     error,
   } = useQuery<
     AxiosResponse<Operation>,
@@ -36,6 +36,6 @@ export const useGetOperation = (
       response && !response.data
         ? new Error("The operation could not be found.")
         : error,
-    isGettingOperation: isPending,
+    isGettingOperation: isLoading,
   };
 };

@@ -4,7 +4,6 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Mirror } from "@canonical/landscape-openapi";
 import { mirrors } from "@/tests/mocks/mirrors";
-import { inProgressOperation } from "@/tests/mocks/operations";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import MirrorDetailsActionBlock from "./MirrorDetailsActionBlock";
@@ -28,9 +27,10 @@ describe("MirrorDetailsActionBlock", () => {
 
   it("renders edit, update, publish, and remove actions", () => {
     renderWithProviders(
-      <MirrorDetailsActionBlock mirror={nonPreserveMirror} />,
-      undefined,
-      `?name=${nonPreserveMirror.name}`,
+      <MirrorDetailsActionBlock
+        mirror={nonPreserveMirror}
+        isUpdating={false}
+      />,
     );
 
     expect(screen.getByRole("button", { name: "Edit" })).toBeInTheDocument();
@@ -45,11 +45,12 @@ describe("MirrorDetailsActionBlock", () => {
 
       renderWithProviders(
         <>
-          <MirrorDetailsActionBlock mirror={nonPreserveMirror} />
+          <MirrorDetailsActionBlock
+            mirror={nonPreserveMirror}
+            isUpdating={false}
+          />
           <LocationDisplay />
         </>,
-        undefined,
-        `?name=${nonPreserveMirror.name}`,
       );
 
       await user.click(screen.getByRole("button", { name: "Edit" }));
@@ -63,33 +64,47 @@ describe("MirrorDetailsActionBlock", () => {
   describe("Update action", () => {
     it("is hidden for preserve-signatures mirrors", () => {
       renderWithProviders(
-        <MirrorDetailsActionBlock mirror={preserveMirror} />,
-        undefined,
-        `?name=${preserveMirror.name}`,
+        <MirrorDetailsActionBlock mirror={preserveMirror} isUpdating={false} />,
       );
 
       expect(
         screen.queryByRole("button", { name: "Update" }),
       ).not.toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", { name: "Updating" }),
-      ).not.toBeInTheDocument();
     });
 
-    it("shows a disabled updating action while an update is in progress", async () => {
+    it("opens cancel modal when the update is in progress", async () => {
       const user = userEvent.setup();
 
       renderWithProviders(
         <MirrorDetailsActionBlock
           mirror={nonPreserveMirror}
-          operation={inProgressOperation}
+          isUpdating={true}
         />,
-        undefined,
-        `?name=${nonPreserveMirror.name}`,
+      );
+
+      await user.click(await screen.findByRole("button", { name: "Update" }));
+
+      expect(
+        await screen.findByRole("heading", {
+          name: `${nonPreserveMirror.displayName} is already updating`,
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it("shows a disabled updating action while updating if canceling LROs is disabled", async () => {
+      setEndpointStatus({ status: "empty", path: "debarchive/features" });
+      const user = userEvent.setup();
+
+      renderWithProviders(
+        <MirrorDetailsActionBlock
+          mirror={nonPreserveMirror}
+          isUpdating={true}
+        />,
       );
 
       const updatingButton = screen.getByRole("button", { name: "Updating" });
       expect(updatingButton).toHaveAttribute("aria-disabled", "true");
+
       expect(
         screen.queryByRole("button", { name: "Update" }),
       ).not.toBeInTheDocument();
@@ -107,9 +122,10 @@ describe("MirrorDetailsActionBlock", () => {
       const user = userEvent.setup();
 
       renderWithProviders(
-        <MirrorDetailsActionBlock mirror={nonPreserveMirror} />,
-        undefined,
-        `?name=${nonPreserveMirror.name}`,
+        <MirrorDetailsActionBlock
+          mirror={nonPreserveMirror}
+          isUpdating={false}
+        />,
       );
 
       await user.click(screen.getByRole("button", { name: "Update" }));
@@ -125,7 +141,10 @@ describe("MirrorDetailsActionBlock", () => {
       const user = userEvent.setup();
 
       renderWithProviders(
-        <MirrorDetailsActionBlock mirror={nonPreserveMirror} />,
+        <MirrorDetailsActionBlock
+          mirror={nonPreserveMirror}
+          isUpdating={false}
+        />,
         undefined,
         `?name=${nonPreserveMirror.name}&updateModal=true`,
       );
@@ -149,7 +168,10 @@ describe("MirrorDetailsActionBlock", () => {
     it("does not open the update modal from the query param for preserve-signatures mirrors", async () => {
       renderWithProviders(
         <>
-          <MirrorDetailsActionBlock mirror={preserveMirror} />
+          <MirrorDetailsActionBlock
+            mirror={preserveMirror}
+            isUpdating={false}
+          />
           <LocationDisplay />
         </>,
         undefined,
@@ -166,6 +188,30 @@ describe("MirrorDetailsActionBlock", () => {
         expect(getLocationDisplay()).not.toHaveTextContent("updateModal=true");
       });
     });
+
+    it("does not open the update modal from the query param if isUpdating and can't cancel operations", async () => {
+      renderWithProviders(
+        <>
+          <MirrorDetailsActionBlock
+            mirror={nonPreserveMirror}
+            isUpdating={true}
+          />
+          <LocationDisplay />
+        </>,
+        undefined,
+        `?name=${nonPreserveMirror.name}&updateModal=true`,
+      );
+
+      expect(
+        screen.queryByRole("heading", {
+          name: `Update ${nonPreserveMirror.displayName}`,
+        }),
+      ).not.toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(getLocationDisplay()).not.toHaveTextContent("updateModal=true");
+      });
+    });
   });
 
   describe("Publish action", () => {
@@ -175,9 +221,10 @@ describe("MirrorDetailsActionBlock", () => {
       setEndpointStatus({ status: "empty", path: "publicationTargets" });
 
       renderWithProviders(
-        <MirrorDetailsActionBlock mirror={nonPreserveMirror} />,
-        undefined,
-        `?name=${nonPreserveMirror.name}`,
+        <MirrorDetailsActionBlock
+          mirror={nonPreserveMirror}
+          isUpdating={false}
+        />,
       );
 
       await user.click(await screen.findByRole("button", { name: "Publish" }));
@@ -194,11 +241,12 @@ describe("MirrorDetailsActionBlock", () => {
 
       renderWithProviders(
         <>
-          <MirrorDetailsActionBlock mirror={nonPreserveMirror} />
+          <MirrorDetailsActionBlock
+            mirror={nonPreserveMirror}
+            isUpdating={false}
+          />
           <LocationDisplay />
         </>,
-        undefined,
-        `?name=${nonPreserveMirror.name}`,
       );
 
       await waitFor(() => {
@@ -225,9 +273,10 @@ describe("MirrorDetailsActionBlock", () => {
       const user = userEvent.setup();
 
       renderWithProviders(
-        <MirrorDetailsActionBlock mirror={nonPreserveMirror} />,
-        undefined,
-        `?name=${nonPreserveMirror.name}`,
+        <MirrorDetailsActionBlock
+          mirror={nonPreserveMirror}
+          isUpdating={false}
+        />,
       );
 
       await user.click(screen.getByRole("button", { name: "Remove" }));

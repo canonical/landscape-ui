@@ -1,26 +1,41 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
-import { TSV_EXPORTS_ENABLED } from "@/constants";
+import { BREAKPOINT_PX, TSV_EXPORTS_ENABLED } from "@/constants";
+import {
+  type PackageChangePlanActionType,
+  PackagesActionForm,
+} from "@/features/packages";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { hasOneItem, pluralize } from "@/utils/_helpers";
-import { Button, ContextualMenu, Icon } from "@canonical/react-components";
+import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
+import {
+  Button,
+  ContextualMenu,
+  Icon,
+  Modal,
+} from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
-import { useBoolean } from "usehooks-ts";
+import { useBoolean, useMediaQuery } from "usehooks-ts";
 import { getFeatures, hasUpgrades } from "../../helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
+import { getActionFormTitle } from "@/features/packages";
+import { DEB_MANAGEMENT_INSTANCE_LIMIT } from "@/features/packages";
+
 const RunInstanceScriptForm = lazy(
   async () => import("@/features/scripts/components/RunInstanceScriptForm"),
 );
 const Upgrades = lazy(
   async () => import("@/features/upgrades/components/Upgrades"),
+);
+const PackagesUpgradeForm = lazy(
+  async () => import("@/features/packages/components/PackagesUpgradeForm"),
 );
 const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
 const DistributionUpgrades = lazy(
@@ -32,6 +47,9 @@ const AttachTokenForm = lazy(
 );
 const ReplaceTokenForm = lazy(
   async () => import("@/features/ubuntupro/components/ReplaceTokenForm"),
+);
+const SnapsActionForm = lazy(
+  async () => import("@/features/snaps/components/SnapsActionForm"),
 );
 
 interface InstancesPageActionsProps {
@@ -50,6 +68,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
   const { createSidePathPusher, lastSidePathSegment } = usePageParams();
+  const menuPosition = useMediaQuery(`(min-width: ${BREAKPOINT_PX.xl}px)`)
+    ? "left"
+    : "right";
 
   const {
     value: rebootModalOpen,
@@ -75,6 +96,12 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setFalse: closeRemoveModal,
   } = useBoolean();
 
+  const {
+    value: debManagementLimitModalOpen,
+    setTrue: openDebManagementLimitModal,
+    setFalse: closeDebManagementLimitModal,
+  } = useBoolean();
+
   const createInstanceCountString = (instances: Instance[]) => {
     return (
       <PluralizeWithBoldCount count={instances.length} singular="instance" />
@@ -92,8 +119,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
         ) ? (
           <div className={classes.warning}>
             <p className="u-margin--bottom">
-              You selected {selectedInstances.length} instances. This script
-              will:
+              You selected{" "}
+              {pluralize(selectedInstances.length, ["instance"], "exact")}. This
+              script will:
             </p>
 
             <ul>
@@ -145,6 +173,30 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
+  const openUpgradesForm = () => {
+    setSidePanelContent(
+      `Apply upgrades to ${getSelectionLabel(selectedInstances, (instance) => instance.title, "instances")}`,
+      <Suspense fallback={<LoadingState />}>
+        <PackagesUpgradeForm selectedInstances={selectedInstances} />
+      </Suspense>,
+      "large",
+    );
+  };
+
+  const openPackagesActionForm = (
+    action: Exclude<PackageChangePlanActionType, "upgrade">,
+  ) => {
+    setSidePanelContent(
+      getActionFormTitle(action),
+      <Suspense fallback={<LoadingState />}>
+        <PackagesActionForm
+          instanceIds={selectedInstances.map(({ id }) => id)}
+          actionType={action}
+        />
+      </Suspense>,
+    );
+  };
+
   const handleReportView = createSidePathPusher("report");
 
   const handleAccessGroupChange = () => {
@@ -192,6 +244,89 @@ const InstancesPageActions = memo(function InstancesPageActions({
       instance.ubuntu_pro_info?.result === "success" &&
       instance.ubuntu_pro_info.attached,
   );
+
+  const handleSnapInstall = () => {
+    setSidePanelContent(
+      "Install snaps",
+      <Suspense fallback={<LoadingState />}>
+        <SnapsActionForm
+          selectedInstances={selectedInstances.map(({ id }) => id)}
+          action="install"
+        />
+      </Suspense>,
+    );
+  };
+
+  const handleSnapUninstall = () => {
+    setSidePanelContent(
+      "Uninstall snaps",
+      <Suspense fallback={<LoadingState />}>
+        <SnapsActionForm
+          selectedInstances={selectedInstances.map(({ id }) => id)}
+          action="uninstall"
+        />
+      </Suspense>,
+    );
+  };
+
+  const handleSnapRefresh = () => {
+    setSidePanelContent(
+      "Refresh snaps",
+      <Suspense fallback={<LoadingState />}>
+        <SnapsActionForm
+          selectedInstances={selectedInstances.map(({ id }) => id)}
+          action="refresh"
+        />
+      </Suspense>,
+    );
+  };
+
+  const handleSnapHold = () => {
+    setSidePanelContent(
+      "Hold snaps",
+      <Suspense fallback={<LoadingState />}>
+        <SnapsActionForm
+          selectedInstances={selectedInstances.map(({ id }) => id)}
+          action="hold"
+        />
+      </Suspense>,
+    );
+  };
+
+  const handleSnapUnhold = () => {
+    setSidePanelContent(
+      "Unhold snaps",
+      <Suspense fallback={<LoadingState />}>
+        <SnapsActionForm
+          selectedInstances={selectedInstances.map(({ id }) => id)}
+          action="unhold"
+        />
+      </Suspense>,
+    );
+  };
+
+  const handleSnapChangeChannel = () => {
+    setSidePanelContent(
+      "Change snap channel",
+      <Suspense fallback={<LoadingState />}>
+        <SnapsActionForm
+          selectedInstances={selectedInstances.map(({ id }) => id)}
+          action="change channel"
+        />
+      </Suspense>,
+    );
+  };
+
+  const noInstanceHasUpgrades =
+    !hasSelectedInstances ||
+    selectedInstances.every(
+      (instance) =>
+        !hasUpgrades(instance.alerts) || !getFeatures(instance).packages,
+    );
+
+  const noInstanceHasPackageFeature =
+    !hasSelectedInstances ||
+    selectedInstances.every((instance) => !getFeatures(instance).packages);
 
   const proServicesLinks = [
     allInstancesHaveToken
@@ -360,16 +495,172 @@ const InstancesPageActions = memo(function InstancesPageActions({
       : []),
   ].filter((link) => link.children);
 
+  const debManagementLinks = [
+    {
+      children: (
+        <>
+          <Icon name="arrow-up" />
+          <span>Upgrade</span>
+        </>
+      ),
+      onClick: openUpgradesForm,
+      disabled: noInstanceHasUpgrades,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="begin-downloading" />
+          <span>Install</span>
+        </>
+      ),
+      disabled: noInstanceHasPackageFeature,
+      onClick: () => {
+        openPackagesActionForm("install");
+      },
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="delete" />
+          <span>Uninstall</span>
+        </>
+      ),
+      onClick: () => {
+        openPackagesActionForm("remove");
+      },
+      disabled: noInstanceHasPackageFeature,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="restart" />
+          <span>Change version</span>
+        </>
+      ),
+      disabled: noInstanceHasPackageFeature,
+      onClick: () => {
+        openPackagesActionForm("change_version");
+      },
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="pause" />
+          <span>Hold</span>
+        </>
+      ),
+      onClick: () => {
+        openPackagesActionForm("hold");
+      },
+      disabled: noInstanceHasPackageFeature,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="play" />
+          <span>Unhold</span>
+        </>
+      ),
+      onClick: () => {
+        openPackagesActionForm("unhold");
+      },
+      disabled: noInstanceHasPackageFeature,
+      hasIcon: true,
+    },
+  ].map((link) => ({
+    ...link,
+    onClick: () => {
+      if (selectedInstances.length > DEB_MANAGEMENT_INSTANCE_LIMIT) {
+        openDebManagementLimitModal();
+      } else {
+        link.onClick();
+      }
+    },
+  }));
+
+  const snapLinks = [
+    {
+      children: (
+        <>
+          <Icon name="import" />
+          <span>Install</span>
+        </>
+      ),
+      onClick: handleSnapInstall,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="close" />
+          <span>Uninstall</span>
+        </>
+      ),
+      onClick: handleSnapUninstall,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="restart" />
+          <span>Refresh</span>
+        </>
+      ),
+      onClick: handleSnapRefresh,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="pause" />
+          <span>Hold</span>
+        </>
+      ),
+      onClick: handleSnapHold,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="play" />
+          <span>Unhold</span>
+        </>
+      ),
+      onClick: handleSnapUnhold,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="change-version" />
+          <span>Change channel</span>
+        </>
+      ),
+      onClick: handleSnapChangeChannel,
+      hasIcon: true,
+    },
+  ];
+
+  const isDebManagementEnabled = (
+    ["package-change-plans", "package-search-rest-api"] as const
+  ).every(isFeatureEnabled);
+
   return (
     <>
       <ResponsiveButtons
-        collapseFrom="sm"
+        collapseFrom="xl"
+        menuPosition={menuPosition}
         className={classes.buttons}
         buttons={[
           <ContextualMenu
             key="operations"
             links={operationsLinks}
-            position="right"
+            position={menuPosition}
             toggleLabel="Operations"
             toggleClassName="u-no-margin--bottom"
             toggleDisabled={!hasInstancesToExport}
@@ -378,10 +669,10 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <ContextualMenu
             key="grouping"
             links={groupingLinks}
-            position="right"
+            position={menuPosition}
             toggleLabel="Grouping"
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={0 === selectedInstances.length}
+            toggleDisabled={!hasSelectedInstances}
             hasToggleIcon
           />,
           hasOneItem(proServicesLinks) ? (
@@ -390,22 +681,50 @@ const InstancesPageActions = memo(function InstancesPageActions({
               type="button"
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
-              disabled={0 === selectedInstances.length}
+              disabled={!hasSelectedInstances}
               hasIcon={proServicesLinks[0].hasIcon}
             >
               {proServicesLinks[0].children}
             </Button>
           ) : (
             <ContextualMenu
-              position="right"
+              position={menuPosition}
               key="pro-services"
               links={proServicesLinks}
               toggleLabel="Ubuntu Pro"
               toggleClassName="u-no-margin--bottom"
-              toggleDisabled={0 === selectedInstances.length}
+              toggleDisabled={!hasSelectedInstances}
               hasToggleIcon
             />
           ),
+          ...(isDebManagementEnabled
+            ? [
+                <ContextualMenu
+                  key="deb-management"
+                  hasToggleIcon
+                  links={debManagementLinks}
+                  position={menuPosition}
+                  toggleLabel={<span>Deb management</span>}
+                  toggleClassName="u-no-margin--bottom"
+                  toggleDisabled={0 === selectedInstances.length}
+                />,
+              ]
+            : []),
+          <ContextualMenu
+            key="snap"
+            links={snapLinks}
+            // The last button never has room to open rightward.
+            position="right"
+            toggleLabel="Snap management"
+            toggleClassName="u-no-margin--bottom"
+            toggleDisabled={
+              !hasSelectedInstances ||
+              selectedInstances.every(
+                (instance) => !getFeatures(instance).snaps,
+              )
+            }
+            hasToggleIcon
+          />,
         ]}
       />
 
@@ -431,6 +750,26 @@ const InstancesPageActions = memo(function InstancesPageActions({
         isOpen={removeModalOpen}
         onSuccess={onRemoveSuccess}
       />
+      {debManagementLimitModalOpen && (
+        <Modal
+          close={closeDebManagementLimitModal}
+          title="Instance limit exceeded"
+          buttonRow={
+            <Button
+              appearance="positive"
+              onClick={closeDebManagementLimitModal}
+            >
+              OK
+            </Button>
+          }
+        >
+          <p className="u-margin--bottom">
+            Deb management features are only available for a selection of{" "}
+            {pluralize(DEB_MANAGEMENT_INSTANCE_LIMIT, ["instance"], "exact")} or
+            fewer. Please select fewer instances, then try again.
+          </p>
+        </Modal>
+      )}
     </>
   );
 });

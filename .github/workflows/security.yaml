@@ -1,169 +1,114 @@
-name: Vulnerability Scan
+name: Security Scan
 
+# Decides which branches get the SSDLC scan and hands each one to
+# security-scan.yaml (the reusable workflow that does the work).
+#
+#   release publish finishes        -> the branch it published, once
+#                                      release-and-build.yml has recorded the
+#                                      version and commit the scan reads
+#   workflow_dispatch               -> the `ref` input, or the branch it was
+#                                      dispatched from
+#   weekly schedule                 -> main plus every supported release
+#                                      branch, so shipped releases are
+#                                      rechecked for newly disclosed CVEs
+#                                      without anyone pushing to them
 on:
   workflow_dispatch:
-  push:
-    branches: ["release/**"]
-    paths-ignore:
-      - "security/sbom/**"
+    inputs:
+      ref:
+        description: Branch to scan (defaults to the branch this is dispatched from)
+        required: false
+        type: string
+  # Not `push`: the scan describes the published build, and on a push the
+  # release workflow has not published it yet, so the scan would still be
+  # looking at the previous one.
+  workflow_run:
+    workflows: ["Release and PPA Build"]
+    types: [completed]
+  schedule:
+    - cron: "0 3 * * 1"
 
 permissions:
-  contents: write
+  contents: read
 
+# One scan per branch and trigger at a time. Scans triggered by a release
+# publish queue rather than cancel, so a scan already describing a build
+# finishes its evidence run instead of being thrown away. This is not a
+# guarantee that every build gets its own scan: GitHub keeps at most one
+# pending run per group, and `meta` reads the ppa-build-* tip anyway, so a
+# build superseded before its scan reads the record is described by the
+# next scan, exactly as the PPA only ever ships the latest build. Manual
+# and scheduled scans are repeatable, so a newer one cancels an older one.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch || inputs.ref || github.ref_name }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_run' }}
 
 jobs:
-  build-image:
-    name: Build Docker Image
+  targets:
+    name: Pick branches to scan
+    # No gate on the release run's conclusion: release-and-build.yml
+    # force-pushes the ppa-build-* record before it tags the commit and
+    # before its deb job runs, so a run that failed or was cancelled after
+    # that point still shipped a build Launchpad will pick up. The scan
+    # anchors to the publish record and `meta` fails when there is none, so
+    # a run that published nothing costs one redundant rescan of the
+    # previous release, and one that published is never left unscanned.
     runs-on: ubuntu-latest
+    outputs:
+      refs: ${{ steps.pick.outputs.refs }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build image (no push)
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: false
-          load: true
-          tags: landscape-ui:scan
-
-      - name: Save image to a tar file
-        run: docker save landscape-ui:scan -o image.tar
-
-      - name: Upload image artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-tar
-          path: image.tar
-          retention-days: 1
-
-  scan-and-report:
-    name: Vulnerability Scan
-    needs: build-image
-    runs-on:
-      [self-hosted, self-hosted-linux-amd64-jammy-private-endpoint-medium]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Download image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: image-tar
-
-      - name: Install secscan client
+      - name: Resolve the branch list
+        id: pick
+        env:
+          EVENT: ${{ github.event_name }}
+          DISPATCH_REF: ${{ inputs.ref }}
+          PUBLISHED_REF: ${{ github.event.workflow_run.head_branch }}
+          # Comma/space-separated release/point branches still under
+          # support, e.g. "release/26.10,release/26.04,point/26.04.2".
+          # Unset: only the highest release/YY.MM on origin is scanned.
+          SUPPORTED_RELEASE_BRANCHES: ${{ vars.SUPPORTED_RELEASE_BRANCHES }}
         run: |
-          sudo snap install canonical-secscan-client
-          sudo snap connect canonical-secscan-client:home system:home
+          case "$EVENT" in
+            schedule)
+              SUPPORTED="$SUPPORTED_RELEASE_BRANCHES"
+              if [[ -z "$SUPPORTED" ]]; then
+                SUPPORTED=$(git branch -r --list 'origin/release/*' \
+                  | sed 's|^[ *]*origin/||' \
+                  | grep -E '^release/[0-9]{2}\.(04|10)$' \
+                  | sort -V \
+                  | tail -n1 || true)
+                echo "SUPPORTED_RELEASE_BRANCHES unset; falling back to ${SUPPORTED:-<none>}"
+              fi
+              REFS="main $(echo "$SUPPORTED" | tr ',' ' ')"
+              ;;
+            workflow_dispatch)
+              REFS="${DISPATCH_REF:-$GITHUB_REF_NAME}"
+              ;;
+            workflow_run)
+              REFS="$PUBLISHED_REF"
+              ;;
+            *)
+              REFS="$GITHUB_REF_NAME"
+              ;;
+          esac
 
-      - name: Determine SSDLC metadata
-        id: meta
-        run: |
-          VERSION=$(node scripts/calculate-version.cjs)
-          BRANCH="${GITHUB_REF_NAME}"
-          if [[ "$BRANCH" =~ ^release/([0-9]{2}\.(04|10))$ ]]; then
-            CYCLE="${BASH_REMATCH[1]}"
-          else
-            # workflow_dispatch from a non-release branch: fall back to the
-            # current calendar cycle (same rule as calculate-version.cjs).
-            CYCLE=$(node -e "const m=new Date().getMonth()+1,y=new Date().getFullYear();console.log(m<=4?String(y).slice(-2)+'.04':m<=10?String(y).slice(-2)+'.10':String(y+1).slice(-2)+'.04')")
-          fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "cycle=$CYCLE" >> "$GITHUB_OUTPUT"
-          echo "Submitting as version=$VERSION cycle=$CYCLE"
+          JSON=$(printf '%s\n' $REFS | sed 's|^refs/heads/||' | jq -R . | jq -sc 'unique')
+          echo "refs=$JSON" >> "$GITHUB_OUTPUT"
+          echo "Scanning: $JSON"
 
-      - name: Run security scan
-        id: scan
-        run: |
-          set +e
-          secscan-client --batch submit \
-            --ssdlc-product-name 'landscape-ui' \
-            --ssdlc-cycle '${{ steps.meta.outputs.cycle }}' \
-            --ssdlc-product-version '${{ steps.meta.outputs.version }}' \
-            --ssdlc-product-channel 'edge' \
-            --scanner trivy \
-            --type container-image \
-            --format oci \
-            image.tar \
-            --wait-and-print | tee secscan-results.txt
-          EXIT_CODE=${PIPESTATUS[0]}
-          echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
-          exit "$EXIT_CODE"
-
-      - name: Upload scan results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: secscan-results
-          path: secscan-results.txt
-
-  generate-and-commit-sbom:
-    name: Generate SBOM
-    needs: build-image
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Download image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: image-tar
-
-      - name: Generate SBOM via Trivy
-        uses: aquasecurity/trivy-action@v0.35.0
-        with:
-          input: image.tar
-          format: "spdx-json"
-          output: "dependency-results.sbom.json"
-          github-pat: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload SBOM as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: sbom-report-json
-          path: "dependency-results.sbom.json"
-          retention-days: 30
-
-      - name: Commit SBOM to release branch
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')
-        run: |
-          set -e
-          mkdir -p security/sbom
-          mv dependency-results.sbom.json security/sbom/release.spdx.json
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          if git diff --quiet -- security/sbom/release.spdx.json; then
-            echo "SBOM unchanged; nothing to commit."
-            exit 0
-          fi
-
-          VERSION=$(node scripts/calculate-version.cjs)
-          git add security/sbom/release.spdx.json
-          git commit -m "chore(sbom): refresh for ${VERSION} [skip ci]"
-
-          # Race protection: if another commit lands between scan and push,
-          # rebase and retry. The SBOM is a full overwrite, so rebases resolve
-          # cleanly without conflict markers.
-          for attempt in 1 2 3; do
-            if git push origin HEAD:"${GITHUB_REF_NAME}"; then
-              exit 0
-            fi
-            echo "Push attempt $attempt failed; rebasing and retrying."
-            git pull --rebase origin "${GITHUB_REF_NAME}"
-          done
-          echo "Failed to push SBOM after 3 attempts" >&2
-          exit 1
+  scan:
+    name: Scan ${{ matrix.ref }}
+    needs: targets
+    strategy:
+      fail-fast: false
+      matrix:
+        ref: ${{ fromJson(needs.targets.outputs.refs) }}
+    # Cap for the called workflow; inside it only persist-sbom uses write.
+    permissions:
+      contents: write
+    uses: ./.github/workflows/security-scan.yaml
+    with:
+      ref: ${{ matrix.ref }}

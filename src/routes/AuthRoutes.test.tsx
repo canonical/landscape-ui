@@ -26,9 +26,17 @@ const getRouteChildren = (element: ReactElement<RouteLikeProps>) => {
   return Children.toArray(element.props.children).filter(isRouteElement);
 };
 
+const getGuestRoutes = () => {
+  const guardedRoute = getRouteChildren(
+    AuthRoutes as ReactElement<RouteLikeProps>,
+  ).find((route) => !route.props.path);
+  assert(guardedRoute);
+  return guardedRoute;
+};
+
 describe("AuthRoutes", () => {
   it("wraps auth routes with guest guard and outlet", () => {
-    const wrapper = (AuthRoutes as ReactElement<RouteLikeProps>).props.element;
+    const wrapper = getGuestRoutes().props.element;
     assert(wrapper);
     const guardWrapper = wrapper as ReactElement<{ children: ReactElement }>;
     expect(guardWrapper.type).toBe(GuestGuard);
@@ -38,9 +46,10 @@ describe("AuthRoutes", () => {
   });
 
   it("defines expected auth paths", () => {
-    const childRoutes = getRouteChildren(
-      AuthRoutes as ReactElement<RouteLikeProps>,
-    );
+    const childRoutes = [
+      ...getRouteChildren(AuthRoutes as ReactElement<RouteLikeProps>),
+      ...getRouteChildren(getGuestRoutes()),
+    ];
     const paths = childRoutes.map((route) => route.props.path);
 
     expect(paths).toContain(PATHS.auth.login);
@@ -54,9 +63,7 @@ describe("AuthRoutes", () => {
   });
 
   it("uses feature guard for attach and support login routes", () => {
-    const childRoutes = getRouteChildren(
-      AuthRoutes as ReactElement<RouteLikeProps>,
-    );
+    const childRoutes = getRouteChildren(getGuestRoutes());
 
     const attachRoute = childRoutes.find(
       (route) => route.props.path === PATHS.auth.attach,
@@ -70,5 +77,17 @@ describe("AuthRoutes", () => {
 
     expect(attachRoute.props.element.type).toBe(FeatureGuard);
     expect(supportLoginRoute.props.element.type).toBe(FeatureGuard);
+  });
+
+  it("keeps invitations outside the guest guard", () => {
+    const isInvitation = (route: ReactElement<RouteLikeProps>) =>
+      route.props.path === PATHS.auth.invitation;
+
+    expect(
+      getRouteChildren(AuthRoutes as ReactElement<RouteLikeProps>).some(
+        isInvitation,
+      ),
+    ).toBe(true);
+    expect(getRouteChildren(getGuestRoutes()).some(isInvitation)).toBe(false);
   });
 });

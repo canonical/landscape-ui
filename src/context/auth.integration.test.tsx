@@ -1,14 +1,15 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { API_URL } from "@/constants";
 import useAuth from "@/hooks/useAuth";
+import useEnv from "@/hooks/useEnv";
 import { authResponse } from "@/tests/mocks/auth";
+import { saasEnv, selfHostedEnv } from "@/tests/mocks/env";
 import { renderHookWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 
-// Self-hosted needs no case of its own: Canonical staff cannot log in there,
-// so every self-hosted user has no staff role, which is the first case below.
+vi.mock("@/hooks/useEnv");
 
 /** Serves `GET /me` for a signed-in user; `undefined` omits `global_roles`. */
 const serveMe = (globalRoles: string[] | undefined) => {
@@ -26,28 +27,41 @@ const renderAuth = async () => {
 
   await waitFor(() => {
     expect(result.current.authorized).toBe(true);
+    expect(result.current.authLoading).toBe(false);
   });
 
   return result;
 };
 
 describe("AuthProvider super admin gating (integration)", () => {
+  beforeEach(() => {
+    vi.mocked(useEnv).mockReturnValue(saasEnv);
+  });
+
   it.each([
-    ["no staff role", [], { isSuperAdmin: false, canManageAccounts: false }],
+    [
+      "no staff role",
+      [],
+      {
+        isSuperAdmin: false,
+        canManageAccounts: false,
+        canEnterAccounts: false,
+      },
+    ],
     [
       "SupportProvider",
       ["SupportProvider"],
-      { isSuperAdmin: true, canManageAccounts: false },
+      { isSuperAdmin: true, canManageAccounts: false, canEnterAccounts: true },
     ],
     [
       "AccountManager",
       ["AccountManager"],
-      { isSuperAdmin: true, canManageAccounts: true },
+      { isSuperAdmin: true, canManageAccounts: true, canEnterAccounts: false },
     ],
     [
       "both staff roles",
       ["AccountManager", "SupportProvider"],
-      { isSuperAdmin: true, canManageAccounts: true },
+      { isSuperAdmin: true, canManageAccounts: true, canEnterAccounts: true },
     ],
   ])("derives the gates for %s", async (_, globalRoles, expected) => {
     serveMe(globalRoles);
@@ -65,6 +79,23 @@ describe("AuthProvider super admin gating (integration)", () => {
     expect(result.current).toMatchObject({
       isSuperAdmin: false,
       canManageAccounts: false,
+      canEnterAccounts: false,
+    });
+  });
+
+  it.each([
+    ["SupportProvider", ["SupportProvider"]],
+    ["AccountManager", ["AccountManager"]],
+  ])("ignores %s on a self-hosted deployment", async (_, globalRoles) => {
+    vi.mocked(useEnv).mockReturnValue(selfHostedEnv);
+    serveMe(globalRoles);
+
+    const result = await renderAuth();
+
+    expect(result.current.user?.global_roles).toEqual(globalRoles);
+    expect(result.current).toMatchObject({
+      isSuperAdmin: false,
+      canManageAccounts: false,
     });
   });
 
@@ -77,6 +108,62 @@ describe("AuthProvider super admin gating (integration)", () => {
     expect(result.current).toMatchObject({
       isSuperAdmin: false,
       canManageAccounts: false,
+      canEnterAccounts: false,
+    });
+  });
+
+  describe("while the deployment mode is still loading", () => {
+    const pendingEnv = {
+      ...saasEnv,
+      envLoading: true,
+      isSaas: false,
+      isSelfHosted: false,
+    };
+
+    it.each([
+      ["SaaS", saasEnv, true],
+      ["self-hosted", selfHostedEnv, false],
+    ])(
+      "keeps staff loading until the mode resolves to %s",
+      async (_, resolvedEnv, isSuperAdmin) => {
+        vi.mocked(useEnv).mockReturnValue(pendingEnv);
+        serveMe(["AccountManager"]);
+
+        const { result, rerender } = renderHook(() => useAuth(), {
+          wrapper: renderHookWithProviders(),
+        });
+
+        await waitFor(() => {
+          expect(result.current.authorized).toBe(true);
+        });
+        expect(result.current.authLoading).toBe(true);
+        expect(result.current.isSuperAdmin).toBe(false);
+
+        vi.mocked(useEnv).mockReturnValue(resolvedEnv);
+        rerender();
+
+        await waitFor(() => {
+          expect(result.current.authLoading).toBe(false);
+        });
+        expect(result.current.isSuperAdmin).toBe(isSuperAdmin);
+        expect(result.current.canManageAccounts).toBe(isSuperAdmin);
+
+        // With everything else settled, the mode alone holds the gates open.
+        vi.mocked(useEnv).mockReturnValue(pendingEnv);
+        rerender();
+
+        expect(result.current.authLoading).toBe(true);
+        expect(result.current.isSuperAdmin).toBe(false);
+      },
+    );
+
+    it("does not make everyone else wait for the mode", async () => {
+      vi.mocked(useEnv).mockReturnValue(pendingEnv);
+      serveMe([]);
+
+      const result = await renderAuth();
+
+      expect(result.current.isSuperAdmin).toBe(false);
     });
   });
 });

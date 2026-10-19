@@ -26,6 +26,7 @@ const authProps: AuthContextProps = {
   hasAccounts: true,
   isSuperAdmin: false,
   canManageAccounts: false,
+  canEnterAccounts: false,
 };
 
 const envCommon: Omit<EnvContextState, "isSaas" | "isSelfHosted"> = {

@@ -10,9 +10,8 @@ import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { handleCellProps } from "./helpers";
+import { formatInvitationExpiration } from "../../helpers";
 import LoadingState from "@/components/layout/LoadingState";
-
-const TWO_WEEKS_DAYS = 14;
 
 const InvitesPanel: FC = () => {
   const debug = useDebug();
@@ -88,9 +87,7 @@ const InvitesPanel: FC = () => {
         Header: "Expires",
         Cell: ({ row }: CellProps<Invitation>) => (
           <span className="font-monospace">
-            {date(row.original.creation_time)
-              .add(TWO_WEEKS_DAYS, "days")
-              .format(DISPLAY_DATE_TIME_FORMAT)}
+            {formatInvitationExpiration(row.original)}
           </span>
         ),
       },

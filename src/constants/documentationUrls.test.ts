@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   ADMINISTRATORS_DOCUMENTATION_URL,
   MANAGE_INSTANCES_DOCUMENTATION_URL,
+  SNAP_REVISIONS_DOCUMENTATION_URL,
 } from "./documentationUrls";
 
 /*
@@ -29,6 +30,12 @@ describe("documentationUrls", () => {
   it("MANAGE_INSTANCES_DOCUMENTATION_URL points to the correct page", () => {
     expect(MANAGE_INSTANCES_DOCUMENTATION_URL).toBe(
       `${BASE_PATH}/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/`,
+    );
+  });
+
+  it("SNAP_REVISIONS_DOCUMENTATION_URL points to the snap revisions documentation", () => {
+    expect(SNAP_REVISIONS_DOCUMENTATION_URL).toBe(
+      "https://snapcraft.io/docs/explanation/how-snaps-work/revisions/",
     );
   });
 });

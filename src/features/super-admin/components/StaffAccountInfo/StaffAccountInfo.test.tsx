@@ -1,11 +1,21 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useAuth from "@/hooks/useAuth";
 import date from "@/libs/date";
 import { createStaffAccounts } from "@/tests/mocks/staffAccounts";
 import { renderWithProviders } from "@/tests/render";
+import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
+import { API_URL } from "@/constants";
+import { authResponse } from "@/tests/mocks/auth";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
 import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import type { FC, ReactNode } from "react";
+import { describe, expect, it, vi } from "vitest";
 import StaffAccountInfo from "./StaffAccountInfo";
+
+// Super admin mode only exists on SaaS deployments.
+vi.mock("@/hooks/useEnv", () => import("@/tests/mocks/env"));
 
 const MISSING_VALUES = 3;
 const ADMINISTRATOR_LIMIT = 37;
@@ -19,6 +29,26 @@ const activeAccount = staffAccounts.find(
     !disabled && subdomain && subdomain !== account && last_login_time,
 );
 const disabledAccount = staffAccounts.find(({ disabled }) => disabled);
+
+/**
+ * Renders once the signed-in user's roles are in, the way the account page
+ * does: `HeaderActions` lays out its buttons from the actions it first sees.
+ */
+const WhenSignedIn: FC<{ readonly children: ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+
+  return user ? children : null;
+};
+
+/** Signs in a staff member with `globalRoles`, for the app and for the mock API. */
+const signInAs = (globalRoles: string[]) => {
+  setStaffGlobalRoles(globalRoles);
+  server.use(
+    http.get(`${API_URL}me`, () =>
+      HttpResponse.json({ ...authResponse, global_roles: globalRoles }),
+    ),
+  );
+};
 
 describe("StaffAccountInfo", () => {
   assert(activeAccount);
@@ -55,12 +85,35 @@ describe("StaffAccountInfo", () => {
     expect(screen.queryByText("Disabled reason")).not.toBeInTheDocument();
   });
 
-  it("offers Enter account as a disabled placeholder", () => {
-    renderWithProviders(<StaffAccountInfo staffAccount={activeAccount} />);
+  it("offers Enter account to a support provider", async () => {
+    signInAs(["SupportProvider"]);
+
+    renderWithProviders(
+      <WhenSignedIn>
+        <StaffAccountInfo staffAccount={activeAccount} />
+      </WhenSignedIn>,
+    );
 
     expect(
-      screen.getByRole("button", { name: "Enter account" }),
-    ).toHaveAttribute("aria-disabled", "true");
+      await screen.findByRole("button", { name: "Enter account" }),
+    ).toBeEnabled();
+  });
+
+  it("hides Enter account from an account manager without the support role", async () => {
+    signInAs(["AccountManager"]);
+
+    renderWithProviders(
+      <WhenSignedIn>
+        <StaffAccountInfo staffAccount={activeAccount} />
+      </WhenSignedIn>,
+    );
+
+    expect(
+      await screen.findByRole("button", { name: "Edit" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Enter account" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders why an account is disabled", () => {

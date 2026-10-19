@@ -63,6 +63,7 @@ That fixture layer currently provides:
 
 - `authenticatedPage`: a page that has already logged in and closed the welcome modal
 - `standaloneAccountMock`: an option for self-hosted account-existence scenarios
+- `staffPage` and `staffApi`: a page logged in as Canonical staff, with the staff (super admin) endpoints mocked over the real session; `staffApiMock` is the option that picks the global roles
 - console, page-error, and request-failure logging written to the test output directory
 
 This is the default starting point for new specs because it keeps authentication setup and basic diagnostics consistent.
@@ -137,6 +138,7 @@ Current patterns:
 
 - inline `page.route(...)` in a spec for targeted auth or callback overrides
 - dedicated helpers such as `mockStandaloneAccount(page, exists)`
+- `mockStaffApi(page, options)` for super admin flows: the backends the suite runs against have no staff users, so it adds the global roles to the real auth responses and serves the staff endpoints from the shared fixture in `src/tests/mocks/staffAccounts.ts`
 - optional helper utilities in `e2e/support/helpers/intercept.ts` for request interception and request waiting
 
 At the moment, inline `page.route(...)` is still common for targeted response overrides, especially in auth callback scenarios. The suite is not yet standardized around a single interception abstraction.

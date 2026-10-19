@@ -1,5 +1,33 @@
 import * as Yup from "yup";
 
+// Stricter than the server, which does not check that the URI has a scheme.
+const URI_PATTERN = /^[a-z][a-z0-9+.-]*:\S+$/i;
+
+export const isValidDebLine = (line: string): boolean => {
+  const [content = ""] = line.split("#");
+  const [type, ...tokens] = content.trim().split(/\s+/);
+
+  if (type !== "deb" && type !== "deb-src") {
+    return false;
+  }
+
+  if (tokens[0]?.startsWith("[")) {
+    const end = tokens.findIndex((token) => token.includes("]"));
+    const closing = tokens[end];
+
+    // The first "]" must exist and must end its token: rejects "]foo" and "a]b]".
+    if (!closing || closing.indexOf("]") !== closing.length - 1) {
+      return false;
+    }
+
+    tokens.splice(0, end + 1);
+  }
+
+  const [uri, suite] = tokens;
+
+  return !!uri && URI_PATTERN.test(uri) && !!suite;
+};
+
 export const getValidationSchema = () =>
   Yup.object().shape({
     name: Yup.string()
@@ -10,9 +38,10 @@ export const getValidationSchema = () =>
       ),
     deb_line: Yup.string()
       .required("This field is required.")
-      .matches(
-        /^(deb|deb-src)\s+\S+/,
-        'Must start with "deb" or "deb-src" followed by a URL.',
+      .test(
+        "valid-deb-line",
+        'Must be a valid APT line: "deb" or "deb-src", a repository URI with a scheme (e.g. https://, s3://), and a suite.',
+        (value) => !value || isValidDebLine(value),
       ),
     gpg_key_name: Yup.string(),
   });

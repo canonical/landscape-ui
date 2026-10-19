@@ -60,4 +60,21 @@ describe("AdministratorsPanelContent", () => {
 
     expect(removedAdministrator).not.toBeInTheDocument();
   });
+
+  it("shows over 20 administrators", async () => {
+    const manyAdministrators = Array.from({ length: 23 }, (_, index) => ({
+      roles: [],
+      email: `admin${index}@example.com`,
+      name: `Admin ${index}`,
+      id: index,
+    }));
+
+    renderWithProviders(
+      <AdministratorsPanelContent administrators={manyAdministrators} />,
+    );
+
+    expect(
+      await screen.findByRole("button", { name: "Admin 22" }),
+    ).toBeInTheDocument();
+  });
 });

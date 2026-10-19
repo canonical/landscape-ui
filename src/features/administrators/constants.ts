@@ -1,0 +1,1 @@
+export const INVITATION_LIFETIME_DAYS = 14;

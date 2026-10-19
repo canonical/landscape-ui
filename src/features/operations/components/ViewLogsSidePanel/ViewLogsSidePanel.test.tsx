@@ -28,6 +28,8 @@ assert(failedLocal, "Missing mock local with a failed operation");
 describe("ViewLogsSidePanel", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test-logs");
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => undefined);
   });
 
   it("renders loading state when fetching", () => {

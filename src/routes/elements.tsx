@@ -156,3 +156,12 @@ export const SuperAdminAccountDetailPage = Loadable(
 export const SuperAdminPeoplePage = Loadable(
   lazy(() => import("@/pages/super-admin/people/PeoplePage")),
 );
+export const SupportSessionPage = Loadable(
+  lazy(() => import("@/pages/super-admin/accounts/SupportSessionPage")),
+);
+export const SupportProfilesPage = Loadable(
+  lazy(() => import("@/pages/super-admin/session/SupportProfilesPage")),
+);
+export const SupportSettingsPage = Loadable(
+  lazy(() => import("@/pages/super-admin/session/SupportSettingsPage")),
+);

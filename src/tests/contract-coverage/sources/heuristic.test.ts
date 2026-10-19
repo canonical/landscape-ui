@@ -41,17 +41,17 @@ describe("createHeuristicSource", () => {
     expect(
       match(
         "POST",
-        "http://localhost:3000/debarchive/v1beta1/publications/7b1d5c2f-0c4e-4d8e-8f2f-99d4f2d9a123:publish",
+        "http://localhost:3000/debarchive/v1/publications/7b1d5c2f-0c4e-4d8e-8f2f-99d4f2d9a123:publish",
       )?.pattern,
-    ).toBe("/debarchive/v1beta1/publications/{id}:publish");
+    ).toBe("/debarchive/v1/publications/{id}:publish");
   });
 
   it("classifies the backend and strips query and trailing slash", () => {
     const matched = match(
       "GET",
-      "http://localhost:3000/debarchive/v1beta1/mirrors/?pageSize=10",
+      "http://localhost:3000/debarchive/v1/mirrors/?pageSize=10",
     );
     expect(matched?.backend).toBe("go");
-    expect(matched?.pattern).toBe("/debarchive/v1beta1/mirrors");
+    expect(matched?.pattern).toBe("/debarchive/v1/mirrors");
   });
 });

@@ -1,19 +1,18 @@
 import InfoItem from "@/components/layout/InfoItem";
-import { useAuthHandle } from "@/features/auth";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
+import useSwitchAccount from "@/hooks/useSwitchAccount";
 import { Select } from "@canonical/react-components";
 import classNames from "classnames";
 import type { ChangeEvent } from "react";
 import classes from "./OrganisationSwitch.module.scss";
 
 const OrganisationSwitch = () => {
-  const { isOnSubdomain, options, handleAccountSwitch, currentAccount } =
-    useAuthAccounts();
+  const { isOnSubdomain, options, currentAccount } = useAuthAccounts();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-  const { switchAccountQuery } = useAuthHandle();
+  const { switchAccount } = useSwitchAccount();
 
   if (isOnSubdomain || options.length === 1) {
     return (
@@ -27,17 +26,11 @@ const OrganisationSwitch = () => {
     );
   }
 
-  const { mutateAsync: switchAccount } = switchAccountQuery;
-
   const handleOrganisationChange = async (
     event: ChangeEvent<HTMLSelectElement>,
   ): Promise<void> => {
-    const account_name = event.target.value;
-
     try {
-      const { data } = await switchAccount({ account_name });
-
-      handleAccountSwitch(data.token, account_name);
+      await switchAccount(event.target.value);
 
       closeSidePanel();
     } catch (error) {

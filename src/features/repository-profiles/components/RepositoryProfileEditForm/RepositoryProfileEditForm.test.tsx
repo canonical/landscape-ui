@@ -135,6 +135,28 @@ describe("RepositoryProfileEditForm", () => {
     expect(screen.getByText("AAAA1111")).toBeInTheDocument();
   });
 
+  it("keeps source action buttons mounted when profile details change", async () => {
+    renderEditForm();
+
+    const [firstSource] = aptSources;
+    await screen.findByText(firstSource.name);
+
+    const editButton = screen.getByRole("button", {
+      name: `Edit ${firstSource.name}`,
+    });
+    const removeButton = screen.getByRole("button", {
+      name: `Remove ${firstSource.name}`,
+    });
+
+    await user.type(
+      screen.getByRole("textbox", { name: /description/i }),
+      " updated",
+    );
+
+    expect(editButton).toBeInTheDocument();
+    expect(removeButton).toBeInTheDocument();
+  });
+
   it("removing a source removes it from the sources table", async () => {
     renderEditForm("view,edit");
 

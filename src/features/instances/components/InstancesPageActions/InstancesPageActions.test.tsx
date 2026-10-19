@@ -20,14 +20,25 @@ import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import type { UbuntuProInfo } from "@/types/Instance";
+import { DEB_MANAGEMENT_INSTANCE_LIMIT } from "@/features/packages";
 
 const selected = instances.slice(0, 2);
+const overLimitSelection = Array.from(
+  { length: DEB_MANAGEMENT_INSTANCE_LIMIT + 1 },
+  (_, index) => ({ ...ubuntuInstance, id: index + 1 }),
+);
 const ubuntuProInfo = {
   result: "success",
   attached: true,
 } as unknown as UbuntuProInfo;
 
-const MENU_LABELS = ["Operations", "Grouping", "Ubuntu Pro"];
+const MENU_LABELS = [
+  "Operations",
+  "Grouping",
+  "Ubuntu Pro",
+  "Deb management",
+  "Snap management",
+];
 
 const OPERATIONS_LABELS = [
   "Shut down",
@@ -43,6 +54,15 @@ const OPERATIONS_LABELS = [
 const GROUPING_LABELS = ["Assign access group", "Assign tag"];
 
 const UBUNTU_PRO_LABELS = ["Attach token", "Detach token"];
+
+const SNAP_MANAGEMENT_LABELS = [
+  "Install",
+  "Uninstall",
+  "Refresh",
+  "Hold",
+  "Unhold",
+  "Change channel",
+];
 
 const defaultProps: ComponentProps<typeof InstancesPageActions> = {
   isGettingInstances: false,
@@ -66,9 +86,91 @@ describe("InstancesPageActions", () => {
     vi.restoreAllMocks();
   });
 
+  it.each(MENU_LABELS.filter((label) => label !== "Snap management"))(
+    "opens %s rightward on large screens",
+    async (label) => {
+      renderPageActions();
+
+      const toggle = await screen.findByRole("button", { name: label });
+      expect(toggle.closest(".p-contextual-menu")).toHaveClass(
+        "p-contextual-menu--left",
+      );
+      await userEvent.click(toggle);
+
+      expect(
+        screen.getByRole("menu").closest(".p-contextual-menu"),
+      ).toHaveClass("p-contextual-menu--left");
+    },
+  );
+
+  it("opens the collapsed Actions submenus leftward", async () => {
+    setScreenSize("sm");
+    renderPageActions();
+
+    await userEvent.click(screen.getByRole("button", { name: "Actions" }));
+    await screen.findByRole("button", { name: "Deb management" });
+
+    for (const label of MENU_LABELS) {
+      expect(screen.getByRole("button", { name: label })).toHaveIcon(
+        "chevron-left",
+      );
+    }
+  });
+
+  it.each([
+    "Upgrade",
+    "Install",
+    "Uninstall",
+    "Change version",
+    "Hold",
+    "Unhold",
+  ])("shows the Deb management instance limit modal for %s", async (action) => {
+    renderPageActions({ selectedInstances: overLimitSelection });
+
+    await userEvent.click(
+      await screen.findByRole("button", { name: MENU_LABELS[3] }),
+    );
+    await userEvent.click(screen.getByRole("menuitem", { name: action }));
+
+    expect(
+      screen.getByRole("dialog", { name: "Instance limit exceeded" }),
+    ).toHaveTextContent(
+      `Deb management features are only available for a selection of ${DEB_MANAGEMENT_INSTANCE_LIMIT} instances or fewer.`,
+    );
+  });
+
+  it.each(["package-change-plans", "package-search-rest-api"] as const)(
+    "hides Deb management when the %s feature is disabled",
+    async (disabledFeature) => {
+      server.use(
+        http.get(`${API_URL}features`, () =>
+          HttpResponse.json({
+            results: features.map((feature) =>
+              feature.key === disabledFeature
+                ? { ...feature, enabled: false }
+                : feature,
+            ),
+          }),
+        ),
+      );
+
+      renderPageActions();
+
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[0] }),
+      );
+      await screen.findByRole("menuitem", { name: /view report/i });
+
+      expect(
+        screen.queryByRole("button", { name: MENU_LABELS[3] }),
+      ).not.toBeInTheDocument();
+    },
+  );
+
   it("should render correct action groups", async () => {
     renderPageActions();
 
+    await screen.findByRole("button", { name: MENU_LABELS[3] });
     const buttons = screen.getAllByRole("button");
     expect(buttons).toHaveLength(MENU_LABELS.length);
 
@@ -86,12 +188,18 @@ describe("InstancesPageActions", () => {
     for (const label of UBUNTU_PRO_LABELS) {
       expect(screen.getByRole("menuitem", { name: label })).toBeInTheDocument();
     }
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[4] }));
+    for (const label of SNAP_MANAGEMENT_LABELS) {
+      expect(screen.getByRole("menuitem", { name: label })).toBeInTheDocument();
+    }
   });
 
   describe("Disabled and visible states", () => {
-    it("should disable all groups when no instances are available to export", () => {
+    it("should disable all groups when no instances are available to export", async () => {
       renderPageActions({ selectedInstances: [] });
 
+      await screen.findByRole("button", { name: MENU_LABELS[3] });
       const buttons = screen.getAllByRole("button");
 
       expect(buttons).toHaveLength(MENU_LABELS.length);
@@ -101,12 +209,13 @@ describe("InstancesPageActions", () => {
       }
     });
 
-    it("should disable buttons while getting instances", () => {
+    it("should disable buttons while getting instances", async () => {
       renderPageActions({
         isGettingInstances: true,
         selectedInstances: [],
       });
 
+      await screen.findByRole("button", { name: MENU_LABELS[3] });
       const buttons = screen.getAllByRole("button");
 
       expect(buttons).toHaveLength(MENU_LABELS.length);
@@ -182,7 +291,7 @@ describe("InstancesPageActions", () => {
       });
 
       await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
+        await screen.findByRole("button", { name: MENU_LABELS[0] }),
       );
 
       const button = screen.getByRole("menuitem", { name: /^upgrade$/i });
@@ -200,7 +309,7 @@ describe("InstancesPageActions", () => {
       });
 
       await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
+        await screen.findByRole("button", { name: MENU_LABELS[0] }),
       );
 
       const button = screen.getByRole("menuitem", { name: /^upgrade$/i });
@@ -228,7 +337,7 @@ describe("InstancesPageActions", () => {
     });
 
     it("'Run script' menu item should be disabled if script feature is disabled", async () => {
-      renderPageActions({ selectedInstances: [{ ...windowsInstance }] });
+      renderPageActions({ selectedInstances: [windowsInstance] });
 
       await userEvent.click(
         screen.getByRole("button", { name: MENU_LABELS[0] }),
@@ -269,6 +378,14 @@ describe("InstancesPageActions", () => {
       expect(
         screen.queryByRole("button", { name: /attach token/i }),
       ).not.toBeInTheDocument();
+    });
+
+    it("'Snap management' group should be disabled if snaps feature is disabled", async () => {
+      renderPageActions({ selectedInstances: [windowsInstance] });
+
+      expect(
+        screen.getByRole("button", { name: MENU_LABELS[4] }),
+      ).toHaveAttribute("aria-disabled", "true");
     });
   });
 
@@ -360,7 +477,7 @@ describe("InstancesPageActions", () => {
 
     it("'Upgrade' menu item", async () => {
       await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
+        await screen.findByRole("button", { name: MENU_LABELS[0] }),
       );
       await userEvent.click(
         screen.getByRole("menuitem", { name: /^upgrade$/i }),
@@ -460,6 +577,76 @@ describe("InstancesPageActions", () => {
 
       expect(
         screen.getByRole("heading", { name: /detach Ubuntu Pro token/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Install' snap menu item", async () => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[4] }),
+      );
+      await userEvent.click(screen.getByRole("menuitem", { name: "Install" }));
+
+      expect(
+        screen.getByRole("heading", { name: /install snap/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Uninstall' snap menu item", async () => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[4] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: "Uninstall" }),
+      );
+
+      expect(
+        screen.getByRole("heading", { name: /uninstall snap/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Refresh' snap menu item", async () => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[4] }),
+      );
+      await userEvent.click(screen.getByRole("menuitem", { name: "Refresh" }));
+
+      expect(
+        screen.getByRole("heading", { name: /refresh snap/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Hold' snap menu item", async () => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[4] }),
+      );
+      await userEvent.click(screen.getByRole("menuitem", { name: "Hold" }));
+
+      expect(
+        screen.getByRole("heading", { name: /hold snap/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Unhold' snap menu item", async () => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[4] }),
+      );
+      await userEvent.click(screen.getByRole("menuitem", { name: "Unhold" }));
+
+      expect(
+        screen.getByRole("heading", { name: /unhold snap/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Change channel' snap menu item", async () => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[4] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: "Change channel" }),
+      );
+
+      expect(
+        screen.getByRole("heading", { name: /change snap channel/i }),
       ).toBeInTheDocument();
     });
   });

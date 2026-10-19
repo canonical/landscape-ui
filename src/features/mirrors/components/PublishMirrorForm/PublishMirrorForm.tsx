@@ -59,6 +59,7 @@ const PublishMirrorForm: FC = () => {
           <PublishMirrorExistingForm
             mirror={mirror}
             publications={publications}
+            publicationTargets={publicationTargets}
           />
         )}
       </SidePanel.Content>
