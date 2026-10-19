@@ -350,8 +350,9 @@ describe("SwitchSnapForm", () => {
     });
 
     it("shows an error notification on API failure", async () => {
-      setEndpointStatus("error");
+      setEndpointStatus({ path: "snaps", status: "error" });
       renderSwitchSnapForm();
+      await waitForChannels();
 
       await userEvent.click(screen.getByRole("button", { name: /switch/i }));
 
