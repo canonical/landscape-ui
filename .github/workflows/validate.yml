@@ -98,8 +98,8 @@ jobs:
 
   e2e-tests:
     name: Playwright (${{ matrix.name }})
-    # Fork PRs run untrusted code, so keep them off the persistent
-    # self-hosted runners.
+    # Fork PR runs execute unreviewed code, so keep them off the persistent
+    # self-hosted runners. Merge-queue runs need an approving review first.
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || fromJSON('["self-hosted", "Linux", "large"]') }}
     timeout-minutes: 30
     container:
@@ -176,8 +176,8 @@ jobs:
 
   unit-tests:
     name: Vitest
-    # Fork PRs run untrusted code, so keep them off the persistent
-    # self-hosted runners.
+    # Fork PR runs execute unreviewed code, so keep them off the persistent
+    # self-hosted runners. Merge-queue runs need an approving review first.
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || fromJSON('["self-hosted", "Linux", "large"]') }}
     timeout-minutes: 30
     permissions:
