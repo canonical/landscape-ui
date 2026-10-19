@@ -27,6 +27,7 @@ const ColumnFilter: FC<FilterProps<ColumnFilterOption>> = ({
   return (
     <TableFilter
       type="multiple"
+      position="right"
       showSelectedItemCount
       label={
         <>

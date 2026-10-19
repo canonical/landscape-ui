@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
-import { TSV_EXPORTS_ENABLED } from "@/constants";
+import { BREAKPOINT_PX, TSV_EXPORTS_ENABLED } from "@/constants";
 import {
   type PackageChangePlanActionType,
   PackagesActionForm,
@@ -19,7 +19,7 @@ import {
   Modal,
 } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
-import { useBoolean } from "usehooks-ts";
+import { useBoolean, useMediaQuery } from "usehooks-ts";
 import { getFeatures, hasUpgrades } from "../../helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
 import classes from "./InstancesPageActions.module.scss";
@@ -68,6 +68,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
   const { createSidePathPusher, lastSidePathSegment } = usePageParams();
+  const menuPosition = useMediaQuery(`(min-width: ${BREAKPOINT_PX.xl}px)`)
+    ? "left"
+    : "right";
 
   const {
     value: rebootModalOpen,
@@ -651,12 +654,13 @@ const InstancesPageActions = memo(function InstancesPageActions({
     <>
       <ResponsiveButtons
         collapseFrom="xl"
+        menuPosition={menuPosition}
         className={classes.buttons}
         buttons={[
           <ContextualMenu
             key="operations"
             links={operationsLinks}
-            position="right"
+            position={menuPosition}
             toggleLabel="Operations"
             toggleClassName="u-no-margin--bottom"
             toggleDisabled={!hasInstancesToExport}
@@ -665,7 +669,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <ContextualMenu
             key="grouping"
             links={groupingLinks}
-            position="right"
+            position={menuPosition}
             toggleLabel="Grouping"
             toggleClassName="u-no-margin--bottom"
             toggleDisabled={!hasSelectedInstances}
@@ -684,7 +688,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             </Button>
           ) : (
             <ContextualMenu
-              position="right"
+              position={menuPosition}
               key="pro-services"
               links={proServicesLinks}
               toggleLabel="Ubuntu Pro"
@@ -699,7 +703,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
                   key="deb-management"
                   hasToggleIcon
                   links={debManagementLinks}
-                  position="right"
+                  position={menuPosition}
                   toggleLabel={<span>Deb management</span>}
                   toggleClassName="u-no-margin--bottom"
                   toggleDisabled={0 === selectedInstances.length}
@@ -709,6 +713,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <ContextualMenu
             key="snap"
             links={snapLinks}
+            // The last button never has room to open rightward.
             position="right"
             toggleLabel="Snap management"
             toggleClassName="u-no-margin--bottom"
