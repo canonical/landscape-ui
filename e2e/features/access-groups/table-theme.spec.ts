@@ -81,11 +81,10 @@ for (const theme of ["light", "dark"]) {
         const table = panel.getByRole("table");
         const header = table.locator("thead");
         const firstCell = table.locator("tbody td").first();
-        const surface = await panel.evaluate(
-          (element) => getComputedStyle(element).backgroundColor,
-        );
+        const surface =
+          theme === "dark" ? "rgb(32, 32, 32)" : defaultBackground;
 
-        expect(surface).not.toBe("rgba(0, 0, 0, 0)");
+        await expect(panel).toHaveCSS("background-color", surface);
         await expect(header).toHaveCSS("background-color", surface);
         await expect(header).toHaveCSS("position", "sticky");
 
