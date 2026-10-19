@@ -98,7 +98,9 @@ jobs:
 
   e2e-tests:
     name: Playwright (${{ matrix.name }})
-    runs-on: [self-hosted, Linux, large]
+    # Fork PR runs execute unreviewed code, so keep them off the persistent
+    # self-hosted runners. Merge-queue runs need an approving review first.
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || fromJSON('["self-hosted", "Linux", "large"]') }}
     timeout-minutes: 30
     container:
       image: mcr.microsoft.com/playwright:v1.60.0
@@ -116,10 +118,13 @@ jobs:
             self_hosted_env: "true"
             msw_enabled: "false"
     env:
-      VITE_API_URL: ${{ vars.API_URL }}
-      VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
-      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE }}
-      VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
+      # vars are not passed to fork PRs. None of these values are secret (the
+      # dev backend is public and the E2E credentials are committed), so fall
+      # back to them only there; a missing var still fails same-repo runs.
+      VITE_API_URL: ${{ github.event.pull_request.head.repo.fork && (vars.API_URL || '/api/v2/') || vars.API_URL }}
+      VITE_API_URL_OLD: ${{ github.event.pull_request.head.repo.fork && (vars.API_URL_OLD || '/api/') || vars.API_URL_OLD }}
+      VITE_API_URL_DEB_ARCHIVE: ${{ github.event.pull_request.head.repo.fork && (vars.API_URL_DEB_ARCHIVE || '/debarchive/v1/') || vars.API_URL_DEB_ARCHIVE }}
+      VITE_API_PROXY_TARGET: ${{ github.event.pull_request.head.repo.fork && (vars.API_PROXY_TARGET || 'https://landscape.yuriy.works') || vars.API_PROXY_TARGET }}
       VITE_APP_TITLE: Landscape
       VITE_ROOT_PATH: /
       VITE_DETAILED_UPGRADES_VIEW_ENABLED: true
@@ -171,16 +176,20 @@ jobs:
 
   unit-tests:
     name: Vitest
-    runs-on: [self-hosted, Linux, large]
+    # Fork PR runs execute unreviewed code, so keep them off the persistent
+    # self-hosted runners. Merge-queue runs need an approving review first.
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || fromJSON('["self-hosted", "Linux", "large"]') }}
     timeout-minutes: 30
     permissions:
       contents: read
       pull-requests: write
     environment: dev
     env:
-      VITE_API_URL: ${{ vars.API_URL }}
-      VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
-      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE }}
+      # vars are not passed to fork PRs; fall back to the .env.production
+      # paths only there, so a missing var still fails same-repo runs.
+      VITE_API_URL: ${{ github.event.pull_request.head.repo.fork && (vars.API_URL || '/api/v2/') || vars.API_URL }}
+      VITE_API_URL_OLD: ${{ github.event.pull_request.head.repo.fork && (vars.API_URL_OLD || '/api/') || vars.API_URL_OLD }}
+      VITE_API_URL_DEB_ARCHIVE: ${{ github.event.pull_request.head.repo.fork && (vars.API_URL_DEB_ARCHIVE || '/debarchive/v1/') || vars.API_URL_DEB_ARCHIVE }}
       VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
       VITE_APP_TITLE: Landscape
       VITE_ROOT_PATH: /portal/
