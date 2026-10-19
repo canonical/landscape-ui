@@ -1,4 +1,5 @@
-import { API_URL, DEBOUNCE_DELAY } from "@/constants";
+import { API_URL } from "@/constants";
+import { DEBOUNCE_DELAY } from "../../constants";
 import { PATHS } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import server from "@/tests/server";

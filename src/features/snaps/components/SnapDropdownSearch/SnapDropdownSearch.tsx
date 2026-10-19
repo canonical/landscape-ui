@@ -10,7 +10,7 @@ import { useGetAvailableSnaps } from "../../api";
 import type { AvailableSnap, SelectedSnaps } from "../../types";
 import SuggestionContent from "./components";
 import classes from "./SnapDropdownSearch.module.scss";
-import { DEBOUNCE_DELAY } from "@/constants";
+import { DEBOUNCE_DELAY } from "../../constants";
 
 interface SnapDropdownSearchProps {
   readonly selectedItems: SelectedSnaps[];
@@ -37,7 +37,7 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
   const { availableSnaps: snapsData, isFetchingAvailableSnaps: isFetching } =
     useGetAvailableSnaps(
       { instance_id: instanceId, query: search },
-      { enabled: search.length > 0 },
+      { enabled: search.length > 0, gcTime: 0, staleTime: Infinity },
     );
 
   const getAvailableSnapSuggestions = (itemName: string): boolean => {

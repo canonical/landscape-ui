@@ -5,7 +5,8 @@ import type { FC } from "react";
 import { useRef, useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 import SnapBulkSearchList from "../SnapBulkSearchList";
-import { DEBOUNCE_DELAY, MAX_SELECTED_SNAPS } from "./constants";
+import { DEBOUNCE_DELAY } from "../../../../constants";
+import { MAX_SELECTED_SNAPS } from "./constants";
 import type { SnapWithCount, SnapAction } from "../../../../types";
 import { useGetBulkSnaps } from "../../../../api";
 
