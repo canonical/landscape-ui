@@ -118,7 +118,7 @@ jobs:
     env:
       VITE_API_URL: ${{ vars.API_URL || '/api/v2/' }}
       VITE_API_URL_OLD: ${{ vars.API_URL_OLD || '/api/' }}
-      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE || '/debarchive/v1beta1/' }}
+      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE || '/debarchive/v1/' }}
       VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
       VITE_APP_TITLE: Landscape
       VITE_ROOT_PATH: /
@@ -180,7 +180,7 @@ jobs:
     env:
       VITE_API_URL: ${{ vars.API_URL || '/api/v2/' }}
       VITE_API_URL_OLD: ${{ vars.API_URL_OLD || '/api/' }}
-      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE || '/debarchive/v1beta1/' }}
+      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE || '/debarchive/v1/' }}
       VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
       VITE_APP_TITLE: Landscape
       VITE_ROOT_PATH: /portal/
