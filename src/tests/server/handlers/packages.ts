@@ -280,8 +280,9 @@ export default [
       }
 
       if (security === true) {
-        groupedResults = groupedResults.filter(({ installation_candidates }) =>
-          installation_candidates.some((c) => c.upgrade && c.security),
+        groupedResults = groupedResults.filter(
+          ({ security: isSec, installation_candidates }) =>
+            isSec || installation_candidates.some((c) => c.security),
         );
       }
 
