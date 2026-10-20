@@ -37,7 +37,7 @@ const AboutContainer: FC = () => {
         </InfoGrid>
       </FormSection>
       <FormSection className={classes.aboutSection} title="Useful Links">
-        <ul className="p-list">
+        <ul className="p-list u-no-margin--bottom">
           <li>
             <Link
               className={classes.usefulLink}

@@ -118,18 +118,35 @@ describe("AddMirrorForm", () => {
     );
   });
 
-  it("rejects an http source URL with an HTTPS validation error", async () => {
+  it("accepts an http source URL", async () => {
+    const httpUrl = "http://archive.example.com/ubuntu/";
+
+    const sourceUrlField = screen.getByLabelText("Source URL");
+    await user.clear(sourceUrlField);
+    await user.type(sourceUrlField, httpUrl);
+
+    await user.click(screen.getByRole("button", { name: "Add mirror" }));
+
+    expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        archiveRoot: httpUrl,
+        mirrorType: "UBUNTU_ARCHIVE",
+      }),
+    );
+  });
+
+  it("rejects a non-http source URL", async () => {
     await user.selectOptions(
       screen.getByLabelText("Source type"),
       "Third party",
     );
 
     const sourceUrlField = screen.getByLabelText("Source URL");
-    await user.type(sourceUrlField, "http://insecure.example.com/");
+    await user.type(sourceUrlField, "htt://insecure.example.com/");
     await user.tab();
 
     expect(
-      await screen.findByText(/source url must use https/i),
+      await screen.findByText(/source url must use http or https/i),
     ).toBeInTheDocument();
   });
 

@@ -83,7 +83,7 @@ const AddMirrorForm: FC = () => {
       sourceType: Yup.string().required("This field is required."),
       sourceUrl: Yup.string()
         .required("This field is required.")
-        .matches(/^https:\/\/.+/, "Source URL must use HTTPS."),
+        .matches(/^https?:\/\/.+/, "Source URL must use HTTP or HTTPS."),
       distribution: Yup.string().required("This field is required."),
       components: Yup.array()
         .of(Yup.string())

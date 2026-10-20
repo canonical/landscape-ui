@@ -152,6 +152,26 @@ describe("SnapChannelRevisionFields", () => {
     );
   });
 
+  it("does not show the classic confinement checkbox when channels load", async () => {
+    renderWithProviders(
+      <SnapChannelRevisionFields
+        {...props}
+        snapModeConfig={{ mode: "channel", value: "latest/stable" }}
+      />,
+    );
+
+    const channelSelect = screen.getByLabelText(
+      `Channel for ${snapWithChannels.snap.name}`,
+    );
+    await waitFor(() => {
+      expect(within(channelSelect).getAllByRole("option")).toHaveLength(4);
+    });
+
+    expect(
+      screen.queryByLabelText(/Use classic confinement/),
+    ).not.toBeInTheDocument();
+  });
+
   it("calls onChange when a revision is entered", async () => {
     const onChange = vi.fn();
     renderWithProviders(
