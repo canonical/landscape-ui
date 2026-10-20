@@ -15,6 +15,7 @@ import type {
 } from "@/features/packages";
 import type MultiSelectField from "@/components/form/MultiSelectField";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { QUERY_LIMIT } from "../../constants";
 import { mockIntersectionObserver } from "@/tests/helpers";
 
 const multiSelectFieldProps = vi.hoisted(() => vi.fn());
@@ -148,6 +149,10 @@ describe("PackageSearchDowngradeItem", () => {
 
   describe("version pagination", () => {
     const totalVersions = 35;
+    const expectedOffsets = Array.from(
+      { length: Math.ceil(totalVersions / QUERY_LIMIT) },
+      (_, page) => page * QUERY_LIMIT,
+    );
     let restoreIntersectionObserver: (() => void) | undefined;
 
     afterEach(() => {
@@ -166,7 +171,7 @@ describe("PackageSearchDowngradeItem", () => {
         http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
           `${API_URL}packages\\:search`,
           async ({ request }) => {
-            const { offset = 0, limit = 10 } = await request.json();
+            const { offset = 0, limit = QUERY_LIMIT } = await request.json();
             requestedOffsets.push(offset);
 
             const pageSize = Math.max(
@@ -197,7 +202,7 @@ describe("PackageSearchDowngradeItem", () => {
       expect(
         await screen.findByText("1.034 (4 instances)"),
       ).toBeInTheDocument();
-      expect(requestedOffsets).toEqual([0, 10, 20, 30]);
+      expect(requestedOffsets).toEqual(expectedOffsets);
     });
   });
 });
