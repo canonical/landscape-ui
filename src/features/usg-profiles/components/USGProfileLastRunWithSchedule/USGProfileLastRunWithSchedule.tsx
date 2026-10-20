@@ -3,7 +3,7 @@ import { Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import type { USGProfile } from "../../types";
 import classes from "./USGProfileLastRunWithSchedule.module.scss";
-import date from "@/libs/date";
+import { parseServerDateTime } from "@/libs/date";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { getUsgSchedule } from "../../helpers";
 
@@ -17,14 +17,16 @@ const USGProfileLastRunWithSchedule: FC<USGProfileLastRunWithScheduleProps> = ({
   const lastRun = !profile.last_run_results.timestamp ? (
     <NoData />
   ) : (
-    date(profile.last_run_results.timestamp)
+    parseServerDateTime(profile.last_run_results.timestamp)
       .utc()
       .format(DISPLAY_DATE_TIME_FORMAT)
   );
   const nextRun = !profile.next_run_time ? (
     <NoData />
   ) : (
-    date(profile.next_run_time).utc().format(DISPLAY_DATE_TIME_FORMAT)
+    parseServerDateTime(profile.next_run_time)
+      .utc()
+      .format(DISPLAY_DATE_TIME_FORMAT)
   );
 
   const tooltipMessage = (

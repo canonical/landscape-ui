@@ -3,7 +3,7 @@ import InfoGrid from "@/components/layout/InfoGrid";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { pluralize } from "@/utils/_helpers";
 import type { FormikContextType } from "formik";
-import date from "@/libs/date";
+import { parseServerDateTime } from "@/libs/date";
 import { phrase } from "../helpers";
 import type { USGProfileFormValues } from "../types/USGProfileAddFormValues";
 
@@ -29,9 +29,9 @@ export default function useUsgProfileFormConfirmationStep<
               <>
                 USG profile&apos;s next run date arrives
                 <br />
-                {date(formik.values.start_date).format(
-                  `${DISPLAY_DATE_TIME_FORMAT}`,
-                )}
+                {parseServerDateTime(formik.values.start_date)
+                  .utc()
+                  .format(`${DISPLAY_DATE_TIME_FORMAT}`)}
               </>
             ),
             iconName: "revisions",

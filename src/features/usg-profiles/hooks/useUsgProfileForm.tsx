@@ -4,7 +4,7 @@ import { DEFAULT_ACCESS_GROUP_NAME, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { useFormik } from "formik";
-import date from "@/libs/date";
+import { parseServerDateTime } from "@/libs/date";
 import type { ReactNode } from "react";
 import * as Yup from "yup";
 import { getDayOfWeek } from "../helpers";
@@ -63,7 +63,9 @@ const useUsgProfileForm = ({
           start_type == "recurring" && end_type == "on-a-date"
             ? schema.required("This field is required.").test({
                 test: (end_date) => {
-                  return date(end_date).isAfter(date(start_date));
+                  return parseServerDateTime(end_date ?? "").isAfter(
+                    parseServerDateTime(start_date),
+                  );
                 },
                 message: `The end date must be after the start date.`,
               })
@@ -177,7 +179,7 @@ const useUsgProfileForm = ({
 
         if (values.end_type == "on-a-date") {
           scheduleRuleParts.push(
-            `UNTIL=${date(values.end_date).format("YYYYMMDDTHHmmss")}Z`,
+            `UNTIL=${parseServerDateTime(values.end_date).utc().format("YYYYMMDDTHHmmss[Z]")}`,
           );
         }
       } else {
@@ -202,9 +204,9 @@ const useUsgProfileForm = ({
               ? values.restart_deliver_delay
               : undefined,
           schedule: scheduleRuleParts.join(";"),
-          start_date: `${date(values.start_date).format(
-            INPUT_DATE_TIME_FORMAT,
-          )}Z`,
+          start_date: parseServerDateTime(values.start_date)
+            .utc()
+            .format(`${INPUT_DATE_TIME_FORMAT}[Z]`),
           tags: values.all_computers ? undefined : values.tags,
           tailoring_file: await values.tailoring_file?.text(),
           title: values.title,

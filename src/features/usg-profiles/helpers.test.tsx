@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { INPUT_DATE_TIME_FORMAT } from "@/constants";
-import date from "@/libs/date";
 import type { NotificationHelper } from "@/types/Notification";
 import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
@@ -215,14 +213,15 @@ describe("getUsgSchedule", () => {
     ).toBe("Recurring, every year in May and September");
   });
 
-  it("appends an until clause when provided", () => {
-    const result = getUsgSchedule(
-      makeProfile({ schedule: "FREQ=DAILY;UNTIL=2024-12-31T00:00:00Z" }),
-    );
-    expect(result).toContain("Recurring, every day until");
-    expect(result).toContain("Dec 31, 2024");
-    expect(result).toContain("UTC");
-  });
+  it.each(["20271231T120000Z", "2027-12-31T12:00:00Z"])(
+    "appends the exact UTC end date for UNTIL=%s",
+    (until) => {
+      const result = getUsgSchedule(
+        makeProfile({ schedule: `FREQ=DAILY;INTERVAL=1;UNTIL=${until}` }),
+      );
+      expect(result).toBe("Recurring, every day until Dec 31, 2027, 12:00 UTC");
+    },
+  );
 });
 
 describe("getStatus", () => {
@@ -273,9 +272,7 @@ describe("getInitialValues", () => {
     expect(values.randomize_delivery).toBe(true);
     expect(values.deliver_delay_window).toBe(20);
     expect(values.tailoring_file).toBeNull();
-    expect(values.start_date).toBe(
-      date("2024-05-15T15:47:07Z").format(INPUT_DATE_TIME_FORMAT),
-    );
+    expect(values.start_date).toBe("2024-05-15T15:47:07");
   });
 
   it("maps a monthly by-week-day schedule", () => {
@@ -302,15 +299,28 @@ describe("getInitialValues", () => {
     expect(values.months).toEqual([5, 9]);
   });
 
-  it("maps an end date when the schedule has an until clause", () => {
+  it.each([
+    ["20271231T120000Z", "2027-12-31T12:00:00"],
+    ["2027-12-31T12:00:00Z", "2027-12-31T12:00:00"],
+    ["20270328T023000Z", "2027-03-28T02:30:00"],
+  ])("maps UNTIL=%s to UTC end-date fields", (until, expected) => {
     const values = getInitialValues(
-      makeProfile({ schedule: "FREQ=DAILY;UNTIL=2024-12-31T00:00:00Z" }),
+      makeProfile({ schedule: `FREQ=DAILY;UNTIL=${until}` }),
     );
 
     expect(values.end_type).toBe("on-a-date");
-    expect(values.end_date).toBe(
-      date("2024-12-31T00:00:00Z").format(INPUT_DATE_TIME_FORMAT),
-    );
+    expect(values.end_date).toBe(expected);
+  });
+
+  it.each([
+    ["2027-01-01T12:00:00", "2027-01-01T12:00:00"],
+    ["2027-01-01T12:00:00Z", "2027-01-01T12:00:00"],
+    ["2027-01-01T14:00:00+02:00", "2027-01-01T12:00:00"],
+    ["2027-01-01T07:00:00-0500", "2027-01-01T12:00:00"],
+  ])("maps next run %s to UTC start-date fields", (nextRun, expected) => {
+    expect(
+      getInitialValues(makeProfile({ next_run_time: nextRun })).start_date,
+    ).toBe(expected);
   });
 
   it("uses asap delivery and no randomization without delays", () => {
@@ -345,15 +355,13 @@ describe("getInitialValues", () => {
         next_run_time: null,
         last_run_results: {
           ...baseProfile.last_run_results,
-          timestamp: "2024-05-15T15:47:07Z",
+          timestamp: "2024-05-15T15:47:07",
         },
       }),
     );
 
     expect(values.unit_of_time).toBe("DAILY");
-    expect(values.start_date).toBe(
-      date("2024-05-15T15:47:07Z").format(INPUT_DATE_TIME_FORMAT),
-    );
+    expect(values.start_date).toBe("2024-05-15T15:47:07");
   });
 });
 
