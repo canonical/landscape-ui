@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ComputerPackageSearchGroupedResult } from "./types";
 import { mapGroupedResultToInstancePackage } from "./helpers";
+import { getPackageStatusInfo } from "./components/PackageList/helpers";
 
 describe("mapGroupedResultToInstancePackage", () => {
   it("maps a package with a security upgrade candidate to status 'security'", () => {
@@ -122,7 +123,7 @@ describe("mapGroupedResultToInstancePackage", () => {
     });
   });
 
-  it("maps a candidate that is both upgrade and security to status 'security' regardless of the group flag", () => {
+  it("maps a candidate that is both upgrade and security to status 'security' even when the group flag is false", () => {
     const input: ComputerPackageSearchGroupedResult = {
       name: "libssl3",
       summary: "Secure Sockets Layer toolkit - shared libraries",
@@ -144,6 +145,30 @@ describe("mapGroupedResultToInstancePackage", () => {
 
     expect(result.status).toBe("security");
     expect(result.available_version).toBe("3.0.2");
+  });
+
+  it("ignores the group security flag when the upgrade candidate is not a security upgrade", () => {
+    const input: ComputerPackageSearchGroupedResult = {
+      name: "curl",
+      summary: "command line tool for transferring data with URL syntax",
+      installed_version: "7.81.0-1ubuntu1.15",
+      installed_id: 109,
+      held: false,
+      security: true,
+      installation_candidates: [
+        {
+          id: 211,
+          version: "7.81.0-1ubuntu1.16",
+          upgrade: true,
+          security: false,
+        },
+      ],
+    };
+
+    const result = mapGroupedResultToInstancePackage(input);
+
+    expect(result.status).toBe("installed");
+    expect(result.available_version).toBe("7.81.0-1ubuntu1.16");
   });
 
   it("does not report a security upgrade for a security candidate on a package that is not installed", () => {
@@ -222,6 +247,7 @@ describe("mapGroupedResultToInstancePackage", () => {
 
     expect(result.status).toBe("installed");
     expect(result.available_version).toBe("5.1-3");
+    expect(getPackageStatusInfo(result).label).toBe("Regular upgrade");
   });
 
   it("maps an available-only (not installed) package to status 'available' with a synthetic id", () => {
