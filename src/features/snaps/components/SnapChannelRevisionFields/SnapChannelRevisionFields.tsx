@@ -221,7 +221,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
       {!isSnapInfoLoading &&
       !isSnapInfoError &&
       mode === "channel" &&
-      !channel ? (
+      channelOptions.length === 0 ? (
         <CheckboxInputWithHelp
           label="Use classic confinement"
           wrapperClassName={classes.classicConfinementCheckbox}

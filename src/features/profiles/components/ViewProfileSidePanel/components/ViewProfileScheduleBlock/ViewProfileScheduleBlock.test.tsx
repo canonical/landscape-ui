@@ -176,6 +176,53 @@ describe("ViewProfileScheduleBlock", () => {
     expect(screen.getByText(/Monday at 01:01 UTC/i)).toBeInTheDocument();
   });
 
+  it.each([
+    {
+      description: "missing hour",
+      schedule: "FREQ=WEEKLY;BYDAY=MO,WE;BYMINUTE=15",
+      expected: "Monday, Wednesday",
+    },
+    {
+      description: "invalid hour",
+      schedule: "FREQ=WEEKLY;BYDAY=MO,WE;BYHOUR=invalid;BYMINUTE=15",
+      expected: "Monday, Wednesday",
+    },
+    {
+      description: "missing hour and minute",
+      schedule: "FREQ=WEEKLY;BYDAY=MO,WE",
+      expected: "Monday, Wednesday",
+    },
+    {
+      description: "missing minute",
+      schedule: "FREQ=WEEKLY;BYDAY=MO;BYHOUR=1",
+      expected: "Monday at 01:00 UTC",
+    },
+    {
+      description: "invalid minute",
+      schedule: "FREQ=WEEKLY;BYDAY=MO;BYHOUR=1;BYMINUTE=invalid",
+      expected: "Monday at 01:00 UTC",
+    },
+    {
+      description: "midnight with missing minute",
+      schedule: "FREQ=WEEKLY;BYDAY=MO;BYHOUR=0",
+      expected: "Monday at 00:00 UTC",
+    },
+  ])("renders reboot schedule with $description", ({ schedule, expected }) => {
+    const rebootProfile = {
+      ...baseProfile,
+      next_run: "2024-01-02T12:00:00Z",
+      schedule,
+      deliver_within: 40,
+      deliver_delay_window: 15,
+      num_computers: 7,
+    };
+
+    renderWithProviders(<ViewProfileScheduleBlock profile={rebootProfile} />);
+
+    expect(screen.getByText(expected, { exact: true })).toBeInTheDocument();
+    expect(screen.queryByText(/NaN/)).not.toBeInTheDocument();
+  });
+
   it("renders delivery delay window for upgrade profile", () => {
     const upgradeProfile = {
       ...baseProfile,
