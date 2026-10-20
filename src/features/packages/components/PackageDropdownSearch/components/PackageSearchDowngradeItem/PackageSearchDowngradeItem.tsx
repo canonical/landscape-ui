@@ -62,6 +62,7 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
     hasNextPage: hasNextPackagesPage,
     isFetchingNextPage: isFetchingNextPackagesPage,
     isFetchNextPageError: isFetchNextPackagesPageError,
+    pageCount: packagesResponse?.pages.length ?? 0,
   });
 
   const packages = isPendingPackages

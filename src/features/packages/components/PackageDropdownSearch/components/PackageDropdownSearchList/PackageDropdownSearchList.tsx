@@ -37,6 +37,7 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
     hasNextPage: queryResult.hasNextPage,
     isFetchingNextPage: queryResult.isFetchingNextPage,
     isFetchNextPageError: queryResult.isFetchNextPageError,
+    pageCount: queryResult.data?.pages.length ?? 0,
   });
 
   if (exact && !search) {

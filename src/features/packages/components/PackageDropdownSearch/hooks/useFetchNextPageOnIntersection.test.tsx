@@ -1,3 +1,4 @@
+import FetchProvider from "@/api/fetch";
 import { API_URL } from "@/constants";
 import type {
   SearchPackagesRequest,
@@ -10,6 +11,7 @@ import { renderHookWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
+import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { QUERY_LIMIT } from "../constants";
 import { useFetchNextPageOnIntersection } from "./useFetchNextPageOnIntersection";
@@ -23,6 +25,16 @@ const EXPECTED_OFFSETS = Array.from(
 const SETTLE_DELAY_MS = 100;
 
 const renderInfiniteSearch = () => {
+  const ProvidersWrapper = renderHookWithProviders();
+
+  // useSearchPackages needs the authenticated fetch client, which the shared
+  // hook wrapper doesn't provide.
+  const Wrapper = ({ children }: { readonly children: ReactNode }) => (
+    <ProvidersWrapper>
+      <FetchProvider>{children}</FetchProvider>
+    </ProvidersWrapper>
+  );
+
   const { result } = renderHook(
     () => {
       const queryResult = useSearchPackages({
@@ -31,11 +43,14 @@ const renderInfiniteSearch = () => {
         limit: QUERY_LIMIT,
       });
 
-      const footerRef = useFetchNextPageOnIntersection(queryResult);
+      const footerRef = useFetchNextPageOnIntersection({
+        ...queryResult,
+        pageCount: queryResult.data?.pages.length ?? 0,
+      });
 
       return { queryResult, footerRef };
     },
-    { wrapper: renderHookWithProviders() },
+    { wrapper: Wrapper },
   );
 
   // Mount the footer that the observer watches.
@@ -98,9 +113,12 @@ describe("useFetchNextPageOnIntersection", () => {
     const result = renderInfiniteSearch();
 
     await waitFor(() => {
-      expect(result.current.queryResult.hasNextPage).toBe(false);
+      expect(result.current.queryResult.data?.pages).toHaveLength(
+        EXPECTED_OFFSETS.length,
+      );
     });
 
+    expect(result.current.queryResult.hasNextPage).toBe(false);
     expect(requestedOffsets).toEqual(EXPECTED_OFFSETS);
     expect(
       result.current.queryResult.data?.pages.flatMap(
