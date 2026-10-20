@@ -2,10 +2,10 @@ import { API_URL } from "@/constants";
 import { activities } from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { describe, expect, it, vi } from "vitest";
+import { assert, describe, expect, it, vi } from "vitest";
 import type { GetPackageChangePlanSummaryResponse } from "../../api";
 import PackagesUpgradeSummary from "./PackagesUpgradeSummary";
 
@@ -105,6 +105,44 @@ describe("PackagesUpgradeSummary", () => {
     });
     expect(
       await screen.findByText("You queued qa-repro-upgrade to be upgraded."),
+    ).toBeInTheDocument();
+  });
+
+  it("lists packages that will not be upgraded on excluded instances", async () => {
+    mockSummary({
+      actions: [],
+      exclusions: [
+        { package_name: "qa-repro-excluded", computer_count: 2 },
+        { package_name: "qa-repro-ignored", computer_count: 0 },
+      ],
+    });
+
+    renderWithProviders(
+      <PackagesUpgradeSummary
+        packageChangePlanId={6}
+        onBackButtonPress={() => undefined}
+      />,
+    );
+
+    expect(
+      await screen.findByText("No upgrades to apply"),
+    ).toBeInTheDocument();
+
+    const items = screen.getAllByRole("listitem");
+    expect(items).toHaveLength(1);
+    const [item] = items;
+    assert(item);
+    expect(within(item).getByText("qa-repro-excluded")).toBeInTheDocument();
+    expect(
+      within(item).getByText(/will not be upgraded on/),
+    ).toBeInTheDocument();
+
+    await userEvent.click(
+      within(item).getByRole("button", { name: "2 instances" }),
+    );
+
+    expect(
+      await screen.findByText("Instances not upgrading qa-repro-excluded"),
     ).toBeInTheDocument();
   });
 });

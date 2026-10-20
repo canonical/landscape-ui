@@ -22,6 +22,7 @@ import type { CellProps, Column } from "react-table";
 import classes from "./PackagesUpgradeSummary.module.scss";
 import useNotify from "@/hooks/useNotify";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
+import PackageActionExclusionsCount from "../PackagesActionSummary/components/PackagesActionExclusionsCount";
 
 interface UpgradesSummaryProps {
   readonly packageChangePlanId: number;
@@ -98,6 +99,9 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
   }
 
   const items = summaryResponse.data.actions;
+  const exclusions = summaryResponse.data.exclusions.filter(
+    ({ computer_count }) => computer_count > 0,
+  );
   const currentItems = items.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize,
@@ -164,6 +168,22 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
             currentItemCount={currentItems.length}
           />
         </>
+      )}
+      {!!exclusions.length && (
+        <ul className={`p-list ${classes.exclusions}`}>
+          {exclusions.map(({ package_name, computer_count }) => (
+            <li key={package_name} className="p-list__item">
+              <strong className="font-monospace">{package_name}</strong> will
+              not be upgraded on{" "}
+              <PackageActionExclusionsCount
+                count={computer_count}
+                id={packageChangePlanId}
+                packageName={package_name}
+                actionType="upgrade"
+              />
+            </li>
+          ))}
+        </ul>
       )}
       <SidePanelFormButtons
         submitButtonLoading={isExecutingChangePlan}
