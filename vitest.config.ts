@@ -8,10 +8,11 @@ const cleanUrl = (id: string) => id.replace(/[?#].*$/, "");
 
 const viteIdToFilePath = (id: string) => cleanUrl(id).replace(/^\/@fs\//, "");
 
-// Pin a non-UTC, DST-observing timezone so date bugs that only show up for
-// users outside UTC are caught. It must be set here, before the worker threads
-// start, because assigning process.env.TZ inside a test has no effect.
-process.env.TZ = "Europe/Berlin";
+// Default to a non-UTC, DST-observing timezone so date bugs that only show up
+// for users outside UTC are caught. An explicit TZ still wins. It must be set
+// here, before the worker threads start, because assigning process.env.TZ
+// inside a test has no effect.
+process.env.TZ ??= "Europe/Berlin";
 
 export default defineConfig({
   test: {
