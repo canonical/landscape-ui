@@ -1,4 +1,6 @@
+import { getFeatures } from "@/features/instances";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { instances } from "@/tests/mocks/instance";
 import { scripts } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
@@ -207,6 +209,57 @@ describe("RunScriptForm", () => {
     expect(
       within(dialog).getByRole("columnheader", { name: /instance/i }),
     ).toBeInTheDocument();
+    expect(
+      within(dialog).queryByText(/only the first/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("should show the total target count when the run modal lists only a preview of the matching instances", async () => {
+    const scriptCapableInstances = instances
+      .filter((instance) => getFeatures(instance).scripts)
+      .slice(0, 2);
+    const matchingInstancesCount = 1234;
+
+    setEndpointStatus({
+      status: "variant",
+      path: "computers",
+      response: {
+        count: matchingInstancesCount,
+        results: scriptCapableInstances,
+        next: null,
+        previous: null,
+      },
+    });
+
+    renderWithProviders(<RunScriptForm script={script} />);
+
+    await selectTag(user, "appservers");
+
+    await user.click(
+      await screen.findByRole("button", { name: /run script/i }),
+    );
+
+    const dialog = await screen.findByRole("dialog");
+
+    expect(
+      within(dialog).getByText(
+        new RegExp(
+          `will run on ${matchingInstancesCount.toLocaleString()} instances`,
+          "i",
+        ),
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(
+        new RegExp(
+          `only the first ${scriptCapableInstances.length} that can run scripts are listed below`,
+          "i",
+        ),
+      ),
+    ).toBeInTheDocument();
+    scriptCapableInstances.forEach(({ title }) => {
+      expect(within(dialog).getByText(title)).toBeInTheDocument();
+    });
   });
 
   it("should show warning notification on tag blur when selected tags have no associated instances", async () => {

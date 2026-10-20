@@ -28,7 +28,9 @@ import EditScriptConfirmationModal from "../EditScriptConfirmationModal";
 import RunScriptFormInstanceList from "../RunScriptFormInstanceList";
 import {
   INITIAL_VALUES,
+  INSTANCE_OPTIONS_LIMIT,
   NO_TAGGED_FEATURED_INSTANCES_WARNING_MESSAGE,
+  TAGGED_INSTANCES_PREVIEW_LIMIT,
   VALIDATION_SCHEMA,
 } from "./constants";
 import classes from "./RunScriptForm.module.scss";
@@ -142,19 +144,25 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
 
   const { tags, isGettingTags } = useGetTags();
 
-  const { instances, isGettingInstances } = useGetInstances({
-    query: `access-group-recursive:${script.access_group}`,
-  });
+  const { instances, isGettingInstances } = useGetInstances(
+    {
+      query: `access-group-recursive:${script.access_group}`,
+      limit: INSTANCE_OPTIONS_LIMIT,
+    },
+    { listenToUrlParams: false },
+  );
 
   const {
     instances: taggedInstances,
+    instancesCount: taggedInstancesCount,
     isGettingInstances: isGettingTaggedInstances,
     instancesError: taggedInstancesError,
   } = useGetInstances(
     {
       query: `access-group-recursive:${script.access_group} ${formik.values.tags.map((tag) => `tag:${tag}`).join(" OR ")}`,
+      limit: TAGGED_INSTANCES_PREVIEW_LIMIT,
     },
-    undefined,
+    { listenToUrlParams: false },
     {
       enabled: !!formik.values.tags.length,
     },
@@ -182,6 +190,10 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
       return getFeatures(instance).scripts;
     },
   );
+
+  const isTaggedInstancesPreviewPartial =
+    taggedInstancesCount !== undefined &&
+    taggedInstancesCount > taggedInstances.length;
 
   const shouldShowNoTaggedInstancesWarning =
     hasClosedTagDropdown &&
@@ -406,11 +418,22 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
           close={hideRunConfirm}
           confirmButtonAppearance="positive"
         >
-          <p className="u-margin--bottom">
-            This script will run on the following instances, which are
-            associated with the selected{" "}
-            {pluralize(formik.values.tags.length, ["tag"])}.
-          </p>
+          {isTaggedInstancesPreviewPartial ? (
+            <p className="u-margin--bottom">
+              This script will run on{" "}
+              {pluralize(taggedInstancesCount, ["instance"], "exact")}{" "}
+              associated with the selected{" "}
+              {pluralize(formik.values.tags.length, ["tag"])}. Only the first{" "}
+              {taggedInstancesWithScriptsFeature.length.toLocaleString()} that
+              can run scripts are listed below.
+            </p>
+          ) : (
+            <p className="u-margin--bottom">
+              This script will run on the following instances, which are
+              associated with the selected{" "}
+              {pluralize(formik.values.tags.length, ["tag"])}.
+            </p>
+          )}
           <RunScriptFormInstanceList
             instances={taggedInstancesWithScriptsFeature}
             tags={formik.values.tags}
