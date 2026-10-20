@@ -159,7 +159,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
     instancesError: taggedInstancesError,
   } = useGetInstances(
     {
-      query: `access-group-recursive:${script.access_group} ${formik.values.tags.map((tag) => `tag:${tag}`).join(" OR ")}`,
+      // Windows hosts are excluded server-side so the count and the preview
+      // follow the same eligibility rule; the client-side scripts-feature
+      // filter below only drops instances that have not reported a
+      // distribution yet.
+      query: `access-group-recursive:${script.access_group} NOT distribution:windows ${formik.values.tags.map((tag) => `tag:${tag}`).join(" OR ")}`,
       limit: TAGGED_INSTANCES_PREVIEW_LIMIT,
     },
     { listenToUrlParams: false },
@@ -420,12 +424,12 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
         >
           {isTaggedInstancesPreviewPartial ? (
             <p className="u-margin--bottom">
-              This script will run on{" "}
-              {pluralize(taggedInstancesCount, ["instance"], "exact")}{" "}
-              associated with the selected{" "}
-              {pluralize(formik.values.tags.length, ["tag"])}. Only the first{" "}
-              {taggedInstancesWithScriptsFeature.length.toLocaleString()} that
-              can run scripts are listed below.
+              The selected {pluralize(formik.values.tags.length, ["tag"])}{" "}
+              {formik.values.tags.length > 1 ? "match" : "matches"}{" "}
+              {pluralize(taggedInstancesCount, ["instance"], "exact")} that can
+              run scripts. Only{" "}
+              {taggedInstancesWithScriptsFeature.length.toLocaleString()} of
+              them are listed below.
             </p>
           ) : (
             <p className="u-margin--bottom">

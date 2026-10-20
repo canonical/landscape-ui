@@ -210,7 +210,7 @@ describe("RunScriptForm", () => {
       within(dialog).getByRole("columnheader", { name: /instance/i }),
     ).toBeInTheDocument();
     expect(
-      within(dialog).queryByText(/only the first/i),
+      within(dialog).queryByText(/of them are listed below/i),
     ).not.toBeInTheDocument();
   });
 
@@ -244,7 +244,7 @@ describe("RunScriptForm", () => {
     expect(
       within(dialog).getByText(
         new RegExp(
-          `will run on ${matchingInstancesCount.toLocaleString()} instances`,
+          `matches ${matchingInstancesCount.toLocaleString()} instances that can run scripts`,
           "i",
         ),
       ),
@@ -252,7 +252,7 @@ describe("RunScriptForm", () => {
     expect(
       within(dialog).getByText(
         new RegExp(
-          `only the first ${scriptCapableInstances.length} that can run scripts are listed below`,
+          `only ${scriptCapableInstances.length} of them are listed below`,
           "i",
         ),
       ),
