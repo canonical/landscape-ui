@@ -46,7 +46,9 @@ describe("SingleInstanceContainer", () => {
       renderWithProviders(
         <SingleInstanceContainer />,
         undefined,
-        ROUTES.instances.details.single(INSTANCE_WITH_UPGRADES_ID, { tab: "activities" }),
+        ROUTES.instances.details.single(INSTANCE_WITH_UPGRADES_ID, {
+          tab: "activities",
+        }),
         `/${PATHS.instances.root}/${PATHS.instances.single}`,
       );
 
