@@ -1794,7 +1794,10 @@ export const instances = [
     cloud_instance_metadata: {},
     vm_info: null,
     container_info: null,
-    ubuntu_pro_info: null,
+    ubuntu_pro_info: {
+      attached: true,
+      expires: null,
+    },
     is_wsl_instance: false,
     children: [],
     parent: null,
