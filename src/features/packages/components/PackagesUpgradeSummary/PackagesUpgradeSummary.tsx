@@ -1,4 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
@@ -135,22 +136,38 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
     closeSidePanel();
   };
 
+  const isEmpty = !items.length;
+
   return (
     <>
-      <span className={classes.summary}>
-        The following packages will be upgraded:
-      </span>
-      <ResponsiveTable columns={columns} data={currentItems} minWidth={512} />
-      <SidePanelTablePagination
-        currentPage={currentPage}
-        pageSize={pageSize}
-        paginate={setCurrentPage}
-        setPageSize={setPageSize}
-        totalItems={items.length}
-        currentItemCount={currentItems.length}
-      />
+      {isEmpty ? (
+        <EmptyState
+          title="No upgrades to apply"
+          body="The selected upgrades are no longer available on the selected instances."
+        />
+      ) : (
+        <>
+          <span className={classes.summary}>
+            The following packages will be upgraded:
+          </span>
+          <ResponsiveTable
+            columns={columns}
+            data={currentItems}
+            minWidth={512}
+          />
+          <SidePanelTablePagination
+            currentPage={currentPage}
+            pageSize={pageSize}
+            paginate={setCurrentPage}
+            setPageSize={setPageSize}
+            totalItems={items.length}
+            currentItemCount={currentItems.length}
+          />
+        </>
+      )}
       <SidePanelFormButtons
         submitButtonLoading={isExecutingChangePlan}
+        submitButtonDisabled={isEmpty}
         submitButtonText={`Upgrade ${pluralize(items.length, ["package"], "exact")}`}
         onSubmit={submit}
         hasBackButton
