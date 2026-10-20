@@ -89,3 +89,67 @@ export const setScreenSize = (bp: keyof typeof BREAKPOINT_PX): void => {
 export function resetScreenSize(): void {
   mockMatchMedia([]);
 }
+
+/**
+ * Stubs IntersectionObserver, which jsdom does not implement. Each observed
+ * element receives a single entry with the given intersection state when it
+ * is observed; like the real API, no further entries are delivered while that
+ * state does not change. Returns a function that restores the original value.
+ */
+export const mockIntersectionObserver = ({
+  isIntersecting = true,
+}: { isIntersecting?: boolean } = {}): (() => void) => {
+  const hadIntersectionObserver = "IntersectionObserver" in window;
+  const originalIntersectionObserver = window.IntersectionObserver;
+
+  class IntersectionObserverMock {
+    readonly root = null;
+    readonly rootMargin = "0px";
+    readonly thresholds = [0];
+    readonly unobserve = vi.fn();
+    readonly disconnect = vi.fn();
+    readonly takeRecords = vi.fn(() => []);
+    private readonly callback: IntersectionObserverCallback;
+
+    constructor(callback: IntersectionObserverCallback) {
+      this.callback = callback;
+    }
+
+    observe(target: Element): void {
+      const rect = target.getBoundingClientRect();
+
+      this.callback(
+        [
+          {
+            target,
+            isIntersecting,
+            intersectionRatio: isIntersecting ? 1 : 0,
+            boundingClientRect: rect,
+            intersectionRect: rect,
+            rootBounds: null,
+            time: performance.now(),
+          },
+        ],
+        this as unknown as IntersectionObserver,
+      );
+    }
+  }
+
+  Object.defineProperty(window, "IntersectionObserver", {
+    configurable: true,
+    writable: true,
+    value: IntersectionObserverMock,
+  });
+
+  return () => {
+    if (hadIntersectionObserver) {
+      Object.defineProperty(window, "IntersectionObserver", {
+        configurable: true,
+        writable: true,
+        value: originalIntersectionObserver,
+      });
+    } else {
+      delete (window as Partial<typeof window>).IntersectionObserver;
+    }
+  };
+};

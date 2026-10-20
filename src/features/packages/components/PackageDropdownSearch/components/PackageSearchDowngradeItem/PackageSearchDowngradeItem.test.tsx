@@ -1,6 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import PackageSearchDowngradeItem from "./PackageSearchDowngradeItem";
 import { ICONS } from "@canonical/react-components";
 import userEvent from "@testing-library/user-event";
@@ -8,9 +8,14 @@ import type { ComponentProps } from "react";
 import { API_URL } from "@/constants";
 import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
-import type { Package } from "@/features/packages";
+import type {
+  Package,
+  SearchPackagesRequest,
+  SearchPackagesResponse,
+} from "@/features/packages";
 import type MultiSelectField from "@/components/form/MultiSelectField";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { mockIntersectionObserver } from "@/tests/helpers";
 
 const multiSelectFieldProps = vi.hoisted(() => vi.fn());
 
@@ -139,5 +144,60 @@ describe("PackageSearchDowngradeItem", () => {
     expect(
       await screen.findByText("No versions were found"),
     ).toBeInTheDocument();
+  });
+
+  describe("version pagination", () => {
+    const totalVersions = 35;
+    let restoreIntersectionObserver: (() => void) | undefined;
+
+    afterEach(() => {
+      restoreIntersectionObserver?.();
+      restoreIntersectionObserver = undefined;
+    });
+
+    it("keeps loading versions while the loading footer stays visible", async () => {
+      restoreIntersectionObserver = mockIntersectionObserver({
+        isIntersecting: true,
+      });
+
+      const requestedOffsets: number[] = [];
+
+      server.use(
+        http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
+          `${API_URL}packages\\:search`,
+          async ({ request }) => {
+            const { offset = 0, limit = 10 } = await request.json();
+            requestedOffsets.push(offset);
+
+            const pageSize = Math.max(
+              Math.min(limit, totalVersions - offset),
+              0,
+            );
+
+            return HttpResponse.json<SearchPackagesResponse>({
+              packages: Array.from({ length: pageSize }, (_, index) => ({
+                ...props.selectedPackage[0],
+                id: 1000 + offset + index,
+                version: `1.${String(offset + index).padStart(3, "0")}`,
+              })),
+              count: totalVersions,
+              next: null,
+              prev: null,
+            });
+          },
+        ),
+      );
+
+      renderWithProviders(<PackageSearchDowngradeItem {...props} />);
+
+      await user.click(
+        await screen.findByRole("combobox", { name: "Version" }),
+      );
+
+      expect(
+        await screen.findByText("1.034 (4 instances)"),
+      ).toBeInTheDocument();
+      expect(requestedOffsets).toEqual([0, 10, 20, 30]);
+    });
   });
 });

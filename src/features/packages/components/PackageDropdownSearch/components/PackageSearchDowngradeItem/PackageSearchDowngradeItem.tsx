@@ -18,8 +18,8 @@ import MultiSelectField from "@/components/form/MultiSelectField";
 import LoadingState from "@/components/layout/LoadingState";
 import { useTheme } from "@/context/theme";
 import classNames from "classnames";
-import { useIntersectionObserver } from "usehooks-ts";
 import { QUERY_LIMIT } from "../../constants";
+import { useFetchNextPageOnIntersection } from "../../hooks";
 
 interface PackageSearchDowngradeItemProps {
   readonly instanceIds: number[];
@@ -56,12 +56,10 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
     throw packagesError;
   }
 
-  const { ref: loadingStateRef } = useIntersectionObserver({
-    onChange: (isIntersecting) => {
-      if (isIntersecting && !isFetchingNextPackagesPage) {
-        fetchNextPackagesPage();
-      }
-    },
+  const loadingStateRef = useFetchNextPageOnIntersection({
+    fetchNextPage: fetchNextPackagesPage,
+    hasNextPage: hasNextPackagesPage,
+    isFetchingNextPage: isFetchingNextPackagesPage,
   });
 
   const packages = isPendingPackages

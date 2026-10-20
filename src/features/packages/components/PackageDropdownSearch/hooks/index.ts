@@ -1,0 +1,1 @@
+export { useFetchNextPageOnIntersection } from "./useFetchNextPageOnIntersection";

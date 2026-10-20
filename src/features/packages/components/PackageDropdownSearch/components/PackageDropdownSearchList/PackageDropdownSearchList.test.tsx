@@ -1,4 +1,5 @@
 import type { Package, SearchPackagesResponse } from "@/features/packages";
+import { mockIntersectionObserver } from "@/tests/helpers";
 import { packages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
 import type {
@@ -9,7 +10,7 @@ import { screen } from "@testing-library/react";
 import { AxiosHeaders, type AxiosResponse } from "axios";
 import type { ControllerStateAndHelpers } from "downshift";
 import type { ComponentProps } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import PackageDropdownSearchList from "./PackageDropdownSearchList";
 
 type QueryResultType = UseInfiniteQueryResult<
@@ -141,5 +142,107 @@ describe("PackageDropdownSearchList", () => {
       <PackageDropdownSearchList {...props} queryResult={queryResultPending} />,
     );
     expect(screen.getByRole("status")).toBeInTheDocument();
+  });
+  describe("pagination", () => {
+    let restoreIntersectionObserver: (() => void) | undefined;
+
+    afterEach(() => {
+      restoreIntersectionObserver?.();
+      restoreIntersectionObserver = undefined;
+    });
+
+    const createPage = (
+      pagePackages: SearchPackagesResponse["packages"],
+    ): AxiosResponse<SearchPackagesResponse> => ({
+      data: {
+        count: packages.length,
+        next: null,
+        prev: null,
+        packages: pagePackages,
+      },
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config: { headers: new AxiosHeaders() },
+    });
+
+    const createQueryResult = (
+      pageCount: number,
+      overrides: Partial<QueryResultType>,
+    ) =>
+      ({
+        ...mockQueryResult,
+        data: {
+          pages: Array.from({ length: pageCount }, (_, index) =>
+            createPage(packages.slice(index * 2, index * 2 + 2)),
+          ),
+          pageParams: [],
+        },
+        ...overrides,
+      }) as unknown as QueryResultType;
+
+    it("fetches successive pages while the loading footer stays visible", () => {
+      restoreIntersectionObserver = mockIntersectionObserver({
+        isIntersecting: true,
+      });
+
+      const fetchNextPage = vi.fn();
+
+      const { rerender } = renderWithProviders(
+        <PackageDropdownSearchList
+          {...props}
+          selectedPackages={[]}
+          queryResult={createQueryResult(1, {
+            hasNextPage: true,
+            fetchNextPage,
+          })}
+        />,
+      );
+
+      expect(fetchNextPage).toHaveBeenCalledTimes(1);
+
+      rerender(
+        <PackageDropdownSearchList
+          {...props}
+          selectedPackages={[]}
+          queryResult={createQueryResult(1, {
+            hasNextPage: true,
+            isFetchingNextPage: true,
+            fetchNextPage,
+          })}
+        />,
+      );
+
+      // No duplicate request while the next page is in flight.
+      expect(fetchNextPage).toHaveBeenCalledTimes(1);
+
+      rerender(
+        <PackageDropdownSearchList
+          {...props}
+          selectedPackages={[]}
+          queryResult={createQueryResult(2, {
+            hasNextPage: true,
+            fetchNextPage,
+          })}
+        />,
+      );
+
+      // The footer never left the viewport, but the next page is requested.
+      expect(fetchNextPage).toHaveBeenCalledTimes(2);
+
+      rerender(
+        <PackageDropdownSearchList
+          {...props}
+          selectedPackages={[]}
+          queryResult={createQueryResult(3, {
+            hasNextPage: false,
+            fetchNextPage,
+          })}
+        />,
+      );
+
+      expect(fetchNextPage).toHaveBeenCalledTimes(2);
+      expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    });
   });
 });

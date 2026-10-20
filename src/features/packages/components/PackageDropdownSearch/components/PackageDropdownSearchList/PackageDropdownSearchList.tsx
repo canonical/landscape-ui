@@ -8,8 +8,8 @@ import type { AxiosResponse } from "axios";
 import classNames from "classnames";
 import type { ControllerStateAndHelpers } from "downshift";
 import type { FC } from "react";
-import { useIntersectionObserver } from "usehooks-ts";
 import type { Package } from "../../../../types";
+import { useFetchNextPageOnIntersection } from "../../hooks";
 import classes from "./PackageDropdownSearchList.module.scss";
 import type { SearchPackagesResponse } from "../../../../api/useSearchPackages";
 import { pluralize } from "@/utils/_helpers";
@@ -32,12 +32,10 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
   search,
   selectedPackages,
 }) => {
-  const { ref: loadingStateRef } = useIntersectionObserver({
-    onChange: (isIntersecting) => {
-      if (isIntersecting && !queryResult.isFetchingNextPage) {
-        queryResult.fetchNextPage();
-      }
-    },
+  const loadingStateRef = useFetchNextPageOnIntersection({
+    fetchNextPage: queryResult.fetchNextPage,
+    hasNextPage: queryResult.hasNextPage,
+    isFetchingNextPage: queryResult.isFetchingNextPage,
   });
 
   if (exact && !search) {
