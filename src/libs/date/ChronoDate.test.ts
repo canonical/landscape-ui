@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
-import date, { ChronoDate } from "./index";
+import date, { ChronoDate, parseServerDateTime } from "./index";
 
 const FIXED_NOW = new Date("2024-03-15T10:30:00Z").getTime();
 const DAYS_ACROSS_DST_CHANGE = 14;
@@ -202,6 +202,32 @@ describe.each([
   ])("rejects invalid compact input %s", (input) => {
     expect(parse(input).isValid()).toBe(false);
   });
+});
+
+describe("server timestamp parsing", () => {
+  it.each([
+    "2026-12-31T05:00:00",
+    "2026-12-31T05:00:00Z",
+    "2026-12-31T14:00:00+09:00",
+    "2026-12-31T00:00:00-0500",
+  ])("reads %s as the correct UTC instant", (input) => {
+    expect(parseServerDateTime(input).toISOString()).toBe(
+      "2026-12-31T05:00:00.000Z",
+    );
+  });
+
+  it("preserves fractional seconds from a timezone-less API timestamp", () => {
+    expect(
+      parseServerDateTime(" 2026-12-31 05:00:00.284113 ").toISOString(),
+    ).toBe("2026-12-31T05:00:00.284Z");
+  });
+
+  it.each(["", "not-a-date", "2026-02-30T05:00:00"])(
+    "keeps invalid server timestamp %s invalid",
+    (input) => {
+      expect(parseServerDateTime(input).isValid()).toBe(false);
+    },
+  );
 });
 
 describe("local parsing", () => {

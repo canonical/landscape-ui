@@ -40,7 +40,7 @@ const getProps = (): ComponentProps<typeof USGProfileForm> => ({
     title: "New profile",
     unit_of_time: "DAILY",
   },
-  mutate: vi.fn(),
+  mutate: vi.fn(async () => undefined),
   submitButtonText: "Submit",
 });
 
@@ -204,21 +204,17 @@ describe("USGProfileForm", () => {
         ["20271231T120000Z", "2027-12-31T12:00"],
         ["20270328T023000Z", "2027-03-28T02:30"],
       ])("preserves UNTIL=%s on submission", async (until, endDate) => {
+        const testProps = getProps();
         const profile = {
           ...usgProfiles[1],
           schedule: `FREQ=DAILY;INTERVAL=7;UNTIL=${until}`,
-          next_run_time: "2027-01-01T00:00:00Z",
+          next_run_time: "2027-01-01T00:00:00",
         };
-        const mutate = vi
-          .fn<ComponentProps<typeof USGProfileForm>["mutate"]>()
-          .mockResolvedValue(undefined);
-
         renderWithProviders(
           <USGProfileForm
-            {...props}
+            {...testProps}
             formMode={formMode}
             initialValues={getInitialValues(profile)}
-            mutate={mutate}
             getConfirmationStepDisabled={() => true}
           />,
         );
@@ -226,17 +222,112 @@ describe("USGProfileForm", () => {
         expect(screen.getByLabelText("End date")).toHaveValue(endDate);
 
         await userEvent.click(
-          await screen.findByRole("button", { name: props.submitButtonText }),
+          await screen.findByRole("button", {
+            name: testProps.submitButtonText,
+          }),
         );
 
         await waitFor(() => {
-          expect(mutate).toHaveBeenCalledWith(
+          expect(testProps.mutate).toHaveBeenCalledWith(
             expect.objectContaining({ schedule: profile.schedule }),
           );
         });
       });
+
+      it.each([
+        ["2027-01-01T12:00:00", "2027-01-01T12:00", "20270101T123000Z"],
+        ["2027-01-01T12:00:00Z", "2027-01-01T12:00", "20270101T123000Z"],
+        ["2027-01-01T14:00:00+02:00", "2027-01-01T12:00", "20270101T123000Z"],
+        ["2027-03-28T02:30:00", "2027-03-28T02:30", "20270328T030000Z"],
+      ])(
+        "validates and submits a UTC end date shortly after %s",
+        async (nextRun, startField, until) => {
+          const testProps = getProps();
+          const profile = {
+            ...usgProfiles[1],
+            schedule: `FREQ=DAILY;INTERVAL=7;UNTIL=${until}`,
+            next_run_time: nextRun,
+          };
+          renderWithProviders(
+            <USGProfileForm
+              {...testProps}
+              formMode={formMode}
+              initialValues={getInitialValues(profile)}
+              getConfirmationStepDisabled={() => true}
+            />,
+          );
+
+          expect(screen.getByLabelText("Start date")).toHaveValue(startField);
+          await userEvent.click(
+            await screen.findByRole("button", {
+              name: testProps.submitButtonText,
+            }),
+          );
+
+          await waitFor(() => {
+            expect(testProps.mutate).toHaveBeenCalledWith(
+              expect.objectContaining({
+                start_date: `${startField}:00Z`,
+                schedule: profile.schedule,
+              }),
+            );
+          });
+        },
+      );
+
+      it.each(["20270328T030000Z", "20270328T023000Z"])(
+        "rejects UNTIL=%s at or before the UTC start, including DST gaps",
+        async (until) => {
+          const testProps = getProps();
+          const profile = {
+            ...usgProfiles[1],
+            schedule: `FREQ=DAILY;INTERVAL=7;UNTIL=${until}`,
+            next_run_time: "2027-03-28T03:00:00",
+          };
+
+          renderWithProviders(
+            <USGProfileForm
+              {...testProps}
+              formMode={formMode}
+              initialValues={getInitialValues(profile)}
+              getConfirmationStepDisabled={() => true}
+            />,
+          );
+
+          await userEvent.click(
+            await screen.findByRole("button", {
+              name: testProps.submitButtonText,
+            }),
+          );
+
+          expect(
+            await screen.findByText(
+              "The end date must be after the start date.",
+            ),
+          ).toBeInTheDocument();
+          expect(testProps.mutate).not.toHaveBeenCalled();
+        },
+      );
     },
   );
+
+  it("shows the UTC next-run fields on the confirmation step at a DST boundary", async () => {
+    renderWithProviders(
+      <USGProfileForm
+        {...props}
+        initialValues={{
+          ...props.initialValues,
+          start_date: "2027-03-28T02:30:00",
+        }}
+      />,
+    );
+
+    await userEvent.click(
+      await screen.findByRole("button", { name: props.submitButtonText }),
+    );
+
+    expect(await screen.findByText(/Mar 28, 2027, 02:30/)).toBeInTheDocument();
+  });
 
   describe("USGProfileForm instances request params", () => {
     const props = getProps();

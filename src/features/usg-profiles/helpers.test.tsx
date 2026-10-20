@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { INPUT_DATE_TIME_FORMAT } from "@/constants";
-import date from "@/libs/date";
 import type { NotificationHelper } from "@/types/Notification";
 import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
@@ -274,9 +272,7 @@ describe("getInitialValues", () => {
     expect(values.randomize_delivery).toBe(true);
     expect(values.deliver_delay_window).toBe(20);
     expect(values.tailoring_file).toBeNull();
-    expect(values.start_date).toBe(
-      date("2024-05-15T15:47:07Z").format(INPUT_DATE_TIME_FORMAT),
-    );
+    expect(values.start_date).toBe("2024-05-15T15:47:07");
   });
 
   it("maps a monthly by-week-day schedule", () => {
@@ -316,6 +312,17 @@ describe("getInitialValues", () => {
     expect(values.end_date).toBe(expected);
   });
 
+  it.each([
+    ["2027-01-01T12:00:00", "2027-01-01T12:00:00"],
+    ["2027-01-01T12:00:00Z", "2027-01-01T12:00:00"],
+    ["2027-01-01T14:00:00+02:00", "2027-01-01T12:00:00"],
+    ["2027-01-01T07:00:00-0500", "2027-01-01T12:00:00"],
+  ])("maps next run %s to UTC start-date fields", (nextRun, expected) => {
+    expect(
+      getInitialValues(makeProfile({ next_run_time: nextRun })).start_date,
+    ).toBe(expected);
+  });
+
   it("uses asap delivery and no randomization without delays", () => {
     const values = getInitialValues(
       makeProfile({
@@ -348,15 +355,13 @@ describe("getInitialValues", () => {
         next_run_time: null,
         last_run_results: {
           ...baseProfile.last_run_results,
-          timestamp: "2024-05-15T15:47:07Z",
+          timestamp: "2024-05-15T15:47:07",
         },
       }),
     );
 
     expect(values.unit_of_time).toBe("DAILY");
-    expect(values.start_date).toBe(
-      date("2024-05-15T15:47:07Z").format(INPUT_DATE_TIME_FORMAT),
-    );
+    expect(values.start_date).toBe("2024-05-15T15:47:07");
   });
 });
 

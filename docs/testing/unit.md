@@ -42,6 +42,8 @@ That setup already provides:
 
 Because the setup is global, unit tests should assume network requests must be handled and responsive state will be reset after each test.
 
+`vitest.config.ts` pins `process.env.TZ` to `Europe/Berlin`, so every run uses a non-UTC timezone with daylight saving time. Setting `process.env.TZ` inside a test has no effect, because tests run in worker threads.
+
 ## Which Render Helper To Use
 
 This repository uses three main entrypoints:
