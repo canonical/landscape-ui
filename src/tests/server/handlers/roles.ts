@@ -49,6 +49,12 @@ export default [
       return;
     }
 
+    const { status, path } = getEndpointStatus();
+
+    if (status === "error" && path === "createRole") {
+      throw createEndpointStatusError();
+    }
+
     const { searchParams } = new URL(request.url);
     const roleName = searchParams.get("name") ?? "NewRole";
     const [role] = roleMocks;
