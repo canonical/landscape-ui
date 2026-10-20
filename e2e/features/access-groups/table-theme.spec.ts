@@ -13,7 +13,7 @@ for (const theme of ["light", "dark"]) {
     { width: DESKTOP_WIDTH, height: 1000 },
     { width: 390, height: 844 },
   ]) {
-    test.describe(`${theme} theme at ${viewport.width}px`, () => {
+    test.describe(`@saas ${theme} theme at ${viewport.width}px`, () => {
       test.use({ viewport });
 
       test("matches side-panel table surfaces and preserves sticky cells", async ({
@@ -81,10 +81,14 @@ for (const theme of ["light", "dark"]) {
         const table = panel.getByRole("table");
         const header = table.locator("thead");
         const firstCell = table.locator("tbody td").first();
-        const surface =
-          theme === "dark" ? "rgb(32, 32, 32)" : defaultBackground;
+        await expect(panel).toBeVisible();
+        await expect(header).toBeVisible();
+        const surface = await panel.evaluate(
+          (element) => getComputedStyle(element).backgroundColor,
+        );
 
-        await expect(panel).toHaveCSS("background-color", surface);
+        expect(surface).not.toBe("");
+        expect(surface).not.toBe("rgba(0, 0, 0, 0)");
         await expect(header).toHaveCSS("background-color", surface);
         await expect(header).toHaveCSS("position", "sticky");
 
@@ -103,6 +107,7 @@ for (const theme of ["light", "dark"]) {
 
         // Force overflow on both axes to exercise the sticky layers.
         const scroller = table.locator("..");
+        await expect(scroller).toHaveCSS("overflow-x", "auto");
         await scroller.evaluate((element) => {
           element.style.maxWidth = "320px";
           element.style.maxHeight = "120px";

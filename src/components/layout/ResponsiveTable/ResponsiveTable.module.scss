@@ -9,7 +9,7 @@
     background-color: $colors--theme--background-default;
 
     :global(.is-dark .l-aside) & {
-      background-color: $colors--theme--background-alt;
+      background-color: $colors--dark-theme--background-alt;
     }
   }
 
