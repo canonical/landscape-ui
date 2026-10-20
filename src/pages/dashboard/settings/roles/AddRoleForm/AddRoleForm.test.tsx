@@ -150,6 +150,12 @@ describe("AddRoleForm", () => {
     expect(
       screen.queryByText(/new role has been added/i),
     ).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /add role/i }),
+      ).not.toBeDisabled();
+    });
   });
 });
 
