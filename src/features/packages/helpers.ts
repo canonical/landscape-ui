@@ -18,20 +18,24 @@ const getSyntheticId = (): number => {
 
 const pickAvailableCandidate = (
   candidates: PackageInstallationCandidate[],
+  isInstalled: boolean,
 ): PackageInstallationCandidate | undefined => {
-  const securityCandidate = candidates.find(({ security }) => security);
+  const upgradeCandidates = candidates.filter(({ upgrade }) => upgrade);
 
-  if (securityCandidate) {
-    return securityCandidate;
+  const securityUpgradeCandidate = upgradeCandidates.find(
+    ({ security }) => security,
+  );
+
+  if (securityUpgradeCandidate) {
+    return securityUpgradeCandidate;
   }
 
-  const upgradeCandidate = candidates.find(({ upgrade }) => upgrade);
-
-  if (upgradeCandidate) {
-    return upgradeCandidate;
+  if (upgradeCandidates[0]) {
+    return upgradeCandidates[0];
   }
 
-  return candidates[0];
+  // Non-upgrade candidates are only meaningful as install targets.
+  return isInstalled ? undefined : candidates[0];
 };
 
 const resolvePackageStatus = (
@@ -42,7 +46,7 @@ const resolvePackageStatus = (
     return "held";
   }
 
-  if (result.security || candidate?.security) {
+  if (candidate?.upgrade && candidate.security) {
     return "security";
   }
 
@@ -60,7 +64,10 @@ const resolvePackageStatus = (
 export const mapGroupedResultToInstancePackage = (
   result: ComputerPackageSearchGroupedResult,
 ): InstancePackage => {
-  const candidate = pickAvailableCandidate(result.installation_candidates);
+  const candidate = pickAvailableCandidate(
+    result.installation_candidates,
+    !!result.installed_version,
+  );
 
   return {
     id: result.installed_id ?? candidate?.id ?? getSyntheticId(),
