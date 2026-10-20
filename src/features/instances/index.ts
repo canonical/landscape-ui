@@ -28,6 +28,7 @@ export {
   hasSecurityUpgrades,
   hasUpgrades,
   getProfileTypes,
+  getStatusRouteParams,
 } from "./helpers";
 export { default as GenerateRecoveryKeyModal } from "./components/GenerateRecoveryKeyModal";
 export { default as RegenerateRecoveryKeyModal } from "./components/RegenerateRecoveryKeyModal";
