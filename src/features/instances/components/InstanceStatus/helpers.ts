@@ -2,17 +2,17 @@ import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
 import { getAlertStatus } from "@/features/alert-notifications";
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
-import { ALERT_STATUSES, STATUS_FILTERS } from "../../constants";
+import {
+  ALERT_STATUSES,
+  STATUS_FILTERS,
+  UPGRADE_ALERT_TYPES,
+} from "../../constants";
 import {
   getFeatures,
   hasRegularUpgrades,
   hasSecurityUpgrades,
 } from "../../helpers";
 import type { StatusItem, StatusSeverity } from "./types";
-
-// Upgrade alerts are surfaced in the dedicated "Upgrades" column, so they are
-// excluded from the status indicators.
-const UPGRADE_ALERT_TYPES = ["PackageUpgradesAlert", "SecurityUpgradesAlert"];
 
 // The severity of a status is derived from the colour of its icon so that the
 // pill tint always matches what the user sees (red/amber/blue).
@@ -73,6 +73,8 @@ export const getInstanceStatuses = (
     ];
   }
 
+  // Upgrade alerts are surfaced in the dedicated "Upgrades" column, so they are
+  // excluded from the status indicators.
   const alerts = (instance.alerts ?? []).filter(
     ({ type }) => !UPGRADE_ALERT_TYPES.includes(type),
   );
