@@ -380,6 +380,33 @@ describe("InstancesPageActions", () => {
       ).not.toBeInTheDocument();
     });
 
+    it("'Ubuntu Pro' group should be disabled if no selected instance can hold a token", async () => {
+      renderPageActions({ selectedInstances: [windowsInstance] });
+
+      expect(
+        await screen.findByRole("button", { name: MENU_LABELS[2] }),
+      ).toHaveAttribute("aria-disabled", "true");
+    });
+
+    it("'Attach token' should target only the instances that can hold a token", async () => {
+      renderPageActions({
+        selectedInstances: [ubuntuInstance, windowsInstance],
+      });
+
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[2] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: /attach token/i }),
+      );
+
+      expect(
+        screen.getByRole("heading", {
+          name: "Attach Ubuntu Pro token to 1 instance",
+        }),
+      ).toBeInTheDocument();
+    });
+
     it("'Snap management' group should be disabled if snaps feature is disabled", async () => {
       renderPageActions({ selectedInstances: [windowsInstance] });
 

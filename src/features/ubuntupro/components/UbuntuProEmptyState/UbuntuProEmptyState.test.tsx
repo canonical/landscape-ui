@@ -1,4 +1,4 @@
-import { instances } from "@/tests/mocks/instance";
+import { instances, windowsInstance } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -89,6 +89,15 @@ describe("UbuntuProEmptyState", () => {
     expect(
       screen.getByRole("heading", { name: "Attach Ubuntu Pro token" }),
     ).toBeInTheDocument();
+  });
+
+  it("does not offer to attach a token to a Windows host", () => {
+    renderWithProviders(<UbuntuProEmptyState instance={windowsInstance} />);
+
+    expect(screen.getByText("No Ubuntu Pro entitlement")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Attach Ubuntu Pro" }),
+    ).not.toBeInTheDocument();
   });
 
   it("lazy loads the attach token form", async () => {
