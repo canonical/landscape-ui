@@ -7,6 +7,8 @@
  * adding a small token-based formatter that the native APIs do not provide.
  *
  * Locale is English-only by design.
+ * ISO input supports extended forms and basic YYYYMMDD[THHmmss[Z]] forms.
+ * Unzoned ISO values use local time; a trailing Z denotes UTC.
  */
 
 const MONTHS_SHORT = [
@@ -74,8 +76,7 @@ const MAX_MINUTE_OR_SECOND = 59;
 /** Sentinel used for strict ISO 8601 parsing. */
 export const ISO_8601 = Symbol("ISO_8601");
 
-const ISO_8601_REGEX =
-  /^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?)?$/;
+const BASIC_ISO_8601_REGEX = /^(\d{4})(\d{2})(\d{2})(T\d{6}Z?)?$/;
 
 const ISO_8601_PARTS_REGEX =
   /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?(?:(Z)|([+-])(\d{2}):?(\d{2}))?)?$/;
@@ -261,8 +262,17 @@ const parseStrictIsoTime = (input: string): number => {
   );
 };
 
-const parseString = (value: string): number => {
-  const input = value.trim();
+const normalizeIsoString = (value: string): string =>
+  value
+    .trim()
+    .replace(
+      BASIC_ISO_8601_REGEX,
+      (_match, year: string, month: string, day: string, time?: string) =>
+        `${year}-${month}-${day}${time?.replace(/(\d{2})(\d{2})(\d{2})/, "$1:$2:$3") ?? ""}`,
+    );
+
+const parseString = (value: string, strict = false): number => {
+  const input = normalizeIsoString(value);
 
   if (!input) {
     return NaN;
@@ -272,7 +282,7 @@ const parseString = (value: string): number => {
     return parseStrictIsoTime(input);
   }
 
-  return new Date(input).getTime();
+  return strict ? NaN : new Date(input).getTime();
 };
 
 const FORMAT_TOKENS: Record<string, (fields: DateFields) => string> = {
@@ -337,11 +347,7 @@ export class ChronoDate {
   }
 
   static parseStrictISO(value: string, strict?: boolean): ChronoDate {
-    if (strict && !ISO_8601_REGEX.test(value.trim())) {
-      return new ChronoDate(NaN, false);
-    }
-
-    return new ChronoDate(parseString(value), false);
+    return new ChronoDate(parseString(value, strict), false);
   }
 
   private fields(): DateFields {
