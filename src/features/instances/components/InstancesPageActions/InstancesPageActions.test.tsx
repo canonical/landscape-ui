@@ -20,6 +20,7 @@ import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import type { UbuntuProInfo } from "@/types/Instance";
+import { detachUbuntuProActivity } from "@/tests/mocks/ubuntuPro";
 import { DEB_MANAGEMENT_INSTANCE_LIMIT } from "@/features/packages";
 
 const selected = instances.slice(0, 2);
@@ -405,6 +406,39 @@ describe("InstancesPageActions", () => {
           name: "Attach Ubuntu Pro token to 1 instance",
         }),
       ).toBeInTheDocument();
+    });
+
+    it("'Detach token' should leave the Windows host out of the request", async () => {
+      let capturedBody: { computer_ids: number[] } | undefined;
+      server.use(
+        http.post(`${API_URL}detach-token`, async ({ request }) => {
+          capturedBody = (await request.json()) as { computer_ids: number[] };
+          return HttpResponse.json(detachUbuntuProActivity);
+        }),
+      );
+
+      renderPageActions({
+        selectedInstances: [
+          { ...ubuntuInstance, ubuntu_pro_info: ubuntuProInfo },
+          windowsInstance,
+        ],
+      });
+
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[2] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: /detach token/i }),
+      );
+      await userEvent.type(
+        screen.getByPlaceholderText("detach ubuntu pro token"),
+        "detach ubuntu pro token",
+      );
+      await userEvent.click(screen.getByRole("button", { name: /^detach$/i }));
+
+      await waitFor(() => {
+        expect(capturedBody?.computer_ids).toEqual([ubuntuInstance.id]);
+      });
     });
 
     it("'Snap management' group should be disabled if snaps feature is disabled", async () => {

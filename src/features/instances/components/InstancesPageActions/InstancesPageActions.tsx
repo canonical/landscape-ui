@@ -6,7 +6,10 @@ import {
   type PackageChangePlanActionType,
   PackagesActionForm,
 } from "@/features/packages";
-import { DetachTokenModal } from "@/features/ubuntupro";
+import {
+  classifyInstancesByToken,
+  DetachTokenModal,
+} from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -243,11 +246,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
     if (lastSidePathSegment !== "export") createSidePathPusher("export")();
   };
 
-  const allInstancesHaveToken = proTokenInstances.every(
-    (instance) =>
-      instance.ubuntu_pro_info?.result === "success" &&
-      instance.ubuntu_pro_info.attached,
-  );
+  const allInstancesHaveToken =
+    classifyInstancesByToken(proTokenInstances).withoutToken === 0;
 
   const handleSnapInstall = () => {
     setSidePanelContent(

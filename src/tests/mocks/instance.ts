@@ -374,7 +374,7 @@ export const windowsInstance: WindowsInstance = {
 
 export const windowsInstanceWithUbuntuPro: WindowsInstance = {
   ...windowsInstance,
-  id: 7,
+  id: 508,
   title: "Noel's Pro Windows Laptop",
   ubuntu_pro_info: {
     result: "success",

@@ -57,7 +57,7 @@ export function getFeatures(instance: InstanceWithoutRelation) {
     packages: isUbuntu,
     power: isLinux,
     pro: !isNonUbuntuLinux,
-    proToken: !isWindows,
+    proToken: !isNonUbuntuLinux && !isWindows,
     processes: isLinux,
     recoveryKey: isLinux,
     sanitization: isLinux && !isUbuntuCore && !instance.is_wsl_instance,
