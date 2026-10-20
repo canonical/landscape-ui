@@ -43,6 +43,7 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
     error: packagesError,
     isPending: isPendingPackages,
     isFetchingNextPage: isFetchingNextPackagesPage,
+    isFetchNextPageError: isFetchNextPackagesPageError,
     fetchNextPage: fetchNextPackagesPage,
     hasNextPage: hasNextPackagesPage,
   } = useSearchPackages({
@@ -60,6 +61,7 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
     fetchNextPage: fetchNextPackagesPage,
     hasNextPage: hasNextPackagesPage,
     isFetchingNextPage: isFetchingNextPackagesPage,
+    isFetchNextPageError: isFetchNextPackagesPageError,
   });
 
   const packages = isPendingPackages
