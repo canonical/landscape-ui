@@ -503,6 +503,17 @@ export default [
       return HttpResponse.json([]);
     }
 
+    if (
+      endpointStatus.path === "GetPendingComputers" &&
+      endpointStatus.status === "forbidden"
+    ) {
+      return createEndpointStatusError({
+        status: 403,
+        error: "Forbidden",
+        message: "Forbidden.",
+      });
+    }
+
     return HttpResponse.json(pendingInstances);
   }),
 
