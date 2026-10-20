@@ -2,12 +2,7 @@ import { hasOneItem } from "@/utils/_helpers";
 import type { JsonBodyType } from "msw";
 
 type EndpointStatusType =
-  | "empty"
-  | "error"
-  | "forbidden"
-  | "default"
-  | "loading"
-  | "variant";
+  "empty" | "error" | "forbidden" | "default" | "loading" | "variant";
 
 interface EndpointStatus {
   status: EndpointStatusType;
