@@ -49,9 +49,9 @@ export default [
       return;
     }
 
-    const { status, path } = getEndpointStatus();
+    const { status } = getEndpointStatus("createRole");
 
-    if (status === "error" && (!path || path === "createRole")) {
+    if (status === "error") {
       throw createEndpointStatusError();
     }
 
