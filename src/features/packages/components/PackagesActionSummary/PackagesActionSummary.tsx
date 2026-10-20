@@ -102,8 +102,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
     ...exclusions
       .filter(
         ({ package_name, computer_count }) =>
-          computer_count > 0 &&
-          !actionablePackageNames.includes(package_name),
+          computer_count > 0 && !actionablePackageNames.includes(package_name),
       )
       .map(({ package_name }) => package_name),
   ];

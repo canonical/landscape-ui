@@ -23,13 +23,10 @@ const mockExecute = () => {
   const executeRequests: string[] = [];
 
   server.use(
-    http.post(
-      `${API_URL}package-change-plans/:id\\:execute`,
-      ({ request }) => {
-        executeRequests.push(request.url);
-        return HttpResponse.json(activities[0]);
-      },
-    ),
+    http.post(`${API_URL}package-change-plans/:id\\:execute`, ({ request }) => {
+      executeRequests.push(request.url);
+      return HttpResponse.json(activities[0]);
+    }),
   );
 
   return executeRequests;
@@ -48,9 +45,7 @@ describe("PackagesUpgradeSummary", () => {
       />,
     );
 
-    expect(
-      await screen.findByText("No upgrades to apply"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("No upgrades to apply")).toBeInTheDocument();
     expect(
       screen.queryByText("The following packages will be upgraded:"),
     ).not.toBeInTheDocument();
@@ -124,9 +119,7 @@ describe("PackagesUpgradeSummary", () => {
       />,
     );
 
-    expect(
-      await screen.findByText("No upgrades to apply"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("No upgrades to apply")).toBeInTheDocument();
 
     const items = screen.getAllByRole("listitem");
     expect(items).toHaveLength(1);

@@ -9,7 +9,9 @@ import { assert, describe, expect, it } from "vitest";
 import type { GetPackageChangePlanSummaryResponse } from "../../api";
 import PackagesActionSummary from "./PackagesActionSummary";
 
-const mockSummary = (summary: GetPackageChangePlanSummaryResponse<"remove">) => {
+const mockSummary = (
+  summary: GetPackageChangePlanSummaryResponse<"remove">,
+) => {
   server.use(
     http.get(`${API_URL}package-change-plans/:id/summary`, () =>
       HttpResponse.json(summary),
@@ -21,13 +23,10 @@ const mockExecute = () => {
   const executeRequests: string[] = [];
 
   server.use(
-    http.post(
-      `${API_URL}package-change-plans/:id\\:execute`,
-      ({ request }) => {
-        executeRequests.push(request.url);
-        return HttpResponse.json(activities[0]);
-      },
-    ),
+    http.post(`${API_URL}package-change-plans/:id\\:execute`, ({ request }) => {
+      executeRequests.push(request.url);
+      return HttpResponse.json(activities[0]);
+    }),
   );
 
   return executeRequests;
