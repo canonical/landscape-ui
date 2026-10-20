@@ -1,11 +1,12 @@
 import { renderWithProviders } from "@/tests/render";
 import { PATHS, ROUTES } from "@/libs/routes";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe } from "vitest";
 import userEvent from "@testing-library/user-event";
 import SingleInstanceContainer from "./SingleInstanceContainer";
 import { AuthContext } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
+import { getComputerPackageSearchResults } from "@/tests/mocks/packages";
 import { AppProviders } from "@/providers/AppProviders";
 import { useState } from "react";
 import { MemoryRouter, Route, Routes } from "react-router";
@@ -13,6 +14,7 @@ import { MemoryRouter, Route, Routes } from "react-router";
 const INSTANCE_ID = 11;
 const INSTANCE_WITHOUT_DISTRIBUTION_ID = 12;
 const MISSING_INSTANCE_ID = 99999;
+const INSTANCE_WITH_UPGRADES_ID = 20;
 
 describe("SingleInstanceContainer", () => {
   describe("component", () => {
@@ -29,6 +31,29 @@ describe("SingleInstanceContainer", () => {
       ).toBeInTheDocument();
       expect(
         screen.getByRole("tab", { name: "Activities" }),
+      ).toBeInTheDocument();
+    });
+
+    it("shows the upgradable package count on the Packages tab", async () => {
+      const upgradableCount = getComputerPackageSearchResults(
+        INSTANCE_WITH_UPGRADES_ID,
+      ).filter(({ installation_candidates }) =>
+        installation_candidates.some(({ upgrade }) => upgrade),
+      ).length;
+
+      expect(upgradableCount).toBeGreaterThan(0);
+
+      renderWithProviders(
+        <SingleInstanceContainer />,
+        undefined,
+        ROUTES.instances.details.single(INSTANCE_WITH_UPGRADES_ID, { tab: "activities" }),
+        `/${PATHS.instances.root}/${PATHS.instances.single}`,
+      );
+
+      const packagesTab = await screen.findByRole("tab", { name: /Packages/ });
+
+      expect(
+        await within(packagesTab).findByText(String(upgradableCount)),
       ).toBeInTheDocument();
     });
 
