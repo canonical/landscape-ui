@@ -150,7 +150,7 @@ export interface UbuntuProService extends Record<string, unknown> {
 export interface UbuntuProInfo {
   attached: boolean;
   expires: string | null;
-  services: UbuntuProService[];
+  services?: UbuntuProService[];
   techSupportLevel?: string;
   effective?: string;
   contract?: UbuntuProContract;

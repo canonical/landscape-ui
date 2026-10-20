@@ -11,7 +11,6 @@ interface UbuntuProServicesListProps {
 }
 
 const UbuntuProList: FC<UbuntuProServicesListProps> = ({ services }) => {
-  const servicesData = useMemo(() => services, [services.length]) ?? [];
   const columns = useMemo<Column<UbuntuProService>[]>(
     () => [
       {
@@ -54,7 +53,7 @@ const UbuntuProList: FC<UbuntuProServicesListProps> = ({ services }) => {
       <span className="p-heading--5">Services</span>
       <ResponsiveTable
         columns={columns}
-        data={servicesData}
+        data={services}
         getCellProps={({ column }) => {
           switch (column.id) {
             case "name":
