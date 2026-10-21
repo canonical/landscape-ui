@@ -20,7 +20,7 @@ describe("PackagesActionForm", () => {
 
       screen.getByRole("searchbox");
 
-      expect(screen.getByRole("button", { name: "Next" })).toHaveAttribute(
+      expect(screen.getByRole("button", { name: "Next" })).not.toHaveAttribute(
         "aria-disabled",
       );
 
@@ -29,16 +29,87 @@ describe("PackagesActionForm", () => {
       ).not.toHaveAttribute("aria-disabled");
     });
 
-    it("enables next button when package and version are selected", async () => {
+    it("shows error and blocks next step when no package or version is selected", async () => {
+      renderWithProviders(
+        <PackagesActionForm
+          instanceIds={[instanceId]}
+          actionType="change_version"
+        />,
+      );
+
+      const searchBox = screen.getByRole("searchbox");
+      const nextButton = screen.getByRole("button", { name: "Next" });
+
+      await user.click(nextButton);
+
+      expect(screen.getByText(/at least one package/i)).toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: /Summary/i }),
+      ).not.toBeInTheDocument();
+
+      await user.type(searchBox, `${firstPackage.name}`);
+      await user.click(
+        await screen.findByRole("option", {
+          name: new RegExp(firstPackage.name),
+        }),
+      );
+
+      await user.click(nextButton);
+
+      expect(
+        screen.getByText(
+          /All selected packages must have at least one version/i,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: /Summary/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("unblocks next step when at least 1 package is selected", async () => {
       renderWithProviders(
         <PackagesActionForm instanceIds={[instanceId]} actionType="install" />,
       );
 
       const searchBox = screen.getByRole("searchbox");
-      await user.type(searchBox, firstPackage.name);
+      await user.type(searchBox, `${firstPackage.name}`);
+      await user.click(await screen.findByText(firstPackage.name));
 
-      const nextButton = screen.getByRole("button", { name: "Next" });
-      expect(nextButton).toHaveAttribute("aria-disabled", "true");
+      await user.click(screen.getByRole("button", { name: "Next" }));
+
+      expect(
+        screen.queryByText(/at least one package/i),
+      ).not.toBeInTheDocument();
+      expect(
+        await screen.findByRole("button", { name: /back/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("unblocks next step when all packages have versions for change version", async () => {
+      renderWithProviders(
+        <PackagesActionForm
+          instanceIds={[instanceId]}
+          actionType="change_version"
+        />,
+      );
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.type(searchBox, `${firstPackage.name}`);
+      await user.click(await screen.findByText(firstPackage.name));
+
+      await user.click(
+        await screen.findByRole("combobox", { name: "Version" }),
+      );
+      await user.click(await screen.findByRole("checkbox"));
+
+      await user.click(screen.getByRole("button", { name: "Next" }));
+
+      expect(
+        screen.queryByText(/at least one version/i),
+      ).not.toBeInTheDocument();
+      expect(
+        await screen.findByRole("button", { name: /back/i }),
+      ).toBeInTheDocument();
     });
   });
 

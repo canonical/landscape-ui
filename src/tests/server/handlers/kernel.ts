@@ -88,7 +88,7 @@ export default [
                   Kernel: "Kernel",
                   Running: true,
                   Supported: "Supported",
-                  UpgradeRequiredDate: null,
+                  UpgradeRequiredDate: "2026-10-20",
                 },
               ],
             },

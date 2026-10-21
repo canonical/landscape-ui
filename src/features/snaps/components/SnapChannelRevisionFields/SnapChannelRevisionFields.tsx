@@ -16,7 +16,7 @@ import {
 } from "../../helpers";
 
 const CLASSIC_CONFINEMENT_TOOLTIP_MESSAGE =
-  "Check the snap store if you're not sure whether this snap requires classic confinement.";
+  "Check the snap store if you're not sure whether this release requires classic confinement.";
 
 interface SnapChannelRevisionFieldsProps {
   readonly instanceIds: number[];
@@ -215,7 +215,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
             "u-no-margin--bottom",
           )}
         >
-          This snap requires classic confinement
+          This release requires classic confinement
         </Notification>
       ) : null}
       {!isSnapInfoLoading &&
