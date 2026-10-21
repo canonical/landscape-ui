@@ -91,7 +91,6 @@ const SingleInstanceContainer: FC = () => {
     isLoading: getInstancePackagesQueryLoading,
   } = getInstancePackagesQuery(
     {
-      available: false,
       upgrade: true,
       instance_id: getQueryInstanceIdParam(instance),
       limit: 1,
