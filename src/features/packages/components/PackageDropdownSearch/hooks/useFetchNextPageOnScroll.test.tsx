@@ -119,7 +119,7 @@ describe("useFetchNextPageOnScroll", () => {
     expect(fetchNextPage).not.toHaveBeenCalled();
   });
 
-  it("retries a failed page only on the next scroll", () => {
+  it("doesn't fetch a failed page again until the next scroll", () => {
     const container = createScrollContainer({ scrollTop: SCROLLED_TO_BOTTOM });
     const { fetchNextPage, rerender } = renderScrollHook(container);
 

@@ -15,8 +15,9 @@ interface UseFetchNextPageOnScrollParams {
  * a callback ref for the scroll container.
  *
  * The check also runs whenever a page loads, so a page that is too short to
- * scroll still leads to the next one. A failed page is retried on the next
- * scroll.
+ * scroll still leads to the next one. After a failed page it doesn't fetch
+ * again until the next scroll, so a persistent error can't cause a request
+ * loop.
  */
 export const useFetchNextPageOnScroll = ({
   fetchNextPage,
