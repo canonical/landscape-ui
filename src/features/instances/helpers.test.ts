@@ -157,4 +157,10 @@ describe("getFeatures", () => {
     expect(getFeatures(windowsInstance).proToken).toBe(false);
     expect(getFeatures(debianInstance).proToken).toBe(false);
   });
+
+  it("does not allow a Pro token on an instance that has not reported a distribution", () => {
+    expect(
+      getFeatures({ ...ubuntuInstance, distribution_info: null }).proToken,
+    ).toBe(false);
+  });
 });
