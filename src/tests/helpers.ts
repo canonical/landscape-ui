@@ -1,5 +1,5 @@
 import { expect, vi } from "vitest";
-import { screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { BREAKPOINT_PX } from "@/constants";
 
 export const expectLoadingState = async (): Promise<void> => {
@@ -91,65 +91,36 @@ export function resetScreenSize(): void {
 }
 
 /**
- * Stubs IntersectionObserver, which jsdom does not implement. Each observed
- * element receives a single entry with the given intersection state when it
- * is observed; like the real API, no further entries are delivered while that
- * state does not change. Returns a function that restores the original value.
+ * Stubs the scroll metrics that jsdom always reports as 0, for testing
+ * infinite scroll. Every element reports the given client height and a scroll
+ * height of one item height per list item it contains. Call before rendering
+ * and restore with `vi.restoreAllMocks()`.
  */
-export const mockIntersectionObserver = ({
-  isIntersecting = true,
-}: { isIntersecting?: boolean } = {}): (() => void) => {
-  const hadIntersectionObserver = "IntersectionObserver" in window;
-  const originalIntersectionObserver = window.IntersectionObserver;
+export const mockListScrollMetrics = ({
+  clientHeight,
+  itemHeight,
+}: {
+  clientHeight: number;
+  itemHeight: number;
+}): { scrollToBottom: (element: Element) => void } => {
+  let scrollTop = 0;
 
-  class IntersectionObserverMock {
-    readonly root = null;
-    readonly rootMargin = "0px";
-    readonly thresholds = [0];
-    readonly unobserve = vi.fn();
-    readonly disconnect = vi.fn();
-    readonly takeRecords = vi.fn(() => []);
-    private readonly callback: IntersectionObserverCallback;
+  vi.spyOn(Element.prototype, "clientHeight", "get").mockReturnValue(
+    clientHeight,
+  );
+  vi.spyOn(Element.prototype, "scrollHeight", "get").mockImplementation(
+    function (this: Element) {
+      return this.querySelectorAll("li").length * itemHeight;
+    },
+  );
+  vi.spyOn(Element.prototype, "scrollTop", "get").mockImplementation(
+    () => scrollTop,
+  );
 
-    constructor(callback: IntersectionObserverCallback) {
-      this.callback = callback;
-    }
-
-    observe(target: Element): void {
-      const rect = target.getBoundingClientRect();
-
-      this.callback(
-        [
-          {
-            target,
-            isIntersecting,
-            intersectionRatio: isIntersecting ? 1 : 0,
-            boundingClientRect: rect,
-            intersectionRect: rect,
-            rootBounds: null,
-            time: performance.now(),
-          },
-        ],
-        this as unknown as IntersectionObserver,
-      );
-    }
-  }
-
-  Object.defineProperty(window, "IntersectionObserver", {
-    configurable: true,
-    writable: true,
-    value: IntersectionObserverMock,
-  });
-
-  return () => {
-    if (hadIntersectionObserver) {
-      Object.defineProperty(window, "IntersectionObserver", {
-        configurable: true,
-        writable: true,
-        value: originalIntersectionObserver,
-      });
-    } else {
-      delete (window as Partial<typeof window>).IntersectionObserver;
-    }
+  return {
+    scrollToBottom: (element) => {
+      scrollTop = element.scrollHeight - element.clientHeight;
+      fireEvent.scroll(element);
+    },
   };
 };

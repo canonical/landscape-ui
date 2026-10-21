@@ -9,7 +9,6 @@ import classNames from "classnames";
 import type { ControllerStateAndHelpers } from "downshift";
 import type { FC } from "react";
 import type { Package } from "../../../../types";
-import { useFetchNextPageOnIntersection } from "../../hooks";
 import classes from "./PackageDropdownSearchList.module.scss";
 import type { SearchPackagesResponse } from "../../../../api/useSearchPackages";
 import { pluralize } from "@/utils/_helpers";
@@ -32,14 +31,6 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
   search,
   selectedPackages,
 }) => {
-  const loadingStateRef = useFetchNextPageOnIntersection({
-    fetchNextPage: queryResult.fetchNextPage,
-    hasNextPage: queryResult.hasNextPage,
-    isFetchingNextPage: queryResult.isFetchingNextPage,
-    isFetchNextPageError: queryResult.isFetchNextPageError,
-    pageCount: queryResult.data?.pages.length ?? 0,
-  });
-
   if (exact && !search) {
     return;
   }
@@ -91,7 +82,7 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
           })}
         </ul>
 
-        {queryResult.hasNextPage && <LoadingState ref={loadingStateRef} />}
+        {queryResult.isFetchingNextPage && <LoadingState />}
       </>
     );
   }

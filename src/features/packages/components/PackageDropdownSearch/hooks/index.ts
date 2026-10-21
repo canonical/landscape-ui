@@ -1,1 +1,1 @@
-export { useFetchNextPageOnIntersection } from "./useFetchNextPageOnIntersection";
+export { useFetchNextPageOnScroll } from "./useFetchNextPageOnScroll";

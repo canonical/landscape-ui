@@ -4,6 +4,7 @@ import {
   useSearchPackages,
 } from "@/features/packages";
 import type { FC } from "react";
+import { useCallback } from "react";
 import classes from "./PackageSearchDowngradeItem.module.scss";
 import type { MultiSelectItem } from "@canonical/react-components";
 import {
@@ -19,7 +20,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { useTheme } from "@/context/theme";
 import classNames from "classnames";
 import { QUERY_LIMIT } from "../../constants";
-import { useFetchNextPageOnIntersection } from "../../hooks";
+import { useFetchNextPageOnScroll } from "../../hooks";
 
 interface PackageSearchDowngradeItemProps {
   readonly instanceIds: number[];
@@ -43,7 +44,6 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
     error: packagesError,
     isPending: isPendingPackages,
     isFetchingNextPage: isFetchingNextPackagesPage,
-    isFetchNextPageError: isFetchNextPackagesPageError,
     fetchNextPage: fetchNextPackagesPage,
     hasNextPage: hasNextPackagesPage,
   } = useSearchPackages({
@@ -57,13 +57,21 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
     throw packagesError;
   }
 
-  const loadingStateRef = useFetchNextPageOnIntersection({
+  const setScrollContainer = useFetchNextPageOnScroll({
     fetchNextPage: fetchNextPackagesPage,
     hasNextPage: hasNextPackagesPage,
     isFetchingNextPage: isFetchingNextPackagesPage,
-    isFetchNextPageError: isFetchNextPackagesPageError,
     pageCount: packagesResponse?.pages.length ?? 0,
   });
+
+  // The dropdown panel (rendered in a portal) is what scrolls, so find it from
+  // the footer, which is rendered inside it.
+  const footerRef = useCallback(
+    (footer: HTMLDivElement | null) => {
+      setScrollContainer(footer?.closest<HTMLElement>('[role="menu"]') ?? null);
+    },
+    [setScrollContainer],
+  );
 
   const packages = isPendingPackages
     ? []
@@ -132,7 +140,11 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
         dropdownHeader={getDropdownHeader()}
         showDropdownFooter={hasNextPackagesPage}
         footerClassName={classes.footer}
-        dropdownFooter={<LoadingState ref={loadingStateRef} />}
+        dropdownFooter={
+          <div ref={footerRef}>
+            {isFetchingNextPackagesPage && <LoadingState />}
+          </div>
+        }
         variant="condensed"
         placeholder={isPendingPackages ? "Loading..." : "Version"}
         onItemsUpdate={onItemsUpdate}

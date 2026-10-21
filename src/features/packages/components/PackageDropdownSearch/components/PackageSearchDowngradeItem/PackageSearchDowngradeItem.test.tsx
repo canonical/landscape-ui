@@ -1,6 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import PackageSearchDowngradeItem from "./PackageSearchDowngradeItem";
 import { ICONS } from "@canonical/react-components";
 import userEvent from "@testing-library/user-event";
@@ -16,7 +16,7 @@ import type {
 import type MultiSelectField from "@/components/form/MultiSelectField";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { QUERY_LIMIT } from "../../constants";
-import { mockIntersectionObserver } from "@/tests/helpers";
+import { mockListScrollMetrics } from "@/tests/helpers";
 
 const multiSelectFieldProps = vi.hoisted(() => vi.fn());
 
@@ -148,24 +148,14 @@ describe("PackageSearchDowngradeItem", () => {
   });
 
   describe("version pagination", () => {
-    const totalVersions = 35;
-    const expectedOffsets = Array.from(
-      { length: Math.ceil(totalVersions / QUERY_LIMIT) },
-      (_, page) => page * QUERY_LIMIT,
-    );
-    let restoreIntersectionObserver: (() => void) | undefined;
+    const totalVersions = QUERY_LIMIT * 2 + 5;
+    const scrollMetrics = { clientHeight: 200, itemHeight: 32 };
+    // Long enough for an unwanted next-page request to be sent.
+    const settleDelayMs = 100;
+    let requestedOffsets: number[];
 
-    afterEach(() => {
-      restoreIntersectionObserver?.();
-      restoreIntersectionObserver = undefined;
-    });
-
-    it("keeps loading versions while the loading footer stays visible", async () => {
-      restoreIntersectionObserver = mockIntersectionObserver({
-        isIntersecting: true,
-      });
-
-      const requestedOffsets: number[] = [];
+    beforeEach(() => {
+      requestedOffsets = [];
 
       server.use(
         http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
@@ -192,7 +182,13 @@ describe("PackageSearchDowngradeItem", () => {
           },
         ),
       );
+    });
 
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    const openVersionDropdown = async () => {
       renderWithProviders(<PackageSearchDowngradeItem {...props} />);
 
       await user.click(
@@ -200,9 +196,29 @@ describe("PackageSearchDowngradeItem", () => {
       );
 
       expect(
-        await screen.findByText("1.034 (4 instances)"),
+        await screen.findByText("1.000 (4 instances)"),
       ).toBeInTheDocument();
-      expect(requestedOffsets).toEqual(expectedOffsets);
+    };
+
+    it("loads only the first page when the dropdown opens", async () => {
+      mockListScrollMetrics(scrollMetrics);
+
+      await openVersionDropdown();
+      await new Promise((resolve) => setTimeout(resolve, settleDelayMs));
+
+      expect(requestedOffsets).toEqual([0]);
+    });
+
+    it("loads the next page when the dropdown is scrolled near the bottom", async () => {
+      const { scrollToBottom } = mockListScrollMetrics(scrollMetrics);
+
+      await openVersionDropdown();
+      scrollToBottom(screen.getByRole("menu"));
+
+      expect(
+        await screen.findByText("1.020 (4 instances)"),
+      ).toBeInTheDocument();
+      expect(requestedOffsets).toEqual([0, QUERY_LIMIT]);
     });
   });
 });
