@@ -79,30 +79,30 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
     }
   };
 
-  const packagesByName = items.reduce<Record<string, typeof items>>(
+  const packagesByName = items.reduce<Map<string, typeof items>>(
     (acc, item) => {
       const packageName = getPackageName(item.action);
-      const packageByName = acc[packageName];
+      const packageByName = acc.get(packageName);
 
       if (packageByName) {
         packageByName.push(item);
       } else {
-        acc[packageName] = [item];
+        acc.set(packageName, [item]);
       }
 
       return acc;
     },
-    {},
+    new Map(),
   );
 
-  const actionablePackageNames = Object.keys(packagesByName);
+  const actionablePackageNames = [...packagesByName.keys()];
 
   const packageNames = [
     ...actionablePackageNames,
     ...exclusions
       .filter(
         ({ package_name, computer_count }) =>
-          computer_count > 0 && !actionablePackageNames.includes(package_name),
+          computer_count > 0 && !packagesByName.has(package_name),
       )
       .map(({ package_name }) => package_name),
   ];
@@ -127,7 +127,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
             return `${packageName} will be ${actionPast}`;
           },
           `selected packages will be ${actionPast}`,
-        )} and ${pluralize(items.length, ["is", "are"])} queued in Activities.`,
+        )} and ${pluralize(actionablePackageNames.length, ["is", "are"])} queued in Activities.`,
         actions: [
           {
             label: "Details",
@@ -240,7 +240,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
                     {packageName}
                   </strong>
                 </div>
-                {packagesByName[packageName]?.map((item) => {
+                {packagesByName.get(packageName)?.map((item) => {
                   return (
                     <div key={getKey(item.action)} className={classes.row}>
                       {getRow(item)}

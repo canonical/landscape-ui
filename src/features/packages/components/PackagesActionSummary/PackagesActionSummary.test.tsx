@@ -201,4 +201,112 @@ describe("PackagesActionSummary", () => {
       await screen.findByText("Instances not uninstalling qa-repro-actionable"),
     ).toBeInTheDocument();
   });
+
+  it("renders an exclusion-only package whose name is an Object prototype key", async () => {
+    mockSummary({
+      actions: [],
+      exclusions: [{ package_name: "constructor", computer_count: 2 }],
+    });
+
+    renderRemoveSummary();
+
+    const [item] = await screen.findAllByRole("listitem");
+    assert(item);
+    expect(within(item).getByText("constructor")).toBeInTheDocument();
+    expect(
+      within(item).getByText(/Will not be uninstalled on/),
+    ).toBeInTheDocument();
+    expect(
+      within(item).getByRole("button", { name: "2 instances" }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("button", { name: "Uninstall 0 packages" }),
+    ).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+  });
+
+  it("groups actionable packages whose names are Object prototype keys", async () => {
+    mockSummary({
+      actions: [
+        {
+          action: {
+            type: "remove",
+            package: { id: 1, name: "constructor", version: "1.0" },
+          },
+          computer_count: 3,
+        },
+      ],
+      exclusions: [{ package_name: "toString", computer_count: 2 }],
+    });
+
+    renderRemoveSummary();
+
+    const items = await screen.findAllByRole("listitem");
+    expect(items).toHaveLength(2);
+    const [actionableItem, excludedItem] = items;
+    assert(actionableItem);
+    assert(excludedItem);
+
+    expect(within(actionableItem).getByText("constructor")).toBeInTheDocument();
+    expect(
+      within(actionableItem).getByRole("button", { name: "3 instances" }),
+    ).toBeInTheDocument();
+    expect(within(excludedItem).getByText("toString")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Uninstall 1 package" }),
+    ).not.toHaveAttribute("aria-disabled");
+  });
+
+  it("uses the actionable package count in the success notification", async () => {
+    mockExecute();
+    server.use(
+      http.get(`${API_URL}package-change-plans/:id/summary`, () =>
+        HttpResponse.json<
+          GetPackageChangePlanSummaryResponse<"change_version">
+        >({
+          actions: [
+            {
+              action: {
+                type: "change_version",
+                from_package: { id: 1, name: "qa-repro-pkg", version: "1.0" },
+                to_package: { id: 3, name: "qa-repro-pkg", version: "3.0" },
+              },
+              computer_count: 1,
+            },
+            {
+              action: {
+                type: "change_version",
+                from_package: { id: 2, name: "qa-repro-pkg", version: "2.0" },
+                to_package: { id: 3, name: "qa-repro-pkg", version: "3.0" },
+              },
+              computer_count: 1,
+            },
+          ],
+          exclusions: [],
+        }),
+      ),
+    );
+
+    renderWithProviders(
+      <PackagesActionSummary
+        actionType="change_version"
+        onBackButtonPress={() => undefined}
+        packageChangePlanId={5}
+      />,
+    );
+
+    await userEvent.click(
+      await screen.findByRole("button", {
+        name: "Change version on 1 package",
+      }),
+    );
+
+    expect(
+      await screen.findByText(
+        "qa-repro-pkg will be changed to a different version and is queued in Activities.",
+      ),
+    ).toBeInTheDocument();
+  });
 });
