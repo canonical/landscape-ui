@@ -380,13 +380,74 @@ describe("InstancesPageActions", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("'Snap management' group should be disabled if snaps feature is disabled", async () => {
-      renderPageActions({ selectedInstances: [windowsInstance] });
+    const UNSUPPORTED_MENUS = [
+      [
+        "Deb management",
+        "None of the selected instances support deb package management.",
+      ],
+      [
+        "Snap management",
+        "None of the selected instances support snap management.",
+      ],
+    ];
 
-      expect(
-        screen.getByRole("button", { name: MENU_LABELS[4] }),
-      ).toHaveAttribute("aria-disabled", "true");
-    });
+    it.each(UNSUPPORTED_MENUS)(
+      "disables %s and explains why when no selected instance supports it",
+      async (label, message) => {
+        renderPageActions({ selectedInstances: [windowsInstance] });
+
+        const toggle = await screen.findByRole("button", {
+          name: `${label} ${message}`,
+        });
+        expect(toggle).toHaveAttribute("aria-disabled", "true");
+
+        await userEvent.hover(within(toggle).getByText(label));
+
+        expect(await screen.findByRole("tooltip")).toHaveTextContent(message);
+      },
+    );
+
+    it.each(UNSUPPORTED_MENUS)(
+      "explains why %s is disabled in the collapsed Actions menu",
+      async (label, message) => {
+        setScreenSize("sm");
+        renderPageActions({ selectedInstances: [windowsInstance] });
+
+        await userEvent.click(screen.getByRole("button", { name: "Actions" }));
+        const toggle = await screen.findByRole("button", {
+          name: `${label} ${message}`,
+        });
+        expect(toggle).toHaveAttribute("aria-disabled", "true");
+
+        await userEvent.hover(within(toggle).getByText(label));
+
+        expect(await screen.findByRole("tooltip")).toHaveTextContent(message);
+      },
+    );
+
+    it.each(["Deb management", "Snap management"])(
+      "enables %s when some selected instances support it",
+      async (label) => {
+        renderPageActions({
+          selectedInstances: [ubuntuInstance, windowsInstance],
+        });
+
+        expect(
+          await screen.findByRole("button", { name: label }),
+        ).not.toHaveAttribute("aria-disabled", "true");
+      },
+    );
+
+    it.each(["Deb management", "Snap management"])(
+      "disables %s without an explanation when nothing is selected",
+      async (label) => {
+        renderPageActions({ selectedInstances: [] });
+
+        const toggle = await screen.findByRole("button", { name: label });
+        expect(toggle).toHaveAttribute("aria-disabled", "true");
+        expect(toggle).toHaveAccessibleName(label);
+      },
+    );
 
     it("'Snap management' should leave out instances without the snaps feature", async () => {
       const requestedIds: string[] = [];
