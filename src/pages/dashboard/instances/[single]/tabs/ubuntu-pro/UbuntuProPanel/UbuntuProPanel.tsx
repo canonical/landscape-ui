@@ -21,6 +21,7 @@ const UbuntuProPanel: FC<UbuntuProPanelProps> = ({ instance }) => {
       <UbuntuProInfoRow instance={instance} />
       <UbuntuProList
         services={instance.ubuntu_pro_info.services ?? EMPTY_SERVICES}
+        simulated={instance.ubuntu_pro_info.simulated}
       />
     </>
   ) : (

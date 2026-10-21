@@ -8,9 +8,13 @@ import classes from "./UbuntuProList.module.scss";
 
 interface UbuntuProServicesListProps {
   readonly services: UbuntuProService[];
+  readonly simulated?: boolean;
 }
 
-const UbuntuProList: FC<UbuntuProServicesListProps> = ({ services }) => {
+const UbuntuProList: FC<UbuntuProServicesListProps> = ({
+  services,
+  simulated = false,
+}) => {
   const columns = useMemo<Column<UbuntuProService>[]>(
     () => [
       {
@@ -24,28 +28,38 @@ const UbuntuProList: FC<UbuntuProServicesListProps> = ({ services }) => {
           <>{row.original.entitled ?? <NoData />}</>
         ),
       },
-      {
-        accessor: "status",
-        Header: "Status",
-        Cell: ({ row }: CellProps<UbuntuProService>) => (
-          <>{row.original.status ?? <NoData />}</>
-        ),
-        getCellIcon: ({ row: { original } }: CellProps<UbuntuProService>) => {
-          if (!original.status) {
-            return null;
+      simulated
+        ? {
+            accessor: "auto_enabled",
+            Header: "Auto enabled",
+            Cell: ({ row }: CellProps<UbuntuProService>) => (
+              <>{row.original.auto_enabled ?? <NoData />}</>
+            ),
           }
-          return original.status === "enabled"
-            ? "status-succeeded-small"
-            : "status-failed-small";
-        },
-      },
+        : {
+            accessor: "status",
+            Header: "Status",
+            Cell: ({ row }: CellProps<UbuntuProService>) => (
+              <>{row.original.status ?? <NoData />}</>
+            ),
+            getCellIcon: ({
+              row: { original },
+            }: CellProps<UbuntuProService>) => {
+              if (!original.status) {
+                return null;
+              }
+              return original.status === "enabled"
+                ? "status-succeeded-small"
+                : "status-failed-small";
+            },
+          },
       {
         accessor: "description",
         Header: "Description",
         className: classes.description,
       },
     ],
-    [],
+    [simulated],
   );
 
   return (
@@ -62,6 +76,8 @@ const UbuntuProList: FC<UbuntuProServicesListProps> = ({ services }) => {
               return { "aria-label": "Entitled" };
             case "status":
               return { "aria-label": "Status" };
+            case "auto_enabled":
+              return { "aria-label": "Auto enabled" };
             case "description":
               return { "aria-label": "Description" };
             default:
