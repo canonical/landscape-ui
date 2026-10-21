@@ -507,7 +507,7 @@ export default [
       endpointStatus.path === "GetPendingComputers" &&
       endpointStatus.status === "forbidden"
     ) {
-      return createEndpointStatusError({
+      throw createEndpointStatusError({
         status: 403,
         error: "Forbidden",
         message: "Forbidden.",
