@@ -111,8 +111,8 @@ describe("OperationStatusNotification", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows an error notification when canceling the operation fails", async () => {
-    setEndpointStatus({ status: "error", path: "operations/cancel" });
+  it("shows a canceling state while the cancel request is pending", async () => {
+    setEndpointStatus({ status: "loading", path: "operations/cancel" });
     const user = userEvent.setup();
 
     renderWithProviders(
@@ -127,8 +127,24 @@ describe("OperationStatusNotification", () => {
     );
 
     expect(
-      screen.getByRole("button", { name: "Canceling..." }),
-    ).toBeInTheDocument();
+      await screen.findByRole("button", { name: "Canceling..." }),
+    ).toHaveAttribute("aria-disabled", "true");
+  });
+
+  it("shows an error notification when canceling the operation fails", async () => {
+    setEndpointStatus({ status: "error", path: "operations/cancel" });
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <OperationStatusNotification
+        type="import"
+        operation={inProgressOperation}
+      />,
+    );
+
+    await user.click(
+      await screen.findByRole("button", { name: "Cancel import" }),
+    );
 
     expect(
       await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
