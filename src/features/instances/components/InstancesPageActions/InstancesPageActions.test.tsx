@@ -15,7 +15,7 @@ import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
-import { afterEach, beforeEach, vi } from "vitest";
+import { afterEach, beforeEach, onTestFinished, vi } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
@@ -386,6 +386,40 @@ describe("InstancesPageActions", () => {
       expect(
         screen.getByRole("button", { name: MENU_LABELS[4] }),
       ).toHaveAttribute("aria-disabled", "true");
+    });
+
+    it("'Snap management' should leave out instances without the snaps feature", async () => {
+      const requestedIds: string[] = [];
+      const captureSnapsRequest = ({ request }: { request: Request }) => {
+        const url = new URL(request.url);
+        if (request.method === "GET" && url.pathname.endsWith("/snaps")) {
+          // The API client sends array params comma-joined, e.g. computer_ids=1,6.
+          requestedIds.push(
+            ...(url.searchParams.get("computer_ids")?.split(",") ?? []),
+          );
+        }
+      };
+      server.events.on("request:start", captureSnapsRequest);
+      onTestFinished(() => {
+        server.events.removeListener("request:start", captureSnapsRequest);
+      });
+
+      renderPageActions({
+        selectedInstances: [ubuntuInstance, windowsInstance],
+      });
+
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[4] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: "Uninstall" }),
+      );
+      await userEvent.click(await screen.findByRole("searchbox"));
+
+      await waitFor(() => {
+        expect(requestedIds).not.toHaveLength(0);
+      });
+      expect(requestedIds).toEqual([String(ubuntuInstance.id)]);
     });
   });
 
