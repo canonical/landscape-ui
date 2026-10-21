@@ -393,7 +393,10 @@ describe("InstancesPageActions", () => {
       const captureSnapsRequest = ({ request }: { request: Request }) => {
         const url = new URL(request.url);
         if (request.method === "GET" && url.pathname.endsWith("/snaps")) {
-          requestedIds.push(...url.searchParams.getAll("computer_ids"));
+          // The API client sends array params comma-joined, e.g. computer_ids=1,6.
+          requestedIds.push(
+            ...(url.searchParams.get("computer_ids")?.split(",") ?? []),
+          );
         }
       };
       server.events.on("request:start", captureSnapsRequest);
@@ -416,9 +419,7 @@ describe("InstancesPageActions", () => {
       await waitFor(() => {
         expect(requestedIds).not.toHaveLength(0);
       });
-      expect(requestedIds.join(",").split(",")).toEqual([
-        String(ubuntuInstance.id),
-      ]);
+      expect(requestedIds).toEqual([String(ubuntuInstance.id)]);
     });
   });
 
