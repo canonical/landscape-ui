@@ -167,7 +167,6 @@ const StaffAccountFeatures: FC<StaffAccountFeaturesProps> = ({
       <ResponsiveTable
         columns={columns}
         data={rows}
-        emptyMsg="The feature registry is empty."
         minWidth={MIN_TABLE_WIDTH}
       />
 

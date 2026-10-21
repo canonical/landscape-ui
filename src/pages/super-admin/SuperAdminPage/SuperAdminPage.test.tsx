@@ -146,8 +146,6 @@ describe("SuperAdminPage", () => {
 
   describe("after a support session", () => {
     it("returns a session that lands in another account later", async () => {
-      signInAs(authUser.current_account);
-
       const switches = recordSwitches();
 
       renderEnteringWith(
@@ -219,8 +217,6 @@ describe("SuperAdminPage", () => {
     });
 
     it("leaves the session alone when it is in one of the person's accounts", async () => {
-      signInAs(authUser.current_account);
-
       const switches = recordSwitches();
 
       renderEnteringWith(null);

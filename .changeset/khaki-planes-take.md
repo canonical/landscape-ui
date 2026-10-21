@@ -2,4 +2,4 @@
 "landscape-ui": patch
 ---
 
-Update empty state icons for Licenses and Administrators
+Add and update empty states, and hide Super admin back button for users with no account.

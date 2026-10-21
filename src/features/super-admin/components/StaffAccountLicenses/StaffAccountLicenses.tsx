@@ -51,7 +51,6 @@ const StaffAccountLicenses: FC<StaffAccountLicensesProps> = ({ licenses }) => {
     <ResponsiveTable
       columns={columns}
       data={licenses}
-      emptyMsg="This account has no licenses."
       minWidth={MIN_TABLE_WIDTH}
     />
   );

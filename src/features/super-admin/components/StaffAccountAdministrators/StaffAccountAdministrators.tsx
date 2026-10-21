@@ -36,7 +36,6 @@ const StaffAccountAdministrators: FC<StaffAccountAdministratorsProps> = ({
     <ResponsiveTable
       columns={columns}
       data={administrators}
-      emptyMsg="This account has no administrators."
       minWidth={MIN_TABLE_WIDTH}
     />
   );
