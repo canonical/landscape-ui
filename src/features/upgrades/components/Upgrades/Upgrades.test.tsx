@@ -326,6 +326,113 @@ describe("Upgrades", () => {
     });
   });
 
+  it("keeps an instances tab exclusion on its own instance when its id is also a packages tab upgrade", async () => {
+    const user = userEvent.setup();
+    const [instanceA, instanceB] = instances.filter(({ alerts }) =>
+      hasUpgrades(alerts),
+    );
+    assert(instanceA && instanceB);
+    const installedOnA = 1001;
+    // Upgrade candidate for instance A and the installed version on instance B.
+    const installedOnB = 2002;
+    let upgradeBody: unknown;
+
+    server.use(
+      http.post(`${API_URL}packages\\:search-upgrades`, () =>
+        HttpResponse.json({
+          packages: [
+            {
+              id: installedOnB,
+              name: "foo",
+              summary: "Foo",
+              version: "2.0.0",
+              computers: { count: 1 },
+            },
+          ],
+          count: 1,
+          next: null,
+          prev: null,
+        }),
+      ),
+      http.get(`${API_URL}computers/:id/packages/search`, () =>
+        HttpResponse.json({
+          count: 1,
+          results: [
+            {
+              name: "foo",
+              summary: "Foo",
+              installed_version: "2.0.0",
+              installed_id: installedOnB,
+              held: false,
+              security: false,
+              installation_candidates: [
+                { id: 3003, version: "3.0.0", upgrade: true, security: false },
+              ],
+            },
+          ],
+        }),
+      ),
+      http.post(`${API_URL}packages\\:search`, () =>
+        HttpResponse.json({
+          packages: [
+            {
+              id: installedOnA,
+              name: "foo",
+              summary: "Foo",
+              version: "1.0.0",
+              computers: { count: 1 },
+            },
+            {
+              id: installedOnB,
+              name: "foo",
+              summary: "Foo",
+              version: "2.0.0",
+              computers: { count: 1 },
+            },
+          ],
+          count: 2,
+          next: null,
+          prev: null,
+        }),
+      ),
+      http.post(`${API_URL}computers/upgrade-packages`, async ({ request }) => {
+        upgradeBody = await request.json();
+        return HttpResponse.json(activities[0]);
+      }),
+    );
+
+    renderWithProviders(
+      <Upgrades selectedInstances={[instanceA, instanceB]} />,
+    );
+
+    await user.click(screen.getByRole("tab", { name: /packages/i }));
+    await screen.findByRole("checkbox", { name: /toggle foo package/i });
+    await user.click(screen.getByRole("tab", { name: /instances/i }));
+
+    const instanceBRow = (await screen.findAllByRole("row")).find(
+      ({ firstChild }) => firstChild?.textContent === instanceB.title,
+    );
+    assert(instanceBRow);
+    await user.click(within(instanceBRow).getByRole("button"));
+    await user.click(
+      await screen.findByRole("checkbox", { name: /toggle foo package/i }),
+    );
+    await user.click(screen.getByRole("button", { name: "Upgrade" }));
+
+    expect(
+      await screen.findByText("You queued packages to be upgraded"),
+    ).toBeInTheDocument();
+    expect(upgradeBody).toEqual({
+      computers: [
+        { id: instanceA.id, exclude_packages: [] },
+        {
+          id: instanceB.id,
+          exclude_packages: expect.arrayContaining([installedOnB]),
+        },
+      ],
+    });
+  });
+
   it("updates excluded usn list from usns tab interaction", async () => {
     const user = userEvent.setup();
 
