@@ -54,4 +54,34 @@ describe("USGProfileLastRunWithSchedule", () => {
     ).toBeInTheDocument();
     expect(within(tooltip).getByText("On a date")).toBeInTheDocument();
   });
+
+  it.each([
+    ["2026-12-31T05:00:00", "2026-12-30T04:00:00"],
+    ["2026-12-31T05:00:00Z", "2026-12-30T04:00:00Z"],
+    ["2026-12-31T14:00:00+09:00", "2026-12-30T13:00:00+09:00"],
+  ])("displays API timestamps %s in UTC", async (nextRun, lastRun) => {
+    const utcProfile = {
+      ...profileWithRuns,
+      next_run_time: nextRun,
+      last_run_results: {
+        ...profileWithRuns.last_run_results,
+        timestamp: lastRun,
+      },
+    };
+    renderWithProviders(<USGProfileLastRunWithSchedule profile={utcProfile} />);
+
+    const lastRunLabel = screen.getByLabelText(
+      `Last run for ${utcProfile.title} profile`,
+    );
+    expect(lastRunLabel).toHaveTextContent("Dec 30, 2026, 04:00");
+    await user.hover(lastRunLabel);
+
+    const tooltip = await screen.findByRole("tooltip");
+    expect(
+      within(tooltip).getByText("Dec 31, 2026, 05:00 UTC"),
+    ).toBeInTheDocument();
+    expect(
+      within(tooltip).getByText("Dec 30, 2026, 04:00 UTC"),
+    ).toBeInTheDocument();
+  });
 });

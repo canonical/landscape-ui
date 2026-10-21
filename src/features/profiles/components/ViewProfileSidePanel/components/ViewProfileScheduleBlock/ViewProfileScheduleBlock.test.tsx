@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import ViewProfileScheduleBlock from "./ViewProfileScheduleBlock";
 import { profiles } from "@/tests/mocks/profiles";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { usgProfiles } from "@/tests/mocks/usgProfiles";
 
 const [baseProfile] = profiles;
 
@@ -90,6 +91,25 @@ describe("ViewProfileScheduleBlock", () => {
         /Delayed by 2 hours, randomize delivery over 30 minutes/i,
       ),
     ).toBeInTheDocument();
+  });
+
+  it.each([
+    ["2026-12-31T05:00:00", "2026-12-30T04:00:00"],
+    ["2026-12-31T05:00:00Z", "2026-12-30T04:00:00Z"],
+    ["2026-12-31T14:00:00+09:00", "2026-12-30T13:00:00+09:00"],
+  ])("displays USG API timestamps %s in UTC", (nextRun, lastRun) => {
+    const usgProfile = {
+      ...usgProfiles[1],
+      next_run_time: nextRun,
+      last_run_results: {
+        ...usgProfiles[1].last_run_results,
+        timestamp: lastRun,
+      },
+    };
+    renderWithProviders(<ViewProfileScheduleBlock profile={usgProfile} />);
+
+    expect(screen.getByText("Dec 31, 2026, 05:00 UTC")).toBeInTheDocument();
+    expect(screen.getByText("Dec 30, 2026, 04:00 UTC")).toBeInTheDocument();
   });
 
   it("renders 'As soon as possible' restart schedule with no delay and no window", () => {

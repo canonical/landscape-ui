@@ -1,5 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import {
+  getStatusRouteParams,
   useGetInstances,
   useGetPendingInstances,
   type Status,
@@ -101,7 +102,9 @@ const AlertCard: FC<Status> = ({
               to={
                 isPendingComputersAlert
                   ? undefined
-                  : ROUTES.instances.root({ status: filterValue })
+                  : ROUTES.instances.root(
+                      getStatusRouteParams({ alertType, filterValue }),
+                    )
               }
             />
           ) : (

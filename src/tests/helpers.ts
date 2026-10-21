@@ -1,5 +1,5 @@
 import { expect, vi } from "vitest";
-import { screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { BREAKPOINT_PX } from "@/constants";
 
 export const expectLoadingState = async (): Promise<void> => {
@@ -89,3 +89,38 @@ export const setScreenSize = (bp: keyof typeof BREAKPOINT_PX): void => {
 export function resetScreenSize(): void {
   mockMatchMedia([]);
 }
+
+/**
+ * Stubs the scroll metrics that jsdom always reports as 0, for testing
+ * infinite scroll. Every element reports the given client height and a scroll
+ * height of one item height per list item it contains. Call before rendering
+ * and restore with `vi.restoreAllMocks()`.
+ */
+export const mockListScrollMetrics = ({
+  clientHeight,
+  itemHeight,
+}: {
+  clientHeight: number;
+  itemHeight: number;
+}): { scrollToBottom: (element: Element) => void } => {
+  let scrollTop = 0;
+
+  vi.spyOn(Element.prototype, "clientHeight", "get").mockReturnValue(
+    clientHeight,
+  );
+  vi.spyOn(Element.prototype, "scrollHeight", "get").mockImplementation(
+    function (this: Element) {
+      return this.querySelectorAll("li").length * itemHeight;
+    },
+  );
+  vi.spyOn(Element.prototype, "scrollTop", "get").mockImplementation(
+    () => scrollTop,
+  );
+
+  return {
+    scrollToBottom: (element) => {
+      scrollTop = element.scrollHeight - element.clientHeight;
+      fireEvent.scroll(element);
+    },
+  };
+};

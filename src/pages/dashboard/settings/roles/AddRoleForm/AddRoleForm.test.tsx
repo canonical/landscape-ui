@@ -6,6 +6,7 @@ import { getPromisesToAddRole, getValuesToAddRole } from "./helpers";
 import type { AccessGroupOption } from "@/pages/dashboard/settings/roles/types";
 import type { FormProps } from "./types";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 
 describe("AddRoleForm", () => {
   const user = userEvent.setup();
@@ -130,6 +131,31 @@ describe("AddRoleForm", () => {
     expect(
       screen.queryByText(/new role has been added/i),
     ).not.toBeInTheDocument();
+  });
+
+  it("shows an error when creating the role fails", async () => {
+    renderWithProviders(<AddRoleForm />);
+
+    await user.type(
+      screen.getByRole("textbox", { name: /role name/i }),
+      "NewRole",
+    );
+
+    setEndpointStatus({ status: "error", path: "createRole" });
+    await user.click(screen.getByRole("button", { name: /add role/i }));
+
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/new role has been added/i),
+    ).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /add role/i }),
+      ).not.toBeDisabled();
+    });
   });
 });
 

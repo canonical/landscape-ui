@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
-import date, { ChronoDate } from "./index";
+import date, { ChronoDate, parseServerDateTime } from "./index";
 
 const FIXED_NOW = new Date("2024-03-15T10:30:00Z").getTime();
 const DAYS_ACROSS_DST_CHANGE = 14;
@@ -157,6 +157,77 @@ describe("strict ISO 8601 parsing", () => {
       "2024-03-15",
     );
   });
+});
+
+describe.each([
+  { mode: "ordinary", parse: (input: string) => date(input) },
+  {
+    mode: "strict",
+    parse: (input: string) => date(input, date.ISO_8601, true),
+  },
+])("basic ISO 8601 parsing ($mode)", ({ parse }) => {
+  it.each([
+    ["20271231T120000Z", "2027-12-31T12:00:00.000Z"],
+    ["20240315T233045Z", "2024-03-15T23:30:45.000Z"],
+    ["20240229T000000Z", "2024-02-29T00:00:00.000Z"],
+  ])("parses %s as UTC", (input, expected) => {
+    expect(parse(input).toISOString()).toBe(expected);
+  });
+
+  it("parses a compact date as local midnight", () => {
+    expect(parse("20240229").format("YYYY-MM-DDTHH:mm:ss")).toBe(
+      "2024-02-29T00:00:00",
+    );
+  });
+
+  it("parses an unzoned compact date-time as local time", () => {
+    expect(parse("20240315T143045").format("YYYY-MM-DDTHH:mm:ss")).toBe(
+      "2024-03-15T14:30:45",
+    );
+  });
+
+  it.each([
+    "20230229",
+    "20240230T120000Z",
+    "20241301T120000Z",
+    "20240001",
+    "20240100",
+    "20240431",
+    "20240315T250000Z",
+    "20240315T246001Z",
+    "20240315T126000Z",
+    "20240315T120060Z",
+    "20240315T12000Z",
+    "20240315T120000ZZ",
+  ])("rejects invalid compact input %s", (input) => {
+    expect(parse(input).isValid()).toBe(false);
+  });
+});
+
+describe("server timestamp parsing", () => {
+  it.each([
+    "2026-12-31T05:00:00",
+    "2026-12-31T05:00:00Z",
+    "2026-12-31T14:00:00+09:00",
+    "2026-12-31T00:00:00-0500",
+  ])("reads %s as the correct UTC instant", (input) => {
+    expect(parseServerDateTime(input).toISOString()).toBe(
+      "2026-12-31T05:00:00.000Z",
+    );
+  });
+
+  it("preserves fractional seconds from a timezone-less API timestamp", () => {
+    expect(
+      parseServerDateTime(" 2026-12-31 05:00:00.284113 ").toISOString(),
+    ).toBe("2026-12-31T05:00:00.284Z");
+  });
+
+  it.each(["", "not-a-date", "2026-02-30T05:00:00"])(
+    "keeps invalid server timestamp %s invalid",
+    (input) => {
+      expect(parseServerDateTime(input).isValid()).toBe(false);
+    },
+  );
 });
 
 describe("local parsing", () => {

@@ -47,17 +47,17 @@ const AddRoleForm: FC = () => {
   const { mutateAsync: addAccessGroups } = addAccessGroupsToRoleQuery;
 
   const handleSubmit = async (values: FormProps) => {
-    await createRole({
-      description: values.description,
-      name: values.name,
-    });
-
-    const promises = getPromisesToAddRole(values, accessGroupOptions, {
-      addAccessGroups,
-      addPermissions,
-    });
-
     try {
+      await createRole({
+        description: values.description,
+        name: values.name,
+      });
+
+      const promises = getPromisesToAddRole(values, accessGroupOptions, {
+        addAccessGroups,
+        addPermissions,
+      });
+
       await Promise.all(promises);
 
       closeSidePanel();

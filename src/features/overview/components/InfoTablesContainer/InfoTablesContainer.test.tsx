@@ -1,5 +1,6 @@
 import type { AuthContextProps } from "@/context/auth";
 import useAuth from "@/hooks/useAuth";
+import { ROUTES } from "@/libs/routes";
 import {
   activities,
   manyUnapprovedActivities,
@@ -16,6 +17,13 @@ import InfoTablesContainer from "./InfoTablesContainer";
 const LIST_LIMIT = 10;
 
 vi.mock("@/hooks/useAuth");
+
+const mockNavigate = vi.fn();
+
+vi.mock("react-router", async () => {
+  const actual = await vi.importActual("react-router");
+  return { ...actual, useNavigate: () => mockNavigate };
+});
 
 const authContextValues: AuthContextProps = {
   logout: vi.fn(),
@@ -34,6 +42,7 @@ const authContextValues: AuthContextProps = {
 
 beforeEach(() => {
   vi.mocked(useAuth).mockReturnValue(authContextValues);
+  mockNavigate.mockClear();
 });
 
 describe("InfoTablesContainer", () => {
@@ -298,8 +307,11 @@ describe("InfoTablesContainer", () => {
         name: /view all/i,
       });
       await userEvent.click(viewAllButton);
-      // Navigation happens; component still renders
-      expect(screen.getByText(/upgrades available/i)).toBeInTheDocument();
+      expect(mockNavigate).toHaveBeenCalledWith(
+        ROUTES.instances.root({
+          upgrades: ["security-upgrades", "package-upgrades"],
+        }),
+      );
     });
 
     it("shows footer and loads more packages on packages tab", async () => {

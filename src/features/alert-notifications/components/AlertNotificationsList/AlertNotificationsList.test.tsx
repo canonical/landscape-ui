@@ -91,6 +91,32 @@ describe("AlertNotificationsList", () => {
     });
   });
 
+  it("links upgrade alerts to the upgrades filter", () => {
+    renderWithProviders(
+      <AlertNotificationsList
+        alerts={alertsSummary}
+        pendingInstances={pendingInstances}
+      />,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "5 computers have security upgrades available",
+      }),
+    ).toHaveAttribute(
+      "href",
+      ROUTES.instances.root({ upgrades: ["security-upgrades"] }),
+    );
+    expect(
+      screen.getByRole("link", {
+        name: "7 computers have package upgrades available",
+      }),
+    ).toHaveAttribute(
+      "href",
+      ROUTES.instances.root({ upgrades: ["package-upgrades"] }),
+    );
+  });
+
   it("opens side panel when pending computers button is clicked", async () => {
     const user = userEvent.setup();
 

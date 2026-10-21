@@ -1,4 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
@@ -21,6 +22,7 @@ import type { CellProps, Column } from "react-table";
 import classes from "./PackagesUpgradeSummary.module.scss";
 import useNotify from "@/hooks/useNotify";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
+import PackageActionExclusionsCount from "../PackagesActionSummary/components/PackagesActionExclusionsCount";
 
 interface UpgradesSummaryProps {
   readonly packageChangePlanId: number;
@@ -97,6 +99,9 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
   }
 
   const items = summaryResponse.data.actions;
+  const exclusions = summaryResponse.data.exclusions.filter(
+    ({ computer_count }) => computer_count > 0,
+  );
   const currentItems = items.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize,
@@ -135,22 +140,54 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
     closeSidePanel();
   };
 
+  const isEmpty = !items.length;
+
   return (
     <>
-      <span className={classes.summary}>
-        The following packages will be upgraded:
-      </span>
-      <ResponsiveTable columns={columns} data={currentItems} minWidth={512} />
-      <SidePanelTablePagination
-        currentPage={currentPage}
-        pageSize={pageSize}
-        paginate={setCurrentPage}
-        setPageSize={setPageSize}
-        totalItems={items.length}
-        currentItemCount={currentItems.length}
-      />
+      {isEmpty ? (
+        <EmptyState
+          title="No upgrades to apply"
+          body="The selected upgrades are no longer available on the selected instances."
+        />
+      ) : (
+        <>
+          <span className={classes.summary}>
+            The following packages will be upgraded:
+          </span>
+          <ResponsiveTable
+            columns={columns}
+            data={currentItems}
+            minWidth={512}
+          />
+          <SidePanelTablePagination
+            currentPage={currentPage}
+            pageSize={pageSize}
+            paginate={setCurrentPage}
+            setPageSize={setPageSize}
+            totalItems={items.length}
+            currentItemCount={currentItems.length}
+          />
+        </>
+      )}
+      {!!exclusions.length && (
+        <ul className={`p-list ${classes.exclusions}`}>
+          {exclusions.map(({ package_name, computer_count }) => (
+            <li key={package_name} className="p-list__item">
+              <strong className="font-monospace">{package_name}</strong> will
+              not be upgraded on{" "}
+              <PackageActionExclusionsCount
+                count={computer_count}
+                id={packageChangePlanId}
+                packageName={package_name}
+                actionType="upgrade"
+              />
+            </li>
+          ))}
+        </ul>
+      )}
       <SidePanelFormButtons
         submitButtonLoading={isExecutingChangePlan}
+        submitButtonDisabled={isEmpty}
         submitButtonText={`Upgrade ${pluralize(items.length, ["package"], "exact")}`}
         onSubmit={submit}
         hasBackButton

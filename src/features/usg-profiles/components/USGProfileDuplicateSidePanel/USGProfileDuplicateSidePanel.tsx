@@ -28,7 +28,7 @@ const USGProfileDuplicateSidePanel: FC = () => {
             title: `${usgProfile.title} copy`,
           }}
           mutate={async (values) => {
-            addUsgProfile({
+            await addUsgProfile({
               access_group: values.access_group,
               all_computers: values.all_computers,
               benchmark: values.benchmark,

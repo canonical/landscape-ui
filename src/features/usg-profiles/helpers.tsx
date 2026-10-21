@@ -3,7 +3,7 @@ import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import type { NotificationHelper } from "@/types/Notification";
 import { Icon, Tooltip } from "@canonical/react-components";
-import date from "@/libs/date";
+import date, { parseServerDateTime } from "@/libs/date";
 import { USG_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "./constants";
 import classes from "./helpers.module.scss";
 import type { USGProfile } from "./types";
@@ -199,8 +199,8 @@ export const getInitialValues = (profile: USGProfile): USGProfileFormValues => {
         : [],
     delivery_time: profile.restart_deliver_delay ? "delayed" : "asap",
     end_date: schedule.UNTIL
-      ? date(schedule.UNTIL).format(INPUT_DATE_TIME_FORMAT)
-      : date().format(INPUT_DATE_TIME_FORMAT),
+      ? date(schedule.UNTIL).utc().format(INPUT_DATE_TIME_FORMAT)
+      : date().utc().format(INPUT_DATE_TIME_FORMAT),
     end_type: schedule.UNTIL ? "on-a-date" : "never",
     every: schedule.INTERVAL,
     months:
@@ -208,9 +208,11 @@ export const getInitialValues = (profile: USGProfile): USGProfileFormValues => {
         ? schedule.BYMONTH.split(",").map((month: string) => Number(month))
         : [],
     randomize_delivery: profile.restart_deliver_delay_window ? true : false,
-    start_date: date(
-      profile.next_run_time ?? profile.last_run_results.timestamp,
-    ).format(INPUT_DATE_TIME_FORMAT),
+    start_date: parseServerDateTime(
+      profile.next_run_time ?? profile.last_run_results.timestamp ?? "",
+    )
+      .utc()
+      .format(INPUT_DATE_TIME_FORMAT),
     start_type: schedule.COUNT == 1 ? "on-a-date" : "recurring",
     tailoring_file: null,
     unit_of_time: schedule.FREQ || "DAILY",

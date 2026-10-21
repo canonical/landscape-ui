@@ -68,6 +68,18 @@ describe("AlertCard", () => {
     );
   });
 
+  it("links upgrade alerts to the upgrades filter", async () => {
+    renderWithProviders(
+      <AlertCard {...ALERT_STATUSES.SecurityUpgradesAlert} />,
+    );
+
+    const link = await screen.findByRole("link", { name: /instance/i });
+    expect(link).toHaveAttribute(
+      "href",
+      ROUTES.instances.root({ upgrades: ["security-upgrades"] }),
+    );
+  });
+
   it("opens pending instances review in side panel", async () => {
     const user = userEvent.setup();
     const pendingAlert = ALERT_STATUSES.PendingComputersAlert;

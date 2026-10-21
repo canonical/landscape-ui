@@ -142,4 +142,51 @@ describe("PackageDropdownSearchList", () => {
     );
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
+  describe("pagination", () => {
+    const queryResultWithNextPage = (isFetchingNextPage: boolean) =>
+      ({
+        ...mockQueryResult,
+        data: {
+          pages: [
+            {
+              data: {
+                count: packages.length,
+                next: null,
+                prev: null,
+                packages,
+              },
+              status: 200,
+              statusText: "OK",
+              headers: {},
+              config: { headers: new AxiosHeaders() },
+            },
+          ],
+          pageParams: [],
+        },
+        hasNextPage: true,
+        isFetchingNextPage,
+      }) as unknown as QueryResultType;
+
+    it("shows a loading indicator while the next page is loading", () => {
+      renderWithProviders(
+        <PackageDropdownSearchList
+          {...props}
+          queryResult={queryResultWithNextPage(true)}
+        />,
+      );
+
+      expect(screen.getByRole("status")).toBeInTheDocument();
+    });
+
+    it("doesn't show a loading indicator while waiting for the user to scroll", () => {
+      renderWithProviders(
+        <PackageDropdownSearchList
+          {...props}
+          queryResult={queryResultWithNextPage(false)}
+        />,
+      );
+
+      expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    });
+  });
 });
