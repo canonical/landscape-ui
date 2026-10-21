@@ -47,12 +47,8 @@ describe("PackagesActionForm", () => {
         screen.queryByRole("heading", { name: /Summary/i }),
       ).not.toBeInTheDocument();
 
-      await user.type(searchBox, `${firstPackage.name}`);
-      await user.click(
-        await screen.findByRole("option", {
-          name: new RegExp(firstPackage.name),
-        }),
-      );
+      await user.type(searchBox, firstPackage.name);
+      await user.click(await screen.findByText(firstPackage.name));
 
       await user.click(nextButton);
 
@@ -72,7 +68,7 @@ describe("PackagesActionForm", () => {
       );
 
       const searchBox = screen.getByRole("searchbox");
-      await user.type(searchBox, `${firstPackage.name}`);
+      await user.type(searchBox, firstPackage.name);
       await user.click(await screen.findByText(firstPackage.name));
 
       await user.click(screen.getByRole("button", { name: "Next" }));
@@ -94,7 +90,7 @@ describe("PackagesActionForm", () => {
       );
 
       const searchBox = screen.getByRole("searchbox");
-      await user.type(searchBox, `${firstPackage.name}`);
+      await user.type(searchBox, firstPackage.name);
       await user.click(await screen.findByText(firstPackage.name));
 
       await user.click(
@@ -120,9 +116,13 @@ describe("PackagesActionForm", () => {
 
     const searchBox = screen.getByRole("searchbox");
     await user.type(searchBox, firstPackage.name);
+    await user.click(await screen.findByText(firstPackage.name));
 
-    expect(
-      screen.queryByRole("checkbox", { name: firstPackage.name }),
-    ).not.toBeInTheDocument();
+    const deleteButton = await screen.findByRole("button", {
+      name: `Delete ${firstPackage.name}`,
+    });
+    await user.click(deleteButton);
+
+    expect(deleteButton).not.toBeInTheDocument();
   });
 });

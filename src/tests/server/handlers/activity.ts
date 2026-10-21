@@ -77,8 +77,14 @@ export default [
     const limit = Number(url.searchParams.get("limit")) || 1;
     const query = url.searchParams.get("query") ?? "";
 
-    const { status, type, searchQuery, createdAfter, createdBefore } =
-      parseActivitiesQuery(query);
+    const {
+      status,
+      type,
+      computerId,
+      searchQuery,
+      createdAfter,
+      createdBefore,
+    } = parseActivitiesQuery(query);
 
     if (shouldApplyEndpointStatus("activities")) {
       const { status: endpointStatus, response } =
@@ -147,6 +153,10 @@ export default [
       }
 
       if (type && activity.type !== type) {
+        return false;
+      }
+
+      if (computerId && activity.computer_id !== Number(computerId)) {
         return false;
       }
 
