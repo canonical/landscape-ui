@@ -1,14 +1,48 @@
+import { API_URL } from "@/constants";
 import { getFeatures } from "@/features/instances";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { instances } from "@/tests/mocks/instance";
 import { scripts } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
+import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import type { Instance } from "@/types/Instance";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, it } from "vitest";
+import { http, HttpResponse } from "msw";
+import { beforeEach, describe, expect, it } from "vitest";
 import RunScriptForm from "./RunScriptForm";
+import {
+  INSTANCE_OPTIONS_LIMIT,
+  TAGGED_INSTANCES_PREVIEW_LIMIT,
+} from "./constants";
 
 const [script] = scripts;
+const INSTANCES_OVER_PICKER_LIMIT = 500;
+
+// Captures every request to the computers endpoint so tests can assert on
+// the pagination and query each one carries.
+const captureInstanceRequests = (count: number = instances.length) => {
+  const requests: URL[] = [];
+
+  server.use(
+    http.get(`${API_URL}computers`, ({ request }) => {
+      const url = new URL(request.url);
+      requests.push(url);
+
+      return HttpResponse.json({
+        ...generatePaginatedResponse<Instance>({
+          data: instances,
+          limit: Number(url.searchParams.get("limit")) || instances.length,
+          offset: Number(url.searchParams.get("offset")) || 0,
+        }),
+        count,
+      });
+    }),
+  );
+
+  return requests;
+};
 
 const selectTag = async (
   user: ReturnType<typeof userEvent.setup>,
@@ -188,6 +222,12 @@ describe("RunScriptForm", () => {
   });
 
   it("should show instance list and confirmation message in run modal when tags have script-capable instances", async () => {
+    // The real server excludes Windows hosts from the preview query; the mock
+    // does not, so report the script-capable count to keep the preview whole.
+    captureInstanceRequests(
+      instances.filter((instance) => getFeatures(instance).scripts).length,
+    );
+
     renderWithProviders(<RunScriptForm script={script} />);
 
     await selectTag(user, "appservers");
@@ -260,6 +300,83 @@ describe("RunScriptForm", () => {
     scriptCapableInstances.forEach(({ title }) => {
       expect(within(dialog).getByText(title)).toBeInTheDocument();
     });
+  });
+
+  it("should ignore the page's URL pagination and fetch the instance list only in instance names mode", async () => {
+    const requests = captureInstanceRequests();
+
+    renderWithProviders(
+      <RunScriptForm script={script} />,
+      undefined,
+      "/scripts?page=3&pageSize=50",
+    );
+
+    await selectTag(user, "appservers");
+    await user.click(
+      await screen.findByRole("button", { name: /run script/i }),
+    );
+    const dialog = await screen.findByRole("dialog");
+
+    const previewRequest = requests.find((url) =>
+      url.searchParams.get("query")?.includes("tag:appservers"),
+    );
+    expect(previewRequest?.searchParams.get("limit")).toBe(
+      String(TAGGED_INSTANCES_PREVIEW_LIMIT),
+    );
+    expect(previewRequest?.searchParams.has("offset")).toBe(false);
+
+    const pickerLimit = String(INSTANCE_OPTIONS_LIMIT);
+    expect(
+      requests.some((url) => url.searchParams.get("limit") === pickerLimit),
+    ).toBe(false);
+
+    await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("radio", { name: /instance names/i }));
+    await screen.findByText("Select instances");
+
+    const pickerRequest = requests.find(
+      (url) => url.searchParams.get("limit") === pickerLimit,
+    );
+    expect(pickerRequest).toBeDefined();
+    expect(pickerRequest?.searchParams.has("offset")).toBe(false);
+
+    requests.forEach((url) => {
+      expect(url.searchParams.get("offset")).not.toBe("100");
+      expect(url.searchParams.get("limit")).not.toBe("50");
+    });
+  });
+
+  it("should tell the user when the instance picker is capped", async () => {
+    const instancesCount = INSTANCE_OPTIONS_LIMIT + INSTANCES_OVER_PICKER_LIMIT;
+    captureInstanceRequests(instancesCount);
+
+    renderWithProviders(<RunScriptForm script={script} />);
+
+    await user.click(
+      await screen.findByRole("radio", { name: /instance names/i }),
+    );
+
+    expect(
+      await screen.findByText(
+        new RegExp(
+          `only the first ${INSTANCE_OPTIONS_LIMIT.toLocaleString()} of the ${instancesCount.toLocaleString()} instances`,
+          "i",
+        ),
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("should not mention a cap when the instance picker lists every instance", async () => {
+    captureInstanceRequests();
+
+    renderWithProviders(<RunScriptForm script={script} />);
+
+    await user.click(
+      await screen.findByRole("radio", { name: /instance names/i }),
+    );
+    await screen.findByText("Select instances");
+
+    expect(screen.queryByText(/only the first/i)).not.toBeInTheDocument();
   });
 
   it("should show warning notification on tag blur when selected tags have no associated instances", async () => {
