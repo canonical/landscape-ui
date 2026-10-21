@@ -23,9 +23,10 @@ describe("StaffAccountAdministrators", () => {
     }
   });
 
-  it("renders the empty message without administrators", () => {
+  it("renders the empty state without administrators", () => {
     renderWithProviders(<StaffAccountAdministrators administrators={[]} />);
 
+    expect(screen.getByText("No administrators")).toBeInTheDocument();
     expect(
       screen.getByText("This account has no administrators."),
     ).toBeInTheDocument();

@@ -13,6 +13,7 @@ import type { CellProps, Column } from "react-table";
 import type { StaffAccountListItem } from "../../types";
 import StaffAccountsListActions from "../StaffAccountsListActions";
 import { getCellProps, getRowProps } from "./helpers";
+import classes from "./StaffAccountsList.module.scss";
 
 interface StaffAccountsListProps {
   readonly staffAccounts: StaffAccountListItem[];
@@ -26,6 +27,7 @@ const StaffAccountsList: FC<StaffAccountsListProps> = ({ staffAccounts }) => {
       {
         accessor: "account",
         Header: "Name",
+        className: classes.name,
         Cell: ({
           row: { original },
         }: CellProps<StaffAccountListItem>): ReactNode => (
@@ -41,6 +43,7 @@ const StaffAccountsList: FC<StaffAccountsListProps> = ({ staffAccounts }) => {
       {
         accessor: "subdomain",
         Header: "Subdomain",
+        className: classes.subdomain,
         Cell: ({
           row: { original },
         }: CellProps<StaffAccountListItem>): ReactNode =>
@@ -49,10 +52,12 @@ const StaffAccountsList: FC<StaffAccountsListProps> = ({ staffAccounts }) => {
       {
         accessor: "computers",
         Header: "Instances",
+        className: classes.count,
       },
       {
         id: "status",
         Header: "Status",
+        className: classes.status,
         Cell: ({
           row: { original },
         }: CellProps<StaffAccountListItem>): ReactNode =>
@@ -71,6 +76,7 @@ const StaffAccountsList: FC<StaffAccountsListProps> = ({ staffAccounts }) => {
       {
         accessor: "creation_time",
         Header: "Created",
+        className: classes.creationTime,
         Cell: ({
           row: { original },
         }: CellProps<StaffAccountListItem>): ReactNode => (
