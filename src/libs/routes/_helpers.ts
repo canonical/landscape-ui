@@ -31,14 +31,13 @@ const buildUrl = <T extends Record<string, PathParamValue>>(
       return;
     }
 
+    // Arrays are comma-joined to match how pageParamsManager parses them.
     if (Array.isArray(value)) {
-      value.forEach((item) => {
-        if (item == null) {
-          return;
-        }
+      const items = value.filter((item) => item != null);
 
-        qs.append(key, String(item));
-      });
+      if (items.length) {
+        qs.append(key, items.join(","));
+      }
     } else {
       qs.append(key, String(value));
     }

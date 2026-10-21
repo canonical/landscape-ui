@@ -62,7 +62,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
     return <LoadingState />;
   }
 
-  const items = summaryResponse.data.actions;
+  const { actions: items, exclusions } = summaryResponse.data;
   const actionPast = mapActionTypeToPast(actionType);
 
   const getPackageName = (
@@ -79,21 +79,33 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
     }
   };
 
-  const packagesByName = items.reduce<Record<string, typeof items>>(
+  const packagesByName = items.reduce<Map<string, typeof items>>(
     (acc, item) => {
       const packageName = getPackageName(item.action);
-      const packageByName = acc[packageName];
+      const packageByName = acc.get(packageName);
 
       if (packageByName) {
         packageByName.push(item);
       } else {
-        acc[packageName] = [item];
+        acc.set(packageName, [item]);
       }
 
       return acc;
     },
-    {},
+    new Map(),
   );
+
+  const actionablePackageNames = [...packagesByName.keys()];
+
+  const packageNames = [
+    ...actionablePackageNames,
+    ...exclusions
+      .filter(
+        ({ package_name, computer_count }) =>
+          computer_count > 0 && !packagesByName.has(package_name),
+      )
+      .map(({ package_name }) => package_name),
+  ];
 
   const submit = async () => {
     try {
@@ -103,19 +115,19 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
 
       notify.success({
         title: `You queued ${getSelectionLabel(
-          Object.keys(packagesByName),
+          actionablePackageNames,
           (packageName) => {
             return `${packageName} to be ${actionPast}`;
           },
           `packages to be ${actionPast}`,
         )}.`,
         message: `${getSelectionLabel(
-          Object.keys(packagesByName),
+          actionablePackageNames,
           (packageName) => {
             return `${packageName} will be ${actionPast}`;
           },
           `selected packages will be ${actionPast}`,
-        )} and ${pluralize(items.length, ["is", "are"])} queued in Activities.`,
+        )} and ${pluralize(actionablePackageNames.length, ["is", "are"])} queued in Activities.`,
         actions: [
           {
             label: "Details",
@@ -196,18 +208,26 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
     }
   };
 
-  const isEmpty = !Object.keys(packagesByName).length;
+  const isEmpty = !items.length;
 
   return (
     <>
-      {isEmpty ? (
-        <EmptyState title="No items" body="The package change plan is empty." />
-      ) : (
+      {isEmpty && (
+        <EmptyState
+          title="No changes to apply"
+          body={
+            packageNames.length
+              ? `None of the selected packages will be ${actionPast} on the selected instances.`
+              : "The package change plan is empty."
+          }
+        />
+      )}
+      {!!packageNames.length && (
         <ul
           className={classNames("p-list", "u-no-margin--bottom", classes.list)}
         >
-          {Object.entries(packagesByName).map(([packageName, items]) => {
-            const exclusion = summaryResponse.data.exclusions.find(
+          {packageNames.map((packageName) => {
+            const exclusion = exclusions.find(
               ({ package_name }) => package_name === packageName,
             );
 
@@ -220,7 +240,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
                     {packageName}
                   </strong>
                 </div>
-                {items.map((item) => {
+                {packagesByName.get(packageName)?.map((item) => {
                   return (
                     <div key={getKey(item.action)} className={classes.row}>
                       {getRow(item)}
@@ -247,7 +267,7 @@ const PackagesActionSummary: FC<PackagesActionSummaryProps> = ({
         submitButtonLoading={isExecutingChangePlan}
         submitButtonDisabled={isEmpty}
         submitButtonText={`${getActionSubmitButtonText(actionType)} ${pluralize(
-          Object.keys(packagesByName).length,
+          actionablePackageNames.length,
           ["package"],
           "exact",
         )}`}

@@ -27,7 +27,7 @@ const USGProfileEditSidePanel: FC = () => {
           getConfirmationStepDisabled={(values) => values.mode == "audit"}
           initialValues={getInitialValues(usgProfile)}
           mutate={async (values) => {
-            updateUsgProfile({
+            await updateUsgProfile({
               id: usgProfile.id,
               all_computers: values.all_computers,
               restart_deliver_delay: values.restart_deliver_delay,

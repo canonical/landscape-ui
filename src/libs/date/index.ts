@@ -28,6 +28,15 @@ const date = ((
 
 date.ISO_8601 = ISO_8601;
 
+const ZONELESS_DATE_TIME_REGEX =
+  /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/;
+
+/** Read server timestamps as UTC when no timezone is specified. */
+export const parseServerDateTime = (value: string) =>
+  date(
+    ZONELESS_DATE_TIME_REGEX.test(value.trim()) ? `${value.trim()}Z` : value,
+  );
+
 export default date;
 export { ChronoDate, ISO_8601 };
 export type { CalendarFormats, DateInput };
