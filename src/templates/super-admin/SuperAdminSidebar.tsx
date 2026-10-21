@@ -3,6 +3,7 @@ import { useState } from "react";
 import classNames from "classnames";
 import { Link, useLocation } from "react-router";
 import { Icon } from "@canonical/react-components";
+import useAuth from "@/hooks/useAuth";
 import { ROUTES } from "@/libs/routes";
 import DesktopHeader from "@/templates/dashboard/DesktopHeader";
 import MobileHeader from "@/templates/dashboard/MobileHeader";
@@ -20,6 +21,7 @@ interface SuperAdminSidebarProps {
 const SuperAdminSidebar: FC<SuperAdminSidebarProps> = ({ returnTo }) => {
   const [menuClosed, setMenuClosed] = useState(true);
   const { pathname } = useLocation();
+  const { hasAccounts } = useAuth();
 
   return (
     <>
@@ -94,31 +96,33 @@ const SuperAdminSidebar: FC<SuperAdminSidebarProps> = ({ returnTo }) => {
                   )}
                 >
                   <ul className="u-no-margin--bottom u-no-margin--left u-no-padding--left">
-                    <li className="p-side-navigation__item">
-                      <Link
-                        className={classNames(
-                          "p-side-navigation__link",
-                          footerClasses.link,
-                        )}
-                        to={returnTo}
-                      >
-                        <Icon
-                          name="chevron-left"
+                    {hasAccounts && (
+                      <li className="p-side-navigation__item">
+                        <Link
                           className={classNames(
-                            "is-light p-side-navigation__icon",
-                            footerClasses.icon,
+                            "p-side-navigation__link",
+                            footerClasses.link,
                           )}
-                        />
-                        <span
-                          className={classNames(
-                            "p-side-navigation__label",
-                            footerClasses.label,
-                          )}
+                          to={returnTo}
                         >
-                          Back to main view
-                        </span>
-                      </Link>
-                    </li>
+                          <Icon
+                            name="chevron-left"
+                            className={classNames(
+                              "is-light p-side-navigation__icon",
+                              footerClasses.icon,
+                            )}
+                          />
+                          <span
+                            className={classNames(
+                              "p-side-navigation__label",
+                              footerClasses.label,
+                            )}
+                          >
+                            Back to main view
+                          </span>
+                        </Link>
+                      </li>
+                    )}
                     <li className="p-side-navigation__item">
                       <LogoutButton />
                     </li>

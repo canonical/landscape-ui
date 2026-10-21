@@ -12,6 +12,7 @@ import type { CellProps, Column } from "react-table";
 import { useEditStaffAccount, useGetFeatureRegistry } from "../../api";
 import type { FeatureRegistryEntry, StaffAccount } from "../../types";
 import classes from "./StaffAccountFeatures.module.scss";
+import EmptyState from "@/components/layout/EmptyState";
 
 const MIN_TABLE_WIDTH = 400;
 
@@ -144,6 +145,16 @@ const StaffAccountFeatures: FC<StaffAccountFeaturesProps> = ({
   const confirmationAction = confirmingFeature?.isEnabled
     ? "Disable"
     : "Enable";
+
+  if (rows.length === 0) {
+    return (
+      <EmptyState
+        title="No features"
+        icon="book"
+        body="The feature registry is empty."
+      />
+    );
+  }
 
   return (
     <>

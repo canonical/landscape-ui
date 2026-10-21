@@ -6,6 +6,7 @@ import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { StaffAccountLicense } from "../../types";
+import EmptyState from "@/components/layout/EmptyState";
 
 const MIN_TABLE_WIDTH = 400;
 
@@ -35,6 +36,16 @@ const StaffAccountLicenses: FC<StaffAccountLicensesProps> = ({ licenses }) => {
     ],
     [],
   );
+
+  if (licenses.length === 0) {
+    return (
+      <EmptyState
+        title="No licenses"
+        body="This account has no licenses."
+        icon="file-blank"
+      />
+    );
+  }
 
   return (
     <ResponsiveTable

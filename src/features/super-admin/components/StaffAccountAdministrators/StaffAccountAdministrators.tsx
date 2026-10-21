@@ -3,6 +3,7 @@ import type { FC } from "react";
 import { useMemo } from "react";
 import type { Column } from "react-table";
 import type { StaffAccountAdministrator } from "../../types";
+import EmptyState from "@/components/layout/EmptyState";
 
 const MIN_TABLE_WIDTH = 400;
 
@@ -20,6 +21,16 @@ const StaffAccountAdministrators: FC<StaffAccountAdministratorsProps> = ({
     ],
     [],
   );
+
+  if (administrators.length === 0) {
+    return (
+      <EmptyState
+        title="No administrators"
+        icon="user-group"
+        body="This account has no administrators."
+      />
+    );
+  }
 
   return (
     <ResponsiveTable
