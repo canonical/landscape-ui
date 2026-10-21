@@ -88,15 +88,24 @@ describe("useFetchNextPageOnScroll", () => {
     expect(fetchNextPage).not.toHaveBeenCalled();
   });
 
-  it("fetches the next page after a page loads if the list doesn't fill the container", () => {
+  it("keeps fetching while the list doesn't fill the container, until the last page", () => {
     const container = createScrollContainer({ scrollHeight: CLIENT_HEIGHT });
     const { fetchNextPage, rerender } = renderScrollHook(container);
 
+    // Page 1 doesn't fill the container: fetch page 2.
     expect(fetchNextPage).toHaveBeenCalledOnce();
 
     rerender({ isFetchingNextPage: true });
     rerender({ pageCount: 2 });
 
+    // Page 2 still doesn't fill it: fetch page 3.
+    expect(fetchNextPage).toHaveBeenCalledTimes(2);
+
+    rerender({ pageCount: 2, isFetchingNextPage: true });
+    rerender({ pageCount: 3, hasNextPage: false });
+    fireEvent.scroll(container);
+
+    // Page 3 is the last page.
     expect(fetchNextPage).toHaveBeenCalledTimes(2);
   });
 

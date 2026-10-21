@@ -209,7 +209,7 @@ describe("PackageSearchDowngradeItem", () => {
       expect(requestedOffsets).toEqual([0]);
     });
 
-    it("loads the next page when the dropdown is scrolled near the bottom", async () => {
+    it("loads one page each time the dropdown is scrolled near the bottom", async () => {
       const { scrollToBottom } = mockListScrollMetrics(scrollMetrics);
 
       await openVersionDropdown();
@@ -219,6 +219,19 @@ describe("PackageSearchDowngradeItem", () => {
         await screen.findByText("1.020 (4 instances)"),
       ).toBeInTheDocument();
       expect(requestedOffsets).toEqual([0, QUERY_LIMIT]);
+
+      scrollToBottom(screen.getByRole("menu"));
+
+      expect(
+        await screen.findByText("1.040 (4 instances)"),
+      ).toBeInTheDocument();
+      expect(requestedOffsets).toEqual([0, QUERY_LIMIT, QUERY_LIMIT * 2]);
+
+      // The last page is loaded, so scrolling requests nothing more.
+      scrollToBottom(screen.getByRole("menu"));
+      await new Promise((resolve) => setTimeout(resolve, settleDelayMs));
+
+      expect(requestedOffsets).toEqual([0, QUERY_LIMIT, QUERY_LIMIT * 2]);
     });
   });
 });
