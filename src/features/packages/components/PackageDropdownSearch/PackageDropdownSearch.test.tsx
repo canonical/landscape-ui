@@ -3,15 +3,17 @@ import { ROUTES } from "@/libs/routes";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import server from "@/tests/server";
 import { packages as availablePackages } from "@/tests/mocks/packages";
+import { mockListScrollMetrics } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import PackageDropdownSearch from "./PackageDropdownSearch";
 import type { SearchPackagesRequest, SearchPackagesResponse } from "../../api";
 import { DEB_MANAGEMENT_PACKAGE_LIMIT } from "../../constants";
+import { QUERY_LIMIT } from "./constants";
 
 const instanceId = 1;
 const instancePageUrl = ROUTES.instances.details.single(instanceId);
@@ -273,6 +275,72 @@ describe("PackageDropdownSearch", () => {
       expect(
         screen.queryByText(/maximum of \d+ packages in one single operation/i),
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Infinite scroll", () => {
+    const totalPackages = QUERY_LIMIT * 2 + 5;
+    const scrollMetrics = { clientHeight: 200, itemHeight: 32 };
+    // Long enough for an unwanted next-page request to be sent.
+    const settleDelayMs = 100;
+    let requestedOffsets: number[];
+
+    beforeEach(() => {
+      requestedOffsets = [];
+
+      server.use(
+        http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
+          `${API_URL}packages\\:search`,
+          async ({ request }) => {
+            const { offset = 0, limit = QUERY_LIMIT } = await request.json();
+            requestedOffsets.push(offset);
+
+            const pageSize = Math.max(
+              Math.min(limit, totalPackages - offset),
+              0,
+            );
+
+            return HttpResponse.json<SearchPackagesResponse>({
+              packages: Array.from({ length: pageSize }, (_, index) => ({
+                ...availablePackages[0],
+                id: 10000 + offset + index,
+                name: `package-${offset + index}`,
+              })),
+              count: totalPackages,
+              next: null,
+              prev: null,
+            });
+          },
+        ),
+      );
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("loads the next page only when the suggestions are scrolled near the bottom", async () => {
+      const { scrollToBottom } = mockListScrollMetrics(scrollMetrics);
+
+      await user.type(screen.getByRole("searchbox"), "query");
+
+      expect(
+        await screen.findByText(`package-0 ${availablePackages[0].version}`),
+      ).toBeInTheDocument();
+
+      await new Promise((resolve) => setTimeout(resolve, settleDelayMs));
+      expect(requestedOffsets).toEqual([0]);
+
+      const suggestions = screen.getByRole("listbox").parentElement;
+      assert(suggestions);
+      scrollToBottom(suggestions);
+
+      expect(
+        await screen.findByText(
+          `package-${QUERY_LIMIT} ${availablePackages[0].version}`,
+        ),
+      ).toBeInTheDocument();
+      expect(requestedOffsets).toEqual([0, QUERY_LIMIT]);
     });
   });
 });

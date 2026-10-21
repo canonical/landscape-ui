@@ -16,6 +16,7 @@ import PackageDropdownSearchCount from "./components/PackageDropdownSearchCount"
 import PackageDropdownSearchItem from "./components/PackageDropdownSearchItem";
 import PackageDropdownSearchList from "./components/PackageDropdownSearchList";
 import { QUERY_LIMIT } from "./constants";
+import { useFetchNextPageOnScroll } from "./hooks";
 import classes from "./PackageDropdownSearch.module.scss";
 import {
   mapActionTypeToQueryParams,
@@ -64,7 +65,17 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
     data: packagesResponse,
     isPending: isPendingPackages,
     error: packagesError,
+    fetchNextPage: fetchNextPackagesPage,
+    hasNextPage: hasNextPackagesPage,
+    isFetchingNextPage: isFetchingNextPackagesPage,
   } = packagesQueryResult;
+
+  const setSuggestionsContainer = useFetchNextPageOnScroll({
+    fetchNextPage: fetchNextPackagesPage,
+    hasNextPage: hasNextPackagesPage,
+    isFetchingNextPage: isFetchingNextPackagesPage,
+    pageCount: packagesResponse?.pages.length ?? 0,
+  });
 
   if (packagesError) {
     throw packagesError;
@@ -165,6 +176,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
             {isOpen && (
               <div
+                ref={setSuggestionsContainer}
                 className={classNames(
                   "p-card--highlighted",
                   "u-no-margin",
