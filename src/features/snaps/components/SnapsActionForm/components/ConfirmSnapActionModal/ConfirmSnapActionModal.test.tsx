@@ -4,6 +4,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { SnapAction, SnapMode } from "../../../../types";
 import ConfirmSnapActionModal from "./ConfirmSnapActionModal";
 
 const [firstSnap, secondSnap, , , , classicSnap] = installedSnaps;
@@ -88,9 +89,101 @@ describe("ConfirmSnapActionModal", () => {
       "p-button--negative",
     );
     expect(
-      screen.getByText(/will be queued to uninstall/i),
+      screen.getByText(
+        "They will be queued to uninstall from all relevant instances.",
+      ),
     ).toBeInTheDocument();
   });
+
+  it.each<{
+    actionVerb: SnapAction;
+    snapModes?: SnapMode[];
+    singular: string;
+    plural: string;
+  }>([
+    {
+      actionVerb: "install",
+      singular:
+        "Installing the snap will set it to the latest revision on the specified channel.",
+      plural:
+        "Installing the snaps will set them to the latest revision on the specified channels.",
+    },
+    {
+      actionVerb: "install",
+      snapModes: ["revision"],
+      singular:
+        "The installed snap will track latest/stable, so a future refresh may replace it with that channel's latest revision.",
+      plural:
+        "Installed snaps will track latest/stable, so a future refresh may replace them with that channel's latest revision.",
+    },
+    {
+      actionVerb: "uninstall",
+      singular: "It will be queued to uninstall from all relevant instances.",
+      plural: "They will be queued to uninstall from all relevant instances.",
+    },
+    {
+      actionVerb: "refresh",
+      singular:
+        "Landscape will check each of the selected instances for a newer revision on the channel that snap is currently tracking, and install it where one is found.",
+      plural:
+        "Landscape will check each of the selected instances for a newer revision on the channel each snap is currently tracking, and install it where one is found.",
+    },
+    {
+      actionVerb: "hold",
+      singular:
+        "If the snap was already held, Landscape will replace the existing hold with an indefinite one.",
+      plural:
+        "If any of the snaps were already held, Landscape will replace the existing holds with indefinite ones.",
+    },
+    {
+      actionVerb: "unhold",
+      singular:
+        "Each refresh will now update the snap to the latest revision on the current channel.",
+      plural:
+        "Each refresh will now update the snaps to the latest revision on their current channels.",
+    },
+    {
+      actionVerb: "change channel",
+      snapModes: ["channel"],
+      singular:
+        "Changing the channel will update the snap to the latest revision on the new channel.",
+      plural:
+        "Changing the channels will update the snaps to the latest revision on their new channels.",
+    },
+    {
+      actionVerb: "change channel",
+      snapModes: ["revision"],
+      singular:
+        "Installing the specified revision will not change the snap's tracked channel, so a future refresh may replace it with that channel's latest revision.",
+      plural:
+        "Installing the specified revisions will not change the snaps' tracked channels, so a future refresh may replace them with those channels' latest revisions.",
+    },
+  ])(
+    "matches the $actionVerb warning to the number of snaps (modes: $snapModes)",
+    ({ actionVerb, snapModes, singular, plural }) => {
+      const { unmount } = renderWithProviders(
+        <ConfirmSnapActionModal
+          {...props}
+          actionVerb={actionVerb}
+          snapModes={snapModes}
+          snaps={[firstSnap]}
+        />,
+      );
+
+      expect(screen.getByRole("dialog")).toHaveTextContent(singular);
+
+      unmount();
+      renderWithProviders(
+        <ConfirmSnapActionModal
+          {...props}
+          actionVerb={actionVerb}
+          snapModes={snapModes}
+        />,
+      );
+
+      expect(screen.getByRole("dialog")).toHaveTextContent(plural);
+    },
+  );
 
   it("renders the hold warning text", () => {
     renderWithProviders(
@@ -103,7 +196,7 @@ describe("ConfirmSnapActionModal", () => {
       ),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/will replace the existing hold/i),
+      screen.getByText(/will replace the existing holds/i),
     ).toBeInTheDocument();
   });
 
@@ -156,7 +249,7 @@ describe("ConfirmSnapActionModal", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /will update the snap to the latest revision on the new channel/i,
+        /will update the snaps to the latest revision on their new channels/i,
       ),
     ).toBeInTheDocument();
   });
@@ -185,7 +278,7 @@ describe("ConfirmSnapActionModal", () => {
       ),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/will not change the snap's tracked channel/i),
+      screen.getByText(/will not change the snaps' tracked channels/i),
     ).toBeInTheDocument();
     expect(
       screen.queryByText(/latest revision on the new channel/i),
@@ -320,7 +413,7 @@ describe("ConfirmSnapActionModal", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /will update the snap to the latest revision on the new channel/i,
+        /will update the snaps to the latest revision on their new channels/i,
       ),
     ).toBeInTheDocument();
   });

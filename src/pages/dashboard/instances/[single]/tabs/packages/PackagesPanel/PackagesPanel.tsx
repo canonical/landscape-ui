@@ -35,7 +35,8 @@ const PackagesPanel: FC = () => {
     limit: pageSize,
     offset: currentPage * pageSize - pageSize,
     installed: !status || undefined,
-    upgrade: status === "upgrade" || undefined,
+    // Security candidates that aren't upgrades are rendered as installed/available.
+    upgrade: status === "upgrade" || status === "security" || undefined,
     held: status === "held" || undefined,
     security: status === "security" || undefined,
   });
