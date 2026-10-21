@@ -17,6 +17,7 @@ import {
   ContextualMenu,
   Icon,
   Modal,
+  Tooltip,
 } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean, useMediaQuery } from "usehooks-ts";
@@ -639,6 +640,25 @@ const InstancesPageActions = memo(function InstancesPageActions({
     },
   ];
 
+  const isDebManagementUnsupported = noInstanceHasPackageFeature;
+  const isSnapManagementUnsupported = snapInstanceIds.length === 0;
+
+  const getMenuToggleLabel = (
+    label: string,
+    isUnsupported: boolean,
+    message: string,
+  ) =>
+    hasSelectedInstances && isUnsupported ? (
+      <>
+        <Tooltip message={message} position="btm-center">
+          <span>{label}</span>
+        </Tooltip>{" "}
+        <span className="u-off-screen">{message}</span>
+      </>
+    ) : (
+      <span>{label}</span>
+    );
+
   const isDebManagementEnabled = (
     ["package-change-plans", "package-search-rest-api"] as const
   ).every(isFeatureEnabled);
@@ -697,9 +717,13 @@ const InstancesPageActions = memo(function InstancesPageActions({
                   hasToggleIcon
                   links={debManagementLinks}
                   position={menuPosition}
-                  toggleLabel={<span>Deb management</span>}
+                  toggleLabel={getMenuToggleLabel(
+                    "Deb management",
+                    isDebManagementUnsupported,
+                    "None of the selected instances support deb package management.",
+                  )}
                   toggleClassName="u-no-margin--bottom"
-                  toggleDisabled={0 === selectedInstances.length}
+                  toggleDisabled={isDebManagementUnsupported}
                 />,
               ]
             : []),
@@ -708,9 +732,13 @@ const InstancesPageActions = memo(function InstancesPageActions({
             links={snapLinks}
             // The last button never has room to open rightward.
             position="right"
-            toggleLabel="Snap management"
+            toggleLabel={getMenuToggleLabel(
+              "Snap management",
+              isSnapManagementUnsupported,
+              "None of the selected instances support snap management.",
+            )}
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={snapInstanceIds.length === 0}
+            toggleDisabled={isSnapManagementUnsupported}
             hasToggleIcon
           />,
         ]}
