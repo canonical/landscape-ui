@@ -1,6 +1,9 @@
 import { renderWithProviders } from "@/tests/render";
 import UbuntuProList from "./UbuntuProList";
-import { instances } from "@/tests/mocks/instance";
+import {
+  instances,
+  windowsInstanceWithUbuntuPro,
+} from "@/tests/mocks/instance";
 import { screen, within } from "@testing-library/react";
 
 const getInstanceWithMixedServiceStatus = () => {
@@ -75,5 +78,26 @@ describe("Ubuntu Pro List", () => {
     });
 
     expect(disabledServiceCellIcon).toHaveIcon("status-failed-small");
+  });
+
+  it("shows auto enablement instead of status for a simulated status", () => {
+    const services = windowsInstanceWithUbuntuPro.ubuntu_pro_info?.services;
+    assert(services);
+
+    renderWithProviders(<UbuntuProList services={services} simulated />);
+
+    expect(
+      screen.getByRole("columnheader", { name: "Auto enabled" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "Status" }),
+    ).not.toBeInTheDocument();
+
+    const row = screen.getByRole("row", {
+      name: `${services[0]?.name} Entitled Auto enabled Description`,
+    });
+    expect(
+      within(row).getByRole("cell", { name: /auto enabled/i }),
+    ).toHaveTextContent("yes");
   });
 });

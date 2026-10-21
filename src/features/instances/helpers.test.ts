@@ -1,6 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { FILTERS } from "./constants";
-import { getInstanceListParams, getOptionQuery, getQuery } from "./helpers";
+import {
+  getFeatures,
+  getInstanceListParams,
+  getOptionQuery,
+  getQuery,
+} from "./helpers";
+import {
+  debianInstance,
+  ubuntuInstance,
+  windowsInstance,
+} from "@/tests/mocks/instance";
 
 const windowsOption = FILTERS.os.options.find(
   (option) => option.value === "windows",
@@ -138,5 +148,19 @@ describe("InstancesPage helpers", () => {
       wsl_children: true,
       wsl_parents: true,
     });
+  });
+});
+
+describe("getFeatures", () => {
+  it("allows a Pro token only on Ubuntu-family instances", () => {
+    expect(getFeatures(ubuntuInstance).proToken).toBe(true);
+    expect(getFeatures(windowsInstance).proToken).toBe(false);
+    expect(getFeatures(debianInstance).proToken).toBe(false);
+  });
+
+  it("does not allow a Pro token on an instance that has not reported a distribution", () => {
+    expect(
+      getFeatures({ ...ubuntuInstance, distribution_info: null }).proToken,
+    ).toBe(false);
   });
 });
