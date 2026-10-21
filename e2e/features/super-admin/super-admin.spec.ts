@@ -204,16 +204,19 @@ test.describe("@saas Canonical staff", () => {
 
       await expect(page).toHaveURL(/\/super-admin\/accounts\/acme$/);
       await expect(superAdmin.supportSession).toHaveCount(0);
-      await expect(
-        page.getByRole("heading", { name: "ACME Corp" }),
-      ).toBeVisible();
 
       // Super admin mode returns the session to the person's own account
-      // once the account's page is open.
+      // once the account's page is open. While that switch is in flight the
+      // page shows a "Leaving …" state in place of the account.
       expect(staffApi.ownAccount).not.toBeNull();
       await expect
         .poll(() => staffApi.switches)
         .toEqual(["acme", staffApi.ownAccount]);
+      await expect(page.getByText(/^Leaving /)).toHaveCount(0);
+
+      await expect(
+        page.getByRole("heading", { name: "ACME Corp" }),
+      ).toBeVisible();
     });
 
     test("search people and invitations, and enter an account from a person", async ({
@@ -311,8 +314,9 @@ test.describe("@saas Canonical staff", () => {
       await expect(page).toHaveURL(/\/super-admin\/accounts$/);
       await expect(superAdmin.navigation).toBeVisible();
 
-      await page.getByRole("link", { name: "Back to main view" }).click();
-
+      await expect(
+        page.getByRole("link", { name: "Back to main view" }),
+      ).not.toBeVisible();
       await expect(page).toHaveURL(/\/super-admin\/accounts$/);
     });
   });

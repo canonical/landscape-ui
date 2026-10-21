@@ -32,7 +32,7 @@ const AdministratorsPanel: FC<AdministratorsPanelProps> = ({
             Invite Administrator
           </Button>,
         ]}
-        icon="user"
+        icon="user-group"
         title="No administrators found"
       />
     );
