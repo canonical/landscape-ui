@@ -6,7 +6,10 @@ import {
   type PackageChangePlanActionType,
   PackagesActionForm,
 } from "@/features/packages";
-import { DetachTokenModal } from "@/features/ubuntupro";
+import {
+  classifyInstancesByToken,
+  DetachTokenModal,
+} from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -109,6 +112,10 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
   const hasSelectedInstances = selectedInstances.length > 0;
+  const proTokenInstances = selectedInstances.filter(
+    (instance) => getFeatures(instance).proToken,
+  );
+  const hasProTokenInstances = proTokenInstances.length > 0;
   const hasInstancesToExport = isAllSelected || hasSelectedInstances;
 
   const handleRunScript = async () => {
@@ -220,18 +227,18 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleAttachToken = () => {
     setSidePanelContent(
-      `Attach Ubuntu Pro token to ${pluralize(selectedInstances.length, ["instance"], "exact")}`,
+      `Attach Ubuntu Pro token to ${pluralize(proTokenInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
-        <AttachTokenForm selectedInstances={selectedInstances} />
+        <AttachTokenForm selectedInstances={proTokenInstances} />
       </Suspense>,
     );
   };
 
   const handleReplaceToken = () => {
     setSidePanelContent(
-      `Replace Ubuntu Pro token for ${pluralize(selectedInstances.length, ["instance"], "exact")}`,
+      `Replace Ubuntu Pro token for ${pluralize(proTokenInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
-        <ReplaceTokenForm selectedInstances={selectedInstances} />
+        <ReplaceTokenForm selectedInstances={proTokenInstances} />
       </Suspense>,
     );
   };
@@ -240,11 +247,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
     if (lastSidePathSegment !== "export") createSidePathPusher("export")();
   };
 
-  const allInstancesHaveToken = selectedInstances.every(
-    (instance) =>
-      instance.ubuntu_pro_info?.result === "success" &&
-      instance.ubuntu_pro_info.attached,
-  );
+  const allInstancesHaveToken =
+    classifyInstancesByToken(proTokenInstances).withoutToken === 0;
 
   // Windows instances can't manage snaps, so leave them out of the activity.
   const snapInstanceIds = selectedInstances
@@ -694,7 +698,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               type="button"
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
-              disabled={!hasSelectedInstances}
+              disabled={!hasProTokenInstances}
               hasIcon={proServicesLinks[0].hasIcon}
             >
               {proServicesLinks[0].children}
@@ -706,7 +710,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               links={proServicesLinks}
               toggleLabel="Ubuntu Pro"
               toggleClassName="u-no-margin--bottom"
-              toggleDisabled={!hasSelectedInstances}
+              toggleDisabled={!hasProTokenInstances}
               hasToggleIcon
             />
           ),
@@ -757,7 +761,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         <DetachTokenModal
           isOpen={detachModalOpen}
           onClose={closeDetachModal}
-          computerIds={selectedInstances.map(({ id }) => id)}
+          computerIds={proTokenInstances.map(({ id }) => id)}
         />
       )}
       <InstanceRemoveFromLandscapeModal

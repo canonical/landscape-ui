@@ -20,6 +20,7 @@ import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import type { UbuntuProInfo } from "@/types/Instance";
+import { detachUbuntuProActivity } from "@/tests/mocks/ubuntuPro";
 import { DEB_MANAGEMENT_INSTANCE_LIMIT } from "@/features/packages";
 
 const selected = instances.slice(0, 2);
@@ -378,6 +379,66 @@ describe("InstancesPageActions", () => {
       expect(
         screen.queryByRole("button", { name: /attach token/i }),
       ).not.toBeInTheDocument();
+    });
+
+    it("'Ubuntu Pro' group should be disabled if no selected instance can hold a token", async () => {
+      renderPageActions({ selectedInstances: [windowsInstance] });
+
+      expect(
+        await screen.findByRole("button", { name: MENU_LABELS[2] }),
+      ).toHaveAttribute("aria-disabled", "true");
+    });
+
+    it("'Attach token' should target only the instances that can hold a token", async () => {
+      renderPageActions({
+        selectedInstances: [ubuntuInstance, windowsInstance],
+      });
+
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[2] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: /attach token/i }),
+      );
+
+      expect(
+        screen.getByRole("heading", {
+          name: "Attach Ubuntu Pro token to 1 instance",
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Detach token' should leave the Windows host out of the request", async () => {
+      let capturedBody: { computer_ids: number[] } | undefined;
+      server.use(
+        http.post(`${API_URL}detach-token`, async ({ request }) => {
+          capturedBody = (await request.json()) as { computer_ids: number[] };
+          return HttpResponse.json(detachUbuntuProActivity);
+        }),
+      );
+
+      renderPageActions({
+        selectedInstances: [
+          { ...ubuntuInstance, ubuntu_pro_info: ubuntuProInfo },
+          windowsInstance,
+        ],
+      });
+
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[2] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: /detach token/i }),
+      );
+      await userEvent.type(
+        screen.getByPlaceholderText("detach ubuntu pro token"),
+        "detach ubuntu pro token",
+      );
+      await userEvent.click(screen.getByRole("button", { name: /^detach$/i }));
+
+      await waitFor(() => {
+        expect(capturedBody?.computer_ids).toEqual([ubuntuInstance.id]);
+      });
     });
 
     const UNSUPPORTED_MENUS = [

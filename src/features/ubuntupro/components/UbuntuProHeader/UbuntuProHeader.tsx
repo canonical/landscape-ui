@@ -1,4 +1,5 @@
 import HeaderActions from "@/components/layout/HeaderActions";
+import { getFeatures } from "@/features/instances";
 import useAuth from "@/hooks/useAuth";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { FC } from "react";
@@ -21,6 +22,7 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ instance }) => {
   const { instanceId, childInstanceId } = useParams<UrlParams>();
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
+  const canManageToken = getFeatures(instance).proToken;
 
   const {
     value: showDetachModal,
@@ -59,14 +61,20 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ instance }) => {
         }
         actions={{
           nondestructive: [
-            { icon: "edit", label: "Edit token", onClick: handleEditToken },
+            {
+              icon: "edit",
+              label: "Edit token",
+              onClick: handleEditToken,
+              excluded: !canManageToken,
+            },
           ],
           destructive: [
             {
               icon: "delete",
               label: "Detach token",
               onClick: openDetachModal,
-              excluded: !isFeatureEnabled("ubuntu-pro-licensing"),
+              excluded:
+                !canManageToken || !isFeatureEnabled("ubuntu-pro-licensing"),
             },
           ],
         }}

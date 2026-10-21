@@ -145,6 +145,7 @@ export interface UbuntuProService extends Record<string, unknown> {
   entitled?: string;
   status?: string;
   status_details?: string;
+  auto_enabled?: string;
 }
 
 export interface UbuntuProInfo {
@@ -156,6 +157,7 @@ export interface UbuntuProInfo {
   contract?: UbuntuProContract;
   account?: UbuntuProAccount;
   result?: "success" | "failure";
+  simulated?: boolean;
   errors?: {
     message: string;
     message_code: string;
