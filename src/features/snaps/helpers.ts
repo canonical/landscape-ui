@@ -1,5 +1,9 @@
 import type { SelectOption } from "@/types/SelectOption";
-import type { AvailableSnapInfo } from "./types";
+import type {
+  AvailableSnapInfo,
+  SnapChangeArgs,
+  SnapModeConfig,
+} from "./types";
 
 type ChannelMapEntry = AvailableSnapInfo["channel-map"][number];
 
@@ -87,4 +91,21 @@ export const isValidRevision = (value: string): boolean => {
 export const isRevisionTooLarge = (value: string): boolean => {
   const trimmed = value.trim();
   return /^\d+$/.test(trimmed) && BigInt(trimmed) > MAX_REVISION;
+};
+
+export const getSnapActionArgs = ({
+  mode,
+  value,
+  channel,
+  confinement,
+}: SnapModeConfig): SnapChangeArgs => {
+  const classic = confinement === "classic";
+
+  if (mode === "revision") {
+    return { revision: value, classic };
+  }
+
+  const trimmedChannel = channel?.trim();
+
+  return trimmedChannel ? { channel: trimmedChannel, classic } : { classic };
 };

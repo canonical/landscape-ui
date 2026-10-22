@@ -1,9 +1,21 @@
-import type { SelectOption } from "@/types/SelectOption";
+import type { AvailableSnapInfo } from "../../types";
+import { getChannelConfinement, getChannelOptions } from "../../helpers";
 import { INITIAL_VALUES } from "./constants";
 import type { SwitchFormValues } from "./types";
 
 export const getInitialValues = (
-  channelOptions: SelectOption[],
+  channelMap: AvailableSnapInfo["channel-map"] | undefined,
 ): SwitchFormValues => {
-  return { ...INITIAL_VALUES, release: channelOptions[0]?.value ?? "" };
+  const [firstChannel] = getChannelOptions(channelMap);
+
+  if (!firstChannel) {
+    return { ...INITIAL_VALUES, mode: "revision" };
+  }
+
+  return {
+    ...INITIAL_VALUES,
+    value: firstChannel.value,
+    channel: firstChannel.value,
+    confinement: getChannelConfinement(channelMap, firstChannel.value),
+  };
 };

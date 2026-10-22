@@ -32,8 +32,3 @@ export interface GetSnapsParams {
   offset?: number;
   search?: string;
 }
-
-export interface GetAvailableSnapsParams {
-  instance_id: number;
-  query: string;
-}

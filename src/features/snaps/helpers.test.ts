@@ -4,6 +4,7 @@ import {
   getChannelConfinement,
   getChannelMapEntry,
   getChannelOptions,
+  getSnapActionArgs,
   isRevisionTooLarge,
   isValidRevision,
 } from "./helpers";
@@ -181,6 +182,35 @@ describe("snaps helpers", () => {
       expect(isRevisionTooLarge("123")).toBe(false);
       expect(isRevisionTooLarge("abc")).toBe(false);
       expect(isRevisionTooLarge("")).toBe(false);
+    });
+  });
+
+  describe("getSnapActionArgs", () => {
+    it("sends the revision and classic flag in revision mode", () => {
+      expect(
+        getSnapActionArgs({
+          mode: "revision",
+          value: "42",
+          confinement: "classic",
+        }),
+      ).toEqual({ revision: "42", classic: true });
+    });
+
+    it("sends the trimmed channel in channel mode", () => {
+      expect(
+        getSnapActionArgs({
+          mode: "channel",
+          value: " latest/edge ",
+          channel: " latest/edge ",
+          confinement: "strict",
+        }),
+      ).toEqual({ channel: "latest/edge", classic: false });
+    });
+
+    it("omits the channel when none is selected", () => {
+      expect(
+        getSnapActionArgs({ mode: "channel", value: "", channel: " " }),
+      ).toEqual({ classic: false });
     });
   });
 });
