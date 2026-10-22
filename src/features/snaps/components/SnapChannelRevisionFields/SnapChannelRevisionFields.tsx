@@ -46,18 +46,11 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   onModeChange,
 }) => {
   const [isClassicConfinement, setIsClassicConfinement] = useState(false);
-  const [revisionValue, setRevisionValue] = useState(value);
 
   const [prevMode, setPrevMode] = useState(mode);
   if (mode !== prevMode) {
     setPrevMode(mode);
     setIsClassicConfinement(false);
-  }
-
-  const [prevValue, setPrevValue] = useState(value);
-  if (value !== prevValue) {
-    setPrevValue(value);
-    setRevisionValue(value);
   }
 
   const { snapInfo, isSnapInfoLoading, isSnapInfoError } = useGetSnapInfo({
@@ -178,13 +171,13 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
             type="text"
             inputMode="numeric"
             aria-label={`Revision for ${snapName}`}
-            value={revisionValue}
+            value={value}
             error={error}
             onChange={(event) => {
-              setRevisionValue(event.currentTarget.value.replace(/\D/g, ""));
-            }}
-            onBlur={(event) => {
-              handleChange(event.currentTarget.value, isClassicConfinement);
+              handleChange(
+                event.currentTarget.value.replace(/\D/g, ""),
+                isClassicConfinement,
+              );
             }}
           />
         )}
@@ -198,7 +191,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
           onChange={(event) => {
             const { checked } = event.currentTarget;
             setIsClassicConfinement(checked);
-            onChange(revisionValue, undefined, checked ? "classic" : "strict");
+            onChange(value, undefined, checked ? "classic" : "strict");
           }}
         />
       ) : null}

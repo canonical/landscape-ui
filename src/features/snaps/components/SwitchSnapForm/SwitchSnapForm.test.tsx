@@ -288,6 +288,25 @@ describe("SwitchSnapForm", () => {
       ]);
     });
 
+    it("submits the typed revision when pressing Enter", async () => {
+      const captured = captureRequest();
+      renderSwitchSnapForm();
+
+      await userEvent.selectOptions(getModeSelect(), "revision");
+      await userEvent.type(getRevisionInput(), "42{Enter}");
+
+      expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
+      expect(
+        screen.queryByText("This field is required"),
+      ).not.toBeInTheDocument();
+      expect(captured.body?.snaps).toEqual([
+        {
+          name: snapWithChannels.snap.name,
+          args: { revision: "42", classic: false },
+        },
+      ]);
+    });
+
     it("submits with scheduled delivery and shows success notification", async () => {
       renderSwitchSnapForm();
 

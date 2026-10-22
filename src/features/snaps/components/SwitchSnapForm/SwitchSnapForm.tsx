@@ -29,7 +29,7 @@ interface SwitchSnapFormProps {
 }
 
 const SwitchSnapForm: FC<SwitchSnapFormProps> = ({ snap, snapInfo }) => {
-  const { instanceId: urlInstanceId } = useParams<UrlParams>();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
   const openActivityDetails = useOpenActivityDetailsPanel();
@@ -38,7 +38,7 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({ snap, snapInfo }) => {
   const [isChannelInfoLoading, setIsChannelInfoLoading] = useState(false);
   const [isChannelInfoError, setIsChannelInfoError] = useState(false);
 
-  const instanceId = Number(urlInstanceId);
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const formik = useFormik<SwitchFormValues>({
     initialValues: getInitialValues(snapInfo?.["channel-map"]),

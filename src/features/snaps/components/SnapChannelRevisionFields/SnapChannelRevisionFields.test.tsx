@@ -2,7 +2,7 @@ import { availableSnapInfo, installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { ComponentProps } from "react";
+import { useState, type ComponentProps, type FC } from "react";
 import { assert, beforeEach, describe, expect, it, vi } from "vitest";
 import SnapChannelRevisionFields from "./SnapChannelRevisionFields";
 import server from "@/tests/server";
@@ -38,6 +38,24 @@ const props: ComponentProps<typeof SnapChannelRevisionFields> = {
   },
   onChange: vi.fn(),
   onModeChange: vi.fn(),
+};
+
+// Feeds onChange back into snapModeConfig, as the parent forms do.
+const ControlledFields: FC<
+  ComponentProps<typeof SnapChannelRevisionFields>
+> = ({ snapModeConfig: initialConfig, onChange, ...rest }) => {
+  const [config, setConfig] = useState(initialConfig);
+
+  return (
+    <SnapChannelRevisionFields
+      {...rest}
+      snapModeConfig={config}
+      onChange={(value, channel, confinement) => {
+        setConfig((prev) => ({ ...prev, value, channel, confinement }));
+        onChange(value, channel, confinement);
+      }}
+    />
+  );
 };
 
 describe("SnapChannelRevisionFields", () => {
@@ -175,7 +193,7 @@ describe("SnapChannelRevisionFields", () => {
   it("calls onChange when a revision is entered", async () => {
     const onChange = vi.fn();
     renderWithProviders(
-      <SnapChannelRevisionFields
+      <ControlledFields
         {...props}
         snapModeConfig={{ ...props.snapModeConfig, mode: "revision" }}
         onChange={onChange}
@@ -187,7 +205,6 @@ describe("SnapChannelRevisionFields", () => {
     });
     await user.click(revisionInput);
     await user.keyboard("123");
-    await user.tab();
     expect(onChange).toHaveBeenLastCalledWith("123", undefined, "strict");
   });
 
@@ -224,10 +241,10 @@ describe("SnapChannelRevisionFields", () => {
     expect(onChange).toHaveBeenLastCalledWith("123", undefined, "classic");
   });
 
-  it("uses the latest typed revision when the checkbox is toggled without blurring first", async () => {
+  it("uses the latest typed revision when the checkbox is toggled", async () => {
     const onChange = vi.fn();
     renderWithProviders(
-      <SnapChannelRevisionFields
+      <ControlledFields
         {...props}
         snapModeConfig={{
           ...props.snapModeConfig,

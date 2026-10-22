@@ -4,11 +4,11 @@ import { useParams } from "react-router";
 import SnapsActionForm from "../SnapsActionForm";
 
 const InstallSnaps: FC = () => {
-  const { instanceId: urlInstanceId } = useParams<UrlParams>();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
 
   return (
     <SnapsActionForm
-      selectedInstances={[Number(urlInstanceId)]}
+      selectedInstances={[Number(childInstanceId ?? urlInstanceId)]}
       action="install"
     />
   );

@@ -24,13 +24,13 @@ interface UnholdSnapFormProps {
 }
 
 const UnholdSnapForm: FC<UnholdSnapFormProps> = ({ installedSnaps }) => {
-  const { instanceId: urlInstanceId } = useParams<UrlParams>();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { snapAction } = useSnapAction();
 
-  const instanceId = Number(urlInstanceId);
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const heldSnaps = installedSnaps.filter((s) => s.held_until !== null);
   const unheldSnaps = installedSnaps.filter((s) => s.held_until === null);

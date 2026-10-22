@@ -15,9 +15,9 @@ interface SwitchChannelButtonProps {
 }
 
 const SwitchChannelButton: FC<SwitchChannelButtonProps> = ({ snap }) => {
-  const { instanceId: urlInstanceId } = useParams<UrlParams>();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const { setSidePanelContent } = useSidePanel();
-  const instanceId = Number(urlInstanceId);
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const { snapInfo, isSnapInfoLoading } = useGetSnapInfo(
     {
