@@ -6,6 +6,7 @@ import type {
   PackageSearchResultPackage,
 } from "@/features/packages";
 import { mapTuple } from "@/utils/_helpers";
+import { securityPocketInstance } from "@/tests/mocks/instance";
 
 export const legacyPackages = [
   {
@@ -375,7 +376,7 @@ export const getInstancePackages = (instanceId: number): InstancePackage[] => {
     );
 };
 
-export const SECURITY_POCKET_INSTANCE_ID = 998;
+export const SECURITY_POCKET_INSTANCE_ID = securityPocketInstance.id;
 
 const securityPocketInstancePackageSearchResults: ComputerPackageSearchGroupedResult[] =
   [
