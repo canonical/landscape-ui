@@ -375,9 +375,52 @@ export const getInstancePackages = (instanceId: number): InstancePackage[] => {
     );
 };
 
+export const SECURITY_POCKET_INSTANCE_ID = 998;
+
+const securityPocketInstancePackageSearchResults: ComputerPackageSearchGroupedResult[] =
+  [
+    {
+      // Installed from the security pocket, but its only upgrade is a regular one.
+      name: "regular-upgrade-pkg",
+      summary: "security-pocket package with a regular upgrade",
+      installed_version: "2.0.0-1ubuntu0.1",
+      installed_id: 99801,
+      held: false,
+      security: true,
+      installation_candidates: [
+        {
+          id: 199801,
+          version: "2.0.0-1ubuntu0.2",
+          upgrade: true,
+          security: false,
+        },
+      ],
+    },
+    {
+      name: "security-upgrade-pkg",
+      summary: "package with a security upgrade",
+      installed_version: "3.0.0-1",
+      installed_id: 99802,
+      held: false,
+      security: false,
+      installation_candidates: [
+        {
+          id: 199802,
+          version: "3.0.0-1ubuntu0.1",
+          upgrade: true,
+          security: true,
+        },
+      ],
+    },
+  ];
+
 export const getComputerPackageSearchResults = (
   instanceId: number,
 ): ComputerPackageSearchGroupedResult[] => {
+  if (instanceId === SECURITY_POCKET_INSTANCE_ID) {
+    return securityPocketInstancePackageSearchResults;
+  }
+
   const instancePkgs = getInstancePackages(instanceId);
 
   return instancePkgs.map((pkg) => {

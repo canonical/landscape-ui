@@ -255,11 +255,28 @@ export default [
       const upgrade = parseBooleanParam(url.searchParams.get("upgrade"));
       const security = parseBooleanParam(url.searchParams.get("security"));
       const held = parseBooleanParam(url.searchParams.get("held"));
+      const securityUpgradesAvailable = parseBooleanParam(
+        url.searchParams.get("security_upgrades_available"),
+      );
       const instanceId = Number(params.id);
 
-      const hasFilters = [upgrade, security, held, available].some(
-        (value) => value === true,
-      );
+      if (securityUpgradesAvailable === false) {
+        return HttpResponse.json(
+          {
+            error: "BadRequest",
+            message: "security_upgrades_available only supports true",
+          },
+          { status: 400 },
+        );
+      }
+
+      const hasFilters = [
+        upgrade,
+        security,
+        held,
+        available,
+        securityUpgradesAvailable,
+      ].some((value) => value === true);
 
       let groupedResults = getComputerPackageSearchResults(instanceId);
 
@@ -296,6 +313,14 @@ export default [
 
       if (held === true) {
         groupedResults = groupedResults.filter(({ held: isHeld }) => isHeld);
+      }
+
+      if (securityUpgradesAvailable === true) {
+        groupedResults = groupedResults.filter(
+          ({ installed_version, installation_candidates }) =>
+            installed_version !== null &&
+            installation_candidates.some((c) => c.upgrade && c.security),
+        );
       }
 
       if (search) {

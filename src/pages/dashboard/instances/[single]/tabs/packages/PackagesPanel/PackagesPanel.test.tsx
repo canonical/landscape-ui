@@ -1,5 +1,6 @@
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { SECURITY_POCKET_INSTANCE_ID } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -76,6 +77,22 @@ describe("PackagesPanel", () => {
     expect(
       await screen.findByText("No available security upgrades found."),
     ).toBeInTheDocument();
+  });
+
+  it("excludes security-pocket packages with only a regular upgrade from the security filter", async () => {
+    renderWithProviders(
+      <PackagesPanel />,
+      undefined,
+      `/instances/${SECURITY_POCKET_INSTANCE_ID}?status=security`,
+      "/instances/:instanceId",
+    );
+
+    expect(
+      await screen.findByRole("button", { name: "security-upgrade-pkg" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "regular-upgrade-pkg" }),
+    ).not.toBeInTheDocument();
   });
 
   it("selects a package when its checkbox is clicked", async () => {
