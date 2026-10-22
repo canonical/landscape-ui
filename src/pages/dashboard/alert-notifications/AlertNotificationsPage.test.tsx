@@ -26,4 +26,18 @@ describe("AlertNotificationsPage", () => {
     const alertsList = await screen.findByRole("list");
     expect(alertsList).toBeInTheDocument();
   });
+
+  it("hides the pending computers alert when pending instances are forbidden", async () => {
+    setEndpointStatus({ status: "forbidden", path: "GetPendingComputers" });
+    renderWithProviders(<AlertNotificationsPage />);
+
+    expect(await screen.findByRole("list")).toBeInTheDocument();
+    expect(
+      screen.getByText("2 computers need to be rebooted"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /pending computers? needs?/i }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Forbidden.")).not.toBeInTheDocument();
+  });
 });

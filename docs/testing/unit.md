@@ -234,6 +234,7 @@ Supported common states:
 - `setEndpointStatus("empty")`
 - `setEndpointStatus("error")`
 - `setEndpointStatus({ status: "error", path: "/features" })`
+- `setEndpointStatus({ status: "forbidden", path: "GetPendingComputers" })` (403; only handlers that implement it respond to it)
 - `setEndpointStatus({ status: "variant", path: "auth/handle-code", response: authState })`
 - `setEndpointStatus({ status: "variant", path: "standalone-account", response: { exists: false } })`
 - `setEndpointStatus([{ status: "variant", path: "auth/handle-code", response: authState }, { status: "variant", path: "standalone-account", response: { exists: false } }])`
