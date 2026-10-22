@@ -12,12 +12,14 @@ interface PackagesPanelProps {
   readonly onExcludedPackagesChange: (
     newExcludedPackages: InstancePackagesToExclude[],
   ) => void;
+  readonly onPackagesLoad?: (packages: Package[]) => void;
 }
 
 const PackagesPanel: FC<PackagesPanelProps> = ({
   excludedPackages,
   instances,
   onExcludedPackagesChange,
+  onPackagesLoad,
 }) => {
   const [packages, setPackages] = useState<Package[]>([]);
   const [offset, setOffset] = useState(0);
@@ -43,6 +45,7 @@ const PackagesPanel: FC<PackagesPanelProps> = ({
 
     totalPackageCountRef.current = getPackageUpgradesQueryResult.data.count;
     offsetRef.current = offset;
+    onPackagesLoad?.(getPackageUpgradesQueryResult.data.results);
     setPackages((prevState) => [
       ...prevState,
       ...getPackageUpgradesQueryResult.data.results,
