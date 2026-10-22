@@ -119,6 +119,19 @@ describe("RepositoryProfileSourceForm", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows deb line validation error for an incomplete line", async () => {
+    renderWithProviders(<RepositoryProfileSourceForm {...defaultProps} />);
+
+    await user.type(screen.getByLabelText(/source name/i), "my-source");
+    await user.type(screen.getByLabelText(/deb line/i), "deb garbage");
+    await user.click(screen.getByRole("button", { name: /add source/i }));
+
+    expect(
+      await screen.findByText(/must be a valid apt line/i),
+    ).toBeInTheDocument();
+    expect(defaultProps.onSuccess).not.toHaveBeenCalled();
+  });
+
   it("pre-populates fields from initialValues", () => {
     const initialValues = {
       name: "existing-source",

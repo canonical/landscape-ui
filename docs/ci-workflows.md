@@ -13,9 +13,11 @@ Independent jobs (no `needs` chain):
 - **ESLint** — `pnpm eslint --cache`
 - **Prettier** — `pnpm prettier --check src`
 - **Stylelint** — `pnpm stylelint "src/**/*.module.scss"`
-- **Playwright** (self-hosted, `mcr.microsoft.com/playwright` container) — matrix over `saas` / `self-hosted`; builds with `pnpm run build:e2e` (`VITE_ROOT_PATH=/`), installs browsers, runs the matching project, uploads `playwright-report-<target>`
-- **Vitest** (self-hosted) — `pnpm exec vitest run --coverage` with `VITE_ROOT_PATH=/portal/` and `NODE_OPTIONS=--max_old_space_size=4096`; uploads `vitest-report` from `reports/`
+- **Playwright** (self-hosted; `ubuntu-latest` for fork PRs; `mcr.microsoft.com/playwright` container) — matrix over `saas` / `self-hosted`; builds with `pnpm run build:e2e` (`VITE_ROOT_PATH=/`), installs browsers, runs the matching project against the `dev` backend (`vars.API_PROXY_TARGET`), uploads `playwright-report-<target>`
+- **Vitest** (self-hosted; `ubuntu-latest` for fork PRs) — `pnpm exec vitest run --coverage` with `VITE_ROOT_PATH=/portal/` and `NODE_OPTIONS=--max_old_space_size=4096`; uploads `vitest-report` from `reports/`
 - **Changeset** — fails the PR unless it *adds* a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it.
+
+**Rule:** fork PRs get no `vars.*` (the `dev` environment's variables come through empty), so the Playwright and Vitest `VITE_API_*` env lines fall back to literal defaults only when `github.event.pull_request.head.repo.fork` is true; keep those defaults in sync with `.env.production`, and never add a secret to either job. Fork PR runs stay on GitHub-hosted runners; merge-queue runs (`merge_group` has no fork flag) use self-hosted runners, which is safe because entering the queue requires an approving code-owner review.
 
 ## Changeset Version (`changeset-version.yml`)
 

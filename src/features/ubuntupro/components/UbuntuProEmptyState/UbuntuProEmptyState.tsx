@@ -1,4 +1,5 @@
 import EmptyState from "@/components/layout/EmptyState";
+import { getFeatures } from "@/features/instances";
 import LoadingState from "@/components/layout/LoadingState";
 import { Button } from "@canonical/react-components";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -13,6 +14,7 @@ interface UbuntuProEmptyStateProps {
 
 const UbuntuProEmptyState: FC<UbuntuProEmptyStateProps> = ({ instance }) => {
   const { setSidePanelContent } = useSidePanel();
+  const canManageToken = getFeatures(instance).proToken;
 
   const handleAttachToken = () => {
     setSidePanelContent(
@@ -30,16 +32,20 @@ const UbuntuProEmptyState: FC<UbuntuProEmptyStateProps> = ({ instance }) => {
         href: "https://ubuntu.com/pro",
         text: "Learn more about Ubuntu Pro",
       }}
-      cta={[
-        <Button
-          key="attach-ubuntu-pro"
-          appearance="positive"
-          type="button"
-          onClick={handleAttachToken}
-        >
-          Attach Ubuntu Pro
-        </Button>,
-      ]}
+      cta={
+        canManageToken
+          ? [
+              <Button
+                key="attach-ubuntu-pro"
+                appearance="positive"
+                type="button"
+                onClick={handleAttachToken}
+              >
+                Attach Ubuntu Pro
+              </Button>,
+            ]
+          : []
+      }
     />
   );
 };

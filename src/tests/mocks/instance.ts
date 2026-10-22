@@ -372,6 +372,48 @@ export const windowsInstance: WindowsInstance = {
   has_release_upgrades: false,
 };
 
+export const windowsInstanceWithUbuntuPro: WindowsInstance = {
+  ...windowsInstance,
+  id: 508,
+  title: "Noel's Pro Windows Laptop",
+  ubuntu_pro_info: {
+    result: "success",
+    attached: true,
+    simulated: true,
+    account: {
+      created_at: "2019-10-11T13:55:56+00:00",
+      external_account_ids: [],
+      id: "aANXOSZO8yy-UlFO0812UF_yTepcjIapchfw",
+      name: "Canonical - staff",
+    },
+    contract: {
+      created_at: "2020-09-29T15:52:51+00:00",
+      id: "cAHu6uIDFC3HDK3Bdl1KEDlJqnp7BFP_HIeCZVz2GrSPEVmCNSzOw",
+      name: "Canonical staff",
+      products: ["uai-advanced-physical"],
+      tech_support_level: "advanced",
+    },
+    effective: "2020-09-29T15:52:51+00:00",
+    expires: "2030-01-01T00:00:00+00:00",
+    services: [
+      {
+        name: "esm-infra",
+        description: "Expanded Security Maintenance for Infrastructure",
+        available: "yes",
+        entitled: "yes",
+        auto_enabled: "yes",
+      },
+      {
+        name: "livepatch",
+        description: "Canonical Livepatch service",
+        available: "yes",
+        entitled: "yes",
+        auto_enabled: "no",
+      },
+    ],
+  },
+};
+
 export const debianInstance: Instance = {
   id: 61,
   title: "intent-ram",
@@ -1794,7 +1836,10 @@ export const instances = [
     cloud_instance_metadata: {},
     vm_info: null,
     container_info: null,
-    ubuntu_pro_info: null,
+    ubuntu_pro_info: {
+      attached: true,
+      expires: null,
+    },
     is_wsl_instance: false,
     children: [],
     parent: null,

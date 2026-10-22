@@ -15,7 +15,7 @@ const LicensesPage: FC = () => {
   const content = !licenses.length ? (
     <EmptyState
       title="No licenses found"
-      icon="connected"
+      icon="file-blank"
       body="Your organization has no licenses."
       link={{
         href: "https://ubuntu.com/pro",

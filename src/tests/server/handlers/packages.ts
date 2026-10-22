@@ -279,8 +279,19 @@ export default [
         );
       }
 
+      // Upgrades are always available, so `available=false&upgrade=true`
+      // matches nothing on the backend either.
+      if (available === false) {
+        groupedResults = groupedResults.filter(
+          ({ installation_candidates }) => installation_candidates.length === 0,
+        );
+      }
+
       if (security === true) {
-        groupedResults = groupedResults.filter(({ security: isSec }) => isSec);
+        groupedResults = groupedResults.filter(
+          ({ security: isSec, installation_candidates }) =>
+            isSec || installation_candidates.some((c) => c.security),
+        );
       }
 
       if (held === true) {
@@ -332,6 +343,15 @@ export default [
   http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
     `${API_URL}packages\\:search`,
     async ({ request }) => {
+      if (getEndpointStatus("packages:search").status === "empty") {
+        return HttpResponse.json<SearchPackagesResponse>({
+          packages: [],
+          count: 0,
+          next: null,
+          prev: null,
+        });
+      }
+
       const body = await request.json();
 
       const response = generatePaginatedResponse({

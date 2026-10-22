@@ -2,6 +2,7 @@ import { API_URL } from "@/constants";
 import { PATHS } from "@/libs/routes";
 import {
   availableSnapInfo,
+  bulkAvailableSnaps,
   successfulSnapInstallResponse,
 } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
@@ -9,152 +10,69 @@ import server from "@/tests/server";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { describe, expect } from "vitest";
+import { assert, describe, expect, it } from "vitest";
+import { getChannelConfinement, getChannelOptions } from "../../helpers";
 import type { SnapActionParams } from "../../types";
 import InstallSnaps from "./InstallSnaps";
 
-const classicSnapInfo = availableSnapInfo.find((snap) =>
-  snap["channel-map"].some((channel) => channel.confinement === "classic"),
-);
-assert(classicSnapInfo);
+const INSTANCE_ID = 1;
 
-const classicChannelMap = classicSnapInfo["channel-map"].find(
-  (channel) => channel.confinement === "classic",
+const snapToInstall = bulkAvailableSnaps.find(({ snap }) =>
+  availableSnapInfo.some(
+    (info) => info.name === snap.name && info["channel-map"].length > 0,
+  ),
 );
-assert(classicChannelMap);
+assert(snapToInstall, "No available snap has channels to install from.");
+
+const snapToInstallInfo = availableSnapInfo.find(
+  (info) => info.name === snapToInstall.snap.name,
+);
+const [firstChannel] = getChannelOptions(snapToInstallInfo?.["channel-map"]);
+assert(firstChannel);
+
+const renderInstallSnaps = () =>
+  renderWithProviders(
+    <InstallSnaps />,
+    {},
+    `/instances/${INSTANCE_ID}`,
+    `/${PATHS.instances.root}/${PATHS.instances.single}`,
+  );
 
 describe("InstallSnaps", () => {
-  beforeEach(async () => {
-    renderWithProviders(
-      <InstallSnaps />,
-      {},
-      "/instances/1",
-      `/${PATHS.instances.root}/${PATHS.instances.single}`,
-    );
-  });
+  const user = userEvent.setup();
 
-  it("renders form correctly", () => {
-    const searchBox = screen.getByRole("searchbox");
-    const installButton = screen.getByRole("button", {
-      name: /install/i,
-    });
-    const cancelButton = screen.getByRole("button", {
-      name: /cancel/i,
-    });
-
-    expect(searchBox).toBeInTheDocument();
-    expect(installButton).toBeInTheDocument();
-    expect(cancelButton).toBeInTheDocument();
-  });
-
-  it("select snap after searching", async () => {
-    const searchBox = screen.getByRole("searchbox");
-    await userEvent.type(searchBox, "Snap 2");
-    expect(searchBox).toHaveValue("Snap 2");
-
-    const snap = await screen.findByText("Snap 2");
-    expect(snap).toBeInTheDocument();
-    await userEvent.click(snap);
-    const addButton = await screen.findByRole("button", {
-      name: /add/i,
-    });
-    expect(addButton).toBeInTheDocument();
-
-    await userEvent.click(addButton);
-    expect(screen.getByText("Snap 2")).toBeInTheDocument();
-  });
-
-  it("shows 'No snaps selected' notification on empty submission", async () => {
-    const installButton = screen.getByRole("button", {
-      name: /install/i,
-    });
-
-    await userEvent.click(installButton);
-
-    expect(await screen.findByText("No snaps selected")).toBeInTheDocument();
-    expect(
-      screen.getByText("Select at least one snap to install."),
-    ).toBeInTheDocument();
-  });
-
-  it("disables install while snap confirmation is open", async () => {
-    const searchBox = screen.getByRole("searchbox");
-    await userEvent.type(searchBox, "Snap 2");
-
-    const matchingSnap = await screen.findByText("Snap 2");
-    await userEvent.click(matchingSnap);
-    expect(
-      await screen.findByRole("button", { name: /add/i }),
-    ).toBeInTheDocument();
-
-    const installButton = screen.getByRole("button", {
-      name: /install snaps/i,
-    });
-
-    expect(installButton).toHaveAttribute("aria-disabled", "true");
-
-    await userEvent.click(installButton);
-
-    expect(screen.queryByText("No snaps selected")).not.toBeInTheDocument();
-  });
-
-  it("delete a snap from list after adding it", async () => {
-    const searchBox = screen.getByRole("searchbox");
-    const installButton = screen.getByRole("button", {
-      name: /install/i,
-    });
-
-    expect(installButton).not.toHaveAttribute("aria-disabled", "true");
-
-    await userEvent.click(installButton);
-    expect(
-      await screen.findByText(/select at least one snap to install/i),
-    ).toBeInTheDocument();
-    expect(screen.queryByText(/you queued/i)).not.toBeInTheDocument();
-
-    await userEvent.type(searchBox, "Snap 2");
-    const firstMatchingSnap = await screen.findByText("Snap 2");
-    await userEvent.click(firstMatchingSnap);
-    const firstButton = await screen.findByRole("button", { name: /add/i });
-    await userEvent.click(firstButton);
-
-    await userEvent.type(searchBox, "Snap 3");
-    const secondMatchingSnap = await screen.findByText("Snap 3");
-    await userEvent.click(secondMatchingSnap);
-    const secondButton = await screen.findByRole("button", { name: /add/i });
-    await userEvent.click(secondButton);
-
-    const listItems = screen.getAllByRole("listitem");
-    assert(listItems[0]);
-    const deleteButton = within(listItems[0]).getByRole("button");
-    expect(deleteButton).toBeInTheDocument();
-
-    await userEvent.click(deleteButton);
-    expect(screen.queryByText("Snap 2")).not.toBeInTheDocument();
-    expect(screen.getByText("Snap 3")).toBeInTheDocument();
-  });
-
-  it("installs snaps after selecting and submitting", async () => {
-    const searchBox = screen.getByRole("searchbox");
-
-    await userEvent.type(searchBox, "Snap 2");
-    const matchingSnap = await screen.findByText("Snap 2");
-    await userEvent.click(matchingSnap);
-    const addButton = await screen.findByRole("button", { name: /add/i });
-    await userEvent.click(addButton);
-
-    const installButton = await waitFor(() =>
-      screen.getByRole("button", {
-        name: /install snaps/i,
+  const selectSnap = async () => {
+    await user.type(screen.getByRole("searchbox"), snapToInstall.snap.name);
+    await user.click(
+      await screen.findByRole("option", {
+        name: `${snapToInstall.snap.name} ${snapToInstall.snap.publisher.username}`,
       }),
     );
-    expect(installButton).not.toHaveAttribute("aria-disabled", "true");
-    await userEvent.click(installButton);
+  };
 
-    expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
+  it("renders the bulk install form", () => {
+    renderInstallSnaps();
+
+    expect(screen.getByRole("searchbox")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Install snaps" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
   });
 
-  it("sends the selected release and classic flag nested in args", async () => {
+  it("shows channel and revision fields for a selected snap", async () => {
+    renderInstallSnaps();
+
+    await selectSnap();
+
+    expect(
+      screen.getByRole("combobox", {
+        name: `Snap channel or revision for ${snapToInstall.snap.name}`,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("installs the selected channel on the instance from the URL", async () => {
     let requestBody: SnapActionParams | null = null;
 
     server.use(
@@ -164,33 +82,89 @@ describe("InstallSnaps", () => {
       }),
     );
 
-    const searchBox = screen.getByRole("searchbox");
-    await userEvent.type(searchBox, classicSnapInfo.name);
-    await userEvent.click(await screen.findByText(classicSnapInfo.name));
+    renderInstallSnaps();
 
-    const releaseSelect = await screen.findByLabelText(/release/i);
-    await userEvent.selectOptions(
-      releaseSelect,
-      `${classicChannelMap.channel.name} - ${classicChannelMap.channel.architecture}`,
+    await selectSnap();
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("combobox", {
+          name: `Channel for ${snapToInstall.snap.name}`,
+        }),
+      ).toHaveValue(firstChannel.value);
+    });
+
+    await user.click(screen.getByRole("button", { name: "Install 1 snap" }));
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Install 1 snap" }),
     );
-    await userEvent.click(screen.getByRole("button", { name: /add/i }));
 
-    await userEvent.click(
-      screen.getByRole("button", { name: /install snaps/i }),
-    );
-
-    expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText("Snaps successfully queued to install"),
+    ).toBeInTheDocument();
     expect(requestBody).toEqual({
       action: "install",
-      computer_ids: [1],
+      computer_ids: [INSTANCE_ID],
       snaps: [
         {
-          name: classicSnapInfo.name,
+          name: snapToInstall.snap.name,
           args: {
-            channel: classicChannelMap.channel.name,
-            revision: classicChannelMap.revision.toString(),
-            classic: true,
+            channel: firstChannel.value,
+            classic:
+              getChannelConfinement(
+                snapToInstallInfo?.["channel-map"],
+                firstChannel.value,
+              ) === "classic",
           },
+        },
+      ],
+    });
+  });
+
+  it("installs a specific revision", async () => {
+    let requestBody: SnapActionParams | null = null;
+
+    server.use(
+      http.post(`${API_URL}snaps`, async ({ request }) => {
+        requestBody = (await request.json()) as SnapActionParams;
+        return HttpResponse.json(successfulSnapInstallResponse);
+      }),
+    );
+
+    renderInstallSnaps();
+
+    await selectSnap();
+
+    await user.selectOptions(
+      screen.getByRole("combobox", {
+        name: `Snap channel or revision for ${snapToInstall.snap.name}`,
+      }),
+      "revision",
+    );
+    await user.type(
+      screen.getByRole("textbox", {
+        name: `Revision for ${snapToInstall.snap.name}`,
+      }),
+      "42",
+    );
+
+    await user.click(screen.getByRole("button", { name: "Install 1 snap" }));
+    const modal = await screen.findByRole("dialog");
+    await user.click(
+      within(modal).getByRole("button", { name: "Install 1 snap" }),
+    );
+
+    expect(
+      await screen.findByText("Snaps successfully queued to install"),
+    ).toBeInTheDocument();
+    expect(requestBody).toEqual({
+      action: "install",
+      computer_ids: [INSTANCE_ID],
+      snaps: [
+        {
+          name: snapToInstall.snap.name,
+          args: { revision: "42", classic: false },
         },
       ],
     });

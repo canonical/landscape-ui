@@ -1,4 +1,3 @@
-import date from "@/libs/date";
 import { ROUTES } from "@/libs/routes";
 import type { SupportSessionNavItem } from "@/templates/support-session";
 import type { ApiError } from "@/types/api/ApiError";
@@ -11,14 +10,7 @@ import {
 } from "./constants";
 import type { StaffPeopleResult, StaffPeopleResultType } from "./types";
 
-const ZONELESS_DATE_TIME_REGEX =
-  /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/;
-
-/** `value` as a date, read as UTC when the server sent it without a zone. */
-export const parseServerDateTime = (value: string) =>
-  date(
-    ZONELESS_DATE_TIME_REGEX.test(value.trim()) ? `${value.trim()}Z` : value,
-  );
+export { parseServerDateTime } from "@/libs/date";
 
 /** The server's message for a failed request, or the error's own. */
 export const getErrorMessage = (error: unknown): string => {

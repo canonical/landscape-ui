@@ -9,11 +9,12 @@ import { useGetTags } from "@/features/tags";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
 import { useState } from "react";
+import { useMediaQuery } from "usehooks-ts";
+import { BREAKPOINT_PX } from "@/constants";
 import { useGetAvailabilityZones } from "../../api";
 import { FILTERS } from "../../constants";
 import AccessGroupFilter from "../AccessGroupFilter";
 import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
-import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
 import UpgradesFilter from "../UpgradesFilter";
 import WslFilter from "../WslFilter";
@@ -32,6 +33,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
   const instanceSearchHelpTerms = useInstanceSearchHelpTerms();
 
   const [showSearchHelp, setShowSearchHelp] = useState(false);
+  const hasRoomOnRight = useMediaQuery(`(min-width: ${BREAKPOINT_PX.xl}px)`);
 
   const { getAccessGroupQuery } = useRoles();
 
@@ -90,6 +92,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
         </div>
         <ResponsiveTableFilters
           isCollapsed={true}
+          menuPosition={hasRoomOnRight ? "left" : "right"}
           filters={[
             <PageParamFilter
               pageParamKey="status"
@@ -178,7 +181,6 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
           setShowSearchHelp(false);
         }}
       />
-      <PendingInstancesNotification />
     </>
   );
 };

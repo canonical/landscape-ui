@@ -1,21 +1,15 @@
 import type { FC, ReactNode } from "react";
 import { Notification } from "@canonical/react-components";
-import { SNAPD_REST_API_DOCUMENTATION_URL } from "@/constants";
+import { SNAP_REVISIONS_DOCUMENTATION_URL } from "@/constants";
 import type {
   ActionWithNotification,
   SnapAction,
-  SnapMode,
+  SnapModeConfig,
 } from "../../../../types";
-
-interface SnapChangeConfig {
-  mode: SnapMode;
-  value: string;
-  channel?: string;
-}
 
 interface SnapNotificationProps {
   readonly action: ActionWithNotification;
-  readonly snapModeConfigs?: Record<string, SnapChangeConfig>;
+  readonly snapModeConfigs?: Record<string, SnapModeConfig>;
 }
 
 const HoldNotification = () => (
@@ -34,8 +28,9 @@ const revisionMessages: Record<
 > = {
   install: (
     <>
-      Specifying a revision tracks <code>latest/stable</code> by default, so
-      future updates may replace it with the store&apos;s latest revision.
+      Installing a specific revision doesn&apos;t change the default tracking
+      channel (<code>latest/stable</code>), so future updates may replace the
+      installed revision.
     </>
   ),
   "change channel":
@@ -62,16 +57,15 @@ const SnapNotification: FC<SnapNotificationProps> = ({
     <Notification
       severity="information"
       actions={[
-        {
-          label: "Visit Snapd documentation",
-          onClick: () => {
-            window.open(
-              SNAPD_REST_API_DOCUMENTATION_URL,
-              "_blank",
-              "noopener,noreferrer",
-            );
-          },
-        },
+        <a
+          key="snap-revisions-documentation"
+          className="p-notification__action"
+          href={SNAP_REVISIONS_DOCUMENTATION_URL}
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+        >
+          Snap documentation: Revisions
+        </a>,
       ]}
     >
       {revisionMessages[action]}

@@ -1,6 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import PackageSearchDowngradeItem from "./PackageSearchDowngradeItem";
 import { ICONS } from "@canonical/react-components";
 import userEvent from "@testing-library/user-event";
@@ -8,20 +8,30 @@ import type { ComponentProps } from "react";
 import { API_URL } from "@/constants";
 import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
-import type { Package } from "@/features/packages";
+import type {
+  Package,
+  SearchPackagesRequest,
+  SearchPackagesResponse,
+} from "@/features/packages";
+import type MultiSelectField from "@/components/form/MultiSelectField";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { QUERY_LIMIT } from "../../constants";
+import { mockListScrollMetrics } from "@/tests/helpers";
 
 const multiSelectFieldProps = vi.hoisted(() => vi.fn());
 
-vi.mock("@/components/form/MultiSelectField", () => ({
-  default: (props: {
-    readonly disabledItems?: { readonly value: number }[];
-    readonly items: { readonly label: string; readonly value: number }[];
-    readonly selectedItems?: { readonly value: number }[];
-  }) => {
-    multiSelectFieldProps(props);
-    return null;
-  },
-}));
+vi.mock("@/components/form/MultiSelectField", async (importOriginal) => {
+  const { default: ActualMultiSelectField } = await importOriginal<{
+    default: typeof MultiSelectField;
+  }>();
+
+  return {
+    default: (props: ComponentProps<typeof MultiSelectField>) => {
+      multiSelectFieldProps(props);
+      return <ActualMultiSelectField {...props} />;
+    },
+  };
+});
 
 const props = {
   selectedPackage: [
@@ -118,6 +128,110 @@ describe("PackageSearchDowngradeItem", () => {
           ],
         }),
       );
+    });
+  });
+
+  it("shows an error when no versions are found", async () => {
+    setEndpointStatus({ status: "empty", path: "packages:search" });
+
+    renderWithProviders(<PackageSearchDowngradeItem {...props} />);
+
+    // should initially not show the error message during fetch
+    expect(
+      screen.queryByText("No versions were found"),
+    ).not.toBeInTheDocument();
+
+    // should appear after the search returns no packages
+    expect(
+      await screen.findByText("No versions were found"),
+    ).toBeInTheDocument();
+  });
+
+  describe("version pagination", () => {
+    const totalVersions = QUERY_LIMIT * 2 + 5;
+    const scrollMetrics = { clientHeight: 200, itemHeight: 32 };
+    // Long enough for an unwanted next-page request to be sent.
+    const settleDelayMs = 100;
+    let requestedOffsets: number[];
+
+    beforeEach(() => {
+      requestedOffsets = [];
+
+      server.use(
+        http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
+          `${API_URL}packages\\:search`,
+          async ({ request }) => {
+            const { offset = 0, limit = QUERY_LIMIT } = await request.json();
+            requestedOffsets.push(offset);
+
+            const pageSize = Math.max(
+              Math.min(limit, totalVersions - offset),
+              0,
+            );
+
+            return HttpResponse.json<SearchPackagesResponse>({
+              packages: Array.from({ length: pageSize }, (_, index) => ({
+                ...props.selectedPackage[0],
+                id: 1000 + offset + index,
+                version: `1.${String(offset + index).padStart(3, "0")}`,
+              })),
+              count: totalVersions,
+              next: null,
+              prev: null,
+            });
+          },
+        ),
+      );
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    const openVersionDropdown = async () => {
+      renderWithProviders(<PackageSearchDowngradeItem {...props} />);
+
+      await user.click(
+        await screen.findByRole("combobox", { name: "Version" }),
+      );
+
+      expect(
+        await screen.findByText("1.000 (4 instances)"),
+      ).toBeInTheDocument();
+    };
+
+    it("loads only the first page when the dropdown opens", async () => {
+      mockListScrollMetrics(scrollMetrics);
+
+      await openVersionDropdown();
+      await new Promise((resolve) => setTimeout(resolve, settleDelayMs));
+
+      expect(requestedOffsets).toEqual([0]);
+    });
+
+    it("loads one page each time the dropdown is scrolled near the bottom", async () => {
+      const { scrollToBottom } = mockListScrollMetrics(scrollMetrics);
+
+      await openVersionDropdown();
+      scrollToBottom(screen.getByRole("menu"));
+
+      expect(
+        await screen.findByText("1.020 (4 instances)"),
+      ).toBeInTheDocument();
+      expect(requestedOffsets).toEqual([0, QUERY_LIMIT]);
+
+      scrollToBottom(screen.getByRole("menu"));
+
+      expect(
+        await screen.findByText("1.040 (4 instances)"),
+      ).toBeInTheDocument();
+      expect(requestedOffsets).toEqual([0, QUERY_LIMIT, QUERY_LIMIT * 2]);
+
+      // The last page is loaded, so scrolling requests nothing more.
+      scrollToBottom(screen.getByRole("menu"));
+      await new Promise((resolve) => setTimeout(resolve, settleDelayMs));
+
+      expect(requestedOffsets).toEqual([0, QUERY_LIMIT, QUERY_LIMIT * 2]);
     });
   });
 });

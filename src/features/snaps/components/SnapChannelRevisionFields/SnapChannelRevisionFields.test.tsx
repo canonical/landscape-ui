@@ -2,7 +2,7 @@ import { availableSnapInfo, installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { ComponentProps } from "react";
+import { useState, type ComponentProps, type FC } from "react";
 import { assert, beforeEach, describe, expect, it, vi } from "vitest";
 import SnapChannelRevisionFields from "./SnapChannelRevisionFields";
 import server from "@/tests/server";
@@ -31,13 +31,31 @@ assert(snapWithNoChannels, "No installed snap has zero available channels.");
 
 const props: ComponentProps<typeof SnapChannelRevisionFields> = {
   instanceIds: [1],
-  selectedSnap: snapWithChannels,
+  snapName: snapWithChannels.snap.name,
   snapModeConfig: {
     mode: "channel",
     value: "",
   },
   onChange: vi.fn(),
   onModeChange: vi.fn(),
+};
+
+// Feeds onChange back into snapModeConfig, as the parent forms do.
+const ControlledFields: FC<
+  ComponentProps<typeof SnapChannelRevisionFields>
+> = ({ snapModeConfig: initialConfig, onChange, ...rest }) => {
+  const [config, setConfig] = useState(initialConfig);
+
+  return (
+    <SnapChannelRevisionFields
+      {...rest}
+      snapModeConfig={config}
+      onChange={(value, channel, confinement) => {
+        setConfig((prev) => ({ ...prev, value, channel, confinement }));
+        onChange(value, channel, confinement);
+      }}
+    />
+  );
 };
 
 describe("SnapChannelRevisionFields", () => {
@@ -152,10 +170,30 @@ describe("SnapChannelRevisionFields", () => {
     );
   });
 
+  it("does not show the classic confinement checkbox when channels load", async () => {
+    renderWithProviders(
+      <SnapChannelRevisionFields
+        {...props}
+        snapModeConfig={{ mode: "channel", value: "latest/stable" }}
+      />,
+    );
+
+    const channelSelect = screen.getByLabelText(
+      `Channel for ${snapWithChannels.snap.name}`,
+    );
+    await waitFor(() => {
+      expect(within(channelSelect).getAllByRole("option")).toHaveLength(4);
+    });
+
+    expect(
+      screen.queryByLabelText(/Use classic confinement/),
+    ).not.toBeInTheDocument();
+  });
+
   it("calls onChange when a revision is entered", async () => {
     const onChange = vi.fn();
     renderWithProviders(
-      <SnapChannelRevisionFields
+      <ControlledFields
         {...props}
         snapModeConfig={{ ...props.snapModeConfig, mode: "revision" }}
         onChange={onChange}
@@ -167,7 +205,6 @@ describe("SnapChannelRevisionFields", () => {
     });
     await user.click(revisionInput);
     await user.keyboard("123");
-    await user.tab();
     expect(onChange).toHaveBeenLastCalledWith("123", undefined, "strict");
   });
 
@@ -179,9 +216,7 @@ describe("SnapChannelRevisionFields", () => {
       />,
     );
 
-    const checkbox = await screen.findByRole("checkbox", {
-      name: "Use classic confinement",
-    });
+    const checkbox = await screen.findByLabelText(/Use classic confinement/);
     expect(checkbox).not.toBeChecked();
   });
 
@@ -199,19 +234,17 @@ describe("SnapChannelRevisionFields", () => {
       />,
     );
 
-    const checkbox = await screen.findByRole("checkbox", {
-      name: "Use classic confinement",
-    });
+    const checkbox = await screen.findByLabelText(/Use classic confinement/);
     await user.click(checkbox);
 
     expect(checkbox).toBeChecked();
     expect(onChange).toHaveBeenLastCalledWith("123", undefined, "classic");
   });
 
-  it("uses the latest typed revision when the checkbox is toggled without blurring first", async () => {
+  it("uses the latest typed revision when the checkbox is toggled", async () => {
     const onChange = vi.fn();
     renderWithProviders(
-      <SnapChannelRevisionFields
+      <ControlledFields
         {...props}
         snapModeConfig={{
           ...props.snapModeConfig,
@@ -229,9 +262,7 @@ describe("SnapChannelRevisionFields", () => {
     await user.clear(revisionInput);
     await user.keyboard("456");
 
-    const checkbox = screen.getByRole("checkbox", {
-      name: "Use classic confinement",
-    });
+    const checkbox = screen.getByLabelText(/Use classic confinement/);
     await user.click(checkbox);
 
     expect(onChange).toHaveBeenLastCalledWith("456", undefined, "classic");
@@ -259,6 +290,28 @@ describe("SnapChannelRevisionFields", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows an error for a revision above the snapd maximum after submit is attempted", async () => {
+    renderWithProviders(
+      <SnapChannelRevisionFields
+        {...props}
+        snapModeConfig={{
+          ...props.snapModeConfig,
+          mode: "revision",
+          value: "9999999999999999999",
+        }}
+        hasAttemptedSubmit
+      />,
+    );
+
+    await screen.findByLabelText(
+      `Snap channel or revision for ${snapWithChannels.snap.name}`,
+    );
+
+    expect(
+      screen.getByText("Revision number is too large"),
+    ).toBeInTheDocument();
+  });
+
   it("shows loading in the channel dropdown while the snap info is loading", async () => {
     renderWithProviders(<SnapChannelRevisionFields {...props} />);
 
@@ -275,7 +328,7 @@ describe("SnapChannelRevisionFields", () => {
     renderWithProviders(
       <SnapChannelRevisionFields
         {...props}
-        selectedSnap={snapWithNoChannels}
+        snapName={snapWithNoChannels.snap.name}
       />,
     );
 
@@ -289,6 +342,22 @@ describe("SnapChannelRevisionFields", () => {
       within(channelSelect).getByText("Default channel"),
     ).toBeInTheDocument();
     expect(screen.getByText("No channels were found")).toBeInTheDocument();
+  });
+
+  it("does not show the classic confinement notification for a snap with no available channels even when confinement is classic", async () => {
+    renderWithProviders(
+      <SnapChannelRevisionFields
+        {...props}
+        snapName={snapWithNoChannels.snap.name}
+        snapModeConfig={{ ...props.snapModeConfig, confinement: "classic" }}
+      />,
+    );
+
+    const checkbox = await screen.findByLabelText(/Use classic confinement/);
+    expect(checkbox).toBeChecked();
+    expect(
+      screen.queryByText("This snap requires classic confinement"),
+    ).not.toBeInTheDocument();
   });
 
   it("does not show 'No channels were found' alongside the load error", async () => {

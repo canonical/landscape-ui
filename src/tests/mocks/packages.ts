@@ -388,7 +388,7 @@ export const getComputerPackageSearchResults = (
           {
             id: pkg.id + 100000,
             version: pkg.available_version,
-            upgrade: true,
+            upgrade: pkg.current_version !== null,
             security: isSecurity,
           },
         ]
@@ -400,7 +400,8 @@ export const getComputerPackageSearchResults = (
       installed_version: pkg.current_version,
       installed_id: pkg.id,
       held: isHeld,
-      security: isSecurity,
+      // Describes the installed version itself, not the available upgrades.
+      security: false,
       installation_candidates: candidates,
     };
   });

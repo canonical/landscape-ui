@@ -70,7 +70,16 @@ const getRebootSchedule = (profile: RebootProfile): string => {
 
   const days = getScheduledDays(on_days);
 
-  return `${days} at ${at_hour}:${at_minute} UTC`;
+  if (!Number.isFinite(at_hour)) {
+    return days;
+  }
+
+  const minutes = Number.isFinite(at_minute)
+    ? String(at_minute).padStart(2, "0")
+    : "00";
+  const time = `${String(at_hour).padStart(2, "0")}:${minutes}`;
+
+  return `${days} at ${time} UTC`;
 };
 
 export const getScheduleMessage = (profile: Profile): string | null => {

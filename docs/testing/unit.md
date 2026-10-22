@@ -42,6 +42,8 @@ That setup already provides:
 
 Because the setup is global, unit tests should assume network requests must be handled and responsive state will be reset after each test.
 
+`vitest.config.ts` defaults `process.env.TZ` to `Europe/Berlin`, so runs use a non-UTC timezone with daylight saving time unless `TZ` is set explicitly (for example `TZ=UTC pnpm vitest`). Setting `process.env.TZ` inside a test has no effect, because tests run in worker threads.
+
 ## Which Render Helper To Use
 
 This repository uses three main entrypoints:
@@ -232,6 +234,7 @@ Supported common states:
 - `setEndpointStatus("empty")`
 - `setEndpointStatus("error")`
 - `setEndpointStatus({ status: "error", path: "/features" })`
+- `setEndpointStatus({ status: "forbidden", path: "GetPendingComputers" })` (403; only handlers that implement it respond to it)
 - `setEndpointStatus({ status: "variant", path: "auth/handle-code", response: authState })`
 - `setEndpointStatus({ status: "variant", path: "standalone-account", response: { exists: false } })`
 - `setEndpointStatus([{ status: "variant", path: "auth/handle-code", response: authState }, { status: "variant", path: "standalone-account", response: { exists: false } }])`

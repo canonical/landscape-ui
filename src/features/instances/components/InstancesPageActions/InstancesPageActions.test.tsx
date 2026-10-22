@@ -15,11 +15,12 @@ import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
-import { afterEach, beforeEach, vi } from "vitest";
+import { afterEach, beforeEach, onTestFinished, vi } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import type { UbuntuProInfo } from "@/types/Instance";
+import { detachUbuntuProActivity } from "@/tests/mocks/ubuntuPro";
 import { DEB_MANAGEMENT_INSTANCE_LIMIT } from "@/features/packages";
 
 const selected = instances.slice(0, 2);
@@ -84,6 +85,37 @@ describe("InstancesPageActions", () => {
   afterEach(() => {
     resetScreenSize();
     vi.restoreAllMocks();
+  });
+
+  it.each(MENU_LABELS.filter((label) => label !== "Snap management"))(
+    "opens %s rightward on large screens",
+    async (label) => {
+      renderPageActions();
+
+      const toggle = await screen.findByRole("button", { name: label });
+      expect(toggle.closest(".p-contextual-menu")).toHaveClass(
+        "p-contextual-menu--left",
+      );
+      await userEvent.click(toggle);
+
+      expect(
+        screen.getByRole("menu").closest(".p-contextual-menu"),
+      ).toHaveClass("p-contextual-menu--left");
+    },
+  );
+
+  it("opens the collapsed Actions submenus leftward", async () => {
+    setScreenSize("sm");
+    renderPageActions();
+
+    await userEvent.click(screen.getByRole("button", { name: "Actions" }));
+    await screen.findByRole("button", { name: "Deb management" });
+
+    for (const label of MENU_LABELS) {
+      expect(screen.getByRole("button", { name: label })).toHaveIcon(
+        "chevron-left",
+      );
+    }
   });
 
   it.each([
@@ -349,12 +381,167 @@ describe("InstancesPageActions", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("'Snap management' group should be disabled if snaps feature is disabled", async () => {
+    it("'Ubuntu Pro' group should be disabled if no selected instance can hold a token", async () => {
       renderPageActions({ selectedInstances: [windowsInstance] });
 
       expect(
-        screen.getByRole("button", { name: MENU_LABELS[4] }),
+        await screen.findByRole("button", { name: MENU_LABELS[2] }),
       ).toHaveAttribute("aria-disabled", "true");
+    });
+
+    it("'Attach token' should target only the instances that can hold a token", async () => {
+      renderPageActions({
+        selectedInstances: [ubuntuInstance, windowsInstance],
+      });
+
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[2] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: /attach token/i }),
+      );
+
+      expect(
+        screen.getByRole("heading", {
+          name: "Attach Ubuntu Pro token to 1 instance",
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Detach token' should leave the Windows host out of the request", async () => {
+      let capturedBody: { computer_ids: number[] } | undefined;
+      server.use(
+        http.post(`${API_URL}detach-token`, async ({ request }) => {
+          capturedBody = (await request.json()) as { computer_ids: number[] };
+          return HttpResponse.json(detachUbuntuProActivity);
+        }),
+      );
+
+      renderPageActions({
+        selectedInstances: [
+          { ...ubuntuInstance, ubuntu_pro_info: ubuntuProInfo },
+          windowsInstance,
+        ],
+      });
+
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[2] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: /detach token/i }),
+      );
+      await userEvent.type(
+        screen.getByPlaceholderText("detach ubuntu pro token"),
+        "detach ubuntu pro token",
+      );
+      await userEvent.click(screen.getByRole("button", { name: /^detach$/i }));
+
+      await waitFor(() => {
+        expect(capturedBody?.computer_ids).toEqual([ubuntuInstance.id]);
+      });
+    });
+
+    const UNSUPPORTED_MENUS = [
+      [
+        "Deb management",
+        "None of the selected instances support deb package management.",
+      ],
+      [
+        "Snap management",
+        "None of the selected instances support snap management.",
+      ],
+    ];
+
+    it.each(UNSUPPORTED_MENUS)(
+      "disables %s and explains why when no selected instance supports it",
+      async (label, message) => {
+        renderPageActions({ selectedInstances: [windowsInstance] });
+
+        const toggle = await screen.findByRole("button", {
+          name: `${label} ${message}`,
+        });
+        expect(toggle).toHaveAttribute("aria-disabled", "true");
+
+        await userEvent.hover(within(toggle).getByText(label));
+
+        expect(await screen.findByRole("tooltip")).toHaveTextContent(message);
+      },
+    );
+
+    it.each(UNSUPPORTED_MENUS)(
+      "explains why %s is disabled in the collapsed Actions menu",
+      async (label, message) => {
+        setScreenSize("sm");
+        renderPageActions({ selectedInstances: [windowsInstance] });
+
+        await userEvent.click(screen.getByRole("button", { name: "Actions" }));
+        const toggle = await screen.findByRole("button", {
+          name: `${label} ${message}`,
+        });
+        expect(toggle).toHaveAttribute("aria-disabled", "true");
+
+        await userEvent.hover(within(toggle).getByText(label));
+
+        expect(await screen.findByRole("tooltip")).toHaveTextContent(message);
+      },
+    );
+
+    it.each(["Deb management", "Snap management"])(
+      "enables %s when some selected instances support it",
+      async (label) => {
+        renderPageActions({
+          selectedInstances: [ubuntuInstance, windowsInstance],
+        });
+
+        expect(
+          await screen.findByRole("button", { name: label }),
+        ).not.toHaveAttribute("aria-disabled", "true");
+      },
+    );
+
+    it.each(["Deb management", "Snap management"])(
+      "disables %s without an explanation when nothing is selected",
+      async (label) => {
+        renderPageActions({ selectedInstances: [] });
+
+        const toggle = await screen.findByRole("button", { name: label });
+        expect(toggle).toHaveAttribute("aria-disabled", "true");
+        expect(toggle).toHaveAccessibleName(label);
+      },
+    );
+
+    it("'Snap management' should leave out instances without the snaps feature", async () => {
+      const requestedIds: string[] = [];
+      const captureSnapsRequest = ({ request }: { request: Request }) => {
+        const url = new URL(request.url);
+        if (request.method === "GET" && url.pathname.endsWith("/snaps")) {
+          // The API client sends array params comma-joined, e.g. computer_ids=1,6.
+          requestedIds.push(
+            ...(url.searchParams.get("computer_ids")?.split(",") ?? []),
+          );
+        }
+      };
+      server.events.on("request:start", captureSnapsRequest);
+      onTestFinished(() => {
+        server.events.removeListener("request:start", captureSnapsRequest);
+      });
+
+      renderPageActions({
+        selectedInstances: [ubuntuInstance, windowsInstance],
+      });
+
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[4] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: "Uninstall" }),
+      );
+      await userEvent.click(await screen.findByRole("searchbox"));
+
+      await waitFor(() => {
+        expect(requestedIds).not.toHaveLength(0);
+      });
+      expect(requestedIds).toEqual([String(ubuntuInstance.id)]);
     });
   });
 

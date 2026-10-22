@@ -1,16 +1,14 @@
-import type { SnapAction, SnapMode, SnapWithCount } from "../../../../types";
+import type {
+  SnapAction,
+  SnapMode,
+  SnapModeConfig,
+  SnapWithCount,
+} from "../../../../types";
 import { capitalize, pluralize } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./ConfirmSnapActionModal.module.scss";
 import { getChangeChannelVerb } from "../../helpers";
-
-interface SnapModeConfig {
-  confinement?: string;
-  mode: SnapMode;
-  value: string;
-  channel?: string;
-}
 
 interface ConfirmSnapActionModalProps {
   readonly actionVerb: SnapAction;
@@ -35,34 +33,16 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   submitText,
   snapModeConfigs = {},
 }) => {
-  const isChangeChannelOrInstall = ["install", "change channel"].includes(
-    actionVerb,
-  );
   const hasChannelMode = snapModes.includes("channel");
   const hasRevisionMode = snapModes.includes("revision");
   const isMixedChangeMode = hasChannelMode && hasRevisionMode;
   const changeChannelVerb = getChangeChannelVerb(snapModes);
 
-  // A missing config entry means the snap was never touched by the user.
-  // For change channel, that only happens when no channel data was
-  // available to pick a default from (the "Default channel" case, mirrored
-  // by the fallback default in SnapsActionForm.tsx), so it must default to
-  // channel mode with no channel selected rather than being read as
-  // "not classic". Other actions never populate snapChangeConfigs at all,
-  // so this default must stay scoped to change channel.
-  const isClassic = (snap: SnapWithCount) => {
-    const config = snapModeConfigs[snap.snap.id];
-
-    if (config?.confinement === "classic") {
-      return true;
-    }
-
-    return (
-      isChangeChannelOrInstall &&
-      config?.mode !== "revision" &&
-      !config?.channel
-    );
-  };
+  // confinement is "classic" either because the channel-map data forces it
+  // (selected channel requires classic on some architecture) or because the
+  // user opted in via a checkbox (revision mode, or default-channel case)
+  const isClassic = (snap: SnapWithCount) =>
+    snapModeConfigs[snap.snap.id]?.confinement === "classic";
 
   const classicSnaps = snaps.filter(isClassic);
 
@@ -75,6 +55,28 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   const hasClassicSnaps = classicSnaps.length > 0;
 
   const snapsToShow = hasClassicSnaps ? classicSnaps : snaps;
+
+  const pluralizeBySnaps = (singular: string, plural: string) =>
+    pluralize(snaps.length, [singular, plural]);
+
+  // Restate what was chosen for each snap so the user can verify the
+  // revision or channel before queueing the activity.
+  const getSnapDetail = (snap: SnapWithCount) => {
+    const config = snapModeConfigs[snap.snap.id];
+
+    if (config?.mode === "revision" && config.value) {
+      return `revision ${config.value}`;
+    }
+    if (config?.mode === "channel") {
+      // an empty channel means no channels were found, so the snap
+      // installs from its default channel
+      if (!config.channel) {
+        return "default";
+      }
+      return config.channel;
+    }
+    return undefined;
+  };
 
   const getTitle = () => {
     const snapsText = pluralize(snaps.length, ["snap"], "exact");
@@ -119,9 +121,15 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
       return "Snaps set to a channel will update to that channel's latest revision. Snaps set to a specific revision will keep tracking their current channel, so a future refresh may replace it with that channel's latest revision.";
     }
     if (hasRevisionMode) {
-      return "Installing the specified revision will not change the snap's tracked channel, so a future refresh may replace it with that channel's latest revision.";
+      return pluralizeBySnaps(
+        "Installing the specified revision will not change the snap's tracked channel, so a future refresh may replace it with that channel's latest revision.",
+        "Installing the specified revisions will not change the snaps' tracked channels, so a future refresh may replace them with those channels' latest revisions.",
+      );
     }
-    return "Changing the channel will update the snap to the latest revision on the new channel.";
+    return pluralizeBySnaps(
+      "Changing the channel will update the snap to the latest revision on the new channel.",
+      "Changing the channels will update the snaps to the latest revision on their new channels.",
+    );
   };
 
   const getInstallModeText = () => {
@@ -138,12 +146,17 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     if (hasRevisionMode) {
       return (
         <>
-          Installed snaps will track <code>latest/stable</code>, so a future
-          refresh may replace it with that channel&apos;s latest revision.
+          {pluralizeBySnaps("The installed snap", "Installed snaps")} will track{" "}
+          <code>latest/stable</code>, so a future refresh may replace{" "}
+          {pluralizeBySnaps("it", "them")} with that channel&apos;s latest
+          revision.
         </>
       );
     }
-    return "Installing the snap will set it to the latest revision on the specified channel.";
+    return pluralizeBySnaps(
+      "Installing the snap will set it to the latest revision on the specified channel.",
+      "Installing the snaps will set them to the latest revision on the specified channels.",
+    );
   };
 
   const getClassicWarningText = () => {
@@ -162,19 +175,26 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   const getWarningText = () => {
     switch (actionVerb) {
       case "refresh":
-        return "Landscape will check each of the selected instances for a newer revision on the channel that snap is currently tracking, and install it where one is found.";
+        return `Landscape will check each of the selected instances for a newer revision on the channel ${pluralizeBySnaps("that snap", "each snap")} is currently tracking, and install it where one is found.`;
       case "uninstall":
         return (
           <strong>
-            These will be queued to uninstall from all relevant instances.
+            {pluralizeBySnaps("It", "They")} will be queued to uninstall from
+            all relevant instances.
           </strong>
         );
       case "hold":
-        return "Landscape will hold all refreshes from the moment the client executes the activity. If the snap was already held, Landscape will replace the existing hold with an indefinite one.";
+        return `Landscape will hold all refreshes from the moment the client executes the activity. ${pluralizeBySnaps(
+          "If the snap was already held, Landscape will replace the existing hold with an indefinite one.",
+          "If any of the snaps were already held, Landscape will replace the existing holds with indefinite ones.",
+        )}`;
       case "install":
         return getInstallModeText();
       case "unhold":
-        return "Each refresh will now update the snap to the latest revision on the current channel.";
+        return pluralizeBySnaps(
+          "Each refresh will now update the snap to the latest revision on the current channel.",
+          "Each refresh will now update the snaps to the latest revision on their current channels.",
+        );
       case "change channel":
         return getChangeChannelModeText();
     }
@@ -195,9 +215,19 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     >
       <p className={classes.summary}>{getInfoText()}:</p>
       <ul>
-        {snapsToShow.map(({ snap }) => (
-          <li key={snap.name}>{snap.name}</li>
-        ))}
+        {snapsToShow.map((snapWithCount) => {
+          const { name } = snapWithCount.snap;
+          const detail = getSnapDetail(snapWithCount);
+
+          return (
+            <li key={name}>
+              <span>{name}</span>
+              {detail ? (
+                <span className="u-text--muted"> ({detail})</span>
+              ) : null}
+            </li>
+          );
+        })}
       </ul>
       {hasClassicSnaps ? (
         <p className={classes.warning}>{getClassicWarningText()}</p>

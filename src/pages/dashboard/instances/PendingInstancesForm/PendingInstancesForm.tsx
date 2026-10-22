@@ -21,7 +21,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import classes from "./PendingInstancesForm.module.scss";
 import { ROUTES } from "@/libs/routes";
-import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "./constants";
+import { AUTO_REGISTER_NEW_COMPUTERS_DOCUMENTATION_URL } from "./constants";
 import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 
 interface PendingInstanceListProps {
@@ -111,7 +111,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
         <Link to={ROUTES.settings.general()}>Org. settings</Link>
         <span> or </span>
         <a
-          href={MANAGING_COMPUTERS_DOCUMENTATION_URL}
+          href={AUTO_REGISTER_NEW_COMPUTERS_DOCUMENTATION_URL}
           target="_blank"
           rel="nofollow noopener noreferrer"
         >

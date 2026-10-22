@@ -1,32 +1,27 @@
 import type { FC } from "react";
 import { useEffect, useState, useMemo, useRef } from "react";
-import {
-  CheckboxInput,
-  Input,
-  Notification,
-  Select,
-} from "@canonical/react-components";
+import { Input, Notification, Select } from "@canonical/react-components";
 import classNames from "classnames";
-import type { SnapWithCount, SnapMode } from "../../types";
+import type { SnapMode, SnapModeConfig } from "../../types";
 import classes from "./SnapChannelRevisionFields.module.scss";
 import { MODE_OPTIONS } from "./helpers";
 import { useTheme } from "@/context/theme";
+import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 import { useGetSnapInfo } from "../../api";
 import {
   getChannelConfinement,
   getChannelOptions,
+  isRevisionTooLarge,
   isValidRevision,
 } from "../../helpers";
 
+const CLASSIC_CONFINEMENT_TOOLTIP_MESSAGE =
+  "Check the snap store if you're not sure whether this release requires classic confinement.";
+
 interface SnapChannelRevisionFieldsProps {
   readonly instanceIds: number[];
-  readonly selectedSnap: SnapWithCount;
-  readonly snapModeConfig: {
-    mode: SnapMode;
-    value: string;
-    channel?: string;
-    confinement?: string;
-  };
+  readonly snapName: string;
+  readonly snapModeConfig: SnapModeConfig;
   readonly isLoading?: boolean;
   readonly hasAttemptedSubmit?: boolean;
   readonly onLoadingChange?: (isLoading: boolean) => void;
@@ -41,7 +36,7 @@ interface SnapChannelRevisionFieldsProps {
 
 const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   instanceIds,
-  selectedSnap,
+  snapName,
   snapModeConfig: { mode, value, channel, confinement },
   isLoading = false,
   hasAttemptedSubmit,
@@ -51,7 +46,6 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
   onModeChange,
 }) => {
   const [isClassicConfinement, setIsClassicConfinement] = useState(false);
-  const [revisionValue, setRevisionValue] = useState(value);
 
   const [prevMode, setPrevMode] = useState(mode);
   if (mode !== prevMode) {
@@ -59,15 +53,9 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
     setIsClassicConfinement(false);
   }
 
-  const [prevValue, setPrevValue] = useState(value);
-  if (value !== prevValue) {
-    setPrevValue(value);
-    setRevisionValue(value);
-  }
-
   const { snapInfo, isSnapInfoLoading, isSnapInfoError } = useGetSnapInfo({
     instance_id: instanceIds[0] ?? 0,
-    name: selectedSnap.snap.name,
+    name: snapName,
   });
 
   const channelOptions = useMemo(
@@ -129,6 +117,9 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
     if (mode === "revision" && !value) {
       return "This field is required";
     }
+    if (mode === "revision" && isRevisionTooLarge(value)) {
+      return "Revision number is too large";
+    }
     if (mode === "revision" && !isValidRevision(value)) {
       return "Revision must be a positive whole number";
     }
@@ -141,7 +132,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
     <>
       <div className={classNames(classes.fieldsRow, !isDarkMode && "is-paper")}>
         <Select
-          aria-label={`Snap channel or revision for ${selectedSnap.snap.name}`}
+          aria-label={`Snap channel or revision for ${snapName}`}
           options={MODE_OPTIONS}
           value={mode}
           onChange={(event) => {
@@ -150,7 +141,7 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
         />
         {mode === "channel" ? (
           <Select
-            aria-label={`Channel for ${selectedSnap.snap.name}`}
+            aria-label={`Channel for ${snapName}`}
             disabled={isLoading || channelOptions.length === 0}
             value={value}
             error={error}
@@ -179,31 +170,32 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
           <Input
             type="text"
             inputMode="numeric"
-            aria-label={`Revision for ${selectedSnap.snap.name}`}
-            value={revisionValue}
+            aria-label={`Revision for ${snapName}`}
+            value={value}
             error={error}
             onChange={(event) => {
-              setRevisionValue(event.currentTarget.value.replace(/\D/g, ""));
-            }}
-            onBlur={(event) => {
-              handleChange(event.currentTarget.value, isClassicConfinement);
+              handleChange(
+                event.currentTarget.value.replace(/\D/g, ""),
+                isClassicConfinement,
+              );
             }}
           />
         )}
       </div>
       {mode === "revision" ? (
-        <CheckboxInput
+        <CheckboxInputWithHelp
           label="Use classic confinement"
-          className={classes.classicConfinementCheckbox}
+          wrapperClassName={classes.classicConfinementCheckbox}
+          tooltipMessage={CLASSIC_CONFINEMENT_TOOLTIP_MESSAGE}
           checked={isClassicConfinement}
           onChange={(event) => {
             const { checked } = event.currentTarget;
             setIsClassicConfinement(checked);
-            onChange(revisionValue, undefined, checked ? "classic" : "strict");
+            onChange(value, undefined, checked ? "classic" : "strict");
           }}
         />
       ) : null}
-      {confinement === "classic" && mode === "channel" ? (
+      {confinement === "classic" && mode === "channel" && channel ? (
         <Notification
           severity="caution"
           className={classNames(
@@ -211,23 +203,23 @@ const SnapChannelRevisionFields: FC<SnapChannelRevisionFieldsProps> = ({
             "u-no-margin--bottom",
           )}
         >
-          This snap requires classic confinement
+          This release requires classic confinement
         </Notification>
       ) : null}
       {!isSnapInfoLoading &&
       !isSnapInfoError &&
       mode === "channel" &&
-      !channel ? (
-        <Notification
-          severity="caution"
-          className={classNames(
-            classes.classicNotification,
-            "u-no-margin--bottom",
-          )}
-        >
-          We couldn&apos;t confirm if this snap requires classic confinement.
-          Check the default channel on the snap store to make sure.
-        </Notification>
+      channelOptions.length === 0 ? (
+        <CheckboxInputWithHelp
+          label="Use classic confinement"
+          wrapperClassName={classes.classicConfinementCheckbox}
+          tooltipMessage={CLASSIC_CONFINEMENT_TOOLTIP_MESSAGE}
+          checked={confinement === "classic"}
+          onChange={(event) => {
+            const { checked } = event.currentTarget;
+            onChange(value, channel, checked ? "classic" : "strict");
+          }}
+        />
       ) : null}
     </>
   );

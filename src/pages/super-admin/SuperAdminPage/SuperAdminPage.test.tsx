@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import type { FC, ReactNode } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import { delay, http, HttpResponse } from "msw";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { API_URL } from "@/constants";
 import useAuth from "@/hooks/useAuth";
 import { ROUTES } from "@/libs/routes";
@@ -95,6 +95,10 @@ const recordSwitches = (delayMs = 0): unknown[] => {
 describe("SuperAdminPage", () => {
   const user = userEvent.setup();
 
+  beforeEach(() => {
+    signInAs(authUser.current_account);
+  });
+
   it("renders the super admin layout around the child page", async () => {
     renderEnteringWith(null);
 
@@ -142,8 +146,6 @@ describe("SuperAdminPage", () => {
 
   describe("after a support session", () => {
     it("returns a session that lands in another account later", async () => {
-      signInAs(authUser.current_account);
-
       const switches = recordSwitches();
 
       renderEnteringWith(
@@ -215,8 +217,6 @@ describe("SuperAdminPage", () => {
     });
 
     it("leaves the session alone when it is in one of the person's accounts", async () => {
-      signInAs(authUser.current_account);
-
       const switches = recordSwitches();
 
       renderEnteringWith(null);

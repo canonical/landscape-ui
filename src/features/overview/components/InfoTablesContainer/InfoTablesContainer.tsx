@@ -399,7 +399,11 @@ const InfoTablesContainer: FC = () => {
   const handleUpgradesLimitChange = async () => {
     switch (currentUpgradesTab) {
       case "instances": {
-        await navigate(ROUTES.instances.root({ status: "package-upgrades" }));
+        await navigate(
+          ROUTES.instances.root({
+            upgrades: ["security-upgrades", "package-upgrades"],
+          }),
+        );
         break;
       }
 

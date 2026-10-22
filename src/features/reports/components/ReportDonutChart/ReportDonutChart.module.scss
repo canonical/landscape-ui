@@ -1,5 +1,6 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
+@import "../../styles/layout";
 
 $segment-green: $color-positive;
 $segment-green-light: rgba($color-positive, 0.5);
@@ -11,18 +12,18 @@ $segment-red: $color-negative;
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: $sp-medium;
+  gap: $report-chart-gap;
 }
 
 .chart {
-  flex: 0 0 192px;
-  width: 192px;
+  flex: 0 0 $report-chart-size;
+  width: $report-chart-size;
 }
 
 .svg {
   display: block;
-  height: 192px;
-  width: 192px;
+  height: $report-chart-size;
+  width: $report-chart-size;
 }
 
 .legend {
@@ -44,7 +45,7 @@ $segment-red: $color-negative;
 .centerSubLabel {
   dominant-baseline: middle;
   fill: $colors--theme--text-muted;
-  font-size: 6px;
+  font-size: 10px;
   text-anchor: middle;
 }
 

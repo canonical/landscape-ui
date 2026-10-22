@@ -1,5 +1,7 @@
 @import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_breakpoints";
 @import "vanilla-framework/scss/settings_spacing";
+@import "../../styles/layout";
 
 .table {
   border-collapse: collapse;
@@ -14,6 +16,10 @@
     padding: 0 0.5rem 0.75rem;
     text-align: left;
     text-transform: uppercase;
+
+    &.countCell {
+      text-align: right;
+    }
   }
 
   td {
@@ -34,7 +40,7 @@
 
 .markerCell {
   white-space: nowrap;
-  width: 1.5rem;
+  width: $report-dot-column-width;
 }
 
 .labelCell {
@@ -55,7 +61,11 @@
 }
 
 .bar .markerCell {
-  width: 40%;
+  width: $report-marker-column-width;
+
+  @media (width < #{$breakpoint-small}) {
+    width: 40%;
+  }
 }
 
 .countZero {

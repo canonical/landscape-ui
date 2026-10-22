@@ -1,4 +1,3 @@
-import { SidePanelTableFilterChips } from "@/components/filter";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
@@ -14,6 +13,7 @@ import {
 import { Button, Modal, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import { useState, type FC } from "react";
+import { createPortal } from "react-dom";
 import UpgradesList from "../PackagesUpgradeList";
 import UpgradesSummary from "../PackagesUpgradeSummary";
 import classes from "./PackagesUpgradeForm.module.scss";
@@ -110,15 +110,6 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
             onSearch={handleSearch}
             autoComplete="off"
           />
-          <SidePanelTableFilterChips
-            filters={[
-              {
-                label: "Search",
-                item: search,
-                clear: clearSearch,
-              },
-            ]}
-          />
           {isPendingUpgrades ? (
             <LoadingState />
           ) : (
@@ -174,23 +165,29 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
               }
             }}
           />
-          {limitModalOpen && (
-            <Modal
-              close={closeLimitModal}
-              title="Upgrade limit exceeded"
-              buttonRow={
-                <Button appearance="positive" onClick={closeLimitModal}>
-                  OK
-                </Button>
-              }
-            >
-              <p className="u-margin--bottom">
-                Upgrades are only available for a selection of{" "}
-                {pluralize(DEB_MANAGEMENT_PACKAGE_LIMIT, ["package"], "exact")}{" "}
-                or fewer. Please select fewer packages, then try again.
-              </p>
-            </Modal>
-          )}
+          {limitModalOpen &&
+            createPortal(
+              <Modal
+                close={closeLimitModal}
+                title="Upgrade limit exceeded"
+                buttonRow={
+                  <Button appearance="positive" onClick={closeLimitModal}>
+                    OK
+                  </Button>
+                }
+              >
+                <p className="u-margin--bottom">
+                  Upgrades are only available for a selection of{" "}
+                  {pluralize(
+                    DEB_MANAGEMENT_PACKAGE_LIMIT,
+                    ["package"],
+                    "exact",
+                  )}{" "}
+                  or fewer. Please select fewer packages, then try again.
+                </p>
+              </Modal>,
+              document.body,
+            )}
         </>
       );
 

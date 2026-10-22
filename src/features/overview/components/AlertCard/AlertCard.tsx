@@ -1,5 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import {
+  getStatusRouteParams,
   useGetInstances,
   useGetPendingInstances,
   type Status,
@@ -45,10 +46,14 @@ const AlertCard: FC<Status> = ({
     },
   );
 
-  const { pendingInstances, isGettingPendingInstances, pendingInstancesError } =
-    useGetPendingInstances(undefined, {
-      enabled: isPendingComputersAlert,
-    });
+  const {
+    pendingInstances,
+    isGettingPendingInstances,
+    pendingInstancesError,
+    isPendingInstancesForbidden,
+  } = useGetPendingInstances(undefined, {
+    enabled: isPendingComputersAlert,
+  });
 
   const alertData = isPendingComputersAlert
     ? pendingInstances
@@ -62,6 +67,7 @@ const AlertCard: FC<Status> = ({
   const isError = isPendingComputersAlert
     ? pendingInstancesError
     : isErrorInstancesWithAlert;
+  const isForbidden = isPendingComputersAlert && isPendingInstancesForbidden;
 
   const handlePendingInstancesReview = () => {
     setSidePanelContent(
@@ -88,7 +94,13 @@ const AlertCard: FC<Status> = ({
         <p className="u-no-margin--bottom">Error loading data.</p>
       )}
 
-      {alertData && !isLoading && !isError && (
+      {!isLoading && isForbidden && (
+        <p className="u-no-margin--bottom u-text--muted">
+          You don&apos;t have permission to view pending instances.
+        </p>
+      )}
+
+      {alertData && !isLoading && !isError && !isForbidden && (
         <>
           {alertCount > 0 ? (
             <AlertLink
@@ -101,7 +113,9 @@ const AlertCard: FC<Status> = ({
               to={
                 isPendingComputersAlert
                   ? undefined
-                  : ROUTES.instances.root({ status: filterValue })
+                  : ROUTES.instances.root(
+                      getStatusRouteParams({ alertType, filterValue }),
+                    )
               }
             />
           ) : (

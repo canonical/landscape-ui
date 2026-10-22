@@ -1,4 +1,8 @@
-import { ALERT_STATUSES, STATUS_FILTERS } from "@/features/instances";
+import {
+  ALERT_STATUSES,
+  getStatusRouteParams,
+  STATUS_FILTERS,
+} from "@/features/instances";
 import type { PageParams } from "@/libs/pageParamsManager";
 import { hasProperty } from "@/utils/_helpers";
 import type { AlertSummary } from "../../types";
@@ -20,7 +24,7 @@ export const getRouteParams = (alert: AlertSummary): Partial<PageParams> => {
   if (isContractExpiryFilter) {
     return { contractExpiryDays: alertStatus.filterValue };
   } else if (isStatusFilter) {
-    return { status: alertStatus.filterValue };
+    return getStatusRouteParams(alertStatus);
   } else {
     return { query: alertStatus.query };
   }

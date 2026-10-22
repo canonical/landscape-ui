@@ -2,7 +2,12 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { type FC, useCallback, useState } from "react";
 import { getActionVerb, getRequestAction, hasNotification } from "./helpers";
 import { capitalize, pluralize } from "@/utils/_helpers";
-import type { SnapAction, SnapWithCount, SnapMode } from "../../types";
+import type {
+  SnapAction,
+  SnapWithCount,
+  SnapMode,
+  SnapModeConfig,
+} from "../../types";
 import classes from "./SnapsActionForm.module.scss";
 import classNames from "classnames";
 import SnapBulkSearch from "./components/SnapBulkSearch";
@@ -13,7 +18,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import useNotify from "@/hooks/useNotify";
 import { useBoolean } from "usehooks-ts";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
-import { isValidRevision } from "../../helpers";
+import { getSnapActionArgs, isValidRevision } from "../../helpers";
 import SnapItemTitleRow from "./components/SnapItemTitleRow";
 import SnapItemSubtitle from "./components/SnapItemSubtitle";
 import SnapChannelRevisionFields from "../SnapChannelRevisionFields";
@@ -35,15 +40,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   );
   const [errorSnapIds, setErrorSnapIds] = useState<Record<string, boolean>>({});
   const [snapModeConfigs, setSnapModeConfigs] = useState<
-    Record<
-      string,
-      {
-        mode: SnapMode;
-        value: string;
-        channel?: string;
-        confinement?: string;
-      }
-    >
+    Record<string, SnapModeConfig>
   >({});
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const {
@@ -91,26 +88,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
             return { name: item.snap.name };
           }
 
-          const config = snapModeConfigs[item.snap.id];
-          const channel = config?.channel?.trim() || undefined;
-          const args =
-            config?.mode === "revision"
-              ? {
-                  revision: config.value,
-                  classic: config.confinement === "classic",
-                }
-              : {
-                  ...(channel ? { channel } : {}),
-                  // The classic flag is safely ignored by snapd when not
-                  // required, so default to classic for the unresolved
-                  // "default channel" case, or when the selected channel
-                  // requires classic on at least one architecture.
-                  classic: !channel || config?.confinement === "classic",
-                };
-
           return {
             name: item.snap.name,
-            args,
+            args: getSnapActionArgs(
+              snapModeConfigs[item.snap.id] ?? { mode: "channel", value: "" },
+            ),
           };
         }),
       });
@@ -275,7 +257,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
               const channelRevisionFields = (
                 <SnapChannelRevisionFields
                   instanceIds={selectedInstances}
-                  selectedSnap={item}
+                  snapName={item.snap.name}
                   snapModeConfig={config}
                   hasAttemptedSubmit={hasAttemptedSubmit}
                   onLoadingChange={(isLoading) => {
@@ -324,7 +306,9 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                         name={item.snap.name}
                         onDelete={handleDelete}
                       />
-                      {channelRevisionFields}
+                      <div className={classes.installFields}>
+                        {channelRevisionFields}
+                      </div>
                     </li>
                   );
                 }

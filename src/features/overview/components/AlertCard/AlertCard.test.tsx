@@ -68,6 +68,18 @@ describe("AlertCard", () => {
     );
   });
 
+  it("links upgrade alerts to the upgrades filter", async () => {
+    renderWithProviders(
+      <AlertCard {...ALERT_STATUSES.SecurityUpgradesAlert} />,
+    );
+
+    const link = await screen.findByRole("link", { name: /instance/i });
+    expect(link).toHaveAttribute(
+      "href",
+      ROUTES.instances.root({ upgrades: ["security-upgrades"] }),
+    );
+  });
+
   it("opens pending instances review in side panel", async () => {
     const user = userEvent.setup();
     const pendingAlert = ALERT_STATUSES.PendingComputersAlert;
@@ -95,5 +107,21 @@ describe("AlertCard", () => {
     expect(
       screen.queryByRole("button", { name: /instance/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("renders a permission message without an error for pending alerts when forbidden", async () => {
+    setEndpointStatus({ status: "forbidden", path: "GetPendingComputers" });
+    const pendingAlert = ALERT_STATUSES.PendingComputersAlert;
+
+    renderWithProviders(<AlertCard {...pendingAlert} />);
+
+    expect(
+      await screen.findByText(
+        /you don't have permission to view pending instances/i,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Error loading data.")).not.toBeInTheDocument();
+    expect(screen.queryByText("Forbidden.")).not.toBeInTheDocument();
+    expect(screen.queryByText("instances")).not.toBeInTheDocument();
   });
 });

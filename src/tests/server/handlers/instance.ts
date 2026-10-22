@@ -440,6 +440,12 @@ export default [
   http.get<Record<"computerId", string>, GetGroupsParams, GroupsResponse>(
     `${API_URL}computers/:computerId/groups`,
     () => {
+      const endpointStatus = getEndpointStatus("computers/:computerId/groups");
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json(endpointStatus.response as GroupsResponse);
+      }
+
       return HttpResponse.json({ groups: userGroups });
     },
   ),
@@ -495,6 +501,17 @@ export default [
       endpointStatus.status === "empty"
     ) {
       return HttpResponse.json([]);
+    }
+
+    if (
+      endpointStatus.path === "GetPendingComputers" &&
+      endpointStatus.status === "forbidden"
+    ) {
+      throw createEndpointStatusError({
+        status: 403,
+        error: "Forbidden",
+        message: "Forbidden.",
+      });
     }
 
     return HttpResponse.json(pendingInstances);

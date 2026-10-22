@@ -18,6 +18,7 @@ import type {
   SearchUpgradesRequest,
 } from "../types";
 import { mapGroupedResultToInstancePackage } from "../helpers";
+import { toInstanceQuery } from "@/utils/_helpers";
 
 interface GetInstancePackagesParams extends ComputerPackageSearchParams {
   instance_id: number;
@@ -56,8 +57,12 @@ export interface InstancePackagesToExclude {
 }
 
 interface UpgradeInstancePackagesParams {
-  computers: InstancePackagesToExclude[];
+  computers: (InstancePackagesToExclude & {
+    excludePackageNames: string[];
+  })[];
 }
+
+const INSTALLED_PACKAGES_SEARCH_LIMIT = 500;
 
 const sanitizeFilterState = (state?: FilterState): FilterState | undefined => {
   if (!state || state === FilterState.UNSPECIFIED) {
@@ -201,8 +206,59 @@ export default function usePackages() {
     AxiosError<ApiError>,
     UpgradeInstancePackagesParams
   >({
-    mutationFn: async (params) =>
-      authFetch.post("/computers/upgrade-packages", params),
+    mutationFn: async ({ computers }) => {
+      const excludedNames = [
+        ...new Set(
+          computers.flatMap(({ excludePackageNames }) => excludePackageNames),
+        ),
+      ];
+      const installedIdsByName = new Map<string, number[]>();
+
+      // excluded names must be resolved to installed versions across the selection
+      if (excludedNames.length) {
+        let offset = 0;
+        let count = Infinity;
+
+        while (offset < count) {
+          const { data } = await authFetch.post<SearchPackagesResponse>(
+            "packages:search",
+            {
+              computer_query: toInstanceQuery(computers.map(({ id }) => id)),
+              names: excludedNames.join(","),
+              installed: FilterState.TRUE,
+              limit: INSTALLED_PACKAGES_SEARCH_LIMIT,
+              offset,
+            },
+          );
+
+          for (const { id, name } of data.packages) {
+            installedIdsByName.set(name, [
+              ...(installedIdsByName.get(name) ?? []),
+              id,
+            ]);
+          }
+
+          ({ count } = data);
+          offset += INSTALLED_PACKAGES_SEARCH_LIMIT;
+        }
+      }
+
+      return authFetch.post("/computers/upgrade-packages", {
+        computers: computers.map(
+          ({ id, exclude_packages, excludePackageNames }) => ({
+            id,
+            exclude_packages: [
+              ...new Set([
+                ...exclude_packages,
+                ...excludePackageNames.flatMap(
+                  (name) => installedIdsByName.get(name) ?? [],
+                ),
+              ]),
+            ],
+          }),
+        ),
+      });
+    },
     onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packages"] }),
