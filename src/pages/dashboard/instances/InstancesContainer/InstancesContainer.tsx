@@ -5,6 +5,7 @@ import {
   InstanceList,
   InstancesHeader,
   InstancesEmptyState,
+  PendingInstancesNotification,
 } from "@/features/instances";
 import type { Instance } from "@/types/Instance";
 import { memo, useState } from "react";
@@ -63,36 +64,39 @@ const InstancesContainer = memo(function InstancesContainer({
   const hasNoInstances =
     !isGettingInstances && instanceCount === 0 && !isFilteringInstances;
 
-  if (hasNoInstances) {
-    return <InstancesEmptyState />;
-  }
-
   return (
     <>
-      <InstancesHeader
-        columnFilterOptions={columnFilterOptions}
-        onChangeFilter={onChangeFilter}
-      />
-
-      {isGettingInstances ? (
-        <LoadingState />
+      <PendingInstancesNotification />
+      {hasNoInstances ? (
+        <InstancesEmptyState />
       ) : (
-        <InstanceList
-          instances={instances}
-          instanceCount={instanceCount}
-          selectedInstances={selectedInstances}
-          setColumnFilterOptions={setColumnFilterOptions}
-          setSelectedInstances={setSelectedInstances}
-          isAllSelected={isAllSelected}
-          onSelectAll={onSelectAll}
-          onClearSelection={onClearSelection}
-        />
-      )}
+        <>
+          <InstancesHeader
+            columnFilterOptions={columnFilterOptions}
+            onChangeFilter={onChangeFilter}
+          />
 
-      <TablePagination
-        totalItems={instanceCount}
-        currentItemCount={instances.length}
-      />
+          {isGettingInstances ? (
+            <LoadingState />
+          ) : (
+            <InstanceList
+              instances={instances}
+              instanceCount={instanceCount}
+              selectedInstances={selectedInstances}
+              setColumnFilterOptions={setColumnFilterOptions}
+              setSelectedInstances={setSelectedInstances}
+              isAllSelected={isAllSelected}
+              onSelectAll={onSelectAll}
+              onClearSelection={onClearSelection}
+            />
+          )}
+
+          <TablePagination
+            totalItems={instanceCount}
+            currentItemCount={instances.length}
+          />
+        </>
+      )}
     </>
   );
 });

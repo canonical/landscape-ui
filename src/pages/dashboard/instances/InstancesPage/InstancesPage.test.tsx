@@ -1,11 +1,19 @@
 import * as Constants from "@/constants";
-import { API_URL, MANAGE_INSTANCES_DOCUMENTATION_URL } from "@/constants";
+import {
+  API_URL,
+  API_URL_OLD,
+  MANAGE_INSTANCES_DOCUMENTATION_URL,
+} from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
 import { features } from "@/tests/mocks/features";
+import { pendingInstances, ubuntuInstance } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import {
+  generatePaginatedResponse,
+  isAction,
+} from "@/tests/server/handlers/_helpers";
 import userEvent from "@testing-library/user-event";
 import { screen, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
@@ -91,7 +99,30 @@ describe("InstancesPage", () => {
   });
 
   it("allows approving pending instances from the empty state", async () => {
-    setEndpointStatus({ status: "empty", path: "computers" });
+    let approved = false;
+    server.use(
+      http.get(`${API_URL}computers`, () =>
+        HttpResponse.json(
+          generatePaginatedResponse({
+            data: approved ? [ubuntuInstance] : [],
+            offset: 0,
+            limit: 20,
+          }),
+        ),
+      ),
+      http.get(API_URL_OLD, ({ request }) => {
+        if (isAction(request, "GetPendingComputers")) {
+          return HttpResponse.json(approved ? [] : pendingInstances);
+        }
+
+        if (!isAction(request, "AcceptPendingComputers")) {
+          return;
+        }
+
+        approved = true;
+        return HttpResponse.json(pendingInstances);
+      }),
+    );
     const user = userEvent.setup();
 
     renderWithProviders(<InstancesPage />);
@@ -129,6 +160,16 @@ describe("InstancesPage", () => {
     expect(
       await screen.findByText(/You have approved \d+ pending instances/),
     ).toBeInTheDocument();
+    const registeredInstancesTable = await screen.findByRole("table");
+    expect(
+      within(registeredInstancesTable).getByRole("row", {
+        name: `${ubuntuInstance.title} instance row`,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Review Pending Instances" }),
+    ).not.toBeInTheDocument();
   });
 
   it("does not show the report panel for a stale report side path when feature is disabled", async () => {

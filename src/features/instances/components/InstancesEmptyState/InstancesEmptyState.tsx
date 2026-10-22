@@ -1,22 +1,18 @@
 import type { FC } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 import { MANAGE_INSTANCES_DOCUMENTATION_URL } from "@/constants";
-import PendingInstancesNotification from "../PendingInstancesNotification";
 
 const InstancesEmptyState: FC = () => {
   return (
-    <>
-      <PendingInstancesNotification />
-      <EmptyState
-        title="No instances found"
-        icon="connected"
-        body="You don't have any instances registered to Landscape yet."
-        link={{
-          href: MANAGE_INSTANCES_DOCUMENTATION_URL,
-          text: "How to manage instances in Landscape",
-        }}
-      />
-    </>
+    <EmptyState
+      title="No instances found"
+      icon="connected"
+      body="You don't have any instances registered to Landscape yet."
+      link={{
+        href: MANAGE_INSTANCES_DOCUMENTATION_URL,
+        text: "How to manage instances in Landscape",
+      }}
+    />
   );
 };
 

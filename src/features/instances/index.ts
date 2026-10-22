@@ -10,6 +10,7 @@ export {
 export { default as InstanceRemoveFromLandscapeModal } from "./components/InstanceRemoveFromLandscapeModal";
 export { default as InstancesHeader } from "./components/InstancesHeader";
 export { default as InstancesEmptyState } from "./components/InstancesEmptyState";
+export { default as PendingInstancesNotification } from "./components/PendingInstancesNotification";
 export { default as InstancesPageActions } from "./components/InstancesPageActions";
 export { default as RecoveryKeyStatus } from "./components/RecoveryKeyStatus";
 export { default as TagsAddConfirmationModal } from "./components/TagsAddConfirmationModal";
