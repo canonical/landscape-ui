@@ -5,6 +5,12 @@ import { deliveryValidationSchema } from "@/components/form/DeliveryScheduling";
 export const NO_TAGGED_FEATURED_INSTANCES_WARNING_MESSAGE =
   "There are no instances with the selected tags that can run scripts.";
 
+// Both instance queries ignore the page's URL pagination. The tag preview is
+// capped: the run itself submits the tag query, so the server resolves the
+// full target set.
+export const INSTANCE_OPTIONS_LIMIT = 1000;
+export const TAGGED_INSTANCES_PREVIEW_LIMIT = 100;
+
 export const INITIAL_VALUES: Omit<FormProps, "code"> = {
   deliver_after: "",
   deliver_immediately: true,
