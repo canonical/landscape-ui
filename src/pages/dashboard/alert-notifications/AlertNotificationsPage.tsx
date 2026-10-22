@@ -19,10 +19,13 @@ const AlertNotificationsPage: FC = () => {
     (alert) => alert.alert_type === "PendingComputersAlert",
   );
 
-  const { pendingInstances, isGettingPendingInstances } =
-    useGetPendingInstances(undefined, {
-      enabled: hasPendingInstancesAlert,
-    });
+  const {
+    pendingInstances,
+    isGettingPendingInstances,
+    isPendingInstancesForbidden,
+  } = useGetPendingInstances(undefined, {
+    enabled: hasPendingInstancesAlert,
+  });
 
   const isGettingAlerts =
     isGettingAlertsSummary ||
@@ -32,11 +35,17 @@ const AlertNotificationsPage: FC = () => {
     return <LoadingState />;
   }
 
+  const visibleAlerts = isPendingInstancesForbidden
+    ? alertsSummary.filter(
+        (alert) => alert.alert_type !== "PendingComputersAlert",
+      )
+    : alertsSummary;
+
   return (
     <PageMain>
       <PageHeader title="Alerts" />
       <PageContent>
-        {!alertsSummary.length ? (
+        {!visibleAlerts.length ? (
           <EmptyState
             title="No subscribed alerts found"
             icon="connected"
@@ -54,7 +63,7 @@ const AlertNotificationsPage: FC = () => {
           />
         ) : (
           <AlertNotificationsList
-            alerts={alertsSummary}
+            alerts={visibleAlerts}
             pendingInstances={pendingInstances}
           />
         )}
