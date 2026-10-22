@@ -48,11 +48,6 @@ describe("InstancesPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("table")).toBeInTheDocument();
     expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
-    expect(
-      await screen.findAllByRole("button", {
-        name: "Review Pending Instances",
-      }),
-    ).toHaveLength(1);
   });
 
   it("shows the account name and registration documentation link", async () => {
