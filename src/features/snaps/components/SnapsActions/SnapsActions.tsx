@@ -92,11 +92,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
         collapseFrom="lg"
         buttons={[
           singleSnap && sidePanel && (
-            <SwitchChannelButton
-              key="switch-channel"
-              snap={singleSnap}
-              selectedSnaps={selectedSnaps}
-            />
+            <SwitchChannelButton key="switch-channel" snap={singleSnap} />
           ),
           <Button
             type="button"
