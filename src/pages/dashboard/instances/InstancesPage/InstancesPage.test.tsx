@@ -40,6 +40,11 @@ describe("InstancesPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("table")).toBeInTheDocument();
     expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
+    expect(
+      await screen.findAllByRole("button", {
+        name: "Review Pending Instances",
+      }),
+    ).toHaveLength(1);
   });
 
   it("shows the account name and registration documentation link", async () => {
@@ -83,6 +88,49 @@ describe("InstancesPage", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
+
+  it("allows approving pending instances from the empty state", async () => {
+    setEndpointStatus({ status: "empty", path: "computers" });
+    const user = userEvent.setup();
+
+    renderWithProviders(<InstancesPage />);
+
+    await expectLoadingState();
+
+    expect(screen.getByText("No instances found")).toBeInTheDocument();
+    const reviewButtons = await screen.findAllByRole("button", {
+      name: "Review Pending Instances",
+    });
+    expect(reviewButtons).toHaveLength(1);
+    const [reviewButton] = reviewButtons;
+    assert(reviewButton);
+    await user.click(reviewButton);
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Review Pending Instances",
+      }),
+    ).toBeInTheDocument();
+    const table = await screen.findByRole("table");
+    const [selectAll] = within(table).getAllByRole("checkbox");
+    assert(selectAll);
+    await user.click(selectAll);
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+
+    expect(
+      await screen.findByRole("combobox", { name: "Access group" }),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+
+    const dialog = await screen.findByRole("dialog");
+    await user.click(
+      within(dialog).getByRole("button", { name: "Approve" }),
+    );
+
+    expect(
+      await screen.findByText(/You have approved \d+ pending instances/),
+    ).toBeInTheDocument();
   });
 
   it("does not show the report panel for a stale report side path when feature is disabled", async () => {
