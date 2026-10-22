@@ -1,3 +1,25 @@
+import type { ComputerPackageSearchParams } from "@/features/packages";
+
+export const getPackageSearchFilters = (
+  filter: string,
+): Pick<
+  ComputerPackageSearchParams,
+  "installed" | "upgrade" | "held" | "security_upgrades_available"
+> => {
+  switch (filter) {
+    case "":
+      return { installed: true };
+    case "upgrade":
+      return { upgrade: true };
+    case "security":
+      return { security_upgrades_available: true };
+    case "held":
+      return { held: true };
+    default:
+      return {};
+  }
+};
+
 export const getEmptyMessage = (filter: string, packageSearch: string) => {
   let message: string;
 

@@ -3,6 +3,7 @@ export interface ComputerPackageSearchParams {
   held?: boolean;
   installed?: boolean;
   security?: boolean;
+  security_upgrades_available?: true;
   upgrade?: boolean;
   search?: string;
   names?: string[];
