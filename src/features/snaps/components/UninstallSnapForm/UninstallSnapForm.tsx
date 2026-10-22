@@ -23,13 +23,13 @@ interface UninstallSnapFormProps {
 }
 
 const UninstallSnapForm: FC<UninstallSnapFormProps> = ({ installedSnaps }) => {
-  const { instanceId: urlInstanceId } = useParams<UrlParams>();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { snapAction } = useSnapAction();
 
-  const instanceId = Number(urlInstanceId);
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const formik = useFormik<SnapFormValues>({
     initialValues: INITIAL_VALUES,

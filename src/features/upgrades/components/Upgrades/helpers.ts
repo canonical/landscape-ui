@@ -1,4 +1,5 @@
 import type { TabsProps } from "@canonical/react-components";
+import type { InstancePackagesToExclude } from "@/features/packages";
 import type { Instance } from "@/types/Instance";
 import { TAB_LINKS } from "./constants";
 import type { UpgradesFormProps } from "./types";
@@ -34,4 +35,19 @@ export const getInitialValues = (instances: Instance[]): UpgradesFormProps => {
     excludedPackages: instances.map(({ id }) => ({ id, exclude_packages: [] })),
     excludedUsns: [],
   };
+};
+
+export const getExcludedPackagesWithNames = (
+  excludedPackages: InstancePackagesToExclude[],
+  packageNamesById: ReadonlyMap<number, string>,
+) => {
+  return excludedPackages.map(({ id, exclude_packages }) => ({
+    id,
+    exclude_packages: exclude_packages.filter(
+      (packageId) => !packageNamesById.has(packageId),
+    ),
+    excludePackageNames: exclude_packages.flatMap(
+      (packageId) => packageNamesById.get(packageId) ?? [],
+    ),
+  }));
 };

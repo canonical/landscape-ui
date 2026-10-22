@@ -1,8 +1,8 @@
 export type {
   GetAvailableSnapInfoParams,
-  GetAvailableSnapsParams,
   GetSnapsParams,
   SnapActionParams,
+  SnapChangeArgs,
 } from "./SnapsParams";
 
 export type {
@@ -10,9 +10,9 @@ export type {
   AvailableSnapInfo,
   ActionWithNotification,
   InstalledSnap,
-  SelectedSnaps,
   SnapStatus,
   SnapAction,
   SnapMode,
+  SnapModeConfig,
   SnapWithCount,
 } from "./Snap";

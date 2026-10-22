@@ -252,7 +252,7 @@ describe("SnapsActions", () => {
       ).toBeInTheDocument();
     });
 
-    it("disables switch channel and shows a tooltip when no channels are available", async () => {
+    it("opens switch channel side panel when no channels are available", async () => {
       const user = userEvent.setup();
 
       const snapWithNoChannels = installedSnaps.find((snap) => {
@@ -271,14 +271,19 @@ describe("SnapsActions", () => {
         `/${PATHS.instances.root}/${PATHS.instances.single}`,
       );
 
-      await waitFor(async () => {
-        await user.hover(
-          screen.getByRole("button", { name: "Switch channel" }),
-        );
+      await waitFor(() => {
         expect(
-          screen.getByText("No available channels to switch to."),
-        ).toBeVisible();
+          screen.getByRole("button", { name: "Switch channel" }),
+        ).not.toHaveAttribute("aria-disabled");
       });
+
+      await user.click(screen.getByRole("button", { name: "Switch channel" }));
+
+      expect(
+        await screen.findByRole("textbox", {
+          name: `Revision for ${snapWithNoChannels.snap.name}`,
+        }),
+      ).toBeInTheDocument();
     });
 
     it("opens uninstall side panel with single snap title in sidepanel mode", async () => {
