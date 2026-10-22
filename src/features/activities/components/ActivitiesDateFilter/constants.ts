@@ -6,11 +6,15 @@ export const INITIAL_VALUES: FormProps = {
   toDate: "",
 };
 
+const DATE_SCHEMA = Yup.date()
+  .transform((value: Date, originalValue: string) =>
+    originalValue === "" ? undefined : value,
+  )
+  .typeError("Invalid date format");
+
 export const VALIDATION_SCHEMA = Yup.object().shape({
-  fromDate: Yup.date().typeError("Invalid date format"),
-  toDate: Yup.date()
-    .typeError("Invalid date format")
-    .when("fromDate", ([from], schema) =>
-      from ? schema.min(from, "To date must be after From date") : schema,
-    ),
+  fromDate: DATE_SCHEMA,
+  toDate: DATE_SCHEMA.when("fromDate", ([from], schema) =>
+    from ? schema.min(from, "To date must be after From date") : schema,
+  ),
 });

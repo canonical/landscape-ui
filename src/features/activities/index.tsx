@@ -16,18 +16,12 @@ export const ActivityDetails: FC<
   );
 };
 
-export {
-  useApproveActivities,
-  useCancelActivities,
-  useGetActivities,
-  useGetActivityTypes,
-  useGetSingleActivity,
-  useRedoActivities,
-} from "./api";
+export * from "./api";
 export { default as Activities } from "./components/Activities";
 export { default as ActivitiesActions } from "./components/ActivitiesActions";
 export { default as ActivitiesContainer } from "./components/ActivitiesContainer";
 export { default as ActivitiesEmptyState } from "./components/ActivitiesEmptyState";
+export { default as ActivitiesList } from "./components/ActivitiesList";
 export { ACTIVITY_STATUSES } from "./constants";
 export { useOpenActivityDetails, useOpenActivityDetailsPanel } from "./hooks";
 export type {

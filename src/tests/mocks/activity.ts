@@ -21,6 +21,13 @@ export const SNAP_ACTION_ACTIVITY: ActivityGroup = {
   deliver_delay_window: 0,
 };
 
+export const activityParents: ActivityGroup[] = [
+  {
+    ...SNAP_ACTION_ACTIVITY,
+    actions: undefined,
+  },
+];
+
 export const RELEASE_UPGRADE_ACTIVITY: Activity = {
   id: 9001,
   type: "ReleaseUpgradeRequest",

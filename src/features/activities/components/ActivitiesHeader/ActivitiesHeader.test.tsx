@@ -43,20 +43,19 @@ describe("ActivitiesHeader", () => {
 
   it("should render filters", () => {
     expect(screen.getByText(/status/i)).toBeInTheDocument();
-    expect(screen.getByText(/type/i)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Type" }),
+    ).not.toBeInTheDocument();
 
     const dateFilterButton = screen.getByRole("button", { name: /date/i });
     expect(dateFilterButton).toBeInTheDocument();
   });
 
-  it("should not show excluded activity types in the type filter", async () => {
-    await user.click(screen.getByRole("button", { name: "Type" }));
-
-    expect(
-      screen.queryByRole("button", {
-        name: EXCLUDED_ACTIVITY_TYPE_OPTIONS[0],
-      }),
-    ).not.toBeInTheDocument();
+  it("omits detail-only terms from the activities page search help", async () => {
+    await user.click(screen.getByRole("button", { name: /help/i }));
+    const dialog = screen.getByRole("dialog", { name: /search help/i });
+    expect(dialog).not.toHaveTextContent("computer:<criteria>");
+    expect(dialog).not.toHaveTextContent("type:<type>");
   });
 
   it("should allow typing in search box", async () => {
@@ -117,9 +116,41 @@ describe("ActivitiesHeader", () => {
 });
 
 describe("ActivitiesHeader with instanceId (panel mode)", () => {
+  it("preserves an initial type filter while activity types are loading", async () => {
+    renderWithProviders(
+      <ActivitiesHeader {...props} isDetailView />,
+      undefined,
+      "/activities?type=ExecuteScriptRequest",
+    );
+    expect(
+      await screen.findByText("Type: ExecuteScriptRequest"),
+    ).toBeInTheDocument();
+  });
+
+  it("shows the Type filter and additional search help in detail views", async () => {
+    const user = userEvent.setup();
+    setScreenSize("xxl");
+    renderWithProviders(<ActivitiesHeader {...props} isDetailView />);
+    await user.click(screen.getByRole("button", { name: "Type" }));
+    expect(
+      screen.queryByRole("button", {
+        name: EXCLUDED_ACTIVITY_TYPE_OPTIONS[0],
+      }),
+    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /help/i }));
+    const dialog = screen.getByRole("dialog", { name: /search help/i });
+    expect(dialog).toHaveTextContent("computer:<criteria>");
+    expect(dialog).toHaveTextContent("type:<type>");
+    resetScreenSize();
+  });
+
   it("renders actions when rendered in panel mode with instanceId", () => {
     renderWithProviders(
-      <ActivitiesHeader selected={[]} resetSelectedIds={vi.fn()} />,
+      <ActivitiesHeader
+        selected={[]}
+        resetSelectedIds={vi.fn()}
+        isDetailView
+      />,
       undefined,
       "/computers/1/activities",
       "/computers/:instanceId/activities",

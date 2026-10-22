@@ -16,11 +16,17 @@ import {
 interface ActivitiesActionsProps {
   readonly selected: ActivityCommon[];
   readonly isAllSelected?: boolean;
+  readonly onExport?: () => void;
+  readonly alwaysCollapse?: boolean;
+  readonly exportOnly?: boolean;
 }
 
 const ActivitiesActions: FC<ActivitiesActionsProps> = ({
   selected,
   isAllSelected = false,
+  onExport,
+  alwaysCollapse = false,
+  exportOnly = false,
 }) => {
   const { notify } = useNotify();
   const debug = useDebug();
@@ -35,6 +41,10 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
 
   const { lastSidePathSegment } = usePageParams();
   const handleExport = () => {
+    if (onExport) {
+      onExport();
+      return;
+    }
     if (lastSidePathSegment !== "export") createSidePathPusher("export")();
   };
 
@@ -80,6 +90,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
   return (
     <ResponsiveButtons
       collapseFrom="xl"
+      alwaysCollapse={alwaysCollapse}
       buttons={[
         ...(TSV_EXPORTS_ENABLED
           ? [
@@ -94,78 +105,82 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
               </Button>,
             ]
           : []),
-        <ConfirmationButton
-          key="approve"
-          type="button"
-          disabled={
-            !selected.length ||
-            isApprovingActivities ||
-            selected.some((activity) => !activity.actions?.approvable)
-          }
-          confirmationModalProps={{
-            title: `Approve ${title}`,
-            children: (
-              <p className="u-margin--bottom">
-                Are you sure you want to approve {title}?
-              </p>
-            ),
-            confirmButtonLabel: "Approve",
-            confirmButtonAppearance: "positive",
-            confirmButtonDisabled: isApprovingActivities,
-            confirmButtonLoading: isApprovingActivities,
-            onConfirm: handleApproveActivities,
-          }}
-        >
-          Approve
-        </ConfirmationButton>,
-        <ConfirmationButton
-          key="cancel"
-          type="button"
-          disabled={
-            !selected.length ||
-            isCancelingActivities ||
-            selected.some((activity) => !activity.actions?.cancelable)
-          }
-          confirmationModalProps={{
-            title: `Cancel ${title}`,
-            children: (
-              <p className="u-margin--bottom">
-                Are you sure you want to cancel {title}?
-              </p>
-            ),
-            confirmButtonLabel: "Confirm",
-            confirmButtonAppearance: "negative",
-            confirmButtonDisabled: isCancelingActivities,
-            confirmButtonLoading: isCancelingActivities,
-            onConfirm: handleCancelActivities,
-          }}
-        >
-          Cancel
-        </ConfirmationButton>,
-        <ConfirmationButton
-          key="redo"
-          type="button"
-          disabled={
-            !selected.length ||
-            isRedoingActivities ||
-            selected.some((activity) => !activity.actions?.reappliable)
-          }
-          confirmationModalProps={{
-            title: `Redo ${title}`,
-            children: (
-              <p className="u-margin--bottom">
-                Are you sure you want to redo {title}?
-              </p>
-            ),
-            confirmButtonLabel: "Redo",
-            confirmButtonAppearance: "positive",
-            confirmButtonDisabled: isRedoingActivities,
-            confirmButtonLoading: isRedoingActivities,
-            onConfirm: handleRedoActivities,
-          }}
-        >
-          Redo
-        </ConfirmationButton>,
+        ...(!exportOnly
+          ? [
+              <ConfirmationButton
+                key="approve"
+                type="button"
+                disabled={
+                  !selected.length ||
+                  isApprovingActivities ||
+                  selected.some((activity) => !activity.actions?.approvable)
+                }
+                confirmationModalProps={{
+                  title: `Approve ${title}`,
+                  children: (
+                    <p className="u-margin--bottom">
+                      Are you sure you want to approve {title}?
+                    </p>
+                  ),
+                  confirmButtonLabel: "Approve",
+                  confirmButtonAppearance: "positive",
+                  confirmButtonDisabled: isApprovingActivities,
+                  confirmButtonLoading: isApprovingActivities,
+                  onConfirm: handleApproveActivities,
+                }}
+              >
+                Approve
+              </ConfirmationButton>,
+              <ConfirmationButton
+                key="cancel"
+                type="button"
+                disabled={
+                  !selected.length ||
+                  isCancelingActivities ||
+                  selected.some((activity) => !activity.actions?.cancelable)
+                }
+                confirmationModalProps={{
+                  title: `Cancel ${title}`,
+                  children: (
+                    <p className="u-margin--bottom">
+                      Are you sure you want to cancel {title}?
+                    </p>
+                  ),
+                  confirmButtonLabel: "Confirm",
+                  confirmButtonAppearance: "negative",
+                  confirmButtonDisabled: isCancelingActivities,
+                  confirmButtonLoading: isCancelingActivities,
+                  onConfirm: handleCancelActivities,
+                }}
+              >
+                Cancel
+              </ConfirmationButton>,
+              <ConfirmationButton
+                key="redo"
+                type="button"
+                disabled={
+                  !selected.length ||
+                  isRedoingActivities ||
+                  selected.some((activity) => !activity.actions?.reappliable)
+                }
+                confirmationModalProps={{
+                  title: `Redo ${title}`,
+                  children: (
+                    <p className="u-margin--bottom">
+                      Are you sure you want to redo {title}?
+                    </p>
+                  ),
+                  confirmButtonLabel: "Redo",
+                  confirmButtonAppearance: "positive",
+                  confirmButtonDisabled: isRedoingActivities,
+                  confirmButtonLoading: isRedoingActivities,
+                  onConfirm: handleRedoActivities,
+                }}
+              >
+                Redo
+              </ConfirmationButton>,
+            ]
+          : []),
       ]}
     />
   );

@@ -4,11 +4,8 @@ import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
 import { TSV_EXPORTS_ENABLED } from "@/constants";
 import type { ActivityCommon } from "@/features/activities";
-import {
-  ActivitiesActions,
-  ActivitiesContainer,
-  useGetActivities,
-} from "@/features/activities";
+import { ActivitiesActions, ActivitiesContainer } from "@/features/activities";
+import { useGetActivityParents } from "@/features/activities";
 import { getExportTitle } from "@/features/exports";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
@@ -22,12 +19,12 @@ const ActivitiesExportForm = lazy(
 
 const ActivitiesPage: FC = () => {
   const { activities, activitiesCount, isGettingActivities } =
-    useGetActivities();
+    useGetActivityParents();
 
   const {
     activitiesCount: unfilteredActivitiesCount,
     isGettingActivities: isGettingUnfilteredActivities,
-  } = useGetActivities(
+  } = useGetActivityParents(
     {
       limit: DEFAULT_PAGE_SIZE,
       offset: 0,
@@ -83,12 +80,13 @@ const ActivitiesPage: FC = () => {
       <PageHeader
         title="Activities"
         actions={
-          unfilteredActivitiesCount
+          TSV_EXPORTS_ENABLED && unfilteredActivitiesCount
             ? [
                 <ActivitiesActions
                   selected={selectedActivities}
                   key="activities-actions"
                   isAllSelected={isAllSelected}
+                  exportOnly
                 />,
               ]
             : undefined
@@ -102,7 +100,9 @@ const ActivitiesPage: FC = () => {
           isGettingUnfilteredActivities={isGettingUnfilteredActivities}
           unfilteredActivitiesCount={unfilteredActivitiesCount}
           selectedActivities={selectedActivities}
-          setSelectedActivities={setSelectedActivities}
+          setSelectedActivities={
+            TSV_EXPORTS_ENABLED ? setSelectedActivities : undefined
+          }
           isAllSelected={isAllSelected}
           onSelectAll={selectAll}
           onClearSelection={clearSelection}

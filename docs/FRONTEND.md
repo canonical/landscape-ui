@@ -145,6 +145,27 @@ Because the current repo still contains some domain hooks under `src/hooks/`, tr
 - The build runs `tcm` against `src/**` for SCSS modules, so CSS module type generation must continue to work.
 - Stylelint covers SCSS files in CI, and Prettier checks Markdown and other formatted assets.
 
+## Activity Table Headers
+
+`ActivitiesHeader` uses `isDetailView` to enable the Type filter, inline activity
+actions, and the `computer:` and `type:` search-help terms. Enable it for
+single-instance activities and the activity details Children tab, not the main
+Activities page.
+
+The main Activities page lists parent activities (`ActivityGroup`) via
+`useGetActivityParents`. Parent responses do not include mutation-action flags,
+so this page uses `ActivitiesActions` in `exportOnly` mode. Show selection and
+export controls only when TSV exports are enabled; keep Approve, Cancel, and
+Redo available only for eligible child activities in the detail tables.
+
+The Children tab supplies local filter controls and queries activities scoped by
+`parent-id`. Search, filtering, pagination, selection, and export panels must not
+change the underlying page's URL or replace its activity details panel. Keep its
+filters and actions collapsed so the header fits the medium-width panel.
+
+Key global activity details by activity ID so opening another activity resets
+its tab, child-table filters, and any local child details panel.
+
 ## Pragma design system (@canonical/pragma)
 
 Pragma is Canonical's next-generation design system and the successor to vanilla-framework and

@@ -13,28 +13,89 @@ import type { FormProps } from "./types";
 interface ActivitiesDateFilterProps {
   readonly label?: ReactNode;
   readonly inline?: boolean;
+  readonly filterControls?: {
+    readonly values: FormProps;
+    readonly onChange: (values: FormProps) => void;
+  };
 }
+
+interface ActivitiesDateFilterFormProps {
+  readonly values: FormProps;
+  readonly onChange: (values: FormProps) => void;
+  readonly onClose?: () => void;
+}
+
+const ActivitiesDateFilterForm: FC<ActivitiesDateFilterFormProps> = ({
+  values,
+  onChange,
+  onClose,
+}) => {
+  const formik = useFormik<FormProps>({
+    initialValues: values,
+    enableReinitialize: true,
+    validationSchema: VALIDATION_SCHEMA,
+    onSubmit: (dates) => {
+      onChange(dates);
+      onClose?.();
+    },
+  });
+
+  return (
+    <Form
+      onSubmit={formik.handleSubmit}
+      noValidate
+      className={classes.container}
+    >
+      <Input
+        type="datetime-local"
+        label="From"
+        {...formik.getFieldProps("fromDate")}
+        error={getFormikError(formik, "fromDate")}
+      />
+      <Input
+        type="datetime-local"
+        label="To"
+        min={formik.values.fromDate}
+        {...formik.getFieldProps("toDate")}
+        error={getFormikError(formik, "toDate")}
+      />
+      <div className={classes.buttons}>
+        <Button
+          small
+          type="button"
+          appearance="base"
+          className="u-no-margin--bottom"
+          onClick={() => {
+            onChange({
+              fromDate: "",
+              toDate: "",
+            });
+            onClose?.();
+          }}
+        >
+          Reset
+        </Button>
+        <Button
+          small
+          type="submit"
+          appearance="positive"
+          className="u-no-margin--bottom"
+        >
+          Apply
+        </Button>
+      </div>
+    </Form>
+  );
+};
 
 const ActivitiesDateFilter: FC<ActivitiesDateFilterProps> = ({
   label = "Date range",
   inline = false,
+  filterControls,
 }) => {
-  const { setPageParams, fromDate, toDate } = usePageParams();
-
-  const formik = useFormik<FormProps>({
-    initialValues: {
-      fromDate: fromDate,
-      toDate: toDate,
-    },
-    enableReinitialize: true,
-    validationSchema: VALIDATION_SCHEMA,
-    onSubmit: (values) => {
-      setPageParams({
-        fromDate: values.fromDate,
-        toDate: values.toDate,
-      });
-    },
-  });
+  const pageParams = usePageParams();
+  const { fromDate, toDate } = filterControls?.values ?? pageParams;
+  const setDates = filterControls?.onChange ?? pageParams.setPageParams;
 
   return (
     <TableFilter
@@ -55,54 +116,11 @@ const ActivitiesDateFilter: FC<ActivitiesDateFilterProps> = ({
       position="left"
       customComponent={({ closeMenu }) => {
         return (
-          <Form
-            onSubmit={(e) => {
-              e.preventDefault();
-              formik.handleSubmit();
-              closeMenu?.();
-            }}
-            noValidate
-            className={classes.container}
-          >
-            <Input
-              type="datetime-local"
-              label="From"
-              {...formik.getFieldProps("fromDate")}
-              error={getFormikError(formik, "fromDate")}
-            />
-            <Input
-              type="datetime-local"
-              label="To"
-              min={formik.values.fromDate}
-              {...formik.getFieldProps("toDate")}
-              error={getFormikError(formik, "toDate")}
-            />
-            <div className={classes.buttons}>
-              <Button
-                small
-                type="button"
-                appearance="base"
-                className="u-no-margin--bottom"
-                onClick={() => {
-                  setPageParams({
-                    fromDate: "",
-                    toDate: "",
-                  });
-                  closeMenu?.();
-                }}
-              >
-                Reset
-              </Button>
-              <Button
-                small
-                type="submit"
-                appearance="positive"
-                className="u-no-margin--bottom"
-              >
-                Apply
-              </Button>
-            </div>
-          </Form>
+          <ActivitiesDateFilterForm
+            values={{ fromDate, toDate }}
+            onChange={setDates}
+            onClose={closeMenu}
+          />
         );
       }}
     />

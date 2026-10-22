@@ -2,13 +2,64 @@ import { expectLoadingState } from "@/tests/helpers";
 import { activities } from "@/tests/mocks/activity";
 import { instances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { HttpResponse, http } from "msw";
+import { API_URL } from "@/constants";
 import { describe, expect, it } from "vitest";
 import ActivityDetails from "./ActivityDetails";
 import type { Creator } from "@/types/Creator";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 
 describe("ActivityDetails", () => {
+  it("renders the paginated children table with the Instance column", async () => {
+    const user = userEvent.setup();
+    const children = Array.from({ length: 21 }, (_, index) => ({
+      ...activities[1],
+      id: activities.length + index,
+      summary: `Child activity ${index + 1}`,
+    }));
+    const parentActivity = { ...activities[0], children };
+
+    server.use(
+      http.get(`${API_URL}activities`, ({ request }) => {
+        const { searchParams } = new URL(request.url);
+        return HttpResponse.json(
+          generatePaginatedResponse({
+            data: children,
+            limit: Number(searchParams.get("limit")),
+            offset: Number(searchParams.get("offset")),
+          }),
+        );
+      }),
+      http.get(`${API_URL}activities/:id`, () =>
+        HttpResponse.json(parentActivity),
+      ),
+    );
+
+    renderWithProviders(<ActivityDetails activityId={parentActivity.id} />);
+    await expectLoadingState();
+    await user.click(screen.getByRole("tab", { name: "Children" }));
+
+    let table = await screen.findByRole("table");
+    expect(within(table).getByText("Instance")).toBeInTheDocument();
+    expect(
+      within(table).getByRole("button", { name: "Child activity 1" }),
+    ).toBeInTheDocument();
+    expect(
+      within(table).queryByRole("button", { name: "Child activity 21" }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Next page" }));
+
+    table = await screen.findByRole("table");
+    expect(
+      within(table).getByRole("button", { name: "Child activity 21" }),
+    ).toBeInTheDocument();
+  });
+
   it("renders activity details with all information", async () => {
     const [activity] = activities;
 

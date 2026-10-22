@@ -13,6 +13,11 @@ import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import Activities from "./Activities";
+import ActivitiesList from "../ActivitiesList";
+import { API_URL } from "@/constants";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
+import sidePanelClasses from "@/components/layout/SidePanel/SidePanel.module.scss";
 
 const setSelectedActivities = vi.fn();
 const defaultProps: ComponentProps<typeof Activities> = {
@@ -33,7 +38,6 @@ describe("Activities", () => {
       const columnHeaders = [
         "Description",
         "Status",
-        "Instance",
         "Created at",
         "Completed at",
         "Creator",
@@ -42,19 +46,11 @@ describe("Activities", () => {
       expect(table).toHaveTexts(columnHeaders);
     });
 
-    it("should render each computer title linked to its instance", () => {
+    it("should not render instance links when the Instance column is hidden", () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
       const table = screen.getByRole("table");
-      const instanceLinks = within(table).getAllByRole("link");
-
-      expect(instanceLinks.map((link) => link.textContent)).toEqual(
-        activities.map((activity) => activity.computer_title),
-      );
-      expect(instanceLinks[0]).toHaveAttribute(
-        "href",
-        ROUTES.instances.details.single(activities[0].computer_id),
-      );
+      expect(within(table).queryAllByRole("link")).toHaveLength(0);
     });
 
     it("should render the completion time for each activity", () => {
@@ -134,6 +130,133 @@ describe("Activities", () => {
   });
 
   describe("Activity details", () => {
+    it("resets the tab and closes local child details when another activity is opened", async () => {
+      const parent = { ...activities[0], children: [activities[1]] };
+      const [, child] = activities;
+      const nextActivity = { ...activities[2], children: [child] };
+      server.use(
+        http.get(`${API_URL}activities`, () =>
+          HttpResponse.json({
+            results: [child],
+            count: 1,
+            next: null,
+            previous: null,
+          }),
+        ),
+        http.get(`${API_URL}activities/:id`, ({ params: { id } }) =>
+          HttpResponse.json(
+            [parent, child, nextActivity].find(
+              (activity) => activity.id === Number(id),
+            ),
+          ),
+        ),
+      );
+      renderWithProviders(
+        <Activities {...defaultProps} activities={[parent, nextActivity]} />,
+      );
+      const mainTable = screen.getByRole("table");
+
+      await user.click(
+        within(mainTable).getByRole("button", { name: parent.summary }),
+      );
+      await user.click(await screen.findByRole("tab", { name: "Children" }));
+      const parentHeading = screen.getByRole("heading", {
+        name: parent.summary,
+      });
+      const parentPanel = parentHeading.closest("aside");
+      assert(parentPanel);
+      const childrenTable = await within(parentPanel).findByRole("table");
+      await user.click(
+        within(childrenTable).getByRole("button", { name: child.summary }),
+      );
+      expect(
+        await screen.findByRole("heading", { name: child.summary }),
+      ).toBeInTheDocument();
+
+      await user.click(
+        within(mainTable).getByRole("button", { name: nextActivity.summary }),
+      );
+      const nextHeading = await screen.findByRole("heading", {
+        name: nextActivity.summary,
+      });
+      const nextPanel = nextHeading.closest("aside");
+      assert(nextPanel);
+      expect(
+        await within(nextPanel).findByText("Description"),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: child.summary }),
+      ).not.toBeInTheDocument();
+      expect(within(nextPanel).queryByRole("table")).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: parent.summary }),
+      ).not.toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: "Info" })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+    });
+
+    it("opens children in a medium local panel without replacing the parent panel", async () => {
+      const parent = { ...activities[0], children: [activities[1]] };
+      const [, child] = activities;
+      server.use(
+        http.get(`${API_URL}activities`, () =>
+          HttpResponse.json({
+            results: [child],
+            count: 1,
+            next: null,
+            previous: null,
+          }),
+        ),
+        http.get(`${API_URL}activities/:id`, ({ params: { id } }) =>
+          HttpResponse.json(Number(id) === parent.id ? parent : child),
+        ),
+      );
+      renderWithProviders(
+        <Activities {...defaultProps} activities={[parent]} />,
+      );
+
+      await user.click(screen.getByRole("button", { name: parent.summary }));
+      const parentHeading = await screen.findByRole("heading", {
+        name: parent.summary,
+      });
+      expect(parentHeading.closest("aside")).toHaveClass("is-wide");
+      await user.click(await screen.findByRole("tab", { name: "Children" }));
+
+      const parentPanel = parentHeading.closest("aside");
+      assert(parentPanel);
+      const table = await within(parentPanel).findByRole("table");
+      await user.click(
+        within(table).getByRole("button", { name: child.summary }),
+      );
+
+      const childHeading = await screen.findByRole("heading", {
+        name: child.summary,
+      });
+      expect(childHeading.closest("aside")).toHaveClass(
+        sidePanelClasses.medium,
+      );
+      expect(parentHeading).toBeInTheDocument();
+      const childPanel = childHeading.closest("aside");
+      assert(childPanel);
+      expect(
+        await within(childPanel).findByText("Description"),
+      ).toBeInTheDocument();
+
+      await user.click(screen.getByRole("button", { name: "Close" }));
+
+      expect(
+        screen.queryByRole("heading", { name: child.summary }),
+      ).not.toBeInTheDocument();
+      expect(parentHeading).toBeInTheDocument();
+      expect(table).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: "Children" })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+    });
+
     it("should open activity details side panel when description is clicked", async () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
@@ -165,16 +288,33 @@ describe("Activities", () => {
   });
 
   describe("Instance ID prop behavior", () => {
-    it("should include Instance column by default", () => {
+    it("should not include the Instance column by default", () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
-      expect(screen.getByText("Instance")).toBeInTheDocument();
+      expect(screen.queryByText("Instance")).not.toBeInTheDocument();
     });
 
     it("should exclude Instance column when instanceId is provided", () => {
       renderWithProviders(<Activities {...defaultProps} instanceId={6} />);
 
       expect(screen.queryByText("Instance")).not.toBeInTheDocument();
+    });
+
+    it("should include the Instance column when requested for a list", () => {
+      renderWithProviders(
+        <ActivitiesList activities={activities} showInstanceColumn />,
+      );
+
+      const table = screen.getByRole("table");
+      expect(within(table).getByText("Instance")).toBeInTheDocument();
+      const instanceLinks = within(table).getAllByRole("link");
+      expect(instanceLinks.map((link) => link.textContent)).toEqual(
+        activities.map((activity) => activity.computer_title),
+      );
+      expect(instanceLinks[0]).toHaveAttribute(
+        "href",
+        ROUTES.instances.details.single(activities[0].computer_id),
+      );
     });
 
     it("should hide the activity details instance field when opened with an instanceId", async () => {

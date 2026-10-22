@@ -12,14 +12,17 @@ import type { FC } from "react";
 
 interface ActivityDetailsButtonsProps {
   readonly activity: Activity;
+  readonly onClose?: () => void;
 }
 
 const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
   activity,
+  onClose,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
+  const close = onClose ?? closeSidePanel;
   const { approveActivities, isApprovingActivities } = useApproveActivities();
   const { cancelActivities, isCancelingActivities } = useCancelActivities();
   const { redoActivities, isRedoingActivities } = useRedoActivities();
@@ -28,7 +31,7 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
     try {
       await approveActivities({ query: `id:${a.id}` });
 
-      closeSidePanel();
+      close();
 
       notify.success({
         title: "You have successfully approved an activity.",
@@ -44,7 +47,7 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
     try {
       await cancelActivities({ query: `id:${a.id}` });
 
-      closeSidePanel();
+      close();
 
       notify.success({
         title: "You have successfully canceled an activity.",
@@ -60,7 +63,7 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
     try {
       await redoActivities({ activity_ids: [a.id] });
 
-      closeSidePanel();
+      close();
 
       notify.success({
         title: "You have successfully redone an activity.",

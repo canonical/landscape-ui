@@ -5,10 +5,19 @@ import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { useState } from "react";
 
-const ActivityTypeFilter: FC<FilterProps> = ({
+interface ActivityTypeFilterProps extends FilterProps {
+  readonly selection?: {
+    readonly value: string;
+    readonly onSelect: (value: string) => void;
+  };
+}
+
+const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({
   options,
   label,
   inline = false,
+  onChange,
+  selection,
 }) => {
   const [searchText, setSearchText] = useState("");
 
@@ -20,7 +29,9 @@ const ActivityTypeFilter: FC<FilterProps> = ({
 
   useSetDynamicFilterValidation(
     "type",
-    newOptions.map((opt) => opt.value),
+    selection || !options.some((option) => option.value)
+      ? []
+      : options.map((opt) => opt.value),
   );
 
   return (
@@ -35,9 +46,14 @@ const ActivityTypeFilter: FC<FilterProps> = ({
       }}
       options={newOptions}
       onItemSelect={(item) => {
-        setPageParams({ type: item });
+        if (selection) {
+          selection.onSelect(item);
+        } else {
+          setPageParams({ type: item });
+        }
+        onChange?.();
       }}
-      selectedItem={type}
+      selectedItem={selection?.value ?? type}
     />
   );
 };

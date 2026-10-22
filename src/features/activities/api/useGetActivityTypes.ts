@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import { EXCLUDED_ACTIVITY_TYPE_OPTIONS } from "../constants";
 
-const useGetActivityTypes = () => {
+const useGetActivityTypes = (enabled = true) => {
   const authFetchOld = useFetchOld();
 
   const { data: response, isPending } = useQuery<
@@ -13,6 +13,7 @@ const useGetActivityTypes = () => {
   >({
     queryKey: ["activityTypes"],
     queryFn: async () => authFetchOld.get("GetActivityTypes"),
+    enabled,
   });
 
   const filteredActivityTypes =

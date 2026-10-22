@@ -2,7 +2,20 @@
 @import "vanilla-framework/scss/settings_colors";
 
 .description {
-  width: 40%;
+  width: 20%;
+}
+
+.descriptionContent {
+  display: flex;
+  min-width: 0;
+}
+
+.descriptionText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .subhead {

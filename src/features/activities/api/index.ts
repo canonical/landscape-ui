@@ -1,4 +1,5 @@
 export { default as useGetActivities } from "./useGetActivities";
+export { default as useGetActivityParents } from "./useGetActivityParents";
 export { default as useApproveActivities } from "./useApproveActivities";
 export { default as useCancelActivities } from "./useCancelActivities";
 export { default as useGetActivityTypes } from "./useGetActivityTypes";

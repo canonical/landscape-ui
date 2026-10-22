@@ -17,6 +17,26 @@ describe("ActivityDetailsButtons", () => {
     },
   };
 
+  it.each([
+    { action: "Approve", confirm: "Approve" },
+    { action: "Cancel", confirm: "Confirm" },
+    { action: "Redo", confirm: "Redo" },
+  ])("closes the local panel after $action", async ({ action, confirm }) => {
+    const onClose = vi.fn();
+    renderWithProviders(
+      <ActivityDetailsButtons activity={mockActivity} onClose={onClose} />,
+    );
+
+    await user.click(screen.getByRole("button", { name: action }));
+    await user.click(
+      within(screen.getByRole("dialog")).getByRole("button", { name: confirm }),
+    );
+
+    await vi.waitFor(() => {
+      expect(onClose).toHaveBeenCalledOnce();
+    });
+  });
+
   describe("Approve button", () => {
     it("should render when activity is approvable", () => {
       renderWithProviders(<ActivityDetailsButtons activity={mockActivity} />);

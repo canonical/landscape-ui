@@ -11,7 +11,7 @@ interface ActivitiesContainerProps {
   readonly isGettingUnfilteredActivities: boolean;
   readonly unfilteredActivitiesCount: number | undefined;
   readonly selectedActivities: ActivityCommon[];
-  readonly setSelectedActivities: (activities: ActivityCommon[]) => void;
+  readonly setSelectedActivities?: (activities: ActivityCommon[]) => void;
   readonly isAllSelected: boolean;
   readonly onSelectAll: () => void;
   readonly onClearSelection: () => void;

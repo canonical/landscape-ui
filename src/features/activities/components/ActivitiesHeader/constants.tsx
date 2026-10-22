@@ -11,10 +11,6 @@ export const ACTIVITY_SEARCH_HELP_TERMS: {
     description: "Search for activities with a specific ID.",
   },
   {
-    term: "parent-id:<parent_id>",
-    description: "Search for children activities of a specific ID.",
-  },
-  {
     term: "created-after:<date>",
     description: (
       <span>
@@ -35,6 +31,10 @@ export const ACTIVITY_SEARCH_HELP_TERMS: {
     description:
       "Search for activities created by a particular person (specified by email address).",
   },
+];
+
+export const ACTIVITY_DETAIL_SEARCH_HELP_TERMS = [
+  ...ACTIVITY_SEARCH_HELP_TERMS,
   {
     term: "computer:<criteria>",
     description:

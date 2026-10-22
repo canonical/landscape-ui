@@ -4,6 +4,7 @@ import type { ExportJob } from "@/features/exports";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   activities,
+  activityParents,
   activityTypes,
   INVALID_ACTIVITY_SEARCH_QUERY,
 } from "@/tests/mocks/activity";
@@ -15,6 +16,7 @@ import {
 } from "./_constants";
 import {
   generatePaginatedResponse,
+  generateGetListEndpoint,
   isAction,
   shouldApplyEndpointStatus,
 } from "./_helpers";
@@ -157,6 +159,11 @@ export default [
         searchFields: ["summary"],
       }),
     );
+  }),
+
+  generateGetListEndpoint({
+    path: "activities/parents",
+    response: activityParents,
   }),
 
   http.get(`${API_URL}activities/:id`, async ({ params: { id } }) => {

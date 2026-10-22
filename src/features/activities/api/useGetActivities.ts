@@ -62,7 +62,7 @@ const useGetActivities = (
     queryParts.push(`type:${type}`);
   }
 
-  params =
+  const requestParams =
     (config?.listenToUrlParams ?? true)
       ? {
           limit: pageSize,
@@ -77,14 +77,15 @@ const useGetActivities = (
     isFetching,
     isPending,
     refetch,
+    error,
   } = useQuery<
     AxiosResponse<ApiPaginatedResponse<Activity>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["activities", params],
+    queryKey: ["activities", requestParams],
     queryFn: async () =>
       authFetch.get("activities", {
-        params,
+        params: requestParams,
       }),
     ...options,
   });
@@ -95,6 +96,7 @@ const useGetActivities = (
     isFetchingActivities: isFetching,
     isGettingActivities: isPending,
     refetchActivities: refetch,
+    activitiesError: error,
   };
 };
 

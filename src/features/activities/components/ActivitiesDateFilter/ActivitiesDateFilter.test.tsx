@@ -1,7 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import ActivitiesDateFilter from "./ActivitiesDateFilter";
 import { ROUTES } from "@/libs/routes";
 
@@ -10,6 +10,53 @@ const toDate = "2024-12-31T18:00";
 
 describe("ActivitiesDateFilter", () => {
   const user = userEvent.setup();
+
+  it("submits a local date range without losing edited values", async () => {
+    const onChange = vi.fn();
+    renderWithProviders(
+      <ActivitiesDateFilter
+        filterControls={{ values: { fromDate: "", toDate: "" }, onChange }}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Date range" }));
+    fireEvent.change(screen.getByLabelText("From"), {
+      target: { value: fromDate },
+    });
+    fireEvent.change(screen.getByLabelText("To"), {
+      target: { value: toDate },
+    });
+    await user.click(screen.getByRole("button", { name: "Apply" }));
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({ fromDate, toDate });
+    });
+    expect(screen.queryByLabelText("From")).not.toBeInTheDocument();
+  });
+
+  it("allows a single-ended range and keeps an invalid range open", async () => {
+    const onChange = vi.fn();
+    renderWithProviders(
+      <ActivitiesDateFilter
+        filterControls={{ values: { fromDate: "", toDate: "" }, onChange }}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Date range" }));
+    fireEvent.change(screen.getByLabelText("From"), {
+      target: { value: toDate },
+    });
+    fireEvent.change(screen.getByLabelText("To"), {
+      target: { value: fromDate },
+    });
+    await user.click(screen.getByRole("button", { name: "Apply" }));
+    expect(
+      await screen.findByText("To date must be after From date"),
+    ).toBeInTheDocument();
+    expect(onChange).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByLabelText("To"), { target: { value: "" } });
+    await user.click(screen.getByRole("button", { name: "Apply" }));
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({ fromDate: toDate, toDate: "" });
+    });
+  });
 
   it("renders the date range filter button", () => {
     renderWithProviders(<ActivitiesDateFilter />);

@@ -20,10 +20,12 @@ const useOpenActivityDetailsPanel = () => {
         activity.summary,
         <Suspense fallback={<LoadingState />}>
           <ActivityDetails
+            key={activity.id}
             activityId={activity.id}
             hideInstanceField={options?.hideInstanceField}
           />
         </Suspense>,
+        "medium",
       );
     },
     [setSidePanelContent],

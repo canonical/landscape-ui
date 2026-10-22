@@ -19,11 +19,13 @@ import type { ActivityListParams } from "./types";
 interface ActivitiesExportFormProps {
   readonly exportParams: ActivityListParams;
   readonly selectedActivityIds?: number[];
+  readonly onClose?: () => void;
 }
 
 const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
   exportParams,
   selectedActivityIds,
+  onClose,
 }) => {
   const { notify } = useNotify();
   const navigate = useNavigate();
@@ -64,7 +66,7 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
         selectionForms: ["selected activity", "selected activities"],
       });
 
-      popSidePath();
+      (onClose ?? popSidePath)();
       notify.success({
         title: "TSV export in progress",
         message: `Your activities export "${values.name.trim()}"${exportScope} is being generated.`,
