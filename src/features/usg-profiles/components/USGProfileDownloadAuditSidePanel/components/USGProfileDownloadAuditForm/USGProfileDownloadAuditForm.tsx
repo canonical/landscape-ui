@@ -92,8 +92,8 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
   const formik = useFormik<USGProfileDownloadAuditFormValues>({
     initialValues: {
       audit_timeframe: "specific-date",
-      end_date: date().format(INPUT_DATE_FORMAT),
-      start_date: date().format(INPUT_DATE_FORMAT),
+      end_date: date().utc().format(INPUT_DATE_FORMAT),
+      start_date: date().utc().format(INPUT_DATE_FORMAT),
       level_of_detail: "summary-only",
     },
 
