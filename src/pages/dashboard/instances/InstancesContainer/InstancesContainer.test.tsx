@@ -95,6 +95,15 @@ describe("InstancesContainer", () => {
         notification.compareDocumentPosition(content) &
           Node.DOCUMENT_POSITION_FOLLOWING,
       ).toBeTruthy();
+      if (!isEmpty) {
+        const filtersButton = screen.getByRole("button", {
+          name: /filters/i,
+        });
+        expect(
+          filtersButton.compareDocumentPosition(notification) &
+            Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
+      }
 
       await user.click(
         screen.getByRole("button", { name: "Close notification" }),

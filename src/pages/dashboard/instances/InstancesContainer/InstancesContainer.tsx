@@ -66,16 +66,17 @@ const InstancesContainer = memo(function InstancesContainer({
 
   return (
     <>
+      {!hasNoInstances && (
+        <InstancesHeader
+          columnFilterOptions={columnFilterOptions}
+          onChangeFilter={onChangeFilter}
+        />
+      )}
       <PendingInstancesNotification />
       {hasNoInstances ? (
         <InstancesEmptyState />
       ) : (
         <>
-          <InstancesHeader
-            columnFilterOptions={columnFilterOptions}
-            onChangeFilter={onChangeFilter}
-          />
-
           {isGettingInstances ? (
             <LoadingState />
           ) : (
