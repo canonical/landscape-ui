@@ -124,9 +124,7 @@ describe("InstancesPage", () => {
     await user.click(screen.getByRole("button", { name: "Approve" }));
 
     const dialog = await screen.findByRole("dialog");
-    await user.click(
-      within(dialog).getByRole("button", { name: "Approve" }),
-    );
+    await user.click(within(dialog).getByRole("button", { name: "Approve" }));
 
     expect(
       await screen.findByText(/You have approved \d+ pending instances/),
