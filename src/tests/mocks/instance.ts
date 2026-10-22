@@ -573,6 +573,17 @@ export const instanceCanceledActivityNoKey: Instance = {
   hostname: "canceled-activity-no-key",
 };
 
+export const securityPocketInstance: Instance = {
+  ...recoveryKeyInstance,
+  id: 998,
+  title: "Security Pocket Upgrades",
+  hostname: "security-pocket-upgrades",
+  upgrades: {
+    regular: 1,
+    security: 1,
+  },
+};
+
 export const instances = [
   ubuntuInstance,
   {
@@ -1859,6 +1870,7 @@ export const instances = [
     registered_at: "2023-11-29T18:29:25Z",
     has_release_upgrades: false,
   } as Instance,
+  securityPocketInstance,
 ] as const satisfies Instance[];
 
 export const pendingInstances = [
