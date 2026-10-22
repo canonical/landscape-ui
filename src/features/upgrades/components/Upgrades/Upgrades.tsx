@@ -13,10 +13,14 @@ import { pluralize } from "@/utils/_helpers";
 import { Form, Tabs } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { Suspense, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import UpgradeInfo from "../UpgradeInfo";
 import { TAB_LINKS, TAB_PANELS, VALIDATION_SCHEMA } from "./constants";
-import { getInitialValues, getTabLinks } from "./helpers";
+import {
+  getExcludedPackagesWithNames,
+  getInitialValues,
+  getTabLinks,
+} from "./helpers";
 import type { UpgradesFormProps } from "./types";
 
 interface UpgradesProps {
@@ -27,6 +31,9 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
   const [activeTabLinkId, setActiveTabLinkId] = useState<string>(
     TAB_LINKS[0].id,
   );
+  // The packages tab lists upgrade candidates, whose ids the upgrade endpoint
+  // ignores, so their names are kept to resolve installed ids on submit.
+  const packageNamesByIdRef = useRef(new Map<number, string>());
 
   const affectedInstances = selectedInstances.filter(({ alerts }) =>
     hasUpgrades(alerts),
@@ -58,7 +65,10 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
         });
       } else {
         await upgradeInstancesPackages({
-          computers: values.excludedPackages,
+          computers: getExcludedPackagesWithNames(
+            values.excludedPackages,
+            packageNamesByIdRef.current,
+          ),
         });
       }
 
@@ -115,6 +125,11 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
                 excludedPackages={formik.values.excludedPackages}
                 instances={affectedInstances}
                 onExcludedPackagesChange={handleExcludedPackagesChange}
+                onPackagesLoad={(packages) => {
+                  for (const { id, name } of packages) {
+                    packageNamesByIdRef.current.set(id, name);
+                  }
+                }}
               />
             </Suspense>
           )}
