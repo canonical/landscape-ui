@@ -578,6 +578,13 @@ export const securityPocketInstance: Instance = {
   id: 998,
   title: "Security Pocket Upgrades",
   hostname: "security-pocket-upgrades",
+  distribution: "24.04",
+  distribution_info: {
+    code_name: "noble",
+    description: "Ubuntu 24.04 LTS",
+    distributor: "Ubuntu",
+    release: "24.04",
+  },
   upgrades: {
     regular: 1,
     security: 1,
