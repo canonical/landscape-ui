@@ -69,6 +69,53 @@ describe("InstancesContainer", () => {
     resetScreenSize();
   });
 
+  it.each([true, false])(
+    "shows one dismissible pending banner above the content when empty=%s",
+    async (isEmpty) => {
+      const user = userEvent.setup();
+      renderWithProviders(
+        <InstancesContainer
+          {...props}
+          instances={isEmpty ? [] : props.instances}
+          instanceCount={isEmpty ? 0 : props.instanceCount}
+          setSelectedInstances={() => undefined}
+        />,
+      );
+
+      const notification = await screen.findByRole("heading", {
+        name: "Pending instances",
+      });
+      expect(
+        screen.getAllByRole("button", { name: "Review Pending Instances" }),
+      ).toHaveLength(1);
+      const content = isEmpty
+        ? screen.getByText("No instances found")
+        : screen.getByRole("table");
+      expect(
+        notification.compareDocumentPosition(content) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+      if (!isEmpty) {
+        const filtersButton = screen.getByRole("button", {
+          name: /filters/i,
+        });
+        expect(
+          filtersButton.compareDocumentPosition(notification) &
+            Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
+      }
+
+      await user.click(
+        screen.getByRole("button", { name: "Close notification" }),
+      );
+
+      expect(
+        screen.queryByRole("heading", { name: "Pending instances" }),
+      ).not.toBeInTheDocument();
+      expect(content).toBeInTheDocument();
+    },
+  );
+
   it("should manage table columns", async () => {
     setScreenSize("xxl");
 

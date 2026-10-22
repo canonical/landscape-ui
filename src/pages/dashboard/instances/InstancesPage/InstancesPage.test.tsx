@@ -1,11 +1,19 @@
 import * as Constants from "@/constants";
-import { API_URL, MANAGE_INSTANCES_DOCUMENTATION_URL } from "@/constants";
+import {
+  API_URL,
+  API_URL_OLD,
+  MANAGE_INSTANCES_DOCUMENTATION_URL,
+} from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
 import { features } from "@/tests/mocks/features";
+import { pendingInstances, ubuntuInstance } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import {
+  generatePaginatedResponse,
+  isAction,
+} from "@/tests/server/handlers/_helpers";
 import userEvent from "@testing-library/user-event";
 import { screen, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
@@ -40,6 +48,11 @@ describe("InstancesPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("table")).toBeInTheDocument();
     expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
+    expect(
+      await screen.findAllByRole("button", {
+        name: "Review Pending Instances",
+      }),
+    ).toHaveLength(1);
   });
 
   it("shows the account name and registration documentation link", async () => {
@@ -83,6 +96,80 @@ describe("InstancesPage", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
+
+  it("allows approving pending instances from the empty state", async () => {
+    let approved = false;
+    server.use(
+      http.get(`${API_URL}computers`, () =>
+        HttpResponse.json(
+          generatePaginatedResponse({
+            data: approved ? [ubuntuInstance] : [],
+            offset: 0,
+            limit: 20,
+          }),
+        ),
+      ),
+      http.get(API_URL_OLD, ({ request }) => {
+        if (isAction(request, "GetPendingComputers")) {
+          return HttpResponse.json(approved ? [] : pendingInstances);
+        }
+
+        if (!isAction(request, "AcceptPendingComputers")) {
+          return;
+        }
+
+        approved = true;
+        return HttpResponse.json(pendingInstances);
+      }),
+    );
+    const user = userEvent.setup();
+
+    renderWithProviders(<InstancesPage />);
+
+    await expectLoadingState();
+
+    expect(screen.getByText("No instances found")).toBeInTheDocument();
+    const reviewButtons = await screen.findAllByRole("button", {
+      name: "Review Pending Instances",
+    });
+    expect(reviewButtons).toHaveLength(1);
+    const [reviewButton] = reviewButtons;
+    assert(reviewButton);
+    await user.click(reviewButton);
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Review Pending Instances",
+      }),
+    ).toBeInTheDocument();
+    const table = await screen.findByRole("table");
+    const [selectAll] = within(table).getAllByRole("checkbox");
+    assert(selectAll);
+    await user.click(selectAll);
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+
+    expect(
+      await screen.findByRole("combobox", { name: "Access group" }),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+
+    const dialog = await screen.findByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: "Approve" }));
+
+    expect(
+      await screen.findByText(/You have approved \d+ pending instances/),
+    ).toBeInTheDocument();
+    const registeredInstancesTable = await screen.findByRole("table");
+    expect(
+      within(registeredInstancesTable).getByRole("row", {
+        name: `${ubuntuInstance.title} instance row`,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Review Pending Instances" }),
+    ).not.toBeInTheDocument();
   });
 
   it("does not show the report panel for a stale report side path when feature is disabled", async () => {

@@ -5,6 +5,7 @@ import {
   InstanceList,
   InstancesHeader,
   InstancesEmptyState,
+  PendingInstancesNotification,
 } from "@/features/instances";
 import type { Instance } from "@/types/Instance";
 import { memo, useState } from "react";
@@ -63,36 +64,40 @@ const InstancesContainer = memo(function InstancesContainer({
   const hasNoInstances =
     !isGettingInstances && instanceCount === 0 && !isFilteringInstances;
 
-  if (hasNoInstances) {
-    return <InstancesEmptyState />;
-  }
-
   return (
     <>
-      <InstancesHeader
-        columnFilterOptions={columnFilterOptions}
-        onChangeFilter={onChangeFilter}
-      />
-
-      {isGettingInstances ? (
-        <LoadingState />
-      ) : (
-        <InstanceList
-          instances={instances}
-          instanceCount={instanceCount}
-          selectedInstances={selectedInstances}
-          setColumnFilterOptions={setColumnFilterOptions}
-          setSelectedInstances={setSelectedInstances}
-          isAllSelected={isAllSelected}
-          onSelectAll={onSelectAll}
-          onClearSelection={onClearSelection}
+      {!hasNoInstances && (
+        <InstancesHeader
+          columnFilterOptions={columnFilterOptions}
+          onChangeFilter={onChangeFilter}
         />
       )}
+      <PendingInstancesNotification />
+      {hasNoInstances ? (
+        <InstancesEmptyState />
+      ) : (
+        <>
+          {isGettingInstances ? (
+            <LoadingState />
+          ) : (
+            <InstanceList
+              instances={instances}
+              instanceCount={instanceCount}
+              selectedInstances={selectedInstances}
+              setColumnFilterOptions={setColumnFilterOptions}
+              setSelectedInstances={setSelectedInstances}
+              isAllSelected={isAllSelected}
+              onSelectAll={onSelectAll}
+              onClearSelection={onClearSelection}
+            />
+          )}
 
-      <TablePagination
-        totalItems={instanceCount}
-        currentItemCount={instances.length}
-      />
+          <TablePagination
+            totalItems={instanceCount}
+            currentItemCount={instances.length}
+          />
+        </>
+      )}
     </>
   );
 });
