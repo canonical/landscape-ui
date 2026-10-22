@@ -4,11 +4,15 @@ import type { PendingInstance } from "@/types/Instance";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
+import { HttpStatusCode, isAxiosError } from "axios";
 
 export const useGetPendingInstances = (
   _params?: undefined,
   options?: Omit<
-    UseQueryOptions<AxiosResponse<PendingInstance[]>, AxiosError<ApiError>>,
+    UseQueryOptions<
+      AxiosResponse<PendingInstance[]> | null,
+      AxiosError<ApiError>
+    >,
     "queryKey" | "queryFn"
   >,
 ) => {
@@ -18,9 +22,24 @@ export const useGetPendingInstances = (
     data: response,
     isPending,
     error,
-  } = useQuery<AxiosResponse<PendingInstance[]>, AxiosError<ApiError>>({
+  } = useQuery<AxiosResponse<PendingInstance[]> | null, AxiosError<ApiError>>({
     queryKey: ["pendingInstances"],
-    queryFn: async () => authFetchOld.get("GetPendingComputers"),
+    queryFn: async () => {
+      try {
+        return await authFetchOld.get<PendingInstance[]>("GetPendingComputers");
+      } catch (error) {
+        // Admins without permission to manage pending instances get a 403;
+        // resolve instead of erroring so no error notification is shown.
+        if (
+          isAxiosError(error) &&
+          error.response?.status === HttpStatusCode.Forbidden
+        ) {
+          return null;
+        }
+
+        throw error;
+      }
+    },
     ...options,
   });
 
@@ -28,5 +47,6 @@ export const useGetPendingInstances = (
     pendingInstances: response?.data ?? [],
     isGettingPendingInstances: isPending,
     pendingInstancesError: error,
+    isPendingInstancesForbidden: response === null,
   };
 };
