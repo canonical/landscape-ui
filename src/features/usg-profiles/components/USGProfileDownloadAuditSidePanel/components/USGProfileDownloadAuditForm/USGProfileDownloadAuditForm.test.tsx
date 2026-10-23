@@ -42,6 +42,7 @@ describe("USGProfileDownloadAuditForm", () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
@@ -71,6 +72,21 @@ describe("USGProfileDownloadAuditForm", () => {
     ).toBeInTheDocument();
   });
 
+  it("generates an audit with the default date when local time is a day ahead of UTC", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-07-15T22:30:00Z"));
+
+    renderWithProviders(
+      <USGProfileDownloadAuditForm usgProfile={usgProfile} />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Generate CSV" }));
+
+    expect(
+      await screen.findByText("Your requested audit is ready:"),
+    ).toBeInTheDocument();
+  });
+
   it("validates that the end date is not before the start date for a range", async () => {
     const { container } = renderWithProviders(
       <USGProfileDownloadAuditForm usgProfile={usgProfile} />,
@@ -84,7 +100,9 @@ describe("USGProfileDownloadAuditForm", () => {
     assert(endDateInput, "End date input not found");
 
     fireEvent.change(endDateInput, {
-      target: { value: date().subtract(1, "day").format("YYYY-MM-DD") },
+      target: {
+        value: date().utc().subtract(1, "day").format("YYYY-MM-DD"),
+      },
     });
     fireEvent.blur(endDateInput);
 
