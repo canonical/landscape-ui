@@ -13,7 +13,7 @@ import useSelection from "@/hooks/useSelection";
 import type { UrlParams } from "@/types/UrlParams";
 import type { FC } from "react";
 import { useLocation, useParams } from "react-router";
-import { getEmptyMessage } from "./helpers";
+import { getEmptyMessage, getPackageSearchFilters } from "./helpers";
 
 const PackagesPanel: FC = () => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
@@ -34,11 +34,7 @@ const PackagesPanel: FC = () => {
     search: search,
     limit: pageSize,
     offset: currentPage * pageSize - pageSize,
-    installed: !status || undefined,
-    // Security candidates that aren't upgrades are rendered as installed/available.
-    upgrade: status === "upgrade" || status === "security" || undefined,
-    held: status === "held" || undefined,
-    security: status === "security" || undefined,
+    ...getPackageSearchFilters(status),
   });
 
   const { selectedItems: selected, setSelectedItems: setSelected } =
