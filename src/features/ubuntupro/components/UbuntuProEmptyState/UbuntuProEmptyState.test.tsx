@@ -1,4 +1,4 @@
-import { instances } from "@/tests/mocks/instance";
+import { ubuntuInstance, windowsInstance } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -7,12 +7,7 @@ import { describe, expect, it } from "vitest";
 import UbuntuProEmptyState from "./UbuntuProEmptyState";
 
 describe("UbuntuProEmptyState", () => {
-  const [instanceWithoutToken] = instances.filter(
-    (instance) =>
-      instance.ubuntu_pro_info?.result === "success" &&
-      !instance.ubuntu_pro_info.attached,
-  );
-  assert(instanceWithoutToken);
+  const instanceWithoutToken = { ...ubuntuInstance, ubuntu_pro_info: null };
 
   const props: ComponentProps<typeof UbuntuProEmptyState> = {
     instance: instanceWithoutToken,
@@ -74,12 +69,11 @@ describe("UbuntuProEmptyState", () => {
   });
 
   it("passes correct instance to attach form", async () => {
-    const [, customInstance] = instances.filter(
-      (instance) =>
-        instance.ubuntu_pro_info?.result === "success" &&
-        !instance.ubuntu_pro_info.attached,
-    );
-    assert(customInstance);
+    const customInstance = {
+      ...instanceWithoutToken,
+      id: 509,
+      title: "Another Ubuntu Server",
+    };
 
     renderWithProviders(<UbuntuProEmptyState instance={customInstance} />);
 
@@ -89,6 +83,15 @@ describe("UbuntuProEmptyState", () => {
     expect(
       screen.getByRole("heading", { name: "Attach Ubuntu Pro token" }),
     ).toBeInTheDocument();
+  });
+
+  it("does not offer to attach a token to a Windows host", () => {
+    renderWithProviders(<UbuntuProEmptyState instance={windowsInstance} />);
+
+    expect(screen.getByText("No Ubuntu Pro entitlement")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Attach Ubuntu Pro" }),
+    ).not.toBeInTheDocument();
   });
 
   it("lazy loads the attach token form", async () => {

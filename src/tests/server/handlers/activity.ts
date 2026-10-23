@@ -10,10 +10,7 @@ import {
 } from "@/tests/mocks/activity";
 import date from "@/libs/date";
 import { http, HttpResponse } from "msw";
-import {
-  createEndpointStatusError,
-  createEndpointStatusNetworkError,
-} from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 import {
   generatePaginatedResponse,
   generateGetListEndpoint,
@@ -23,7 +20,9 @@ import {
 
 const STATUS_QUERY_REGEX = /(?:^|\s)status:([^\s]+)/;
 const TYPE_QUERY_REGEX = /(?:^|\s)type:([^\s]+)/;
-const COMPUTER_ID_REGEX = /computer:id:(\d+)/;
+const COMPUTER_ID_REGEX = /(?:^|\s)computer:id:(\d+)/;
+const CREATED_AFTER_QUERY_REGEX = /(?:^|\s)created-after:([^\s]+)/;
+const CREATED_BEFORE_QUERY_REGEX = /(?:^|\s)created-before:([^\s]+)/;
 
 const parseActivitiesQuery = (
   rawQuery: string,
@@ -31,42 +30,73 @@ const parseActivitiesQuery = (
   status?: string;
   type?: string;
   computerId?: string;
+  createdAfter?: number;
+  createdBefore?: number;
   searchQuery: string;
 } => {
   const statusMatch = rawQuery.match(STATUS_QUERY_REGEX);
   const typeMatch = rawQuery.match(TYPE_QUERY_REGEX);
   const computerMatch = rawQuery.match(COMPUTER_ID_REGEX);
+  const createdAfterMatch = rawQuery.match(CREATED_AFTER_QUERY_REGEX);
+  const createdBeforeMatch = rawQuery.match(CREATED_BEFORE_QUERY_REGEX);
 
   let searchQuery = rawQuery;
 
   if (statusMatch) {
-    searchQuery = searchQuery.replace(statusMatch[0], "").trim();
+    searchQuery = searchQuery.replace(STATUS_QUERY_REGEX, "").trim();
   }
   if (typeMatch) {
-    searchQuery = searchQuery.replace(typeMatch[0], "").trim();
+    searchQuery = searchQuery.replace(TYPE_QUERY_REGEX, "").trim();
   }
   if (computerMatch) {
-    searchQuery = searchQuery.replace(computerMatch[0], "").trim();
+    searchQuery = searchQuery.replace(COMPUTER_ID_REGEX, "").trim();
+  }
+  if (createdAfterMatch) {
+    searchQuery = searchQuery.replace(CREATED_AFTER_QUERY_REGEX, "").trim();
+  }
+  if (createdBeforeMatch) {
+    searchQuery = searchQuery.replace(CREATED_BEFORE_QUERY_REGEX, "").trim();
   }
 
   return {
     status: statusMatch?.[1],
     type: typeMatch?.[1],
     computerId: computerMatch?.[1],
+    createdAfter: createdAfterMatch?.[1]
+      ? Date.parse(createdAfterMatch[1])
+      : undefined,
+    createdBefore: createdBeforeMatch?.[1]
+      ? Date.parse(createdBeforeMatch[1])
+      : undefined,
     searchQuery: searchQuery.replace(/\s\s+/g, " "),
   };
 };
 
 export default [
   http.get(`${API_URL}activities`, async ({ request }) => {
-    if (shouldApplyEndpointStatus("activities")) {
-      const { status } = getEndpointStatus("activities");
+    const url = new URL(request.url);
+    const offset = Number(url.searchParams.get("offset")) || 0;
+    const limit = Number(url.searchParams.get("limit")) || 1;
+    const query = url.searchParams.get("query") ?? "";
 
-      if (status === "error") {
+    const {
+      status,
+      type,
+      computerId,
+      searchQuery,
+      createdAfter,
+      createdBefore,
+    } = parseActivitiesQuery(query);
+
+    if (shouldApplyEndpointStatus("activities")) {
+      const { status: endpointStatus, response } =
+        getEndpointStatus("activities");
+
+      if (endpointStatus === "error") {
         throw createEndpointStatusError();
       }
 
-      if (status === "empty") {
+      if (endpointStatus === "empty") {
         return HttpResponse.json({
           results: [],
           count: 0,
@@ -74,13 +104,32 @@ export default [
           previous: null,
         });
       }
-    }
 
-    const url = new URL(request.url);
-    const offset = Number(url.searchParams.get("offset")) || 0;
-    const limit = Number(url.searchParams.get("limit")) || 1;
-    const query = url.searchParams.get("query") ?? "";
-    const endpointStatus = getEndpointStatus("activities");
+      if (endpointStatus === "variant") {
+        if (Array.isArray(response)) {
+          const data = response as Activity[];
+          return HttpResponse.json(
+            generatePaginatedResponse<Activity>({
+              data,
+              limit: data.length,
+              offset: 0,
+            }),
+          );
+        }
+        const { unapproved, delivered } = response as {
+          unapproved: Activity[];
+          delivered: Activity[];
+        };
+        const bulkData = status === "unapproved" ? unapproved : delivered;
+        return HttpResponse.json(
+          generatePaginatedResponse<Activity>({
+            data: bulkData,
+            limit,
+            offset,
+          }),
+        );
+      }
+    }
 
     if (query === INVALID_ACTIVITY_SEARCH_QUERY) {
       throw HttpResponse.json(
@@ -89,33 +138,6 @@ export default [
           message: "The search query provided is invalid.",
         },
         { status: 400 },
-      );
-    }
-
-    const { status, type, searchQuery } = parseActivitiesQuery(query);
-
-    if (
-      endpointStatus.status === "variant" &&
-      endpointStatus.path === "activities"
-    ) {
-      if (Array.isArray(endpointStatus.response)) {
-        const data = endpointStatus.response as Activity[];
-        return HttpResponse.json(
-          generatePaginatedResponse<Activity>({
-            data,
-            limit: data.length,
-            offset: 0,
-          }),
-        );
-      }
-
-      const { unapproved, delivered } = endpointStatus.response as {
-        unapproved: Activity[];
-        delivered: Activity[];
-      };
-      const bulkData = status === "unapproved" ? unapproved : delivered;
-      return HttpResponse.json(
-        generatePaginatedResponse<Activity>({ data: bulkData, limit, offset }),
       );
     }
 
@@ -133,6 +155,18 @@ export default [
       }
 
       if (type && activity.type !== type) {
+        return false;
+      }
+
+      if (computerId && activity.computer_id !== Number(computerId)) {
+        return false;
+      }
+
+      const creationTime = Date.parse(activity.creation_time);
+      if (createdAfter !== undefined && creationTime <= createdAfter) {
+        return false;
+      }
+      if (createdBefore !== undefined && creationTime >= createdBefore) {
         return false;
       }
 
@@ -176,7 +210,7 @@ export default [
           : new HttpResponse(null, { status: 404 });
       }
 
-      throw createEndpointStatusNetworkError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json<Activity>(

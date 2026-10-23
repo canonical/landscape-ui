@@ -47,12 +47,6 @@ export interface AvailableSnapInfo extends AvailableSnap {
   "default-track": unknown;
 }
 
-export interface SelectedSnaps extends AvailableSnap {
-  channel: string;
-  revision: string;
-  confinement: string;
-}
-
 export interface SnapWithCount {
   snap: Snap;
   computer_count: number | null;
@@ -69,3 +63,10 @@ export type ActionWithNotification = Extract<
 >;
 
 export type SnapMode = "channel" | "revision";
+
+export interface SnapModeConfig {
+  mode: SnapMode;
+  value: string;
+  channel?: string;
+  confinement?: string;
+}

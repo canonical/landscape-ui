@@ -28,7 +28,9 @@ import EditScriptConfirmationModal from "../EditScriptConfirmationModal";
 import RunScriptFormInstanceList from "../RunScriptFormInstanceList";
 import {
   INITIAL_VALUES,
+  INSTANCE_OPTIONS_LIMIT,
   NO_TAGGED_FEATURED_INSTANCES_WARNING_MESSAGE,
+  TAGGED_INSTANCES_PREVIEW_LIMIT,
   VALIDATION_SCHEMA,
 } from "./constants";
 import classes from "./RunScriptForm.module.scss";
@@ -142,19 +144,37 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
 
   const { tags, isGettingTags } = useGetTags();
 
-  const { instances, isGettingInstances } = useGetInstances({
-    query: `access-group-recursive:${script.access_group}`,
-  });
+  // Windows hosts are excluded server-side so the counts and the lists
+  // follow the same eligibility rule; the client-side scripts-feature
+  // filters below only drop instances that have not reported a
+  // distribution yet.
+  const accessGroupQuery = `access-group-recursive:${script.access_group} NOT distribution:windows`;
+
+  const { instancesCount, isGettingInstances: isGettingInstancesCount } =
+    useGetInstances(
+      { query: accessGroupQuery, limit: 1 },
+      { listenToUrlParams: false },
+    );
+
+  // The full list only feeds the "Instance names" picker, so it is fetched
+  // once that mode is selected.
+  const { instances, isGettingInstances } = useGetInstances(
+    { query: accessGroupQuery, limit: INSTANCE_OPTIONS_LIMIT },
+    { listenToUrlParams: false },
+    { enabled: formik.values.queryType === "ids" },
+  );
 
   const {
     instances: taggedInstances,
+    instancesCount: taggedInstancesCount,
     isGettingInstances: isGettingTaggedInstances,
     instancesError: taggedInstancesError,
   } = useGetInstances(
     {
-      query: `access-group-recursive:${script.access_group} ${formik.values.tags.map((tag) => `tag:${tag}`).join(" OR ")}`,
+      query: `${accessGroupQuery} ${formik.values.tags.map((tag) => `tag:${tag}`).join(" OR ")}`,
+      limit: TAGGED_INSTANCES_PREVIEW_LIMIT,
     },
-    undefined,
+    { listenToUrlParams: false },
     {
       enabled: !!formik.values.tags.length,
     },
@@ -183,6 +203,13 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
     },
   );
 
+  const isTaggedInstancesPreviewPartial =
+    taggedInstancesCount !== undefined &&
+    taggedInstancesCount > taggedInstancesWithScriptsFeature.length;
+
+  const isInstanceOptionsListPartial =
+    instancesCount !== undefined && instancesCount > INSTANCE_OPTIONS_LIMIT;
+
   const shouldShowNoTaggedInstancesWarning =
     hasClosedTagDropdown &&
     !isTagDropdownOpen &&
@@ -200,7 +227,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
     }
   };
 
-  if (isGettingTags || isGettingInstances) {
+  if (isGettingTags || isGettingInstancesCount) {
     return <LoadingState />;
   }
 
@@ -243,9 +270,9 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
                 {...formik.getFieldProps("queryType")}
                 value="ids"
                 checked={formik.values.queryType === "ids"}
-                disabled={!instanceOptions.length}
+                disabled={!instancesCount}
                 help={
-                  !instanceOptions.length &&
+                  !instancesCount &&
                   "There are no available instances in this script's access group."
                 }
               />
@@ -285,7 +312,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
                 />
               )}
 
-              {formik.values.queryType === "ids" && (
+              {formik.values.queryType === "ids" && isGettingInstances && (
+                <LoadingState />
+              )}
+
+              {formik.values.queryType === "ids" && !isGettingInstances && (
                 <MultiSelectField
                   placeholder="Select instances"
                   variant="condensed"
@@ -306,6 +337,10 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
                     formik.setFieldTouched("instanceIds", true, false);
                   }}
                   error={getFormikError(formik, "instanceIds")}
+                  help={
+                    isInstanceOptionsListPartial &&
+                    `Only the first ${INSTANCE_OPTIONS_LIMIT.toLocaleString()} of the ${pluralize(instancesCount, ["instance"], "exact")} in this script's access group are listed. Use tags to target the others.`
+                  }
                 />
               )}
             </div>
@@ -406,11 +441,22 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
           close={hideRunConfirm}
           confirmButtonAppearance="positive"
         >
-          <p className="u-margin--bottom">
-            This script will run on the following instances, which are
-            associated with the selected{" "}
-            {pluralize(formik.values.tags.length, ["tag"])}.
-          </p>
+          {isTaggedInstancesPreviewPartial ? (
+            <p className="u-margin--bottom">
+              The selected {pluralize(formik.values.tags.length, ["tag"])}{" "}
+              {formik.values.tags.length > 1 ? "match" : "matches"}{" "}
+              {pluralize(taggedInstancesCount, ["instance"], "exact")} that can
+              run scripts. Only{" "}
+              {taggedInstancesWithScriptsFeature.length.toLocaleString()} of
+              them are listed below.
+            </p>
+          ) : (
+            <p className="u-margin--bottom">
+              This script will run on the following instances, which are
+              associated with the selected{" "}
+              {pluralize(formik.values.tags.length, ["tag"])}.
+            </p>
+          )}
           <RunScriptFormInstanceList
             instances={taggedInstancesWithScriptsFeature}
             tags={formik.values.tags}

@@ -21,7 +21,10 @@ export const useAcceptPendingInstances = () => {
     mutationFn: async (params) =>
       authFetchOld.get("AcceptPendingComputers", { params }),
     onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["pendingInstances"] }),
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["pendingInstances"] }),
+        queryClient.invalidateQueries({ queryKey: ["instances"] }),
+      ]),
   });
 
   return {

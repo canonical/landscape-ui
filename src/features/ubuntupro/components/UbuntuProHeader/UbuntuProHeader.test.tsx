@@ -1,6 +1,9 @@
 import { INSTANCES_PATHS } from "@/libs/routes/instances";
 import useAuth from "@/hooks/useAuth";
-import { instances } from "@/tests/mocks/instance";
+import {
+  instances,
+  windowsInstanceWithUbuntuPro,
+} from "@/tests/mocks/instance";
 import { authUser } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
@@ -118,6 +121,23 @@ describe("UbuntuProHeader", () => {
       singleInstancePath,
     );
 
+    expect(
+      screen.queryByRole("button", { name: /detach token/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("hides token actions for a Windows host", () => {
+    renderWithProviders(
+      <UbuntuProHeader instance={windowsInstanceWithUbuntuPro} />,
+      undefined,
+      `/instances/${windowsInstanceWithUbuntuPro.id}`,
+      singleInstancePath,
+    );
+
+    expect(screen.getByText(/account information/i)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /edit token/i }),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /detach token/i }),
     ).not.toBeInTheDocument();

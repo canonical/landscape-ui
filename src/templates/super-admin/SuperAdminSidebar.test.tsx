@@ -88,6 +88,16 @@ describe("SuperAdminSidebar", () => {
     ).toHaveAttribute("href", RETURN_TO);
   });
 
+  it("hides the main view link when the superadmin has no accounts", () => {
+    vi.mocked(useAuth).mockReturnValue({ ...mockAuth, hasAccounts: false });
+
+    renderAt(ROUTES.superAdmin.accounts());
+
+    expect(
+      screen.queryByRole("link", { name: "Back to main view" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("signs out", async () => {
     const logout = vi.fn();
     vi.mocked(useAuth).mockReturnValue({ ...mockAuth, logout });

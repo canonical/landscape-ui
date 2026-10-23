@@ -666,19 +666,19 @@ describe("SnapsActionForm", () => {
     });
 
     expect(
-      screen.queryByText("This snap requires classic confinement"),
+      screen.queryByText(/requires classic confinement/i),
     ).not.toBeInTheDocument();
 
     await user.selectOptions(channelSelect, "latest/edge");
 
     expect(
-      await screen.findByText("This snap requires classic confinement"),
+      await screen.findByText("This release requires classic confinement"),
     ).toBeInTheDocument();
 
     await user.selectOptions(channelSelect, "latest/stable");
 
     expect(
-      screen.queryByText("This snap requires classic confinement"),
+      screen.queryByText(/requires classic confinement/i),
     ).not.toBeInTheDocument();
   });
 
@@ -1118,7 +1118,7 @@ describe("SnapsActionForm", () => {
     );
 
     expect(
-      await screen.findByText("This snap requires classic confinement"),
+      await screen.findByText("This release requires classic confinement"),
     ).toBeInTheDocument();
   });
 

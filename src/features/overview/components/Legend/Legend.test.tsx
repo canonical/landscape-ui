@@ -1,6 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ROUTES } from "@/libs/routes";
 import { describe, expect, it, vi } from "vitest";
 import Legend from "./Legend";
 
@@ -46,6 +47,23 @@ describe("Legend", () => {
         screen.getByRole("link", { name: `${item.count} instances` }),
       ).toBeInTheDocument();
     });
+  });
+
+  it("links upgrade items to the upgrades filter", () => {
+    renderWithProviders(<Legend {...props} />);
+
+    expect(screen.getByRole("link", { name: "7 instances" })).toHaveAttribute(
+      "href",
+      ROUTES.instances.root({ upgrades: ["package-upgrades"] }),
+    );
+    expect(screen.getByRole("link", { name: "5 instances" })).toHaveAttribute(
+      "href",
+      ROUTES.instances.root({ upgrades: ["security-upgrades"] }),
+    );
+    expect(screen.getByRole("link", { name: "6 instances" })).toHaveAttribute(
+      "href",
+      ROUTES.instances.root({ status: "up-to-date" }),
+    );
   });
 
   it("renders zero counts as plain text rather than a link", () => {

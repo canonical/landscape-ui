@@ -31,12 +31,9 @@ assert(
 );
 assert(snapWithNoChannels, "No installed snap has zero available channels.");
 
-const renderSwitchChannelButton = (
-  snap = snapWithChannels,
-  selectedSnaps = [snap],
-) =>
+const renderSwitchChannelButton = (snap = snapWithChannels) =>
   renderWithProviders(
-    <SwitchChannelButton snap={snap} selectedSnaps={selectedSnaps} />,
+    <SwitchChannelButton snap={snap} />,
     undefined,
     ROUTES.instances.details.single(INSTANCE_ID),
     `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -61,21 +58,14 @@ describe("SwitchChannelButton", () => {
     });
   });
 
-  it("disables the button with a tooltip when no channels are available", async () => {
-    const user = userEvent.setup();
+  it("enables the button when no channels are available so a revision can be specified", async () => {
     renderSwitchChannelButton(snapWithNoChannels);
 
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Switch channel" }),
-      ).toHaveAttribute("aria-disabled");
+      ).not.toHaveAttribute("aria-disabled");
     });
-
-    await user.hover(screen.getByText("Switch channel"));
-
-    expect(
-      await screen.findByText("No available channels to switch to."),
-    ).toBeVisible();
   });
 
   it("opens the switch snap form side panel when clicked", async () => {
@@ -109,10 +99,7 @@ describe("SwitchChannelButton", () => {
     );
 
     renderWithProviders(
-      <SwitchChannelButton
-        snap={snapWithChannels}
-        selectedSnaps={[snapWithChannels]}
-      />,
+      <SwitchChannelButton snap={snapWithChannels} />,
       undefined,
       `/${PATHS.instances.root}/NaN?tab=snaps`,
       `/${PATHS.instances.root}/${PATHS.instances.single}`,

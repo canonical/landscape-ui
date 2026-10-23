@@ -4,18 +4,12 @@ import { SNAP_REVISIONS_DOCUMENTATION_URL } from "@/constants";
 import type {
   ActionWithNotification,
   SnapAction,
-  SnapMode,
+  SnapModeConfig,
 } from "../../../../types";
-
-interface SnapChangeConfig {
-  mode: SnapMode;
-  value: string;
-  channel?: string;
-}
 
 interface SnapNotificationProps {
   readonly action: ActionWithNotification;
-  readonly snapModeConfigs?: Record<string, SnapChangeConfig>;
+  readonly snapModeConfigs?: Record<string, SnapModeConfig>;
 }
 
 const HoldNotification = () => (

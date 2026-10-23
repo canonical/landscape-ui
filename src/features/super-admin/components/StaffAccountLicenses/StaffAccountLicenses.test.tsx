@@ -37,9 +37,10 @@ describe("StaffAccountLicenses", () => {
     expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 
-  it("renders the empty message without licenses", () => {
+  it("renders the empty state without licenses", () => {
     renderWithProviders(<StaffAccountLicenses licenses={[]} />);
 
+    expect(screen.getByText("No licenses")).toBeInTheDocument();
     expect(
       screen.getByText("This account has no licenses."),
     ).toBeInTheDocument();

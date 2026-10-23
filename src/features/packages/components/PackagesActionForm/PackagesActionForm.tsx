@@ -43,6 +43,21 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
   } = useCreatePackageChangePlan();
   const { mutateAsync: deletePackageChangePlan } = useDeletePackageChangePlan();
 
+  const getValidationError = () => {
+    if (!selectedPackages.length) {
+      return "You must add at least one package to continue";
+    }
+
+    if (
+      actionType == "change_version" &&
+      selectedPackages.some(([, versions]) => !versions.length)
+    ) {
+      return "All selected packages must have at least one version";
+    }
+
+    return undefined;
+  };
+
   switch (packageChangePlanId) {
     case null:
       return (
@@ -54,15 +69,13 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
             actionType={actionType}
           />
           <SidePanelFormButtons
-            submitButtonDisabled={
-              !selectedPackages.length ||
-              (actionType == "change_version" &&
-                selectedPackages.some(([, versions]) => !versions.length))
-            }
+            formError={getValidationError()}
             submitButtonText="Next"
             submitButtonAppearance="positive"
             submitButtonLoading={isCreatingPackageChangePlan}
             onSubmit={async () => {
+              if (getValidationError()) return;
+
               try {
                 const computer_query = toInstanceQuery(instanceIds);
 

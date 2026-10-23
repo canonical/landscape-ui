@@ -6,7 +6,10 @@ import {
   type PackageChangePlanActionType,
   PackagesActionForm,
 } from "@/features/packages";
-import { DetachTokenModal } from "@/features/ubuntupro";
+import {
+  classifyInstancesByToken,
+  DetachTokenModal,
+} from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -17,6 +20,7 @@ import {
   ContextualMenu,
   Icon,
   Modal,
+  Tooltip,
 } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean, useMediaQuery } from "usehooks-ts";
@@ -108,6 +112,10 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
   const hasSelectedInstances = selectedInstances.length > 0;
+  const proTokenInstances = selectedInstances.filter(
+    (instance) => getFeatures(instance).proToken,
+  );
+  const hasProTokenInstances = proTokenInstances.length > 0;
   const hasInstancesToExport = isAllSelected || hasSelectedInstances;
 
   const handleRunScript = async () => {
@@ -219,18 +227,18 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleAttachToken = () => {
     setSidePanelContent(
-      `Attach Ubuntu Pro token to ${pluralize(selectedInstances.length, ["instance"], "exact")}`,
+      `Attach Ubuntu Pro token to ${pluralize(proTokenInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
-        <AttachTokenForm selectedInstances={selectedInstances} />
+        <AttachTokenForm selectedInstances={proTokenInstances} />
       </Suspense>,
     );
   };
 
   const handleReplaceToken = () => {
     setSidePanelContent(
-      `Replace Ubuntu Pro token for ${pluralize(selectedInstances.length, ["instance"], "exact")}`,
+      `Replace Ubuntu Pro token for ${pluralize(proTokenInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
-        <ReplaceTokenForm selectedInstances={selectedInstances} />
+        <ReplaceTokenForm selectedInstances={proTokenInstances} />
       </Suspense>,
     );
   };
@@ -239,20 +247,19 @@ const InstancesPageActions = memo(function InstancesPageActions({
     if (lastSidePathSegment !== "export") createSidePathPusher("export")();
   };
 
-  const allInstancesHaveToken = selectedInstances.every(
-    (instance) =>
-      instance.ubuntu_pro_info?.result === "success" &&
-      instance.ubuntu_pro_info.attached,
-  );
+  const allInstancesHaveToken =
+    classifyInstancesByToken(proTokenInstances).withoutToken === 0;
+
+  // Windows instances can't manage snaps, so leave them out of the activity.
+  const snapInstanceIds = selectedInstances
+    .filter((instance) => getFeatures(instance).snaps)
+    .map(({ id }) => id);
 
   const handleSnapInstall = () => {
     setSidePanelContent(
       "Install snaps",
       <Suspense fallback={<LoadingState />}>
-        <SnapsActionForm
-          selectedInstances={selectedInstances.map(({ id }) => id)}
-          action="install"
-        />
+        <SnapsActionForm selectedInstances={snapInstanceIds} action="install" />
       </Suspense>,
     );
   };
@@ -262,7 +269,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       "Uninstall snaps",
       <Suspense fallback={<LoadingState />}>
         <SnapsActionForm
-          selectedInstances={selectedInstances.map(({ id }) => id)}
+          selectedInstances={snapInstanceIds}
           action="uninstall"
         />
       </Suspense>,
@@ -273,10 +280,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setSidePanelContent(
       "Refresh snaps",
       <Suspense fallback={<LoadingState />}>
-        <SnapsActionForm
-          selectedInstances={selectedInstances.map(({ id }) => id)}
-          action="refresh"
-        />
+        <SnapsActionForm selectedInstances={snapInstanceIds} action="refresh" />
       </Suspense>,
     );
   };
@@ -285,10 +289,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setSidePanelContent(
       "Hold snaps",
       <Suspense fallback={<LoadingState />}>
-        <SnapsActionForm
-          selectedInstances={selectedInstances.map(({ id }) => id)}
-          action="hold"
-        />
+        <SnapsActionForm selectedInstances={snapInstanceIds} action="hold" />
       </Suspense>,
     );
   };
@@ -297,10 +298,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setSidePanelContent(
       "Unhold snaps",
       <Suspense fallback={<LoadingState />}>
-        <SnapsActionForm
-          selectedInstances={selectedInstances.map(({ id }) => id)}
-          action="unhold"
-        />
+        <SnapsActionForm selectedInstances={snapInstanceIds} action="unhold" />
       </Suspense>,
     );
   };
@@ -310,7 +308,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       "Change snap channel",
       <Suspense fallback={<LoadingState />}>
         <SnapsActionForm
-          selectedInstances={selectedInstances.map(({ id }) => id)}
+          selectedInstances={snapInstanceIds}
           action="change channel"
         />
       </Suspense>,
@@ -646,6 +644,25 @@ const InstancesPageActions = memo(function InstancesPageActions({
     },
   ];
 
+  const isDebManagementUnsupported = noInstanceHasPackageFeature;
+  const isSnapManagementUnsupported = snapInstanceIds.length === 0;
+
+  const getMenuToggleLabel = (
+    label: string,
+    isUnsupported: boolean,
+    message: string,
+  ) =>
+    hasSelectedInstances && isUnsupported ? (
+      <>
+        <Tooltip message={message} position="btm-center">
+          <span>{label}</span>
+        </Tooltip>{" "}
+        <span className="u-off-screen">{message}</span>
+      </>
+    ) : (
+      <span>{label}</span>
+    );
+
   const isDebManagementEnabled = (
     ["package-change-plans", "package-search-rest-api"] as const
   ).every(isFeatureEnabled);
@@ -681,7 +698,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               type="button"
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
-              disabled={!hasSelectedInstances}
+              disabled={!hasProTokenInstances}
               hasIcon={proServicesLinks[0].hasIcon}
             >
               {proServicesLinks[0].children}
@@ -693,7 +710,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               links={proServicesLinks}
               toggleLabel="Ubuntu Pro"
               toggleClassName="u-no-margin--bottom"
-              toggleDisabled={!hasSelectedInstances}
+              toggleDisabled={!hasProTokenInstances}
               hasToggleIcon
             />
           ),
@@ -704,9 +721,13 @@ const InstancesPageActions = memo(function InstancesPageActions({
                   hasToggleIcon
                   links={debManagementLinks}
                   position={menuPosition}
-                  toggleLabel={<span>Deb management</span>}
+                  toggleLabel={getMenuToggleLabel(
+                    "Deb management",
+                    isDebManagementUnsupported,
+                    "None of the selected instances support deb package management.",
+                  )}
                   toggleClassName="u-no-margin--bottom"
-                  toggleDisabled={0 === selectedInstances.length}
+                  toggleDisabled={isDebManagementUnsupported}
                 />,
               ]
             : []),
@@ -715,14 +736,13 @@ const InstancesPageActions = memo(function InstancesPageActions({
             links={snapLinks}
             // The last button never has room to open rightward.
             position="right"
-            toggleLabel="Snap management"
+            toggleLabel={getMenuToggleLabel(
+              "Snap management",
+              isSnapManagementUnsupported,
+              "None of the selected instances support snap management.",
+            )}
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={
-              !hasSelectedInstances ||
-              selectedInstances.every(
-                (instance) => !getFeatures(instance).snaps,
-              )
-            }
+            toggleDisabled={isSnapManagementUnsupported}
             hasToggleIcon
           />,
         ]}
@@ -741,7 +761,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         <DetachTokenModal
           isOpen={detachModalOpen}
           onClose={closeDetachModal}
-          computerIds={selectedInstances.map(({ id }) => id)}
+          computerIds={proTokenInstances.map(({ id }) => id)}
         />
       )}
       <InstanceRemoveFromLandscapeModal

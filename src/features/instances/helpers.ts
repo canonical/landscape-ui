@@ -1,7 +1,9 @@
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import type { ListFilter } from "@/types/Filters";
 import type { USGProfile } from "../usg-profiles";
-import { FILTERS } from "./constants";
+import type { PageParams } from "@/libs/pageParamsManager";
+import { FILTERS, UPGRADE_ALERT_TYPES } from "./constants";
+import type { Status } from "./types";
 import type { RecoveryKeyActivityStatus } from "./types/RecoveryKey";
 
 export const isRecoveryKeyActivityFailedOrCanceled = (
@@ -57,6 +59,7 @@ export function getFeatures(instance: InstanceWithoutRelation) {
     packages: isUbuntu,
     power: isLinux,
     pro: !isNonUbuntuLinux,
+    proToken: isUbuntu || isUbuntuCore,
     processes: isLinux,
     recoveryKey: isLinux,
     sanitization: isLinux && !isUbuntuCore && !instance.is_wsl_instance,
@@ -212,3 +215,13 @@ export const getInstanceListParams = ({
   wsl_children: wsl.includes("child"),
   wsl_parents: wsl.includes("parent"),
 });
+
+// Upgrade alerts map to the multi-select "Upgrades" filter; every other status
+// maps to the single-select "Status" filter.
+export const getStatusRouteParams = ({
+  alertType,
+  filterValue,
+}: Pick<Status, "alertType" | "filterValue">): Partial<PageParams> =>
+  UPGRADE_ALERT_TYPES.includes(alertType)
+    ? { upgrades: [filterValue] }
+    : { status: filterValue };

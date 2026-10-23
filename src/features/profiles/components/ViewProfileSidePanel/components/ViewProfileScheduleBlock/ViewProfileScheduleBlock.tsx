@@ -12,7 +12,7 @@ import {
 } from "../../../../helpers";
 import Blocks from "@/components/layout/Blocks";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import date from "@/libs/date";
+import date, { parseServerDateTime } from "@/libs/date";
 import { getLastRunData, getNextRunData, getScheduleMessage } from "./helpers";
 import { pluralize } from "@/utils/_helpers";
 
@@ -29,6 +29,7 @@ const ViewProfileScheduleBlock: FC<ViewProfileScheduleBlockProps> = ({
     !isProfileArchived(profile) && !isPostEnrollmentScriptProfile(profile);
   const nextRun = getNextRunData(profile);
   const nextLabel = isRebootProfile(profile) ? "Next restart" : "Next run";
+  const parseRunDate = isUsgProfile(profile) ? parseServerDateTime : date;
 
   return (
     <Blocks.Item title="Running schedule">
@@ -44,7 +45,7 @@ const ViewProfileScheduleBlock: FC<ViewProfileScheduleBlockProps> = ({
             label="Last run"
             value={
               lastRun
-                ? `${date(lastRun).utc().format(DISPLAY_DATE_TIME_FORMAT)} UTC`
+                ? `${parseRunDate(lastRun).utc().format(DISPLAY_DATE_TIME_FORMAT)} UTC`
                 : null
             }
           />
@@ -62,7 +63,7 @@ const ViewProfileScheduleBlock: FC<ViewProfileScheduleBlockProps> = ({
             label={nextLabel}
             value={
               nextRun
-                ? `${date(nextRun).utc().format(DISPLAY_DATE_TIME_FORMAT)} UTC`
+                ? `${parseRunDate(nextRun).utc().format(DISPLAY_DATE_TIME_FORMAT)} UTC`
                 : null
             }
           />

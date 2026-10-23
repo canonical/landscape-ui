@@ -145,17 +145,19 @@ export interface UbuntuProService extends Record<string, unknown> {
   entitled?: string;
   status?: string;
   status_details?: string;
+  auto_enabled?: string;
 }
 
 export interface UbuntuProInfo {
   attached: boolean;
   expires: string | null;
-  services: UbuntuProService[];
+  services?: UbuntuProService[];
   techSupportLevel?: string;
   effective?: string;
   contract?: UbuntuProContract;
   account?: UbuntuProAccount;
   result?: "success" | "failure";
+  simulated?: boolean;
   errors?: {
     message: string;
     message_code: string;

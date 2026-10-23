@@ -15,7 +15,6 @@ import { useGetAvailabilityZones } from "../../api";
 import { FILTERS } from "../../constants";
 import AccessGroupFilter from "../AccessGroupFilter";
 import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
-import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
 import UpgradesFilter from "../UpgradesFilter";
 import WslFilter from "../WslFilter";
@@ -182,7 +181,6 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
           setShowSearchHelp(false);
         }}
       />
-      <PendingInstancesNotification />
     </>
   );
 };
