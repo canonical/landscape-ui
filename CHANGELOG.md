@@ -3,6 +3,52 @@
 
 ---
 
+## 26.10.0.5
+
+### Patch Changes
+
+- Show an error when creating a role fails instead of failing silently
+- Validate the deb line when adding a repository profile source
+- Disable Deb management and Snap management the same way when no selected instance supports them, with a tooltip explaining why
+- Update welcome portal copy
+- fallback when package has no available versions
+- Disable snaps info request when instance id is not a valid number
+- Update axios to 1.20.0 and refresh undici, devalue, brace-expansion and source-map-js to their patched versions, clearing the fixable HIGH findings in the 26.10 security scan
+- Fix the learn more link in the pending-instance review and approval steps to point to the automatic registration documentation.
+- fix upgrade alert links to filter instances by upgrades
+- Fix about page spacing and reboot profiles datetime formatting, and allow http URLs for mirror source
+- Update validation for deb management and wording for snaps management
+- Hide pending instances without an error notification when the user lacks permission to view them
+- Add and update empty states, and hide Super admin back button for users with no account.
+- Open the instances filter and action menus to the right when there is room and to the left on smaller screens, and stop the Columns menu from jumping when it first opens.
+- Fix table backgrounds in dark side panels.
+- Load more package versions and search results as you scroll package dropdowns, instead of stopping after the second page
+- Show the pending instances banner when no instances are registered, so pending instances can be reviewed and approved. Refreshed the registered instances list after approval so newly added instances appear without having to refresh the page or navigate away.
+- Make the primary group optional when adding a user, with "Use system default" selected initially. Show a success notification with a "View activity" action when user creation is queued.
+- Instance packages are no longer shown as security upgrades when they are not installed or when the installed version is newer than the security candidate. The Packages tab badge on an instance now shows the count of upgradable packages.
+- Disable package change plan execution when the Upgrade Summary has no actions and show a "No upgrades to apply" state instead of an empty table, and list packages that will not be upgraded on excluded instances. List packages that are excluded on every selected instance in the Deb management Summary, with their excluded-instance links, and show "No changes to apply" when nothing can be executed.
+- Blank optional fields are no longer sent when creating a user; name required in edit form.
+- Fixed radio button alignment in run scripts side panel and the single instance hold snaps form
+- Update styles for compliance report side panel
+- Show the total number of targeted instances in the script-run confirmation when the preview list is partial, and stop the instance picker and preview from inheriting the page's pagination
+- Fixes the "Security upgrades" filter on an instance's Packages tab to only list packages with an available security update. Packages installed from the security pocket that only have a regular upgrade are no longer included.
+- Align the Status and Time to Patch USNs columns in ReportView
+- Show a checkbox for snap install / change channel where confinement is unknown for the default channel
+- fixed styling shift by moving subtitle on the legacy license page to underneath the page title.
+- Fixed empty space beside links allowing hovering and clicking.
+- Match the snap action confirmation text to the number of selected snaps
+- Leave instances that can't manage snaps, such as Windows, out of snap management activities
+- Show the chosen revision or channel next to each snap in the install and change channel confirmation modals, reject revisions above the snapd maximum, clarify the install revision notice, and link it to the snap revisions documentation.
+- Fix licenses table expiration date so it doesn't change by timezone, and rephrase the text in the Remove instance from Landscape modal.
+- Update single-instance snap actions to align with bulk snap actions
+- Don't upgrade packages that are excluded in the Packages tab of the Upgrades form
+- Clearing location and phone numbers when editing a user now works.
+- Fixed the USG audit download form defaulting to a future date for users ahead of UTC, which blocked audit generation.
+- Fix saved USG schedule end dates showing as "Invalid date". Show the correct last and next run times for USG profiles outside UTC. Show an error instead of a success message when editing or duplicating a USG profile fails.
+- Show a WSL host's Ubuntu Pro subscription instead of an empty state, and hide token actions on non-Ubuntu hosts
+- Fix mirror update modal so the checkboxes don't block each other, and rename for clarity
+- Update the breakpoint for the actions menu in the instances page
+
 ## 26.10.0.0-rc
 
 ### Minor Changes
