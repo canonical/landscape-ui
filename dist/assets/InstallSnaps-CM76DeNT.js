@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-DanBxBBP.js";import{c as t}from"./hooks-CexamaVX.js";import{n}from"./SnapsActionForm-DT4d7Krf.js";var r=e(),i=()=>{let{instanceId:e,childInstanceId:i}=t();return(0,r.jsx)(n,{selectedInstances:[Number(i??e)],action:`install`})};export{i as default};

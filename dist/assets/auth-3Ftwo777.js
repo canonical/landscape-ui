@@ -1,0 +1,1 @@
+import"./AuthTemplate-8OesdoVk.js";

@@ -1,0 +1,109 @@
+/* @canonical/styles — Grid layout presets
+ *
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │  Three grid modes                                           │
+ * ├──────────────┬──────────────────────────────────────────────┤
+ * │ .responsive  │ Breakpoint-driven: 4-col / 8-col / 12-col   │
+ * │ .intrinsic   │ Fluid auto-fill, groups of 4 columns         │
+ * │ (bare)       │ No preset — bring your own columns            │
+ * └──────────────┴──────────────────────────────────────────────┘
+ *
+ * Classes:
+ *   .grid            Base grid context (display: grid)
+ *   .grid.responsive Breakpoint-driven column grid
+ *   .grid.intrinsic  Fluid auto-fill grid
+ *   .subgrid         CSS subgrid child — inherits parent columns
+ *
+ * Customization:
+ *   --grid-gap        Shorthand: sets both row-gap and column-gap (default: var(--grid-gutter))
+ *   --grid-row-gap    Block-direction (vertical) gap between rows
+ *   --grid-column-gap Inline-direction (horizontal) gap between columns
+ *   --grid-col-min    Minimum column width for intrinsic mode (default: 100px)
+ *   --subgrid-span    Column span for subgrid children (default: 1 / -1, full width)
+ *
+ * Breakpoints (responsive mode):
+ *   < 768px          4 columns  (mobile)
+ *   768px – 1279px   8 columns  (tablet)
+ *   ≥ 1280px         12 columns (desktop)
+ *
+ * Relationship to spacing architecture:
+ *   The grid provides horizontal structure. Vertical spacing between
+ *   grid items is handled by the spacing architecture tokens
+ *   (--container-gap-* for app UI, element margin-bottom for editorial).
+ *   The --grid-gap property controls both axes unless overridden
+ *   per-axis with --grid-row-gap or --grid-column-gap.
+ *
+ * Usage examples:
+ *
+ *   <!-- Responsive 12-column layout -->
+ *   <div class="grid responsive">
+ *     <main style="grid-column: span 8">Content</main>
+ *     <aside style="grid-column: span 4">Sidebar</aside>
+ *   </div>
+ *
+ *   <!-- Fluid card grid -->
+ *   <div class="grid intrinsic">
+ *     <article>Card 1</article>
+ *     <article>Card 2</article>
+ *   </div>
+ *
+ *   <!-- Subgrid for aligned form fields -->
+ *   <div class="grid responsive">
+ *     <form class="subgrid">
+ *       <div class="subgrid" style="grid-column: span 6">
+ *         <label>Name</label>
+ *         <input />
+ *       </div>
+ *     </form>
+ *   </div>
+ *
+ *   <!-- Custom gap -->
+ *   <div class="grid responsive" style="--grid-gap: 2rem">...</div>
+ *
+ *   <!-- Separate row/column gaps -->
+ *   <div class="grid responsive" style="--grid-row-gap: 1.5rem; --grid-column-gap: 1rem">...</div>
+ */
+
+@layer ds.components {
+  :root {
+    --grid-col-min: 100px;
+
+    --grid-intrinsic: repeat(
+      auto-fill,
+      minmax(var(--grid-col-min), 1fr) minmax(var(--grid-col-min), 1fr)
+        minmax(var(--grid-col-min), 1fr) minmax(var(--grid-col-min), 1fr)
+    );
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: var(--modifier-grid-template);
+    column-gap: var(
+      --grid-column-gap,
+      var(--grid-gap, var(--grid-gutter, 1.5rem))
+    );
+    row-gap: var(--grid-row-gap, var(--grid-gap, var(--grid-gutter, 1.5rem)));
+  }
+
+  .responsive {
+    --modifier-grid-template: repeat(4, 1fr);
+
+    @media (min-width: 768px) {
+      --modifier-grid-template: repeat(8, 1fr);
+    }
+
+    @media (min-width: 1280px) {
+      --modifier-grid-template: repeat(12, 1fr);
+    }
+  }
+
+  .intrinsic {
+    --modifier-grid-template: var(--grid-intrinsic);
+  }
+
+  .subgrid {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: var(--subgrid-span, 1 / -1);
+  }
+}
