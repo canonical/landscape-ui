@@ -10,3 +10,12 @@ onlyBuiltDependencies:
   - "@parcel/watcher"
   - esbuild
   - msw
+
+# Patched versions for the 26.10 security scan. dompurify is pinned exactly by
+# monaco-editor (0.57.0 still pins a vulnerable 3.4.15); the rest are
+# transitive through axios and @canonical/storybook-config.
+overrides:
+  dompurify: 3.4.17
+  follow-redirects: 1.16.1
+  storybook: 10.6.2
+  "@storybook/addon-vitest": 10.6.2
