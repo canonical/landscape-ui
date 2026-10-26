@@ -76,7 +76,6 @@ export default defineConfig({
     // worker + environment start-up for every file as `threads` does.
     projects: [
       {
-        extends: true,
         test: {
           name: "vm",
           pool: "vmThreads",
@@ -84,7 +83,6 @@ export default defineConfig({
         },
       },
       {
-        extends: true,
         test: {
           name: "threads",
           pool: "threads",
@@ -123,7 +121,7 @@ export default defineConfig({
         "**/tests/**",
         "**/*.config.*",
         "**/types/**",
-        "**/index.ts",
+        "**/index.{ts,tsx}",
         "**/_data.{ts,tsx}",
         "**/[.]**",
         "**/*.d.ts",
