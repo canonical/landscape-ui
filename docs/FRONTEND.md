@@ -185,8 +185,7 @@ from `@canonical/react-components` is a lint error, so finished migrations canno
 migration PR removes the last legacy import of a component, add the component to that list in the
 same PR. Partially migrated components, such as `Icon`, stay off the list until no legacy imports
 remain. Only list names that `@canonical/react-components` exports. For example, Breadcrumbs
-never existed in that package. To check a package's exports, run
-`node .github/skills/pragma/list-exports.mjs @canonical/react-components <Name>`.
+never existed in that package.
 
 Lint checks imports only, so follow this by convention: if Pragma ships the component, use it.
 Do not hand-write Vanilla classes such as `p-card` or `p-badge`, or custom classes, to recreate

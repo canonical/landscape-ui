@@ -40,15 +40,9 @@ the CLI with `pnpm exec pragma …` if they are unavailable. Both read the same 
 those are different blocks. Read every `- Tier:` line and pick the one whose package the app
 actually depends on.
 
-The graph records what the design system has documented, not what a package exports. Before you
-use a block, confirm the export:
-
-```bash
-node .github/skills/pragma/list-exports.mjs @canonical/react-ds-global Button
-```
-
-A documented but unexported block is a gap. Report it, and leave the existing markup in place.
-Never hand-roll a lookalike.
+The graph also documents blocks that `@canonical/react-ds-global` has not shipped yet, such as
+Table. If the import does not exist, stop and report the gap. Leave the existing markup in place,
+and never hand-roll a lookalike.
 
 ## Load the upstream workflow skill for the task
 
