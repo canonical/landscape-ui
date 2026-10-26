@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { extractPayload } from "./setup";
+import { extractPayload } from "./contract-coverage/recorder";
 
 describe("extractPayload", () => {
   it("returns null for an empty body", async () => {
