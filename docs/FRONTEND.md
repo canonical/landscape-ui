@@ -180,16 +180,14 @@ components from `@canonical/react-ds-global-form`. `vitest.config.ts` currently 
 #### Pragma migration guardrail
 
 `PRAGMA_MIGRATED_COMPONENTS` in `eslint.config.mjs` lists the components whose migration is
-complete. Currently that is `Badge` and `Card`. Importing one of them, or its `Props` type,
-from `@canonical/react-components` is a lint error, so finished migrations cannot regress. When a
-migration PR removes the last legacy import of a component, add the component to that list in the
-same PR. Partially migrated components, such as `Icon`, stay off the list until no legacy imports
-remain. Only list names that `@canonical/react-components` exports. For example, Breadcrumbs
-never existed in that package.
+complete. Importing a listed component, or its `Props` type, from `@canonical/react-components` is
+a lint error, so finished migrations cannot regress. When a migration PR removes the last legacy
+import of a component, add the component to that list in the same PR. Partially migrated
+components stay off the list until no legacy imports remain. Only list names that
+`@canonical/react-components` exports.
 
-Lint checks imports only, so follow this by convention: if Pragma ships the component, use it.
-Do not hand-write Vanilla classes such as `p-card` or `p-badge`, or custom classes, to recreate
-it.
+Lint checks imports only, so follow this by convention: if Pragma ships the component, use it. Do
+not recreate it with Vanilla `p-*` classes or custom classes.
 
 ### Pragma CLI, MCP server, and agent skill
 
@@ -198,7 +196,7 @@ from an offline knowledge graph covering blocks (components, patterns, layouts),
 families, and code standards. Use it instead of guessing component names or props:
 
 ```
-pnpm exec pragma block lookup Button          # anatomy, modifiers, properties
+pnpm exec pragma block lookup <Component>     # anatomy, modifiers, properties
 pnpm exec pragma block list                   # every block in scope, with its tier
 pnpm exec pragma standard list --category react
 pnpm exec pragma skill list                   # upstream workflow skills (adoption tracks, audits)
