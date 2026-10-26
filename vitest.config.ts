@@ -75,7 +75,7 @@ export default defineConfig({
         "**/tests/**",
         "**/*.config.*",
         "**/types/**",
-        "**/index.ts",
+        "**/index.{ts,tsx}",
         "**/_data.{ts,tsx}",
         "**/[.]**",
         "**/*.d.ts",
