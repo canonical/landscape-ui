@@ -188,6 +188,10 @@ remain. Only list names that `@canonical/react-components` exports. For example,
 never existed in that package. To check a package's exports, run
 `node .github/skills/pragma/list-exports.mjs @canonical/react-components <Name>`.
 
+The guardrail checks imports only. It does not flag Vanilla classes written by hand, such as
+`p-card`, which still style several autocomplete dropdowns. Consider adding a class-name lint rule
+once a migrated component is used mostly through its raw classes, as Chip is.
+
 ### Pragma CLI, MCP server, and agent skill
 
 `@canonical/pragma-cli` is a pinned devDependency. It answers questions about the design system
