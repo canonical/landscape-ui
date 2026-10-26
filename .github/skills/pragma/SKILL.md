@@ -81,7 +81,8 @@ with the Landscape overrides below. Do not copy its text into this repository.
 - **Lock finished migrations.** When a PR removes the last `@canonical/react-components` import of
   a component, add the component to `PRAGMA_MIGRATED_COMPONENTS` in `eslint.config.mjs`. Lint then
   rejects any new legacy import of it (see "Pragma migration guardrail" in `docs/FRONTEND.md`).
-  Never import a listed component from the legacy package.
+  Never import a listed component from the legacy package. Likewise, if Pragma ships a component,
+  use it rather than recreating it with Vanilla `p-*` classes or custom classes.
 - **Forms (A3).** Forms are a work in progress. They use Formik today and move to the Pragma form
   system (built on react-hook-form) during A3. When A3 starts, follow `adoption-a3-forms`. Until
   then, keep each existing form consistent with the library it already uses.
