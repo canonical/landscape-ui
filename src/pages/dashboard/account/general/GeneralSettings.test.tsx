@@ -8,10 +8,10 @@ import { expectLoadingState } from "@/tests/helpers";
 import { userDetails } from "@/tests/mocks/user";
 import { screen } from "@testing-library/react";
 
-describe("GeneralSettings", () => {
-  vi.mock("@/hooks/useAuth");
-  vi.mock("@/hooks/useEnv");
+vi.mock("@/hooks/useAuth");
+vi.mock("@/hooks/useEnv");
 
+describe("GeneralSettings", () => {
   it("should show user info instead of user edit form and no helper content", async () => {
     vi.mocked(useAuth, { partial: true }).mockReturnValue({
       user: { ...authUser, has_password: false },

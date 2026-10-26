@@ -15,6 +15,17 @@ const redirectToExternalUrl = vi.hoisted(() => vi.fn());
 const rootPath = vi.hoisted(() => ({ value: "/" }));
 const ubuntuOneParams = vi.fn();
 
+vi.mock("../../helpers", async (importOriginal) => {
+  const actual = await importOriginal<typeof AuthHelpers>();
+
+  return {
+    ...actual,
+    getLoginRedirect: (searchParams: URLSearchParams) =>
+      actual.getLoginRedirect(searchParams, rootPath.value),
+    redirectToExternalUrl,
+  };
+});
+
 const props: AvailableProviderListProps = {
   oidcProviders,
   isUbuntuOneEnabled: true,
@@ -24,17 +35,6 @@ const props: AvailableProviderListProps = {
 describe("AvailableProviderList", () => {
   beforeEach(() => {
     vi.resetModules();
-
-    vi.mock("../../helpers", async (importOriginal) => {
-      const actual = await importOriginal<typeof AuthHelpers>();
-
-      return {
-        ...actual,
-        getLoginRedirect: (searchParams: URLSearchParams) =>
-          actual.getLoginRedirect(searchParams, rootPath.value),
-        redirectToExternalUrl,
-      };
-    });
 
     vi.doMock("@/features/auth", async () => {
       const actual = await vi.importActual("@/features/auth");
