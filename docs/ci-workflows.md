@@ -10,7 +10,7 @@ Agents must follow these triggers, job orders, and guardrails when touching `.gi
 
 Independent jobs, except that **Vitest** waits for its shards:
 
-- **ESLint** — `pnpm run typecheck` (the only type check in CI: `tcm:run`, then `tsgo` over `tsconfig.json` and `tsconfig.node.json`), then `pnpm eslint --cache --concurrency=4` (which still runs if the type check fails)
+- **ESLint** — `pnpm run typecheck` (the only type check in CI: `tcm:run`, then `tsgo` over `tsconfig.json`, `tsconfig.node.json` and `e2e/tsconfig.json`), then `pnpm eslint --cache --concurrency=4` (which still runs if the type check fails)
 - **Prettier** — `pnpm prettier --check src`
 - **Stylelint** — `pnpm stylelint "src/**/*.module.scss"`
 - **Playwright** (self-hosted; `ubuntu-latest` for fork PRs; `mcr.microsoft.com/playwright:v<version>-noble` container) — matrix over `saas` / `self-hosted`; checks the image tag matches the installed `@playwright/test`, builds with `pnpm run build:e2e` (Vite only, `VITE_ROOT_PATH=/`), installs Chromium, runs the matching project against the `dev` backend (`vars.API_PROXY_TARGET`), uploads `playwright-report-<target>`
@@ -24,7 +24,7 @@ Independent jobs, except that **Vitest** waits for its shards:
 
 **Rule:** bump the Playwright container tag together with `@playwright/test`; the job fails on a mismatch. A stale image makes every run re-download the browsers and apt-upgrade their dependencies.
 
-**Rule:** `@typescript/native-preview` (`tsgo`) is pinned next to `typescript` 6, which stays because typescript-eslint and `pnpm build` (the release and security-scan builds) need the JS compiler API. Do not install the stable `typescript@7` package under an alias: its `tsc` bin takes over `node_modules/.bin/tsc`. Every project plain `tsc` checks must stay in `typecheck`. `e2e/tsconfig.json` is not type-checked.
+**Rule:** `@typescript/native-preview` (`tsgo`) is pinned next to `typescript` 6, which stays because typescript-eslint and `pnpm build` (the release and security-scan builds) need the JS compiler API. Do not install the stable `typescript@7` package under an alias: its `tsc` bin takes over `node_modules/.bin/tsc`. Every project plain `tsc` checks must stay in `typecheck`, and so must `e2e/tsconfig.json`. It extends the root `tsconfig.json` because e2e helpers import from `src`, so it also lists the ambient app files those imports need (`src/**/*.d.ts`, the React Query `Register` augmentation in `src/context/reactQuery.tsx`); add new ones there.
 
 **Rule:** do not persist `.eslintcache` between runs. ESLint keys the cache on file content only, so with type-aware rules a file is not re-linted when a type it imports changes.
 
