@@ -40,6 +40,11 @@ the CLI with `pnpm exec pragma …` if they are unavailable. Both read the same 
 those are different blocks. Read every `- Tier:` line and pick the one whose package the app
 actually depends on.
 
+Use a block's usage guidance ("When to use", "When not to use") to decide which component
+replaces which. Names do not map 1:1. For example, a read-only legacy chip is a Tag in Pragma,
+not a Chip. The graph's property list describes the design spec and can differ from the shipped
+component, so take prop names and values from the package's TypeScript types.
+
 The graph also documents blocks that `@canonical/react-ds-global` has not shipped yet, such as
 Table. If the import does not exist, stop and report the gap. Leave the existing markup in place,
 and never hand-roll a lookalike.
@@ -70,7 +75,9 @@ with the Landscape overrides below. Do not copy its text into this repository.
   package, check its exports. Adding it is a dependency decision, so raise it with the user. If
   you add it, also add it to `test.server.deps.inline` in `vitest.config.ts`.
 - **Inventory.** The legacy surface is `@canonical/react-components` imports plus Vanilla `p-*`
-  classes under `src/`. Inventory both, grouped by component type.
+  classes under `src/`. Inventory both, grouped by component type. Include selectors such as
+  `querySelectorAll(".p-chip")`. Pragma components render different classes, so those selectors
+  silently stop matching, and jsdom tests do not catch it.
 - **One component type per PR.** Each PR also needs a changeset (`pnpm changeset`).
 - **Lock finished migrations.** When a PR removes the last `@canonical/react-components` import of
   a component, add the component to `PRAGMA_MIGRATED_COMPONENTS` in `eslint.config.mjs`. Lint then
