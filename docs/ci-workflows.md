@@ -8,16 +8,25 @@ Agents must follow these triggers, job orders, and guardrails when touching `.gi
 
 **Trigger:** PR → `main`, `release/**`, `point/**`; merge queue (`merge_group`).
 
-Independent jobs (no `needs` chain):
+Independent jobs, except that **Vitest** waits for its shards:
 
-- **ESLint** — `pnpm eslint --cache`
+- **ESLint** — `pnpm run typecheck` (the only type check in CI: `tcm:run`, then `tsgo` over `tsconfig.json` and `tsconfig.node.json`), then `pnpm eslint --cache --concurrency=4` (which still runs if the type check fails)
 - **Prettier** — `pnpm prettier --check src`
 - **Stylelint** — `pnpm stylelint "src/**/*.module.scss"`
-- **Playwright** (self-hosted; `ubuntu-latest` for fork PRs; `mcr.microsoft.com/playwright` container) — matrix over `saas` / `self-hosted`; builds with `pnpm run build:e2e` (`VITE_ROOT_PATH=/`), installs browsers, runs the matching project against the `dev` backend (`vars.API_PROXY_TARGET`), uploads `playwright-report-<target>`
-- **Vitest** (self-hosted; `ubuntu-latest` for fork PRs) — `pnpm exec vitest run --coverage` with `VITE_ROOT_PATH=/portal/` and `NODE_OPTIONS=--max_old_space_size=4096`; uploads `vitest-report` from `reports/`
-- **Changeset** — fails the PR unless it *adds* a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it.
+- **Playwright** (self-hosted; `ubuntu-latest` for fork PRs; `mcr.microsoft.com/playwright:v<version>-noble` container) — matrix over `saas` / `self-hosted`; checks the image tag matches the installed `@playwright/test`, builds with `pnpm run build:e2e` (Vite only, `VITE_ROOT_PATH=/`), installs Chromium, runs the matching project against the `dev` backend (`vars.API_PROXY_TARGET`), uploads `playwright-report-<target>`
+- **Vitest (shard n/3)** (self-hosted; `ubuntu-latest` for fork PRs) — `pnpm exec vitest run --coverage --shard=n/3` with the blob reporter, coverage thresholds zeroed, `VITE_ROOT_PATH=/portal/` and `NODE_OPTIONS=--max_old_space_size=4096`; uploads `vitest-blob-<n>` (1 day)
+- **Vitest** (same runners) — `needs` the shards with `if: always()`, fails first unless every shard succeeded, then `pnpm exec vitest --merge-reports=vitest-blob --coverage`, which fails on any failed test and enforces the `vitest.config.ts` coverage thresholds on the merged coverage; uploads `vitest-report` from `reports/`
+- **Changeset** — fails the PR unless it _adds_ a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it.
 
 **Rule:** fork PRs get no `vars.*` (the `dev` environment's variables come through empty), so the Playwright and Vitest `VITE_API_*` env lines fall back to literal defaults only when `github.event.pull_request.head.repo.fork` is true; keep those defaults in sync with `.env.production`, and never add a secret to either job. Fork PR runs stay on GitHub-hosted runners; merge-queue runs (`merge_group` has no fork flag) use self-hosted runners, which is safe because entering the queue requires an approving code-owner review.
+
+**Rule:** the required checks are the job names `ESLint`, `Prettier`, `Stylelint`, `Playwright (SaaS)`, `Playwright (self-hosted)`, `Vitest` and `Changeset`. Renaming one, or moving a gate (such as the type check) into a new job, silently drops it from the merge gate until the ruleset is updated. A required check that is skipped counts as passing, so a job that aggregates others (like `Vitest`) must run with `if: always()` and fail on any non-`success` result.
+
+**Rule:** bump the Playwright container tag together with `@playwright/test`; the job fails on a mismatch. A stale image makes every run re-download the browsers and apt-upgrade their dependencies.
+
+**Rule:** `@typescript/native-preview` (`tsgo`) is pinned next to `typescript` 6, which stays because typescript-eslint and `pnpm build` (the release and security-scan builds) need the JS compiler API. Do not install the stable `typescript@7` package under an alias: its `tsc` bin takes over `node_modules/.bin/tsc`. Every project plain `tsc` checks must stay in `typecheck`. `e2e/tsconfig.json` is not type-checked.
+
+**Rule:** do not persist `.eslintcache` between runs. ESLint keys the cache on file content only, so with type-aware rules a file is not re-linted when a type it imports changes.
 
 ## Changeset Version (`changeset-version.yml`)
 
@@ -64,7 +73,7 @@ Inside `security-scan.yaml`:
 
 **Trigger:** `workflow_dispatch`; monthly cron (`0 3 1 * *`).
 
-- **unit-tests** — same shape as the Validate Vitest job; uploads `vitest-report`.
+- **unit-tests** — a single unsharded `pnpm exec vitest run --coverage` with the same env as Validate's Vitest shards; uploads `vitest-report`.
 - **tics-report** — needs `unit-tests`; self-hosted TIOBE runner, `mode: qserver`, `installTics: true`, a per-run `tmpdir`, and a repository-wide `concurrency` group (self-hosted runners share machine state, so qserver runs must be serialized).
 
 **Rule:** keep `pnpm run tcm:run` before the TICS step — it needs the generated CSS module declarations.
@@ -78,7 +87,8 @@ Runs `pnpm coverage:full` to produce the MSW contract-coverage report, determini
 ## CI Tooling Contracts
 
 - **Node:** `24` · **pnpm:** `10` · **Install:** `pnpm install --frozen-lockfile` only
-- **Playwright:** install browsers (`pnpm exec playwright install --with-deps`) inside the job that runs them — never move this out
+- **Playwright:** install browsers (`pnpm exec playwright install --with-deps chromium`) inside the job that runs them — never move this out; keep the container image tag equal to `@playwright/test`
+- **Checkout:** shallow (default depth) everywhere except **Changeset**, which diffs against the base branch
 - **Caching:** `actions/setup-node@v4` with `cache: "pnpm"`
 
 ## Agents MUST NOT

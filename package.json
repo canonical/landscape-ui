@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "vite",
     "build": "pnpm run lint && pnpm run tcm:run && tsc && vite build",
-    "build:e2e": "pnpm run build --mode e2e",
+    "build:e2e": "vite build --mode e2e",
+    "typecheck": "pnpm run tcm:run && tsgo && tsgo -p tsconfig.node.json --noEmit --incremental false --composite false",
     "lint": "eslint --fix src e2e",
     "preview": "vite preview",
     "test": "pnpm exec playwright test",
@@ -61,6 +62,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@types/react-table": "7.7.20",
+    "@typescript/native-preview": "7.0.0-dev.20260707.2",
     "@vitejs/plugin-react": "6.1.2",
     "@vitest/coverage-v8": "4.1.11",
     "eslint": "9.39.5",
