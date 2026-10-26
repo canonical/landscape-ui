@@ -40,4 +40,9 @@ const names = checker
   )
   .sort();
 
+if (names.length === 0) {
+  console.error(`${packageName} exports nothing matching "${filter}".`);
+  process.exit(1);
+}
+
 console.log(names.join("\n"));
