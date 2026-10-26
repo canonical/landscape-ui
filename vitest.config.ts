@@ -14,6 +14,20 @@ const viteIdToFilePath = (id: string) => cleanUrl(id).replace(/^\/@fs\//, "");
 // inside a test has no effect.
 process.env.TZ ??= "Europe/Berlin";
 
+// Test files that cannot run under `pool: "vmThreads"`. There, `window` is the
+// real jsdom window, so `vi.spyOn(window, "location", "get")` throws "Cannot
+// redefine property: location", and values from other realms fail
+// `instanceof` checks (e.g. a thrown Promise vs the context's `Promise`).
+// These keep the classic `threads` pool. Add a file here if it fails only
+// under vmThreads for one of those reasons.
+const THREADS_POOL_TESTS = [
+  "src/components/layout/AppErrorBoundary/FallbackComponent.test.tsx",
+  "src/features/auth/helpers.test.ts",
+  "src/pages/auth/handle/oidc/OidcAuthPage/OidcAuthPage.test.tsx",
+  "src/pages/auth/handle/ubuntu-one/UbuntuOneAuthPage/UbuntuOneAuthPage.test.tsx",
+  "src/routes/elements.test.tsx",
+];
+
 export default defineConfig({
   test: {
     exclude: [
@@ -27,7 +41,10 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     globalSetup: [resolve(import.meta.dirname, "src/tests/global-setup.ts")],
-    setupFiles: [resolve(import.meta.dirname, "src/tests/setup.ts")],
+    setupFiles: [
+      resolve(import.meta.dirname, "src/tests/setup-vm-globals.ts"),
+      resolve(import.meta.dirname, "src/tests/setup.ts"),
+    ],
     alias: [
       {
         find: /^.*\.(css|scss|sass)$/,
@@ -46,8 +63,35 @@ export default defineConfig({
         replacement: resolve(import.meta.dirname, "src"),
       },
     ],
-    pool: "threads",
     testTimeout: 30000,
+    // Only applies to the vmThreads project below; must be set at the root,
+    // because Vitest reads it from the root config. VM contexts leak memory in
+    // reused workers, and the default limit (total RAM / workers) lets the
+    // pool grow to almost all of the machine's memory. Recycle each worker once
+    // its heap passes this instead. "1GB" was ~20% faster but nearly doubled
+    // peak RSS (~10GB vs ~5.5GB at 8 workers).
+    vmMemoryLimit: "512MB",
+    // vmThreads reuses each worker and its jsdom import across test files
+    // (a fresh VM context per file keeps them isolated), instead of paying
+    // worker + environment start-up for every file as `threads` does.
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "vm",
+          pool: "vmThreads",
+          exclude: THREADS_POOL_TESTS,
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: "threads",
+          pool: "threads",
+          include: THREADS_POOL_TESTS,
+        },
+      },
+    ],
     server: {
       deps: {
         // Inline the Pragma barrel so Vite (not Node) transforms it: this lets
