@@ -14,7 +14,7 @@ Independent jobs, except that **Vitest** waits for its shards:
 - **Prettier** — `pnpm prettier --check src`
 - **Stylelint** — `pnpm stylelint "src/**/*.module.scss"`
 - **Playwright** (self-hosted; `ubuntu-latest` for fork PRs; `mcr.microsoft.com/playwright:v<version>-noble` container) — matrix over `saas` / `self-hosted`; checks the image tag matches the installed `@playwright/test`, builds with `pnpm run build:e2e` (Vite only, `VITE_ROOT_PATH=/`), installs Chromium, runs the matching project against the `dev` backend (`vars.API_PROXY_TARGET`), uploads `playwright-report-<target>`
-- **Vitest (shard n/3)** (self-hosted; `ubuntu-latest` for fork PRs) — `pnpm exec vitest run --coverage --shard=n/3` with the blob reporter, coverage thresholds zeroed, `VITE_ROOT_PATH=/portal/` and `NODE_OPTIONS=--max_old_space_size=4096`; uploads `vitest-blob-<n>` (1 day)
+- **Vitest (shard n/4)** (self-hosted; `ubuntu-latest` for fork PRs) — `pnpm exec vitest run --coverage --shard=n/4` with the blob reporter, coverage thresholds zeroed, `VITE_ROOT_PATH=/portal/` and `NODE_OPTIONS=--max_old_space_size=4096`; uploads `vitest-blob-<n>` (1 day)
 - **Vitest** (same runners) — `needs` the shards with `if: always()`, fails first unless every shard succeeded, then `pnpm exec vitest --merge-reports=vitest-blob --coverage`, which fails on any failed test and enforces the `vitest.config.ts` coverage thresholds on the merged coverage; uploads `vitest-report` from `reports/`
 - **Changeset** — fails the PR unless it _adds_ a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it.
 

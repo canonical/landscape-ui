@@ -191,7 +191,7 @@ jobs:
           retention-days: 30
 
   unit-tests:
-    name: Vitest (shard ${{ matrix.shard }}/3)
+    name: Vitest (shard ${{ matrix.shard }}/4)
     # Fork PR runs execute unreviewed code, so keep them off the persistent
     # self-hosted runners. Merge-queue runs need an approving review first.
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || fromJSON('["self-hosted", "Linux", "large"]') }}
@@ -200,7 +200,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3]
+        shard: [1, 2, 3, 4]
     env:
       # vars are not passed to fork PRs; fall back to the .env.production
       # paths only there, so a missing var still fails same-repo runs.
@@ -237,7 +237,7 @@ jobs:
       - name: Run tests with coverage
         run: >-
           pnpm exec vitest run --coverage
-          --shard=${{ matrix.shard }}/3
+          --shard=${{ matrix.shard }}/4
           --reporter=default --reporter=blob
           --outputFile.blob=vitest-blob/blob-${{ matrix.shard }}.json
           --coverage.reporter=text-summary
@@ -290,7 +290,7 @@ jobs:
         env:
           SHARDS_RESULT: ${{ needs.unit-tests.result }}
         run: |
-          echo "::error::Vitest shards finished with result '$SHARDS_RESULT'; see the 'Vitest (shard n/3)' jobs."
+          echo "::error::Vitest shards finished with result '$SHARDS_RESULT'; see the 'Vitest (shard n/4)' jobs."
           exit 1
 
       - name: Checkout repository
