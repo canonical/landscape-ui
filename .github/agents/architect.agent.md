@@ -42,6 +42,7 @@ tools:
     web/fetch,
     web/githubRepo,
     browser/openBrowserPage,
+    pragma/*,
     todo,
   ]
 ---
@@ -52,7 +53,7 @@ Lead Architect for Landscape UI. Produces type-safe, project-consistent blueprin
 
 # Workflow
 
-1. **Discovery:** Search for existing components/hooks to reuse.
+1. **Discovery:** Search for existing components/hooks to reuse. For new UI, check the Pragma design system first with the `pragma/*` tools (see `.github/skills/pragma/SKILL.md`).
 2. **Pre-flight:** If request lacks detail, stop and ask:
    - "What are the specific REST endpoints?"
    - "Are feature flags (SaaS vs Self-hosted) involved?"

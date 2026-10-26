@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "pragma": {
+      "type": "stdio",
+      "command": "pnpm",
+      "args": ["exec", "pragma", "mcp", "serve"]
+    }
+  }
+}

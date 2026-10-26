@@ -177,6 +177,31 @@ components from `@canonical/react-ds-global-form`. `vitest.config.ts` currently 
 `@canonical/react-ds-global` so its side-effect CSS imports are handled by the existing
 `styleMock` alias and its dangling sourcemap references are stripped during tests.
 
+### Pragma CLI, MCP server, and agent skill
+
+`@canonical/pragma-cli` is a pinned devDependency. It answers questions about the design system
+from an offline knowledge graph covering blocks (components, patterns, layouts), tiers, modifier
+families, and code standards. Use it instead of guessing component names or props:
+
+```
+pnpm exec pragma block lookup Button          # anatomy, modifiers, properties
+pnpm exec pragma block list                   # every block in scope, with its tier
+pnpm exec pragma standard list --category react
+pnpm exec pragma skill list                   # upstream workflow skills (adoption tracks, audits)
+```
+
+`pragma.config.ts` sets the default tier scope to `apps_landscape`, so reads include the global,
+shared-apps, and Landscape-specific blocks. Most Landscape-tier blocks are documented specs
+without a shipped implementation. Their conventional package, `@canonical/react-ds-app-landscape`,
+is not a dependency yet.
+
+The same graph is available to AI agents through `pragma mcp serve`. `.mcp.json` registers it for
+Copilot CLI and Claude Code, and `.vscode/mcp.json` registers it for VS Code. The `architect` and
+`implementer` agents can use the `pragma/*` tools. `.github/skills/pragma/SKILL.md` maps Pragma's
+upstream workflow skills to this repository and lists the Landscape-specific overrides.
+
+To get token autocompletion in stylesheets, run `pnpm exec pragma setup lsp` once per machine.
+
 ## Testing
 
 - Follow [testing/index.md](testing/index.md) for the repository testing contract and [verification/index.md](verification/index.md) for completion criteria.

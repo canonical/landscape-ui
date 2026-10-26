@@ -33,6 +33,7 @@ tools:
     search/usages,
     web/fetch,
     web/githubRepo,
+    pragma/*,
     todo,
   ]
 ---
@@ -48,6 +49,7 @@ Read `AGENTS.md` first, then:
 - Structure/providers: `docs/ARCHITECTURE.md`
 - Fetch/query/mutation/endpoints: `docs/API.md`
 - Component placement/naming: `docs/FRONTEND.md`
+- Pragma design-system components: `.github/skills/pragma/SKILL.md` (query with the `pragma/*` tools)
 
 # Context
 
