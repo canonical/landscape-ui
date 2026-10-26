@@ -10,7 +10,7 @@
     "dev": "vite",
     "build": "pnpm run lint && pnpm run tcm:run && tsc && vite build",
     "build:e2e": "vite build --mode e2e",
-    "typecheck": "pnpm run tcm:run && tsgo && tsgo -p tsconfig.node.json --noEmit --incremental false --composite false",
+    "typecheck": "pnpm run tcm:run && tsgo && tsgo -p tsconfig.node.json --noEmit --incremental false --composite false && tsgo -p e2e",
     "lint": "eslint --fix src e2e",
     "preview": "vite preview",
     "test": "pnpm exec playwright test",
