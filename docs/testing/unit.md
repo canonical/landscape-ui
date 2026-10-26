@@ -222,9 +222,11 @@ Use this when you want to keep most of a feature module real but replace one hoo
 
 ### Mock lifecycle
 
-Current suite patterns use:
+Vitest clears every mock's call history before each test (`clearMocks` is on by default since Vitest 5), so a mock shared across tests, such as a `vi.fn()` in a `props` object at the top of a `describe`, only records calls from the current test. Assertions on it cannot pass because of an earlier test.
 
-- `vi.clearAllMocks()` to reset call history
+Current suite patterns also use:
+
+- `vi.clearAllMocks()` to reset call history mid-test or in hooks that run outside a test, such as `beforeAll`
 - `vi.resetAllMocks()` when return values and implementations should be reset
 - `vi.restoreAllMocks()` after spies such as `console.warn`
 
