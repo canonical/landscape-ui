@@ -13,6 +13,14 @@ workflow skills. This skill wires those into this repository. It does not restat
 Read `docs/FRONTEND.md` § "Pragma design system" first. It records what is already in place
 (styles, fonts, icons, Vitest inlining) and outranks generic upstream advice.
 
+## Adoption status
+
+- **A1 (styles, fonts, icons):** done. Do not redo it. One gap: confirm the root context and
+  density classes (for example `app comfortable`) before you rely on density-sized components.
+- **A2 (presentational components):** in progress. This is the default track for UI work now.
+- **A3 (forms):** scheduled for last. Existing forms stay on Formik until then. Use A3 only when
+  you are asked to migrate forms.
+
 ## Query the graph, never memory
 
 Prefer the `pragma` MCP tools (registered in `.mcp.json` and `.vscode/mcp.json`). Fall back to
@@ -67,16 +75,12 @@ with the Landscape overrides below. Do not copy its text into this repository.
   Treat these blocks as design specs for the app's own components. Before suggesting the
   package, check its exports. Adding it is a dependency decision, so raise it with the user. If
   you add it, also add it to `test.server.deps.inline` in `vitest.config.ts`.
-- **Foundation check before swaps.** A2 assumes the root carries a context and density class pair
-  (for example `app comfortable`). Check `index.html` and the app root. If the pair is missing,
-  report it before swapping, because swapped components size from the `--density-*` variables
-  those classes emit.
 - **Inventory.** The legacy surface is `@canonical/react-components` imports plus Vanilla `p-*`
   classes under `src/`. Inventory both, grouped by component type.
 - **One component type per PR.** Each PR also needs a changeset (`pnpm changeset`).
-- **Forms (A3).** The app's forms use Formik. The Pragma form system is built on
-  react-hook-form, so migrating a form changes its programming model. Migrate whole forms. Never
-  mix Formik and Pragma fields in one form.
+- **Forms (A3).** Forms are a work in progress. They use Formik today and move to the Pragma form
+  system (built on react-hook-form) during A3. When A3 starts, follow `adoption-a3-forms`. Until
+  then, keep each existing form consistent with the library it already uses.
 - **Placement.** Follow `docs/FRONTEND.md`. Shared wrappers go in `src/components/ui/`, and
   feature-specific usage stays in its feature. `pragma create component` emits Pragma's own
   package layout, so run it only with `--dry-run` as a reference. Never write its output into
