@@ -3,7 +3,8 @@ import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import type { Employee } from "../../types";
 import { usePatchEmployee } from "../../api";
-import useDebug from "@/hooks/useDebug";
+import { API_URL } from "@/constants";
+import axios from "axios";
 
 interface ActivateEmployeeModalProps {
   readonly employee: Employee;
@@ -15,7 +16,6 @@ const ActivateEmployeeModal: FC<ActivateEmployeeModalProps> = ({
   handleClose,
 }) => {
   const { notify } = useNotify();
-  const debug = useDebug();
   const { patchEmployee, isPending } = usePatchEmployee();
 
   const handleActivateEmployee = async () => {
@@ -24,13 +24,22 @@ const ActivateEmployeeModal: FC<ActivateEmployeeModalProps> = ({
         id: employee.id,
         is_active: true,
       });
+      await axios.post(`${API_URL}employees/${employee.id}/welcome-email`);
       notify.success({
         title: `You have successfully activated ${employee.name}`,
         message: `${employee.name} will be able to log in to Landscape and register new instances with their account.`,
+        actions: [
+          {
+            label: "View employees",
+            onClick: () => {
+              window.location.assign("/portal/settings/employees");
+            },
+          },
+        ],
       });
       handleClose();
     } catch (error) {
-      debug(error);
+      console.error(error);
     }
   };
 
