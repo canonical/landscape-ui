@@ -23,7 +23,7 @@ Read `docs/FRONTEND.md` § "Pragma design system" first. It records what is alre
 
 ## Query the graph, never memory
 
-Prefer the `pragma` MCP tools (registered in `.mcp.json` and `.vscode/mcp.json`). Fall back to
+Prefer the `pragma` MCP tools (registered in `.mcp.json`). Fall back to
 the CLI with `pnpm exec pragma …` if they are unavailable. Both read the same graph offline.
 
 | Question                                   | MCP tool                           | CLI                                               |
