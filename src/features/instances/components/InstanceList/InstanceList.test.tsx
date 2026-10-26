@@ -326,7 +326,7 @@ describe("InstanceList", () => {
     });
 
     await userEvent.click(clearSelectionButton);
-    expect(props.setSelectedInstances).toHaveBeenCalledWith([]);
+    expect(props.onClearSelection).toHaveBeenCalledOnce();
   });
 
   describe("cross-page 'Select all' control", () => {
