@@ -44,6 +44,20 @@ Because the setup is global, unit tests should assume network requests must be h
 
 `vitest.config.ts` defaults `process.env.TZ` to `Europe/Berlin`, so runs use a non-UTC timezone with daylight saving time unless `TZ` is set explicitly (for example `TZ=UTC pnpm vitest`). Setting `process.env.TZ` inside a test has no effect, because tests run in worker threads.
 
+### Test Pools
+
+`vitest.config.ts` splits the suite into two [projects](https://vitest.dev/guide/projects):
+
+- `vm` (almost every file) uses `pool: "vmThreads"`. Workers and the `jsdom` import are reused across files, and each file still gets a fresh VM context, so module state and globals stay isolated per file. This avoids paying worker and environment start-up for every file.
+- `threads` uses the classic `pool: "threads"` for the short `THREADS_POOL_TESTS` list in `vitest.config.ts`.
+
+Under `vmThreads`, `window` is the real `jsdom` window, so a few patterns do not work there:
+
+- `vi.spyOn(window, "location", "get")` throws `Cannot redefine property: location`
+- `instanceof` checks against globals such as `Promise` can fail for values created in another realm
+
+If a new test fails only for one of those reasons, add the file to `THREADS_POOL_TESTS` instead of reworking the test. `src/tests/setup-vm-globals.ts` copies Node's WHATWG stream classes (such as `TransformStream`) into the VM context, because MSW needs them and `jsdom` does not provide them.
+
 ## Which Render Helper To Use
 
 This repository uses three main entrypoints:
