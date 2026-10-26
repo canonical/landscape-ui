@@ -18,7 +18,10 @@ const require = createRequire(path.join(process.cwd(), "/"));
 const manifestPath = require.resolve(`${packageName}/package.json`);
 const manifest = require(manifestPath);
 const typesEntry =
-  manifest.exports?.["."]?.types ?? manifest.types ?? manifest.typings;
+  manifest.exports?.["."]?.types ??
+  manifest.types ??
+  manifest.typings ??
+  manifest.main?.replace(/\.[cm]?js$/, ".d.ts");
 
 if (!typesEntry) {
   console.error(`${packageName} declares no types entry.`);

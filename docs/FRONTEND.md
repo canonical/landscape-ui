@@ -177,6 +177,17 @@ components from `@canonical/react-ds-global-form`. `vitest.config.ts` currently 
 `@canonical/react-ds-global` so its side-effect CSS imports are handled by the existing
 `styleMock` alias and its dangling sourcemap references are stripped during tests.
 
+#### Pragma migration guardrail
+
+`PRAGMA_MIGRATED_COMPONENTS` in `eslint.config.mjs` lists the components whose migration is
+complete. Currently that is `Badge` and `Card`. Importing one of them, or its `Props` type,
+from `@canonical/react-components` is a lint error, so finished migrations cannot regress. When a
+migration PR removes the last legacy import of a component, add the component to that list in the
+same PR. Partially migrated components, such as `Icon`, stay off the list until no legacy imports
+remain. Only list names that `@canonical/react-components` exports. For example, Breadcrumbs
+never existed in that package. To check a package's exports, run
+`node .github/skills/pragma/list-exports.mjs @canonical/react-components <Name>`.
+
 ### Pragma CLI, MCP server, and agent skill
 
 `@canonical/pragma-cli` is a pinned devDependency. It answers questions about the design system
