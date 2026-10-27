@@ -46,7 +46,8 @@ Current behavior:
 - project selection is driven by `@saas` and `@self-hosted` tags
 - local runs use `pnpm dev`
 - CI runs use `pnpm preview`
-- failed retries keep traces, and failed tests retain videos
+- CI runs tests in parallel across 4 workers; tests must not depend on each other or on running order
+- failed tests are retried on CI; the first retry records a trace and a video
 
 The config also starts the app automatically and sets:
 
