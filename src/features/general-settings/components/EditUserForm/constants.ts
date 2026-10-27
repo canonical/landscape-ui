@@ -1,11 +1,10 @@
 import * as Yup from "yup";
+import { emailSchema } from "@/utils/validation/email";
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
   name: Yup.string().required("This field is required"),
   timezone: Yup.string().required("This field is required"),
-  email: Yup.string()
-    .email("Please provide a valid email address")
-    .required("This field is required"),
+  email: emailSchema().required("This field is required"),
   preferred_account: Yup.string(),
 });
 

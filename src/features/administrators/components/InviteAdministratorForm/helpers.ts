@@ -1,11 +1,11 @@
 import * as Yup from "yup";
+import { emailSchema } from "@/utils/validation/email";
 import type { Invitation } from "../../types/Invitation";
 
 export const getValidationSchema = (invitations: Invitation[]) => {
   return Yup.object().shape({
-    email: Yup.string()
+    email: emailSchema()
       .required("This field is required.")
-      .email("Please provide a valid email address")
       .test({
         name: "unique-email",
         params: { invitations },

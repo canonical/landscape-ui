@@ -118,6 +118,22 @@ describe("InviteAdministratorForm", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("accepts a plus-addressed email", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<InviteAdministratorForm />);
+
+    await user.type(screen.getByLabelText(/name/i), "Jane Smith");
+    await user.type(screen.getByLabelText(/email/i), "jane+tag@example.com");
+    await user.click(screen.getByRole("button", { name: /send invite/i }));
+
+    expect(
+      await screen.findByText("You sent an administrator invite"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Please provide a valid email address"),
+    ).not.toBeInTheDocument();
+  });
+
   it("shows error notification when API call fails and side panel remains open", async () => {
     setEndpointStatus({ status: "error", path: "InviteAdministrator" });
     const user = userEvent.setup();

@@ -167,6 +167,30 @@ describe("LoginMethodsLayout", () => {
     emptyMessageNotBeInTheDocument();
   });
 
+  it("should accept a plus-addressed email with pam method disabled", async () => {
+    const methods = {
+      ...noneLoginMethods,
+      password: {
+        available: true,
+        enabled: true,
+      },
+    };
+
+    renderWithProviders(<LoginMethods methods={methods} />);
+
+    const emailInput = screen.getByRole("textbox", { name: /email/i });
+
+    await userEvent.type(emailInput, "user+tag@example.com");
+
+    await waitFor(() => {
+      emailInput.blur();
+    });
+
+    expect(
+      screen.queryByText("Please provide a valid email address"),
+    ).not.toBeInTheDocument();
+  });
+
   it("should render all sign in method", async () => {
     renderWithProviders(<LoginMethods methods={allLoginMethods} />);
 

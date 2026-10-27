@@ -163,6 +163,32 @@ describe("EditUserForm", () => {
       expect(saveButton).toHaveAttribute("aria-disabled");
     });
 
+    it("accepts a plus-addressed email when saving", async () => {
+      const email = "user+tag@example.com";
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{
+            ...props.userDetails,
+            email,
+            allowable_emails: [email, "another@example.com"],
+          }}
+        />,
+      );
+
+      const nameInput = screen.getByRole("textbox");
+      await userEvent.type(nameInput, " Updated");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText("Please provide a valid email address"),
+      ).not.toBeInTheDocument();
+    });
+
     it("should show an empty option for default organisation select if user has not yet selected one", async () => {
       renderWithProviders(
         <EditUserForm
