@@ -1,12 +1,24 @@
 import * as Yup from "yup";
-import { emailSchema } from "@/utils/validation/email";
+import { EMAIL_ERROR_MESSAGE, emailSchema } from "@/utils/validation/email";
 
-export const VALIDATION_SCHEMA = Yup.object().shape({
-  name: Yup.string().required("This field is required"),
-  timezone: Yup.string().required("This field is required"),
-  email: emailSchema().required("This field is required"),
-  preferred_account: Yup.string(),
-});
+// Emails supplied by the server (the stored one and the allowable ones) are not
+// re-validated, so users whose address predates the stricter rules can still
+// save other changes.
+export const getValidationSchema = (serverEmails: readonly string[]) =>
+  Yup.object().shape({
+    name: Yup.string().required("This field is required"),
+    timezone: Yup.string().required("This field is required"),
+    email: Yup.string()
+      .required("This field is required")
+      .test(
+        "email",
+        EMAIL_ERROR_MESSAGE,
+        (value) =>
+          (value !== undefined && serverEmails.includes(value)) ||
+          emailSchema().isValidSync(value),
+      ),
+    preferred_account: Yup.string(),
+  });
 
 export const TIMEZONE_OPTIONS = [
   { value: "Pacific/Midway", label: "(GMT -11:00 SST) Pacific/Midway" },

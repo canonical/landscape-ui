@@ -14,7 +14,7 @@ import { useSearchParams } from "react-router";
 import * as Yup from "yup";
 import classes from "./LoginForm.module.scss";
 import { getFormikError } from "@/utils/formikErrors";
-import { emailSchema } from "@/utils/validation/email";
+import { basicEmailSchema, normalizeEmail } from "@/utils/validation/email";
 
 interface FormProps {
   identifier: string;
@@ -45,7 +45,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
     validationSchema: Yup.object().shape({
       identifier: isIdentityAvailable
         ? Yup.string().required("This field is required")
-        : emailSchema().required("This field is required"),
+        : basicEmailSchema().required("This field is required"),
       password: Yup.string().required("This field is required"),
     }),
     onSubmit: async (values) => {
@@ -53,7 +53,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
         const { identifier, password } = values;
         const credentials = isIdentityAvailable
           ? { identity: identifier, password }
-          : { email: identifier, password };
+          : { email: normalizeEmail(identifier), password };
         const { data } = await login(credentials);
 
         if ("current_account" in data) {

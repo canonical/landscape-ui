@@ -212,6 +212,40 @@ export const isValidEmail = (value: string): boolean =>
   toCodePoints(value).length <= PYDANTIC_MAX_LENGTH &&
   isValidAddress(value.replace(SURROUNDING_WHITESPACE, ""));
 
+/**
+ * Minimal approximation of the address the server stores: surrounding
+ * whitespace stripped, NFC-normalized and the domain lowercased. Submit this
+ * instead of the raw field value.
+ */
+export const normalizeEmail = (value: string): string => {
+  const address = value.replace(SURROUNDING_WHITESPACE, "").normalize("NFC");
+  const at = address.lastIndexOf("@");
+
+  if (at === -1) {
+    return address;
+  }
+
+  // Lowercase per character: String#toLowerCase maps a word-final Σ to ς, but
+  // the server's UTS 46 mapping always produces σ.
+  const domain = Array.from(address.slice(at + 1), (char) =>
+    char.toLowerCase(),
+  ).join("");
+
+  return `${address.slice(0, at)}@${domain}`;
+};
+
+/**
+ * Basic `local@domain` shape check for fields that must keep accepting
+ * existing addresses, such as login, where the stricter account-creation rules
+ * would lock out users whose stored email predates them.
+ */
+export const basicEmailSchema = () =>
+  Yup.string().test(
+    "email",
+    EMAIL_ERROR_MESSAGE,
+    (value) => !value || /^[^\s@]+@[^\s@]+$/.test(normalizeEmail(value)),
+  );
+
 /** Yup schema for an email field; empty values are left to `.required()`. */
 export const emailSchema = () =>
   Yup.string().test(

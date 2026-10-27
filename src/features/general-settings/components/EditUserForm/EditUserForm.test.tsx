@@ -13,7 +13,9 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import EditUserForm from "./EditUserForm";
-import { MASKED_VALUE } from "@/constants";
+import { API_URL, MASKED_VALUE } from "@/constants";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
 
 vi.mock("@/hooks/useEnv");
 vi.mock("@/hooks/useAuth");
@@ -80,6 +82,17 @@ const mockSaas: EnvContextState = {
   packageVersion: "",
   revision: "",
   displayDisaStigBanner: false,
+};
+
+const capturePersonRequest = () => {
+  const captured: { body: Record<string, unknown> | null } = { body: null };
+  server.use(
+    http.post(`${API_URL}person`, async ({ request }) => {
+      captured.body = (await request.json()) as Record<string, unknown>;
+      return HttpResponse.json(props.userDetails);
+    }),
+  );
+  return captured;
 };
 
 describe("EditUserForm", () => {
@@ -187,6 +200,78 @@ describe("EditUserForm", () => {
       expect(
         screen.queryByText("Please provide a valid email address"),
       ).not.toBeInTheDocument();
+    });
+
+    it("saves other changes when the stored email fails the stricter rules", async () => {
+      const email = "ops@host.local";
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{
+            ...props.userDetails,
+            email,
+            allowable_emails: [email, "another@example.com"],
+          }}
+        />,
+      );
+
+      const nameInput = screen.getByRole("textbox");
+      await userEvent.type(nameInput, " Updated");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).not.toHaveProperty("email");
+    });
+
+    it("sends a server-supplied email verbatim, even if it fails the stricter rules", async () => {
+      const allowedEmail = "Ops@Corp.LOCAL";
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{
+            ...props.userDetails,
+            allowable_emails: [props.userDetails.email, allowedEmail],
+          }}
+        />,
+      );
+
+      await userEvent.selectOptions(
+        screen.getByRole("combobox", { name: "Email address" }),
+        allowedEmail,
+      );
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toHaveProperty("email", allowedEmail);
+    });
+
+    it("normalizes a typed email before sending it", async () => {
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, allowable_emails: [] }}
+        />,
+      );
+
+      const emailInput = screen.getByRole("textbox", { name: "Email" });
+      await userEvent.clear(emailInput);
+      await userEvent.type(emailInput, " New@EXAMPLE.COM ");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toHaveProperty("email", "New@example.com");
     });
 
     it("should show an empty option for default organisation select if user has not yet selected one", async () => {

@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { emailSchema } from "@/utils/validation/email";
+import { emailSchema, normalizeEmail } from "@/utils/validation/email";
 import type { Invitation } from "../../types/Invitation";
 
 export const getValidationSchema = (invitations: Invitation[]) => {
@@ -11,7 +11,8 @@ export const getValidationSchema = (invitations: Invitation[]) => {
         params: { invitations },
         test: (value, { createError, parent }) => {
           const existInvitation = invitations.find(
-            ({ email }) => email === value,
+            ({ email }) =>
+              !!value && normalizeEmail(email) === normalizeEmail(value),
           );
 
           return (

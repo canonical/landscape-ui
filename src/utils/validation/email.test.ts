@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { EMAIL_ERROR_MESSAGE, emailSchema, isValidEmail } from "./email";
+import {
+  basicEmailSchema,
+  EMAIL_ERROR_MESSAGE,
+  emailSchema,
+  isValidEmail,
+  normalizeEmail,
+} from "./email";
 
 const LOCAL_PART_MAX_LENGTH = 64;
 const DNS_LABEL_MAX_LENGTH = 63;
@@ -198,4 +204,32 @@ describe("emailSchema", () => {
     await expect(emailSchema().isValid("")).resolves.toBe(true);
     await expect(emailSchema().required().isValid("")).resolves.toBe(false);
   });
+});
+
+describe("normalizeEmail", () => {
+  it.each([
+    [" user@example.com\n", "user@example.com"],
+    ["User@EXAMPLE.COM", "User@example.com"],
+    ["cafe\u0301@example.com", "caf\u00e9@example.com"],
+    ["a@\u03a3\u0391\u03a3.gr", "a@\u03c3\u03b1\u03c3.gr"],
+    ["not-an-email", "not-an-email"],
+  ])("normalizes %j", (value, expected) => {
+    expect(normalizeEmail(value)).toBe(expected);
+  });
+});
+
+describe("basicEmailSchema", () => {
+  it.each(["admin@corp.local", " user@example.com ", "user+tag@example.com"])(
+    "accepts %j",
+    (value) => {
+      expect(basicEmailSchema().isValidSync(value)).toBe(true);
+    },
+  );
+
+  it.each(["testinputvalue", "a b@example.com", "@example.com", "user@"])(
+    "rejects %j",
+    (value) => {
+      expect(basicEmailSchema().isValidSync(value)).toBe(false);
+    },
+  );
 });
