@@ -140,15 +140,26 @@ export default defineConfig({
     },
   },
   projects: [
+    /**
+     * Logs in once and saves the session for `authenticatedPage` and
+     * `staffPage` to reuse; see `e2e/support/auth.setup.ts`.
+     */
+    {
+      name: "setup",
+      testDir: "e2e/support",
+      testMatch: "auth.setup.ts",
+    },
     {
       name: "saas",
       use: { ...devices["Desktop Chrome"] },
       grepInvert: /@self-hosted/,
+      dependencies: ["setup"],
     },
     {
       name: "self-hosted",
       use: { ...devices["Desktop Chrome"] },
       grepInvert: /@saas/,
+      dependencies: ["setup"],
     },
   ],
 });
