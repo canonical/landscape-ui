@@ -263,9 +263,9 @@ jobs:
     name: Vitest
     needs: unit-tests
     if: ${{ always() }}
-    # Fork PR runs execute unreviewed code, so keep them off the persistent
-    # self-hosted runners. Merge-queue runs need an approving review first.
-    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || fromJSON('["self-hosted", "Linux", "large"]') }}
+    # Merging blobs is light work, and a GitHub-hosted runner measured faster
+    # than self-hosted here. This also keeps it off the shared runner pool.
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: read
