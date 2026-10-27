@@ -43,6 +43,7 @@ const Activities: FC<ActivitiesProps> = ({
         isDetailView={instanceId !== undefined}
       />
       <ActivitiesList
+        isActivityGroup={instanceId === undefined}
         activities={activities}
         activitiesCount={activitiesCount}
         isGettingActivities={isGettingActivities}

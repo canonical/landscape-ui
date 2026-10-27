@@ -4,7 +4,12 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Activity, ActivityCommon } from "@/features/activities";
-import { useApproveActivities, useGetActivities } from "@/features/activities";
+import {
+  ActivitiesPanel,
+  useApproveActivities,
+  useGetActivities,
+  useOpenActivityDetailsPanel,
+} from "@/features/activities";
 import { useGetInstances } from "@/features/instances";
 import type { Package } from "@/features/packages";
 import { usePackages } from "@/features/packages";
@@ -12,6 +17,7 @@ import { useUsns } from "@/features/usns";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance } from "@/types/Instance";
 import type { Usn } from "@/types/Usn";
@@ -49,6 +55,8 @@ const InfoTablesContainer: FC = () => {
   >("unapproved");
 
   const navigate = useNavigate();
+  const openActivityDetails = useOpenActivityDetailsPanel();
+  const { setSidePanelContent } = useSidePanel();
   const debug = useDebug();
   const { notify } = useNotify();
   const { isFeatureEnabled } = useAuth();
@@ -299,13 +307,16 @@ const InfoTablesContainer: FC = () => {
         accessor: "summary",
         className: classes.description,
         Cell: ({ row }: CellProps<ActivityCommon>): ReactNode => (
-          <Link
-            to={ROUTES.activities.root()}
-            state={{ activity: row.original as Activity }}
+          <Button
+            type="button"
+            appearance="link"
+            onClick={() => {
+              openActivityDetails(row.original);
+            }}
             className="u-no-margin--bottom"
           >
             {row.original.summary}
-          </Link>
+          </Button>
         ),
       },
       {
@@ -328,7 +339,7 @@ const InfoTablesContainer: FC = () => {
         },
       },
     ],
-    [currentUpgradesTab],
+    [openActivityDetails],
   );
 
   const handleClickUpgradesTab = (tab: typeof currentUpgradesTab): void => {
@@ -419,18 +430,16 @@ const InfoTablesContainer: FC = () => {
     }
   };
 
-  const handleActivitiesLimitChange = async () => {
-    switch (currentActivitiesTab) {
-      case "unapproved": {
-        await navigate(ROUTES.activities.root({ status: "unapproved" }));
-        break;
-      }
-
-      case "inProgress": {
-        await navigate(ROUTES.activities.root({ status: "delivered" }));
-        break;
-      }
-    }
+  const handleActivitiesLimitChange = () => {
+    const status =
+      currentActivitiesTab === "unapproved" ? "unapproved" : "delivered";
+    setSidePanelContent(
+      status === "unapproved"
+        ? "Activities requiring approval"
+        : "Activities in progress",
+      <ActivitiesPanel key={status} initialStatus={status} />,
+      "large",
+    );
   };
 
   return (

@@ -9,13 +9,17 @@ const ActivityDetails = lazy(
 
 export interface OpenActivityDetailsPanelOptions {
   hideInstanceField?: boolean;
+  size?: "small" | "medium" | "large";
 }
 
 const useOpenActivityDetailsPanel = () => {
   const { setSidePanelContent } = useSidePanel();
 
   return useCallback(
-    (activity: ActivityCommon, options?: OpenActivityDetailsPanelOptions) => {
+    (
+      activity: Pick<ActivityCommon, "id" | "summary">,
+      options?: OpenActivityDetailsPanelOptions,
+    ) => {
       setSidePanelContent(
         activity.summary,
         <Suspense fallback={<LoadingState />}>
@@ -23,9 +27,10 @@ const useOpenActivityDetailsPanel = () => {
             key={activity.id}
             activityId={activity.id}
             hideInstanceField={options?.hideInstanceField}
+            size={options?.size}
           />
         </Suspense>,
-        "medium",
+        options?.size ?? "small",
       );
     },
     [setSidePanelContent],

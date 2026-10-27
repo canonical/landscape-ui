@@ -24,7 +24,7 @@ const COMPUTER_ID_REGEX = /(?:^|\s)computer:id:(\d+)/;
 const CREATED_AFTER_QUERY_REGEX = /(?:^|\s)created-after:([^\s]+)/;
 const CREATED_BEFORE_QUERY_REGEX = /(?:^|\s)created-before:([^\s]+)/;
 
-const parseActivitiesQuery = (
+export const parseActivitiesQuery = (
   rawQuery: string,
 ): {
   status?: string;

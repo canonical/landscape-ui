@@ -1,11 +1,13 @@
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { ACTIVITY_STATUSES, type ActivityCommon } from "@/features/activities";
+import {
+  ACTIVITY_STATUSES,
+  ActivityDetailsLink,
+  type ActivityCommon,
+} from "@/features/activities";
 import { ModularTable } from "@canonical/react-components";
 import date from "@/libs/date";
 import { type FC, useMemo } from "react";
-import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
-import { ROUTES } from "@/libs/routes";
 
 interface ScriptProfileActivitiesListProps {
   readonly activities: ActivityCommon[];
@@ -20,14 +22,15 @@ const ScriptProfileActivitiesList: FC<ScriptProfileActivitiesListProps> = ({
         Header: "Run",
         accessor: "creation_time",
         Cell: ({ row: { original: activity } }: CellProps<ActivityCommon>) => (
-          <Link
+          <ActivityDetailsLink
+            activity={activity}
+            isActivityGroup
             className="font-monospace"
-            to={ROUTES.activities.root({ query: `parent-id:${activity.id}` })}
           >
             {date(activity.creation_time)
               .utc()
               .format(DISPLAY_DATE_TIME_FORMAT)}
-          </Link>
+          </ActivityDetailsLink>
         ),
       },
       {

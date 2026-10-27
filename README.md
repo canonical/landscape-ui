@@ -78,6 +78,48 @@ Follow these instructions to set up the project on your local machine for develo
 
     With `VITE_MSW_ENABLED=true` the app runs against the mocks in `src/tests/`: sign in with any credentials, and the session survives reloads. To use the app as Canonical staff (super admin mode), run `window.msw.setGlobalRoles(["SupportProvider", "AccountManager"])` in the browser console and reload.
 
+### Activity demo data (MSW)
+
+With `VITE_MSW_ENABLED=true`, browser-only activity fixtures cover the activity
+table, details panels, and local links without changing the unit-test fixtures.
+For Compose, set the flag in the UI environment file used by your stack and
+recreate the UI service so Vite receives the new value. TSV export controls also
+require `VITE_TSV_EXPORTS_ENABLED=true`.
+
+| Where                                           | What to inspect                                                                                                                                    |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Overview, both activity tabs, **View all**      | More than 20 matching children; large local list, Instance column, status chip, search/filter controls, pagination and selection                   |
+| Overview activity row or list row               | Small child details; closing nested details preserves the list's search, page and selection                                                        |
+| Activities                                      | More than 20 groups; group-only table without an Instance column or mutation actions                                                               |
+| Group `id:10000`                                | Large group with Activities/Output tabs and more than 20 children                                                                                  |
+| Group `id:10001`                                | Activities block without tabs (no group output)                                                                                                    |
+| Groups `id:10027` and `id:10028`                | Empty groups, without and with output respectively                                                                                                 |
+| Group `id:10002`                                | Children covering every status, output/no output, creator/no creator, no actions, long summaries and applicable Approve/Cancel/Redo actions        |
+| Instances, **Application Server 1**, Activities | Child-only table without an Instance column; small details                                                                                         |
+| Instances, **Application Server 1**, Users      | `user1`/`user2` pending lock/unlock links, `user3` pending deletion in details/edit, and pending-field links in Edit user                          |
+| Edit `user1`                                    | Change a field and additional groups to queue multiple operations; **View activities** searches for the returned group IDs without opening details |
+| Scripts, Profiles                               | Last run timestamps and run-history rows open real group details locally                                                                           |
+| Profiles, USG profiles                          | Run an audit or remediation profile, then **View details** in the notification to open a real group locally                                        |
+
+Search accepts structured terms, for example `id:10000`, `computer:id:1`,
+`type:ExecuteScriptRequest`, and `creator:john@example.com`; an unmatched ID
+shows a filtered-empty result. Unsupported plain-text searches return a 400
+rather than silently pretending to match descriptions.
+
+Browser console controls let you inspect request states:
+
+```js
+window.msw.setActivityScenario("empty"); // Empty Overview and activity collections
+window.msw.setActivityScenario("loading"); // Pending activity requests
+window.msw.setActivityScenario("error"); // Activity API errors
+window.msw.setActivityScenario("default"); // Restore populated data
+```
+
+Reload after setting a scenario. It persists for the browser tab's session.
+Approve, Cancel and Redo update the in-memory child data; reload restores it.
+The demo intercepts activity APIs and their user/profile entry points; it also
+uses the existing computer/profile/export mocks so related links remain local.
+
 ### Running the Development Server
 
 Once the setup is complete, you can start the Vite development server:

@@ -11,6 +11,8 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ActivityChildren from "./ActivityChildren";
+import { ErrorBoundary } from "@sentry/react";
+import { HttpStatusCode } from "axios";
 
 const parentId = activities[0].id;
 const children = Array.from({ length: 21 }, (_, index) => ({
@@ -43,6 +45,29 @@ describe("ActivityChildren", () => {
   afterEach(() => {
     resetScreenSize();
     vi.restoreAllMocks();
+  });
+
+  it("surfaces an API failure through the panel error boundary", async () => {
+    server.use(
+      http.get(`${API_URL}activities`, () =>
+        HttpResponse.json(
+          { error: "InternalServerError", message: "Activities unavailable" },
+          { status: HttpStatusCode.InternalServerError },
+        ),
+      ),
+    );
+    renderWithProviders(
+      <ErrorBoundary fallback={<p>Activities unavailable</p>}>
+        <ActivityChildren
+          activityId={parentId}
+          onActivityDetailsOpen={vi.fn()}
+        />
+      </ErrorBoundary>,
+    );
+    expect(
+      await screen.findByText("Activities unavailable"),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 
   it("keeps searches scoped to the parent without changing page filters", async () => {
@@ -121,6 +146,25 @@ describe("ActivityChildren", () => {
         offset: "0",
       });
     });
+    for (const label of ["Type", "From", "To"]) {
+      const chip = screen
+        .getByText(new RegExp(`^${label}:`))
+        .closest(".p-chip");
+      assert(chip instanceof HTMLElement);
+      await user.click(within(chip).getByRole("button", { name: "Dismiss" }));
+    }
+    await waitFor(() => {
+      expect(getChildren).toHaveBeenLastCalledWith({
+        query: `parent-id:${parentId} status:failed`,
+        limit: "20",
+        offset: "0",
+      });
+    });
+    await user.click(screen.getByRole("button", { name: "Filters" }));
+    await user.click(screen.getByRole("button", { name: "Type" }));
+    await user.click(
+      await screen.findByRole("button", { name: "ExecuteScriptRequest" }),
+    );
     await user.click(screen.getByRole("button", { name: "Clear all filters" }));
     await waitFor(() => {
       expect(getChildren).toHaveBeenLastCalledWith({
@@ -200,6 +244,15 @@ describe("ActivityChildren", () => {
     await user.click(
       await screen.findByRole("checkbox", { name: "Child activity 1" }),
     );
+    await user.click(screen.getByRole("button", { name: "Actions" }));
+    await user.click(
+      screen.getByRole("button", { name: "Export selection as TSV" }),
+    );
+    await screen.findByRole("textbox", { name: "Export name" });
+    await user.click(screen.getByRole("button", { name: "Close" }));
+    expect(
+      screen.queryByRole("textbox", { name: "Export name" }),
+    ).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Actions" }));
     await user.click(
       screen.getByRole("button", { name: "Export selection as TSV" }),

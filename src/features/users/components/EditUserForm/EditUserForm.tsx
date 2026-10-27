@@ -1,7 +1,10 @@
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { useOpenActivityDetailsPanel } from "@/features/activities";
+import {
+  ActivityDetailsLink,
+  useOpenActivityDetailsPanel,
+} from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -13,7 +16,7 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Notification, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import {
   useAddUserToGroup,
   useEditUser,
@@ -231,7 +234,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
                   navigate(
                     ROUTES.activities.root({
                       query: activities
-                        .map(({ activity }) => `parent-id:${activity.id}`)
+                        .map(({ activity }) => `id:${activity.id}`)
                         .join(" OR "),
                     }),
                   );
@@ -260,20 +263,14 @@ const EditUserForm: FC<EditUserFormProps> = ({ user, onError }) => {
               user.pending_activity.operation,
             )}{" "}
           </span>
-          <Link
-            to={ROUTES.activities.root({
-              query: `id:${user.pending_activity.activity_id}`,
-            })}
-            state={{
-              activity: {
-                id: user.pending_activity.activity_id,
-                summary: user.pending_activity.summary,
-              },
+          <ActivityDetailsLink
+            activity={{
+              id: user.pending_activity.activity_id,
+              summary: user.pending_activity.summary,
             }}
-            onClick={closeSidePanel}
           >
             View activity
-          </Link>
+          </ActivityDetailsLink>
         </Notification>
       )}
       <ReadOnlyField

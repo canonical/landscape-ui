@@ -13,6 +13,10 @@ import {
   setStaffGlobalRoles,
   staffState,
 } from "./server/handlers/staffAccounts";
+import {
+  createActivityDemoHandlers,
+  type ActivityDemoScenario,
+} from "./server/handlers/activityDemo";
 
 // --- Dev session ---
 //
@@ -24,6 +28,18 @@ import {
 
 const SESSION_KEY = "msw:authState";
 const GLOBAL_ROLES_KEY = "msw:globalRoles";
+const ACTIVITY_SCENARIO_KEY = "msw:activityScenario";
+const ACTIVITY_SCENARIOS: ActivityDemoScenario[] = [
+  "default",
+  "empty",
+  "loading",
+  "error",
+];
+
+const getActivityScenario = (): ActivityDemoScenario => {
+  const value = sessionStorage.getItem(ACTIVITY_SCENARIO_KEY);
+  return ACTIVITY_SCENARIOS.find((scenario) => scenario === value) ?? "default";
+};
 
 const readJson = <T>(key: string): T | null => {
   const value = sessionStorage.getItem(key);
@@ -88,6 +104,7 @@ declare global {
   interface Window {
     msw?: {
       setGlobalRoles: (roles: string[]) => void;
+      setActivityScenario: (scenario: ActivityDemoScenario) => void;
     };
   }
 }
@@ -100,6 +117,15 @@ window.msw = {
     setStaffGlobalRoles(roles);
     console.info("[MSW] Global roles set; reload to apply them.");
   },
+  setActivityScenario: (scenario) => {
+    if (!ACTIVITY_SCENARIOS.includes(scenario)) {
+      throw new Error(`Unknown activity scenario: ${scenario}`);
+    }
+    sessionStorage.setItem(ACTIVITY_SCENARIO_KEY, scenario);
+    console.info(
+      `[MSW] Activity scenario set to ${scenario}; reload to apply it.`,
+    );
+  },
 };
 
 console.info(
@@ -110,6 +136,7 @@ console.info(
 // --- Handlers ---
 
 const handlers: RequestHandler[] = [
+  ...createActivityDemoHandlers(getActivityScenario),
   http.all("*", ({ request }) => {
     if (
       !request.url.includes(API_URL) &&
@@ -124,6 +151,9 @@ const handlers: RequestHandler[] = [
     }
 
     if (
+      /\/(?:computers|script-profiles|usg-profiles|exports)(?:\/|\?|$)/.test(
+        request.url,
+      ) ||
       MSW_ENDPOINTS_TO_INTERCEPT.some((url: string) =>
         request.url.includes(url),
       )

@@ -40,7 +40,7 @@ describe("UserContainer", () => {
     renderUserContainer();
 
     for (const pendingUser of usersWithPendingActivities) {
-      const { activity_id, operation } = pendingUser.pending_activity;
+      const { operation } = pendingUser.pending_activity;
       const row = (
         await screen.findByRole("button", {
           name: `Show details of user ${pendingUser.username}`,
@@ -51,13 +51,10 @@ describe("UserContainer", () => {
       const statusCell = within(row).getByRole("cell", { name: "Status" });
       expect(statusCell).toHaveIcon("spinner");
       expect(
-        within(statusCell).getByRole("link", {
+        within(statusCell).getByRole("button", {
           name: `View Pending activity to ${operation} for ${pendingUser.username}`,
         }),
-      ).toHaveAttribute(
-        "href",
-        ROUTES.activities.root({ query: `id:${activity_id}` }),
-      );
+      ).not.toHaveAttribute("href");
       expect(statusCell).toHaveTextContent(`Pending activity to ${operation}`);
     }
   });

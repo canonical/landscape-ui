@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
 import ActivityTypeFilter from "./ActivityTypeFilter";
+import { LocationDisplay, getLocationDisplay } from "@/tests/LocationDisplay";
 
 const options = activityTypes.map((type) => ({
   label: type,
@@ -30,6 +31,20 @@ describe("ActivityTypeFilter", () => {
     expect(
       screen.getByRole("button", { name: activityTypes[0] }),
     ).toBeInTheDocument();
+  });
+
+  it("updates the URL and notifies the caller when a type is selected", async () => {
+    const onChange = vi.fn();
+    renderWithProviders(
+      <>
+        <ActivityTypeFilter {...props} onChange={onChange} />
+        <LocationDisplay />
+      </>,
+    );
+    await user.click(screen.getByRole("button", { name: "Type" }));
+    await user.click(screen.getByRole("button", { name: activityTypes[0] }));
+    expect(getLocationDisplay()).toHaveTextContent(`type=${activityTypes[0]}`);
+    expect(onChange).toHaveBeenCalledOnce();
   });
 
   it("handles case-insensitive search", async () => {

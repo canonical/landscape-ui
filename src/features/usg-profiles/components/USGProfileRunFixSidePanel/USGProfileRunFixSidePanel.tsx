@@ -8,15 +8,14 @@ import usePageParams from "@/hooks/usePageParams";
 import { pluralize } from "@/utils/_helpers";
 import { Form } from "@canonical/react-components";
 import type { FC, SyntheticEvent } from "react";
-import { useNavigate } from "react-router";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import { useRunUsgProfile } from "../../api";
 import { useGetPageUsgProfile } from "../../api/useGetPageUsgProfile";
 import { getNotificationMessage } from "../../helpers";
-import { ROUTES } from "@/libs/routes";
 
 const USGProfileRunFixSidePanel: FC = () => {
   const debug = useDebug();
-  const navigate = useNavigate();
+  const openActivityDetails = useOpenActivityDetailsPanel();
   const { notify } = useNotify();
   const { popSidePathUntilClear, closeSidePanel } = usePageParams();
 
@@ -45,11 +44,7 @@ const USGProfileRunFixSidePanel: FC = () => {
           {
             label: "View details",
             onClick: () => {
-              navigate(
-                ROUTES.activities.root({
-                  query: `parent-id:${activity.id}`,
-                }),
-              );
+              openActivityDetails(activity, { size: "large" });
             },
           },
         ],

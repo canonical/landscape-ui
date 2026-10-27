@@ -20,6 +20,7 @@ import {
   ACTIVITY_SEARCH_HELP_TERMS,
   ACTIVITY_DETAIL_SEARCH_HELP_TERMS,
   ACTIVITY_STATUS_OPTIONS,
+  ACTIVITY_DETAIL_STATUS_OPTIONS,
 } from "./constants";
 import type { ActivitiesFilterControls, ActivitiesFilters } from "./types";
 
@@ -45,6 +46,9 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
 
   const pageParams = usePageParams();
   const filters = filterControls?.values ?? pageParams;
+  const statusOptions = isDetailView
+    ? ACTIVITY_DETAIL_STATUS_OPTIONS
+    : ACTIVITY_STATUS_OPTIONS;
   const { query } = filters;
   const { activityTypes } = useGetActivityTypes(isDetailView);
   const typeOptions = [
@@ -100,7 +104,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
                   key="status"
                   type="single"
                   label="Status"
-                  options={ACTIVITY_STATUS_OPTIONS}
+                  options={statusOptions}
                   selectedItem={filters.status}
                   onItemSelect={(status) => {
                     changeFilters({ status });
@@ -113,7 +117,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
                   key="status"
                   pageParamKey="status"
                   label="Status"
-                  options={ACTIVITY_STATUS_OPTIONS}
+                  options={statusOptions}
                   onChange={resetSelectedIds}
                 />
               ),
@@ -178,7 +182,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
             {
               label: "Status",
               item: filters.status
-                ? ACTIVITY_STATUS_OPTIONS.find(
+                ? statusOptions.find(
                     (option) => option.value === filters.status,
                   )?.label
                 : undefined,
@@ -225,7 +229,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
               ? ["status", "type", "fromDate", "toDate"]
               : ["status", "fromDate", "toDate"]
           }
-          statusOptions={ACTIVITY_STATUS_OPTIONS}
+          statusOptions={statusOptions}
           typeOptions={typeOptions}
           onChange={resetSelectedIds}
         />

@@ -15,12 +15,12 @@ import ProfileAssociatedInstancesLink from "../ProfileAssociatedInstancesLink";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
 import { getTitleByName } from "@/utils/_helpers";
-import { Button, Link } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import type { CellProps, Column } from "react-table";
 import ProfilesListActions from "./components/ProfilesListActions";
 import date from "@/libs/date";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { ROUTES } from "@/libs/routes";
+import { ActivityDetailsLink } from "@/features/activities";
 import type { AxiosResponse } from "axios";
 import type { ScriptProfile } from "@/features/script-profiles";
 import {
@@ -271,15 +271,11 @@ export const getScriptColumns = (): Column<Profile>[] => [
       if (isScriptProfile(profile)) {
         const { last_activity } = profile.activities;
         return last_activity ? (
-          <Link
-            href={ROUTES.activities.root({
-              query: `parent-id:${last_activity.id}`,
-            })}
-          >
+          <ActivityDetailsLink activity={last_activity} isActivityGroup>
             {date(last_activity.creation_time)
               .utc()
               .format(DISPLAY_DATE_TIME_FORMAT)}
-          </Link>
+          </ActivityDetailsLink>
         ) : (
           <NoData />
         );

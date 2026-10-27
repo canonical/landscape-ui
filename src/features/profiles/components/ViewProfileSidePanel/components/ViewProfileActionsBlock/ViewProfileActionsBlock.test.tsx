@@ -6,6 +6,12 @@ import { describe, expect, it } from "vitest";
 import { ProfileTypes } from "../../../../helpers";
 import ViewProfileActionsBlock from "./ViewProfileActionsBlock";
 import { profiles } from "@/tests/mocks/profiles";
+import { API_URL } from "@/constants";
+import { activityParents } from "@/tests/mocks/activity";
+import { usgProfiles } from "@/tests/mocks/usgProfiles";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
 
 const [baseProfile] = profiles;
 
@@ -21,6 +27,44 @@ const actionLabels = {
 describe("ViewProfileActionsBlock", () => {
   beforeEach(() => {
     setScreenSize("sm");
+  });
+
+  it("opens large local group details from the audit-run notification", async () => {
+    const [, profile] = usgProfiles;
+    const [group] = activityParents;
+    assert(group);
+    server.use(
+      http.post(`${API_URL}usg-profiles/:id\\:execute`, () =>
+        HttpResponse.json(group),
+      ),
+      http.get(`${API_URL}activities/:id`, () => HttpResponse.json(group)),
+      http.get(`${API_URL}activities`, () =>
+        HttpResponse.json({ results: [], count: 0 }),
+      ),
+    );
+    renderWithProviders(
+      <>
+        <ViewProfileActionsBlock profile={profile} type={ProfileTypes.usg} />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/profiles/usg?sidePath=view&name=1",
+    );
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Actions" }),
+    );
+    await userEvent.click(await screen.findByRole("button", { name: "Run" }));
+    await userEvent.click(
+      await screen.findByRole("button", { name: "View details" }),
+    );
+    const heading = await screen.findByRole("heading", { name: group.summary });
+    expect(heading.closest("aside")).toHaveClass("is-wide");
+    expect(
+      await screen.findByRole("heading", { name: "Activities" }),
+    ).toBeInTheDocument();
+    expect(getLocationDisplay()).toHaveTextContent("/profiles/usg");
+    expect(getLocationDisplay()).not.toHaveTextContent("/activities");
+    expect(getLocationDisplay()).not.toHaveTextContent("sidePath");
   });
 
   it("shows archived notification for archived script profiles", () => {

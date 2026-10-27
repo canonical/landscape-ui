@@ -46,9 +46,14 @@ export const ACTIVITY_DETAIL_SEARCH_HELP_TERMS = [
   },
 ];
 
-export const ACTIVITY_STATUS_OPTIONS: SelectOption[] = [
+export const ACTIVITY_DETAIL_STATUS_OPTIONS: SelectOption[] = [
   { label: "All", value: "" },
-  ...Object.entries(ACTIVITY_STATUSES)
-    .filter(([value]) => value !== "unapproved")
-    .map(([value, { label }]) => ({ label, value })),
+  ...Object.entries(ACTIVITY_STATUSES).map(([value, { label }]) => ({
+    label,
+    value,
+  })),
 ];
+
+export const ACTIVITY_STATUS_OPTIONS = ACTIVITY_DETAIL_STATUS_OPTIONS.filter(
+  ({ value }) => value !== "unapproved",
+);

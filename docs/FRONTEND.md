@@ -149,7 +149,7 @@ Because the current repo still contains some domain hooks under `src/hooks/`, tr
 
 `ActivitiesHeader` uses `isDetailView` to enable the Type filter, inline activity
 actions, and the `computer:` and `type:` search-help terms. Enable it for
-single-instance activities and the activity details Children tab, not the main
+single-instance activities and the activity details Activities tab, not the main
 Activities page.
 
 The main Activities page lists parent activities (`ActivityGroup`) via
@@ -158,13 +158,37 @@ so this page uses `ActivitiesActions` in `exportOnly` mode. Show selection and
 export controls only when TSV exports are enabled; keep Approve, Cancel, and
 Redo available only for eligible child activities in the detail tables.
 
-The Children tab supplies local filter controls and queries activities scoped by
+The Activities tab supplies local filter controls and queries activities scoped by
 `parent-id`. Search, filtering, pagination, selection, and export panels must not
 change the underlying page's URL or replace its activity details panel. Keep its
-filters and actions collapsed so the header fits the medium-width panel.
+filters and actions collapsed so the header fits within the details panel.
 
 Key global activity details by activity ID so opening another activity resets
 its tab, child-table filters, and any local child details panel.
+
+Activity groups with output open on the Activities tab; their output is shown
+only on the Output tab. Groups without output show an Activities block without
+tabs. Groups without children show the activities empty state. Child activities
+have no tabs and show an Output block only
+when output exists. Details use the shared `Blocks` and dense `InfoGrid`
+styling from profile details. Table labels are "Activity group" on the main
+page and "Activity" in instance and group-detail views.
+Details opened from the main Activities page use large panels, including local
+child panels; single-instance activity details retain the small size from main.
+Navigation-state links that automatically open details use the same contextual
+size as table clicks. Switching between Activities and Output keeps the child
+table mounted so its local filters, pagination, and selection are preserved.
+Overview activity rows are children and open details on Overview itself, using
+the original small panel size rather than navigating to the parent-only page.
+Overview's activity "View all" buttons open a large panel listing all child
+activities, initially filtered to the clicked tab's status. This list includes
+the Instance column and uses local search, filters, actions, exports, and
+side-panel pagination shared with group-detail child tables. Individual details
+open in a small nested panel; closing it preserves the list's state.
+Activity-detail links elsewhere also stay on the current page: group links open
+large panels with the child table, while child links open small panels. The
+multi-operation Edit user notification navigates to Activities using
+`id:<group_id> OR id:<group_id>` without automatically opening details.
 
 ## Pragma design system (@canonical/pragma)
 

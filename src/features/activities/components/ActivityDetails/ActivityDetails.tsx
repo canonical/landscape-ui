@@ -1,30 +1,30 @@
-import InfoGrid from "@/components/layout/InfoGrid";
+import Blocks from "@/components/layout/Blocks";
 import LoadingState from "@/components/layout/LoadingState";
 import StaticLink from "@/components/layout/StaticLink";
 import SidePanel from "@/components/layout/SidePanel";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetInstance } from "@/features/instances";
-import { CodeSnippet, Icon, Tabs } from "@canonical/react-components";
-import date from "@/libs/date";
+import { CodeSnippet, Tabs } from "@canonical/react-components";
 import { useState, type FC } from "react";
-import { ACTIVITY_STATUSES } from "../../constants";
 import { useGetSingleActivity } from "../../api";
 import classes from "./ActivityDetails.module.scss";
 import ActivityDetailsButtons from "./components/ActivityDetailsButtons";
 import { ROUTES } from "@/libs/routes/routes";
 import ActivityChildren from "../ActivityChildren";
 import type { ActivityCommon } from "../../types";
+import ActivityDetailsInfo from "./components/ActivityDetailsInfo";
 
 interface ActivityDetailsProps {
   readonly activityId: number;
   readonly hideInstanceField?: boolean;
   readonly onClose?: () => void;
+  readonly size?: "small" | "medium" | "large";
 }
 
 const ActivityDetails: FC<ActivityDetailsProps> = ({
   activityId,
   hideInstanceField,
   onClose,
+  size = "small",
 }) => {
   const { activity, isGettingActivity, activityError } = useGetSingleActivity({
     activityId,
@@ -39,7 +39,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({
     { enabled: instanceQueryEnabled },
   );
 
-  const [tabId, setTabId] = useState("info");
+  const [tabId, setTabId] = useState("activities");
   const [selectedChild, setSelectedChild] = useState<ActivityCommon>();
 
   if (isGettingActivity) {
@@ -58,117 +58,78 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({
     return <LoadingState />;
   }
 
+  const isActivityGroup = activity.type === "ActivityGroup";
+  const output = activity.result_text ? (
+    <CodeSnippet blocks={[{ wrapLines: true, code: activity.result_text }]} />
+  ) : null;
+
   return (
     <>
-      <ActivityDetailsButtons activity={activity} onClose={onClose} />
+      <div className={classes.actions}>
+        <ActivityDetailsButtons activity={activity} onClose={onClose} />
+      </div>
 
-      {!!activity.children?.length && (
-        <Tabs
-          links={[
-            {
-              label: "Info",
-              active: tabId === "info",
-              role: "tab",
-              onClick: (): void => {
-                setTabId("info");
-              },
-            },
-            {
-              label: "Children",
-              active: tabId === "children",
-              role: "tab",
-              onClick: (): void => {
-                setTabId("children");
-              },
-            },
-          ]}
-        />
-      )}
+      <Blocks>
+        <Blocks.Item>
+          <ActivityDetailsInfo
+            activity={activity}
+            instanceLink={
+              !hideInstanceField &&
+              instance && (
+                <StaticLink
+                  to={ROUTES.instances.details.fromInstance(instance)}
+                >
+                  {instance.title}
+                </StaticLink>
+              )
+            }
+          />
+        </Blocks.Item>
+        {!isActivityGroup && output && (
+          <Blocks.Item title="Output">{output}</Blocks.Item>
+        )}
+        {isActivityGroup && !output && (
+          <Blocks.Item title="Activities">
+            <ActivityChildren
+              activityId={activity.id}
+              onActivityDetailsOpen={setSelectedChild}
+            />
+          </Blocks.Item>
+        )}
+      </Blocks>
 
-      {tabId === "info" && (
+      {isActivityGroup && output && (
         <>
-          <InfoGrid spaced>
-            <InfoGrid.Item label="Description" large value={activity.summary} />
-
-            {!hideInstanceField && instance && (
-              <InfoGrid.Item
-                label="Instance"
-                large
-                value={
-                  <StaticLink
-                    to={ROUTES.instances.details.fromInstance(instance)}
-                  >
-                    {instance.title}
-                  </StaticLink>
-                }
-              />
-            )}
-
-            <InfoGrid.Item
-              label="Status"
-              value={
-                <>
-                  <Icon
-                    name={ACTIVITY_STATUSES[activity.activity_status].icon}
-                    className={classes.statusIcon}
-                  />
-                  <span>
-                    {ACTIVITY_STATUSES[activity.activity_status].label}
-                  </span>
-                </>
-              }
-            />
-            <InfoGrid.Item
-              label="Created at"
-              value={date(activity.creation_time).format(
-                DISPLAY_DATE_TIME_FORMAT,
-              )}
-            />
-
-            {typeof activity.delivery_time === "string" && (
-              <InfoGrid.Item
-                label="Delivered at"
-                value={date(activity.delivery_time).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )}
-              />
-            )}
-            {activity.completion_time !== null && (
-              <InfoGrid.Item
-                label="Completed at"
-                value={date(activity.completion_time).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )}
-              />
-            )}
-
-            <InfoGrid.Item
-              label="Creator"
-              large
-              value={activity.creator?.name}
-            />
-          </InfoGrid>
-
-          {activity.result_text && (
-            <CodeSnippet
-              className={classes.output}
-              blocks={[
-                {
-                  wrapLines: true,
-                  title: "Output",
-                  code: activity.result_text,
+          <Tabs
+            className={classes.tabs}
+            links={[
+              {
+                label: "Activities",
+                active: tabId === "activities",
+                role: "tab",
+                onClick: (): void => {
+                  setTabId("activities");
                 },
-              ]}
-            />
-          )}
-        </>
-      )}
+              },
+              {
+                label: "Output",
+                active: tabId === "output",
+                role: "tab",
+                onClick: (): void => {
+                  setTabId("output");
+                },
+              },
+            ]}
+          />
 
-      {tabId === "children" && (
-        <ActivityChildren
-          activityId={activity.id}
-          onActivityDetailsOpen={setSelectedChild}
-        />
+          <div hidden={tabId !== "activities"}>
+            <ActivityChildren
+              activityId={activity.id}
+              onActivityDetailsOpen={setSelectedChild}
+            />
+          </div>
+          {tabId === "output" && output}
+        </>
       )}
       {selectedChild && (
         <SidePanel
@@ -176,13 +137,14 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({
           onClose={() => {
             setSelectedChild(undefined);
           }}
-          size="medium"
+          size={size}
         >
           <SidePanel.Header>{selectedChild.summary}</SidePanel.Header>
           <SidePanel.Content>
             <ActivityDetails
               key={selectedChild.id}
               activityId={selectedChild.id}
+              size={size}
               onClose={() => {
                 setSelectedChild(undefined);
               }}

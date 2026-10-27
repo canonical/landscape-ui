@@ -18,6 +18,8 @@ import { API_URL } from "@/constants";
 import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import sidePanelClasses from "@/components/layout/SidePanel/SidePanel.module.scss";
+import globalSidePanelClasses from "@/context/SidePanelProvider.module.scss";
+import { useNavigate } from "react-router";
 
 const setSelectedActivities = vi.fn();
 const defaultProps: ComponentProps<typeof Activities> = {
@@ -36,7 +38,7 @@ describe("Activities", () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
       const columnHeaders = [
-        "Description",
+        "Activity group",
         "Status",
         "Created at",
         "Completed at",
@@ -131,9 +133,19 @@ describe("Activities", () => {
 
   describe("Activity details", () => {
     it("resets the tab and closes local child details when another activity is opened", async () => {
-      const parent = { ...activities[0], children: [activities[1]] };
+      const parent = {
+        ...activities[0],
+        type: "ActivityGroup",
+        result_text: "Group output",
+        children: [activities[1]],
+      };
       const [, child] = activities;
-      const nextActivity = { ...activities[2], children: [child] };
+      const nextActivity = {
+        ...activities[2],
+        type: "ActivityGroup",
+        result_text: "Next group output",
+        children: [child],
+      };
       server.use(
         http.get(`${API_URL}activities`, () =>
           HttpResponse.json({
@@ -159,7 +171,9 @@ describe("Activities", () => {
       await user.click(
         within(mainTable).getByRole("button", { name: parent.summary }),
       );
-      await user.click(await screen.findByRole("tab", { name: "Children" }));
+      await screen.findByRole("tab", { name: "Activities" });
+      await user.click(screen.getByRole("tab", { name: "Output" }));
+      await user.click(screen.getByRole("tab", { name: "Activities" }));
       const parentHeading = screen.getByRole("heading", {
         name: parent.summary,
       });
@@ -172,6 +186,7 @@ describe("Activities", () => {
       expect(
         await screen.findByRole("heading", { name: child.summary }),
       ).toBeInTheDocument();
+      await user.click(screen.getByRole("tab", { name: "Output" }));
 
       await user.click(
         within(mainTable).getByRole("button", { name: nextActivity.summary }),
@@ -182,80 +197,109 @@ describe("Activities", () => {
       const nextPanel = nextHeading.closest("aside");
       assert(nextPanel);
       expect(
-        await within(nextPanel).findByText("Description"),
-      ).toBeInTheDocument();
+        await within(nextPanel).findByRole("tab", { name: "Activities" }),
+      ).toHaveAttribute("aria-selected", "true");
       expect(
         screen.queryByRole("heading", { name: child.summary }),
       ).not.toBeInTheDocument();
-      expect(within(nextPanel).queryByRole("table")).not.toBeInTheDocument();
+      expect(await within(nextPanel).findByRole("table")).toBeInTheDocument();
       expect(
         screen.queryByRole("heading", { name: parent.summary }),
       ).not.toBeInTheDocument();
-      expect(screen.getByRole("tab", { name: "Info" })).toHaveAttribute(
+      expect(screen.getByRole("tab", { name: "Activities" })).toHaveAttribute(
         "aria-selected",
         "true",
       );
     });
 
-    it("opens children in a medium local panel without replacing the parent panel", async () => {
-      const parent = { ...activities[0], children: [activities[1]] };
-      const [, child] = activities;
-      server.use(
-        http.get(`${API_URL}activities`, () =>
-          HttpResponse.json({
-            results: [child],
-            count: 1,
-            next: null,
-            previous: null,
-          }),
-        ),
-        http.get(`${API_URL}activities/:id`, ({ params: { id } }) =>
-          HttpResponse.json(Number(id) === parent.id ? parent : child),
-        ),
-      );
-      renderWithProviders(
-        <Activities {...defaultProps} activities={[parent]} />,
-      );
+    it.each([
+      { instanceId: undefined, size: "large" as const },
+      { instanceId: 6, size: "small" as const },
+    ])(
+      "opens children in a $size local panel for instanceId=$instanceId",
+      async ({ instanceId, size }) => {
+        const parent = {
+          ...activities[0],
+          type: "ActivityGroup",
+          result_text: "Group output",
+          children: [activities[1]],
+        };
+        const [, child] = activities;
+        server.use(
+          http.get(`${API_URL}activities`, () =>
+            HttpResponse.json({
+              results: [child],
+              count: 1,
+              next: null,
+              previous: null,
+            }),
+          ),
+          http.get(`${API_URL}activities/:id`, ({ params: { id } }) =>
+            HttpResponse.json(Number(id) === parent.id ? parent : child),
+          ),
+        );
+        renderWithProviders(
+          <Activities
+            {...defaultProps}
+            activities={[parent]}
+            instanceId={instanceId}
+          />,
+        );
 
-      await user.click(screen.getByRole("button", { name: parent.summary }));
-      const parentHeading = await screen.findByRole("heading", {
-        name: parent.summary,
-      });
-      expect(parentHeading.closest("aside")).toHaveClass("is-wide");
-      await user.click(await screen.findByRole("tab", { name: "Children" }));
+        await user.click(screen.getByRole("button", { name: parent.summary }));
+        const parentHeading = await screen.findByRole("heading", {
+          name: parent.summary,
+        });
+        if (size === "small") {
+          expect(parentHeading.closest("aside")).not.toHaveClass("is-wide");
+        } else {
+          expect(parentHeading.closest("aside")).toHaveClass("is-wide");
+        }
+        expect(parentHeading.closest("aside")).not.toHaveClass(
+          globalSidePanelClasses.medium,
+        );
+        await screen.findByRole("tab", { name: "Activities" });
 
-      const parentPanel = parentHeading.closest("aside");
-      assert(parentPanel);
-      const table = await within(parentPanel).findByRole("table");
-      await user.click(
-        within(table).getByRole("button", { name: child.summary }),
-      );
+        const parentPanel = parentHeading.closest("aside");
+        assert(parentPanel);
+        const table = await within(parentPanel).findByRole("table");
+        await user.click(
+          within(table).getByRole("button", { name: child.summary }),
+        );
 
-      const childHeading = await screen.findByRole("heading", {
-        name: child.summary,
-      });
-      expect(childHeading.closest("aside")).toHaveClass(
-        sidePanelClasses.medium,
-      );
-      expect(parentHeading).toBeInTheDocument();
-      const childPanel = childHeading.closest("aside");
-      assert(childPanel);
-      expect(
-        await within(childPanel).findByText("Description"),
-      ).toBeInTheDocument();
+        const childHeading = await screen.findByRole("heading", {
+          name: child.summary,
+        });
+        if (size === "small") {
+          expect(childHeading.closest("aside")).not.toHaveClass(
+            sidePanelClasses.medium,
+            sidePanelClasses.large,
+          );
+        } else {
+          expect(childHeading.closest("aside")).toHaveClass(
+            sidePanelClasses.large,
+          );
+        }
+        expect(parentHeading).toBeInTheDocument();
+        const childPanel = childHeading.closest("aside");
+        assert(childPanel);
+        expect(
+          await within(childPanel).findByText("Created at"),
+        ).toBeInTheDocument();
 
-      await user.click(screen.getByRole("button", { name: "Close" }));
+        await user.click(screen.getByRole("button", { name: "Close" }));
 
-      expect(
-        screen.queryByRole("heading", { name: child.summary }),
-      ).not.toBeInTheDocument();
-      expect(parentHeading).toBeInTheDocument();
-      expect(table).toBeInTheDocument();
-      expect(screen.getByRole("tab", { name: "Children" })).toHaveAttribute(
-        "aria-selected",
-        "true",
-      );
-    });
+        expect(
+          screen.queryByRole("heading", { name: child.summary }),
+        ).not.toBeInTheDocument();
+        expect(parentHeading).toBeInTheDocument();
+        expect(table).toBeInTheDocument();
+        expect(screen.getByRole("tab", { name: "Activities" })).toHaveAttribute(
+          "aria-selected",
+          "true",
+        );
+      },
+    );
 
     it("should open activity details side panel when description is clicked", async () => {
       renderWithProviders(<Activities {...defaultProps} />);
@@ -292,6 +336,13 @@ describe("Activities", () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
       expect(screen.queryByText("Instance")).not.toBeInTheDocument();
+    });
+
+    it("labels single-instance activity rows as Activity", () => {
+      renderWithProviders(<Activities {...defaultProps} instanceId={6} />);
+      expect(
+        screen.getByRole("columnheader", { name: /^Toggle all\s*Activity$/ }),
+      ).toBeInTheDocument();
     });
 
     it("should exclude Instance column when instanceId is provided", () => {
@@ -336,6 +387,39 @@ describe("Activities", () => {
   });
 
   describe("useOpenActivityDetails hook", () => {
+    it("opens activities from navigation state in a large main-page panel", async () => {
+      const NavigationLink = () => {
+        const navigate = useNavigate();
+        return (
+          <button
+            onClick={() => {
+              navigate(ROUTES.activities.root(), {
+                state: { activity: activities[0] },
+              });
+            }}
+          >
+            View overview activity
+          </button>
+        );
+      };
+      renderWithProviders(
+        <>
+          <NavigationLink />
+          <Activities {...defaultProps} />
+        </>,
+      );
+      await user.click(
+        screen.getByRole("button", { name: "View overview activity" }),
+      );
+      const heading = await screen.findByRole("heading", {
+        name: activities[0].summary,
+      });
+      expect(heading.closest("aside")).toHaveClass("is-wide");
+      expect(heading.closest("aside")).not.toHaveClass(
+        globalSidePanelClasses.medium,
+      );
+    });
+
     it("should open activity details when navigated with state", async () => {
       renderWithProviders(
         <Activities {...defaultProps} />,

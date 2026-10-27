@@ -29,6 +29,7 @@ interface ActivitiesListProps {
   readonly onSelectAll?: () => void;
   readonly onClearSelection?: () => void;
   readonly showInstanceColumn?: boolean;
+  readonly isActivityGroup?: boolean;
   readonly onActivityDetailsOpen?: (activity: ActivityCommon) => void;
 }
 
@@ -43,9 +44,19 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
   onSelectAll,
   onClearSelection,
   showInstanceColumn = false,
+  isActivityGroup = false,
   onActivityDetailsOpen,
 }) => {
-  const handleActivityDetailsOpen = useOpenActivityDetailsPanel();
+  const openActivityDetailsPanel = useOpenActivityDetailsPanel();
+  const handleActivityDetailsOpen = useCallback(
+    (activity: ActivityCommon) => {
+      openActivityDetailsPanel(activity, {
+        hideInstanceField: instanceId !== undefined,
+        size: isActivityGroup ? "large" : "small",
+      });
+    },
+    [openActivityDetailsPanel, instanceId, isActivityGroup],
+  );
   const isMedium = useMediaQuery(`(max-width: ${BREAKPOINT_PX.md}px)`);
   const isSelectionEnabled = setSelectedActivities !== undefined;
 
@@ -120,7 +131,7 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
                 disabled={!activities.length}
               />
             )}
-            Description
+            <span>{isActivityGroup ? "Activity group" : "Activity"}</span>
           </>
         ),
         Cell: ({ row }: CellProps<ActivityCommon>) => (
@@ -149,9 +160,7 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
                   onActivityDetailsOpen(row.original);
                   return;
                 }
-                handleActivityDetailsOpen(row.original, {
-                  hideInstanceField: instanceId !== undefined,
-                });
+                handleActivityDetailsOpen(row.original);
               }}
             >
               {row.original.summary}
@@ -236,12 +245,12 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
       handleActivityDetailsOpen,
       onActivityDetailsOpen,
       handleToggleActivity,
-      instanceId,
       isAllSelected,
       isMedium,
       isSelectionEnabled,
       selectedActivities,
       showInstanceColumn,
+      isActivityGroup,
       toggleAll,
     ],
   );

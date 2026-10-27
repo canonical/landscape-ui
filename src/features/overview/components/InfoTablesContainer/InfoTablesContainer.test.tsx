@@ -13,6 +13,7 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import InfoTablesContainer from "./InfoTablesContainer";
+import globalSidePanelClasses from "@/context/SidePanelProvider.module.scss";
 
 const LIST_LIMIT = 10;
 
@@ -131,6 +132,28 @@ describe("InfoTablesContainer", () => {
         const activitySummary = await screen.findAllByText(activity.summary);
         expect(activitySummary.length).toBeGreaterThan(0);
       }
+    });
+
+    it("opens child activity details locally in the original small panel", async () => {
+      const activity = activities.find(
+        (item) => item.activity_status === "unapproved",
+      );
+      assert(activity);
+      await userEvent.click(
+        await screen.findByRole("button", { name: activity.summary }),
+      );
+      const heading = await screen.findByRole("heading", {
+        name: activity.summary,
+      });
+      const panel = heading.closest("aside");
+      assert(panel);
+      expect(panel).not.toHaveClass("is-wide");
+      expect(panel).not.toHaveClass(globalSidePanelClasses.medium);
+      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(
+        screen.queryByRole("link", { name: activity.summary }),
+      ).not.toBeInTheDocument();
+      expect(await within(panel).findByText("Created at")).toBeInTheDocument();
     });
 
     it("renders in progress activities list", async () => {
@@ -352,7 +375,7 @@ describe("InfoTablesContainer", () => {
 });
 
 describe("InfoTablesContainer activities footer", () => {
-  it("shows footer and navigates when activities count exceeds limit on unapproved tab", async () => {
+  it("opens a local large child-activity list from the unapproved footer", async () => {
     setEndpointStatus({
       status: "variant",
       path: "activities",
@@ -376,10 +399,27 @@ describe("InfoTablesContainer activities footer", () => {
     const activitiesViewAllButton = viewAllButtons.at(-1);
     assert(activitiesViewAllButton);
     await userEvent.click(activitiesViewAllButton);
-    expect(screen.getByText("Activities")).toBeInTheDocument();
+    const heading = await screen.findByRole("heading", {
+      name: "Activities requiring approval",
+    });
+    const panel = heading.closest("aside");
+    assert(panel);
+    expect(panel).toHaveClass("is-wide");
+    expect(
+      await within(panel).findByRole("columnheader", { name: "Instance" }),
+    ).toBeInTheDocument();
+    expect(within(panel).getAllByRole("row")).toHaveLength(
+      manyUnapprovedActivities.length + 1,
+    );
+    expect(
+      within(panel).queryByRole("button", {
+        name: manyDeliveredActivities[0]?.summary,
+      }),
+    ).not.toBeInTheDocument();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
-  it("shows footer and navigates when activities count exceeds limit on in-progress tab", async () => {
+  it("opens a local large child-activity list from the in-progress footer", async () => {
     setEndpointStatus({
       status: "variant",
       path: "activities",
@@ -407,7 +447,24 @@ describe("InfoTablesContainer activities footer", () => {
     const activitiesViewAllButton = viewAllButtons.at(-1);
     assert(activitiesViewAllButton);
     await userEvent.click(activitiesViewAllButton);
-    expect(screen.getByText("Activities")).toBeInTheDocument();
+    const heading = await screen.findByRole("heading", {
+      name: "Activities in progress",
+    });
+    const panel = heading.closest("aside");
+    assert(panel);
+    expect(panel).toHaveClass("is-wide");
+    expect(
+      await within(panel).findByRole("columnheader", { name: "Instance" }),
+    ).toBeInTheDocument();
+    expect(within(panel).getAllByRole("row")).toHaveLength(
+      manyDeliveredActivities.length + 1,
+    );
+    expect(
+      within(panel).queryByRole("button", {
+        name: manyUnapprovedActivities[0]?.summary,
+      }),
+    ).not.toBeInTheDocument();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
 
