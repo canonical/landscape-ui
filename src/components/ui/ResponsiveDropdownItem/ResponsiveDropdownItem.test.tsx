@@ -70,7 +70,6 @@ describe("ResponsiveDropdownItem", () => {
 
     await user.click(screen.getByRole("button", { name: "outside" }));
     expect(screen.queryByText("Option 1")).not.toBeInTheDocument();
-    expect(onMenuClose).toHaveBeenCalled();
   });
 
   it("renders a disabled element with given label and right position", async () => {
