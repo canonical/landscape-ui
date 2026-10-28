@@ -24,8 +24,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
@@ -39,10 +37,20 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
+        id: install
         run: pnpm install --frozen-lockfile
 
+      # The only type check in CI (the e2e build no longer runs tsc). It lives
+      # in this job so it stays behind the required "ESLint" check.
+      - name: Type check (tsgo)
+        run: pnpm run typecheck
+
       - name: Run ESLint
-        run: pnpm eslint --cache
+        # Report lint results even when the type check fails.
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        # 4 workers matches ubuntu-latest's vCPUs; "auto" oversubscribes memory
+        # because each worker builds its own TypeScript program.
+        run: pnpm eslint --cache --concurrency=4
 
   prettier:
     name: Prettier
@@ -50,8 +58,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
@@ -76,8 +82,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
@@ -103,7 +107,10 @@ jobs:
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || fromJSON('["self-hosted", "Linux", "large"]') }}
     timeout-minutes: 30
     container:
-      image: mcr.microsoft.com/playwright:v1.60.0
+      # Keep in sync with @playwright/test in package.json (the "Check
+      # Playwright image version" step fails on drift). A mismatched image
+      # makes every run re-download the browsers and apt-upgrade their deps.
+      image: mcr.microsoft.com/playwright:v1.64.0-noble
     environment: dev
     strategy:
       fail-fast: false
@@ -136,8 +143,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
@@ -153,6 +158,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Check Playwright image version
+        run: |
+          IMAGE=$(grep -oP 'mcr\.microsoft\.com/playwright:v\K[0-9]+\.[0-9]+\.[0-9]+' .github/workflows/validate.yml | head -n1)
+          PKG=$(node -p "require('@playwright/test/package.json').version")
+          if [ "$IMAGE" != "$PKG" ]; then
+            echo "::error::Playwright container image is v$IMAGE but @playwright/test is $PKG. Update the container image tag in validate.yml."
+            exit 1
+          fi
+
+      # Vite only: lint and the type check run in the ESLint job.
       - name: Build the project
         run: pnpm run build:e2e
         env:
@@ -160,8 +175,9 @@ jobs:
           VITE_MSW_ENABLED: ${{ matrix.msw_enabled }}
           VITE_SELF_HOSTED_ENV: ${{ matrix.self_hosted_env }}
 
+      # Both projects use Desktop Chrome; the matching image already ships it.
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Run ${{ matrix.name }} tests
         run: pnpm exec playwright test --project=${{ matrix.target }}
@@ -175,15 +191,16 @@ jobs:
           retention-days: 30
 
   unit-tests:
-    name: Vitest
+    name: Vitest (shard ${{ matrix.shard }}/4)
     # Fork PR runs execute unreviewed code, so keep them off the persistent
     # self-hosted runners. Merge-queue runs need an approving review first.
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || fromJSON('["self-hosted", "Linux", "large"]') }}
     timeout-minutes: 30
-    permissions:
-      contents: read
-      pull-requests: write
     environment: dev
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     env:
       # vars are not passed to fork PRs; fall back to the .env.production
       # paths only there, so a missing var still fails same-repo runs.
@@ -215,13 +232,100 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Coverage thresholds only make sense for the whole suite, so they are
+      # zeroed here and enforced by the "Vitest" job on the merged report.
       - name: Run tests with coverage
-        run: pnpm exec vitest run --coverage
+        run: >-
+          pnpm exec vitest run --coverage
+          --shard=${{ matrix.shard }}/4
+          --reporter=default --reporter=blob
+          --outputFile.blob=vitest-blob/blob-${{ matrix.shard }}.json
+          --coverage.reporter=text-summary
+          --coverage.thresholds.statements=0
+          --coverage.thresholds.lines=0
+          --coverage.thresholds.functions=0
+          --coverage.thresholds.branches=0
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+
+      - name: Upload blob report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-blob-${{ matrix.shard }}
+          path: vitest-blob
+          retention-days: 1
+          if-no-files-found: error
+
+  # The required "Vitest" check. GitHub counts a skipped required check as
+  # passing, so this job always runs and fails unless every shard succeeded.
+  unit-tests-merge:
+    name: Vitest
+    needs: unit-tests
+    if: ${{ always() }}
+    # Fork PR runs execute unreviewed code, so keep them off the persistent
+    # self-hosted runners. Merge-queue runs need an approving review first.
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || fromJSON('["self-hosted", "Linux", "large"]') }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write
+    environment: dev
+    env:
+      # vars are not passed to fork PRs; fall back to the .env.production
+      # paths only there, so a missing var still fails same-repo runs.
+      VITE_API_URL: ${{ github.event.pull_request.head.repo.fork && (vars.API_URL || '/api/v2/') || vars.API_URL }}
+      VITE_API_URL_OLD: ${{ github.event.pull_request.head.repo.fork && (vars.API_URL_OLD || '/api/') || vars.API_URL_OLD }}
+      VITE_API_URL_DEB_ARCHIVE: ${{ github.event.pull_request.head.repo.fork && (vars.API_URL_DEB_ARCHIVE || '/debarchive/v1/') || vars.API_URL_DEB_ARCHIVE }}
+      VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
+      VITE_APP_TITLE: Landscape
+      VITE_ROOT_PATH: /portal/
+      VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
+      VITE_APP_VERSION: "26.04.0.12"
+      VITE_APP_COMMIT: ${{ github.sha }}
+      VITE_SELF_HOSTED_ENV: true
+    steps:
+      - name: Require every shard to pass
+        if: ${{ needs.unit-tests.result != 'success' }}
+        env:
+          SHARDS_RESULT: ${{ needs.unit-tests.result }}
+        run: |
+          echo "::error::Vitest shards finished with result '$SHARDS_RESULT'; see the 'Vitest (shard n/4)' jobs."
+          exit 1
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download blob reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: vitest-blob-*
+          path: vitest-blob
+          merge-multiple: true
+
+      # Fails on any failed test in the blobs and enforces the coverage
+      # thresholds from vitest.config.ts against the merged coverage.
+      - name: Merge reports and check coverage
+        run: pnpm exec vitest --merge-reports=vitest-blob --coverage
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
 
       - name: Upload test results
-        if: always()
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: vitest-report

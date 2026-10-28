@@ -16,6 +16,7 @@ dist-ssr
 .vite-node
 coverage
 /reports
+/vitest-blob
 src/**/*.module.scss.d.ts
 
 # Cache
