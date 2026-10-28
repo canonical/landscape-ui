@@ -16,6 +16,7 @@ import useDebug from "@/hooks/useDebug";
 import { HOMEPAGE_PATH } from "@/constants";
 import { ROUTES } from "@/libs/routes";
 import { getFormikError } from "@/utils/formikErrors";
+import { normalizeEmail } from "@/utils/validation/email";
 
 import { useLogin } from "@/features/auth";
 import { useCreateStandaloneAccount } from "../../api";
@@ -35,15 +36,17 @@ const AccountCreationSelfHostedForm: FC = () => {
   const { login: signIn } = useLogin();
 
   const handleSubmit = async (values: FormValues) => {
+    const email = normalizeEmail(values.email);
+
     try {
       await createStandaloneAccount({
         name: values.fullName,
-        email: values.email,
+        email,
         password: values.password,
       });
 
       const { data } = await signIn({
-        email: values.email,
+        email,
         password: values.password,
       });
 

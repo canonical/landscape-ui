@@ -1,13 +1,29 @@
 import * as Yup from "yup";
+import {
+  EMAIL_ERROR_MESSAGE,
+  legacyEmailSchema,
+} from "@/utils/validation/email";
 
-export const VALIDATION_SCHEMA = Yup.object().shape({
-  name: Yup.string().required("This field is required"),
-  timezone: Yup.string().required("This field is required"),
-  email: Yup.string()
-    .email("Please provide a valid email address")
-    .required("This field is required"),
-  preferred_account: Yup.string(),
-});
+// The person endpoint validates with the legacy `is_email_address`, which
+// rejects addresses that account creation (`EmailStr`) accepts, such as a
+// non-ASCII local part. Emails supplied by the server (the stored one and the
+// allowable ones) are therefore not re-validated, so those users can still
+// save other changes.
+export const getValidationSchema = (serverEmails: readonly string[]) =>
+  Yup.object().shape({
+    name: Yup.string().required("This field is required"),
+    timezone: Yup.string().required("This field is required"),
+    email: Yup.string()
+      .required("This field is required")
+      .test(
+        "email",
+        EMAIL_ERROR_MESSAGE,
+        (value) =>
+          (value !== undefined && serverEmails.includes(value)) ||
+          legacyEmailSchema().isValidSync(value),
+      ),
+    preferred_account: Yup.string(),
+  });
 
 export const TIMEZONE_OPTIONS = [
   { value: "Pacific/Midway", label: "(GMT -11:00 SST) Pacific/Midway" },
