@@ -3,6 +3,14 @@
 
 ---
 
+## 26.10.0.7
+
+### Patch Changes
+
+- Update vite to 8.2.4 and pin dompurify 3.4.17, follow-redirects 1.16.1 and storybook 10.6.2, clearing the fixable HIGH and CRITICAL findings in the 26.10.0.5 security scan
+- Accept the same email addresses as the server on the login, invite administrator, edit user and self-hosted account creation forms, including plus addressing such as user+tag@example.com
+- Fix saving profile details when no default organization is selected.
+
 ## 26.10.0.5
 
 ### Patch Changes
