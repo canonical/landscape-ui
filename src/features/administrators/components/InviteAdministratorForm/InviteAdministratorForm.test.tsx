@@ -118,6 +118,51 @@ describe("InviteAdministratorForm", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("accepts a plus-addressed email", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<InviteAdministratorForm />);
+
+    await user.type(screen.getByLabelText(/name/i), "Jane Smith");
+    await user.type(screen.getByLabelText(/email/i), "jane+tag@example.com");
+    await user.click(screen.getByRole("button", { name: /send invite/i }));
+
+    expect(
+      await screen.findByText("You sent an administrator invite"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Please provide a valid email address"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("accepts an email on a special-use domain like the invitation endpoint", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<InviteAdministratorForm />);
+
+    await user.type(screen.getByLabelText(/name/i), "Jane Smith");
+    await user.type(screen.getByLabelText(/email/i), "jane@corp.local");
+    await user.click(screen.getByRole("button", { name: /send invite/i }));
+
+    expect(
+      await screen.findByText("You sent an administrator invite"),
+    ).toBeInTheDocument();
+  });
+
+  it("rejects a non-ASCII local part like the invitation endpoint", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<InviteAdministratorForm />);
+
+    await user.type(screen.getByLabelText(/name/i), "Jane Smith");
+    await user.type(screen.getByLabelText(/email/i), "用户@example.com");
+    await user.click(screen.getByRole("button", { name: /send invite/i }));
+
+    expect(
+      await screen.findByText("Please provide a valid email address"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("You sent an administrator invite"),
+    ).not.toBeInTheDocument();
+  });
+
   it("shows error notification when API call fails and side panel remains open", async () => {
     setEndpointStatus({ status: "error", path: "InviteAdministrator" });
     const user = userEvent.setup();

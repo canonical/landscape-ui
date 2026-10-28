@@ -13,7 +13,9 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import EditUserForm from "./EditUserForm";
-import { MASKED_VALUE } from "@/constants";
+import { API_URL, MASKED_VALUE } from "@/constants";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
 
 vi.mock("@/hooks/useEnv");
 vi.mock("@/hooks/useAuth");
@@ -80,6 +82,17 @@ const mockSaas: EnvContextState = {
   packageVersion: "",
   revision: "",
   displayDisaStigBanner: false,
+};
+
+const capturePersonRequest = () => {
+  const captured: { body: Record<string, unknown> | null } = { body: null };
+  server.use(
+    http.post(`${API_URL}person`, async ({ request }) => {
+      captured.body = (await request.json()) as Record<string, unknown>;
+      return HttpResponse.json(props.userDetails);
+    }),
+  );
+  return captured;
 };
 
 describe("EditUserForm", () => {
@@ -161,6 +174,165 @@ describe("EditUserForm", () => {
         await screen.findByText("User details updated successfully"),
       ).toBeInTheDocument();
       expect(saveButton).toHaveAttribute("aria-disabled");
+    });
+
+    it("accepts a plus-addressed email when saving", async () => {
+      const email = "user+tag@example.com";
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{
+            ...props.userDetails,
+            email,
+            allowable_emails: [email, "another@example.com"],
+          }}
+        />,
+      );
+
+      const nameInput = screen.getByRole("textbox");
+      await userEvent.type(nameInput, " Updated");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText("Please provide a valid email address"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("saves other changes when the stored email fails the legacy rules", async () => {
+      // Account creation accepts a non-ASCII local part; the person endpoint
+      // does not.
+      const email = "用户@example.com";
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{
+            ...props.userDetails,
+            email,
+            allowable_emails: [email, "another@example.com"],
+          }}
+        />,
+      );
+
+      const nameInput = screen.getByRole("textbox");
+      await userEvent.type(nameInput, " Updated");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).not.toHaveProperty("email");
+    });
+
+    it("sends a server-supplied email verbatim, even if it fails the legacy rules", async () => {
+      const allowedEmail = "用户@Example.COM";
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{
+            ...props.userDetails,
+            allowable_emails: [props.userDetails.email, allowedEmail],
+          }}
+        />,
+      );
+
+      await userEvent.selectOptions(
+        screen.getByRole("combobox", { name: "Email address" }),
+        allowedEmail,
+      );
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toHaveProperty("email", allowedEmail);
+    });
+
+    it("normalizes a typed email before sending it", async () => {
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, allowable_emails: [] }}
+        />,
+      );
+
+      const emailInput = screen.getByRole("textbox", { name: "Email" });
+      await userEvent.clear(emailInput);
+      await userEvent.type(emailInput, " New@EXAMPLE.COM ");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toHaveProperty("email", "New@example.com");
+    });
+
+    it("maps a Unicode dot in the domain to the form used at login", async () => {
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, allowable_emails: [] }}
+        />,
+      );
+
+      const emailInput = screen.getByRole("textbox", { name: "Email" });
+      await userEvent.clear(emailInput);
+      await userEvent.type(emailInput, "user@example\u3002com");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toHaveProperty("email", "user@example.com");
+    });
+
+    it("rejects a non-ASCII local part like the person endpoint", async () => {
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, allowable_emails: [] }}
+        />,
+      );
+
+      const emailInput = screen.getByRole("textbox", { name: "Email" });
+      await userEvent.clear(emailInput);
+      await userEvent.type(emailInput, "用户@example.com");
+      await userEvent.tab();
+
+      expect(
+        await screen.findByText("Please provide a valid email address"),
+      ).toBeInTheDocument();
+    });
+
+    it("accepts a special-use domain like the person endpoint", async () => {
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, allowable_emails: [] }}
+        />,
+      );
+
+      const emailInput = screen.getByRole("textbox", { name: "Email" });
+      await userEvent.clear(emailInput);
+      await userEvent.type(emailInput, "ops@corp.local");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toHaveProperty("email", "ops@corp.local");
     });
 
     it("should show an empty option for default organisation select if user has not yet selected one", async () => {

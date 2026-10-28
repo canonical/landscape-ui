@@ -19,11 +19,12 @@ import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useUserGeneralSettings } from "../../hooks";
 import type { UserDetails } from "../../types";
-import { TIMEZONE_OPTIONS, VALIDATION_SCHEMA } from "./constants";
+import { getValidationSchema, TIMEZONE_OPTIONS } from "./constants";
 import classes from "./EditUserForm.module.scss";
 import { getAccountOptions } from "./helpers";
 import type { EditUserFormValues } from "./types";
 import { MASKED_VALUE } from "@/constants";
+import { normalizeEmail } from "@/utils/validation/email";
 
 const ChangePasswordForm = lazy(async () => import("../ChangePasswordForm"));
 
@@ -48,6 +49,11 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
       value: email,
     })) ?? [];
 
+  const serverEmails = [
+    userDetails.email,
+    ...(userDetails.allowable_emails ?? []),
+  ];
+
   const formik = useFormik<EditUserFormValues>({
     initialValues: {
       name: userDetails.name,
@@ -55,18 +61,30 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
       email: userDetails.email,
       preferred_account: userDetails.preferred_account ?? "",
     },
-    validationSchema: VALIDATION_SCHEMA,
+    validationSchema: getValidationSchema(serverEmails),
     onSubmit: async (values, { resetForm }) => {
       try {
         if (!user) {
           return;
         }
 
-        await editUserMutation(values);
+        const { email: enteredEmail, ...otherValues } = values;
+        const isEmailChanged = enteredEmail !== userDetails.email;
+        // SSO users may only pick an exact entry from allowable_emails, so
+        // server-supplied emails are sent verbatim.
+        const email = serverEmails.includes(enteredEmail)
+          ? enteredEmail
+          : normalizeEmail(enteredEmail);
+
+        // The server re-validates any email it receives with its own legacy
+        // rules, so an unchanged email is left out of the request.
+        await editUserMutation(
+          isEmailChanged ? { ...otherValues, email } : otherValues,
+        );
 
         setUser({
           ...user,
-          email: values.email,
+          email,
           name: values.name,
         });
 
