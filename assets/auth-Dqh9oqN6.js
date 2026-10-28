@@ -1,0 +1,1 @@
+import"./AuthTemplate-CfMfsa4t.js";

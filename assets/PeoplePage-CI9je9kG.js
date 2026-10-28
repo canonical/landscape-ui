@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-DanBxBBP.js";import{n as t,r as n,t as r}from"./PageMain-BcNATJOH.js";import{i}from"./super-admin-B_CkRdd_.js";var a=e(),o=()=>(0,a.jsxs)(r,{children:[(0,a.jsx)(t,{title:`People`}),(0,a.jsx)(n,{hasTable:!0,children:(0,a.jsx)(i,{})})]});export{o as default};

@@ -1,0 +1,32 @@
+{
+  "name": "@changesets/assemble-release-plan",
+  "version": "7.0.0",
+  "description": "Reads changesets and adds information on dependents that need bumping",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/changesets/changesets.git",
+    "directory": "packages/assemble-release-plan"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "semver": "^7.8.1",
+    "@changesets/errors": "^1.0.0",
+    "@changesets/get-dependents-graph": "^3.0.0",
+    "@changesets/should-skip-package": "^1.0.0",
+    "@changesets/types": "^7.0.0"
+  },
+  "devDependencies": {
+    "@changesets/config": "4.0.0"
+  },
+  "engines": {
+    "node": "^22.11 || ^24 || >=26"
+  }
+}

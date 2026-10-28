@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-DanBxBBP.js";import{W as t}from"./auth-_q3DFMy1.js";import{t as n}from"./AuthTemplate-CfMfsa4t.js";import"./auth-Dqh9oqN6.js";var r=e(),i=()=>(0,r.jsx)(n,{title:`Sign in to Landscape`,children:(0,r.jsx)(t,{isStandaloneOidcEnabled:!1,isUbuntuOneEnabled:!0,oidcProviders:[]})});export{i as default};

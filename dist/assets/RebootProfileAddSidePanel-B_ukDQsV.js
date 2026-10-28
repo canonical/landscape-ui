@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-DanBxBBP.js";import{t}from"./SidePanel-uwwZkBTD.js";import{t as n}from"./RebootProfilesForm-BKf2_ZJe.js";var r=e(),i=()=>(0,r.jsxs)(r.Fragment,{children:[(0,r.jsx)(t.Header,{children:`Add reboot profile`}),(0,r.jsx)(t.Content,{children:(0,r.jsx)(n,{action:`add`})})]});export{i as default};
