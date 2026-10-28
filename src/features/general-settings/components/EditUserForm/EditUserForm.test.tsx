@@ -202,8 +202,10 @@ describe("EditUserForm", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("saves other changes when the stored email fails the stricter rules", async () => {
-      const email = "ops@host.local";
+    it("saves other changes when the stored email fails the legacy rules", async () => {
+      // Account creation accepts a non-ASCII local part; the person endpoint
+      // does not.
+      const email = "用户@example.com";
       const request = capturePersonRequest();
       renderWithProviders(
         <EditUserForm
@@ -227,8 +229,8 @@ describe("EditUserForm", () => {
       expect(request.body).not.toHaveProperty("email");
     });
 
-    it("sends a server-supplied email verbatim, even if it fails the stricter rules", async () => {
-      const allowedEmail = "Ops@Corp.LOCAL";
+    it("sends a server-supplied email verbatim, even if it fails the legacy rules", async () => {
+      const allowedEmail = "用户@Example.COM";
       const request = capturePersonRequest();
       renderWithProviders(
         <EditUserForm
@@ -272,6 +274,65 @@ describe("EditUserForm", () => {
         await screen.findByText("User details updated successfully"),
       ).toBeInTheDocument();
       expect(request.body).toHaveProperty("email", "New@example.com");
+    });
+
+    it("maps a Unicode dot in the domain to the form used at login", async () => {
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, allowable_emails: [] }}
+        />,
+      );
+
+      const emailInput = screen.getByRole("textbox", { name: "Email" });
+      await userEvent.clear(emailInput);
+      await userEvent.type(emailInput, "user@example\u3002com");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toHaveProperty("email", "user@example.com");
+    });
+
+    it("rejects a non-ASCII local part like the person endpoint", async () => {
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, allowable_emails: [] }}
+        />,
+      );
+
+      const emailInput = screen.getByRole("textbox", { name: "Email" });
+      await userEvent.clear(emailInput);
+      await userEvent.type(emailInput, "用户@example.com");
+      await userEvent.tab();
+
+      expect(
+        await screen.findByText("Please provide a valid email address"),
+      ).toBeInTheDocument();
+    });
+
+    it("accepts a special-use domain like the person endpoint", async () => {
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, allowable_emails: [] }}
+        />,
+      );
+
+      const emailInput = screen.getByRole("textbox", { name: "Email" });
+      await userEvent.clear(emailInput);
+      await userEvent.type(emailInput, "ops@corp.local");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toHaveProperty("email", "ops@corp.local");
     });
 
     it("should show an empty option for default organisation select if user has not yet selected one", async () => {

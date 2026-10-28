@@ -4,6 +4,8 @@ import {
   EMAIL_ERROR_MESSAGE,
   emailSchema,
   isValidEmail,
+  isValidLegacyEmail,
+  legacyEmailSchema,
   normalizeEmail,
 } from "./email";
 
@@ -151,6 +153,65 @@ const PRETTY_NAMES = [
   '"John Doe" <john@example.com>',
 ];
 
+// Expected results were produced by landscape-server's legacy
+// canonical.lib.mail.is_email_address, which the person and invitation
+// endpoints use.
+const LEGACY_ACCEPTED = [
+  "user+tag@example.com",
+  "a!#$%&'*+/=?^_`|~-@example.com",
+  "first.last@sub.example.co.uk",
+  "admin@corp.local",
+  "user@localhost",
+  "user@example",
+  "a@example.test",
+  "a@exa_mple.com",
+  "a@example.com1",
+  "a@-example.com",
+  "a@01.2.3.4",
+  "a@256.1.1.1",
+  ".user@example.com",
+  "us..er@example.com",
+  "a".repeat(LOCAL_PART_MAX_LENGTH + 1) + "@example.com",
+  `u@${LONG_LABEL}.com`,
+  "a@例子.广告",
+  "a@例子。广告",
+  "a@xn--fsqu00a.xn--3lr804guic",
+  "a@MÜNCHEN.DE",
+  "a@example。com",
+  "a@ｅｘａｍｐｌｅ.com",
+];
+
+const LEGACY_REJECTED = [
+  "用户@example.com",
+  "é@example.com",
+  "a b@example.com",
+  "a,b@example.com",
+  "a\\b@example.com",
+  "a<b@example.com",
+  "a\u{0}b@example.com",
+  "a\nb@example.com",
+  '"quoted"@example.com',
+  "a@",
+  "@example.com",
+  "a@@example.com",
+  "a@example.com.",
+  "a@.example.com",
+  "a@example..com",
+  "a@example。",
+  "a@1.2.3.4",
+  "a{b}@example.com",
+  "a@ex:ample.com",
+  "a@[1.2.3.4]",
+  "a@exa mple.com",
+  `u@${LONG_LABEL}a.com`,
+  "a@\u{a0}.com",
+  " a@example.com",
+  "a@example.com ",
+  "a@example.com\n",
+  "",
+  "  ",
+];
+
 const withTestName = (addresses: string[]) =>
   addresses.map((address) => {
     const shown = JSON.stringify(address.slice(0, MAX_TEST_NAME_LENGTH));
@@ -186,6 +247,54 @@ describe("isValidEmail", () => {
   );
 });
 
+describe("isValidLegacyEmail", () => {
+  it.each(withTestName(LEGACY_ACCEPTED))(
+    "accepts %s like the legacy validator",
+    (_name, address) => {
+      expect(isValidLegacyEmail(address)).toBe(true);
+    },
+  );
+
+  it.each(withTestName(LEGACY_REJECTED))(
+    "rejects %s like the legacy validator",
+    (_name, address) => {
+      expect(isValidLegacyEmail(address)).toBe(false);
+    },
+  );
+
+  it.each(withTestName(PRETTY_NAMES))(
+    "rejects the pretty-name form %s",
+    (_name, address) => {
+      expect(isValidLegacyEmail(address)).toBe(false);
+    },
+  );
+});
+
+describe("legacyEmailSchema", () => {
+  it.each(["admin@corp.local", " User@Example.COM ", "user@example。com"])(
+    "accepts %j",
+    (value) => {
+      expect(legacyEmailSchema().isValidSync(value)).toBe(true);
+    },
+  );
+
+  it.each(["用户@example.com", "not-an-email", "a@1.2.3.4"])(
+    "rejects %j with the shared message",
+    async (value) => {
+      await expect(legacyEmailSchema().validate(value)).rejects.toThrow(
+        EMAIL_ERROR_MESSAGE,
+      );
+    },
+  );
+
+  it("leaves empty values to required()", async () => {
+    await expect(legacyEmailSchema().isValid("")).resolves.toBe(true);
+    await expect(legacyEmailSchema().required().isValid("")).resolves.toBe(
+      false,
+    );
+  });
+});
+
 describe("emailSchema", () => {
   it("accepts plus-addressed emails", async () => {
     await expect(emailSchema().isValid("user+tag@example.com")).resolves.toBe(
@@ -212,7 +321,16 @@ describe("normalizeEmail", () => {
     ["User@EXAMPLE.COM", "User@example.com"],
     ["cafe\u0301@example.com", "caf\u00e9@example.com"],
     ["a@\u03a3\u0391\u03a3.gr", "a@\u03c3\u03b1\u03c3.gr"],
+    // The Unicode dots and fullwidth letters map to ASCII, as at login.
+    ["user@example\u3002com", "user@example.com"],
+    ["user@example\uff0ecom\uff61", "user@example.com."],
+    ["user@\uff45\uff58\uff41\uff4d\uff50\uff4c\uff45.com", "user@example.com"],
+    // International domains stay in Unicode form, which the server stores.
+    ["a@例子。广告", "a@例子.广告"],
+    ["a@MÜNCHEN.DE", "a@münchen.de"],
+    ["a@xn--fsqu00a.xn--3lr804guic", "a@xn--fsqu00a.xn--3lr804guic"],
     ["not-an-email", "not-an-email"],
+    ["a@exa/mple\u3002com", "a@exa/mple.com"],
   ])("normalizes %j", (value, expected) => {
     expect(normalizeEmail(value)).toBe(expected);
   });

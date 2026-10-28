@@ -1,9 +1,15 @@
 import * as Yup from "yup";
 
 /**
- * Client-side approximation of landscape-server's pydantic `EmailStr`
- * (pydantic 2.4.2 -> email-validator 2.2.0, syntax checks only, default
- * options). Hand port of email-validator's `syntax.py` / `validate_email.py`.
+ * Client-side email validation that mirrors landscape-server. The server has
+ * two validators, so there are two schemas:
+ *
+ * - `emailSchema()`: pydantic `EmailStr` (pydantic 2.4.2 -> email-validator
+ *   2.2.0, syntax checks only, default options), used by login and self-hosted
+ *   account creation. Hand port of email-validator's `syntax.py` /
+ *   `validate_email.py`.
+ * - `legacyEmailSchema()`: `canonical.lib.mail.is_email_address`, used by the
+ *   person (profile) and invitation endpoints.
  *
  * Non-ASCII domains are converted to punycode with the platform's `URL`
  * instead of porting IDNA. `URL` implements UTS 46 but not the IDNA 2008
@@ -13,10 +19,10 @@ import * as Yup from "yup";
  * data differs between `URL` and `idna` (for example invisible Hangul fillers,
  * which the server drops and `URL` rejects).
  *
- * Intentional divergence: the server also accepts the "pretty" form
- * `Name <addr>` (and `<addr>`). This validator rejects it, because users never
- * type it into these fields and accepting it would leave the UI holding a
- * different string than the one the server stores. Quoted local parts and
+ * Intentional divergence: both server validators also accept the "pretty"
+ * form `Name <addr>` (and `<addr>`). These validators reject it, because users
+ * never type it into these fields and accepting it would leave the UI holding
+ * a different string than the one the server stores. Quoted local parts and
  * domain literals need no special handling: `"`, `<`, `>`, `[` and `]` are not
  * valid anywhere else, so they are rejected as a result.
  */
@@ -50,7 +56,17 @@ const MARK = /^\p{M}$/u;
 const NON_ASCII = /\P{ASCII}/u;
 const TLD_ENDS_WITH_LETTER = /[a-z]$/;
 const RESERVED_LABEL = /^(?!xn)..--/iu;
+const PUNYCODE_LABEL = /^xn--/i;
 const UNICODE_DOTS = /[\u3002\uff0e\uff61]/g;
+
+// canonical.lib.mail._is_valid_email_address_atom: printable ASCII (DEL
+// included) without `"(),:;<>@[\]{}`.
+const LEGACY_ATOM = /^[!-\x7f]+$/;
+const LEGACY_EXCLUDED = /["(),:;<>@[\\\]{}]/;
+// Python's ipaddress.IPv4Address: four decimal octets without leading zeros.
+// IPv6 addresses contain ":", which the atom check already rejects.
+const IPV4_OCTET = "(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])";
+const IPV4_ADDRESS = new RegExp(`^${IPV4_OCTET}(?:\\.${IPV4_OCTET}){3}$`);
 
 // Characters Python's str.strip() removes. pydantic strips the address before
 // validating it, so the server accepts surrounding whitespace.
@@ -91,6 +107,14 @@ const hasOnlySafeChars = (codePoints: readonly string[]): boolean =>
     return !UNSAFE_CHAR.test(char) && (index !== 0 || !MARK.test(char));
   });
 
+/** Whether every ASCII character is a hostname character, so `URL` cannot misparse the value. */
+const hasOnlyHostnameChars = (codePoints: readonly string[]): boolean =>
+  codePoints.every(
+    (char) =>
+      (char.codePointAt(0) as number) >= ASCII_LIMIT ||
+      HOSTNAME_CHAR.test(char),
+  );
+
 /** email-validator syntax.validate_email_local_part (no quoted form, SMTPUTF8 allowed). */
 const isValidLocalPart = (local: string): boolean => {
   const codePoints = toCodePoints(local);
@@ -117,14 +141,7 @@ const toPunycodeHostname = (domain: string): string | undefined => {
 const toAsciiDomain = (domain: string): string | undefined => {
   const codePoints = toCodePoints(domain);
 
-  if (
-    !codePoints.every(
-      (char) =>
-        (char.codePointAt(0) as number) >= ASCII_LIMIT ||
-        HOSTNAME_CHAR.test(char),
-    ) ||
-    !hasOnlySafeChars(codePoints)
-  ) {
+  if (!hasOnlyHostnameChars(codePoints) || !hasOnlySafeChars(codePoints)) {
     return undefined;
   }
 
@@ -212,10 +229,90 @@ export const isValidEmail = (value: string): boolean =>
   toCodePoints(value).length <= PYDANTIC_MAX_LENGTH &&
   isValidAddress(value.replace(SURROUNDING_WHITESPACE, ""));
 
+/** canonical.lib.mail._is_valid_email_address_atom */
+const isValidLegacyAtom = (atom: string): boolean =>
+  LEGACY_ATOM.test(atom) && !LEGACY_EXCLUDED.test(atom);
+
 /**
- * Minimal approximation of the address the server stores: surrounding
- * whitespace stripped, NFC-normalized and the domain lowercased. Submit this
- * instead of the raw field value.
+ * canonical.lib.mail._is_valid_domain, after Python's `idna` codec. The codec
+ * splits on the Unicode dots as well, rejects empty labels and labels over 63
+ * characters, and turns non-ASCII labels into punycode, which always passes
+ * the atom check. A trailing dot survives the codec and is rejected after it.
+ */
+const isValidLegacyDomain = (domain: string): boolean => {
+  const labels = domain.replace(UNICODE_DOTS, ".").split(".");
+
+  return (
+    labels.every((label) => {
+      if (!NON_ASCII.test(label)) {
+        return label.length <= DNS_LABEL_MAX_LENGTH && isValidLegacyAtom(label);
+      }
+
+      const codePoints = toCodePoints(label);
+      const punycode =
+        hasOnlyHostnameChars(codePoints) && hasOnlySafeChars(codePoints)
+          ? toPunycodeHostname(label)
+          : undefined;
+
+      return punycode !== undefined && punycode.length <= DNS_LABEL_MAX_LENGTH;
+    }) && !IPV4_ADDRESS.test(domain)
+  );
+};
+
+/**
+ * Whether landscape-server's legacy `is_email_address` accepts `value`, except
+ * for the `Name <addr>` form, which is rejected on purpose. Unlike `EmailStr`,
+ * it rejects any non-ASCII local part, accepts special-use domains such as
+ * `corp.local` and does not require a dot in the domain.
+ */
+export const isValidLegacyEmail = (value: string): boolean => {
+  const parts = value.split("@");
+
+  return (
+    parts.length === 2 &&
+    isValidLegacyAtom(parts[0] as string) &&
+    isValidLegacyDomain(parts[1] as string)
+  );
+};
+
+/**
+ * UTS 46 mapping of the domain, as `EmailStr` applies it before the address
+ * is stored or compared at login: NFC form, lowercase, and the Unicode dots
+ * (U+3002, U+FF0E, U+FF61) and other compatibility characters mapped to ASCII.
+ * Internationalized domains stay in Unicode form, which is what the server
+ * stores; a domain typed in punycode (`xn--`) is left as typed, because the
+ * platform offers no decoder.
+ */
+const normalizeDomain = (domain: string): string => {
+  // Lowercase per character: String#toLowerCase maps a word-final Σ to ς, but
+  // the server's UTS 46 mapping always produces σ.
+  const mapped = Array.from(domain.replace(UNICODE_DOTS, "."), (char) =>
+    char.toLowerCase(),
+  ).join("");
+
+  if (!NON_ASCII.test(mapped)) {
+    return mapped;
+  }
+
+  const codePoints = toCodePoints(mapped);
+  const ascii = hasOnlyHostnameChars(codePoints)
+    ? toPunycodeHostname(mapped)
+    : undefined;
+
+  // `URL` maps fullwidth and other compatibility characters to plain ASCII;
+  // punycode output means the domain is genuinely international.
+  return ascii !== undefined &&
+    !ascii.split(".").some((label) => PUNYCODE_LABEL.test(label))
+    ? ascii
+    : mapped;
+};
+
+/**
+ * Approximation of the address the server stores after `EmailStr` validation:
+ * surrounding whitespace stripped, NFC-normalized and the domain mapped per
+ * UTS 46 (see `normalizeDomain`). Submit this instead of the raw field value,
+ * so that an address saved through a legacy endpoint (which stores its input
+ * verbatim) still matches the one `EmailStr` derives at login.
  */
 export const normalizeEmail = (value: string): string => {
   const address = value.replace(SURROUNDING_WHITESPACE, "").normalize("NFC");
@@ -225,13 +322,7 @@ export const normalizeEmail = (value: string): string => {
     return address;
   }
 
-  // Lowercase per character: String#toLowerCase maps a word-final Σ to ς, but
-  // the server's UTS 46 mapping always produces σ.
-  const domain = Array.from(address.slice(at + 1), (char) =>
-    char.toLowerCase(),
-  ).join("");
-
-  return `${address.slice(0, at)}@${domain}`;
+  return `${address.slice(0, at)}@${normalizeDomain(address.slice(at + 1))}`;
 };
 
 /**
@@ -246,10 +337,22 @@ export const basicEmailSchema = () =>
     (value) => !value || /^[^\s@]+@[^\s@]+$/.test(normalizeEmail(value)),
   );
 
-/** Yup schema for an email field; empty values are left to `.required()`. */
+/** Yup schema for an email field validated by `EmailStr`; empty values are left to `.required()`. */
 export const emailSchema = () =>
   Yup.string().test(
     "email",
     EMAIL_ERROR_MESSAGE,
     (value) => !value || isValidEmail(value),
+  );
+
+/**
+ * Yup schema for an email field validated by the legacy `is_email_address`
+ * (person and invitation endpoints). The server does not strip or normalize
+ * its input, so the check runs on the value `normalizeEmail` would submit.
+ */
+export const legacyEmailSchema = () =>
+  Yup.string().test(
+    "email",
+    EMAIL_ERROR_MESSAGE,
+    (value) => !value || isValidLegacyEmail(normalizeEmail(value)),
   );

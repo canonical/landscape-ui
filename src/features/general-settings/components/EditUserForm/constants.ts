@@ -1,8 +1,13 @@
 import * as Yup from "yup";
-import { EMAIL_ERROR_MESSAGE, emailSchema } from "@/utils/validation/email";
+import {
+  EMAIL_ERROR_MESSAGE,
+  legacyEmailSchema,
+} from "@/utils/validation/email";
 
-// Emails supplied by the server (the stored one and the allowable ones) are not
-// re-validated, so users whose address predates the stricter rules can still
+// The person endpoint validates with the legacy `is_email_address`, which
+// rejects addresses that account creation (`EmailStr`) accepts, such as a
+// non-ASCII local part. Emails supplied by the server (the stored one and the
+// allowable ones) are therefore not re-validated, so those users can still
 // save other changes.
 export const getValidationSchema = (serverEmails: readonly string[]) =>
   Yup.object().shape({
@@ -15,7 +20,7 @@ export const getValidationSchema = (serverEmails: readonly string[]) =>
         EMAIL_ERROR_MESSAGE,
         (value) =>
           (value !== undefined && serverEmails.includes(value)) ||
-          emailSchema().isValidSync(value),
+          legacyEmailSchema().isValidSync(value),
       ),
     preferred_account: Yup.string(),
   });
