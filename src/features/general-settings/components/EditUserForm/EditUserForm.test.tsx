@@ -1,3 +1,4 @@
+import { API_URL, MASKED_VALUE } from "@/constants";
 import type { AuthContextProps } from "@/context/auth";
 import type { EnvContextState } from "@/context/env";
 import type { Account } from "@/features/auth";
@@ -8,20 +9,19 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { accountsDefault } from "@/tests/mocks/accounts";
 import { authUser } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import EditUserForm from "./EditUserForm";
-import { API_URL, MASKED_VALUE } from "@/constants";
-import server from "@/tests/server";
-import { http, HttpResponse } from "msw";
 
 vi.mock("@/hooks/useEnv");
 vi.mock("@/hooks/useAuth");
 vi.mock("@/hooks/useAuthAccounts");
 
-vi.mocked(useAuthAccounts).mockReturnValue({
+const accountsContextValues: ReturnType<typeof useAuthAccounts> = {
   currentAccount: accountsDefault.find(
     (account) => !!account.default,
   ) as Account,
@@ -31,7 +31,7 @@ vi.mocked(useAuthAccounts).mockReturnValue({
     value: name,
   })),
   handleAccountSwitch: vi.fn(),
-});
+};
 
 const props = {
   userDetails: {
@@ -100,6 +100,7 @@ describe("EditUserForm", () => {
     setEndpointStatus("default");
     vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
     vi.mocked(useAuth).mockReturnValue(authContextValues);
+    vi.mocked(useAuthAccounts).mockReturnValue(accountsContextValues);
   });
 
   describe("tests for saas and self-hosted", () => {
@@ -409,6 +410,126 @@ describe("EditUserForm", () => {
         name: /change password/i,
       });
       expect(changePassword).toBeInTheDocument();
+    });
+  });
+
+  describe.each([
+    { environment: "self-hosted", env: mockSelfHosted },
+    { environment: "SaaS", env: mockSaas },
+  ])("request payload in $environment", ({ env }) => {
+    const accountOptions = props.userDetails.accounts.map(
+      ({ name, title }) => ({
+        label: title,
+        value: name,
+      }),
+    );
+    let request: ReturnType<typeof capturePersonRequest>;
+
+    beforeEach(() => {
+      vi.mocked(useEnv).mockReturnValue(env);
+      vi.mocked(useAuthAccounts).mockReturnValue({
+        ...accountsContextValues,
+        options: accountOptions,
+      });
+      request = capturePersonRequest();
+    });
+
+    it.each([
+      {
+        scenario: "multiple organizations",
+        isOnSubdomain: false,
+        options: accountOptions,
+      },
+      {
+        scenario: "a single organization",
+        isOnSubdomain: false,
+        options: accountOptions.slice(0, 1),
+      },
+      {
+        scenario: "a subdomain",
+        isOnSubdomain: true,
+        options: [],
+      },
+    ])(
+      "omits an unset preferred account for $scenario",
+      async ({ isOnSubdomain, options }) => {
+        const user = userEvent.setup();
+        vi.mocked(useAuthAccounts).mockReturnValue({
+          ...accountsContextValues,
+          isOnSubdomain,
+          options,
+        });
+        renderWithProviders(
+          <EditUserForm
+            userDetails={{ ...props.userDetails, preferred_account: null }}
+          />,
+        );
+
+        const organizationSelect = screen.queryByRole("combobox", {
+          name: /default organization/i,
+        });
+        if (!isOnSubdomain && options.length > 1) {
+          expect(organizationSelect).toHaveValue("");
+        } else {
+          expect(organizationSelect).not.toBeInTheDocument();
+        }
+
+        const nameInput = screen.getByRole("textbox", { name: "Name" });
+        await user.clear(nameInput);
+        await user.type(nameInput, "Updated Name");
+        await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+        expect(
+          await screen.findByText("User details updated successfully"),
+        ).toBeInTheDocument();
+        expect(request.body).toEqual({
+          name: "Updated Name",
+          timezone: props.userDetails.timezone,
+        });
+      },
+    );
+
+    it("preserves an existing preferred account on a name-only edit", async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<EditUserForm {...props} />);
+
+      const nameInput = screen.getByRole("textbox", { name: "Name" });
+      await user.clear(nameInput);
+      await user.type(nameInput, "Updated Name");
+      await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toEqual({
+        name: "Updated Name",
+        timezone: props.userDetails.timezone,
+        preferred_account: props.userDetails.preferred_account,
+      });
+    });
+
+    it("submits a newly selected preferred account", async () => {
+      const user = userEvent.setup();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, preferred_account: null }}
+        />,
+      );
+
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: /default organization/i }),
+        "another-account",
+      );
+      await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toEqual({
+        name: props.userDetails.name,
+        timezone: props.userDetails.timezone,
+        preferred_account: "another-account",
+      });
     });
   });
 });
