@@ -1,6 +1,9 @@
+import { API_URL_DEB_ARCHIVE } from "@/constants";
 import { expectLoadingState, setScreenSize } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { screen, within } from "@testing-library/react";
+import { http } from "msw";
 import { afterEach, describe, expect, it } from "vitest";
 import LocalRepositoriesPage from "./LocalRepositoriesPage";
 import userEvent from "@testing-library/user-event";
@@ -9,6 +12,71 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 describe("LocalRepositoriesPage", () => {
   afterEach(() => {
     setEndpointStatus({ path: "locals", status: "default" });
+  });
+
+  describe("search filters", () => {
+    let latestFilter: string | null | undefined;
+
+    beforeEach(() => {
+      latestFilter = undefined;
+      setEndpointStatus({ path: "locals", status: "empty" });
+
+      // Observe requests while leaving responses to the shared handler.
+      server.use(
+        http.get(`${API_URL_DEB_ARCHIVE}locals`, ({ request }) => {
+          latestFilter = new URL(request.url).searchParams.get("filter");
+        }),
+      );
+    });
+
+    it.each([
+      {
+        search: 'Audit "quoted"',
+        filter: String.raw`display_name="Audit \"quoted\"*"`,
+      },
+      {
+        search: "Audit \\path\\",
+        filter: String.raw`display_name="Audit \\path\\*"`,
+      },
+    ])("escapes search $search in the filter", async ({ search, filter }) => {
+      renderWithProviders(
+        <LocalRepositoriesPage />,
+        undefined,
+        `/?${new URLSearchParams({ search })}`,
+      );
+
+      expect(
+        await screen.findByText(
+          `No local repositories found with the search: "${search}"`,
+        ),
+      ).toBeInTheDocument();
+
+      expect(latestFilter).toBe(filter);
+    });
+
+    it("keeps ordinary prefix matching and omits the filter after clearing search", async () => {
+      const user = userEvent.setup();
+
+      renderWithProviders(
+        <LocalRepositoriesPage />,
+        undefined,
+        "/?search=Audit",
+      );
+
+      await screen.findByText(
+        'No local repositories found with the search: "Audit"',
+      );
+      expect(latestFilter).toBe('display_name="Audit*"');
+
+      await user.click(
+        screen.getByRole("button", { name: /clear search field/i }),
+      );
+
+      expect(
+        await screen.findByText("You don’t have any local repositories yet"),
+      ).toBeInTheDocument();
+      expect(latestFilter).toBeNull();
+    });
   });
 
   it("renders the title and add button", async () => {
