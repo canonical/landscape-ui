@@ -220,8 +220,12 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     EditPackageProfileConstraintParams
   >({
-    mutationFn: async ({ id, name, ...params }) =>
-      authFetch.put(`packageprofiles/${name}/constraints/${id}`, params),
+    mutationFn: async ({ id, name, rule, version, ...params }) =>
+      authFetch.put(`packageprofiles/${name}/constraints/${id}`, {
+        ...params,
+        rule: rule || undefined,
+        version: version || undefined,
+      }),
     onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
