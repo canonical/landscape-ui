@@ -12,4 +12,12 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: process.env.VITE_API_PROXY_TARGET || "http://localhost:9091",
+        changeOrigin: true,
+      },
+    },
+  },
 });
