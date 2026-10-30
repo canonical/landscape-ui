@@ -15,7 +15,7 @@ Independent jobs (no `needs` chain):
 - **Stylelint** — `pnpm stylelint "src/**/*.module.scss"`
 - **Playwright** (self-hosted; `ubuntu-latest` for fork PRs; `mcr.microsoft.com/playwright` container) — matrix over `saas` / `self-hosted`; builds with `pnpm run build:e2e` (`VITE_ROOT_PATH=/`), installs browsers, runs the matching project against the `dev` backend (`vars.API_PROXY_TARGET`), uploads `playwright-report-<target>`
 - **Vitest** (self-hosted; `ubuntu-latest` for fork PRs) — `pnpm exec vitest run --coverage` with `VITE_ROOT_PATH=/portal/` and `NODE_OPTIONS=--max_old_space_size=4096`; uploads `vitest-report` from `reports/`
-- **Changeset** — fails the PR unless it _adds_ a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it.
+- **Changeset** — fails the PR unless it *adds* a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it.
 - **Backporter tests** — `node --test '.github/scripts/backporter/*.test.cjs'` on Node 24, with SHA-pinned checkout/setup-node and no pnpm install or dependency cache.
 
 **Rule:** fork PRs get no `vars.*` (the `dev` environment's variables come through empty), so the Playwright and Vitest `VITE_API_*` env lines fall back to literal defaults only when `github.event.pull_request.head.repo.fork` is true; keep those defaults in sync with `.env.production`, and never add a secret to either job. Fork PR runs stay on GitHub-hosted runners; merge-queue runs (`merge_group` has no fork flag) use self-hosted runners, which is safe because entering the queue requires an approving code-owner review.
@@ -23,33 +23,16 @@ Independent jobs (no `needs` chain):
 ## Backporter link (`backporter-link.yaml`)
 
 **Trigger:** `pull_request_target` opened/reopened/edited against `release/**`
-or `point/**`. The script enforces the exact `BACKPORT_BRANCHES` allowlist:
-`release/26.10` and `point/26.04.2`. Other bases, including valid-looking
-`point/26.10.2`, are ignored. Enable additional targets only after their PR
-lint/tests work; older `release/24.04`, `release/26.04`, and `point/26.04.1`
-currently lack matching PR validation.
-
-A hand-made backport titled `<title> (backport of #N)` links its URL into
-source PR N's bare unchecked "Releases this PR should be backported to" entry.
-Linked, ticked, commented, and unrelated-section entries are not rewritten.
-Humans tick entries when backports merge. The human procedure is in the
-[backport-pr skill](../.github/skills/backport-pr/SKILL.md).
+or `point/**`. A PR titled `<title> (backport of #N)` against a target in the
+script's `BACKPORT_BRANCHES` allowlist links its URL into source PR N's bare
+"Releases this PR should be backported to" entry. Enable a target only after
+its own PR CI runs. Human procedure: [backport-pr skill](../.github/skills/backport-pr/SKILL.md).
 
 **Trust:** only a same-repository head or OWNER/MEMBER/COLLABORATOR may link,
-and the source must have merged into main. The privileged trigger never runs
-PR code: it sparse-checks only the default branch's deterministic script,
-uses `persist-credentials: false`, and passes event data through `context`,
-not executable interpolation. Its only credential is `GITHUB_TOKEN` with
-contents read and pull-requests write; no PAT, App token, or secret is needed.
-Keep the justified zizmor trigger suppression with these guardrails.
-
-The link job uses the shared non-cancelling `backporter-source-body`
-concurrency group so source-body writers cannot overwrite sibling links.
-GitHub may replace pending jobs; reopening or editing a backport retries its
-link. Run `node --test '.github/scripts/backporter/*.test.cjs'` for local tests.
-The `pr-969`/`pr-972` fixtures are real source bodies used as negative examples;
-their Release Impact checkboxes must not become backport requests. Preserve
-fixture formatting rather than reformatting copied PR bodies.
+and the source must have merged into main. The job never checks out PR code:
+it sparse-checks the default branch's script with `persist-credentials: false`
+and uses only `GITHUB_TOKEN`. It shares the non-cancelling
+`backporter-source-body` group with other source-body writers.
 
 ## Backporter (`backporter.md`)
 
