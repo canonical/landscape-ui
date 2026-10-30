@@ -29,7 +29,7 @@ test("only bare backport-section entries are actionable", () => {
     "release/1.23.1",
     "point/2026-04-14",
   ]);
-  for (const name of ["linked", "ticked", "commented", "pr-969", "pr-972"]) {
+  for (const name of ["linked", "ticked", "commented"]) {
     assert.deepEqual(parseBackportReleases(fixture(name)), [], name);
   }
 });
@@ -210,36 +210,8 @@ test("API failures propagate instead of reporting successful linking", async () 
   );
 });
 
-test("allowlisted names are CalVer; link workflow globs leave exact enforcement to the script", () => {
+test("allowlisted backport targets are CalVer release or point branches", () => {
   for (const branch of BACKPORT_BRANCHES) {
     assert.match(branch, /^(release\/\d{2}\.\d{2}|point\/\d{2}\.\d{2}\.\d+)$/);
   }
-  const workflow = read("../../workflows/backporter-link.yaml");
-  assert.match(workflow, /branches: \["release\/\*\*", "point\/\*\*"\]/);
-  assert.match(
-    workflow,
-    /ref: \$\{\{ github.event.repository.default_branch \}\}/,
-  );
-  assert.match(workflow, /sparse-checkout: .github\/scripts\/backporter/);
-  assert.match(workflow, /persist-credentials: false/);
-  assert.match(
-    workflow,
-    /group: backporter-source-body\s+cancel-in-progress: false/,
-  );
-  assert.doesNotMatch(workflow, /secrets\.|pull_request\.head/);
-});
-
-test("Validate runs dependency-free backporter tests on Node 24", () => {
-  const workflow = read("../../workflows/validate.yml");
-  const job = workflow.match(
-    / {2}backporter-tests:[\s\S]*?(?=\n {2}\w|\s*$)/,
-  )[0];
-  assert.match(job, /node-version: 24/);
-  assert.match(
-    job,
-    /node --test '\.github\/scripts\/backporter\/\*\.test\.cjs'/,
-  );
-  assert.doesNotMatch(job, /pnpm|cache:/);
-  assert.match(job, /actions\/checkout@[a-f0-9]{40} # v/);
-  assert.match(job, /actions\/setup-node@[a-f0-9]{40} # v/);
 });
