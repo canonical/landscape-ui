@@ -69,7 +69,8 @@ backport PR per target, with an empty-changeset fallback when needed. See the
 for conflict and PR-body rules.
 
 **Failure provenance:** the first visible non-empty line must be
-``Backport to `<branch>` failed``, not quoted, indented, or fenced. The author
+``Backport to `<branch>` failed``, not quoted, indented, or fenced. Blockquote
+lines before it, such as gh-aw's threat-detection alert, are skipped. The author
 must be OWNER/MEMBER/COLLABORATOR or `user.type === "Bot"`, and the body must
 match gh-aw v0.88.7's `matchesWorkflowId`semantics for`backporter`: either
 `<!-- gh-aw-workflow-id: backporter -->`or a combined`<!-- gh-aw-agentic-workflow: ..., workflow_id: backporter, ... -->` marker.

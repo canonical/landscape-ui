@@ -190,9 +190,10 @@ async function failedReleases(github, owner, repo, number) {
         (text.includes("<!-- gh-aw-agentic-workflow:") &&
           (text.includes("workflow_id: backporter,") ||
             text.includes("workflow_id: backporter -->"))));
+    // gh-aw prepends a blockquote alert when threat detection warns.
     const firstLine = stripHtmlComments(text)
       .split(/\r?\n/)
-      .find((line) => line.trim());
+      .find((line) => line.trim() && !/^\s*>/.test(line));
     const headline = FAILURE_HEADLINE.exec(firstLine || "");
     if (fromWorkflow && headline) {
       failed.add(headline[1]);

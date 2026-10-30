@@ -183,6 +183,27 @@ test("agent comments with either gh-aw marker suppress automatic retries, not di
   );
 });
 
+test("gh-aw threat-detection prefixes do not hide agent failure headlines", async () => {
+  for (const prefix of [
+    "> [!CAUTION]\n> agentic threat detected\n>\n> <details>\n> <summary>Details</summary>\n> </details>",
+    "> [!WARNING]\n> **Threat Detection Engine Failure** — The analysis engine could not complete.",
+  ]) {
+    const h = harness({
+      comments: [
+        {
+          body: `${prefix}\n\n${headline}\n\nConflicting files: none.\n\n${combined}`,
+          user: { type: "Bot" },
+        },
+      ],
+    });
+    assert.deepEqual(
+      (await h.run()).todo.map((item) => item.release),
+      ["point/26.04.2"],
+      prefix,
+    );
+  }
+});
+
 test("untrusted non-bot users cannot suppress retries with copied workflow text", async () => {
   const h = harness({
     comments: [
