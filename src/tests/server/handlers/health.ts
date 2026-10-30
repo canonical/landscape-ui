@@ -222,7 +222,10 @@ export default [
         updated_at: NOW(),
         is_system_default: false,
       };
-      overrides = [...overrides.filter((r) => r.rule_key !== rule.rule_key), rule];
+      overrides = [
+        ...overrides.filter((r) => r.rule_key !== rule.rule_key),
+        rule,
+      ];
       return HttpResponse.json(rule, { status: 201 });
     },
   ),
@@ -232,30 +235,27 @@ export default [
     { id: string },
     UpdateRuleBody,
     HealthRule | { error: string; message: string }
-  >(
-    `${API_URL}health/rules/:id`,
-    async ({ params, request }) => {
-      const id = Number(params.id);
-      const body = (await request.json()) as UpdateRuleBody;
-      const existing = overrides.find((r) => r.id === id);
-      if (!existing) {
-        return HttpResponse.json(
-          { error: "HealthRuleNotFoundError", message: `Unknown id ${id}` },
-          { status: 404 },
-        );
-      }
-      const updated: HealthRule = {
-        ...existing,
-        weight: body.weight ?? existing.weight,
-        description: body.description ?? existing.description,
-        definition: body.definition ?? existing.definition,
-        enabled: body.enabled ?? existing.enabled,
-        updated_at: NOW(),
-      };
-      overrides = overrides.map((r) => (r.id === id ? updated : r));
-      return HttpResponse.json(updated);
-    },
-  ),
+  >(`${API_URL}health/rules/:id`, async ({ params, request }) => {
+    const id = Number(params.id);
+    const body = (await request.json()) as UpdateRuleBody;
+    const existing = overrides.find((r) => r.id === id);
+    if (!existing) {
+      return HttpResponse.json(
+        { error: "HealthRuleNotFoundError", message: `Unknown id ${id}` },
+        { status: 404 },
+      );
+    }
+    const updated: HealthRule = {
+      ...existing,
+      weight: body.weight ?? existing.weight,
+      description: body.description ?? existing.description,
+      definition: body.definition ?? existing.definition,
+      enabled: body.enabled ?? existing.enabled,
+      updated_at: NOW(),
+    };
+    overrides = overrides.map((r) => (r.id === id ? updated : r));
+    return HttpResponse.json(updated);
+  }),
 
   // DELETE /api/v2/health/rules/:id
   http.delete<{ id: string }, never, undefined>(
@@ -312,28 +312,36 @@ export default [
   // server returns the flat summary PLUS a `groups` array (top-10 + "other"
   // rollup). We synthesise the grouped breakdown from the active fleet
   // fixture so MSW reflects the real shape for the HealthByGroup widget.
-  http.get<never, never, FleetHealthSummary>(`${API_URL}health/summary`, ({ request }) => {
-    const endpointStatus = getEndpointStatus();
-    if (endpointStatus.status === "error") {
-      throw createEndpointStatusError();
-    }
-    if (endpointStatus.status === "loading") {
-      return new Promise<never>(() => {
-        /* intentionally never resolves */
-      });
-    }
-    const url = new URL(request.url);
-    const groupBy = url.searchParams.get("group_by");
-    const fixture = getHealthFixture();
-    if (groupBy === "tag" || groupBy === "distribution" || groupBy === "account") {
-      return HttpResponse.json({
-        ...fixture.summary,
-        groups: synthesiseGroups(fixture.computers, groupBy),
-        kernel_usns_waived_count: fixture.summary.kernel_usns_waived_count ?? 0,
-      });
-    }
-    return HttpResponse.json(fixture.summary);
-  }),
+  http.get<never, never, FleetHealthSummary>(
+    `${API_URL}health/summary`,
+    ({ request }) => {
+      const endpointStatus = getEndpointStatus();
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+      if (endpointStatus.status === "loading") {
+        return new Promise<never>(() => {
+          /* intentionally never resolves */
+        });
+      }
+      const url = new URL(request.url);
+      const groupBy = url.searchParams.get("group_by");
+      const fixture = getHealthFixture();
+      if (
+        groupBy === "tag" ||
+        groupBy === "distribution" ||
+        groupBy === "account"
+      ) {
+        return HttpResponse.json({
+          ...fixture.summary,
+          groups: synthesiseGroups(fixture.computers, groupBy),
+          kernel_usns_waived_count:
+            fixture.summary.kernel_usns_waived_count ?? 0,
+        });
+      }
+      return HttpResponse.json(fixture.summary);
+    },
+  ),
 
   // GET /api/v2/health/top-detractors?limit=N — derived from the active
   // fleet fixture so the Overview's "Top issues" panel stays in sync with
@@ -365,36 +373,39 @@ export default [
     { computer_id: string },
     HealthActionBody,
     HealthActionResponse | { error: string; message: string }
-  >(`${API_URL}computers/:computer_id/health/actions`, async ({ params, request }) => {
-    const endpointStatus = getEndpointStatus();
-    if (endpointStatus.status === "error") {
-      throw createEndpointStatusError();
-    }
-    const computerId = Number(params.computer_id);
-    const body = (await request.json()) as HealthActionBody;
-    if (
-      body.action === "attach-ubuntu-pro" ||
-      body.action === "run-diagnostic-script"
-    ) {
+  >(
+    `${API_URL}computers/:computer_id/health/actions`,
+    async ({ params, request }) => {
+      const endpointStatus = getEndpointStatus();
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+      const computerId = Number(params.computer_id);
+      const body = (await request.json()) as HealthActionBody;
+      if (
+        body.action === "attach-ubuntu-pro" ||
+        body.action === "run-diagnostic-script"
+      ) {
+        return HttpResponse.json(
+          {
+            error: "HealthActionNotImplementedError",
+            message: `Health action '${body.action}' is not implemented yet.`,
+          },
+          { status: 501 },
+        );
+      }
       return HttpResponse.json(
         {
-          error: "HealthActionNotImplementedError",
-          message: `Health action '${body.action}' is not implemented yet.`,
+          action: body.action,
+          computer_id: computerId,
+          activity_id:
+            body.action === "refresh-facts" ? null : nextActivityId++,
+          enqueued_at: NOW(),
         },
-        { status: 501 },
+        { status: 202 },
       );
-    }
-    return HttpResponse.json(
-      {
-        action: body.action,
-        computer_id: computerId,
-        activity_id:
-          body.action === "refresh-facts" ? null : nextActivityId++,
-        enqueued_at: NOW(),
-      },
-      { status: 202 },
-    );
-  }),
+    },
+  ),
 
   // POST /api/v2/health/actions/bulk — LA061 Phase 1.8
   // Returns **HTTP 207 Multi-Status** with a per-computer outcome list. The
@@ -454,7 +465,8 @@ export default [
         results.push({
           computer_id: id,
           status: "enqueued",
-          activity_id: body.action === "refresh-facts" ? null : nextActivityId++,
+          activity_id:
+            body.action === "refresh-facts" ? null : nextActivityId++,
         });
         success += 1;
       }

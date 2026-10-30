@@ -30,10 +30,7 @@ import classNames from "classnames";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
 import type { Instance } from "@/types/Instance";
-import type {
-  FleetTopDetractor,
-  HealthActionKind,
-} from "../../types";
+import type { FleetTopDetractor, HealthActionKind } from "../../types";
 import classes from "./RemediationPile.module.scss";
 
 interface CardSpec {
@@ -59,7 +56,8 @@ const CARDS: CardSpec[] = [
   {
     action: "reboot",
     title: "Reboot pending",
-    subtitle: "Instances waiting for a reboot to apply kernel or system updates.",
+    subtitle:
+      "Instances waiting for a reboot to apply kernel or system updates.",
     affectedRuleKeys: ["reboot_required"],
     emptyCopy: "No reboots needed.",
   },
@@ -113,7 +111,9 @@ const RemediationPile: FC = () => {
   // kind so confirmation dialogs are mutually exclusive and per-card
   // spinners can show only on the card that's actually running.
   const [modalAction, setModalAction] = useState<HealthActionKind | null>(null);
-  const [pendingRefreshIds, setPendingRefreshIds] = useState<number[] | null>(null);
+  const [pendingRefreshIds, setPendingRefreshIds] = useState<number[] | null>(
+    null,
+  );
 
   const cards = useMemo(
     () =>
@@ -173,9 +173,7 @@ const RemediationPile: FC = () => {
   };
 
   const rebootInstances =
-    modalAction === "reboot"
-      ? instancesForRuleKeys(["reboot_required"])
-      : [];
+    modalAction === "reboot" ? instancesForRuleKeys(["reboot_required"]) : [];
   const securityInstances =
     modalAction === "run-security-updates"
       ? instancesForRuleKeys([
@@ -226,9 +224,9 @@ const RemediationPile: FC = () => {
   const hasAnyWork = cards.some((c) => c.metric.computerCount > 0);
 
   if (
-    detractorsQuery.isLoading
-    || summaryQuery.isLoading
-    || (!hasAnyWork && detractorsQuery.isSuccess)
+    detractorsQuery.isLoading ||
+    summaryQuery.isLoading ||
+    (!hasAnyWork && detractorsQuery.isSuccess)
   ) {
     return (
       <div className={classes.container}>
@@ -249,14 +247,14 @@ const RemediationPile: FC = () => {
       <div className={classes.container}>
         {cards.map(({ spec, metric }) => {
           const disabled =
-            metric.computerCount === 0
-            || instancesQuery.isGettingInstances
-            || (spec.action === "refresh-facts" && pendingRefreshIds !== null);
+            metric.computerCount === 0 ||
+            instancesQuery.isGettingInstances ||
+            (spec.action === "refresh-facts" && pendingRefreshIds !== null);
           const isThisActionRunning =
-            (spec.action === "refresh-facts" && pendingRefreshIds !== null)
-            || (spec.action === "reboot" && modalAction === "reboot")
-            || (spec.action === "run-security-updates"
-              && modalAction === "run-security-updates");
+            (spec.action === "refresh-facts" && pendingRefreshIds !== null) ||
+            (spec.action === "reboot" && modalAction === "reboot") ||
+            (spec.action === "run-security-updates" &&
+              modalAction === "run-security-updates");
           return (
             <article key={spec.action} className={classes.card}>
               <header className={classes.cardHeader}>
@@ -283,13 +281,14 @@ const RemediationPile: FC = () => {
                   </p>
                 </div>
               )}
-              {spec.action === "run-security-updates" && kernelWaivedCount > 0 && (
-                <div className={classes.proBadge}>
-                  <Icon name="security" />
-                  {kernelWaivedCount} kernel USN
-                  {kernelWaivedCount === 1 ? "" : "s"} waived by Livepatch
-                </div>
-              )}
+              {spec.action === "run-security-updates" &&
+                kernelWaivedCount > 0 && (
+                  <div className={classes.proBadge}>
+                    <Icon name="security" />
+                    {kernelWaivedCount} kernel USN
+                    {kernelWaivedCount === 1 ? "" : "s"} waived by Livepatch
+                  </div>
+                )}
               <div className={classes.actions}>
                 <button
                   type="button"
@@ -324,28 +323,29 @@ const RemediationPile: FC = () => {
           }}
         />
       )}
-      {modalAction === "run-security-updates" && securityInstances.length > 0 && (
-        <ConfirmationModal
-          close={() => {
-            setModalAction(null);
-          }}
-          title={`Apply security updates on ${securityInstances.length} instance${
-            securityInstances.length === 1 ? "" : "s"
-          }`}
-          confirmButtonLabel="Apply"
-          confirmButtonAppearance="positive"
-          confirmButtonLoading={upgradeUsnsQuery.isPending}
-          onConfirm={() => {
-            void handleApplyUpgrade();
-          }}
-        >
-          <p>
-            All open Ubuntu security notices will be applied to {" "}
-            {securityInstances.length} instance
-            {securityInstances.length === 1 ? "" : "s"} with pending USNs.
-          </p>
-        </ConfirmationModal>
-      )}
+      {modalAction === "run-security-updates" &&
+        securityInstances.length > 0 && (
+          <ConfirmationModal
+            close={() => {
+              setModalAction(null);
+            }}
+            title={`Apply security updates on ${securityInstances.length} instance${
+              securityInstances.length === 1 ? "" : "s"
+            }`}
+            confirmButtonLabel="Apply"
+            confirmButtonAppearance="positive"
+            confirmButtonLoading={upgradeUsnsQuery.isPending}
+            onConfirm={() => {
+              void handleApplyUpgrade();
+            }}
+          >
+            <p>
+              All open Ubuntu security notices will be applied to{" "}
+              {securityInstances.length} instance
+              {securityInstances.length === 1 ? "" : "s"} with pending USNs.
+            </p>
+          </ConfirmationModal>
+        )}
     </>
   );
 };

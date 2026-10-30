@@ -125,8 +125,8 @@ describe("HealthBar", () => {
     // The descriptive band label disappears in compact mode but the meter
     // still exposes the band via aria-label for screen readers.
     expect(screen.queryByText(/^Warning$/)).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("meter").getAttribute("aria-label"),
-    ).toMatch(/Warning/);
+    expect(screen.getByRole("meter").getAttribute("aria-label")).toMatch(
+      /Warning/,
+    );
   });
 });

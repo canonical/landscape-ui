@@ -21,12 +21,12 @@ import { ROUTES } from "@/libs/routes";
 import type { Instance } from "@/types/Instance";
 import { Button, Icon } from "@canonical/react-components";
 import classNames from "classnames";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { Link } from "react-router";
 import classes from "./HealthPanel.module.scss";
 
-const DATE_FORMAT = "MMM D, YYYY \\a\\t HH:mm";
+const DATE_FORMAT = "MMM D, YYYY [at] HH:mm";
 
 const BAND_ICON: Record<HealthBand, string> = {
   critical: "error",
@@ -59,8 +59,8 @@ const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
           <>
             <p>
               The Instance Health Engine relies on signals reported by the
-              Landscape client, which only runs on Ubuntu (server, desktop,
-              and Core). This instance reports{" "}
+              Landscape client, which only runs on Ubuntu (server, desktop, and
+              Core). This instance reports{" "}
               <strong>
                 {instance.distribution_info?.distributor ?? "no distribution"}
               </strong>
@@ -90,9 +90,8 @@ const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
         icon="error"
         body={
           <p>
-            We couldn&apos;t load the health details for this instance.
-            This is usually transient — check back in a moment, or refresh
-            to retry.
+            We couldn&apos;t load the health details for this instance. This is
+            usually transient — check back in a moment, or refresh to retry.
           </p>
         }
         cta={[
@@ -144,9 +143,7 @@ const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
             >
               Health for {instance.title}
             </h2>
-            <span
-              className={classNames(classes.bandPill, bandClassName(band))}
-            >
+            <span className={classNames(classes.bandPill, bandClassName(band))}>
               <Icon name={BAND_ICON[band]} />
               <strong>{score}</strong>
               <span>/ 100 · {BAND_LABEL[band]}</span>
@@ -196,7 +193,7 @@ const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
             <p className={classes.footnote}>
               Last evaluated{" "}
               <time dateTime={updated_at}>
-                {moment(updated_at).format(DATE_FORMAT)}
+                {date(updated_at).format(DATE_FORMAT)}
               </time>
               .
             </p>
@@ -230,8 +227,8 @@ const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
                     </span>
                     {triggeringFactor && (
                       <span className={classes.actionBecause}>
-                        Triggered by: <em>{triggeringFactor.description}</em>{" "}
-                        (−{triggeringFactor.points})
+                        Triggered by: <em>{triggeringFactor.description}</em> (−
+                        {triggeringFactor.points})
                       </span>
                     )}
                   </div>

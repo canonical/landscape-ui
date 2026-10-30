@@ -10,9 +10,7 @@ import classNames from "classnames";
 import type { FC } from "react";
 import { useState } from "react";
 import { Link } from "react-router";
-import type {
-  FleetHealthSummaryGroupRow,
-} from "@/tests/mocks/health";
+import type { FleetHealthSummaryGroupRow } from "@/tests/mocks/health";
 import type { HealthBand } from "../../types";
 import type { HealthGroupBy } from "../../types";
 import classes from "./HealthByGroup.module.scss";
@@ -27,8 +25,8 @@ const GROUP_OPTIONS: { label: string; value: HealthGroupBy }[] = [
 ];
 
 interface GroupRowProps {
-  row: FleetHealthSummaryGroupRow;
-  groupBy: HealthGroupBy;
+  readonly row: FleetHealthSummaryGroupRow;
+  readonly groupBy: HealthGroupBy;
 }
 
 const GroupRow: FC<GroupRowProps> = ({ row, groupBy }) => {
@@ -68,8 +66,8 @@ const GroupRow: FC<GroupRowProps> = ({ row, groupBy }) => {
         className={classes.bar}
         role="img"
         aria-label={
-          `${row.group}: ${row.band_critical_count} critical, `
-          + `${row.band_warning_count} warning, ${row.band_healthy_count} healthy`
+          `${row.group}: ${row.band_critical_count} critical, ` +
+          `${row.band_warning_count} warning, ${row.band_healthy_count} healthy`
         }
       >
         {row.band_critical_count > 0 && (
@@ -119,9 +117,7 @@ const HealthByGroup: FC = () => {
           />
         </div>
       </header>
-      {query.isLoading && (
-        <div className={classes.empty}>Loading…</div>
-      )}
+      {query.isLoading && <div className={classes.empty}>Loading…</div>}
       {!query.isLoading && groups.length === 0 && (
         <div className={classes.empty}>
           No groups to show for this dimension yet.
@@ -133,7 +129,12 @@ const HealthByGroup: FC = () => {
             {groupBy === "tag" ? "Tag" : "Distribution"}
           </span>
           <span className={classes.tableHeader}>Distribution</span>
-          <span className={classNames(classes.tableHeader, classes.tableHeaderTotal)}>
+          <span
+            className={classNames(
+              classes.tableHeader,
+              classes.tableHeaderTotal,
+            )}
+          >
             Total
           </span>
           {groups.map((row) => (

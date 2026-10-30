@@ -11,9 +11,7 @@ import {
   seededRules,
   setHealthFixture,
 } from "@/tests/mocks/health";
-import {
-  setEndpointStatus,
-} from "@/tests/controllers/controller";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 const HTTP_OK = 200;
@@ -88,7 +86,13 @@ describe("POST /health/rules — per-account override CRUD", () => {
     expect(created.rule_key).toBe("usn.high");
 
     const list = await get("health/rules");
-    const body = (await list.json()) as { results: { rule_key: string; weight: number; is_system_default: boolean }[] };
+    const body = (await list.json()) as {
+      results: {
+        rule_key: string;
+        weight: number;
+        is_system_default: boolean;
+      }[];
+    };
     const usnHigh = body.results.find((r) => r.rule_key === "usn.high");
     // Override wins over the system default.
     expect(usnHigh?.weight).toBe(OVERRIDE_WEIGHT_USN_HIGH);
@@ -132,11 +136,15 @@ describe("POST /health/rules — per-account override CRUD", () => {
 
 describe("GET /computers/:id/health", () => {
   it("returns the manyFactors fixture for the demo id", async () => {
-    const res = await get(`computers/${manyFactorsComputer.computer_id}/health`);
+    const res = await get(
+      `computers/${manyFactorsComputer.computer_id}/health`,
+    );
     const body = await res.json();
     expect(body.factors).toHaveLength(manyFactorsComputer.factors.length);
     // Phase 1.5 — the wide breakdown must include the new rule keys.
-    const keys = new Set(body.factors.map((f: { rule_key: string }) => f.rule_key));
+    const keys = new Set(
+      body.factors.map((f: { rule_key: string }) => f.rule_key),
+    );
     expect(keys.has("usn.low")).toBe(true);
     expect(keys.has("package.updates_available")).toBe(true);
   });
@@ -157,9 +165,9 @@ describe("GET /health/summary", () => {
     const body = await res.json();
     expect(body.band_critical_count).toBeGreaterThan(0);
     expect(
-      body.band_critical_count
-        + body.band_warning_count
-        + body.band_healthy_count,
+      body.band_critical_count +
+        body.band_warning_count +
+        body.band_healthy_count,
     ).toBe(body.total_count);
   });
 

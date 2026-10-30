@@ -40,9 +40,7 @@ const FleetTopIssues: FC<FleetTopIssuesProps> = ({
   return (
     <section className={classes.container}>
       <p className="p-heading--5 u-no-margin--bottom">{heading}</p>
-      {isLoading && (
-        <p className={classes.detail}>Loading…</p>
-      )}
+      {isLoading && <p className={classes.detail}>Loading…</p>}
       {!isLoading && rows.length === 0 && (
         <p className={classes.empty}>
           <Icon name="success" /> No factors are dragging the fleet down.

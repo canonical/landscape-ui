@@ -70,9 +70,9 @@ describe.each([
   it("summary band counts sum to total_count", () => {
     const { summary } = fleet;
     expect(
-      summary.band_critical_count
-        + summary.band_warning_count
-        + summary.band_healthy_count,
+      summary.band_critical_count +
+        summary.band_warning_count +
+        summary.band_healthy_count,
     ).toBe(summary.total_count);
   });
 
@@ -112,7 +112,9 @@ describe("livepatchWaiverFleet", () => {
     expect(pro.factors.some((f) => f.rule_key === "usn.critical")).toBe(false);
     // Non-Pro: full critical penalty applies.
     expect(nonPro.band).toBe("critical");
-    expect(nonPro.factors.some((f) => f.rule_key === "usn.critical")).toBe(true);
+    expect(nonPro.factors.some((f) => f.rule_key === "usn.critical")).toBe(
+      true,
+    );
     expect(nonPro.critical_factor_count).toBeGreaterThanOrEqual(1);
   });
 });

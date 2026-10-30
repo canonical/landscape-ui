@@ -13,13 +13,9 @@ interface TopDetractorsResponse {
 
 export default function useFleetTopDetractors(limit: number = DEFAULT_LIMIT) {
   const authFetch = useFetch();
-  return useQuery<
-    AxiosResponse<TopDetractorsResponse>,
-    AxiosError<ApiError>
-  >({
+  return useQuery<AxiosResponse<TopDetractorsResponse>, AxiosError<ApiError>>({
     queryKey: ["health", "top-detractors", limit],
-    queryFn: async () =>
-      authFetch.get(`health/top-detractors?limit=${limit}`),
+    queryFn: async () => authFetch.get(`health/top-detractors?limit=${limit}`),
     staleTime: SIXTY_SECONDS,
   });
 }

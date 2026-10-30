@@ -138,7 +138,7 @@ export const features: Feature[] = [
     description:
       "Aggregates monitoring signals into a single Health score per managed instance, with a Health Bar on the instance list and a fleet-health widget on the dashboard. Backed by LA061.",
     key: "health",
-    database_key: 13,
+    database_key: 18,
     // Spec default per LA061 § Feature flag: false. Tests that want to
     // exercise the health-on UI override the mock via MSW or a per-test
     // setEndpointStatus call.

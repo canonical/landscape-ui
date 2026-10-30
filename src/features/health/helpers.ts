@@ -99,8 +99,7 @@ export const HEALTH_ACTION_META: Record<HealthActionKind, HealthActionMeta> = {
   "run-security-updates": {
     label: "Run security updates",
     icon: "security-tick",
-    description:
-      "Queues an apt upgrade limited to packages with pending USNs.",
+    description: "Queues an apt upgrade limited to packages with pending USNs.",
   },
   reboot: {
     label: "Reboot now",
@@ -122,8 +121,7 @@ export const HEALTH_ACTION_META: Record<HealthActionKind, HealthActionMeta> = {
   "run-diagnostic-script": {
     label: "Run diagnostic script",
     icon: "code",
-    description:
-      "Collects logs and runtime state into a downloadable bundle.",
+    description: "Collects logs and runtime state into a downloadable bundle.",
   },
 };
 

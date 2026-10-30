@@ -129,17 +129,32 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
   const rows = useMemo<BandRow[]>(() => {
     if (!summary) return [];
     const baseRows: BandRow[] = [
-      { kind: "score", band: "critical", label: "Critical", count: summary.band_critical_count },
-      { kind: "score", band: "warning", label: "Warning", count: summary.band_warning_count },
-      { kind: "score", band: "healthy", label: "Healthy", count: summary.band_healthy_count },
+      {
+        kind: "score",
+        band: "critical",
+        label: "Critical",
+        count: summary.band_critical_count,
+      },
+      {
+        kind: "score",
+        band: "warning",
+        label: "Warning",
+        count: summary.band_warning_count,
+      },
+      {
+        kind: "score",
+        band: "healthy",
+        label: "Healthy",
+        count: summary.band_healthy_count,
+      },
     ];
     // LA061 Phase 1.8: append a muted Unmeasured row when the account has
     // computers the engine can't score (Windows / WSL host / no
     // distribution). Hidden when zero so the band list doesn't carry an
     // always-empty fourth row.
     const unmeasured =
-      summary.unmeasurable_count
-      ?? Math.max(
+      summary.unmeasurable_count ??
+      Math.max(
         0,
         summary.total_count - (summary.measurable_count ?? summary.total_count),
       );
@@ -173,9 +188,15 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
         {!hideTopDetractors && (
           <div className={classes.detractorColumn}>
             <h3 className={classes.subheading}>Top issues now</h3>
-            <div className={classNames(classes.detractorSkeleton, classes.shimmer)} />
-            <div className={classNames(classes.detractorSkeleton, classes.shimmer)} />
-            <div className={classNames(classes.detractorSkeleton, classes.shimmer)} />
+            <div
+              className={classNames(classes.detractorSkeleton, classes.shimmer)}
+            />
+            <div
+              className={classNames(classes.detractorSkeleton, classes.shimmer)}
+            />
+            <div
+              className={classNames(classes.detractorSkeleton, classes.shimmer)}
+            />
           </div>
         )}
       </section>
@@ -195,8 +216,8 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
           icon="error"
           body={
             <p>
-              We couldn&apos;t load the fleet health summary. This is
-              usually transient — check back in a moment.
+              We couldn&apos;t load the fleet health summary. This is usually
+              transient — check back in a moment.
             </p>
           }
           cta={
@@ -228,9 +249,7 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
           <Icon name="information" />
           <div>
             <strong>No instances yet</strong>
-            <p>
-              Register a computer to start seeing fleet health here.
-            </p>
+            <p>Register a computer to start seeing fleet health here.</p>
           </div>
         </div>
       </section>
@@ -252,8 +271,8 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
   const fleetTotal = measurable + unmeasurable;
   const score = computeAverage(summary);
   const scoreBand = bandForScore(score);
-  const gaugeProgress = (Math.max(0, Math.min(100, score)) / PERCENT_BASE) *
-    GAUGE_ARC_LENGTH;
+  const gaugeProgress =
+    (Math.max(0, Math.min(100, score)) / PERCENT_BASE) * GAUGE_ARC_LENGTH;
   // Rotate the start by half the missing portion so the arc is centered
   // at the bottom of the gauge (open end at 6 o'clock).
   const GAUGE_START_ROTATION = -QUARTER_DEGREES - GAUGE_SWEEP_DEGREES / 2;
@@ -271,10 +290,7 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
       {/* ── Score gauge ── */}
       <div className={classes.gaugeColumn}>
         <svg
-          className={classNames(
-            classes.gauge,
-            classes[`gauge_${scoreBand}`],
-          )}
+          className={classNames(classes.gauge, classes[`gauge_${scoreBand}`])}
           viewBox={`0 0 ${GAUGE_VIEW} ${GAUGE_VIEW}`}
           role="img"
           aria-label={`Average health score ${score} of 100, ${BAND_LABEL[scoreBand]}`}
@@ -332,7 +348,10 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
       <div className={classes.middleColumn}>
         <p
           id={titleId}
-          className={classNames("p-heading--5 u-no-margin--bottom", classes.heading)}
+          className={classNames(
+            "p-heading--5 u-no-margin--bottom",
+            classes.heading,
+          )}
         >
           {heading}
         </p>
@@ -347,9 +366,8 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
             // percentages sum to 100%.
             const denominator =
               row.kind === "unmeasured" ? fleetTotal : measurable;
-            const pct = denominator > 0
-              ? (row.count / denominator) * PERCENT_BASE
-              : 0;
+            const pct =
+              denominator > 0 ? (row.count / denominator) * PERCENT_BASE : 0;
             const accessibleLabel =
               row.kind === "unmeasured"
                 ? `${row.count} unmeasured instances, ${ROUND(pct)} percent of the fleet`
@@ -425,15 +443,19 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
                     <span
                       className={classNames(
                         classes.detractorIcon,
-                        d.weight >= HEALTHY_FLOOR && classes.detractorIconCritical,
+                        d.weight >= HEALTHY_FLOOR &&
+                          classes.detractorIconCritical,
                       )}
                       aria-hidden="true"
                     >
-                      <Icon name={d.weight >= HEALTHY_FLOOR ? "error" : "warning"} />
+                      <Icon
+                        name={d.weight >= HEALTHY_FLOOR ? "error" : "warning"}
+                      />
                     </span>
                     <span className={classes.detractorBody}>
                       <span className={classes.detractorCount}>
-                        {d.computer_count} {d.computer_count === 1 ? "instance" : "instances"}
+                        {d.computer_count}{" "}
+                        {d.computer_count === 1 ? "instance" : "instances"}
                       </span>
                       <span className={classes.detractorText}>
                         {d.description}
@@ -455,7 +477,10 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
           {unmeasurable > 0 ? (
             <>
               {" · "}
-              <span>{unmeasurable} non-Ubuntu instance{unmeasurable === 1 ? "" : "s"} can&apos;t be measured</span>
+              <span>
+                {unmeasurable} non-Ubuntu instance
+                {unmeasurable === 1 ? "" : "s"} can&apos;t be measured
+              </span>
             </>
           ) : null}
           {summary.updated_at && (

@@ -6,7 +6,7 @@ import { ROUTES } from "@/libs/routes";
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import { Button, ConfirmationModal, Icon } from "@canonical/react-components";
 import classNames from "classnames";
-import moment from "moment";
+import date from "@/libs/date";
 import { useState, type FC } from "react";
 import { Link } from "react-router";
 import {
@@ -34,7 +34,7 @@ const STATUS_FORBIDDEN = 403;
 const STATUS_CONFLICT = 409;
 const STATUS_NOT_IMPLEMENTED = 501;
 
-const DATE_FORMAT = "MMM D, YYYY \\a\\t HH:mm";
+const DATE_FORMAT = "MMM D, YYYY [at] HH:mm";
 
 interface HealthDetailsPanelProps {
   readonly instance: Pick<
@@ -67,8 +67,8 @@ const HealthDetailsPanel: FC<HealthDetailsPanelProps> = ({ instance }) => {
         icon="error"
         body={
           <p>
-            We couldn&apos;t load the health details for this instance.
-            This is usually transient — retry to refresh.
+            We couldn&apos;t load the health details for this instance. This is
+            usually transient — retry to refresh.
           </p>
         }
         cta={[
@@ -174,7 +174,7 @@ const HealthDetailsPanel: FC<HealthDetailsPanelProps> = ({ instance }) => {
             <span className={classes.heroUpdated}>
               Last evaluated{" "}
               <time dateTime={updated_at}>
-                {moment(updated_at).format(DATE_FORMAT)}
+                {date(updated_at).format(DATE_FORMAT)}
               </time>
             </span>
           )}

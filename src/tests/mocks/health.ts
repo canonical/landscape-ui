@@ -278,9 +278,7 @@ function summarise(computers: ComputerHealth[]): FleetHealthSummary {
     band_warning_count: warning,
     band_healthy_count: healthy,
     total_count: computers.length,
-    average_score: computers.length
-      ? Math.round(total / computers.length)
-      : 0,
+    average_score: computers.length ? Math.round(total / computers.length) : 0,
     measurable_count: computers.length,
     // LA061 Phase 1.8: each demo fleet has a couple of synthetic Windows /
     // WSL host instances that the engine can't score. The Overview surfaces
@@ -307,12 +305,7 @@ function summarise(computers: ComputerHealth[]): FleetHealthSummary {
 // Per-row demo cases. Each tuple is [id, score, factors, critical_count?]
 // and is wired against the `instances` fixture in `mocks/instance.ts` so
 // the visible rows show distinct scores, bands, and breakdowns.
-const MIXED_SEEDS: readonly [
-  number,
-  number,
-  HealthFactor[],
-  number?,
-][] = [
+const MIXED_SEEDS: readonly [number, number, HealthFactor[], number?][] = [
   // Ubuntu instances — full spectrum of band-and-factor combinations.
   [1, 0, [factorCritical, factorReboot, factorUpdates], 1],
   [2, 43, [factorHigh, factorOffline, factorMedium, factorUpdates]],
@@ -341,7 +334,11 @@ const MIXED_SEEDS: readonly [
   [207, 99, [factorUpdates]],
   [208, 8, [factorCritical, factorHigh, factorOffline, factorReboot], 1],
   [209, 82, [factorMedium, factorReboot]],
-  [210, 28, [factorHigh, factorReboot, factorOffline, factorMedium, factorUpdates]],
+  [
+    210,
+    28,
+    [factorHigh, factorReboot, factorOffline, factorMedium, factorUpdates],
+  ],
 ];
 
 // Filler-tail buckets so the wider fleet summary stays believable.

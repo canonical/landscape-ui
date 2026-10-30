@@ -93,10 +93,10 @@ const TopDetractors: FC = () => {
 };
 
 interface FragmentRowProps {
-  instance: Instance;
-  score: number;
-  scoreClass: string;
-  factor: DominantFactor | null;
+  readonly instance: Instance;
+  readonly score: number;
+  readonly scoreClass: string;
+  readonly factor: DominantFactor | null;
 }
 
 const FragmentRow: FC<FragmentRowProps> = ({

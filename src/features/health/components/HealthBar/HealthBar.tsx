@@ -102,10 +102,7 @@ const HealthBar: FC<HealthBarProps> = ({
       </span>
       <span className={classes.score}>{score}</span>
       <span className={classes.bar} aria-hidden="true">
-        <span
-          className={classes.fill}
-          style={{ width: fillWidth }}
-        />
+        <span className={classes.fill} style={{ width: fillWidth }} />
       </span>
       {critical_factor_count > 1 ? (
         <span

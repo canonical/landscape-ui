@@ -16,9 +16,7 @@ import classes from "./HealthCell.module.scss";
 // Lazy-load the side panel content so the cell itself stays cheap to
 // render across hundreds of rows. The panel only mounts when an
 // operator actually opens it.
-const HealthDetailsPanel = lazy(
-  async () => import("../HealthDetailsPanel"),
-);
+const HealthDetailsPanel = lazy(async () => import("../HealthDetailsPanel"));
 
 interface HealthCellProps {
   readonly instance: Pick<
@@ -98,11 +96,7 @@ const HealthCell: FC<HealthCellProps> = ({ instance }) => {
           : `Health for ${instance.title}`
       }
     >
-      <HealthBar
-        health={health}
-        isLoading={isLoading}
-        isError={isError}
-      />
+      <HealthBar health={health} isLoading={isLoading} isError={isError} />
     </button>
   );
 };

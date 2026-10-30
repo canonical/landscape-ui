@@ -202,9 +202,7 @@ export default [
     const enrichWithHealth = (data: Instance[]): Instance[] => {
       if (!withHealth) return data;
       const { computers: healthByComputer } = getHealthFixture();
-      const byId = new Map(
-        healthByComputer.map((h) => [h.computer_id, h]),
-      );
+      const byId = new Map(healthByComputer.map((h) => [h.computer_id, h]));
       return data.map((instance) => {
         const h = byId.get(instance.id);
         // Mirror the real server: computers without a state row get the
