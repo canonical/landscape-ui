@@ -1,0 +1,36 @@
+name: Backporter link
+
+# Only default-branch code runs with this base-repository write token.
+on:
+  # Required for trusted fork PRs; no PR-head code is checked out or executed.
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
+    types: [opened, reopened, edited]
+    # Exact enabled targets are enforced by BACKPORT_BRANCHES in the script.
+    branches: ["release/**", "point/**"]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: backporter-link-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  link:
+    if: "contains(github.event.pull_request.title, '(backport of #')"
+    runs-on: ubuntu-latest
+    concurrency:
+      group: backporter-source-body
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: .github/scripts/backporter
+          persist-credentials: false
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { linkOpenedBackport } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/backporter/backport.cjs`);
+            await linkOpenedBackport({ github, context, core });
