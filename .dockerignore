@@ -4,5 +4,6 @@ dist
 .env.local
 .env.*.local
 coverage
+playwright
 playwright-report
 test-results
