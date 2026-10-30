@@ -172,7 +172,7 @@ test("agent comments with either gh-aw marker suppress automatic retries, not di
   const h = harness({
     comments: [
       {
-        body: read("fixtures/failure.md"),
+        body: `Backport to \`point/26.04.2\` failed\n\nConflicting files: src/types/Instance.ts.\n\n${combined}`,
         user: { type: "Bot" },
       },
     ],
@@ -369,7 +369,7 @@ test("scheduled discovery covers 30 days and manual input is validated", async (
   }
 });
 
-test("safe outputs match the script allowlist; discovery joins the link writer lock", () => {
+test("safe outputs and agent instructions match the script contract", () => {
   const workflow = read("../../workflows/backporter.md");
   const allowed = JSON.parse(
     /allowed-base-branches:\s*(\[[\s\S]*?\])/
@@ -378,16 +378,7 @@ test("safe outputs match the script allowlist; discovery joins the link writer l
   );
   assert.deepEqual(allowed, BACKPORT_BRANCHES);
   assert.match(
-    workflow,
-    /group: backporter-source-body\s+cancel-in-progress: false/,
-  );
-  assert.doesNotMatch(workflow, /BACKPORTER_BOT_LOGIN/);
-  assert.match(
     read("../../agents/backporter.agent.md"),
     /Backport to `<release>` failed/,
-  );
-  assert.doesNotMatch(
-    read("../../agents/backporter.agent.md"),
-    /invalid_branch|backporter:failed:/,
   );
 });

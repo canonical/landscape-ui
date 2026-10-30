@@ -36,57 +36,32 @@ and uses only `GITHUB_TOKEN`. It shares the non-cancelling
 
 ## Backporter (`backporter.md`)
 
-**Trigger:** push to main, daily 30-day sweep, or `workflow_dispatch` with a
-positive integer `pr_number`. Manual dispatch retries previously failed targets.
-The deterministic `find-backports` job emits todo only for enabled, existing
-branches and links trusted pre-existing backports. It uses `GITHUB_TOKEN` with
-contents/issues read and pull-requests write to report invalid targets itself;
-invalid targets never invoke the agent. API errors other than missing refs fail
-the job rather than masquerading as absent branches.
+**Trigger:** push to main, daily 30-day sweep, or `workflow_dispatch` with
+`pr_number` (which also retries failed targets). The deterministic
+`find-backports` job emits todo items for enabled, existing targets, links
+trusted pre-existing backports, and comments on invalid targets itself. The
+agent runs only when there is work, uses only Git and edit tools, and opens one
+PR per target; see the
+[unattended skill](../.github/skills/backport-pr/SKILL.md#running-unattended-backporter).
 
-The agent runs only when `has_todo` is true. It uses Git/edit tools, defaults
-plus github.com network access, full checkout history, and no pnpm install,
-lint, type-checking, or tests. It preserves source authors and creates one
-backport PR per target, with an empty-changeset fallback when needed. See the
-[unattended skill](../.github/skills/backport-pr/SKILL.md#running-unattended-backporter)
-for conflict and PR-body rules.
+**Failure detection:** automatic runs skip a target when a trusted
+(OWNER/MEMBER/COLLABORATOR or bot) comment carries gh-aw's `backporter`
+workflow marker and its first visible line, after any leading blockquote alert,
+is ``Backport to `<branch>` failed``. gh-aw strips agent-written HTML comments,
+so only gh-aw's own marker is trusted.
 
-**Failure provenance:** the first visible non-empty line must be
-``Backport to `<branch>` failed``, not quoted, indented, or fenced. Blockquote
-lines before it, such as gh-aw's threat-detection alert, are skipped. The author
-must be OWNER/MEMBER/COLLABORATOR or `user.type === "Bot"`, and the body must
-match gh-aw v0.88.7's `matchesWorkflowId`semantics for`backporter`: either
-`<!-- gh-aw-workflow-id: backporter -->`or a combined`<!-- gh-aw-agentic-workflow: ..., workflow_id: backporter, ... -->` marker.
-Reaction comments are excluded. The marker may precede further footer content.
-The agent must not invent an HTML marker: gh-aw sanitizes prose HTML comments
-before adding its own footer/marker. Deterministic comments bypass safe outputs
-and add the standalone marker themselves. Automatic runs do not repost matching
-invalid-target failures; dispatch intentionally retries them. No bot-login
-configuration is required.
+**Setup:** create the `backport` and `automation` labels, a `BACKPORTER_TOKEN`
+secret (PAT or App token with contents/pull-requests write, so opened PRs
+trigger CI), and `COPILOT_GITHUB_TOKEN` for the Copilot engine.
 
-**Setup:** create `backport` and `automation` labels and a `BACKPORTER_TOKEN`
-Actions secret, a PAT or App token scoped to contents/pull-requests write on
-canonical/landscape-ui. Safe outputs use it so opened PRs trigger CI; the agent
-retains read-only GitHub permissions. Provide `COPILOT_GITHUB_TOKEN` for the
-Copilot engine. Team reviewers are `canonical/landscape-ui`. Only package.json
-and pnpm-lock.yaml are exempted from default protected-file checks.
+**Maintenance:** install `gh extension install github/gh-aw --pin v0.88.7`,
+then regenerate with `gh aw compile backporter --strict` and commit the lock
+file (excluded from Prettier). v0.88.7 `allowed-base-branches` accepts only
+exact names, so keep it equal to `BACKPORT_BRANCHES`; tests enforce this.
 
-**Maintenance:** install the pinned compiler with
-`gh extension install github/gh-aw --pin v0.88.7`. Edit the source and regenerate
-with `gh aw compile backporter --strict`; commit the lock file and verify no
-post-compilation drift. The root `.prettierignore` excludes only this generated
-lock file because formatting it would introduce compiler drift; handwritten
-workflow files and scripts remain checked. v0.88.7 safe outputs accept only exact names and `*`,
-not `[0-9]` or `+`. Keep `allowed-base-branches` equal to `BACKPORT_BRANCHES`
-in the script; the link workflow's broad globs need no per-target update.
-Enable targets only after their own PR CI works. Tests enforce this contract.
-
-Link-back is separate because gh-aw makes the agent depend on every custom
-job; a custom job after safe outputs would create a dependency cycle.
-`find-backports` joins the link job's non-cancelling `backporter-source-body`
-group to serialize both writers. Whole backporter runs also serialize in
-`backporter`. GitHub can coalesce pending work; the daily sweep reconciles
-eligible recent requests and dispatch handles older or failed sources.
+Link-back is a separate workflow because gh-aw makes the agent depend on every
+custom job, so a job after safe outputs would create a cycle. `find-backports`
+joins the link job's `backporter-source-body` group to serialize body writes.
 
 ## Changeset Version (`changeset-version.yml`)
 
