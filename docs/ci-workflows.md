@@ -16,8 +16,25 @@ Independent jobs (no `needs` chain):
 - **Playwright** (self-hosted; `ubuntu-latest` for fork PRs; `mcr.microsoft.com/playwright` container) — matrix over `saas` / `self-hosted`; builds with `pnpm run build:e2e` (`VITE_ROOT_PATH=/`), installs browsers, runs the matching project against the `dev` backend (`vars.API_PROXY_TARGET`), uploads `playwright-report-<target>`
 - **Vitest** (self-hosted; `ubuntu-latest` for fork PRs) — `pnpm exec vitest run --coverage` with `VITE_ROOT_PATH=/portal/` and `NODE_OPTIONS=--max_old_space_size=4096`; uploads `vitest-report` from `reports/`
 - **Changeset** — fails the PR unless it *adds* a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it.
+- **Backporter tests** — `node --test '.github/scripts/backporter/*.test.cjs'` on Node 24, with SHA-pinned checkout/setup-node and no pnpm install or dependency cache.
 
 **Rule:** fork PRs get no `vars.*` (the `dev` environment's variables come through empty), so the Playwright and Vitest `VITE_API_*` env lines fall back to literal defaults only when `github.event.pull_request.head.repo.fork` is true; keep those defaults in sync with `.env.production`, and never add a secret to either job. Fork PR runs stay on GitHub-hosted runners; merge-queue runs (`merge_group` has no fork flag) use self-hosted runners, which is safe because entering the queue requires an approving code-owner review.
+
+## Backporter link (`backporter-link.yaml`)
+
+**Trigger:** `pull_request_target` opened/reopened/edited against `release/**`
+or `point/**`. A PR titled `<title> (backport of #N)` against a target in the
+script's `BACKPORT_BRANCHES` allowlist links its URL into source PR N's bare
+"Releases this PR should be backported to" entry. Enable a target only after
+its own PR CI runs. Human procedure: [backport-pr skill](../.github/skills/backport-pr/SKILL.md).
+
+**Trust:** only a same-repository head or OWNER/MEMBER/COLLABORATOR may link,
+and the source must have merged into main. The job never checks out PR code:
+it sparse-checks the default branch's script with `persist-credentials: false`
+and uses only `GITHUB_TOKEN`. It shares the workflow-level, non-cancelling
+`backporter-source-body` group with other source-body writers; `queue: max`
+keeps pending runs from replacing each other. Only open backports link, and
+`edited` runs only when the title or base changed.
 
 ## Changeset Version (`changeset-version.yml`)
 

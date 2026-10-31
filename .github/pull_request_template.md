@@ -18,6 +18,17 @@ Change type (tick one):
 
 > The change-type label is informational and only affects how the entry is rendered in the CHANGELOG. The actual version is computed from the branch and CalVer cycle — `pnpm changeset`'s `patch`/`minor` choice does not influence it.
 
+## Releases this PR should be backported to
+
+<!--
+This is separate from Release Impact above, which selects this PR's own target.
+List one bare unchecked full branch per line, for example "- [ ] release/26.10".
+For a hand-made backport, use the title "<title> (backport of #N)".
+When that PR opens against an enabled target, the link workflow adds its URL
+to the source entry: "- [ ] release/26.10: <PR URL>". Humans tick it on merge.
+Leave this section empty when no backports are needed.
+-->
+
 ## Checklist
 
 - [ ] **Changeset added** — I have run `pnpm changeset` (or `pnpm changeset --empty` if no CHANGELOG line is warranted) and committed the resulting `.md` file. Required for PRs targeting `main` and `release/*`; enforced by the `Changeset check` workflow.
