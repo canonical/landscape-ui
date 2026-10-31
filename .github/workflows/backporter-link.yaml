@@ -12,17 +12,22 @@ permissions:
   contents: read
   pull-requests: write
 
+# Serializes all source-body writers. queue: max keeps up to 100 pending runs;
+# the default keeps one, so a newer pending run would cancel an older link.
 concurrency:
-  group: backporter-link-${{ github.event.pull_request.number }}
+  group: backporter-source-body
+  queue: max
   cancel-in-progress: false
 
 jobs:
   link:
-    if: "contains(github.event.pull_request.title, '(backport of #')"
+    # Body-only edits (including checkbox ticks) cannot change what links.
+    if: >-
+      github.event.pull_request.state == 'open' &&
+      contains(github.event.pull_request.title, '(backport of #') &&
+      (github.event.action != 'edited' ||
+      github.event.changes.title || github.event.changes.base)
     runs-on: ubuntu-latest
-    concurrency:
-      group: backporter-source-body
-      cancel-in-progress: false
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

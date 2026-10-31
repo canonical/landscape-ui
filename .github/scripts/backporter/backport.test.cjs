@@ -51,6 +51,28 @@ test("parsing handles duplicates, boundaries, placeholders and missing bodies", 
   }
 });
 
+test("entries GitHub does not render as section checkboxes are ignored", () => {
+  for (const input of [
+    body("```md", "- [ ] release/26.10", "```"),
+    body("~~~", "```", "- [ ] release/26.10", "~~~"),
+    body("<!--", "- [ ] release/26.10"),
+    body("Notes", "", "    - [ ] release/26.10"),
+    body("# Other", "- [ ] release/26.10"),
+    body("Other", "---", "- [ ] release/26.10"),
+    body("Other", "===", "- [ ] release/26.10"),
+    "```\n## Releases this PR should be backported to\n```\n- [ ] release/26.10",
+    "### Releases this PR should be backported to\n### Notes\n- [ ] release/26.10",
+  ]) {
+    assert.deepEqual(parseBackportReleases(input), [], input);
+  }
+  assert.deepEqual(
+    parseBackportReleases(
+      body("```", "x", "```", "### Details", "- [ ] release/26.10"),
+    ),
+    ["release/26.10"],
+  );
+});
+
 test("linking changes only the matching line, preserving CRLF and other entries", () => {
   const original = body("- [ ] release/26.10", "- [ ] point/26.04.2");
   const linked = linkBackportEntry(original, "release/26.10", url);
@@ -92,6 +114,7 @@ const opened = (extra = {}) => ({
   number: 20,
   title: "fix: x (backport of #10)",
   html_url: url,
+  state: "open",
   base: { ref: "release/26.10" },
   head: { repo: { full_name: "contributor/landscape-ui" } },
   author_association: "MEMBER",
@@ -146,12 +169,15 @@ test("same-repo heads and trusted fork associations may link", async () => {
   }
 });
 
-test("untrusted forks, malformed titles and non-allowlisted bases cannot link", async () => {
+test("untrusted forks, closed PRs, malformed titles and non-allowlisted bases cannot link", async () => {
   for (const extra of [
     { author_association: "NONE" },
     { author_association: "CONTRIBUTOR" },
     { author_association: "NONE", head: { repo: null } },
+    { state: "closed" },
     { title: "x (backport of #10) extra" },
+    { title: "x (backport of #010)" },
+    { title: "x (backport of #0)" },
     { title: "x" },
     { base: { ref: "main" } },
     { base: { ref: "release/1.19.1" } },

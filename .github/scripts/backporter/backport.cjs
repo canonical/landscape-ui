@@ -1,8 +1,12 @@
 const SECTION_HEADING = /Releases this PR should be backported to/i;
+// Up to 3 leading spaces: 4 or more is an indented code block.
 const ACTIONABLE_ENTRY =
-  /^\s*[-*]\s+\[ \]\s+((?:release|point)\/[a-zA-Z0-9][a-zA-Z0-9./-]*)\s*$/;
+  /^ {0,3}[-*]\s+\[ \]\s+((?:release|point)\/[a-zA-Z0-9][a-zA-Z0-9./-]*)\s*$/;
+const ATX_HEADING = /^ {0,3}(#{1,6})(?:\s|$)/;
+const SETEXT_UNDERLINE = /^ {0,3}(?:=+|-+)\s*$/;
+const FENCE = /^ {0,3}(`{3,}|~{3,})(.*)$/;
 const BACKPORT_BRANCHES = Object.freeze(["release/26.10", "point/26.04.2"]);
-const BACKPORT_TITLE = /\(backport of #(\d+)\)\s*$/;
+const BACKPORT_TITLE = /\(backport of #([1-9]\d*)\)\s*$/;
 const TRUSTED_ASSOCIATIONS = new Set(["OWNER", "MEMBER", "COLLABORATOR"]);
 const FAILURE_HEADLINE = /^Backport to `([^`\r\n]+)` failed$/;
 const WORKFLOW_MARKER = "<!-- gh-aw-workflow-id: backporter -->";
@@ -11,26 +15,64 @@ const JIRA_URL =
 const SWEEP_DAYS = 30;
 
 function stripHtmlComments(text) {
-  // Preserve line offsets for byte-preserving link-back edits.
-  return text.replace(/<!--[\s\S]*?-->/g, (comment) =>
+  // Preserve line offsets for byte-preserving link-back edits. GitHub hides
+  // everything after an unclosed comment, so it runs to the end of the body.
+  return text.replace(/<!--[\s\S]*?(?:-->|$)/g, (comment) =>
     comment.replace(/[^\n]/g, " "),
   );
 }
 
-function actionableEntries(body) {
-  const lines = stripHtmlComments(body || "").split("\n");
-  const start = lines.findIndex(
-    (line) => /^\s*#/.test(line) && SECTION_HEADING.test(line),
-  );
-  const entries = [];
-  if (start === -1) {
-    return entries;
+function headingLevel(lines, i) {
+  const atx = ATX_HEADING.exec(lines[i]);
+  if (atx) {
+    return atx[1].length;
   }
-  for (let i = start + 1; i < lines.length; i++) {
-    if (/^\s*##\s/.test(lines[i])) {
+  const previous = i > 0 ? lines[i - 1] : "";
+  if (
+    SETEXT_UNDERLINE.test(lines[i]) &&
+    previous.trim() !== "" &&
+    !ATX_HEADING.test(previous)
+  ) {
+    return lines[i].trim().startsWith("=") ? 1 : 2;
+  }
+  return 0;
+}
+
+function actionableEntries(body) {
+  const lines = stripHtmlComments(body || "")
+    .split("\n")
+    .map((line) => line.replace(/\r$/, ""));
+  const entries = [];
+  let sectionLevel = 0;
+  let fence = null;
+  for (let i = 0; i < lines.length; i++) {
+    const marker = FENCE.exec(lines[i]);
+    if (fence) {
+      if (
+        marker &&
+        marker[1][0] === fence[0] &&
+        marker[1].length >= fence.length &&
+        !marker[2].trim()
+      ) {
+        fence = null;
+      }
+      continue;
+    }
+    if (marker) {
+      fence = marker[1];
+      continue;
+    }
+    const level = headingLevel(lines, i);
+    if (!sectionLevel) {
+      if (level && SECTION_HEADING.test(lines[i])) {
+        sectionLevel = level;
+      }
+      continue;
+    }
+    if (level && level <= sectionLevel) {
       break;
     }
-    const match = ACTIONABLE_ENTRY.exec(lines[i].replace(/\r$/, ""));
+    const match = ACTIONABLE_ENTRY.exec(lines[i]);
     if (match) {
       entries.push({ line: i, release: match[1] });
     }
@@ -90,6 +132,10 @@ async function linkOpenedBackport({ github, context, core }) {
   const title = BACKPORT_TITLE.exec(pr.title || "");
   if (!BACKPORT_BRANCHES.includes(release) || !title) {
     core.info(`#${pr.number}: not an enabled backport PR`);
+    return false;
+  }
+  if (pr.state !== "open") {
+    core.info(`#${pr.number}: backport is ${pr.state}, not linking`);
     return false;
   }
   if (!isTrustedBackport(pr, owner, repo)) {
