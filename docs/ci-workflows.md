@@ -63,7 +63,8 @@ exact names, so keep it equal to `BACKPORT_BRANCHES`; tests enforce this.
 
 Link-back is a separate workflow because gh-aw makes the agent depend on every
 custom job, so a job after safe outputs would create a cycle. `find-backports`
-joins the link job's `backporter-source-body` group to serialize body writes.
+joins the link workflow's `backporter-source-body` group, also with `queue: max`,
+to serialize body writes.
 
 ## Changeset Version (`changeset-version.yml`)
 

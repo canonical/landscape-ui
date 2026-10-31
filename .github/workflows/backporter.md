@@ -49,9 +49,11 @@ tools:
 jobs:
   find-backports:
     runs-on: ubuntu-latest
-    # Share this writer lock with backporter-link.yaml to prevent lost links.
+    # Share this writer lock with backporter-link.yaml to prevent lost links;
+    # queue: max keeps a newer pending writer from cancelling an older one.
     concurrency:
       group: backporter-source-body
+      queue: max
       cancel-in-progress: false
     permissions:
       contents: read
