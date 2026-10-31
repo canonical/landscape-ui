@@ -31,8 +31,10 @@ its own PR CI runs. Human procedure: [backport-pr skill](../.github/skills/backp
 **Trust:** only a same-repository head or OWNER/MEMBER/COLLABORATOR may link,
 and the source must have merged into main. The job never checks out PR code:
 it sparse-checks the default branch's script with `persist-credentials: false`
-and uses only `GITHUB_TOKEN`. It shares the non-cancelling
-`backporter-source-body` group with other source-body writers.
+and uses only `GITHUB_TOKEN`. It shares the workflow-level, non-cancelling
+`backporter-source-body` group with other source-body writers; `queue: max`
+keeps pending runs from replacing each other. Only open backports link, and
+`edited` runs only when the title or base changed.
 
 ## Changeset Version (`changeset-version.yml`)
 
