@@ -36,6 +36,36 @@ and uses only `GITHUB_TOKEN`. It shares the workflow-level, non-cancelling
 keeps pending runs from replacing each other. Only open backports link, and
 `edited` runs only when the title or base changed.
 
+## Backporter (`backporter.md`)
+
+**Trigger:** push to main, daily 30-day sweep, or `workflow_dispatch` with
+`pr_number` (which also retries failed targets). The deterministic
+`find-backports` job emits todo items for enabled, existing targets, links
+trusted pre-existing backports, and comments on invalid targets itself. The
+agent runs only when there is work, uses only Git and edit tools, and opens one
+PR per target; see the
+[unattended skill](../.github/skills/backport-pr/SKILL.md#running-unattended-backporter).
+
+**Failure detection:** automatic runs skip a target when a trusted
+(OWNER/MEMBER/COLLABORATOR or bot) comment carries gh-aw's `backporter`
+workflow marker and its first visible line, after any leading blockquote alert,
+is ``Backport to `<branch>` failed``. gh-aw strips agent-written HTML comments,
+so only gh-aw's own marker is trusted.
+
+**Setup:** create the `backport` and `automation` labels, a `BACKPORTER_TOKEN`
+secret (PAT or App token with contents/pull-requests write, so opened PRs
+trigger CI), and `COPILOT_GITHUB_TOKEN` for the Copilot engine.
+
+**Maintenance:** install `gh extension install github/gh-aw --pin v0.88.7`,
+then regenerate with `gh aw compile backporter --strict` and commit the lock
+file (excluded from Prettier). v0.88.7 `allowed-base-branches` accepts only
+exact names, so keep it equal to `BACKPORT_BRANCHES`; tests enforce this.
+
+Link-back is a separate workflow because gh-aw makes the agent depend on every
+custom job, so a job after safe outputs would create a cycle. `find-backports`
+joins the link workflow's `backporter-source-body` group, also with `queue: max`,
+to serialize body writes.
+
 ## Changeset Version (`changeset-version.yml`)
 
 **Trigger:** push → `main`.
