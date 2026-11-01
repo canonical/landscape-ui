@@ -4,14 +4,10 @@ const path = require("node:path");
 const test = require("node:test");
 const {
   BACKPORT_BRANCHES,
+  applyBackports,
   backportBranchName,
-  failedReleases,
   findBackports,
 } = require("./backport.cjs");
-const read = (file) => fs.readFileSync(path.join(__dirname, file), "utf8");
-const standalone = "<!-- gh-aw-workflow-id: backporter -->";
-const combined =
-  "<!-- gh-aw-agentic-workflow: Backporter, engine: copilot, workflow_id: backporter, run: https://github.com/canonical/landscape-ui/actions/runs/123 -->";
 const headline = "Backport to `release/26.10` failed";
 const body = (...branches) =>
   `https://warthogs.atlassian.net/browse/LNDENG-5610\n\n## Releases this PR should be backported to\n${branches.map((branch) => `- [ ] ${branch}`).join("\n")}`;
@@ -138,41 +134,33 @@ test("todo has only enabled, existing targets with one slash-safe branch mapping
   assert.deepEqual(h.posted, []);
 });
 
-test("agent comments with either gh-aw marker suppress automatic retries, not dispatch", async () => {
-  for (const marker of [
-    standalone,
-    combined,
-    "<!-- gh-aw-agentic-workflow: Backporter, workflow_id: backporter -->",
+test("trusted failure headlines suppress automatic retries, not dispatch", async () => {
+  for (const author of [
+    { author_association: "OWNER" },
+    { author_association: "MEMBER" },
+    { author_association: "COLLABORATOR" },
+    {
+      author_association: "NONE",
+      user: { login: "custom-app[bot]", type: "Bot" },
+    },
   ]) {
-    for (const author of [
-      { author_association: "OWNER" },
-      { author_association: "MEMBER" },
-      { author_association: "COLLABORATOR" },
-      {
-        author_association: "NONE",
-        user: { login: "custom-app[bot]", type: "Bot" },
-      },
-    ]) {
-      const make = () =>
-        harness({
-          comments: [
-            { body: `\n${headline}\n\nReason.\n${marker}\nFooter.`, ...author },
-          ],
-        });
-      assert.deepEqual(
-        (await make().run()).todo.map((item) => item.release),
-        ["point/26.04.2"],
-      );
-      assert.equal(
-        (await make().run(context("workflow_dispatch"))).todo.length,
-        2,
-      );
-    }
+    const make = () =>
+      harness({
+        comments: [{ body: `\n${headline}\n\nReason.`, ...author }],
+      });
+    assert.deepEqual(
+      (await make().run()).todo.map((item) => item.release),
+      ["point/26.04.2"],
+    );
+    assert.equal(
+      (await make().run(context("workflow_dispatch"))).todo.length,
+      2,
+    );
   }
   const h = harness({
     comments: [
       {
-        body: `Backport to \`point/26.04.2\` failed\n\nConflicting files: src/types/Instance.ts.\n\n${combined}`,
+        body: "Backport to `point/26.04.2` failed\n\nConflicting files: src/types/Instance.ts.",
         user: { type: "Bot" },
       },
     ],
@@ -183,32 +171,11 @@ test("agent comments with either gh-aw marker suppress automatic retries, not di
   );
 });
 
-test("gh-aw threat-detection prefixes do not hide agent failure headlines", async () => {
-  for (const prefix of [
-    "> [!CAUTION]\n> agentic threat detected\n>\n> <details>\n> <summary>Details</summary>\n> </details>",
-    "> [!WARNING]\n> **Threat Detection Engine Failure** — The analysis engine could not complete.",
-  ]) {
-    const h = harness({
-      comments: [
-        {
-          body: `${prefix}\n\n${headline}\n\nConflicting files: none.\n\n${combined}`,
-          user: { type: "Bot" },
-        },
-      ],
-    });
-    assert.deepEqual(
-      (await h.run()).todo.map((item) => item.release),
-      ["point/26.04.2"],
-      prefix,
-    );
-  }
-});
-
-test("untrusted non-bot users cannot suppress retries with copied workflow text", async () => {
+test("untrusted non-bot users cannot suppress retries with a copied headline", async () => {
   const h = harness({
     comments: [
       {
-        body: `${headline}\n\n${combined}`,
+        body: `${headline}\n\nReason.`,
         author_association: "NONE",
         user: { type: "User", login: "github-actions[bot]" },
       },
@@ -225,11 +192,12 @@ test("headlines must be the first visible non-empty line, never quoted or fenced
     `Example:\n${headline}`,
     `    ${headline}`,
     `${headline}: additional text`,
+    `> quoted explanation\n\n${headline}`,
   ]) {
     const h = harness({
       comments: [
         {
-          body: `${text}\n\n${standalone}`,
+          body: `${text}\n\nReason.`,
           user: { type: "Bot" },
         },
       ],
@@ -239,35 +207,12 @@ test("headlines must be the first visible non-empty line, never quoted or fenced
   const h = harness({
     comments: [
       {
-        body: `<!-- hidden -->\n\n${headline}\n\n${combined}`,
+        body: `<!-- hidden -->\n\n${headline}\n\nReason.`,
         user: { type: "Bot" },
       },
     ],
   });
   assert.equal((await h.run()).todo.length, 1);
-});
-
-test("marker matching follows gh-aw v0.88.7, including reaction exclusion", async () => {
-  for (const marker of [
-    "",
-    "<!-- gh-aw-workflow-id: another -->",
-    "<!-- gh-aw-agentic-workflow: Backporter, workflow_id: backporter-extra, run: x -->",
-    `${standalone}\n<!-- gh-aw-comment-type: reaction -->`,
-  ]) {
-    const h = harness({
-      comments: [
-        {
-          body: `${headline}\n\n${marker}`,
-          author_association: "MEMBER",
-        },
-      ],
-    });
-    assert.deepEqual(
-      [...(await failedReleases(h.github, "canonical", "landscape-ui", 10))],
-      [],
-    );
-    assert.equal((await h.run()).todo.length, 2);
-  }
 });
 
 test("invalid targets are commented once by discovery and never enter todo", async () => {
@@ -285,7 +230,7 @@ test("invalid targets are commented once by discovery and never enter todo", asy
     assert.ok(
       h.posted[0].body.startsWith(`Backport to \`${branch}\` failed\n`),
     );
-    assert.ok(h.posted[0].body.includes(standalone));
+    assert.doesNotMatch(h.posted[0].body, /<!--/);
     assert.match(
       h.posted[0].body,
       /https:\/\/github.com\/canonical\/landscape-ui\/actions\/runs\/123/,
@@ -369,16 +314,386 @@ test("scheduled discovery covers 30 days and manual input is validated", async (
   }
 });
 
-test("safe outputs and agent instructions match the script contract", () => {
-  const workflow = read("../../workflows/backporter.md");
-  const allowed = JSON.parse(
-    /allowed-base-branches:\s*(\[[\s\S]*?\])/
-      .exec(workflow)[1]
-      .replace(/,\s*\]$/, "]"),
+const todoItem = (number = 10, release = "release/26.10") => ({
+  number,
+  release,
+  backport_branch: backportBranchName(number, release),
+  merge_commit_sha: `sha${number}`,
+  title: `fix: change ${number}`,
+  jira_url: "https://warthogs.atlassian.net/browse/LNDENG-5610",
+});
+function applyHarness({
+  mode,
+  parents = 1,
+  missingChangeset = false,
+  apiError,
+  gitError,
+} = {}) {
+  const commands = [],
+    created = [],
+    labels = [],
+    reviewers = [],
+    comments = [],
+    failed = [],
+    errors = [];
+  let active = false;
+  const exec = {
+    exec: async (command, args) => {
+      assert.equal(command, "git");
+      commands.push(args);
+      return 0;
+    },
+    getExecOutput: async (command, args) => {
+      assert.equal(command, "git");
+      commands.push(args);
+      let exitCode = 0,
+        stdout = "",
+        stderr = "";
+      if (args[0] === "commit" && mode === "commit-error") {
+        exitCode = 1;
+        stderr = "Commit unavailable";
+      } else if (args[0] === "ls-remote") {
+        exitCode = mode === "existing" ? 0 : gitError ? 128 : 2;
+        stderr = gitError || "";
+      } else if (args[0] === "rev-list") {
+        stdout = `${args.at(-1)} ${Array.from({ length: parents }, (_, i) => `parent${i}`).join(" ")}\n`;
+      } else if (args[0] === "cherry-pick" && args[1] === "--abort") {
+        active = false;
+      } else if (args[0] === "cherry-pick") {
+        if (
+          args.at(-1) === "sha10" &&
+          ["conflict", "empty", "other-pick-error"].includes(mode)
+        ) {
+          exitCode = 1;
+          active = mode !== "other-pick-error";
+          stderr =
+            mode === "empty"
+              ? "The previous cherry-pick is now empty"
+              : "Pick failed";
+        }
+      } else if (args[0] === "rev-parse") {
+        exitCode = active ? 0 : 1;
+      } else if (args.includes("--diff-filter=U")) {
+        stdout =
+          mode === "conflict" && active ? "src/one.ts\nsrc/two.ts\n" : "";
+      } else if (args.includes("--diff-filter=A")) {
+        stdout = missingChangeset
+          ? ".changeset/README.md\n"
+          : ".changeset/source.md\n";
+      } else if (args.includes("--cached")) {
+        exitCode = mode === "empty" ? 0 : 1;
+      }
+      return { exitCode, stdout, stderr };
+    },
+  };
+  const github = {
+    rest: {
+      pulls: {
+        create: async (params) => {
+          if (apiError === "create") throw new Error("PR API unavailable");
+          created.push(params);
+          return {
+            data: {
+              number: 100 + created.length,
+              html_url: "https://github.com/canonical/landscape-ui/pull/100",
+            },
+          };
+        },
+        requestReviewers: async (params) => {
+          if (apiError === "review")
+            throw new Error("Reviewer API unavailable");
+          reviewers.push(params);
+        },
+      },
+      issues: {
+        addLabels: async (params) => {
+          if (apiError === "labels") throw new Error("Labels API unavailable");
+          labels.push(params);
+        },
+        createComment: async (params) => {
+          if (apiError === "comment")
+            throw new Error("Comment API unavailable");
+          comments.push(params);
+        },
+      },
+    },
+  };
+  const core = {
+    info: (message) => assert.equal(typeof message, "string"),
+    error: (message) => errors.push(message),
+    setFailed: (message) => failed.push(message),
+  };
+  return {
+    commands,
+    created,
+    labels,
+    reviewers,
+    comments,
+    failed,
+    errors,
+    run: (todo = [todoItem()]) =>
+      applyBackports({ github, context: context(), core, exec, todo }),
+  };
+}
+
+test("a clean pick creates exactly the requested PR, labels and team slug without force-push", async () => {
+  const h = applyHarness();
+  const results = await h.run();
+  assert.equal(results[0].status, "success");
+  assert.deepEqual(h.created[0], {
+    owner: "canonical",
+    repo: "landscape-ui",
+    base: "release/26.10",
+    head: "backport/10-release-26.10",
+    title: "fix: change 10 (backport of #10)",
+    body: "https://warthogs.atlassian.net/browse/LNDENG-5610\n\nBackport of canonical/landscape-ui#10 to `release/26.10`. Clean cherry-pick with `git cherry-pick -x sha10`; no differences from the source.\n\nSee the source PR for testing instructions.",
+  });
+  assert.deepEqual(h.labels[0], {
+    owner: "canonical",
+    repo: "landscape-ui",
+    issue_number: 101,
+    labels: ["backport", "automation"],
+  });
+  assert.deepEqual(h.reviewers[0], {
+    owner: "canonical",
+    repo: "landscape-ui",
+    pull_number: 101,
+    team_reviewers: ["landscape-ui"],
+  });
+  assert.ok(
+    h.commands.some(
+      (args) =>
+        JSON.stringify(args) ===
+        JSON.stringify([
+          "switch",
+          "-c",
+          "backport/10-release-26.10",
+          "origin/release/26.10",
+        ]),
+    ),
   );
-  assert.deepEqual(allowed, BACKPORT_BRANCHES);
+  assert.ok(
+    h.commands.some(
+      (args) =>
+        JSON.stringify(args) ===
+        JSON.stringify(["push", "origin", "backport/10-release-26.10"]),
+    ),
+  );
+  assert.ok(
+    h.commands.some(
+      (args) =>
+        JSON.stringify(args) ===
+        JSON.stringify(["config", "user.name", "github-actions[bot]"]),
+    ),
+  );
+  assert.ok(
+    h.commands.some(
+      (args) =>
+        JSON.stringify(args) ===
+        JSON.stringify([
+          "config",
+          "user.email",
+          "41898282+github-actions[bot]@users.noreply.github.com",
+        ]),
+    ),
+  );
+  assert.ok(
+    h.commands.every(
+      (args) =>
+        !args.includes("--force") && !args.includes("--force-with-lease"),
+    ),
+  );
+  assert.deepEqual(h.comments, []);
+  assert.deepEqual(h.failed, []);
+});
+
+test("two parents add -m 1; one parent keeps the ordinary cherry-pick", async () => {
+  for (const parents of [1, 2]) {
+    const h = applyHarness({ parents });
+    await h.run();
+    assert.deepEqual(
+      h.commands.find((args) => args[0] === "cherry-pick"),
+      ["cherry-pick", "-x", ...(parents === 2 ? ["-m", "1"] : []), "sha10"],
+    );
+  }
+});
+
+test("conflicts are listed and aborted, and the next item still succeeds", async () => {
+  const h = applyHarness({ mode: "conflict" });
+  const results = await h.run([todoItem(), todoItem(11, "point/26.04.2")]);
+  assert.deepEqual(
+    results.map((result) => result.status),
+    ["failed", "success"],
+  );
+  assert.equal(results[0].reason, "conflicts");
+  assert.deepEqual(results[0].conflicting_files, ["src/one.ts", "src/two.ts"]);
+  assert.equal(h.comments.length, 1);
+  assert.ok(
+    h.comments[0].body.startsWith(
+      "Backport to `release/26.10` failed\n\nconflicts",
+    ),
+  );
   assert.match(
-    read("../../agents/backporter.agent.md"),
-    /Backport to `<release>` failed/,
+    h.comments[0].body,
+    /Conflicting files:.*src\/one.ts.*src\/two.ts/,
   );
+  assert.match(h.comments[0].body, /actions\/runs\/123/);
+  assert.ok(
+    h.commands.some(
+      (args) => args[0] === "cherry-pick" && args[1] === "--abort",
+    ),
+  );
+  assert.ok(
+    h.commands.some((args) => args[0] === "switch" && args[1] === "--detach"),
+  );
+  assert.ok(
+    h.commands.some(
+      (args) =>
+        args[0] === "branch" && args.at(-1) === todoItem().backport_branch,
+    ),
+  );
+  assert.deepEqual(h.failed, []);
+});
+
+test("an empty pick reports an already-present change and aborts it", async () => {
+  const h = applyHarness({ mode: "empty" });
+  const results = await h.run();
+  assert.equal(results[0].reason, "change already present on `release/26.10`");
+  assert.match(h.comments[0].body, /Conflicting files: none/);
+  assert.ok(
+    h.commands.some(
+      (args) => args[0] === "cherry-pick" && args[1] === "--abort",
+    ),
+  );
+  assert.deepEqual(h.created, []);
+  assert.deepEqual(h.failed, []);
+});
+
+test("an existing remote branch is never reused, overwritten or deleted locally", async () => {
+  const h = applyHarness({ mode: "existing" });
+  const results = await h.run();
+  assert.equal(results[0].reason, "branch already exists");
+  assert.ok(
+    !h.commands.some((args) => args[0] === "switch" && args[1] === "-c"),
+  );
+  assert.ok(
+    !h.commands.some((args) => args[0] === "push" || args[0] === "branch"),
+  );
+  assert.equal(h.comments.length, 1);
+  assert.deepEqual(h.failed, []);
+});
+
+test("a missing changeset is created exclusively, committed and disclosed", async (t) => {
+  const writes = [];
+  t.mock.method(fs, "writeFileSync", (...args) => writes.push(args));
+  const h = applyHarness({ missingChangeset: true });
+  await h.run();
+  assert.deepEqual(writes, [
+    [path.join(".changeset", "backport-10.md"), "---\n---\n", { flag: "wx" }],
+  ]);
+  assert.ok(
+    h.commands.some(
+      (args) =>
+        JSON.stringify(args) ===
+        JSON.stringify(["add", path.join(".changeset", "backport-10.md")]),
+    ),
+  );
+  assert.ok(
+    h.commands.some(
+      (args) =>
+        JSON.stringify(args) ===
+        JSON.stringify([
+          "commit",
+          "-m",
+          "chore: add empty changeset for backport of #10",
+        ]),
+    ),
+  );
+  assert.match(
+    h.created[0].body,
+    /An empty changeset was added to satisfy the Changeset check\./,
+  );
+});
+
+test("a changeset filename collision fails rather than overwriting the file", async (t) => {
+  t.mock.method(fs, "writeFileSync", () => {
+    throw Object.assign(new Error("Already exists"), { code: "EEXIST" });
+  });
+  const h = applyHarness({ missingChangeset: true });
+  const results = await h.run();
+  assert.equal(results[0].status, "failed");
+  assert.match(h.comments[0].body, /changeset.*already exists/i);
+  assert.ok(!h.commands.some((args) => args[0] === "push"));
+});
+
+test("a failed changeset commit removes only its owned staged file before continuing", async (t) => {
+  const removed = [];
+  t.mock.method(fs, "writeFileSync", (file) =>
+    assert.match(file, /backport-\d+\.md$/),
+  );
+  t.mock.method(fs, "unlinkSync", (file) => removed.push(file));
+  const h = applyHarness({ missingChangeset: true, mode: "commit-error" });
+  const results = await h.run([todoItem(), todoItem(11, "point/26.04.2")]);
+  assert.equal(results.length, 2);
+  assert.deepEqual(removed, [
+    path.join(".changeset", "backport-10.md"),
+    path.join(".changeset", "backport-11.md"),
+  ]);
+  const restore = h.commands.findIndex(
+    (args) =>
+      JSON.stringify(args) ===
+      JSON.stringify([
+        "restore",
+        "--staged",
+        "--",
+        path.join(".changeset", "backport-10.md"),
+      ]),
+  );
+  const nextFetch = h.commands.findIndex(
+    (args) => args[0] === "fetch" && args.at(-1) === "point/26.04.2",
+  );
+  assert.ok(restore !== -1 && restore < nextFetch);
+  assert.equal(h.failed.length, 1);
+});
+
+test("untrusted title bytes reach only API arguments, never Git arguments", async () => {
+  const item = {
+    ...todoItem(),
+    jira_url: "",
+    title: 'fix: `$(printf harmless)` "quoted"\nsecond line',
+  };
+  const h = applyHarness();
+  await h.run([item]);
+  assert.equal(h.created[0].title, `${item.title} (backport of #10)`);
+  assert.ok(
+    h.commands.every((args) =>
+      args.every(
+        (arg) => !arg.includes("harmless") && !arg.includes("second line"),
+      ),
+    ),
+  );
+  assert.ok(h.created[0].body.startsWith("Backport of "));
+});
+
+test("API errors are reported and fail the job after processing all items", async () => {
+  for (const apiError of ["create", "labels", "review"]) {
+    const h = applyHarness({ apiError });
+    const results = await h.run([todoItem(), todoItem(11, "point/26.04.2")]);
+    assert.equal(results.length, 2);
+    assert.equal(h.comments.length, 2);
+    assert.equal(h.failed.length, 1);
+    assert.match(h.failed[0], /API unavailable/);
+  }
+});
+
+test("unexpected Git and failure-comment errors are not treated as conflicts", async () => {
+  for (const options of [
+    { gitError: "Network unavailable" },
+    { mode: "other-pick-error" },
+    { mode: "conflict", apiError: "comment" },
+  ]) {
+    const h = applyHarness(options);
+    await h.run();
+    assert.equal(h.failed.length, 1);
+  }
 });

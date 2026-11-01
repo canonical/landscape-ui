@@ -15,7 +15,7 @@ Independent jobs (no `needs` chain):
 - **Stylelint** — `pnpm stylelint "src/**/*.module.scss"`
 - **Playwright** (self-hosted; `ubuntu-latest` for fork PRs; `mcr.microsoft.com/playwright` container) — matrix over `saas` / `self-hosted`; builds with `pnpm run build:e2e` (`VITE_ROOT_PATH=/`), installs browsers, runs the matching project against the `dev` backend (`vars.API_PROXY_TARGET`), uploads `playwright-report-<target>`
 - **Vitest** (self-hosted; `ubuntu-latest` for fork PRs) — `pnpm exec vitest run --coverage` with `VITE_ROOT_PATH=/portal/` and `NODE_OPTIONS=--max_old_space_size=4096`; uploads `vitest-report` from `reports/`
-- **Changeset** — fails the PR unless it *adds* a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it.
+- **Changeset** — fails the PR unless it _adds_ a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it.
 - **Backporter tests** — `node --test '.github/scripts/backporter/*.test.cjs'` on Node 24, with SHA-pinned checkout/setup-node and no pnpm install or dependency cache.
 
 **Rule:** fork PRs get no `vars.*` (the `dev` environment's variables come through empty), so the Playwright and Vitest `VITE_API_*` env lines fall back to literal defaults only when `github.event.pull_request.head.repo.fork` is true; keep those defaults in sync with `.env.production`, and never add a secret to either job. Fork PR runs stay on GitHub-hosted runners; merge-queue runs (`merge_group` has no fork flag) use self-hosted runners, which is safe because entering the queue requires an approving code-owner review.
@@ -36,35 +36,59 @@ and uses only `GITHUB_TOKEN`. It shares the workflow-level, non-cancelling
 keeps pending runs from replacing each other. Only open backports link, and
 `edited` runs only when the title or base changed.
 
-## Backporter (`backporter.md`)
+## Backporter (`backporter.yaml`)
 
-**Trigger:** push to main, daily 30-day sweep, or `workflow_dispatch` with
-`pr_number` (which also retries failed targets). The deterministic
-`find-backports` job emits todo items for enabled, existing targets, links
-trusted pre-existing backports, and comments on invalid targets itself. The
-agent runs only when there is work, uses only Git and edit tools, and opens one
-PR per target; see the
-[unattended skill](../.github/skills/backport-pr/SKILL.md#running-unattended-backporter).
+**Trigger:** push to main, daily at 05:06 UTC (a 30-day sweep), or
+`workflow_dispatch` with required string `pr_number`. Manual dispatch retries
+previously failed targets. Workflow runs serialize in the non-cancelling
+`backporter` group; default token permissions are empty.
 
-**Failure detection:** automatic runs skip a target when a trusted
-(OWNER/MEMBER/COLLABORATOR or bot) comment carries gh-aw's `backporter`
-workflow marker and its first visible line, after any leading blockquote alert,
-is ``Backport to `<branch>` failed``. gh-aw strips agent-written HTML comments,
-so only gh-aw's own marker is trusted.
+**Discovery:** `find-backports` uses `GITHUB_TOKEN` with contents/issues read
+and pull-requests write. It selects only merged-main requests for enabled,
+existing targets, links trusted pre-existing backports, and comments on invalid
+targets itself. It shares the queued, non-cancelling `backporter-source-body`
+group with the link workflow so body writes cannot overwrite each other.
 
-**Setup:** create the `backport` and `automation` labels, a `BACKPORTER_TOKEN`
-secret (PAT or App token with contents/pull-requests write, so opened PRs
-trigger CI), and `COPILOT_GITHUB_TOKEN` for the Copilot engine.
+**Cherry-picking:** the `backport` job runs only when discovery has todo. It
+uses `BACKPORTER_TOKEN` for full-history checkout, Git pushes and PR APIs,
+processing targets in order. Each new branch starts at `origin/<release>`, not
+at main. It refuses existing remote branches and runs `git cherry-pick -x`,
+adding `-m 1` only for exactly two parents. It never force-pushes or resolves
+conflicts. Source authors are preserved; the committer is `github-actions[bot]`.
 
-**Maintenance:** install `gh extension install github/gh-aw --pin v0.88.7`,
-then regenerate with `gh aw compile backporter --strict` and commit the lock
-file (excluded from Prettier). v0.88.7 `allowed-base-branches` accepts only
-exact names, so keep it equal to `BACKPORT_BRANCHES`; tests enforce this.
+If the diff adds no `.changeset/*.md` except `README.md`, the job creates
+`.changeset/backport-<N>.md` with exactly `---\n---\n`, exclusively, and commits
+only that file. Filename collisions fail. The PR discloses an empty changeset
+and points to the source PR for testing. PRs receive `backport`/`automation`
+labels and the `landscape-ui` team reviewer. Target PR CI owns validation;
+the job installs no dependencies and runs no lint, builds or tests.
 
-Link-back is a separate workflow because gh-aw makes the agent depend on every
-custom job, so a job after safe outputs would create a cycle. `find-backports`
-joins the link workflow's `backporter-source-body` group, also with `queue: max`,
-to serialize body writes.
+**Failures:** conflicts list the affected files; an empty pick reports the
+change already present. Every failure posts one source-PR comment beginning
+with exactly ``Backport to `<branch>` failed``, followed by its reason,
+conflicting files (or "none"), and run URL. An active cherry-pick is aborted,
+the job detaches at the target and deletes only its newly created local branch
+before continuing. Unexpected Git/API errors fail the job after the loop; if
+cleanup itself fails, further work stops rather than using a dirty checkout.
+If an empty-changeset commit fails, cleanup unstages and removes only that
+newly created file before starting another item.
+
+Automatic runs skip a target when such a headline is the first visible,
+non-empty line of an OWNER/MEMBER/COLLABORATOR or Bot comment. No hidden marker
+or configured bot login is required. Quoted, fenced and indented headlines do
+not match. Discovery's invalid-target comments use the same rule.
+
+**Setup:** create the `backport` and `automation` labels and a
+`BACKPORTER_TOKEN` Actions secret, a PAT or App token scoped to contents and
+pull-requests write on canonical/landscape-ui. It is required so pushed PRs
+trigger release CI and the link workflow; writes with `GITHUB_TOKEN` would
+not. The existing link workflow remains default-branch-only and uses only
+`GITHUB_TOKEN`.
+
+**Maintenance:** `BACKPORT_BRANCHES` is the only target list. Enable a target
+only after its own PR CI runs. Keep all actions pinned by SHA. Run
+`node --test '.github/scripts/backporter/*.test.cjs'` for the dependency-free
+tests; the Validate job runs the same command on Node 24.
 
 ## Changeset Version (`changeset-version.yml`)
 

@@ -1,0 +1,67 @@
+name: Backporter
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "6 5 * * *"
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Merged PR number to backport (also retries failed targets)
+        required: true
+        type: string
+
+concurrency:
+  group: backporter
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  find-backports:
+    runs-on: ubuntu-latest
+    # Share this writer lock with backporter-link.yaml to prevent lost links;
+    # queue: max keeps a newer pending writer from cancelling an older one.
+    concurrency:
+      group: backporter-source-body
+      queue: max
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: write
+    outputs:
+      todo: ${{ steps.find.outputs.todo }}
+      has_todo: ${{ steps.find.outputs.has_todo }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/scripts/backporter
+          persist-credentials: false
+      - id: find
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { findBackports } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/backporter/backport.cjs`);
+            await findBackports({ github, context, core });
+
+  backport:
+    needs: find-backports
+    if: needs.find-backports.outputs.has_todo == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.BACKPORTER_TOKEN }}
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          TODO: ${{ needs.find-backports.outputs.todo }}
+        with:
+          github-token: ${{ secrets.BACKPORTER_TOKEN }}
+          script: |
+            const { applyBackports } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/backporter/backport.cjs`);
+            await applyBackports({ github, context, core, exec, todo: JSON.parse(process.env.TODO) });

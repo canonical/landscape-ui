@@ -1,3 +1,6 @@
+const fs = require("node:fs");
+const path = require("node:path");
+
 const SECTION_HEADING = /Releases this PR should be backported to/i;
 // Up to 3 leading spaces: 4 or more is an indented code block.
 const ACTIONABLE_ENTRY =
@@ -9,7 +12,6 @@ const BACKPORT_BRANCHES = Object.freeze(["release/26.10", "point/26.04.2"]);
 const BACKPORT_TITLE = /\(backport of #([1-9]\d*)\)\s*$/;
 const TRUSTED_ASSOCIATIONS = new Set(["OWNER", "MEMBER", "COLLABORATOR"]);
 const FAILURE_HEADLINE = /^Backport to `([^`\r\n]+)` failed$/;
-const WORKFLOW_MARKER = "<!-- gh-aw-workflow-id: backporter -->";
 const JIRA_URL =
   /https:\/\/warthogs\.atlassian\.net\/browse\/[A-Z][A-Z0-9]+-\d+/;
 const SWEEP_DAYS = 30;
@@ -229,19 +231,11 @@ async function failedReleases(github, owner, repo, number) {
       continue;
     }
     const text = comment.body || "";
-    // Match gh-aw v0.88.7 generate_footer.cjs matchesWorkflowId, not custom HTML.
-    const fromWorkflow =
-      !text.includes("<!-- gh-aw-comment-type: reaction -->") &&
-      (text.includes(WORKFLOW_MARKER) ||
-        (text.includes("<!-- gh-aw-agentic-workflow:") &&
-          (text.includes("workflow_id: backporter,") ||
-            text.includes("workflow_id: backporter -->"))));
-    // gh-aw prepends a blockquote alert when threat detection warns.
     const firstLine = stripHtmlComments(text)
       .split(/\r?\n/)
-      .find((line) => line.trim() && !/^\s*>/.test(line));
+      .find((line) => line.trim());
     const headline = FAILURE_HEADLINE.exec(firstLine || "");
-    if (fromWorkflow && headline) {
+    if (headline) {
       failed.add(headline[1]);
     }
   }
@@ -337,8 +331,6 @@ async function findBackports({ github, context, core }) {
             "Conflicting files: none.",
             "",
             `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`,
-            "",
-            WORKFLOW_MARKER,
           ].join("\n"),
         });
         core.info(`#${pr.number} -> ${release}: reported invalid target`);
@@ -378,8 +370,253 @@ async function findBackports({ github, context, core }) {
   return { todo, linkOnly };
 }
 
+class BackportFailure extends Error {
+  constructor(message, files = []) {
+    super(message);
+    this.files = files;
+  }
+}
+
+async function applyBackports({ github, context, core, exec, todo }) {
+  const { owner, repo } = context.repo;
+  const results = [];
+  const unexpectedErrors = [];
+  const git = async (args, allowFailure = false) => {
+    const output = await exec.getExecOutput("git", args, {
+      ignoreReturnCode: true,
+      silent: true,
+    });
+    if (output.exitCode !== 0 && !allowFailure) {
+      throw new Error(
+        `git ${args[0]} failed: ${output.stderr.trim() || output.stdout.trim() || `exit ${output.exitCode}`}`,
+      );
+    }
+    return output;
+  };
+  const pickInProgress = async () => {
+    const state = await git(
+      ["rev-parse", "-q", "--verify", "CHERRY_PICK_HEAD"],
+      true,
+    );
+    if (state.exitCode !== 0 && state.exitCode !== 1) {
+      throw new Error(`Cannot inspect cherry-pick state: ${state.stderr}`);
+    }
+    return state.exitCode === 0;
+  };
+  await exec.exec("git", ["config", "user.name", "github-actions[bot]"]);
+  await exec.exec("git", [
+    "config",
+    "user.email",
+    "41898282+github-actions[bot]@users.noreply.github.com",
+  ]);
+
+  for (const item of todo) {
+    const {
+      number,
+      release,
+      backport_branch,
+      merge_commit_sha,
+      title,
+      jira_url,
+    } = item;
+    let createdBranch = false;
+    let emptyChangeset = false;
+    let createdChangeset = null;
+    let stagedChangeset = false;
+    try {
+      await git(["fetch", "origin", release]);
+      const remote = await git(
+        ["ls-remote", "--exit-code", "--heads", "origin", backport_branch],
+        true,
+      );
+      if (remote.exitCode === 0) {
+        throw new BackportFailure("branch already exists");
+      }
+      if (remote.exitCode !== 2) {
+        throw new Error(`Remote branch check failed: ${remote.stderr}`);
+      }
+      await git(["switch", "-c", backport_branch, `origin/${release}`]);
+      createdBranch = true;
+      const parents = await git([
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        merge_commit_sha,
+      ]);
+      const parentCount = parents.stdout.trim().split(/\s+/).length - 1;
+      const pick = await git(
+        [
+          "cherry-pick",
+          "-x",
+          ...(parentCount === 2 ? ["-m", "1"] : []),
+          merge_commit_sha,
+        ],
+        true,
+      );
+      if (pick.exitCode !== 0) {
+        const conflicted = await git([
+          "diff",
+          "--name-only",
+          "--diff-filter=U",
+        ]);
+        const files = conflicted.stdout.split(/\r?\n/).filter(Boolean);
+        if (files.length) {
+          throw new BackportFailure("conflicts", files);
+        }
+        if (await pickInProgress()) {
+          const staged = await git(["diff", "--cached", "--quiet"], true);
+          if (staged.exitCode === 0) {
+            throw new BackportFailure(
+              `change already present on \`${release}\``,
+            );
+          }
+          if (staged.exitCode !== 1) {
+            throw new Error(`Cannot inspect staged changes: ${staged.stderr}`);
+          }
+        }
+        throw new Error(
+          `Cherry-pick failed: ${pick.stderr.trim() || pick.stdout.trim()}`,
+        );
+      }
+      const added = await git([
+        "diff",
+        "--name-only",
+        "--diff-filter=A",
+        `origin/${release}...HEAD`,
+        "--",
+        ".changeset/*.md",
+      ]);
+      if (
+        !added.stdout
+          .split(/\r?\n/)
+          .some((file) => file && file !== ".changeset/README.md")
+      ) {
+        const changeset = path.join(".changeset", `backport-${number}.md`);
+        try {
+          fs.writeFileSync(changeset, "---\n---\n", { flag: "wx" });
+          createdChangeset = changeset;
+        } catch (error) {
+          if (error.code === "EEXIST") {
+            throw new BackportFailure(`changeset ${changeset} already exists`);
+          }
+          throw error;
+        }
+        await git(["add", changeset]);
+        stagedChangeset = true;
+        await git([
+          "commit",
+          "-m",
+          `chore: add empty changeset for backport of #${number}`,
+        ]);
+        emptyChangeset = true;
+      }
+      await git(["push", "origin", backport_branch]);
+      const { data: pr } = await github.rest.pulls.create({
+        owner,
+        repo,
+        base: release,
+        head: backport_branch,
+        title: `${title} (backport of #${number})`,
+        body: [
+          jira_url,
+          `Backport of ${owner}/${repo}#${number} to \`${release}\`. Clean cherry-pick with \`git cherry-pick -x ${merge_commit_sha}\`; no differences from the source.`,
+          emptyChangeset
+            ? "An empty changeset was added to satisfy the Changeset check."
+            : "",
+          "See the source PR for testing instructions.",
+        ]
+          .filter(Boolean)
+          .join("\n\n"),
+      });
+      await github.rest.issues.addLabels({
+        owner,
+        repo,
+        issue_number: pr.number,
+        labels: ["backport", "automation"],
+      });
+      await github.rest.pulls.requestReviewers({
+        owner,
+        repo,
+        pull_number: pr.number,
+        team_reviewers: ["landscape-ui"],
+      });
+      results.push({
+        number,
+        release,
+        status: "success",
+        url: pr.html_url,
+        empty_changeset: emptyChangeset,
+      });
+      core.info(`#${number} -> ${release}: opened ${pr.html_url}`);
+    } catch (error) {
+      const files = error instanceof BackportFailure ? error.files : [];
+      if (!(error instanceof BackportFailure)) {
+        unexpectedErrors.push(error.message);
+        core.error(`#${number} -> ${release}: ${error.message}`);
+      }
+      results.push({
+        number,
+        release,
+        status: "failed",
+        reason: error.message,
+        conflicting_files: files,
+      });
+      try {
+        await github.rest.issues.createComment({
+          owner,
+          repo,
+          issue_number: number,
+          body: [
+            `Backport to \`${release}\` failed`,
+            "",
+            error.message,
+            "",
+            `Conflicting files: ${files.length ? files.join(", ") : "none"}`,
+            "",
+            `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`,
+          ].join("\n"),
+        });
+      } catch (commentError) {
+        unexpectedErrors.push(commentError.message);
+        core.error(
+          `#${number} -> ${release}: failure comment failed: ${commentError.message}`,
+        );
+      }
+      try {
+        if (await pickInProgress()) {
+          await git(["cherry-pick", "--abort"]);
+        }
+        if (createdChangeset && !emptyChangeset) {
+          if (stagedChangeset) {
+            await git(["restore", "--staged", "--", createdChangeset]);
+          }
+          fs.unlinkSync(createdChangeset);
+        }
+        await git(["switch", "--detach", `origin/${release}`]);
+        if (createdBranch) {
+          await git(["branch", "-D", backport_branch]);
+        }
+      } catch (cleanupError) {
+        unexpectedErrors.push(cleanupError.message);
+        core.error(
+          `#${number} -> ${release}: cleanup failed: ${cleanupError.message}`,
+        );
+        break;
+      }
+    }
+  }
+  if (unexpectedErrors.length) {
+    core.setFailed(
+      `Backporter encountered unexpected errors: ${unexpectedErrors.join("; ")}`,
+    );
+  }
+  return results;
+}
+
 module.exports = {
   BACKPORT_BRANCHES,
+  applyBackports,
   backportBranchName,
   failedReleases,
   findBackports,
