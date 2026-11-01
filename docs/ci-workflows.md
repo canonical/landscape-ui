@@ -46,8 +46,12 @@ previously failed targets. Workflow runs queue in the non-cancelling
 **Discovery:** `find-backports` uses `GITHUB_TOKEN` with contents/issues read
 and pull-requests write. It selects only merged-main requests for enabled,
 existing targets, links trusted pre-existing backports, and comments on invalid
-targets itself. It shares the queued, non-cancelling `backporter-source-body`
-group with the link workflow so body writes cannot overwrite each other.
+targets itself. Push runs check every PR merged in the push, since the merge
+queue can land several at once. An API error for one PR fails the job only
+after other PRs' links and todo are written; the backport job still runs
+that partial todo. It shares the queued,
+non-cancelling `backporter-source-body` group with the link workflow so body
+writes cannot overwrite each other.
 
 **Cherry-picking:** the `backport` job runs only when discovery has todo. It
 uses `BACKPORTER_TOKEN` for full-history checkout, Git pushes and PR APIs,
@@ -70,8 +74,8 @@ conflicting files (or "none"), and run URL. An active cherry-pick is aborted,
 the job detaches at the target and deletes only its newly created local branch
 before continuing. Unexpected Git/API errors fail the job after the loop; if
 cleanup itself fails, further work stops rather than using a dirty checkout.
-If PR creation fails after the push, the comment names the pushed branch,
-which must be deleted before a retry. Label or reviewer errors after the PR
+If PR creation fails after the push, the job deletes the pushed branch; the
+comment names it only if that delete fails. Label or reviewer errors after the PR
 exists only log warnings.
 If an empty-changeset commit fails, cleanup unstages and removes only that
 newly created file before starting another item.
@@ -79,11 +83,15 @@ newly created file before starting another item.
 Automatic runs skip a target when such a headline is the first visible,
 non-empty line of an OWNER/MEMBER/COLLABORATOR or Bot comment. No hidden marker
 or configured bot login is required. Quoted, fenced and indented headlines do
-not match. Discovery's invalid-target comments use the same rule.
+not match. Discovery's invalid-target comments use the same rule and say to
+dispatch with `pr_number` once the target is fixed.
 
 **Setup:** create the `backport` and `automation` labels and a
 `BACKPORTER_TOKEN` Actions secret, a PAT or App token scoped to contents and
-pull-requests write on canonical/landscape-ui. It is required so pushed PRs
+pull-requests write on canonical/landscape-ui, plus workflows write so
+backports that touch `.github/workflows/` can be pushed. Its comments must read
+as OWNER/MEMBER/COLLABORATOR or Bot to stop retries: use an App token, or a
+machine user that is a direct collaborator. It is required so pushed PRs
 trigger release CI and the link workflow; writes with `GITHUB_TOKEN` would
 not. The existing link workflow remains default-branch-only and uses only
 `GITHUB_TOKEN`.

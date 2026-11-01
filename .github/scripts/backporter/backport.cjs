@@ -261,13 +261,26 @@ async function candidatePullRequests({ github, context, core }) {
     return [data];
   }
   if (context.eventName === "push") {
-    const { data } =
-      await github.rest.repos.listPullRequestsAssociatedWithCommit({
-        owner,
-        repo,
-        commit_sha: context.sha,
-      });
-    return data.filter((pr) => pr.merge_commit_sha === context.sha);
+    // The merge queue can land several PRs in one push.
+    const shas = new Set([
+      ...(context.payload.commits || []).map((commit) => commit.id),
+      context.sha,
+    ]);
+    const pulls = new Map();
+    for (const sha of shas) {
+      const { data } =
+        await github.rest.repos.listPullRequestsAssociatedWithCommit({
+          owner,
+          repo,
+          commit_sha: sha,
+        });
+      for (const pr of data) {
+        if (pr.merge_commit_sha === sha) {
+          pulls.set(pr.number, pr);
+        }
+      }
+    }
+    return [...pulls.values()];
   }
   const since = new Date(Date.now() - SWEEP_DAYS * 86400000)
     .toISOString()
@@ -294,80 +307,112 @@ async function candidatePullRequests({ github, context, core }) {
 }
 
 async function findBackports({ github, context, core }) {
-  const { owner, repo } = context.repo;
   const todo = [];
   const linkOnly = [];
+  const errors = [];
   for (const pr of await candidatePullRequests({ github, context, core })) {
-    if (!pr.merged_at || pr.base.ref !== "main") {
-      core.info(`#${pr.number}: not merged into main, skipping`);
-      continue;
+    // One PR's API error must not drop other PRs' links or todo items.
+    try {
+      await discoverPullRequest({ github, context, core, pr, todo, linkOnly });
+    } catch (error) {
+      errors.push(`#${pr.number}: ${error.message}`);
+      core.error(`#${pr.number}: discovery failed: ${error.message}`);
     }
-    const failed =
-      context.eventName === "workflow_dispatch"
-        ? new Set()
-        : await failedReleases(github, owner, repo, pr.number);
-    for (const release of parseBackportReleases(pr.body)) {
-      if (failed.has(release)) {
-        core.info(
-          `#${pr.number} -> ${release}: failed before; dispatch to retry`,
-        );
-        continue;
-      }
-      const enabled = BACKPORT_BRANCHES.includes(release);
-      if (!enabled || !(await branchExists(github, owner, repo, release))) {
-        const reason = enabled
-          ? `Branch \`${release}\` does not exist in ${owner}/${repo}.`
-          : `Branch \`${release}\` is not enabled for backports.`;
-        await github.rest.issues.createComment({
-          owner,
-          repo,
-          issue_number: pr.number,
-          body: [
-            `Backport to \`${release}\` failed`,
-            "",
-            reason,
-            "Fix or remove the source checklist entry.",
-            "",
-            "Conflicting files: none.",
-            "",
-            `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`,
-          ].join("\n"),
-        });
-        core.info(`#${pr.number} -> ${release}: reported invalid target`);
-        continue;
-      }
-      const existing = await findExistingBackport(
-        github,
-        owner,
-        repo,
-        pr.number,
-        release,
-      );
-      if (existing) {
-        linkOnly.push({ number: pr.number, release, backport_url: existing });
-        continue;
-      }
-      const jira = JIRA_URL.exec(pr.body || "");
-      todo.push({
-        number: pr.number,
-        release,
-        backport_branch: backportBranchName(pr.number, release),
-        title: pr.title,
-        url: pr.html_url,
-        merge_commit_sha: pr.merge_commit_sha,
-        author: pr.user?.login || "",
-        jira_url: jira ? jira[0] : "",
-      });
-    }
-  }
-  for (const { number, release, backport_url: url } of linkOnly) {
-    await linkEntry({ github, core, owner, repo, number, release, url });
   }
   core.info(`todo: ${JSON.stringify(todo)}`);
   core.info(`link_only: ${JSON.stringify(linkOnly)}`);
   core.setOutput("todo", JSON.stringify(todo));
   core.setOutput("has_todo", todo.length ? "true" : "false");
+  if (errors.length) {
+    core.setFailed(`Backporter discovery failed for ${errors.join("; ")}`);
+  }
   return { todo, linkOnly };
+}
+
+async function discoverPullRequest({
+  github,
+  context,
+  core,
+  pr,
+  todo,
+  linkOnly,
+}) {
+  const { owner, repo } = context.repo;
+  if (!pr.merged_at || pr.base.ref !== "main") {
+    core.info(`#${pr.number}: not merged into main, skipping`);
+    return;
+  }
+  const releases = parseBackportReleases(pr.body);
+  if (!releases.length) {
+    return;
+  }
+  const failed =
+    context.eventName === "workflow_dispatch"
+      ? new Set()
+      : await failedReleases(github, owner, repo, pr.number);
+  for (const release of releases) {
+    if (failed.has(release)) {
+      core.info(
+        `#${pr.number} -> ${release}: failed before; dispatch to retry`,
+      );
+      continue;
+    }
+    const enabled = BACKPORT_BRANCHES.includes(release);
+    if (!enabled || !(await branchExists(github, owner, repo, release))) {
+      const reason = enabled
+        ? `Branch \`${release}\` does not exist in ${owner}/${repo}.`
+        : `Branch \`${release}\` is not enabled for backports.`;
+      await github.rest.issues.createComment({
+        owner,
+        repo,
+        issue_number: pr.number,
+        body: [
+          `Backport to \`${release}\` failed`,
+          "",
+          reason,
+          "Fix or remove the source checklist entry. Automatic runs now skip",
+          `this target; after fixing it, run the Backporter workflow with pr_number ${pr.number}.`,
+          "",
+          "Conflicting files: none.",
+          "",
+          `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`,
+        ].join("\n"),
+      });
+      core.info(`#${pr.number} -> ${release}: reported invalid target`);
+      continue;
+    }
+    const existing = await findExistingBackport(
+      github,
+      owner,
+      repo,
+      pr.number,
+      release,
+    );
+    if (existing) {
+      await linkEntry({
+        github,
+        core,
+        owner,
+        repo,
+        number: pr.number,
+        release,
+        url: existing,
+      });
+      linkOnly.push({ number: pr.number, release, backport_url: existing });
+      continue;
+    }
+    const jira = JIRA_URL.exec(pr.body || "");
+    todo.push({
+      number: pr.number,
+      release,
+      backport_branch: backportBranchName(pr.number, release),
+      title: pr.title,
+      url: pr.html_url,
+      merge_commit_sha: pr.merge_commit_sha,
+      author: pr.user?.login || "",
+      jira_url: jira ? jira[0] : "",
+    });
+  }
 }
 
 class BackportFailure extends Error {
@@ -583,6 +628,20 @@ async function applyBackports({ github, context, core, exec, todo }) {
         reason: error.message,
         conflicting_files: files,
       });
+      // ls-remote proved this run created the branch, so a retry needs it gone.
+      let orphaned = false;
+      if (pushed) {
+        const deleted = await git(
+          ["push", "origin", "--delete", backport_branch],
+          true,
+        );
+        orphaned = deleted.exitCode !== 0;
+        if (orphaned) {
+          unexpectedErrors.push(
+            `could not delete ${backport_branch}: ${deleted.stderr.trim()}`,
+          );
+        }
+      }
       try {
         await github.rest.issues.createComment({
           owner,
@@ -592,7 +651,7 @@ async function applyBackports({ github, context, core, exec, todo }) {
             `Backport to \`${release}\` failed`,
             "",
             error.message,
-            ...(pushed
+            ...(orphaned
               ? [
                   "",
                   `Branch \`${backport_branch}\` was pushed; delete it before retrying.`,

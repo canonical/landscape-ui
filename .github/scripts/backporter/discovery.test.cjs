@@ -38,10 +38,13 @@ function harness({
   branches = BACKPORT_BRANCHES,
   branchError,
   commentError,
+  associated = {},
 } = {}) {
   const updates = [],
     posted = [],
     queries = [],
+    commentLists = [],
+    errors = [],
     outputs = {};
   const storedPulls = { 10: pr, ...pulls };
   const github = {
@@ -58,7 +61,10 @@ function harness({
         },
       },
       issues: {
-        listComments: async () => ({ data: comments }),
+        listComments: async (params) => {
+          commentLists.push(params.issue_number);
+          return { data: comments };
+        },
         createComment: async (params) => {
           if (commentError) throw commentError;
           posted.push(params);
@@ -74,7 +80,9 @@ function harness({
           }
           return { data: {} };
         },
-        listPullRequestsAssociatedWithCommit: async () => ({ data: [pr] }),
+        listPullRequestsAssociatedWithCommit: async ({ commit_sha }) => ({
+          data: associated[commit_sha] ?? [pr],
+        }),
       },
       search: {
         issuesAndPullRequests: async ({ q }) => {
@@ -94,6 +102,7 @@ function harness({
   };
   const core = {
     info: (message) => assert.equal(typeof message, "string"),
+    error: (message) => errors.push(message),
     setOutput: (name, value) => {
       outputs[name] = value;
     },
@@ -105,6 +114,8 @@ function harness({
     updates,
     posted,
     queries,
+    commentLists,
+    errors,
     outputs,
     github,
     core,
@@ -236,6 +247,10 @@ test("invalid targets are commented once by discovery and never enter todo", asy
       /https:\/\/github.com\/canonical\/landscape-ui\/actions\/runs\/123/,
     );
     assert.match(h.posted[0].body, /not enabled|does not exist/);
+    assert.match(
+      h.posted[0].body,
+      /run the Backporter workflow with pr_number 10/,
+    );
     await h.run(context("schedule"));
     assert.equal(h.posted.length, 1);
     await h.run(context("workflow_dispatch"));
@@ -243,20 +258,73 @@ test("invalid targets are commented once by discovery and never enter todo", asy
   }
 });
 
-test("invalid-comment and unexpected branch API failures propagate", async () => {
-  await assert.rejects(
-    harness({
-      pr: source({ body: body("release/1.19.1") }),
-      commentError: new Error("Cannot comment"),
-    }).run(),
-    /Cannot comment/,
+test("invalid-comment and unexpected branch API failures fail the job", async () => {
+  for (const [options, message] of [
+    [
+      {
+        pr: source({ body: body("release/1.19.1") }),
+        commentError: new Error("Cannot comment"),
+      },
+      /Cannot comment/,
+    ],
+    [
+      { branchError: Object.assign(new Error("Forbidden"), { status: 403 }) },
+      /Forbidden/,
+    ],
+  ]) {
+    const h = harness(options);
+    assert.deepEqual((await h.run()).todo, []);
+    assert.equal(h.outputs.has_todo, "false");
+    assert.match(h.outputs.failed, message);
+  }
+});
+
+test("one PR's API error keeps other PRs' links and todo items", async () => {
+  const broken = source({
+    number: 11,
+    merge_commit_sha: "sha11",
+    body: body("release/1.19.1"),
+  });
+  const backport = {
+    number: 20,
+    title: "fix: change 10 (backport of #10)",
+    state: "open",
+    html_url: "https://github.com/canonical/landscape-ui/pull/20",
+    base: { ref: "release/26.10" },
+    author_association: "MEMBER",
+    head: { repo: { full_name: "canonical/landscape-ui" } },
+  };
+  const h = harness({
+    commentError: new Error("Cannot comment"),
+    associated: { sha11: [broken] },
+    searchItems: [{ ...backport, base: "release/26.10" }],
+    pulls: { 11: broken, 20: backport },
+  });
+  const event = context();
+  event.payload.commits = [{ id: "sha11" }, { id: "sha10" }];
+  const { todo } = await h.run(event);
+  assert.deepEqual(
+    todo.map((item) => `${item.number} ${item.release}`),
+    ["10 point/26.04.2"],
   );
-  await assert.rejects(
-    harness({
-      branchError: Object.assign(new Error("Forbidden"), { status: 403 }),
-    }).run(),
-    /Forbidden/,
-  );
+  assert.equal(h.updates.length, 1);
+  assert.equal(h.outputs.has_todo, "true");
+  assert.match(h.outputs.failed, /#11: Cannot comment/);
+});
+
+test("push discovery covers every PR merged in the push", async () => {
+  const other = source({ number: 11, merge_commit_sha: "sha11" });
+  const h = harness({ associated: { sha11: [other] }, pulls: { 11: other } });
+  const event = context();
+  event.payload.commits = [{ id: "sha11" }, { id: "sha10" }];
+  const { todo } = await h.run(event);
+  assert.deepEqual([...new Set(todo.map((item) => item.number))], [11, 10]);
+});
+
+test("PRs without bare entries skip the comment lookup", async () => {
+  const h = harness({ pr: source({ body: "No backports." }) });
+  assert.deepEqual((await h.run()).todo, []);
+  assert.deepEqual(h.commentLists, []);
 });
 
 test("discovery links trusted existing backports but rejects untrusted or closed ones", async () => {
@@ -350,7 +418,10 @@ function applyHarness({
       let exitCode = 0,
         stdout = "",
         stderr = "";
-      if (args[0] === "commit" && mode === "commit-error") {
+      if (args[0] === "push" && args.includes("--delete")) {
+        exitCode = mode === "delete-error" ? 1 : 0;
+        stderr = mode === "delete-error" ? "Delete refused" : "";
+      } else if (args[0] === "commit" && mode === "commit-error") {
         exitCode = 1;
         stderr = "Commit unavailable";
       } else if (args[0] === "ls-remote") {
@@ -693,24 +764,34 @@ test("label or reviewer errors after PR creation only warn", async () => {
   }
 });
 
-test("a PR-creation failure after push names the pushed branch and fails the job", async () => {
+test("a PR-creation failure after push deletes the pushed branch and fails the job", async () => {
   const h = applyHarness({ apiError: "create" });
   const results = await h.run([todoItem(), todoItem(11, "point/26.04.2")]);
   assert.deepEqual(
     results.map((result) => result.status),
     ["failed", "failed"],
   );
+  assert.deepEqual(
+    h.commands.filter((args) => args.includes("--delete")),
+    [
+      ["push", "origin", "--delete", "backport/10-release-26.10"],
+      ["push", "origin", "--delete", "backport/11-point-26.04.2"],
+    ],
+  );
   assert.equal(h.comments.length, 2);
+  assert.doesNotMatch(h.comments[0].body, /delete it before retrying/);
+  assert.equal(h.failed.length, 1);
+  assert.match(h.failed[0], /PR API unavailable/);
+});
+
+test("a pushed branch that cannot be deleted is named in the failure comment", async () => {
+  const h = applyHarness({ apiError: "create", mode: "delete-error" });
+  await h.run();
   assert.match(
     h.comments[0].body,
     /`backport\/10-release-26\.10` was pushed; delete it before retrying/,
   );
-  assert.match(
-    h.comments[1].body,
-    /`backport\/11-point-26\.04\.2` was pushed; delete it before retrying/,
-  );
-  assert.equal(h.failed.length, 1);
-  assert.match(h.failed[0], /PR API unavailable/);
+  assert.match(h.failed[0], /could not delete backport\/10-release-26\.10/);
 });
 
 test("unexpected Git and failure-comment errors are not treated as conflicts", async () => {

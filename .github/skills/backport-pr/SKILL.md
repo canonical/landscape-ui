@@ -37,9 +37,11 @@ and [section 5](../../../RELEASES.md#5-point-releases-pointyymmn).
 6. Read the target's `.github/pull_request_template.md` and open a PR against
    that branch titled `<source title> (backport of #N)`. Read it back to
    verify its base, title, and body. Never merge unless asked.
-7. For automatic link-back, add a bare source-checklist entry such as
-   `- [ ] release/26.10` before opening the hand-made backport. The link
-   workflow adds its URL; humans tick the entry after merge.
+7. A bare source-checklist entry such as `- [ ] release/26.10` asks the
+   backporter to open the PR itself, so never add one for a hand-made
+   backport. After opening it, add the entry already linked:
+   `- [ ] release/26.10: <backport PR URL>`. If a bare entry already exists,
+   the link workflow fills in the URL. Humans tick the entry after merge.
 
 ## PR body
 

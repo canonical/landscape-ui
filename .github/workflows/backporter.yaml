@@ -23,6 +23,7 @@ permissions: {}
 jobs:
   find-backports:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     # Share this writer lock with backporter-link.yaml to prevent lost links;
     # queue: max keeps a newer pending writer from cancelling an older one.
     concurrency:
@@ -50,8 +51,10 @@ jobs:
 
   backport:
     needs: find-backports
-    if: needs.find-backports.outputs.has_todo == 'true'
+    # Discovery fails after emitting partial todo; still process those items.
+    if: ${{ !cancelled() && needs.find-backports.outputs.has_todo == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
     steps:
