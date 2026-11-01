@@ -89,12 +89,7 @@ function harness({
           queries.push(q);
           const base = /base:(\S+)/.exec(q)[1];
           return {
-            data: {
-              items:
-                base === "main"
-                  ? [{ number: pr.number, body: pr.body }]
-                  : searchItems.filter((item) => item.base === base),
-            },
+            data: { items: searchItems.filter((item) => item.base === base) },
           };
         },
       },
@@ -234,7 +229,7 @@ test("invalid targets are commented once by discovery and never enter todo", asy
     ["release/26.10", []],
   ]) {
     const h = harness({ pr: source({ body: body(branch) }), branches: refs });
-    assert.deepEqual((await h.run(context("schedule"))).todo, []);
+    assert.deepEqual((await h.run()).todo, []);
     assert.equal(h.outputs.has_todo, "false");
     assert.equal(h.posted.length, 1);
     assert.equal(h.posted[0].issue_number, 10);
@@ -251,7 +246,7 @@ test("invalid targets are commented once by discovery and never enter todo", asy
       h.posted[0].body,
       /run the Backporter workflow with pr_number 10/,
     );
-    await h.run(context("schedule"));
+    await h.run();
     assert.equal(h.posted.length, 1);
     await h.run(context("workflow_dispatch"));
     assert.equal(h.posted.length, 2);
@@ -365,14 +360,10 @@ test("unmerged sources, other bases and unrelated push commits are skipped", asy
   }
 });
 
-test("scheduled discovery covers 30 days and manual input is validated", async () => {
+test("only push and validated manual input find candidates", async () => {
   const h = harness();
-  assert.equal((await h.run(context("schedule"))).todo.length, 2);
-  const since = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
-  assert.equal(
-    h.queries[0],
-    `repo:canonical/landscape-ui is:pr is:merged base:main merged:>=${since}`,
-  );
+  assert.deepEqual((await h.run(context("schedule"))).todo, []);
+  assert.deepEqual(h.queries, []);
   for (const value of ["", "abc", "-1", "1.5"]) {
     const event = context("workflow_dispatch");
     event.payload.inputs.pr_number = value;

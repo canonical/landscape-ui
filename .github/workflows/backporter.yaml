@@ -3,8 +3,6 @@ name: Backporter
 on:
   push:
     branches: [main]
-  schedule:
-    - cron: "6 5 * * *"
   workflow_dispatch:
     inputs:
       pr_number:

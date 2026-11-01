@@ -38,9 +38,10 @@ keeps pending runs from replacing each other. Only open backports link, and
 
 ## Backporter (`backporter.yaml`)
 
-**Trigger:** push to main, daily at 05:06 UTC (a 30-day sweep), or
-`workflow_dispatch` with required string `pr_number`. Manual dispatch retries
-previously failed targets. Workflow runs queue in the non-cancelling
+**Trigger:** push to main or `workflow_dispatch` with required string
+`pr_number`. Each merge is processed once; there is no scheduled sweep yet, so
+entries added after merge and missed push runs need a manual dispatch, which
+also retries previously failed targets. Workflow runs queue in the non-cancelling
 `backporter` group (`queue: max`); default token permissions are empty.
 
 **Discovery:** `find-backports` uses `GITHUB_TOKEN` with contents/issues read

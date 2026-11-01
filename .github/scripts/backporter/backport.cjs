@@ -14,7 +14,6 @@ const TRUSTED_ASSOCIATIONS = new Set(["OWNER", "MEMBER", "COLLABORATOR"]);
 const FAILURE_HEADLINE = /^Backport to `([^`\r\n]+)` failed$/;
 const JIRA_URL =
   /https:\/\/warthogs\.atlassian\.net\/browse\/[A-Z][A-Z0-9]+-\d+/;
-const SWEEP_DAYS = 30;
 
 function stripHtmlComments(text) {
   // Preserve line offsets for byte-preserving link-back edits. GitHub hides
@@ -282,28 +281,9 @@ async function candidatePullRequests({ github, context, core }) {
     }
     return [...pulls.values()];
   }
-  const since = new Date(Date.now() - SWEEP_DAYS * 86400000)
-    .toISOString()
-    .slice(0, 10);
-  const items = await github.paginate(
-    github.rest.search.issuesAndPullRequests,
-    {
-      q: `repo:${owner}/${repo} is:pr is:merged base:main merged:>=${since}`,
-      per_page: 100,
-    },
-  );
-  const pulls = [];
-  for (const item of items) {
-    if (parseBackportReleases(item.body).length) {
-      const { data } = await github.rest.pulls.get({
-        owner,
-        repo,
-        pull_number: item.number,
-      });
-      pulls.push(data);
-    }
-  }
-  return pulls;
+  // No scheduled sweep yet: push runs once per merge, dispatch retries.
+  core.info(`${context.eventName}: no candidate PRs`);
+  return [];
 }
 
 async function findBackports({ github, context, core }) {
