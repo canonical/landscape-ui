@@ -40,8 +40,8 @@ keeps pending runs from replacing each other. Only open backports link, and
 
 **Trigger:** push to main, daily at 05:06 UTC (a 30-day sweep), or
 `workflow_dispatch` with required string `pr_number`. Manual dispatch retries
-previously failed targets. Workflow runs serialize in the non-cancelling
-`backporter` group; default token permissions are empty.
+previously failed targets. Workflow runs queue in the non-cancelling
+`backporter` group (`queue: max`); default token permissions are empty.
 
 **Discovery:** `find-backports` uses `GITHUB_TOKEN` with contents/issues read
 and pull-requests write. It selects only merged-main requests for enabled,
@@ -70,6 +70,9 @@ conflicting files (or "none"), and run URL. An active cherry-pick is aborted,
 the job detaches at the target and deletes only its newly created local branch
 before continuing. Unexpected Git/API errors fail the job after the loop; if
 cleanup itself fails, further work stops rather than using a dirty checkout.
+If PR creation fails after the push, the comment names the pushed branch,
+which must be deleted before a retry. Label or reviewer errors after the PR
+exists only log warnings.
 If an empty-changeset commit fails, cleanup unstages and removes only that
 newly created file before starting another item.
 

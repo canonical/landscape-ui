@@ -335,7 +335,8 @@ function applyHarness({
     reviewers = [],
     comments = [],
     failed = [],
-    errors = [];
+    errors = [],
+    warnings = [];
   let active = false;
   const exec = {
     exec: async (command, args) => {
@@ -421,9 +422,11 @@ function applyHarness({
   const core = {
     info: (message) => assert.equal(typeof message, "string"),
     error: (message) => errors.push(message),
+    warning: (message) => warnings.push(message),
     setFailed: (message) => failed.push(message),
   };
   return {
+    warnings,
     commands,
     created,
     labels,
@@ -675,15 +678,39 @@ test("untrusted title bytes reach only API arguments, never Git arguments", asyn
   assert.ok(h.created[0].body.startsWith("Backport of "));
 });
 
-test("API errors are reported and fail the job after processing all items", async () => {
-  for (const apiError of ["create", "labels", "review"]) {
+test("label or reviewer errors after PR creation only warn", async () => {
+  for (const apiError of ["labels", "review"]) {
     const h = applyHarness({ apiError });
     const results = await h.run([todoItem(), todoItem(11, "point/26.04.2")]);
-    assert.equal(results.length, 2);
-    assert.equal(h.comments.length, 2);
-    assert.equal(h.failed.length, 1);
-    assert.match(h.failed[0], /API unavailable/);
+    assert.deepEqual(
+      results.map((result) => result.status),
+      ["success", "success"],
+    );
+    assert.deepEqual(h.comments, []);
+    assert.deepEqual(h.failed, []);
+    assert.equal(h.warnings.length, 2);
+    assert.match(h.warnings[0], /API unavailable/);
   }
+});
+
+test("a PR-creation failure after push names the pushed branch and fails the job", async () => {
+  const h = applyHarness({ apiError: "create" });
+  const results = await h.run([todoItem(), todoItem(11, "point/26.04.2")]);
+  assert.deepEqual(
+    results.map((result) => result.status),
+    ["failed", "failed"],
+  );
+  assert.equal(h.comments.length, 2);
+  assert.match(
+    h.comments[0].body,
+    /`backport\/10-release-26\.10` was pushed; delete it before retrying/,
+  );
+  assert.match(
+    h.comments[1].body,
+    /`backport\/11-point-26\.04\.2` was pushed; delete it before retrying/,
+  );
+  assert.equal(h.failed.length, 1);
+  assert.match(h.failed[0], /PR API unavailable/);
 });
 
 test("unexpected Git and failure-comment errors are not treated as conflicts", async () => {

@@ -14,6 +14,8 @@ on:
 
 concurrency:
   group: backporter
+  # Queue pending runs so a newer merge does not cancel an older pending one.
+  queue: max
   cancel-in-progress: false
 
 permissions: {}

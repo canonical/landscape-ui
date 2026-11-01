@@ -423,6 +423,7 @@ async function applyBackports({ github, context, core, exec, todo }) {
     let emptyChangeset = false;
     let createdChangeset = null;
     let stagedChangeset = false;
+    let pushed = false;
     try {
       await git(["fetch", "origin", release]);
       const remote = await git(
@@ -512,6 +513,7 @@ async function applyBackports({ github, context, core, exec, todo }) {
         emptyChangeset = true;
       }
       await git(["push", "origin", backport_branch]);
+      pushed = true;
       const { data: pr } = await github.rest.pulls.create({
         owner,
         repo,
@@ -529,18 +531,37 @@ async function applyBackports({ github, context, core, exec, todo }) {
           .filter(Boolean)
           .join("\n\n"),
       });
-      await github.rest.issues.addLabels({
-        owner,
-        repo,
-        issue_number: pr.number,
-        labels: ["backport", "automation"],
-      });
-      await github.rest.pulls.requestReviewers({
-        owner,
-        repo,
-        pull_number: pr.number,
-        team_reviewers: ["landscape-ui"],
-      });
+      // The PR exists now, so metadata errors must not report the backport as failed.
+      for (const [what, request] of [
+        [
+          "labels",
+          () =>
+            github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: pr.number,
+              labels: ["backport", "automation"],
+            }),
+        ],
+        [
+          "reviewers",
+          () =>
+            github.rest.pulls.requestReviewers({
+              owner,
+              repo,
+              pull_number: pr.number,
+              team_reviewers: ["landscape-ui"],
+            }),
+        ],
+      ]) {
+        try {
+          await request();
+        } catch (error) {
+          core.warning(
+            `#${number} -> ${release}: could not add ${what} to ${pr.html_url}: ${error.message}`,
+          );
+        }
+      }
       results.push({
         number,
         release,
@@ -571,6 +592,12 @@ async function applyBackports({ github, context, core, exec, todo }) {
             `Backport to \`${release}\` failed`,
             "",
             error.message,
+            ...(pushed
+              ? [
+                  "",
+                  `Branch \`${backport_branch}\` was pushed; delete it before retrying.`,
+                ]
+              : []),
             "",
             `Conflicting files: ${files.length ? files.join(", ") : "none"}`,
             "",
