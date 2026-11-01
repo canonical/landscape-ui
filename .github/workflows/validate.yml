@@ -26,7 +26,10 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 24
-      - run: node --test '.github/scripts/backporter/*.test.cjs'
+      # node --test passes with 0 tests when the glob matches nothing.
+      - run: |
+          compgen -G '.github/scripts/backporter/*.test.cjs' >/dev/null
+          node --test '.github/scripts/backporter/*.test.cjs'
 
   eslint:
     name: ESLint

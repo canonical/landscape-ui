@@ -1,6 +1,6 @@
 # CI/CD Workflows
 
-This is a reference for the workflows under `.github/workflows/` other than Integration Tests, which has its own deep-dive doc: [docs/integration-testing.md](integration-testing.md) (including the SHA-pinned third-party actions convention — unique to that workflow).
+This is a reference for the workflows under `.github/workflows/` other than Integration Tests, which has its own deep-dive doc: [docs/integration-testing.md](integration-testing.md). Integration Tests, Backporter link and Validate's Backporter tests job pin third-party actions by SHA.
 
 Agents must follow these triggers, job orders, and guardrails when touching `.github/workflows/`.
 
