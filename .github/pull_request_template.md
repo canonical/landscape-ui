@@ -23,6 +23,8 @@ Change type (tick one):
 <!--
 This is separate from Release Impact above, which selects this PR's own target.
 List one bare unchecked full branch per line, for example "- [ ] release/26.10".
+After this PR merges into main, backporter opens PRs for bare unchecked entries
+on enabled targets. Linked, ticked, and commented entries do not request work.
 For a hand-made backport, use the title "<title> (backport of #N)".
 When that PR opens against an enabled target, the link workflow adds its URL
 to the source entry: "- [ ] release/26.10: <PR URL>". Humans tick it on merge.

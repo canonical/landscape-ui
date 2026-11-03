@@ -15,7 +15,7 @@ Independent jobs (no `needs` chain):
 - **Stylelint** — `pnpm stylelint "src/**/*.module.scss"`
 - **Playwright** (self-hosted; `ubuntu-latest` for fork PRs; `mcr.microsoft.com/playwright` container) — matrix over `saas` / `self-hosted`; builds with `pnpm run build:e2e` (`VITE_ROOT_PATH=/`), installs browsers, runs the matching project against the `dev` backend (`vars.API_PROXY_TARGET`), uploads `playwright-report-<target>`
 - **Vitest** (self-hosted; `ubuntu-latest` for fork PRs) — `pnpm exec vitest run --coverage` with `VITE_ROOT_PATH=/portal/` and `NODE_OPTIONS=--max_old_space_size=4096`; uploads `vitest-report` from `reports/`
-- **Changeset** — fails the PR unless it *adds* a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it.
+- **Changeset** — fails the PR unless it _adds_ a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it.
 - **Backporter tests** — `node --test '.github/scripts/backporter/*.test.cjs'` on Node 24, with SHA-pinned checkout/setup-node and no pnpm install or dependency cache.
 
 **Rule:** fork PRs get no `vars.*` (the `dev` environment's variables come through empty), so the Playwright and Vitest `VITE_API_*` env lines fall back to literal defaults only when `github.event.pull_request.head.repo.fork` is true; keep those defaults in sync with `.env.production`, and never add a secret to either job. Fork PR runs stay on GitHub-hosted runners; merge-queue runs (`merge_group` has no fork flag) use self-hosted runners, which is safe because entering the queue requires an approving code-owner review.
@@ -35,6 +35,72 @@ and uses only `GITHUB_TOKEN`. It shares the workflow-level, non-cancelling
 `backporter-source-body` group with other source-body writers; `queue: max`
 keeps pending runs from replacing each other. Only open backports link, and
 `edited` runs only when the title or base changed.
+
+## Backporter (`backporter.yaml`)
+
+**Trigger:** push to main or `workflow_dispatch` with required string
+`pr_number`. Each merge is processed once; there is no scheduled sweep yet, so
+entries added after merge and missed push runs need a manual dispatch, which
+also retries previously failed targets. Workflow runs queue in the non-cancelling
+`backporter` group (`queue: max`); default token permissions are empty.
+
+**Discovery:** `find-backports` uses `GITHUB_TOKEN` with contents/issues read
+and pull-requests write. It selects only merged-main requests for enabled,
+existing targets, links trusted pre-existing backports, and comments on invalid
+targets itself. Push runs check every PR merged in the push, since the merge
+queue can land several at once. An API error for one PR fails the job only
+after other PRs' links and todo are written; the backport job still runs
+that partial todo. It shares the queued,
+non-cancelling `backporter-source-body` group with the link workflow so body
+writes cannot overwrite each other.
+
+**Cherry-picking:** the `backport` job runs only when discovery has todo. It
+uses `BACKPORTER_TOKEN` for full-history checkout, Git pushes and PR APIs,
+processing targets in order. Each new branch starts at `origin/<release>`, not
+at main. It refuses existing remote branches and runs `git cherry-pick -x`,
+adding `-m 1` only for exactly two parents. It never force-pushes or resolves
+conflicts. Source authors are preserved; the committer is `github-actions[bot]`.
+
+If the diff adds no `.changeset/*.md` except `README.md`, the job creates
+`.changeset/backport-<N>.md` with exactly `---\n---\n`, exclusively, and commits
+only that file. Filename collisions fail. The PR discloses an empty changeset
+and points to the source PR for testing. PRs receive `backport`/`automation`
+labels and the `landscape-ui` team reviewer. Target PR CI owns validation;
+the job installs no dependencies and runs no lint, builds or tests.
+
+**Failures:** conflicts list the affected files; an empty pick reports the
+change already present. Every failure posts one source-PR comment beginning
+with exactly ``Backport to `<branch>` failed``, followed by its reason,
+conflicting files (or "none"), and run URL. An active cherry-pick is aborted,
+the job detaches at the target and deletes only its newly created local branch
+before continuing. Unexpected Git/API errors fail the job after the loop; if
+cleanup itself fails, further work stops rather than using a dirty checkout.
+If PR creation fails after the push, the job deletes the pushed branch; the
+comment names it only if that delete fails. Label or reviewer errors after the PR
+exists only log warnings.
+If an empty-changeset commit fails, cleanup unstages and removes only that
+newly created file before starting another item.
+
+Automatic runs skip a target when such a headline is the first visible,
+non-empty line of an OWNER/MEMBER/COLLABORATOR or Bot comment. No hidden marker
+or configured bot login is required. Quoted, fenced and indented headlines do
+not match. Discovery's invalid-target comments use the same rule and say to
+dispatch with `pr_number` once the target is fixed.
+
+**Setup:** create the `backport` and `automation` labels and a
+`BACKPORTER_TOKEN` Actions secret, a PAT or App token scoped to contents and
+pull-requests write on canonical/landscape-ui, plus workflows write so
+backports that touch `.github/workflows/` can be pushed. Its comments must read
+as OWNER/MEMBER/COLLABORATOR or Bot to stop retries: use an App token, or a
+machine user that is a direct collaborator. It is required so pushed PRs
+trigger release CI and the link workflow; writes with `GITHUB_TOKEN` would
+not. The existing link workflow remains default-branch-only and uses only
+`GITHUB_TOKEN`.
+
+**Maintenance:** `BACKPORT_BRANCHES` is the only target list. Enable a target
+only after its own PR CI runs. Keep all actions pinned by SHA. Run
+`node --test '.github/scripts/backporter/*.test.cjs'` for the dependency-free
+tests; the Validate job runs the same command on Node 24.
 
 ## Changeset Version (`changeset-version.yml`)
 
