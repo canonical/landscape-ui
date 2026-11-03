@@ -7,6 +7,10 @@ import type { AccessGroupOption } from "@/pages/dashboard/settings/roles/types";
 import type { FormProps } from "./types";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
+import { API_URL_OLD } from "@/constants";
+import server from "@/tests/server";
+import { isAction } from "@/tests/server/handlers/_helpers";
+import { http } from "msw";
 
 describe("AddRoleForm", () => {
   const user = userEvent.setup();
@@ -54,7 +58,23 @@ describe("AddRoleForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("successfully submits the form with a valid role name", async () => {
+  it.each([
+    { scenario: "omits a blank description", description: "" },
+    {
+      scenario: "preserves a nonempty description",
+      description: "  Operators + auditors & support  ",
+    },
+  ])("$scenario when creating a role", async ({ description }) => {
+    let createRoleParams: URLSearchParams | undefined;
+
+    server.use(
+      http.get(API_URL_OLD, ({ request }) => {
+        if (isAction(request, "CreateRole")) {
+          createRoleParams = new URL(request.url).searchParams;
+        }
+      }),
+    );
+
     renderWithProviders(<AddRoleForm />);
 
     await user.type(
@@ -62,7 +82,23 @@ describe("AddRoleForm", () => {
       "NewRole",
     );
 
+    const descriptionInput = screen.getByRole("textbox", {
+      name: /description/i,
+    });
+    expect(descriptionInput).not.toBeRequired();
+    if (description) {
+      await user.type(descriptionInput, description);
+    }
+
     await user.click(screen.getByRole("button", { name: /add role/i }));
+
+    await waitFor(() => {
+      if (description) {
+        expect(createRoleParams?.get("description")).toBe(description);
+      } else {
+        expect(createRoleParams?.has("description")).toBe(false);
+      }
+    });
 
     expect(
       await screen.findByText(/new role has been added/i),
