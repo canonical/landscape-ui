@@ -21,6 +21,8 @@ export default defineConfig({
       "**/node_modules/**",
       "**/dist/**",
       "**/cypress/**",
+      // node:test suites, run by Validate's "Backporter tests" job.
+      ".github/**",
       "**/.{idea,git,cache,output,temp}/**",
       "**/{karma,rollup,webpack,vite,tests,jest,ava,babel,nyc,cypress,tsup,build}.config.*",
     ],

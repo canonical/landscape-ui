@@ -28,6 +28,12 @@ export default defineConfig(
   reactHooks.configs.flat.recommended,
 
   {
+    files: [".github/scripts/backporter/**/*.cjs"],
+    languageOptions: { globals: globals.node },
+    rules: { "@typescript-eslint/no-require-imports": "off" },
+  },
+
+  {
     files: ["**/*.{js,jsx,ts,tsx}"],
     plugins: { "react-hooks": reactHooks },
     rules: {
