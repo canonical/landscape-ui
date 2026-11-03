@@ -12,23 +12,26 @@ interface SearchHelpPopupProps {
 
 const SearchHelpPopup: FC<SearchHelpPopupProps> = ({ open, onClose, data }) => {
   const columns: (Column<Record<string, unknown>> & { className?: string })[] =
-    [
-      {
-        Header: "Term",
-        accessor: "term",
-        className: classes.term,
-        Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
-          "string" === typeof value ? <code>{value}</code> : null,
-      },
-      {
-        Header: "Description",
-        accessor: "description",
-        Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
-          "string" === typeof value || isValidElement(value) ? (
-            <span className="u-text--muted">{value}</span>
-          ) : null,
-      },
-    ];
+    useMemo(
+      () => [
+        {
+          Header: "Term",
+          accessor: "term",
+          className: classes.term,
+          Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
+            "string" === typeof value ? <code>{value}</code> : null,
+        },
+        {
+          Header: "Description",
+          accessor: "description",
+          Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
+            "string" === typeof value || isValidElement(value) ? (
+              <span className="u-text--muted">{value}</span>
+            ) : null,
+        },
+      ],
+      [],
+    );
 
   return (
     open && (
@@ -42,8 +45,8 @@ const SearchHelpPopup: FC<SearchHelpPopupProps> = ({ open, onClose, data }) => {
         </p>
         <ModularTable
           className="u-no-margin--bottom"
-          columns={useMemo(() => columns, [])}
-          data={useMemo(() => data, [])}
+          columns={columns}
+          data={data}
         />
       </Modal>
     )
