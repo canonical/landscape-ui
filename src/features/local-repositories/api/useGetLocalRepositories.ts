@@ -25,7 +25,9 @@ export const useGetLocalRepositories = (search?: string) => {
             "locals",
             {
               params: {
-                filter: search ? `display_name="${search}*"` : undefined,
+                filter: search
+                  ? `display_name=${JSON.stringify(`${search}*`)}`
+                  : undefined,
                 pageSize: 1000,
                 pageToken,
               },
