@@ -3,8 +3,10 @@ import { MASKED_VALUE } from "@/constants";
 import type { AuthContextProps } from "@/context/auth";
 import { getFeatures } from "@/features/instances";
 import useAuth from "@/hooks/useAuth";
+import { ROUTES } from "@/libs/routes";
 import { expectLoadingState, setScreenSize } from "@/tests/helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { authUser } from "@/tests/mocks/auth";
 import {
   instances,
@@ -19,7 +21,7 @@ import {
 import { renderWithProviders } from "@/tests/render";
 import type { FeatureKey } from "@/types/FeatureKey";
 import type { Instance } from "@/types/Instance";
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import InfoPanel from "./InfoPanel";
@@ -710,7 +712,16 @@ describe("InfoPanel", () => {
     });
 
     it("navigates away after Remove from Landscape is confirmed", async () => {
-      renderWithProviders(<InfoPanel instance={instances[0]} />);
+      const instancePath = ROUTES.instances.details.single(instances[0].id);
+
+      renderWithProviders(
+        <>
+          <InfoPanel instance={instances[0]} />
+          <LocationDisplay />
+        </>,
+        undefined,
+        instancePath,
+      );
       await expectLoadingState();
 
       await user.click(screen.getByRole("button", { name: "More actions" }));
@@ -730,9 +741,9 @@ describe("InfoPanel", () => {
         within(dialog).getByRole("button", { name: /^remove$/i }),
       );
 
-      expect(
-        await screen.findByText(/you have successfully removed/i),
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(getLocationDisplay()).toHaveTextContent(ROUTES.instances.root());
+      });
     });
   });
 
