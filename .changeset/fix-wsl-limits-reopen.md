@@ -2,4 +2,4 @@
 "landscape-ui": patch
 ---
 
-Fix the WSL limits edit panel so it shows the current values.
+Fix header actions using outdated values after updates, for example the WSL limits edit panel.

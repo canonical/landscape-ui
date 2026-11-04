@@ -1,4 +1,5 @@
 import type { WslFeatureLimits } from "@/features/super-admin";
+import useAuth from "@/hooks/useAuth";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { authResponse } from "@/tests/mocks/auth";
 import {
@@ -9,11 +10,19 @@ import { renderWithProviders } from "@/tests/render";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { FC, ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { WSL_LIMIT_FIELDS } from "../../constants";
 import StaffAccountWslLimits from "./StaffAccountWslLimits";
 
 vi.mock("@/hooks/useEnv", () => import("@/tests/mocks/env"));
+
+// Match the page guard so HeaderActions mounts with the signed-in user's roles.
+const WhenSignedIn: FC<{ readonly children: ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+
+  return user ? children : null;
+};
 
 describe("StaffAccountWslLimits", () => {
   it("reopens the form with the saved limits and compares further changes against them", async () => {
@@ -37,7 +46,11 @@ describe("StaffAccountWslLimits", () => {
       max_wsl_child_instance_profiles: 25,
     };
 
-    renderWithProviders(<StaffAccountWslLimits staffAccount={staffAccount} />);
+    renderWithProviders(
+      <WhenSignedIn>
+        <StaffAccountWslLimits staffAccount={staffAccount} />
+      </WhenSignedIn>,
+    );
 
     await user.click(await screen.findByRole("button", { name: "Edit" }));
 
