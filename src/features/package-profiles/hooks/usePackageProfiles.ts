@@ -148,6 +148,8 @@ export default function usePackageProfiles() {
       const normalizedTags = tags ?? [];
       return authFetch.put(`packageprofiles/${name}`, {
         ...rest,
+        title: rest.title === "" ? null : rest.title,
+        description: rest.description === "" ? null : rest.description,
         tags: normalizedTags,
       });
     },
@@ -221,7 +223,11 @@ export default function usePackageProfiles() {
     EditPackageProfileConstraintParams
   >({
     mutationFn: async ({ id, name, ...params }) =>
-      authFetch.put(`packageprofiles/${name}/constraints/${id}`, params),
+      authFetch.put(`packageprofiles/${name}/constraints/${id}`, {
+        ...params,
+        rule: params.rule === "" ? null : params.rule,
+        version: params.version === "" ? null : params.version,
+      }),
     onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),

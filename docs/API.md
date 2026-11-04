@@ -51,6 +51,20 @@ Current behavior:
 
 If a feature bypasses the shared fetch providers, it is also bypassing this behavior.
 
+### Empty Strings In Update Payloads
+
+The shared interceptor preserves empty strings. Normalize them only in endpoint
+hooks whose backend validators reject them:
+
+- instance updates: `title`, `access_group`, and `comment`
+- package profile updates: `title` and `description`
+- package profile constraint updates: `rule` and `version`
+
+These hooks send `null` for `""`. For instance and package profile details, this
+means "leave unchanged", not "clear". For profile constraints, null rule and version mean
+"any version". Repository profile updates and `POST /users:edit` preserve empty
+strings for clearing fields.
+
 ## React Query Is The Default Server-State Layer
 
 `src/context/reactQuery.tsx` defines the app-wide React Query client.

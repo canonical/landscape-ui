@@ -22,7 +22,12 @@ export const useEditInstance = () => {
     EditInstanceParams
   >({
     mutationFn: async ({ instanceId, ...params }) =>
-      authFetch.put(`computers/${instanceId}`, params),
+      authFetch.put(`computers/${instanceId}`, {
+        ...params,
+        title: params.title === "" ? null : params.title,
+        access_group: params.access_group === "" ? null : params.access_group,
+        comment: params.comment === "" ? null : params.comment,
+      }),
     onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["instances"] }),
