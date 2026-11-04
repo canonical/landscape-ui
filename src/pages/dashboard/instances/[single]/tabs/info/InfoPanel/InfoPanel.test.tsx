@@ -742,7 +742,7 @@ describe("InfoPanel", () => {
       );
 
       await waitFor(() => {
-        expect(getLocationDisplay()).toHaveTextContent(ROUTES.instances.root());
+        expect(getLocationDisplay().textContent).toBe(ROUTES.instances.root());
       });
     });
   });
