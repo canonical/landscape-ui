@@ -444,6 +444,14 @@ export default [
     return HttpResponse.json(baseResponse);
   }),
   http.get(`${API_URL}me`, ({ request }) => {
+    if (shouldApplyEndpointStatus("me")) {
+      const endpointStatus = getEndpointStatus("me");
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json(endpointStatus.response);
+      }
+    }
+
     const authHeader = request.headers.get("Authorization");
     const token = authHeader?.replace("Bearer ", "");
 
