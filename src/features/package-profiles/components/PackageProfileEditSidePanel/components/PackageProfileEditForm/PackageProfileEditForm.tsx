@@ -73,7 +73,10 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
       <Input
         type="text"
         label="Description"
+        required
+        autoComplete="off"
         {...formik.getFieldProps("description")}
+        error={getFormikError(formik, "description")}
       />
 
       <ReadOnlyField
