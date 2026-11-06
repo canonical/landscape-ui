@@ -43,9 +43,7 @@ describe("RebootProfilesForm", () => {
       screen.getByRole("button", { name: "Add reboot profile" }),
     );
 
-    expect(
-      await screen.findByText("Reboot profile added"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Reboot profile added")).toBeInTheDocument();
     expect(onCreate).toHaveBeenCalledWith(
       expect.objectContaining({ deliver_within: 1 }),
     );
@@ -99,21 +97,18 @@ describe("RebootProfilesForm", () => {
     ["abc", "Enter an integer greater than or equal to 1."],
     ["1.5", "'Expires after' must be an integer."],
     ["", "Enter an integer greater than or equal to 1."],
-  ])(
-    "rejects an expiration value of %j",
-    async (value, message) => {
-      renderWithProviders(<RebootProfilesForm action="add" />);
+  ])("rejects an expiration value of %j", async (value, message) => {
+    renderWithProviders(<RebootProfilesForm action="add" />);
 
-      const expirationInput = screen.getByLabelText("Expires after");
-      await user.clear(expirationInput);
-      if (value) {
-        await user.type(expirationInput, value);
-      }
-      await user.tab();
+    const expirationInput = screen.getByLabelText("Expires after");
+    await user.clear(expirationInput);
+    if (value) {
+      await user.type(expirationInput, value);
+    }
+    await user.tab();
 
-      expect(await screen.findByText(message)).toBeInTheDocument();
-    },
-  );
+    expect(await screen.findByText(message)).toBeInTheDocument();
+  });
 
   it("defaults to a valid expiration of one hour", () => {
     renderWithProviders(<RebootProfilesForm action="add" />);
