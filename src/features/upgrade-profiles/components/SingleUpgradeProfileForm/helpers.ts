@@ -1,4 +1,7 @@
-import { randomizationValidationSchema } from "@/components/form/DeliveryScheduling";
+import {
+  expirationValidationSchema,
+  randomizationValidationSchema,
+} from "@/components/form/DeliveryScheduling";
 import { MAX_HOURS_IN_DAY, MAX_MINUTES_IN_HOUR } from "@/constants";
 import type { ProfileDay } from "@/features/profiles";
 import * as Yup from "yup";
@@ -13,6 +16,7 @@ import type { SingleUpgradeProfileFormProps } from "./types";
 export const getValidationSchema = (action: "add" | "edit") => {
   return Yup.object().shape({
     ...randomizationValidationSchema,
+    ...expirationValidationSchema,
     access_group: Yup.string(),
     all_computers: Yup.boolean(),
     at_hour: Yup.number().when("every", {
@@ -29,9 +33,6 @@ export const getValidationSchema = (action: "add" | "edit") => {
       .integer("Minute must be an integer.")
       .min(0, "Minute must be between 0 and 59.")
       .max(MAX_MINUTES_IN_HOUR, "Minute must be between 0 and 59."),
-    deliver_within: Yup.number()
-      .integer("'Expires after' must be an integer.")
-      .min(0, "'Expires after' must be at least 0."),
     every: Yup.string<UpgradeProfileFrequency>().required(
       "This field is required.",
     ),

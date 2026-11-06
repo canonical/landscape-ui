@@ -101,6 +101,7 @@ const UpgradeProfileScheduleBlock: FC<UpgradeProfileScheduleBlockProps> = ({
 
           <Input
             type="number"
+            required
             label={
               <>
                 <span>Expires after </span>
