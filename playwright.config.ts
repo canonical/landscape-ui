@@ -61,11 +61,12 @@ export default defineConfig({
   retries: IS_CI ? 2 : 0,
 
   /**
-   * Limit the number of workers on CI to 1. This can significantly improve
-   * stability on resource-constrained CI runners by preventing contention.
-   * For local development, it uses the default number of workers.
+   * Run 4 workers on CI. Every test gets its own browser context and writes
+   * to the backend are mocked, so tests are independent; 4 matches the
+   * vCPUs of the GitHub-hosted runners that fork PRs fall back to. For local
+   * development, it uses the default number of workers.
    */
-  workers: IS_CI ? 1 : undefined,
+  workers: IS_CI ? 4 : undefined,
 
   /**
    * The reporters to use. "html" generates a report of the test results,
@@ -123,9 +124,10 @@ export default defineConfig({
     trace: "on-first-retry",
 
     /**
-     * Record a video of the test run when a test fails.
+     * Record a video on the first retry of a failed test, like the trace.
+     * Recording every run to keep only the failures costs CPU on each test.
      */
-    video: "retain-on-failure",
+    video: "on-first-retry",
 
     /**
      * Ignore HTTPS errors, which is often necessary for local development servers.
@@ -138,15 +140,26 @@ export default defineConfig({
     },
   },
   projects: [
+    /**
+     * Logs in once and saves the session for `authenticatedPage` and
+     * `staffPage` to reuse; see `e2e/support/auth.setup.ts`.
+     */
+    {
+      name: "setup",
+      testDir: "e2e/support",
+      testMatch: "auth.setup.ts",
+    },
     {
       name: "saas",
       use: { ...devices["Desktop Chrome"] },
       grepInvert: /@self-hosted/,
+      dependencies: ["setup"],
     },
     {
       name: "self-hosted",
       use: { ...devices["Desktop Chrome"] },
       grepInvert: /@saas/,
+      dependencies: ["setup"],
     },
   ],
 });
