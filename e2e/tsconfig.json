@@ -1,14 +1,15 @@
 {
+  // Shares the app's compiler options and `@/*` paths: e2e helpers import
+  // types and fixtures from `src`, which pulls app modules into this program.
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "types": ["node", "@playwright/test"],
-    "baseUrl": "..",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "types": ["node"]
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"]
+  "include": [
+    "**/*.ts",
+    // Ambient declarations the app modules rely on: Vite env, CSS module
+    // typings, and the React Query `Register` augmentation.
+    "../src/**/*.d.ts",
+    "../src/context/reactQuery.tsx"
+  ]
 }
