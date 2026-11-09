@@ -6,11 +6,15 @@ import {
 import { parseSchedule, type ProfileDay } from "@/features/profiles";
 import * as Yup from "yup";
 import type { FormProps, RebootProfilesFormProps } from "./types";
-import { randomizationValidationSchema } from "@/components/form/DeliveryScheduling";
+import {
+  expirationValidationSchema,
+  randomizationValidationSchema,
+} from "@/components/form/DeliveryScheduling";
 
 export const getValidationSchema = (action: "add" | "edit" | "duplicate") => {
   return Yup.object().shape({
     ...randomizationValidationSchema,
+    ...expirationValidationSchema,
     title: Yup.string().test({
       name: "required",
       message: "This field is required.",
@@ -28,9 +32,6 @@ export const getValidationSchema = (action: "add" | "edit" | "duplicate") => {
       .integer("Minute must be an integer.")
       .min(0, "Minute must be between 0 and 59.")
       .max(MAX_MINUTES_IN_HOUR, "Minute must be between 0 and 59."),
-    deliver_within: Yup.number()
-      .integer("'Expires after' must be an integer.")
-      .min(0, "'Expires after' must be at least 0."),
     tags: Yup.array().of(Yup.string()),
     on_days: Yup.array()
       .of(Yup.string<ProfileDay>())
@@ -49,7 +50,7 @@ export const getInitialValues = (props: RebootProfilesFormProps): FormProps => {
       tags: [],
       at_hour: "",
       at_minute: "",
-      deliver_within: 0,
+      deliver_within: 1,
       on_days: [],
     };
   }
