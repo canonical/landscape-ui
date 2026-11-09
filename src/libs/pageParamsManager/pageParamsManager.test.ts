@@ -252,3 +252,119 @@ describe("PageParamsManager (Refactored)", () => {
     });
   });
 });
+
+describe("slot-scoped tab values", () => {
+  const parse = (search: string) =>
+    pageParamsManager.getParsedParams(new URLSearchParams(search));
+
+  const sanitize = (search: string) =>
+    decodeURIComponent(
+      pageParamsManager
+        .sanitizeSearchParams(new URLSearchParams(search))
+        .toString(),
+    );
+
+  describe("getParsedParams", () => {
+    it("separates the page tab from slot values", () => {
+      const parsed = parse(
+        "tab=scripts&tab=panel:code&tab=upgrades:packages&sidePath=view",
+      );
+
+      expect(parsed.tab).toBe("scripts");
+      expect(parsed.tabSlots).toEqual({ panel: "code", upgrades: "packages" });
+      expect(parsed.sidePath).toEqual(["view"]);
+    });
+
+    it("parses slot values without a page tab, in any order", () => {
+      const parsed = parse("tab=activities:in-progress&tab=profiles");
+
+      expect(parsed.tab).toBe("profiles");
+      expect(parsed.tabSlots).toEqual({ activities: "in-progress" });
+    });
+
+    it("parses percent-encoded separators", () => {
+      expect(parse("tab=panel%3Acode").tabSlots).toEqual({ panel: "code" });
+    });
+
+    it("keeps the first value of each kind", () => {
+      const parsed = parse("tab=a&tab=b&tab=panel:info&tab=panel:code");
+
+      expect(parsed.tab).toBe("a");
+      expect(parsed.tabSlots).toEqual({ panel: "info" });
+    });
+
+    it("ignores malformed and unknown slot values", () => {
+      const parsed = parse(
+        "tab=bogus:x&tab=panel:&tab=:code&tab=panel:a:b&tab=",
+      );
+
+      expect(parsed.tab).toBe("");
+      expect(parsed.tabSlots).toEqual({});
+    });
+
+    it("defaults to no tab state", () => {
+      expect(parse("")).toMatchObject({ tab: "", tabSlots: {} });
+    });
+  });
+
+  describe("sanitizeSearchParams", () => {
+    it("leaves a clean URL unchanged", () => {
+      const search =
+        "tab=profiles&tab=panel:activity-history&sidePath=view&name=1";
+
+      expect(sanitize(search)).toBe(search);
+    });
+
+    it("drops malformed, unknown, duplicate and shadowed tab values", () => {
+      expect(
+        sanitize(
+          "tab=panel:code&tab=bogus:x&tab=&tab=panel:code&tab=panel:info&tab=upgrades:packages&tab=a&tab=b",
+        ),
+      ).toBe("tab=panel:code&tab=upgrades:packages&tab=a");
+    });
+  });
+
+  describe("getTabSearchParams", () => {
+    const getSearch = (
+      search: string,
+      target: Parameters<typeof pageParamsManager.getTabSearchParams>[1],
+    ) =>
+      decodeURIComponent(
+        pageParamsManager
+          .getTabSearchParams(new URLSearchParams(search), target)
+          .toString(),
+      );
+
+    it("drops every other param for a page tab", () => {
+      expect(
+        getSearch("tab=scripts&tab=panel:code&search=x&sidePath=view", {
+          id: "profiles",
+        }),
+      ).toBe("tab=profiles");
+    });
+
+    it("changes only its slot for a slot tab", () => {
+      expect(
+        getSearch("search=x&tab=scripts&tab=panel:code&tab=upgrades:usns", {
+          slot: "panel",
+          id: "info",
+        }),
+      ).toBe("tab=scripts&tab=panel:info&tab=upgrades:usns&search=x");
+    });
+
+    it("removes its slot for an empty id", () => {
+      expect(
+        getSearch("tab=scripts&tab=panel:code", { slot: "panel", id: "" }),
+      ).toBe("tab=scripts");
+    });
+
+    it("drops invalid params while merging", () => {
+      expect(
+        getSearch("tab=bogus:x&unknown=1&currentPage=1", {
+          slot: "activities",
+          id: "in-progress",
+        }),
+      ).toBe("tab=activities:in-progress");
+    });
+  });
+});

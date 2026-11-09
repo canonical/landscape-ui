@@ -1,8 +1,10 @@
+import type { AppTabItem } from "@/components/AppTabs";
 import LoadingState from "@/components/layout/LoadingState";
 import { getFeatures } from "@/features/instances";
 import type { FeatureKey } from "@/types/FeatureKey";
 import type { Instance } from "@/types/Instance";
 import { Badge } from "@canonical/react-ds-global";
+import type { ReactNode } from "react";
 
 interface GetTabLabelProps {
   id: string;
@@ -15,7 +17,7 @@ interface GetTabLabelProps {
   kernelLoading: boolean;
 }
 
-const getTabLabel = ({
+const getTabLabelContent = ({
   id,
   label,
   packageCount,
@@ -24,11 +26,11 @@ const getTabLabel = ({
   usnLoading,
   kernelCount,
   kernelLoading,
-}: GetTabLabelProps) => {
+}: GetTabLabelProps): ReactNode => {
   if (
-    (id === "tab-link-packages" && packagesLoading) ||
-    (id === "tab-link-security-issues" && usnLoading) ||
-    (id === "tab-link-kernel" && kernelLoading)
+    (id === "packages" && packagesLoading) ||
+    (id === "security-issues" && usnLoading) ||
+    (id === "kernel" && kernelLoading)
   ) {
     return (
       <>
@@ -38,7 +40,7 @@ const getTabLabel = ({
     );
   }
 
-  if (id === "tab-link-packages" && packageCount) {
+  if (id === "packages" && packageCount) {
     return (
       <>
         <span>{label}</span>
@@ -47,7 +49,7 @@ const getTabLabel = ({
     );
   }
 
-  if (id === "tab-link-security-issues" && usnCount) {
+  if (id === "security-issues" && usnCount) {
     return (
       <>
         <span>{label}</span>
@@ -56,7 +58,7 @@ const getTabLabel = ({
     );
   }
 
-  if (id === "tab-link-kernel" && kernelCount) {
+  if (id === "kernel" && kernelCount) {
     return (
       <>
         <span>{label}</span>
@@ -65,14 +67,25 @@ const getTabLabel = ({
     );
   }
 
-  return label;
+  return undefined;
 };
 
+export type SingleInstanceTabId =
+  | "info"
+  | "wsl"
+  | "activities"
+  | "kernel"
+  | "security-issues"
+  | "packages"
+  | "snaps"
+  | "processes"
+  | "ubuntu-pro"
+  | "users"
+  | "hardware";
+
 interface GetTabLinksProps {
-  activeTabId: string;
   instance: Instance;
   isFeatureEnabled: (feature: FeatureKey) => boolean;
-  onActiveTabChange: (tabId: string) => void;
   packageCount: number | undefined;
   packagesLoading: boolean;
   usnCount: number | undefined;
@@ -82,77 +95,75 @@ interface GetTabLinksProps {
 }
 
 export const getTabLinks = ({
-  activeTabId,
   instance,
   isFeatureEnabled,
-  onActiveTabChange,
   packageCount,
   packagesLoading,
   usnCount,
   usnLoading,
   kernelCount,
   kernelLoading,
-}: GetTabLinksProps) => {
+}: GetTabLinksProps): AppTabItem<SingleInstanceTabId>[] => {
   const tabLinks: {
     label: string;
-    id: string;
+    id: SingleInstanceTabId;
     included: boolean;
   }[] = [
     {
       label: "Info",
-      id: "tab-link-info",
+      id: "info",
       included: true,
     },
     {
       label: "WSL",
-      id: "tab-link-wsl",
+      id: "wsl",
       included:
         getFeatures(instance).wsl &&
         isFeatureEnabled("wsl-child-instance-profiles"),
     },
     {
       label: "Activities",
-      id: "tab-link-activities",
+      id: "activities",
       included: true,
     },
     {
       label: "Kernel",
-      id: "tab-link-kernel",
+      id: "kernel",
       included: getFeatures(instance).packages,
     },
     {
       label: "Security issues",
-      id: "tab-link-security-issues",
+      id: "security-issues",
       included: getFeatures(instance).packages,
     },
     {
       label: "Packages",
-      id: "tab-link-packages",
+      id: "packages",
       included: getFeatures(instance).packages,
     },
     {
       label: "Snaps",
-      id: "tab-link-snaps",
+      id: "snaps",
       included: getFeatures(instance).snaps,
     },
     {
       label: "Processes",
-      id: "tab-link-processes",
+      id: "processes",
       included: getFeatures(instance).processes,
     },
     {
       label: "Ubuntu Pro",
-      id: "tab-link-ubuntu-pro",
+      id: "ubuntu-pro",
       included: getFeatures(instance).pro,
     },
     {
       label: "Users",
-      id: "tab-link-users",
+      id: "users",
       included: getFeatures(instance).users,
     },
     {
       label: "Hardware",
-      id: "tab-link-hardware",
+      id: "hardware",
       included: getFeatures(instance).hardware,
     },
   ];
@@ -160,7 +171,9 @@ export const getTabLinks = ({
   return tabLinks
     .filter((link) => link.included)
     .map(({ label, id }) => ({
-      label: getTabLabel({
+      id,
+      label,
+      labelContent: getTabLabelContent({
         label,
         id,
         packageCount,
@@ -170,11 +183,5 @@ export const getTabLinks = ({
         kernelCount,
         kernelLoading,
       }),
-      id,
-      role: "tab",
-      active: id === activeTabId,
-      onClick: () => {
-        onActiveTabChange(id);
-      },
     }));
 };

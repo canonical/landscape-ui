@@ -8,10 +8,10 @@ import {
   useAdministrators,
 } from "@/features/administrators";
 import date from "@/libs/date";
-import { Tabs } from "@canonical/react-components";
+import AppTabs from "@/components/AppTabs";
 import { Badge } from "@canonical/react-ds-global";
-import type { FC, ReactNode } from "react";
-import { useMemo, useState } from "react";
+import type { FC } from "react";
+import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 
 const ADMINISTRATOR_COLUMNS: Column<Administrator>[] = [
@@ -42,8 +42,6 @@ const INVITATION_COLUMNS: Column<Invitation>[] = [
   },
 ];
 
-type TabId = "administrators" | "invites";
-
 /** The entered account's administrators and pending invitations, read-only. */
 const SupportAdministrators: FC = () => {
   const { getAdministratorsQuery, getInvitationsQuery } = useAdministrators();
@@ -57,8 +55,6 @@ const SupportAdministrators: FC = () => {
     isPending: isGettingInvitations,
     error: invitationsError,
   } = getInvitationsQuery();
-
-  const [tabId, setTabId] = useState<TabId>("administrators");
 
   const administrators = useMemo(
     () => administratorsData?.data ?? [],
@@ -84,56 +80,40 @@ const SupportAdministrators: FC = () => {
     return <LoadingState />;
   }
 
-  const tabs: { id: TabId; label: ReactNode }[] = [
-    { id: "administrators", label: "Administrators" },
-    {
-      id: "invites",
-      label: (
-        <>
-          <span>Invites</span>
-          {!!invitationsCount && <Badge value={invitationsCount} />}
-        </>
-      ),
-    },
-  ];
-
   return (
-    <>
-      <Tabs
-        listClassName="u-no-margin--bottom"
-        links={tabs.map(({ id, label }) => ({
-          id: `tab-link-${id}`,
-          label,
-          role: "tab",
-          "aria-controls": `tab-panel-${id}`,
-          active: id === tabId,
-          onClick: () => {
-            setTabId(id);
-          },
-        }))}
-      />
-      <div
-        id={`tab-panel-${tabId}`}
-        role="tabpanel"
-        aria-labelledby={`tab-link-${tabId}`}
-        tabIndex={0}
-      >
-        {tabId === "administrators" && (
-          <ResponsiveTable
-            columns={ADMINISTRATOR_COLUMNS}
-            data={administrators}
-            emptyMsg="This account has no administrators."
-          />
-        )}
-        {tabId === "invites" && (
-          <ResponsiveTable
-            columns={INVITATION_COLUMNS}
-            data={invitations}
-            emptyMsg="This account has no pending invitations."
-          />
-        )}
-      </div>
-    </>
+    <AppTabs
+      aria-label="Administrator settings"
+      items={[
+        {
+          id: "administrators",
+          label: "Administrators",
+          panel: (
+            <ResponsiveTable
+              columns={ADMINISTRATOR_COLUMNS}
+              data={administrators}
+              emptyMsg="This account has no administrators."
+            />
+          ),
+        },
+        {
+          id: "invites",
+          label: "Invites",
+          labelContent: invitationsCount ? (
+            <>
+              <span>Invites</span>
+              <Badge value={invitationsCount} />
+            </>
+          ) : undefined,
+          panel: (
+            <ResponsiveTable
+              columns={INVITATION_COLUMNS}
+              data={invitations}
+              emptyMsg="This account has no pending invitations."
+            />
+          ),
+        },
+      ]}
+    />
   );
 };
 

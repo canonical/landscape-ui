@@ -1,7 +1,14 @@
+import type { TAB_SLOTS } from "./tabValues";
+
 /**
  * A "SortDirection" type to reflect the valid sort states.
  */
 export type SortDirection = "asc" | "desc" | null;
+
+export type TabSlot = (typeof TAB_SLOTS)[number];
+
+/** Active tab ids of the slot-scoped tab strips, keyed by slot. */
+export type TabSlots = Partial<Record<TabSlot, string>>;
 
 /**
  * The "PageParams" structure that your application expects.
@@ -23,6 +30,8 @@ export interface PageParams {
   sortBy: string;
   status: string;
   tab: string;
+  /** Parsed from the repeated "tab" param's "slot:id" values; not a URL key. */
+  tabSlots: TabSlots;
   tags: string[];
   toDate: string;
   upgrades: string[];

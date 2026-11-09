@@ -107,16 +107,15 @@ describe("AutoinstallFileDetails", () => {
     });
   });
 
-  it("renders with an initial tab id", () => {
+  it("opens the tab from the panel tab slot", () => {
     renderWithProviders(
-      <AutoinstallFileDetails
-        {...defaultProps}
-        initialTabId="version-history"
-      />,
+      <AutoinstallFileDetails {...defaultProps} />,
+      undefined,
+      "/settings/employees?tab=autoinstall-files&tab=panel:version-history",
     );
     expect(
-      screen.getByRole("tab", { name: /version history/i }),
-    ).toBeInTheDocument();
+      screen.getByRole("link", { name: /version history/i }),
+    ).toHaveAttribute("aria-current", "page");
   });
 
   it("calls viewVersionHistory when navigating back from a version detail", async () => {
@@ -132,10 +131,9 @@ describe("AutoinstallFileDetails", () => {
     });
 
     renderWithProviders(
-      <AutoinstallFileDetails
-        {...defaultProps}
-        initialTabId="version-history"
-      />,
+      <AutoinstallFileDetails {...defaultProps} />,
+      undefined,
+      "/settings/employees?tab=autoinstall-files&tab=panel:version-history",
     );
 
     // Wait for version history to load

@@ -4,7 +4,7 @@ import { isTableTab, TABS } from "./constants";
 describe("isTableTab", () => {
   it("is true for every tab that renders a table", () => {
     for (const { id, hasTable } of TABS) {
-      expect(isTableTab(id.replace("tab-link-", ""))).toBe(hasTable);
+      expect(isTableTab(id)).toBe(hasTable);
     }
   });
 

@@ -73,7 +73,7 @@ describe("InfoTablesContainer", () => {
     });
 
     it("renders package list", async () => {
-      const packagesTab = screen.getByRole("tab", { name: /packages/i });
+      const packagesTab = screen.getByRole("link", { name: /packages/i });
       await userEvent.click(packagesTab);
 
       const tableRows = await screen.findAllByRole("row");
@@ -89,16 +89,16 @@ describe("InfoTablesContainer", () => {
       renderWithProviders(<InfoTablesContainer />);
 
       expect(
-        screen.queryByRole("tab", { name: /packages/i }),
+        screen.queryByRole("link", { name: /packages/i }),
       ).not.toBeInTheDocument();
       expect(
-        screen.getByRole("tab", { name: /instances/i }),
+        screen.getByRole("link", { name: /instances/i }),
       ).toBeInTheDocument();
-      expect(screen.getByRole("tab", { name: /usns/i })).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /usns/i })).toBeInTheDocument();
     });
 
     it("renders usn list", async () => {
-      const usnsTab = screen.getByRole("tab", { name: /usns/i });
+      const usnsTab = screen.getByRole("link", { name: /usns/i });
       expect(usnsTab).toBeInTheDocument();
       await userEvent.click(usnsTab);
 
@@ -134,7 +134,7 @@ describe("InfoTablesContainer", () => {
     });
 
     it("renders in progress activities list", async () => {
-      const activitiesInProgressTab = screen.getByRole("tab", {
+      const activitiesInProgressTab = screen.getByRole("link", {
         name: /in progress/i,
       });
       await userEvent.click(activitiesInProgressTab);
@@ -151,10 +151,10 @@ describe("InfoTablesContainer", () => {
 
   describe("Tab navigation", () => {
     it("switches back to Instances tab after clicking Packages", async () => {
-      const packagesTab = screen.getByRole("tab", { name: /packages/i });
+      const packagesTab = screen.getByRole("link", { name: /packages/i });
       await userEvent.click(packagesTab);
 
-      const instancesTab = screen.getByRole("tab", { name: /^instances$/i });
+      const instancesTab = screen.getByRole("link", { name: /^instances$/i });
       await userEvent.click(instancesTab);
 
       // Should show instances again
@@ -166,10 +166,10 @@ describe("InfoTablesContainer", () => {
     });
 
     it("switches back to Requires approval tab after clicking In progress", async () => {
-      const inProgressTab = screen.getByRole("tab", { name: /in progress/i });
+      const inProgressTab = screen.getByRole("link", { name: /in progress/i });
       await userEvent.click(inProgressTab);
 
-      const requiresApprovalTab = screen.getByRole("tab", {
+      const requiresApprovalTab = screen.getByRole("link", {
         name: /requires approval/i,
       });
       await userEvent.click(requiresApprovalTab);
@@ -315,7 +315,7 @@ describe("InfoTablesContainer", () => {
     });
 
     it("shows footer and loads more packages on packages tab", async () => {
-      const packagesTab = screen.getByRole("tab", { name: /packages/i });
+      const packagesTab = screen.getByRole("link", { name: /packages/i });
       await userEvent.click(packagesTab);
 
       await screen.findAllByRole("row");
@@ -333,7 +333,7 @@ describe("InfoTablesContainer", () => {
     });
 
     it("shows footer and loads more USNs on usns tab", async () => {
-      const usnsTab = screen.getByRole("tab", { name: /usns/i });
+      const usnsTab = screen.getByRole("link", { name: /usns/i });
       await userEvent.click(usnsTab);
 
       const shownUsns = usns.slice(0, LIST_LIMIT);
@@ -390,9 +390,9 @@ describe("InfoTablesContainer activities footer", () => {
     });
     renderWithProviders(<InfoTablesContainer />);
 
-    const inProgressTab = await screen.findByTestId(
-      "activities-in-progress-tab",
-    );
+    const inProgressTab = await screen.findByRole("link", {
+      name: "In progress",
+    });
     await userEvent.click(inProgressTab);
 
     await waitFor(() => {
@@ -428,8 +428,8 @@ describe("InfoTablesContainer empty-state refresh handlers", () => {
     renderWithProviders(<InfoTablesContainer />);
 
     // Wait for instances to load, then switch to packages tab
-    await screen.findByRole("tab", { name: /instances/i });
-    const [packagesTab] = screen.getAllByRole("tab", { name: /packages/i });
+    await screen.findByRole("link", { name: /instances/i });
+    const [packagesTab] = screen.getAllByRole("link", { name: /packages/i });
     assert(packagesTab);
     await userEvent.click(packagesTab);
 
@@ -444,8 +444,8 @@ describe("InfoTablesContainer empty-state refresh handlers", () => {
     setEndpointStatus({ status: "empty", path: "usns" });
     renderWithProviders(<InfoTablesContainer />);
 
-    await screen.findByRole("tab", { name: /instances/i });
-    const usnsTab = screen.getByRole("tab", { name: /usns/i });
+    await screen.findByRole("link", { name: /instances/i });
+    const usnsTab = screen.getByRole("link", { name: /usns/i });
     await userEvent.click(usnsTab);
 
     const refreshButton = await screen.findByRole("button", {
@@ -473,9 +473,9 @@ describe("InfoTablesContainer empty-state refresh handlers", () => {
     setEndpointStatus("empty");
     renderWithProviders(<InfoTablesContainer />);
 
-    const inProgressTab = await screen.findByTestId(
-      "activities-in-progress-tab",
-    );
+    const inProgressTab = await screen.findByRole("link", {
+      name: "In progress",
+    });
     await userEvent.click(inProgressTab);
 
     const refreshButtons = await screen.findAllByRole("button", {

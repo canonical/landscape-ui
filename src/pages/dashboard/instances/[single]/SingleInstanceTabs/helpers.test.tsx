@@ -45,10 +45,8 @@ const TabLabelsConsumer: FC<TabLabelProps> = ({
 }) => {
   const { isFeatureEnabled } = useAuth();
   const links = getTabLinks({
-    activeTabId: "tab-link-packages",
     instance: ubuntuInstance,
     isFeatureEnabled,
-    onActiveTabChange: vi.fn(),
     packageCount,
     packagesLoading,
     usnCount,
@@ -60,7 +58,7 @@ const TabLabelsConsumer: FC<TabLabelProps> = ({
   return (
     <ul>
       {links.map((link) => (
-        <li key={link.id}>{link.label}</li>
+        <li key={link.id}>{link.labelContent ?? link.label}</li>
       ))}
     </ul>
   );
@@ -114,15 +112,13 @@ describe("getTabLinks helpers", () => {
     expect(screen.getByText("Activities")).toBeInTheDocument();
   });
 
-  it("marks active tab correctly", () => {
-    const ActiveConsumer = () => {
+  it("uses bare tab ids and plain string labels", () => {
+    const IdsConsumer = () => {
       const { isFeatureEnabled } = useAuth();
       const links = getTabLinks({
-        activeTabId: "tab-link-info",
         instance: ubuntuInstance,
         isFeatureEnabled,
-        onActiveTabChange: vi.fn(),
-        packageCount: undefined,
+        packageCount: 5,
         packagesLoading: false,
         usnCount: undefined,
         usnLoading: false,
@@ -132,17 +128,13 @@ describe("getTabLinks helpers", () => {
       return (
         <ul>
           {links.map((link) => (
-            <li key={link.id} data-active={link.active ? "true" : "false"}>
-              {link.id}
-            </li>
+            <li key={link.id}>{`${link.id}:${link.label}`}</li>
           ))}
         </ul>
       );
     };
-    renderWithProviders(<ActiveConsumer />);
-    const infoItem = screen
-      .getAllByRole("listitem")
-      .find((el) => el.textContent === "tab-link-info");
-    expect(infoItem).toHaveAttribute("data-active", "true");
+    renderWithProviders(<IdsConsumer />);
+    expect(screen.getByText("info:Info")).toBeInTheDocument();
+    expect(screen.getByText("packages:Packages")).toBeInTheDocument();
   });
 });
