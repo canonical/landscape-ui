@@ -10,10 +10,7 @@ import type {
   WslFeatureLimits,
 } from "@/features/super-admin";
 import { features } from "@/tests/mocks/features";
-import {
-  createEndpointStatusError,
-  createEndpointStatusNetworkError,
-} from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 import { shouldApplyEndpointStatus } from "./_helpers";
 import type {
   StaffInvitationRow,
