@@ -73,8 +73,27 @@ describe("AccountCreationSelfHostedForm", () => {
     await user.tab();
 
     expect(
-      await screen.findByText("Invalid email address"),
+      await screen.findByText("Please provide a valid email address"),
     ).toBeInTheDocument();
+  });
+
+  it("accepts a plus-addressed email", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<AccountCreationSelfHostedForm />);
+
+    await user.type(screen.getByLabelText("Full name"), "John Doe");
+    await user.type(
+      screen.getByLabelText("Email address"),
+      "user+tag@example.com",
+    );
+    await user.type(screen.getByLabelText("Password"), "Password1234");
+
+    expect(
+      screen.queryByText("Please provide a valid email address"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Create account" }),
+    ).toBeEnabled();
   });
 
   it("submits the form calls create and login", async () => {

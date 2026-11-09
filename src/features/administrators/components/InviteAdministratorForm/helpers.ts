@@ -1,17 +1,18 @@
 import * as Yup from "yup";
+import { legacyEmailSchema, normalizeEmail } from "@/utils/validation/email";
 import type { Invitation } from "../../types/Invitation";
 
 export const getValidationSchema = (invitations: Invitation[]) => {
   return Yup.object().shape({
-    email: Yup.string()
+    email: legacyEmailSchema()
       .required("This field is required.")
-      .email("Please provide a valid email address")
       .test({
         name: "unique-email",
         params: { invitations },
         test: (value, { createError, parent }) => {
           const existInvitation = invitations.find(
-            ({ email }) => email === value,
+            ({ email }) =>
+              !!value && normalizeEmail(email) === normalizeEmail(value),
           );
 
           return (

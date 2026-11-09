@@ -209,9 +209,8 @@ is not a dependency yet.
 
 The same graph is available to AI agents through `pragma mcp serve`. `.mcp.json` registers it for
 Copilot CLI and Claude Code. To use it in another editor, add a server that runs
-`pnpm exec pragma mcp serve` from the repository root. The `architect` and `implementer` agents
-can use the `pragma/*` tools. `.github/skills/pragma/SKILL.md` maps Pragma's upstream workflow
-skills to this repository and lists the Landscape-specific overrides.
+`pnpm exec pragma mcp serve` from the repository root. `.github/skills/pragma/SKILL.md` maps
+Pragma's upstream workflow skills to this repository and lists the Landscape-specific overrides.
 
 To get token autocompletion in stylesheets, run `pnpm exec pragma setup lsp` once per machine.
 

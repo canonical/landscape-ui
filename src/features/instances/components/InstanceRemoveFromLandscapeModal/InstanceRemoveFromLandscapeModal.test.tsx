@@ -58,5 +58,9 @@ describe("InstanceRemoveFromLandscapeModal", () => {
       expect(props.close).toHaveBeenCalled();
       expect(onSuccess).toHaveBeenCalled();
     });
+
+    expect(
+      await screen.findByText(/you have successfully removed/i),
+    ).toBeInTheDocument();
   });
 });
