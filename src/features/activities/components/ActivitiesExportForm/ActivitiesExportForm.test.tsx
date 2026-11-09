@@ -16,7 +16,14 @@ const openAttributeGroup = async (
   user: ReturnType<typeof userEvent.setup>,
   name: RegExp,
 ) => {
-  await user.click(screen.getByRole("tab", { name }));
+  const heading = screen.getByRole("heading", { name });
+  const summary = heading.closest("summary");
+
+  if (!summary) {
+    throw new Error(`Missing accordion summary for ${name.toString()}`);
+  }
+
+  await user.click(summary);
 };
 
 describe("ActivitiesExportForm", () => {
@@ -33,10 +40,10 @@ describe("ActivitiesExportForm", () => {
       screen.getByRole("searchbox", { name: "Search attributes" }),
     ).toBeVisible();
     expect(
-      screen.getByRole("tab", { name: /primary identity/i }),
+      screen.getByRole("heading", { name: /primary identity/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("tab", { name: /audit & time/i }),
+      screen.getByRole("heading", { name: /audit & time/i }),
     ).toBeInTheDocument();
 
     await openAttributeGroup(user, /primary identity/i);

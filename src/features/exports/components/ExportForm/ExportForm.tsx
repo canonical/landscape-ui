@@ -3,13 +3,13 @@ import { INPUT_DATE_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import {
-  Accordion,
   CheckboxInput,
   Form,
   Input,
   Notification,
   SearchBox,
 } from "@canonical/react-components";
+import { Accordion } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import { useFormik } from "formik";
 import { type ReactNode, useCallback, useMemo, useState, type FC } from "react";
@@ -50,6 +50,17 @@ const ExportForm: FC<ExportFormProps> = ({
   const [step, setStep] = useState<StepIndex>(0);
   const [attributeSearch, setAttributeSearch] = useState("");
   const [orderedFields, setOrderedFields] = useState<ExportField[]>([]);
+  const [expandedFieldGroupKey, setExpandedFieldGroupKey] = useState<
+    string | null
+  >(null);
+  const [collapsedSearchGroupKeys, setCollapsedSearchGroupKeys] = useState<
+    ReadonlySet<string>
+  >(() => new Set());
+
+  const resetFieldGroupExpansion = () => {
+    setExpandedFieldGroupKey(null);
+    setCollapsedSearchGroupKeys(new Set());
+  };
 
   const handleBack = () => {
     setStep(0);
@@ -68,6 +79,7 @@ const ExportForm: FC<ExportFormProps> = ({
 
       if (step === 0) {
         setOrderedFields(selectedFields);
+        resetFieldGroupExpansion();
         setStep(1);
         onStepChange?.(1);
         return;
@@ -124,7 +136,55 @@ const ExportForm: FC<ExportFormProps> = ({
     [attributeSearch, fieldGroups],
   );
 
-  const accordionSections = filteredFieldGroups.map((group) => {
+  const isSearching = !!attributeSearch.trim();
+
+  const orderedFieldGroups = useMemo(() => {
+    if (!isSearching) {
+      return filteredFieldGroups;
+    }
+
+    return [...filteredFieldGroups].sort(
+      (a, b) =>
+        getGroupSearchRank(a.key, filteredFieldGroups, attributeSearch) -
+        getGroupSearchRank(b.key, filteredFieldGroups, attributeSearch),
+    );
+  }, [attributeSearch, filteredFieldGroups, isSearching]);
+
+  // Outside search only one group is open at a time; during search every
+  // matching group starts open and can be collapsed individually.
+  const isFieldGroupExpanded = (groupKey: string) =>
+    isSearching
+      ? !collapsedSearchGroupKeys.has(groupKey)
+      : expandedFieldGroupKey === groupKey;
+
+  const handleFieldGroupExpandedChange = (
+    groupKey: string,
+    expanded: boolean,
+  ) => {
+    // `<details>` also fires `toggle` when React applies `open`; ignore those.
+    if (expanded === isFieldGroupExpanded(groupKey)) {
+      return;
+    }
+
+    if (isSearching) {
+      setCollapsedSearchGroupKeys((current) => {
+        const next = new Set(current);
+
+        if (expanded) {
+          next.delete(groupKey);
+        } else {
+          next.add(groupKey);
+        }
+
+        return next;
+      });
+      return;
+    }
+
+    setExpandedFieldGroupKey(expanded ? groupKey : null);
+  };
+
+  const accordionItems = orderedFieldGroups.map((group) => {
     const groupIds = group.fields.map((field) => field.id);
     const allSelected = groupIds.every((id) =>
       formik.values.selectedFieldIds.includes(id),
@@ -133,24 +193,38 @@ const ExportForm: FC<ExportFormProps> = ({
       !allSelected &&
       groupIds.some((id) => formik.values.selectedFieldIds.includes(id));
 
-    const isSearching = !!attributeSearch.trim();
-
-    return {
-      key: group.key,
-      title: (
-        <CheckboxInput
-          label={group.title}
-          labelClassName={classes.exportFormGroupTitleCheckbox}
-          checked={allSelected}
-          indeterminate={someSelected}
-          aria-label={`${group.title} select all`}
-          disabled={isSearching}
-          onChange={() => {
-            if (!isSearching) toggleGroupSelect(group.fields);
-          }}
-        />
-      ),
-      content: (
+    return (
+      <Accordion.Item
+        key={group.key}
+        expanded={isFieldGroupExpanded(group.key)}
+        heading={
+          <h5 aria-label={group.title}>
+            <CheckboxInput
+              label={group.title}
+              labelClassName={classes.groupCheckbox}
+              checked={allSelected}
+              indeterminate={someSelected}
+              aria-label={`${group.title} select all`}
+              aria-labelledby={undefined}
+              disabled={isSearching}
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+              onKeyDown={(event) => {
+                event.stopPropagation();
+              }}
+              onChange={() => {
+                if (!isSearching) {
+                  toggleGroupSelect(group.fields);
+                }
+              }}
+            />
+          </h5>
+        }
+        onExpandedChange={(expanded) => {
+          handleFieldGroupExpandedChange(group.key, expanded);
+        }}
+      >
         <div className={classes.optionList}>
           {group.fields.map((field) => (
             <CheckboxInput
@@ -163,59 +237,11 @@ const ExportForm: FC<ExportFormProps> = ({
             />
           ))}
         </div>
-      ),
-    };
+      </Accordion.Item>
+    );
   });
 
   const selectedFieldIdsError = getFormikError(formik, "selectedFieldIds");
-
-  const renderFieldGroups = () => {
-    if (!filteredFieldGroups.length) {
-      return (
-        <p className={classes.emptyState}>No attributes match your search.</p>
-      );
-    }
-
-    if (attributeSearch.trim()) {
-      const sortedSections = [...accordionSections].sort((a, b) => {
-        const aRank = getGroupSearchRank(
-          a.key,
-          filteredFieldGroups,
-          attributeSearch,
-        );
-        const bRank = getGroupSearchRank(
-          b.key,
-          filteredFieldGroups,
-          attributeSearch,
-        );
-        return aRank - bRank;
-      });
-
-      return (
-        <div>
-          {sortedSections.map((section) => (
-            <Accordion
-              key={`filtered-${section.key}`}
-              className="export-form-field-groups-accordion"
-              sections={[section]}
-              expanded={section.key}
-              titleElement="h5"
-            />
-          ))}
-        </div>
-      );
-    }
-
-    return (
-      <div>
-        <Accordion
-          className="export-form-field-groups-accordion"
-          sections={accordionSections}
-          titleElement="h5"
-        />
-      </div>
-    );
-  };
 
   const stepContent =
     step === 0 ? (
@@ -248,6 +274,9 @@ const ExportForm: FC<ExportFormProps> = ({
                 aria-label="Search attributes"
                 searchButtonType="button"
                 onChange={(value) => {
+                  if (!!value.trim() !== isSearching) {
+                    resetFieldGroupExpansion();
+                  }
                   setAttributeSearch(value);
                 }}
               />
@@ -260,7 +289,15 @@ const ExportForm: FC<ExportFormProps> = ({
               {selectedFieldIdsError}
             </p>
           )}
-          {renderFieldGroups()}
+          {filteredFieldGroups.length ? (
+            <Accordion className={classes.accordion}>
+              {accordionItems}
+            </Accordion>
+          ) : (
+            <p className={classes.emptyState}>
+              No attributes match your search.
+            </p>
+          )}
         </div>
       </>
     ) : (

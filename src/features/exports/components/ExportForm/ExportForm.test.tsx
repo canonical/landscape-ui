@@ -64,10 +64,166 @@ const openAttributeGroup = async (
   user: ReturnType<typeof userEvent.setup>,
   name: RegExp,
 ) => {
-  await user.click(screen.getByRole("tab", { name }));
+  const heading = screen.getByRole("heading", { name });
+  const summary = heading.closest("summary");
+
+  if (!summary) {
+    throw new Error(`Missing accordion summary for ${name.toString()}`);
+  }
+
+  await user.click(summary);
 };
 
 describe("ExportForm", () => {
+  it("keeps only one attribute group expanded outside search", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    const primaryIdentity = screen
+      .getByRole("heading", { name: /primary identity/i })
+      .closest("details");
+    const compliance = screen
+      .getByRole("heading", { name: /compliance/i })
+      .closest("details");
+
+    await openAttributeGroup(user, /primary identity/i);
+    await waitFor(() => {
+      expect(primaryIdentity).toHaveAttribute("open");
+    });
+
+    await openAttributeGroup(user, /compliance/i);
+    await waitFor(() => {
+      expect(primaryIdentity).not.toHaveAttribute("open");
+      expect(compliance).toHaveAttribute("open");
+    });
+
+    await openAttributeGroup(user, /compliance/i);
+    await waitFor(() => {
+      expect(compliance).not.toHaveAttribute("open");
+    });
+  });
+
+  it("returns to collapsed groups after clearing search", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await openAttributeGroup(user, /primary identity/i);
+
+    const searchInput = screen.getByRole("searchbox", {
+      name: "Search attributes",
+    });
+    await user.type(searchInput, "name");
+
+    await waitFor(() => {
+      expect(
+        screen
+          .getByRole("heading", { name: /primary identity/i })
+          .closest("details"),
+      ).toHaveAttribute("open");
+    });
+
+    await user.clear(searchInput);
+
+    await waitFor(() => {
+      expect(
+        screen
+          .getByRole("heading", { name: /primary identity/i })
+          .closest("details"),
+      ).not.toHaveAttribute("open");
+      expect(
+        screen.getByRole("heading", { name: /compliance/i }).closest("details"),
+      ).not.toHaveAttribute("open");
+    });
+  });
+
+  it("expands every matching group during search", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await user.type(
+      screen.getByRole("searchbox", { name: "Search attributes" }),
+      "a",
+    );
+
+    await waitFor(() => {
+      expect(
+        screen
+          .getByRole("heading", { name: /primary identity/i })
+          .closest("details"),
+      ).toHaveAttribute("open");
+      expect(
+        screen.getByRole("heading", { name: /compliance/i }).closest("details"),
+      ).toHaveAttribute("open");
+    });
+  });
+
+  it("keeps a group collapsed during search until the search is restarted", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    const searchInput = screen.getByRole("searchbox", {
+      name: "Search attributes",
+    });
+    const getPrimaryIdentity = () =>
+      screen
+        .getByRole("heading", { name: /primary identity/i })
+        .closest("details");
+
+    await user.type(searchInput, "a");
+    await waitFor(() => {
+      expect(getPrimaryIdentity()).toHaveAttribute("open");
+    });
+
+    await openAttributeGroup(user, /primary identity/i);
+    await waitFor(() => {
+      expect(getPrimaryIdentity()).not.toHaveAttribute("open");
+      expect(
+        screen.getByRole("heading", { name: /compliance/i }).closest("details"),
+      ).toHaveAttribute("open");
+    });
+
+    await user.type(searchInput, "m");
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("heading", { name: /compliance/i }),
+      ).not.toBeInTheDocument();
+    });
+    expect(getPrimaryIdentity()).not.toHaveAttribute("open");
+
+    await user.clear(searchInput);
+    await user.type(searchInput, "a");
+    await waitFor(() => {
+      expect(getPrimaryIdentity()).toHaveAttribute("open");
+    });
+  });
+
+  it("selects a group with the keyboard without toggling expansion", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    const groupCheckbox = screen.getByRole("checkbox", {
+      name: "Primary Identity select all",
+    });
+    const group = groupCheckbox.closest("details");
+
+    groupCheckbox.focus();
+    await user.keyboard(" ");
+
+    expect(groupCheckbox).toBeChecked();
+    expect(group).not.toHaveAttribute("open");
+
+    await openAttributeGroup(user, /primary identity/i);
+    await waitFor(() => {
+      expect(group).toHaveAttribute("open");
+    });
+
+    groupCheckbox.focus();
+    await user.keyboard(" ");
+
+    expect(groupCheckbox).not.toBeChecked();
+    expect(group).toHaveAttribute("open");
+  });
+
   it("shows validation errors on Next click for empty name and no attributes", async () => {
     const user = userEvent.setup();
     renderForm();
@@ -123,10 +279,10 @@ describe("ExportForm", () => {
     await user.type(searchInput, "securely");
 
     expect(
-      screen.getByRole("tab", { name: /compliance/i }),
+      screen.getByRole("heading", { name: /compliance/i }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("tab", { name: /primary identity/i }),
+      screen.queryByRole("heading", { name: /primary identity/i }),
     ).not.toBeInTheDocument();
 
     await user.clear(searchInput);
@@ -141,15 +297,20 @@ describe("ExportForm", () => {
     const user = userEvent.setup();
     renderForm();
 
-    expect(
-      screen.queryByRole("checkbox", { name: "Hostname" }),
-    ).not.toBeInTheDocument();
+    // Pragma accordion items are native <details>, so content stays mounted;
+    // expansion is signalled by the `open` attribute.
+    const group = screen
+      .getByRole("heading", { name: /primary identity/i })
+      .closest("details");
+
+    expect(group).not.toHaveAttribute("open");
 
     await user.type(
       screen.getByRole("searchbox", { name: "Search attributes" }),
       "host",
     );
 
+    expect(group).toHaveAttribute("open");
     expect(
       screen.getByRole("checkbox", { name: "Hostname" }),
     ).toBeInTheDocument();
@@ -219,7 +380,7 @@ describe("ExportForm", () => {
     ).toBeInTheDocument();
     // Compliance group has no matching fields → not rendered.
     expect(
-      screen.queryByRole("tab", { name: /compliance/i }),
+      screen.queryByRole("heading", { name: /compliance/i }),
     ).not.toBeInTheDocument();
   });
 
@@ -232,7 +393,7 @@ describe("ExportForm", () => {
     const exportName = screen.getByRole("textbox", { name: "Export name" });
     const nextButton = screen.getByRole("button", { name: "Next" });
     const groupSelectAll = screen.getByRole("checkbox", {
-      name: "Primary Identity",
+      name: "Primary Identity select all",
     });
 
     await user.type(exportName, "Group selection export");
@@ -272,7 +433,7 @@ describe("ExportForm", () => {
 
     // No attributes selected - validation error appears on Next click
     await user.click(
-      screen.getByRole("checkbox", { name: "Primary Identity" }),
+      screen.getByRole("checkbox", { name: "Primary Identity select all" }),
     );
     await user.click(nextButton);
     await waitFor(() => {
@@ -309,6 +470,11 @@ describe("ExportForm", () => {
       expect(
         screen.getByRole("textbox", { name: "Export name" }),
       ).toBeInTheDocument();
+      expect(
+        screen
+          .getByRole("heading", { name: /primary identity/i })
+          .closest("details"),
+      ).not.toHaveAttribute("open");
     });
   });
 

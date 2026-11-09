@@ -21,49 +21,42 @@
   margin-top: $spv--small;
 }
 
-.attributesLabel {
-  display: block;
-  font-weight: 500;
-  margin-bottom: $spv--small;
-}
+/*
+ * Vanilla's unlayered `details`, `summary` and `h5` base rules outrank Pragma's
+ * layered Accordion rules (e.g. `summary { display: list-item }` hides the
+ * chevron). `revert-layer` drops only those unlayered values so Pragma's own
+ * declarations apply again, without restating Pragma values here.
+ */
+.accordion {
+  :global(.ds.accordion-item) {
+    margin-bottom: revert-layer;
+    overflow: revert-layer;
+  }
 
-:global(.export-form-field-groups-accordion) {
-  border-top: 1px solid $colors--theme--border-low-contrast;
-}
+  :global(.ds.accordion-item > .header) {
+    box-sizing: revert-layer;
+    display: revert-layer;
+    font: revert-layer;
+    margin-bottom: revert-layer;
+    max-width: revert-layer;
+    padding: revert-layer;
+  }
 
-:global(.export-form-field-groups-accordion .p-accordion__list) {
-  margin-bottom: 0;
-}
+  :global(.ds.accordion-item > .header > .heading > h5) {
+    font: revert-layer;
+    margin: revert-layer;
+    max-width: revert-layer;
 
-:global(.export-form-field-groups-accordion h5.p-accordion__heading),
-:global(
-  .export-form-field-groups-accordion h5.p-accordion__heading.p-heading--5
-) {
-  font-weight: 400;
-}
+    /* Pragma's h5 baseline nudge would make the header taller than the row. */
+    padding: 0;
+  }
 
-.exportFormGroupTitleCheckbox {
-  margin-bottom: 0;
-}
-
-:global(.export-form-field-groups-accordion .p-accordion__panel) {
-  padding-top: 0;
-}
-
-:global(.export-form-field-groups-accordion .p-accordion__tab) {
-  padding-right: $sph--x-large;
-}
-
-:global(.export-form-field-groups-accordion .p-accordion__tab)::before {
-  margin-right: 0;
-  position: absolute;
-  right: 1.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-:global(
-  .export-form-field-groups-accordion .p-accordion__tab[aria-expanded="false"]
-)::before {
-  transform: translateY(-50%) rotate(-90deg);
+  /*
+   * The nested Vanilla checkbox keeps its own control styling; only its
+   * baseline spacing is removed so it centres on the Pragma header row.
+   */
+  .groupCheckbox {
+    margin-bottom: 0;
+    padding-top: 0;
+  }
 }
