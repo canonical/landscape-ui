@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { isValidElement, useMemo } from "react";
+import { isValidElement } from "react";
 import { Modal, ModularTable } from "@canonical/react-components";
 import type { CellProps, Column } from "react-table";
 import classes from "./SearchHelpPopup.module.scss";
@@ -10,29 +10,25 @@ interface SearchHelpPopupProps {
   readonly data: Record<string, unknown>[];
 }
 
-const SearchHelpPopup: FC<SearchHelpPopupProps> = ({ open, onClose, data }) => {
-  const columns: (Column<Record<string, unknown>> & { className?: string })[] =
-    useMemo(
-      () => [
-        {
-          Header: "Term",
-          accessor: "term",
-          className: classes.term,
-          Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
-            "string" === typeof value ? <code>{value}</code> : null,
-        },
-        {
-          Header: "Description",
-          accessor: "description",
-          Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
-            "string" === typeof value || isValidElement(value) ? (
-              <span className="u-text--muted">{value}</span>
-            ) : null,
-        },
-      ],
-      [],
-    );
+const columns: (Column<Record<string, unknown>> & { className?: string })[] = [
+  {
+    Header: "Term",
+    accessor: "term",
+    className: classes.term,
+    Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
+      "string" === typeof value ? <code>{value}</code> : null,
+  },
+  {
+    Header: "Description",
+    accessor: "description",
+    Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
+      "string" === typeof value || isValidElement(value) ? (
+        <span className="u-text--muted">{value}</span>
+      ) : null,
+  },
+];
 
+const SearchHelpPopup: FC<SearchHelpPopupProps> = ({ open, onClose, data }) => {
   return (
     open && (
       <Modal title="Search help" close={onClose} className={classes.modal}>
