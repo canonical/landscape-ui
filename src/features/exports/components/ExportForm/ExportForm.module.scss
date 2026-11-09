@@ -26,6 +26,10 @@
  * layered Accordion rules (e.g. `summary { display: list-item }` hides the
  * chevron). `revert-layer` drops only those unlayered values so Pragma's own
  * declarations apply again, without restating Pragma values here.
+ *
+ * TODO: Temporary workaround. Remove this block once Vanilla is layered via
+ * `@canonical/styles-vanilla-adapter` (add `ds-permeable` to `Accordion.Item`
+ * and drop the `h5` wrapper). See https://github.com/canonical/pragma-web/issues/1449
  */
 .accordion {
   :global(.ds.accordion-item) {
