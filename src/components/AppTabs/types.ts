@@ -7,10 +7,10 @@ export interface AppTabItem<Id extends string = string> {
   /** Plain-text tab name. */
   readonly label: string;
   /**
-   * Rich rendering of the label, e.g. with a count badge or a loading
-   * indicator. Defaults to `label`.
+   * Trailing content rendered after the label, e.g. a count badge or a
+   * loading indicator. Mirrors Pragma's `TabItem.slot`.
    */
-  readonly labelContent?: ReactNode;
+  readonly slot?: ReactNode;
   /** Content rendered below the strip while this tab is active. */
   readonly panel?: ReactNode;
   readonly disabled?: boolean;

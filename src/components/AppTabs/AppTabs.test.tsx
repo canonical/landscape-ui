@@ -72,7 +72,10 @@ describe("getActiveTabId", () => {
 describe("AppTabs", () => {
   describe("page strip", () => {
     it("renders a labelled navigation of links to the page's tab URLs", () => {
-      renderAtUrl("/scripts", <AppTabs aria-label="Scripts" items={pageItems} />);
+      renderAtUrl(
+        "/scripts",
+        <AppTabs aria-label="Scripts" items={pageItems} />,
+      );
 
       expect(getNav("Scripts")).toBeInTheDocument();
       expect(screen.queryByRole("tab")).not.toBeInTheDocument();
@@ -87,7 +90,10 @@ describe("AppTabs", () => {
     });
 
     it("marks the default tab current when the URL has no tab", () => {
-      renderAtUrl("/scripts", <AppTabs aria-label="Scripts" items={pageItems} />);
+      renderAtUrl(
+        "/scripts",
+        <AppTabs aria-label="Scripts" items={pageItems} />,
+      );
 
       expect(getTab("Scripts", "Scripts")).toHaveAttribute(
         "aria-current",
@@ -240,7 +246,11 @@ describe("AppTabs", () => {
         url,
         <>
           <AppTabs aria-label="Scripts" items={pageItems} />
-          <AppTabs aria-label="Script details" slot="panel" items={panelItems} />
+          <AppTabs
+            aria-label="Script details"
+            slot="panel"
+            items={panelItems}
+          />
           <AppTabs
             aria-label="Upgrades"
             slot="upgrades"
@@ -308,7 +318,7 @@ describe("AppTabs", () => {
     });
   });
 
-  it("renders rich label content inside the tab link", () => {
+  it("renders the item slot after the label inside the tab link", () => {
     renderAtUrl(
       "/scripts",
       <AppTabs
@@ -318,12 +328,7 @@ describe("AppTabs", () => {
           {
             id: "invites",
             label: "Invites",
-            labelContent: (
-              <>
-                <span>Invites</span>
-                <Badge value={3} />
-              </>
-            ),
+            slot: <Badge value={3} />,
           },
         ]}
       />,

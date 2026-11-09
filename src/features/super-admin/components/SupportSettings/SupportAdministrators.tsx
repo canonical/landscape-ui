@@ -98,11 +98,8 @@ const SupportAdministrators: FC = () => {
         {
           id: "invites",
           label: "Invites",
-          labelContent: invitationsCount ? (
-            <>
-              <span>Invites</span>
-              <Badge value={invitationsCount} />
-            </>
+          slot: invitationsCount ? (
+            <Badge value={invitationsCount} />
           ) : undefined,
           panel: (
             <ResponsiveTable

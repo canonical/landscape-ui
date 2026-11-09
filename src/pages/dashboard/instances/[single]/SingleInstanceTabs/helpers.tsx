@@ -6,9 +6,8 @@ import type { Instance } from "@/types/Instance";
 import { Badge } from "@canonical/react-ds-global";
 import type { ReactNode } from "react";
 
-interface GetTabLabelProps {
+interface GetTabSlotProps {
   id: string;
-  label: string;
   packageCount: number | undefined;
   packagesLoading: boolean;
   usnCount: number | undefined;
@@ -17,54 +16,33 @@ interface GetTabLabelProps {
   kernelLoading: boolean;
 }
 
-const getTabLabelContent = ({
+const getTabSlot = ({
   id,
-  label,
   packageCount,
   packagesLoading,
   usnCount,
   usnLoading,
   kernelCount,
   kernelLoading,
-}: GetTabLabelProps): ReactNode => {
+}: GetTabSlotProps): ReactNode => {
   if (
     (id === "packages" && packagesLoading) ||
     (id === "security-issues" && usnLoading) ||
     (id === "kernel" && kernelLoading)
   ) {
-    return (
-      <>
-        <span>{label}</span>
-        <LoadingState inline />
-      </>
-    );
+    return <LoadingState inline />;
   }
 
   if (id === "packages" && packageCount) {
-    return (
-      <>
-        <span>{label}</span>
-        <Badge value={packageCount} />
-      </>
-    );
+    return <Badge value={packageCount} />;
   }
 
   if (id === "security-issues" && usnCount) {
-    return (
-      <>
-        <span>{label}</span>
-        <Badge value={usnCount} criticality="error" />
-      </>
-    );
+    return <Badge value={usnCount} criticality="error" />;
   }
 
   if (id === "kernel" && kernelCount) {
-    return (
-      <>
-        <span>{label}</span>
-        <Badge value={kernelCount} />
-      </>
-    );
+    return <Badge value={kernelCount} />;
   }
 
   return undefined;
@@ -173,8 +151,7 @@ export const getTabLinks = ({
     .map(({ label, id }) => ({
       id,
       label,
-      labelContent: getTabLabelContent({
-        label,
+      slot: getTabSlot({
         id,
         packageCount,
         packagesLoading,

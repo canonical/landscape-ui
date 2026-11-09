@@ -1,0 +1,10 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+// TEMPORARY (pragma-tabs-slot): mirrors the upstream `.tabs-link > .slot`
+// styles. Delete with `TabSlotShim.tsx`.
+.slot {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  margin-inline-start: $sp-small;
+}

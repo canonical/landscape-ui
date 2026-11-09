@@ -32,12 +32,7 @@ const AdministratorsTabs: FC<AdministratorsTabsProps> = ({
       {
         id: "invites",
         label: "Invites",
-        labelContent: invitationsCount ? (
-          <>
-            <span>Invites</span>
-            <Badge value={invitationsCount} />
-          </>
-        ) : undefined,
+        slot: invitationsCount ? <Badge value={invitationsCount} /> : undefined,
         panel: <InvitesPanel />,
       },
     ]}

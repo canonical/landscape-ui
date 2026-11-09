@@ -9,7 +9,8 @@ import { Suspense, useEffect, useRef } from "react";
 import { useLocation, useSearchParams } from "react-router";
 import classes from "./AppTabs.module.scss";
 import { getActiveTabId, getTabHref } from "./helpers";
-import TabLink, { TabLabelContentContext } from "./TabLink";
+import TabLink from "./TabLink";
+import { TabSlotsProvider } from "./TabSlotShim";
 import type { AppTabsProps } from "./types";
 
 /**
@@ -47,12 +48,6 @@ const AppTabs = <Id extends string>({
     ]),
   );
 
-  const labelContent = new Map(
-    items.flatMap(({ label, labelContent: content }) =>
-      content === undefined ? [] : [[label, content]],
-    ),
-  );
-
   // Page-level tab switches close any open side panel and its notifications.
   const previousTabRef = useRef(tab);
   useEffect(() => {
@@ -67,7 +62,7 @@ const AppTabs = <Id extends string>({
   return (
     <>
       {items.length > 1 && (
-        <TabLabelContentContext value={labelContent}>
+        <TabSlotsProvider items={items}>
           <Tabs
             aria-label={ariaLabel}
             className={classes.tabs}
@@ -83,7 +78,7 @@ const AppTabs = <Id extends string>({
               })),
             }}
           />
-        </TabLabelContentContext>
+        </TabSlotsProvider>
       )}
       {activeItem?.panel !== undefined && (
         <div className={classNames(classes.tabPanel, panelClassName)}>

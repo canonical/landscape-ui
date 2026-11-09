@@ -58,7 +58,10 @@ const TabLabelsConsumer: FC<TabLabelProps> = ({
   return (
     <ul>
       {links.map((link) => (
-        <li key={link.id}>{link.labelContent ?? link.label}</li>
+        <li key={link.id}>
+          {link.label}
+          {link.slot}
+        </li>
       ))}
     </ul>
   );
