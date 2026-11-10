@@ -34,7 +34,7 @@ export default function useFeatures(userEmail: string | null) {
 
   const {
     data: debarchiveFeatures = [],
-    isPending: isGettingDebarchiveFeatures,
+    isLoading: isGettingDebarchiveFeatures,
   } = useQuery<
     AxiosResponse<DebarchiveFeatureResponse>,
     AxiosError<ApiError>,
