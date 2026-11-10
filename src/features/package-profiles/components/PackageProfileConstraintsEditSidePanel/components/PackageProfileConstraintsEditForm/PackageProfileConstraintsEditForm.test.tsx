@@ -192,7 +192,6 @@ describe("PackageProfileConstraintsEditForm", () => {
       if (version) {
         await user.clear(versionInput);
         await user.type(versionInput, version);
-        await user.tab();
       } else {
         expect(versionInput).toHaveValue("");
         expect(screen.queryByText("Required.")).not.toBeInTheDocument();
@@ -218,7 +217,7 @@ describe("PackageProfileConstraintsEditForm", () => {
       { rule: ">=", version: "" },
       { rule: "", version: "9.0" },
     ])(
-      "allows correcting an incomplete restriction after saving: $rule $version",
+      "allows correcting an incomplete restriction and saving directly: $rule $version",
       async ({ rule, version }) => {
         renderWithProviders(
           <PackageProfileConstraintsEditForm profile={packageProfiles[0]} />,
@@ -240,7 +239,6 @@ describe("PackageProfileConstraintsEditForm", () => {
             screen.getByRole("textbox", { name: "Version" }),
             version,
           );
-          await user.tab();
         }
         await user.click(
           screen.getByRole("button", {
@@ -272,7 +270,6 @@ describe("PackageProfileConstraintsEditForm", () => {
             screen.getByRole("textbox", { name: "Version" }),
             "9.0",
           );
-          await user.tab();
         }
         await user.click(
           screen.getByRole("button", {

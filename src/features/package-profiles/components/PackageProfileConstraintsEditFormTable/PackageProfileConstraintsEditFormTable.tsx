@@ -6,6 +6,7 @@ import {
   Select,
 } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
+import { FormikProvider, useFormikContext } from "formik";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -33,6 +34,20 @@ interface PackageProfileConstraintsEditFormTableProps {
   readonly search: string;
   readonly selectedIds: number[];
 }
+
+// Keep Save mounted when a field's blur commits values before its click.
+const ConstraintActionsCell: FC<CellProps<Constraint>> = ({
+  row: { original },
+}) => {
+  const formik = useFormikContext<Constraint>();
+
+  return (
+    <PackageProfileConstraintsEditFormTableActions
+      constraint={original}
+      formik={formik}
+    />
+  );
+};
 
 const PackageProfileConstraintsEditFormTable: FC<
   PackageProfileConstraintsEditFormTableProps
@@ -217,31 +232,22 @@ const PackageProfileConstraintsEditFormTable: FC<
       {
         accessor: "actions",
         className: classes.actionsCell,
-        Cell: ({ row: { original } }: CellProps<Constraint>) => (
-          <PackageProfileConstraintsEditFormTableActions
-            constraint={original}
-            formik={formik}
-          />
-        ),
+        Cell: ConstraintActionsCell,
       },
     ],
-    [
-      constraints,
-      selectedIds.length,
-      formik.errors,
-      formik.touched,
-      formik.isSubmitting,
-    ],
+    [constraints, selectedIds.length, formik.errors, formik.touched],
   );
 
   return (
-    <ModularTable
-      columns={columns}
-      data={constraints}
-      getCellProps={(cell) => getCellProps(cell, formik.values.id)}
-      className="u-no-margin--bottom"
-      emptyMsg={getEmptyMessage(filter, search)}
-    />
+    <FormikProvider value={formik}>
+      <ModularTable
+        columns={columns}
+        data={constraints}
+        getCellProps={(cell) => getCellProps(cell, formik.values.id)}
+        className="u-no-margin--bottom"
+        emptyMsg={getEmptyMessage(filter, search)}
+      />
+    </FormikProvider>
   );
 };
 

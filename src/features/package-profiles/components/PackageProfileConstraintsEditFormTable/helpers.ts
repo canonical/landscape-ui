@@ -10,7 +10,7 @@ const handleConstraintPropChange = async (
   prop: keyof Constraint,
   value: string,
 ) => {
-  await formik.setFieldTouched(`${prop}`, true, false);
+  void formik.setFieldTouched(`${prop}`, true, false);
   await formik.setValues((values) => {
     const updatedValues = { ...values, [prop]: value };
 
