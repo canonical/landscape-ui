@@ -106,6 +106,11 @@ export const getSupportSessionNavigation = (
   name: string,
 ): SupportSessionNavItem[] => [
   {
+    label: "Instances",
+    icon: "machines",
+    path: ROUTES.superAdmin.sessionInstances(name),
+  },
+  {
     label: "Events log",
     icon: "status",
     path: ROUTES.superAdmin.sessionEventsLog(name),
