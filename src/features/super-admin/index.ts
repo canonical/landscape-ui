@@ -17,16 +17,21 @@ export type {
   EditStaffAccountParams,
   EditStaffAccountWslLimitsParams,
   GetStaffAccountsParams,
+  GetStaffInstancesParams,
   GetStaffPeopleParams,
 } from "./api";
 export {
   useEditStaffAccount,
   useEditStaffAccountWslLimits,
   useGetFeatureRegistry,
+  useGetStaffAccessGroups,
   useGetStaffAccount,
   useGetStaffAccounts,
   useGetStaffAccountWslLimits,
+  useGetStaffAvailabilityZones,
+  useGetStaffInstances,
   useGetStaffPeople,
+  useGetStaffTags,
 } from "./api";
 
 export {
@@ -41,6 +46,7 @@ export { isTableTab } from "./components/StaffAccountTabs";
 export { default as StaffAccountsContainer } from "./components/StaffAccountsContainer";
 export { default as StaffPeopleContainer } from "./components/StaffPeopleContainer";
 export { default as SupportSessionContainer } from "./components/SupportSessionContainer";
+export { default as SupportInstances } from "./components/SupportInstances";
 export { default as SupportProfiles } from "./components/SupportProfiles";
 export { SUPPORT_PROFILE_PAGES, SUPPORT_SETTINGS_PAGES } from "./constants";
 export type {

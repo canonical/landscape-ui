@@ -9,3 +9,8 @@ export { useGetStaffAccounts } from "./useGetStaffAccounts";
 export { useGetStaffAccountWslLimits } from "./useGetStaffAccountWslLimits";
 export type { GetStaffPeopleParams } from "./useGetStaffPeople";
 export { useGetStaffPeople } from "./useGetStaffPeople";
+export { useGetStaffAccessGroups } from "./useGetStaffAccessGroups";
+export { useGetStaffAvailabilityZones } from "./useGetStaffAvailabilityZones";
+export type { GetStaffInstancesParams } from "./useGetStaffInstances";
+export { useGetStaffInstances } from "./useGetStaffInstances";
+export { useGetStaffTags } from "./useGetStaffTags";
