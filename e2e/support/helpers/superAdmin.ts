@@ -47,6 +47,14 @@ export interface StaffApiMock {
 const DEFAULT_PAGE_SIZE = 25;
 
 const API_PATH = "/api/v2/";
+const LEGACY_API_PATH = "/api/";
+const LEGACY_API_VERSION = "2011-08-01";
+
+/** The account-scoped reads the customer app makes through the legacy API. */
+const LEGACY_ACTIONS: Record<string, string> = {
+  "access-groups": "GetAccessGroups",
+  "activity-types": "GetActivityTypes",
+};
 
 const apiRoute = (path: string): RegExp =>
   new RegExp(`${API_PATH.replaceAll("/", "\\/")}${path}(\\?.*)?$`);
@@ -368,6 +376,34 @@ export async function mockStaffApi(
     }
 
     await json(route, account);
+  });
+
+  // The account-scoped reads (an account's instances and what hangs off
+  // them). A standalone backend has no such routes, so each is answered by
+  // the customer endpoint it stands for, with the session's real token: the
+  // pages show the person's own data, as the rest of a session does here.
+  await page.route(apiRoute("accounts/([^/?]+)/([^?]+)"), async (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    const [, name = "", resource = ""] =
+      /accounts\/([^/]+)\/(.+)$/.exec(url.pathname) ?? [];
+
+    if (request.method() !== "GET" || !findAccount(decodeURIComponent(name))) {
+      await notFound(route);
+      return;
+    }
+
+    const legacyAction = LEGACY_ACTIONS[resource];
+
+    if (legacyAction) {
+      url.pathname = LEGACY_API_PATH;
+      url.searchParams.set("action", legacyAction);
+      url.searchParams.set("version", LEGACY_API_VERSION);
+    } else {
+      url.pathname = `${API_PATH}${resource}`;
+    }
+
+    await route.fulfill({ response: await route.fetch({ url: url.href }) });
   });
 
   await page.route(
