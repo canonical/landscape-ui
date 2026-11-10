@@ -5,7 +5,12 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import axios from "axios";
 import type { ApiError } from "@/types/api/ApiError";
-import { API_URL, API_URL_DEB_ARCHIVE, IS_DEV_ENV } from "@/constants";
+import {
+  API_URL,
+  API_URL_DEB_ARCHIVE,
+  IS_DEV_ENV,
+  IS_SELF_HOSTED_ENV,
+} from "@/constants";
 
 interface DebarchiveFeatureResponse {
   readonly features: DebarchiveFeature[];
@@ -34,6 +39,7 @@ export default function useFeatures(userEmail: string | null) {
     queryKey: ["debarchive", "features", userEmail],
     queryFn: async () => axios.get(`${API_URL_DEB_ARCHIVE}features`),
     select: (response) => response.data?.features,
+    enabled: IS_SELF_HOSTED_ENV === "true",
   });
 
   const isLoading = isGettingFeatures || isGettingDebarchiveFeatures;
