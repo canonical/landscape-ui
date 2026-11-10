@@ -164,8 +164,15 @@ jobs:
 
       - name: Check Playwright image matches @playwright/test
         run: |
-          missing=$(pnpm exec playwright install --dry-run chromium \
-            | awk '/Install location:/ { print $3 }' \
+          locations=$(pnpm exec playwright install --dry-run chromium \
+            | awk '/Install location:/ { print $NF }')
+          # Fail closed: no parsed paths means the dry-run errored or its
+          # output format changed, not that every browser is present.
+          if [ -z "$locations" ]; then
+            echo "::error::could not read browser install locations from 'playwright install --dry-run'"
+            exit 1
+          fi
+          missing=$(printf '%s\n' "$locations" \
             | while read -r dir; do [ -d "$dir" ] || echo "$dir"; done)
           if [ -n "$missing" ]; then
             echo "::error::container image does not match @playwright/test ($(pnpm exec playwright --version)). Update container.image in validate.yml. Missing: $missing"
