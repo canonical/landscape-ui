@@ -7,7 +7,7 @@ import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { expect } from "vitest";
@@ -189,11 +189,14 @@ describe("PackageProfileConstraintsEditForm", () => {
         rule,
       );
       const versionInput = screen.getByRole("textbox", { name: "Version" });
-      await user.clear(versionInput);
       if (version) {
+        await user.clear(versionInput);
         await user.type(versionInput, version);
+        await user.tab();
+      } else {
+        expect(versionInput).toHaveValue("");
+        expect(screen.queryByText("Required.")).not.toBeInTheDocument();
       }
-      await user.tab();
 
       await user.click(
         screen.getByRole("button", {
@@ -215,7 +218,7 @@ describe("PackageProfileConstraintsEditForm", () => {
       { rule: ">=", version: "" },
       { rule: "", version: "9.0" },
     ])(
-      "does not submit an incomplete restriction: $rule $version",
+      "allows correcting an incomplete restriction after saving: $rule $version",
       async ({ rule, version }) => {
         renderWithProviders(
           <PackageProfileConstraintsEditForm profile={packageProfiles[0]} />,
@@ -250,6 +253,42 @@ describe("PackageProfileConstraintsEditForm", () => {
         expect(
           screen.queryByText("Package profile constraint updated"),
         ).not.toBeInTheDocument();
+
+        await waitFor(() => {
+          expect(
+            screen.getByRole("button", {
+              name: `Save changes to ${constraint.package} constraint`,
+            }),
+          ).not.toHaveAttribute("aria-disabled", "true");
+        });
+
+        if (!rule) {
+          await user.selectOptions(
+            screen.getByRole("combobox", { name: "Rule" }),
+            ">=",
+          );
+        } else {
+          await user.type(
+            screen.getByRole("textbox", { name: "Version" }),
+            "9.0",
+          );
+          await user.tab();
+        }
+        await user.click(
+          screen.getByRole("button", {
+            name: `Save changes to ${constraint.package} constraint`,
+          }),
+        );
+
+        expect(
+          await screen.findByText("Package profile constraint updated"),
+        ).toBeInTheDocument();
+        expect(submittedPayload).toEqual({
+          constraint: constraint.constraint,
+          package: constraint.package,
+          rule: ">=",
+          version: "9.0",
+        });
       },
     );
   });

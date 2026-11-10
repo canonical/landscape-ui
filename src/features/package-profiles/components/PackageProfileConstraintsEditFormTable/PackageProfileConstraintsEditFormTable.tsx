@@ -225,7 +225,13 @@ const PackageProfileConstraintsEditFormTable: FC<
         ),
       },
     ],
-    [constraints, selectedIds.length, formik.errors, formik.touched],
+    [
+      constraints,
+      selectedIds.length,
+      formik.errors,
+      formik.touched,
+      formik.isSubmitting,
+    ],
   );
 
   return (
