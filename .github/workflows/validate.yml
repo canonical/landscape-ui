@@ -103,7 +103,9 @@ jobs:
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || fromJSON('["self-hosted", "Linux", "large"]') }}
     timeout-minutes: 30
     container:
-      image: mcr.microsoft.com/playwright:v1.60.0
+      # Must match the @playwright/test version in package.json; the
+      # "Check Playwright image" step fails if they drift.
+      image: mcr.microsoft.com/playwright:v1.64.0
     environment: dev
     strategy:
       fail-fast: false
@@ -160,8 +162,27 @@ jobs:
           VITE_MSW_ENABLED: ${{ matrix.msw_enabled }}
           VITE_SELF_HOSTED_ENV: ${{ matrix.self_hosted_env }}
 
+      - name: Check Playwright image matches @playwright/test
+        run: |
+          locations=$(pnpm exec playwright install --dry-run chromium \
+            | awk '/Install location:/ { print $NF }')
+          # Fail closed: no parsed paths means the dry-run errored or its
+          # output format changed, not that every browser is present.
+          if [ -z "$locations" ]; then
+            echo "::error::could not read browser install locations from 'playwright install --dry-run'"
+            exit 1
+          fi
+          missing=$(printf '%s\n' "$locations" \
+            | while read -r dir; do [ -d "$dir" ] || echo "$dir"; done)
+          if [ -n "$missing" ]; then
+            echo "::error::container image does not match @playwright/test ($(pnpm exec playwright --version)). Update container.image in validate.yml. Missing: $missing"
+            exit 1
+          fi
+
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
+        # The container image ships browsers and system deps; this is a no-op
+        # when the image matches. Do not add --with-deps (it always runs apt).
+        run: pnpm exec playwright install chromium
 
       - name: Run ${{ matrix.name }} tests
         run: pnpm exec playwright test --project=${{ matrix.target }}

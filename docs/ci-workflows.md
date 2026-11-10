@@ -78,7 +78,7 @@ Runs `pnpm coverage:full` to produce the MSW contract-coverage report, determini
 ## CI Tooling Contracts
 
 - **Node:** `24` · **pnpm:** `10` · **Install:** `pnpm install --frozen-lockfile` only
-- **Playwright:** install browsers (`pnpm exec playwright install --with-deps`) inside the job that runs them — never move this out
+- **Playwright:** the Validate `e2e-tests` container tag (`mcr.microsoft.com/playwright:vX.Y.Z`) must equal `@playwright/test` in `package.json`; bump both in the same PR. Install browsers (`pnpm exec playwright install chromium`, no `--with-deps`, since the image has the deps) inside the job that runs them — never move this out
 - **Caching:** `actions/setup-node@v4` with `cache: "pnpm"`
 
 ## Agents MUST NOT
