@@ -117,6 +117,25 @@ const notFoundResponse = () =>
     { status: 404 },
   );
 
+/**
+ * The gate every account-scoped staff handler runs before its own work: the
+ * global permission (403), then the account lookup (404), in that order so
+ * account existence is never disclosed to unauthorized callers. Returns the
+ * rejection, or the account. `isPermitted` defaults to the read tier.
+ */
+export const resolveStaffAccount = (
+  name: string,
+  isPermitted: () => boolean = hasViewAllAccounts,
+): { account: StaffAccount } | { rejection: Response } => {
+  if (!isPermitted()) {
+    return { rejection: unauthorizedAccessResponse() };
+  }
+
+  const account = getStaffAccountByName(name);
+
+  return account ? { account } : { rejection: notFoundResponse() };
+};
+
 interface PydanticErrorDetail {
   type: string;
   loc: (string | number)[];
