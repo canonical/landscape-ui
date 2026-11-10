@@ -59,7 +59,7 @@ describe("PendingUserActivity", () => {
     const userEventInstance = userEvent.setup();
     renderPendingUserActivity("lock");
 
-    const activityLink = await screen.findByRole("link", {
+    const activityLink = await screen.findByRole("button", {
       name: `View Pending activity to lock for ${user.username}`,
     });
     expect(activityLink).toHaveTextContent("Pending activity to lock");
@@ -76,7 +76,7 @@ describe("PendingUserActivity", () => {
       "href",
       ROUTES.instances.details.fromInstance(ubuntuInstance),
     );
-    expect(panel).toHaveInfoItem("Description", childActivity.summary);
+    expect(panel).not.toHaveClass("is-wide");
     expect(
       within(panel).getByRole("button", { name: "Cancel activity" }),
     ).toBeEnabled();
@@ -86,20 +86,14 @@ describe("PendingUserActivity", () => {
     expect(
       within(panel).queryByRole("button", { name: "Redo" }),
     ).not.toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Search")).toHaveValue(
-      `id:${childActivity.id}`,
-    );
-    const table = await screen.findByRole("table");
-    expect(
-      within(table).getByRole("button", { name: childActivity.summary }),
-    ).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Search")).not.toBeInTheDocument();
   });
 
   it("renders a pending deletion activity", async () => {
     renderPendingUserActivity("delete");
 
     expect(
-      await screen.findByRole("link", {
+      await screen.findByRole("button", {
         name: `View Pending activity to delete for ${user.username}`,
       }),
     ).toHaveTextContent("Pending activity to delete");

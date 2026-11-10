@@ -1,32 +1,30 @@
 import LoadingState from "@/components/layout/LoadingState";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import type { ActivityCommon } from "../../types";
 import Activities from "../Activities";
 import ActivitiesEmptyState from "../ActivitiesEmptyState";
 
 interface ActivitiesContainerProps {
+  readonly children: ReactNode;
   readonly activities: ActivityCommon[];
   readonly activitiesCount: number | undefined;
-  readonly isGettingActivities: boolean;
   readonly isGettingUnfilteredActivities: boolean;
   readonly unfilteredActivitiesCount: number | undefined;
   readonly selectedActivities: ActivityCommon[];
   readonly setSelectedActivities: (activities: ActivityCommon[]) => void;
   readonly isAllSelected: boolean;
-  readonly onSelectAll: () => void;
   readonly onClearSelection: () => void;
 }
 
 const ActivitiesContainer: FC<ActivitiesContainerProps> = ({
+  children,
   activities,
   activitiesCount,
-  isGettingActivities,
   isGettingUnfilteredActivities,
   unfilteredActivitiesCount,
   selectedActivities,
   setSelectedActivities,
   isAllSelected,
-  onSelectAll,
   onClearSelection,
 }) => {
   if (isGettingUnfilteredActivities) {
@@ -41,13 +39,13 @@ const ActivitiesContainer: FC<ActivitiesContainerProps> = ({
     <Activities
       activities={activities}
       activitiesCount={activitiesCount}
-      isGettingActivities={isGettingActivities}
       selectedActivities={selectedActivities}
       setSelectedActivities={setSelectedActivities}
       isAllSelected={isAllSelected}
-      onSelectAll={onSelectAll}
       onClearSelection={onClearSelection}
-    />
+    >
+      {children}
+    </Activities>
   );
 };
 

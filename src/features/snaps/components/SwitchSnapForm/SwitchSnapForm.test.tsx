@@ -1,6 +1,5 @@
 import { API_URL } from "@/constants";
 import { PATHS } from "@/libs/routes";
-import { SNAP_ACTION_ACTIVITY } from "@/tests/mocks/activity";
 import {
   availableSnapInfo,
   installedSnaps,
@@ -221,7 +220,7 @@ describe("SwitchSnapForm", () => {
       await userEvent.click(viewDetailsButton);
 
       expect(
-        await screen.findByText(SNAP_ACTION_ACTIVITY.summary),
+        await screen.findByText("Refresh snaps on 1 computer"),
       ).toBeInTheDocument();
     });
 

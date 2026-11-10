@@ -1,20 +1,16 @@
-import type { ReactElement } from "react";
 import type { SelectOption } from "@/types/SelectOption";
 import { ACTIVITY_STATUSES } from "../../constants";
 
-export const ACTIVITY_SEARCH_HELP_TERMS: {
-  term: string;
-  description: string | ReactElement<Element>;
-}[] = [
-  {
+export const ACTIVITY_SEARCH_HELP_TERMS = {
+  id: {
     term: "id:<activity_id>",
     description: "Search for activities with a specific ID.",
   },
-  {
+  parentId: {
     term: "parent-id:<parent_id>",
     description: "Search for children activities of a specific ID.",
   },
-  {
+  createdAfter: {
     term: "created-after:<date>",
     description: (
       <span>
@@ -25,26 +21,26 @@ export const ACTIVITY_SEARCH_HELP_TERMS: {
       </span>
     ),
   },
-  {
+  createdBefore: {
     term: "created-before:<date>",
     description:
       "Search for activities created before a specific date or time. The format is the same as created-after.",
   },
-  {
+  creator: {
     term: "creator:<email>",
     description:
       "Search for activities created by a particular person (specified by email address).",
   },
-  {
+  computer: {
     term: "computer:<criteria>",
     description:
       "Search for activities related to the given instances. The criteria is itself another query argument to search instances. See Instance Queries for details.",
   },
-  {
+  type: {
     term: "type:<type>",
     description: "Search for activities of a specific type.",
   },
-];
+};
 
 export const ACTIVITY_STATUS_OPTIONS: SelectOption[] = [
   { label: "All", value: "" },

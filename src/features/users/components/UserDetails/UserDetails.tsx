@@ -1,11 +1,10 @@
 import InfoGrid from "@/components/layout/InfoGrid";
-import useSidePanel from "@/hooks/useSidePanel";
-import { ROUTES } from "@/libs/routes";
+import { ActivityDetailsLink } from "@/features/activities";
 import type { UrlParams } from "@/types/UrlParams";
 import type { User } from "@/types/User";
 import { Notification } from "@canonical/react-components";
 import type { FC } from "react";
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 import { getPendingUserActivityMessage } from "../../constants";
 import UserPanelActionButtons from "../UserPanelActionButtons";
 import { useGetGroups, useGetUserGroups } from "../../api";
@@ -18,7 +17,6 @@ interface UserDetailsProps {
 const UserDetails: FC<UserDetailsProps> = ({ user, onEditError }) => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const instanceId = Number(childInstanceId ?? urlInstanceId);
-  const { closeSidePanel } = useSidePanel();
 
   const { groups: allGroups } = useGetGroups({ computer_id: instanceId });
   const { userGroups: userGroupsData } = useGetUserGroups({
@@ -40,20 +38,14 @@ const UserDetails: FC<UserDetailsProps> = ({ user, onEditError }) => {
               user.pending_activity.operation,
             )}{" "}
           </span>
-          <Link
-            to={ROUTES.activities.root({
-              query: `id:${user.pending_activity.activity_id}`,
-            })}
-            state={{
-              activity: {
-                id: user.pending_activity.activity_id,
-                summary: user.pending_activity.summary,
-              },
+          <ActivityDetailsLink
+            activity={{
+              id: user.pending_activity.activity_id,
+              summary: user.pending_activity.summary,
             }}
-            onClick={closeSidePanel}
           >
             View activity
-          </Link>
+          </ActivityDetailsLink>
         </Notification>
       )}
 

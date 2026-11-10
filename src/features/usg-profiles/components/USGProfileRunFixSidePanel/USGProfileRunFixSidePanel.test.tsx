@@ -1,5 +1,5 @@
 import { API_URL } from "@/constants";
-import { ROUTES } from "@/libs/routes";
+import { activityParents } from "@/tests/mocks/activity";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectErrorNotification } from "@/tests/helpers";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
@@ -73,10 +73,18 @@ describe("USGProfileRunFixSidePanel", () => {
     expect(screen.getByText("No")).toBeInTheDocument();
   });
 
-  it("navigates to the activity details from the success notification", async () => {
+  it("opens group details locally from the success notification", async () => {
+    const [activity] = activityParents;
+    assert(activity);
     server.use(
       http.post(`${API_URL}usg-profiles/:id\\:execute`, () =>
-        HttpResponse.json({ id: 123 }),
+        HttpResponse.json(activity),
+      ),
+      http.get(`${API_URL}activities/:id`, () =>
+        HttpResponse.json({ ...activity, result_text: null, children: [] }),
+      ),
+      http.get(`${API_URL}activities`, () =>
+        HttpResponse.json({ results: [], count: 0 }),
       ),
     );
 
@@ -95,9 +103,14 @@ describe("USGProfileRunFixSidePanel", () => {
       await screen.findByRole("button", { name: "View details" }),
     );
 
-    expect(getLocationDisplay()).toHaveTextContent(
-      ROUTES.activities.root({ query: "parent-id:123" }),
-    );
+    expect(getLocationDisplay()).not.toHaveTextContent("/activities");
+    const heading = await screen.findByRole("heading", {
+      name: activity.summary,
+    });
+    expect(heading.closest("aside")).toHaveClass("is-wide");
+    expect(
+      await screen.findByRole("heading", { name: "Activities" }),
+    ).toBeInTheDocument();
   });
 
   it("shows an error notification when running the profile fails", async () => {

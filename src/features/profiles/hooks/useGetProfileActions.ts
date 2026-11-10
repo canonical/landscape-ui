@@ -9,10 +9,9 @@ import {
   type ProfileTypes,
 } from "../helpers";
 import useDebug from "@/hooks/useDebug";
-import { useNavigate } from "react-router";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useNotify from "@/hooks/useNotify";
 import { useRunUsgProfile } from "@/features/usg-profiles";
-import { ROUTES } from "@/libs/routes";
 import { useOpenProfileSidePanel } from "./useOpenProfileSidePanel";
 import type { USGProfileMode } from "@/features/usg-profiles";
 import useProfiles from "@/hooks/useProfiles";
@@ -35,7 +34,7 @@ export const useGetProfileActions = ({
   const { isProfileLimitReached } = useProfiles();
   const { closeSidePanel } = usePageParams();
   const debug = useDebug();
-  const navigate = useNavigate();
+  const openActivityDetails = useOpenActivityDetailsPanel();
   const { notify } = useNotify();
 
   const getNotificationMessage = (mode: USGProfileMode) => {
@@ -64,11 +63,7 @@ export const useGetProfileActions = ({
           {
             label: "View details",
             onClick: () => {
-              navigate(
-                ROUTES.activities.root({
-                  query: `parent-id:${activity.id}`,
-                }),
-              );
+              openActivityDetails(activity, { size: "large" });
             },
           },
         ],

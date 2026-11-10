@@ -43,10 +43,12 @@ const renderForm = (
       values: ExportFormValues;
       fieldsToExport: { id: string; label: string; groupTitle?: string }[];
     }) => Promise<void>;
+    onCancel: () => void;
   }> = {},
 ) => {
   const onGenerate =
     overrides.onGenerate ?? vi.fn().mockResolvedValue(undefined);
+  const onCancel = overrides.onCancel ?? vi.fn();
 
   renderWithProviders(
     <ExportForm
@@ -54,10 +56,11 @@ const renderForm = (
       initialValues={overrides.initialValues ?? INITIAL_VALUES}
       isSubmitting={false}
       onGenerate={onGenerate}
+      onCancel={onCancel}
     />,
   );
 
-  return { onGenerate };
+  return { onGenerate, onCancel };
 };
 
 const openAttributeGroup = async (
@@ -383,8 +386,9 @@ describe("ExportForm", () => {
     });
   });
 
-  it("pops one sidePath entry on cancel", async () => {
+  it("calls onCancel instead of changing the URL when provided", async () => {
     const user = userEvent.setup();
+    const onCancel = vi.fn();
 
     renderWithProviders(
       <>
@@ -393,6 +397,7 @@ describe("ExportForm", () => {
           initialValues={INITIAL_VALUES}
           isSubmitting={false}
           onGenerate={vi.fn()}
+          onCancel={onCancel}
         />
         <LocationDisplay />
       </>,
@@ -402,12 +407,8 @@ describe("ExportForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));
 
-    await waitFor(() => {
-      expect(getLocationDisplay()).toHaveTextContent("sidePath=view");
-      expect(getLocationDisplay()).not.toHaveTextContent(
-        "sidePath=view,export",
-      );
-    });
+    expect(onCancel).toHaveBeenCalledOnce();
+    expect(getLocationDisplay()).toHaveTextContent("sidePath=view,export");
   });
 
   it("does not change the URL when advancing from step 0 to step 1", async () => {
@@ -420,6 +421,7 @@ describe("ExportForm", () => {
           initialValues={INITIAL_VALUES}
           isSubmitting={false}
           onGenerate={vi.fn()}
+          onCancel={vi.fn()}
         />
         <LocationDisplay />
       </>,

@@ -1,4 +1,3 @@
-import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import * as Constants from "@/constants";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { activities } from "@/tests/mocks/activity";
@@ -7,7 +6,14 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { Activity } from "../../types";
+import type { ComponentProps } from "react";
 import ActivitiesActions from "./ActivitiesActions";
+
+const props: ComponentProps<typeof ActivitiesActions> = {
+  selected: [],
+  availableActions: { approve: true, cancel: true, redo: true },
+  onExport: vi.fn(),
+};
 
 describe("ActivitiesActions", () => {
   beforeEach(() => {
@@ -39,16 +45,61 @@ describe("ActivitiesActions", () => {
     },
   ] as const satisfies Activity[];
 
+  it.each([
+    {
+      availableActions: { approve: true, cancel: false, redo: false },
+      visibleActions: ["Approve"],
+    },
+    {
+      availableActions: { approve: false, cancel: true, redo: false },
+      visibleActions: ["Cancel"],
+    },
+    {
+      availableActions: { approve: false, cancel: false, redo: true },
+      visibleActions: ["Redo"],
+    },
+    {
+      availableActions: { approve: false, cancel: false, redo: false },
+      visibleActions: [],
+    },
+  ])(
+    "renders only the configured mutation actions: $visibleActions",
+    ({ availableActions, visibleActions }) => {
+      renderWithProviders(
+        <ActivitiesActions
+          {...props}
+          selected={mockActivities}
+          availableActions={availableActions}
+        />,
+      );
+
+      for (const name of ["Approve", "Cancel", "Redo"]) {
+        if (visibleActions.some((action) => action === name)) {
+          expect(screen.getByRole("button", { name })).toBeEnabled();
+        } else {
+          expect(
+            screen.queryByRole("button", { name }),
+          ).not.toBeInTheDocument();
+        }
+      }
+      expect(
+        screen.getByRole("button", { name: "Export selection as TSV" }),
+      ).toBeEnabled();
+    },
+  );
+
   describe("Approve button", () => {
     it("should be disabled when no activities are selected", () => {
-      renderWithProviders(<ActivitiesActions selected={[]} />);
+      renderWithProviders(<ActivitiesActions {...props} selected={[]} />);
 
       const approveButton = screen.getByRole("button", { name: "Approve" });
       expect(approveButton).toHaveAttribute("aria-disabled", "true");
     });
 
     it("should be enabled when activities with approvable action are selected", () => {
-      renderWithProviders(<ActivitiesActions selected={mockActivities} />);
+      renderWithProviders(
+        <ActivitiesActions {...props} selected={mockActivities} />,
+      );
 
       const approveButton = screen.getByRole("button", { name: "Approve" });
       expect(approveButton).not.toHaveAttribute("aria-disabled");
@@ -68,7 +119,7 @@ describe("ActivitiesActions", () => {
       ];
 
       renderWithProviders(
-        <ActivitiesActions selected={nonApprovableActivities} />,
+        <ActivitiesActions {...props} selected={nonApprovableActivities} />,
       );
 
       const approveButton = screen.getByRole("button", { name: "Approve" });
@@ -77,7 +128,9 @@ describe("ActivitiesActions", () => {
 
     it("should show confirmation modal and approve single activity", async () => {
       const singleActivity = [mockActivities[0]];
-      renderWithProviders(<ActivitiesActions selected={singleActivity} />);
+      renderWithProviders(
+        <ActivitiesActions {...props} selected={singleActivity} />,
+      );
 
       await userEvent.click(screen.getByRole("button", { name: "Approve" }));
 
@@ -102,7 +155,9 @@ describe("ActivitiesActions", () => {
     });
 
     it("should show confirmation modal and approve multiple activities", async () => {
-      renderWithProviders(<ActivitiesActions selected={mockActivities} />);
+      renderWithProviders(
+        <ActivitiesActions {...props} selected={mockActivities} />,
+      );
 
       await userEvent.click(screen.getByRole("button", { name: "Approve" }));
 
@@ -133,14 +188,16 @@ describe("ActivitiesActions", () => {
 
   describe("Cancel button", () => {
     it("should be disabled when no activities are selected", () => {
-      renderWithProviders(<ActivitiesActions selected={[]} />);
+      renderWithProviders(<ActivitiesActions {...props} selected={[]} />);
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
       expect(cancelButton).toHaveAttribute("aria-disabled", "true");
     });
 
     it("should be enabled when activities with cancelable action are selected", () => {
-      renderWithProviders(<ActivitiesActions selected={mockActivities} />);
+      renderWithProviders(
+        <ActivitiesActions {...props} selected={mockActivities} />,
+      );
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
       expect(cancelButton).not.toHaveAttribute("aria-disabled");
@@ -160,7 +217,7 @@ describe("ActivitiesActions", () => {
       ];
 
       renderWithProviders(
-        <ActivitiesActions selected={nonCancelableActivities} />,
+        <ActivitiesActions {...props} selected={nonCancelableActivities} />,
       );
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
@@ -169,7 +226,9 @@ describe("ActivitiesActions", () => {
 
     it("should show confirmation modal and cancel single activity", async () => {
       const singleActivity = [mockActivities[0]];
-      renderWithProviders(<ActivitiesActions selected={singleActivity} />);
+      renderWithProviders(
+        <ActivitiesActions {...props} selected={singleActivity} />,
+      );
 
       await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
@@ -194,7 +253,9 @@ describe("ActivitiesActions", () => {
     });
 
     it("should show confirmation modal and cancel multiple activities", async () => {
-      renderWithProviders(<ActivitiesActions selected={mockActivities} />);
+      renderWithProviders(
+        <ActivitiesActions {...props} selected={mockActivities} />,
+      );
 
       await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
@@ -225,14 +286,16 @@ describe("ActivitiesActions", () => {
 
   describe("Redo button", () => {
     it("should be disabled when no activities are selected", () => {
-      renderWithProviders(<ActivitiesActions selected={[]} />);
+      renderWithProviders(<ActivitiesActions {...props} selected={[]} />);
 
       const redoButton = screen.getByRole("button", { name: "Redo" });
       expect(redoButton).toHaveAttribute("aria-disabled", "true");
     });
 
     it("should be enabled when activities with reappliable action are selected", () => {
-      renderWithProviders(<ActivitiesActions selected={mockActivities} />);
+      renderWithProviders(
+        <ActivitiesActions {...props} selected={mockActivities} />,
+      );
 
       const redoButton = screen.getByRole("button", { name: "Redo" });
       expect(redoButton).not.toHaveAttribute("aria-disabled");
@@ -252,7 +315,7 @@ describe("ActivitiesActions", () => {
       ];
 
       renderWithProviders(
-        <ActivitiesActions selected={nonReappliableActivities} />,
+        <ActivitiesActions {...props} selected={nonReappliableActivities} />,
       );
 
       const redoButton = screen.getByRole("button", { name: "Redo" });
@@ -261,7 +324,9 @@ describe("ActivitiesActions", () => {
 
     it("should show confirmation modal and redo single activity", async () => {
       const singleActivity = [mockActivities[0]];
-      renderWithProviders(<ActivitiesActions selected={singleActivity} />);
+      renderWithProviders(
+        <ActivitiesActions {...props} selected={singleActivity} />,
+      );
 
       await userEvent.click(screen.getByRole("button", { name: "Redo" }));
 
@@ -286,7 +351,9 @@ describe("ActivitiesActions", () => {
     });
 
     it("should show confirmation modal and redo multiple activities", async () => {
-      renderWithProviders(<ActivitiesActions selected={mockActivities} />);
+      renderWithProviders(
+        <ActivitiesActions {...props} selected={mockActivities} />,
+      );
 
       await userEvent.click(screen.getByRole("button", { name: "Redo" }));
 
@@ -332,7 +399,9 @@ describe("ActivitiesActions", () => {
         },
       ];
 
-      renderWithProviders(<ActivitiesActions selected={mixedActivities} />);
+      renderWithProviders(
+        <ActivitiesActions {...props} selected={mixedActivities} />,
+      );
 
       const approveButton = screen.getByRole("button", { name: "Approve" });
       expect(approveButton).toHaveAttribute("aria-disabled", "true");
@@ -343,25 +412,29 @@ describe("ActivitiesActions", () => {
     });
   });
 
-  it("Export button pushes sidePath=export", async () => {
+  it("calls the parent export handler", async () => {
+    const onExport = vi.fn();
     renderWithProviders(
-      <>
-        <ActivitiesActions selected={mockActivities} />
-        <LocationDisplay />
-      </>,
+      <ActivitiesActions
+        {...props}
+        selected={mockActivities}
+        onExport={onExport}
+      />,
     );
 
     await userEvent.click(
       await screen.findByRole("button", { name: "Export selection as TSV" }),
     );
 
-    expect(getLocationDisplay()).toHaveTextContent("sidePath=export");
+    expect(onExport).toHaveBeenCalledOnce();
   });
 
   it("does not render the export button when TSV exports are disabled", async () => {
     vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
 
-    renderWithProviders(<ActivitiesActions selected={mockActivities} />);
+    renderWithProviders(
+      <ActivitiesActions {...props} selected={mockActivities} />,
+    );
 
     await expect(
       screen.findByRole(

@@ -4,6 +4,10 @@
   margin-right: $sph--small !important;
 }
 
-.output {
-  margin-top: 2rem;
+.actions:has(button) {
+  margin-bottom: $spv--x-large;
+}
+
+.tabs {
+  margin-top: $spv--x-large;
 }

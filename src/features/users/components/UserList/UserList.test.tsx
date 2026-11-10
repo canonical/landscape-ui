@@ -52,15 +52,10 @@ describe("UserList", () => {
       const statusCell = screen.getByRole("cell", { name: "Status" });
       expect(statusCell).toHaveIcon("spinner");
       expect(
-        within(statusCell).getByRole("link", {
+        within(statusCell).getByRole("button", {
           name: `View Pending activity to lock for ${pendingUser.username}`,
         }),
-      ).toHaveAttribute(
-        "href",
-        ROUTES.activities.root({
-          query: `id:${activityId}`,
-        }),
-      );
+      ).not.toHaveAttribute("href");
       expect(statusCell).toHaveTextContent("Pending activity to lock");
       expect(statusCell).not.toHaveTextContent("Unlocked");
     });

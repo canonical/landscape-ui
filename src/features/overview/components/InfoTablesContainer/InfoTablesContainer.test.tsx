@@ -1,11 +1,8 @@
 import type { AuthContextProps } from "@/context/auth";
 import useAuth from "@/hooks/useAuth";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { ROUTES } from "@/libs/routes";
-import {
-  activities,
-  manyUnapprovedActivities,
-  manyDeliveredActivities,
-} from "@/tests/mocks/activity";
+import { activities, activityGroupChildren } from "@/tests/mocks/activity";
 import { instances } from "@/tests/mocks/instance";
 import { usns } from "@/tests/mocks/usn";
 import { renderWithProviders } from "@/tests/render";
@@ -13,6 +10,8 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import InfoTablesContainer from "./InfoTablesContainer";
+import classes from "./InfoTablesContainer.module.scss";
+import globalSidePanelClasses from "@/context/SidePanelProvider.module.scss";
 
 const LIST_LIMIT = 10;
 
@@ -127,10 +126,60 @@ describe("InfoTablesContainer", () => {
         .filter((activity) => activity.activity_status === "unapproved")
         .slice(0, LIST_LIMIT);
       expect(shownActivities.length).toBeGreaterThan(0);
+      expect(
+        await screen.findByRole("columnheader", { name: "Activity" }),
+      ).toBeInTheDocument();
+      const activityTable = screen
+        .getByRole("columnheader", { name: "Activity" })
+        .closest("table");
+      assert(activityTable);
+      expect(activityTable).toHaveClass(classes.activitiesTable);
       for (const activity of shownActivities) {
-        const activitySummary = await screen.findAllByText(activity.summary);
-        expect(activitySummary.length).toBeGreaterThan(0);
+        const activityButton = await within(activityTable).findByRole(
+          "button",
+          { name: activity.summary },
+        );
+        expect(activityButton).toHaveClass("u-align-text--left");
+        expect(activityButton).toHaveClass(classes.activityTitle);
       }
+      const [firstActivity] = shownActivities;
+      assert(firstActivity);
+      const firstActivityButton = within(activityTable).getByRole("button", {
+        name: firstActivity.summary,
+      });
+      const firstActivityRow = firstActivityButton.closest("tr");
+      assert(firstActivityRow);
+      const [, creatorCell, createdAtCell] =
+        within(firstActivityRow).getAllByRole("cell");
+      assert(creatorCell);
+      assert(createdAtCell);
+      expect(creatorCell).toHaveClass(classes.creator);
+      expect(createdAtCell).toHaveClass(classes.createdAt);
+      const createdAtText = createdAtCell.querySelector("span");
+      assert(createdAtText);
+      expect(createdAtText).toHaveClass(classes.singleLineCell);
+    });
+
+    it("opens child activity details locally in the original small panel", async () => {
+      const activity = activities.find(
+        (item) => item.activity_status === "unapproved",
+      );
+      assert(activity);
+      await userEvent.click(
+        await screen.findByRole("button", { name: activity.summary }),
+      );
+      const heading = await screen.findByRole("heading", {
+        name: activity.summary,
+      });
+      const panel = heading.closest("aside");
+      assert(panel);
+      expect(panel).not.toHaveClass("is-wide");
+      expect(panel).not.toHaveClass(globalSidePanelClasses.medium);
+      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(
+        screen.queryByRole("link", { name: activity.summary }),
+      ).not.toBeInTheDocument();
+      expect(await within(panel).findByText("Created at")).toBeInTheDocument();
     });
 
     it("renders in progress activities list", async () => {
@@ -290,7 +339,7 @@ describe("InfoTablesContainer", () => {
       await userEvent.click(confirmButton);
 
       // Component should not crash after error
-      expect(screen.getByText(/activities/i)).toBeInTheDocument();
+      expect(screen.getByText("Activities")).toBeInTheDocument();
     });
   });
 
@@ -303,7 +352,11 @@ describe("InfoTablesContainer", () => {
       await screen.findByText(firstInstance.title);
 
       // The footer shows "View all" for instances tab (instances count > 10)
-      const viewAllButton = await screen.findByRole("button", {
+      const upgradesCard = screen
+        .getByText("Upgrades available")
+        .closest(`.${classes.tableContainer}`);
+      assert(upgradesCard instanceof HTMLElement);
+      const viewAllButton = await within(upgradesCard).findByRole("button", {
         name: /view all/i,
       });
       await userEvent.click(viewAllButton);
@@ -352,63 +405,79 @@ describe("InfoTablesContainer", () => {
 });
 
 describe("InfoTablesContainer activities footer", () => {
-  it("shows footer and navigates when activities count exceeds limit on unapproved tab", async () => {
-    setEndpointStatus({
-      status: "variant",
-      path: "activities",
-      response: {
-        unapproved: manyUnapprovedActivities,
-        delivered: manyDeliveredActivities,
-      },
-    });
-    renderWithProviders(<InfoTablesContainer />);
+  it.each([
+    {
+      tab: "Requires approval",
+      status: "unapproved",
+      title: "Activities requiring approval",
+      total: 11,
+    },
+    {
+      tab: "In progress",
+      status: "delivered",
+      title: "Activities in progress",
+      total: 21,
+    },
+  ])(
+    "opens a local large child-activity list from the $tab footer using default mocks",
+    async ({ tab, status, title, total }) => {
+      const allActivities = [...activities, ...activityGroupChildren];
+      const expectedActivities = allActivities.filter(
+        (activity) => activity.activity_status === status,
+      );
+      expect(expectedActivities).toHaveLength(total);
+      renderWithProviders(<InfoTablesContainer />);
 
-    await waitFor(() => {
+      const tabButton = screen.getByRole("tab", { name: tab });
+      await userEvent.click(tabButton);
+      const activitiesCard = tabButton.closest(`.${classes.tableContainer}`);
+      assert(activitiesCard instanceof HTMLElement);
+      await userEvent.click(
+        await within(activitiesCard).findByRole("button", {
+          name: /view all/i,
+        }),
+      );
+      expect(within(activitiesCard).getAllByRole("row")).toHaveLength(
+        LIST_LIMIT + 1,
+      );
+      const heading = await screen.findByRole("heading", { name: title });
+      const panel = heading.closest("aside");
+      assert(panel);
+      expect(panel).toHaveClass("is-wide");
       expect(
-        screen.getAllByText(/unapproved bulk activity/i).length,
-      ).toBeGreaterThan(0);
-    });
-
-    // Activities column is second; get all "View all" buttons and click the last (activities footer)
-    const viewAllButtons = await screen.findAllByRole("button", {
-      name: /view all/i,
-    });
-    const activitiesViewAllButton = viewAllButtons.at(-1);
-    assert(activitiesViewAllButton);
-    await userEvent.click(activitiesViewAllButton);
-    expect(screen.getByText("Activities")).toBeInTheDocument();
-  });
-
-  it("shows footer and navigates when activities count exceeds limit on in-progress tab", async () => {
-    setEndpointStatus({
-      status: "variant",
-      path: "activities",
-      response: {
-        unapproved: manyUnapprovedActivities,
-        delivered: manyDeliveredActivities,
-      },
-    });
-    renderWithProviders(<InfoTablesContainer />);
-
-    const inProgressTab = await screen.findByTestId(
-      "activities-in-progress-tab",
-    );
-    await userEvent.click(inProgressTab);
-
-    await waitFor(() => {
-      expect(
-        screen.getAllByText(/delivered bulk activity/i).length,
-      ).toBeGreaterThan(0);
-    });
-
-    const viewAllButtons = await screen.findAllByRole("button", {
-      name: /view all/i,
-    });
-    const activitiesViewAllButton = viewAllButtons.at(-1);
-    assert(activitiesViewAllButton);
-    await userEvent.click(activitiesViewAllButton);
-    expect(screen.getByText("Activities")).toBeInTheDocument();
-  });
+        await within(panel).findByRole("columnheader", { name: "Instance" }),
+      ).toBeInTheDocument();
+      const firstPageActivities = expectedActivities.slice(
+        0,
+        DEFAULT_PAGE_SIZE,
+      );
+      expect(within(panel).getAllByRole("row")).toHaveLength(
+        firstPageActivities.length + 1,
+      );
+      for (const activity of firstPageActivities) {
+        expect(
+          within(panel).getByRole("button", { name: activity.summary }),
+        ).toBeInTheDocument();
+      }
+      if (total > DEFAULT_PAGE_SIZE) {
+        await userEvent.click(
+          within(panel).getByRole("button", { name: "Next page" }),
+        );
+        const lastActivity = expectedActivities.at(-1);
+        assert(lastActivity);
+        expect(
+          await within(panel).findByRole("button", {
+            name: lastActivity.summary,
+          }),
+        ).toBeInTheDocument();
+        expect(within(panel).getAllByRole("row")).toHaveLength(2);
+        expect(
+          within(panel).getByText("Showing 1 of 21 results"),
+        ).toBeInTheDocument();
+      }
+      expect(mockNavigate).not.toHaveBeenCalled();
+    },
+  );
 });
 
 describe("InfoTablesContainer empty-state refresh handlers", () => {
