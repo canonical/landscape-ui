@@ -26,8 +26,8 @@ export default function useFeatures(userEmail: string | null) {
     select: (response) => response.data?.results,
   });
 
-  const hasRepositoryMirrorsFeature = serverFeatures.some(
-    ({ key }) => key === "repository-mirrors",
+  const isRepositoryMirrorsEnabled = serverFeatures.some(
+    ({ key, enabled }) => key === "repository-mirrors" && enabled,
   );
 
   const {
@@ -41,7 +41,7 @@ export default function useFeatures(userEmail: string | null) {
     queryKey: ["debarchive", "features", userEmail],
     queryFn: async () => axios.get(`${API_URL_DEB_ARCHIVE}features`),
     select: (response) => response.data?.features,
-    enabled: isSelfHosted || hasRepositoryMirrorsFeature,
+    enabled: isSelfHosted || isRepositoryMirrorsEnabled,
   });
 
   const isLoading = isGettingFeatures || isGettingDebarchiveFeatures;
