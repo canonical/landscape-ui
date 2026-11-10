@@ -115,11 +115,21 @@ describe("PackageProfileConstraintsEditForm", () => {
     }
   });
 
-  it("catches errors", async () => {
-    setEndpointStatus({
-      status: "error",
-      path: "packageprofiles/:profileName/constraints/:constraintId",
-    });
+  it("catches errors with multiple targeted endpoint statuses", async () => {
+    setEndpointStatus([
+      {
+        status: "variant",
+        path: "packageprofiles/:profileName/constraints",
+        response: {
+          results: [packageProfiles[0].constraints[0]],
+          count: 1,
+        },
+      },
+      {
+        status: "error",
+        path: "packageprofiles/:profileName/constraints/:constraintId",
+      },
+    ]);
     await renderAndSubmit();
     expect(
       await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),

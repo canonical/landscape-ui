@@ -100,7 +100,9 @@ export default [
           "packageprofiles/:profileName/constraints/:constraintId",
         )
       ) {
-        const { status } = getEndpointStatus();
+        const { status } = getEndpointStatus(
+          "packageprofiles/:profileName/constraints/:constraintId",
+        );
         if (status === "error") {
           throw createEndpointStatusError();
         }
