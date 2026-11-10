@@ -6,7 +6,6 @@ import {
   Select,
 } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
-import { FormikProvider, useFormikContext } from "formik";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -34,20 +33,6 @@ interface PackageProfileConstraintsEditFormTableProps {
   readonly search: string;
   readonly selectedIds: number[];
 }
-
-// Keep Save mounted when a field's blur commits values before its click.
-const ConstraintActionsCell: FC<CellProps<Constraint>> = ({
-  row: { original },
-}) => {
-  const formik = useFormikContext<Constraint>();
-
-  return (
-    <PackageProfileConstraintsEditFormTableActions
-      constraint={original}
-      formik={formik}
-    />
-  );
-};
 
 const PackageProfileConstraintsEditFormTable: FC<
   PackageProfileConstraintsEditFormTableProps
@@ -98,6 +83,33 @@ const PackageProfileConstraintsEditFormTable: FC<
 
   const { handleConstraintPropChange, getConstraintPropError } =
     getConstraintPropHandlers(formik);
+
+  const {
+    handleSubmit,
+    isSubmitting,
+    resetForm,
+    setValues,
+    values: { id: editingConstraintId },
+  } = formik;
+
+  // Field edits must not remount Save between the field's blur and its click.
+  const actionsColumn = useMemo<Column<Constraint>>(
+    () => ({
+      accessor: "actions",
+      className: classes.actionsCell,
+      Cell: ({ row: { original } }: CellProps<Constraint>) => (
+        <PackageProfileConstraintsEditFormTableActions
+          constraint={original}
+          editingConstraintId={editingConstraintId}
+          isSubmitting={isSubmitting}
+          onEdit={setValues}
+          onCancel={resetForm}
+          onSave={handleSubmit}
+        />
+      ),
+    }),
+    [editingConstraintId, isSubmitting, setValues, resetForm, handleSubmit],
+  );
 
   const columns = useMemo<Column<Constraint>[]>(
     () => [
@@ -229,25 +241,25 @@ const PackageProfileConstraintsEditFormTable: FC<
             <>{original.version}</>
           ),
       },
-      {
-        accessor: "actions",
-        className: classes.actionsCell,
-        Cell: ConstraintActionsCell,
-      },
+      actionsColumn,
     ],
-    [constraints, selectedIds.length, formik.errors, formik.touched],
+    [
+      constraints,
+      selectedIds.length,
+      formik.errors,
+      formik.touched,
+      actionsColumn,
+    ],
   );
 
   return (
-    <FormikProvider value={formik}>
-      <ModularTable
-        columns={columns}
-        data={constraints}
-        getCellProps={(cell) => getCellProps(cell, formik.values.id)}
-        className="u-no-margin--bottom"
-        emptyMsg={getEmptyMessage(filter, search)}
-      />
-    </FormikProvider>
+    <ModularTable
+      columns={columns}
+      data={constraints}
+      getCellProps={(cell) => getCellProps(cell, formik.values.id)}
+      className="u-no-margin--bottom"
+      emptyMsg={getEmptyMessage(filter, search)}
+    />
   );
 };
 
