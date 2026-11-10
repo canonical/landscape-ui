@@ -12,6 +12,7 @@ export const SUPER_ADMIN_PATHS = {
   people: "people",
   /** The support session: an account's dashboard, entered by staff. */
   session: "accounts/:name/session",
+  sessionInstances: "instances",
   sessionEventsLog: "events-log",
   sessionProfiles: "profiles",
   sessionProfile: "profiles/:profileType",
@@ -38,6 +39,9 @@ export const SUPER_ADMIN_ROUTES = {
     ),
   people: createRoute(buildPath(SUPER_ADMIN_PATHS.people)),
   session: sessionRoute(sessionBase),
+  sessionInstances: sessionRoute(
+    buildSessionPath(SUPER_ADMIN_PATHS.sessionInstances),
+  ),
   sessionEventsLog: sessionRoute(
     buildSessionPath(SUPER_ADMIN_PATHS.sessionEventsLog),
   ),

@@ -9,6 +9,11 @@ export {
 } from "./components/InstanceStatus";
 export { default as InstanceRemoveFromLandscapeModal } from "./components/InstanceRemoveFromLandscapeModal";
 export { default as InstancesHeader } from "./components/InstancesHeader";
+export { default as AccessGroupFilter } from "./components/AccessGroupFilter";
+export { default as AvailabilityZoneFilter } from "./components/AvailabilityZoneFilter";
+export { default as TagFilter } from "./components/TagFilter";
+export { default as UpgradesFilter } from "./components/UpgradesFilter";
+export { default as WslFilter } from "./components/WslFilter";
 export { default as InstancesEmptyState } from "./components/InstancesEmptyState";
 export { default as PendingInstancesNotification } from "./components/PendingInstancesNotification";
 export { default as InstancesPageActions } from "./components/InstancesPageActions";
