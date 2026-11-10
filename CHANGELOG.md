@@ -3,6 +3,172 @@
 
 ---
 
+## 26.10.0.5
+
+### Patch Changes
+
+- Show an error when creating a role fails instead of failing silently
+- Validate the deb line when adding a repository profile source
+- Disable Deb management and Snap management the same way when no selected instance supports them, with a tooltip explaining why
+- Update welcome portal copy
+- fallback when package has no available versions
+- Disable snaps info request when instance id is not a valid number
+- Update axios to 1.20.0 and refresh undici, devalue, brace-expansion and source-map-js to their patched versions, clearing the fixable HIGH findings in the 26.10 security scan
+- Fix the learn more link in the pending-instance review and approval steps to point to the automatic registration documentation.
+- fix upgrade alert links to filter instances by upgrades
+- Fix about page spacing and reboot profiles datetime formatting, and allow http URLs for mirror source
+- Update validation for deb management and wording for snaps management
+- Hide pending instances without an error notification when the user lacks permission to view them
+- Add and update empty states, and hide Super admin back button for users with no account.
+- Open the instances filter and action menus to the right when there is room and to the left on smaller screens, and stop the Columns menu from jumping when it first opens.
+- Fix table backgrounds in dark side panels.
+- Load more package versions and search results as you scroll package dropdowns, instead of stopping after the second page
+- Show the pending instances banner when no instances are registered, so pending instances can be reviewed and approved. Refreshed the registered instances list after approval so newly added instances appear without having to refresh the page or navigate away.
+- Make the primary group optional when adding a user, with "Use system default" selected initially. Show a success notification with a "View activity" action when user creation is queued.
+- Instance packages are no longer shown as security upgrades when they are not installed or when the installed version is newer than the security candidate. The Packages tab badge on an instance now shows the count of upgradable packages.
+- Disable package change plan execution when the Upgrade Summary has no actions and show a "No upgrades to apply" state instead of an empty table, and list packages that will not be upgraded on excluded instances. List packages that are excluded on every selected instance in the Deb management Summary, with their excluded-instance links, and show "No changes to apply" when nothing can be executed.
+- Blank optional fields are no longer sent when creating a user; name required in edit form.
+- Fixed radio button alignment in run scripts side panel and the single instance hold snaps form
+- Update styles for compliance report side panel
+- Show the total number of targeted instances in the script-run confirmation when the preview list is partial, and stop the instance picker and preview from inheriting the page's pagination
+- Fixes the "Security upgrades" filter on an instance's Packages tab to only list packages with an available security update. Packages installed from the security pocket that only have a regular upgrade are no longer included.
+- Align the Status and Time to Patch USNs columns in ReportView
+- Show a checkbox for snap install / change channel where confinement is unknown for the default channel
+- fixed styling shift by moving subtitle on the legacy license page to underneath the page title.
+- Fixed empty space beside links allowing hovering and clicking.
+- Match the snap action confirmation text to the number of selected snaps
+- Leave instances that can't manage snaps, such as Windows, out of snap management activities
+- Show the chosen revision or channel next to each snap in the install and change channel confirmation modals, reject revisions above the snapd maximum, clarify the install revision notice, and link it to the snap revisions documentation.
+- Fix licenses table expiration date so it doesn't change by timezone, and rephrase the text in the Remove instance from Landscape modal.
+- Update single-instance snap actions to align with bulk snap actions
+- Don't upgrade packages that are excluded in the Packages tab of the Upgrades form
+- Clearing location and phone numbers when editing a user now works.
+- Fixed the USG audit download form defaulting to a future date for users ahead of UTC, which blocked audit generation.
+- Fix saved USG schedule end dates showing as "Invalid date". Show the correct last and next run times for USG profiles outside UTC. Show an error instead of a success message when editing or duplicating a USG profile fails.
+- Show a WSL host's Ubuntu Pro subscription instead of an empty state, and hide token actions on non-Ubuntu hosts
+- Fix mirror update modal so the checkboxes don't block each other, and rename for clarity
+- Update the breakpoint for the actions menu in the instances page
+
+## 26.10.0.0-rc
+
+### Minor Changes
+
+- Add publishing status for publications
+- Add a side panel to edit an access group's title
+- Add missing loading states for buttons
+- package management limit warnings
+- Remove the Applied column from repository profiles
+- Update LandscapeActions subnav to use "legacy portal" wording and remove "New portal" text / tooltip
+- Add help text and announcement for signature-preserving mirrors to clarify update behavior.
+- Add tooltip for "Include dependencies in filter" checkbox
+- Add bulk snap actions to the instances page
+- Update badge styling and remove pagination in administrators page
+- Add completion time to activities table
+- changed base url mount path from `/new_dashboard/` to `/portal/`
+- Align error behavior for side panels on debarchive resources
+- Package management at scale
+- Add administrator limits and fix administrator documentation link
+- Add syncing status for mirrors
+- Include instance name in activities table
+- Add exports functionality for instances and activities
+- Added a legacy license page (self-hosted licensing), bringing it in line with the legacy UI.
+- Redesign instance status, upgrade and tag indicators as accessible labelled pills (colour, icon and text), move the Upgrades column before Status, collapse overflowing table tags behind a counter like statuses, add a dedicated Upgrades filter (security/regular), show a neutral "N/A" pill when upgrades don't apply, and let status, upgrade and tag pills filter the table when clicked. Expanded status/tag cells now collapse when clicking anywhere outside the pop-over, including elsewhere in the same row.
+- Update loading and in progress status cell for mirrors, locals, and publications tables.
+- Added a licenses page with information on active licenses
+- Add "available version" column to instance>packages tab with NO_DATA_TEXT
+- Update mirrors and locals package list pagination to show an approximate page count when there are over 1000 packages
+- Replace chart.js pie with pure SVG donut, improve accessibility
+- Add mirror package filter options
+- Show pending user activities in the Users tab and edit form, with links to activity details.
+- Add mirror packages tab
+- Design changes and added test coverage for export form
+- Add an information tip to the instances page that contains the account name and a link to documentation on how users can register new instances to their Landscape organization.
+- package management feature flags
+- Gate the instances report side panel behind the server-driven `instance-reports` feature flag, replacing the build-time `VITE_REPORT_VIEW_ENABLED` environment variable.
+- Add tsv export feature using v2 endpoint for instance reports
+- Add buttons to cancel ongoing publishing attempts, mirror updates, and local repository package imports. Keep them under a feature flag.
+- Add a badge to the Alerts navigation menu item showing the number of alerts
+- Limit usage of disabled submit buttons in side panel forms. Most forms now only disable the submit button while loading, though some flows may still disable it after validation failures (for example, importing repository packages).
+- Created an about page to summarize information about the UI, Server, and serve useful links to the user.
+- Show and edit the WSL limits of a staff account in super admin mode
+- Add super admin mode for Canonical staff: browse and edit accounts, search people and pending invitations, and enter an account in a read-only support session to see its events log, profiles and org settings
+- Add package import status for local repositories
+- Add WSL profile compliance warning
+- Add creator to activity details
+- Add a side panel to view access group details
+- Hide instance field in single instance activity side panel
+- Move the theme setting from the account settings sidebar to Account settings > General and add a "System default" option that follows the OS color scheme
+- Add containerized test environment with API and e2e tests against dockerized backend stack
+
+### Patch Changes
+
+- Sort the local repositories packages list so it stays consistent
+- Move account name from API credentials to organization settings as a read-only field
+- Fix instances header spacing and alignment
+- Show GPG Key in mirrors and publications, unlock publications distribution fields if non-signature-preserving, and lock link type field for publication target
+- Redirect /profiles and /repositories pages to the first item in their submenu
+- Update badges to the new Pragma design system appearance, and migrate cards and breadcrumbs to Pragma components.
+- Remove count from the sidebar alerts badge
+- Fix snap install, switch channel and hold actions silently dropping their options. The channel, revision, hold time and classic confinement flag are now sent nested under `args` as the API expects, so classic-confined snaps can be installed from the new UI.
+- Fix API param to remove GPG key. Better options for gpg keys on edit mirror form: users can keep their current key, remove it, or add a new one
+- Fix issue where WSL profile non-compliant instances side panel opened underneath WSL profile details
+- Add informational text when there are no channels to switch a snap to
+- Rename the Ubuntu Pro mirror token field to "Bearer token", clarify that it is not the Ubuntu Pro subscription token, and mask the entered token
+- Point the deb archive API base at the promoted `/debarchive/v1/` endpoints (previously `/debarchive/v1beta1/`).
+- Fix back navigation to open sidePath by scoping allowed filter values per-page
+- Improve test coverage for publications and mirrors
+- Fix pagination for mirrors when number of mirrors is >20
+- Remove search chips from appearing when performing a search
+- Remove ellipsis overflow from the table header checkbox in the instance packages empty list
+- Fix "Include dependencies in filter" checkbox
+- Fix instances page actions grouping so it doesn't overflow horizontally
+- Include empty Associated Publications table in Publication Targets
+- Debounce all search fields instead of sending an API request after each char typed
+- Assign global access group as default value to "Review pending instances" form
+- Fix issue where some modals open behind the navigation menu
+- Disable autocomplete suggestions for AWS access key ID and keep password manager suggestions for secrets and passwords
+- Show error when USG profile creation fails
+- Fix new tab link security issue and dark mode text contrast for password constraints
+- Renamed "delete script" to "redact script". Also updated texts around scripts and script profiles to explain that their titles cannot be reused, even after archiving or redacting them.
+- Fix success notification timing out too early and not updating properly
+- Fix external link icon styling
+- Add gpg key fingerprint to sources table on repo profiles, fix PUT param empty string replacement
+- Fix empty state spacing and links that used to be buttons
+- Allow selection of more than one architecture when creating a publication
+- Clear package filter field in add mirror form when preserve signatures is checked
+- Reverts the `local-repository-last-import` feature flag which is never sent by the backend, so that last_import_time shows for local repositories.
+- Fix the spacing for checkboxes with tooltips. Also add the publication target display name to the publish forms for mirrors and local repositories.
+- Handle partial success returns from batchGet endpoints and display unreachable resources appropriately
+- Send mirrorType when creating mirrors and improve source-type/authentication inference for legacy mirrors
+- Gate the local repository import time field behind the server-driven `local-repository-last-import` feature flag.
+- Fixed a grammar mistake in the Search Help Popup on the Instances page.
+- Disable snap switch channel button when there are no available channels to switch to
+- Fix the issue where the confirmation modals on an instance's users panel do not close on confirm
+- Added empty state for instances and fixed broken link in scripts page
+- Add preserve signatures field to mirror add / edit forms and details view.
+- Fix profiles sidepanels cancel and close behavior to be consistent with new design
+- Make publication automatic installs and upgrades settings less confusing
+- Replace moment.js with a custom `ChronoDate` class to remove the moment.js dependency and reduce bundle size. Behavior is preserved across parsing, formatting, UTC/local modes, calendar, diff math (including DST adjustment), and strict ISO 8601 validation.
+- Refactor to no longer use deprecated API endpoints, add feature flag for Upgrades > Packages flow for multiple instances.
+- Fix invitation links redirecting signed-in users to the home page instead of showing the accept/reject form
+- Fix Ubuntu Pro mirror archive root
+- Automatically publishes a new publication and adds cleanup of older packages on publishing
+- Fix batch get operations endpoint behavior.
+- Fix debarchive mirror/publication types by removing now-dead nullable handling for architecture/distribution fields.
+- Make the behavior of adding a publication and publishing a mirror or local to a new publication consistent
+- Update welcome modal text to make new UI / portal the default
+- Collapse table header action buttons and filters on medium screens so the search bar stays visible in the WSL, Activities and Processes views
+- Make repositories success notifications consistent and add link to update mirror from creation
+- Fix styling for Autoinstall files side panel
+- Fix misleading validation text from Add WSL profile form
+- Enable closing out of expanded cells and info items using Escape key
+- Keyboard a11y and arrow-key navigation for saved-searches dropdown
+- Fix consecutive instance removals not working
+- Add a message for when scripts search returns no results.
+- Fix broken pass / fail query links from /profiles/usg to /instances with search term set
+- Standardize publications settings behavior and adjust other publication fields
+- Fixes profiles pages issue where the header disappears during loading
+
 ## 26.10.0.1081-beta
 
 ### Minor Changes
