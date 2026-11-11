@@ -183,9 +183,6 @@ describe("ActivityDetails", () => {
       await screen.findByRole("heading", { name: "Activities" }),
     ).toBeInTheDocument();
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
-    expect(
-      await screen.findByText("There are no activities yet."),
-    ).toBeInTheDocument();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 

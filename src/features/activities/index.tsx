@@ -38,7 +38,7 @@ export { default as ActivitiesList } from "./components/ActivitiesList";
 export { default as ActivitiesPanelList } from "./components/ActivitiesPanelList";
 export { default as ActivityDetailsLink } from "./components/ActivityDetailsLink";
 export { ACTIVITY_STATUSES } from "./constants";
-export { useOpenActivityDetails, useOpenActivityDetailsPanel } from "./hooks";
+export { useOpenActivityDetailsPanel } from "./hooks";
 export type {
   Activity,
   ActivityCommon,

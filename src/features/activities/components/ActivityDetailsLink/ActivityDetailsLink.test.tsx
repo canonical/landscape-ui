@@ -53,9 +53,6 @@ describe("ActivityDetailsLink", () => {
         expect(
           await within(panel).findByRole("heading", { name: "Activities" }),
         ).toBeInTheDocument();
-        expect(
-          await within(panel).findByText("There are no activities yet."),
-        ).toBeInTheDocument();
       } else {
         expect(panel).not.toHaveClass("is-wide");
         expect(

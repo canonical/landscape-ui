@@ -10,10 +10,10 @@ interface ActivitiesContainerProps {
   readonly activitiesCount: number | undefined;
   readonly isGettingUnfilteredActivities: boolean;
   readonly unfilteredActivitiesCount: number | undefined;
-  readonly selectedActivities: ActivityCommon[];
-  readonly setSelectedActivities: (activities: ActivityCommon[]) => void;
-  readonly isAllSelected: boolean;
-  readonly onClearSelection: () => void;
+  readonly selectedActivities?: ActivityCommon[];
+  readonly setSelectedActivities?: (activities: ActivityCommon[]) => void;
+  readonly isAllSelected?: boolean;
+  readonly onClearSelection?: () => void;
 }
 
 const ActivitiesContainer: FC<ActivitiesContainerProps> = ({

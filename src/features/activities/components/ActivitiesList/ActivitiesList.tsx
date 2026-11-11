@@ -15,7 +15,6 @@ import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useMediaQuery } from "usehooks-ts";
 import { ACTIVITY_STATUSES } from "../../constants";
-import { useOpenActivityDetails } from "../../hooks";
 import type { ActivityCommon } from "../../types";
 import classes from "./ActivitiesList.module.scss";
 import classNames from "classnames";
@@ -27,8 +26,8 @@ interface ActivitiesListProps {
   readonly isGettingActivities: boolean;
   readonly header: ReactNode;
   readonly selectionEnabled: boolean;
-  readonly selectedActivities: ActivityCommon[];
-  readonly setSelectedActivities: (activities: ActivityCommon[]) => void;
+  readonly selectedActivities?: ActivityCommon[];
+  readonly setSelectedActivities?: (activities: ActivityCommon[]) => void;
   readonly showInstanceColumn?: boolean;
   readonly isAllSelected?: boolean;
   readonly onSelectAll?: () => void;
@@ -43,7 +42,7 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
   isGettingActivities,
   header,
   selectionEnabled,
-  selectedActivities,
+  selectedActivities = [],
   setSelectedActivities,
   isAllSelected = false,
   onSelectAll,
@@ -51,13 +50,11 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
 }) => {
   const isMedium = useMediaQuery(`(max-width: ${BREAKPOINT_PX.md}px)`);
 
-  useOpenActivityDetails(onActivityDetailsOpen);
-
   const handleClearSelection = useCallback(() => {
     if (onClearSelection) {
       onClearSelection();
     } else {
-      setSelectedActivities([]);
+      setSelectedActivities?.([]);
     }
   }, [setSelectedActivities, onClearSelection]);
 
@@ -65,7 +62,7 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
     if (isAllSelected || selectedActivities.length !== 0) {
       handleClearSelection();
     } else {
-      setSelectedActivities(activities);
+      setSelectedActivities?.(activities);
     }
   }, [
     activities,
@@ -81,7 +78,7 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
         handleClearSelection();
         return;
       }
-      setSelectedActivities(
+      setSelectedActivities?.(
         selectedActivities.includes(activity)
           ? selectedActivities.filter(
               (selectedActivity) => selectedActivity !== activity,

@@ -104,6 +104,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
               selected.some((activity) => !activity.actions?.approvable)
             }
             confirmationModalProps={{
+              renderInPortal: true,
               title: `Approve ${title}`,
               children: (
                 <p className="u-margin--bottom">
@@ -130,6 +131,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
               selected.some((activity) => !activity.actions?.cancelable)
             }
             confirmationModalProps={{
+              renderInPortal: true,
               title: `Cancel ${title}`,
               children: (
                 <p className="u-margin--bottom">
@@ -156,6 +158,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
               selected.some((activity) => !activity.actions?.reappliable)
             }
             confirmationModalProps={{
+              renderInPortal: true,
               title: `Redo ${title}`,
               children: (
                 <p className="u-margin--bottom">

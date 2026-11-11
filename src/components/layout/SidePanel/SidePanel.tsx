@@ -3,7 +3,7 @@ import type { SidePanelProps as SidePanelBaseProps } from "@canonical/react-comp
 import { SidePanel as SidePanelBase } from "@canonical/react-components";
 import * as Sentry from "@sentry/react";
 import classNames from "classnames";
-import type { ReactNode } from "react";
+import type { Key, ReactNode } from "react";
 import { type FC, useContext } from "react";
 import { FallbackComponent } from "../AppErrorBoundary/FallbackComponent";
 import CloseContext from "./CloseContext";
@@ -19,6 +19,7 @@ export interface SidePanelProps extends SidePanelBaseProps {
   readonly children: ReactNode;
   readonly onClose: () => void;
   readonly size?: "small" | "medium" | "large";
+  readonly contentKey?: Key;
 }
 
 const SidePanel: FC<SidePanelProps> & {
@@ -26,7 +27,13 @@ const SidePanel: FC<SidePanelProps> & {
   Header: FC<HeaderProps>;
   LoadingState: FC;
   Suspense: FC<SuspenseProps>;
-} = ({ children, onClose, size = "small", ...props }: SidePanelProps) => {
+} = ({
+  children,
+  onClose,
+  size = "small",
+  contentKey,
+  ...props
+}: SidePanelProps) => {
   const parentId = useContext(ApplicationIdContext);
 
   return (
@@ -41,6 +48,7 @@ const SidePanel: FC<SidePanelProps> & {
     >
       <CloseContext value={onClose}>
         <Sentry.ErrorBoundary
+          key={contentKey}
           fallback={(errorData) => (
             <>
               <Header />

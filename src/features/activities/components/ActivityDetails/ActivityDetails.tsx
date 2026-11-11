@@ -8,7 +8,6 @@ import { CodeSnippet, Icon, Tabs } from "@canonical/react-components";
 import { useState } from "react";
 import type { FC } from "react";
 import { useGetSingleActivity } from "../../api";
-import type { ActivityCommon } from "../../types";
 import classes from "./ActivityDetails.module.scss";
 import ActivityDetailsButtons from "./components/ActivityDetailsButtons";
 import ActivitiesPanelList from "../ActivitiesPanelList";
@@ -46,7 +45,6 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({
   );
 
   const [tabId, setTabId] = useState("activities");
-  const [selectedChild, setSelectedChild] = useState<ActivityCommon>();
 
   if (isGettingActivity) {
     return renderInSidePanel ? <SidePanel.LoadingState /> : <LoadingState />;
@@ -187,28 +185,6 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({
           {tabId === "activities" && activityChildren}
           {tabId === "output" && output}
         </>
-      )}
-
-      {selectedChild && (
-        <SidePanel
-          isOpen
-          onClose={() => {
-            setSelectedChild(undefined);
-          }}
-          size={size}
-        >
-          <SidePanel.Header>{selectedChild.summary}</SidePanel.Header>
-          <SidePanel.Content>
-            <ActivityDetails
-              key={selectedChild.id}
-              activityId={selectedChild.id}
-              size={size}
-              onClose={() => {
-                setSelectedChild(undefined);
-              }}
-            />
-          </SidePanel.Content>
-        </SidePanel>
       )}
     </>
   );

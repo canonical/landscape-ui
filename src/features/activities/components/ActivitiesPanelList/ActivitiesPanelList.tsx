@@ -7,7 +7,6 @@ import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { lazy, useState, type FC } from "react";
 import { useGetActivities } from "../../api";
 import type { ActivityCommon } from "../../types";
-import ActivitiesEmptyState from "../ActivitiesEmptyState";
 import ActivitiesHeader from "../ActivitiesHeader";
 import type { ActivitiesFilters } from "../ActivitiesHeader/types";
 import ActivitiesList from "../ActivitiesList";
@@ -90,14 +89,6 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
     setCurrentPage(page);
     clearSelection();
   };
-
-  if (
-    !isGettingActivities &&
-    activitiesCount === 0 &&
-    !Object.values(filters).some(Boolean)
-  ) {
-    return <ActivitiesEmptyState />;
-  }
 
   return (
     <>

@@ -88,25 +88,6 @@ describe("ActivityChildren", () => {
     expect(screen.getByRole("searchbox")).toBeInTheDocument();
   });
 
-  it("shows the activities empty state when no activities are returned", async () => {
-    server.use(
-      http.get(`${API_URL}activities`, ({ request }) => {
-        const { searchParams } = new URL(request.url);
-        return HttpResponse.json(
-          generatePaginatedResponse({
-            data: [],
-            limit: Number(searchParams.get("limit")),
-            offset: Number(searchParams.get("offset")),
-          }),
-        );
-      }),
-    );
-    renderWithProviders(<ActivitiesPanelList />);
-
-    expect(await screen.findByText("No activities found")).toBeInTheDocument();
-    expect(screen.queryByRole("table")).not.toBeInTheDocument();
-  });
-
   it("keeps searches scoped to the parent without changing page filters", async () => {
     const user = userEvent.setup();
     renderWithProviders(

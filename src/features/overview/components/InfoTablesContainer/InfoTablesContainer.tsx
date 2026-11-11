@@ -449,9 +449,9 @@ const InfoTablesContainer: FC = () => {
         status={status}
         size="large"
         availableActions={{
-          approve: status !== "delivered",
+          approve: status === "unapproved",
           cancel: true,
-          redo: status !== "unapproved" && status !== "delivered",
+          redo: false,
         }}
       />,
       "large",

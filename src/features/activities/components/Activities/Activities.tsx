@@ -9,8 +9,8 @@ interface ActivitiesProps {
   readonly children: ReactNode;
   readonly activities: ActivityCommon[];
   readonly activitiesCount: number | undefined;
-  readonly selectedActivities: ActivityCommon[];
-  readonly setSelectedActivities: (activities: ActivityCommon[]) => void;
+  readonly selectedActivities?: ActivityCommon[];
+  readonly setSelectedActivities?: (activities: ActivityCommon[]) => void;
   readonly instanceId?: number;
   readonly isAllSelected?: boolean;
   readonly onClearSelection?: () => void;
@@ -21,7 +21,7 @@ const Activities: FC<ActivitiesProps> = ({
   activities,
   activitiesCount: activityCount,
   instanceId,
-  selectedActivities,
+  selectedActivities = [],
   setSelectedActivities,
   isAllSelected = false,
   onClearSelection,
@@ -34,7 +34,7 @@ const Activities: FC<ActivitiesProps> = ({
     if (onClearSelection) {
       onClearSelection();
     } else {
-      setSelectedActivities([]);
+      setSelectedActivities?.([]);
     }
   }, [setSelectedActivities, onClearSelection]);
 
@@ -60,7 +60,7 @@ const Activities: FC<ActivitiesProps> = ({
           createdAfter: true,
           createdBefore: true,
           creator: true,
-          computer: instanceId !== undefined,
+          computer: false,
           type: instanceId !== undefined,
         }}
         filters={pageParams}

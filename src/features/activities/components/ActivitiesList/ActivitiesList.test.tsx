@@ -10,7 +10,6 @@ import server from "@/tests/server";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps, FC } from "react";
-import { useNavigate } from "react-router";
 import { http, HttpResponse } from "msw";
 import ActivitiesList from "./ActivitiesList";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -347,36 +346,6 @@ describe("ActivitiesList rendering", () => {
       );
     },
   );
-
-  it("passes activities from navigation state to the parent callback", async () => {
-    const NavigationLink = () => {
-      const navigate = useNavigate();
-      return (
-        <button
-          onClick={() => {
-            navigate(ROUTES.activities.root(), {
-              state: { activity: activities[0] },
-            });
-          }}
-        >
-          View overview activity
-        </button>
-      );
-    };
-    renderWithProviders(
-      <>
-        <NavigationLink />
-        <ActivitiesList {...defaultProps} header="Activity group" />
-      </>,
-    );
-
-    await userEvent.click(
-      screen.getByRole("button", { name: "View overview activity" }),
-    );
-    expect(defaultProps.onActivityDetailsOpen).toHaveBeenCalledWith(
-      activities[0],
-    );
-  });
 });
 
 describe("ActivitiesList selection", () => {
