@@ -23,16 +23,29 @@ import SnapItemTitleRow from "./components/SnapItemTitleRow";
 import SnapItemSubtitle from "./components/SnapItemSubtitle";
 import SnapChannelRevisionFields from "../SnapChannelRevisionFields";
 import SnapNotification from "./components/SnapNotification";
-
 import ConfirmSnapActionModal from "./components/ConfirmSnapActionModal";
+import {
+  DeliveryBlock,
+  RandomizationBlock,
+} from "@/components/form/DeliveryScheduling";
+import { useFormik } from "formik";
+import date from "@/libs/date";
+import {
+  DELIVERY_INITIAL_VALUES,
+  DELIVERY_VALIDATION_SCHEMA,
+} from "./constants";
+import type { SnapDeliveryFormValues } from "./types";
+
 interface SnapsActionFormProps {
   readonly selectedInstances: number[];
   readonly action: SnapAction;
+  readonly hasDeliveryScheduling?: boolean;
 }
 
 const SnapsActionForm: FC<SnapsActionFormProps> = ({
   selectedInstances,
   action,
+  hasDeliveryScheduling = false,
 }) => {
   const [selectedSnaps, setSelectedSnaps] = useState<SnapWithCount[]>([]);
   const [loadingSnapIds, setLoadingSnapIds] = useState<Record<string, boolean>>(
@@ -78,11 +91,55 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       ? `${capitalize(action)}`
       : `${capitalize(action)} ${snapsText}`;
 
-  const onSubmit = async () => {
+  // Submitting the delivery fields only opens the confirmation modal, which
+  // validates them and marks them touched. The request is sent on confirm.
+  const deliveryFormik = useFormik<SnapDeliveryFormValues>({
+    initialValues: DELIVERY_INITIAL_VALUES,
+    validationSchema: DELIVERY_VALIDATION_SCHEMA,
+    onSubmit: openModal,
+  });
+
+  const hasDeliveryErrors = async () => {
+    if (!hasDeliveryScheduling) {
+      return false;
+    }
+
+    const errors = await deliveryFormik.validateForm();
+
+    return Object.keys(errors).length > 0;
+  };
+
+  const getDeliveryParams = () => {
+    if (!hasDeliveryScheduling) {
+      return {};
+    }
+
+    const { values } = deliveryFormik;
+
+    return {
+      deliver_after:
+        !values.deliver_immediately && values.deliver_after
+          ? date(values.deliver_after).format()
+          : undefined,
+      deliver_after_window: values.randomize_delivery
+        ? values.deliver_delay_window
+        : undefined,
+    };
+  };
+
+  const handleConfirm = async () => {
+    // The scheduled time was in the future when the modal opened, but it can
+    // pass while the user reads the modal. The field keeps its inline error.
+    if (await hasDeliveryErrors()) {
+      closeModal();
+      return;
+    }
+
     try {
       const { data: activity } = await snapAction({
         action: getRequestAction(action),
         computer_ids: selectedInstances,
+        ...getDeliveryParams(),
         snaps: selectedSnaps.map((item) => {
           if (action !== "change channel" && action !== "install") {
             return { name: item.snap.name };
@@ -152,7 +209,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     return null;
   };
 
-  const checkSubmit = () => {
+  const checkSubmit = async () => {
     setHasAttemptedSubmit(true);
     if (
       !getValidationError() &&
@@ -161,7 +218,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
       !hasMissingRevisionValue &&
       !hasInvalidRevisionValue
     ) {
-      openModal();
+      if (hasDeliveryScheduling) {
+        await deliveryFormik.submitForm();
+      } else {
+        openModal();
+      }
     }
   };
 
@@ -328,6 +389,13 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
             })}
           </ul>
         )}
+
+        {hasDeliveryScheduling && (
+          <div className={classes.deliveryScheduling}>
+            <DeliveryBlock formik={deliveryFormik} />
+            <RandomizationBlock formik={deliveryFormik} />
+          </div>
+        )}
       </div>
 
       <SidePanelFormButtons
@@ -345,7 +413,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           snapModes={snapModes}
           instancesCount={selectedInstances.length}
           onClose={closeModal}
-          onConfirm={onSubmit}
+          onConfirm={handleConfirm}
           isSubmitting={isSnapActionPending}
           submitText={submitText}
           snapModeConfigs={snapModeConfigs}
