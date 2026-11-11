@@ -9,6 +9,11 @@
 
 .noPadding {
   padding: 0;
+
+  &.actionsCell {
+    padding-top: $spv--small;
+    vertical-align: top;
+  }
 }
 
 .cell {

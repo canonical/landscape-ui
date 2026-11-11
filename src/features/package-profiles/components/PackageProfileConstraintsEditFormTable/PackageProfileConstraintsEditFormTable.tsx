@@ -84,6 +84,33 @@ const PackageProfileConstraintsEditFormTable: FC<
   const { handleConstraintPropChange, getConstraintPropError } =
     getConstraintPropHandlers(formik);
 
+  const {
+    handleSubmit,
+    isSubmitting,
+    resetForm,
+    setValues,
+    values: { id: editingConstraintId },
+  } = formik;
+
+  // Field edits must not remount Save between the field's blur and its click.
+  const actionsColumn = useMemo<Column<Constraint>>(
+    () => ({
+      accessor: "actions",
+      className: classes.actionsCell,
+      Cell: ({ row: { original } }: CellProps<Constraint>) => (
+        <PackageProfileConstraintsEditFormTableActions
+          constraint={original}
+          editingConstraintId={editingConstraintId}
+          isSubmitting={isSubmitting}
+          onEdit={setValues}
+          onCancel={resetForm}
+          onSave={handleSubmit}
+        />
+      ),
+    }),
+    [editingConstraintId, isSubmitting, setValues, resetForm, handleSubmit],
+  );
+
   const columns = useMemo<Column<Constraint>[]>(
     () => [
       {
@@ -207,6 +234,7 @@ const PackageProfileConstraintsEditFormTable: FC<
               className={classes.input}
               wrapperClassName={classes.inputWrapper}
               {...formik.getFieldProps(`version`)}
+              disabled={formik.values.rule === ""}
               onChange={(value) => handleConstraintPropChange("version", value)}
               error={getConstraintPropError("version")}
             />
@@ -214,18 +242,15 @@ const PackageProfileConstraintsEditFormTable: FC<
             <>{original.version}</>
           ),
       },
-      {
-        accessor: "actions",
-        className: classes.actionsCell,
-        Cell: ({ row: { original } }: CellProps<Constraint>) => (
-          <PackageProfileConstraintsEditFormTableActions
-            constraint={original}
-            formik={formik}
-          />
-        ),
-      },
+      actionsColumn,
     ],
-    [constraints, selectedIds.length, formik.errors, formik.touched],
+    [
+      constraints,
+      selectedIds.length,
+      formik.errors,
+      formik.touched,
+      actionsColumn,
+    ],
   );
 
   return (
