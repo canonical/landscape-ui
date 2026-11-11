@@ -10,19 +10,22 @@ const handleConstraintPropChange = async (
   prop: keyof Constraint,
   value: string,
 ) => {
-  await formik.setFieldValue(`${prop}`, value);
+  void formik.setFieldTouched(`${prop}`, true, false);
+  await formik.setValues((values) => {
+    const updatedValues = { ...values, [prop]: value };
 
-  await formik.setFieldTouched(`${prop}`, true);
+    if (prop === "rule" && value === "") {
+      updatedValues.version = "";
+    }
 
-  if (!["rule", "version"].includes(`${prop}`)) {
-    return;
-  }
+    if (prop === "rule" || prop === "version") {
+      updatedValues.notAnyVersion = !!(
+        updatedValues.rule || updatedValues.version
+      );
+    }
 
-  if (value !== "") {
-    await formik.setFieldValue(`notAnyVersion`, true);
-  } else if (formik.values[prop === "rule" ? "version" : "rule"] === "") {
-    await formik.setFieldValue(`notAnyVersion`, false);
-  }
+    return updatedValues;
+  });
 };
 
 const getConstraintPropError = (

@@ -21,6 +21,13 @@ export default [
   http.get(
     `${API_URL}packageprofiles/:profileName/constraints`,
     ({ params, request }) => {
+      const { status, response } = getEndpointStatus(
+        "packageprofiles/:profileName/constraints",
+      );
+      if (status === "variant") {
+        return HttpResponse.json(response);
+      }
+
       const { searchParams } = new URL(request.url);
 
       const search = searchParams.get("search");
@@ -93,7 +100,9 @@ export default [
           "packageprofiles/:profileName/constraints/:constraintId",
         )
       ) {
-        const { status } = getEndpointStatus();
+        const { status } = getEndpointStatus(
+          "packageprofiles/:profileName/constraints/:constraintId",
+        );
         if (status === "error") {
           throw createEndpointStatusError();
         }
