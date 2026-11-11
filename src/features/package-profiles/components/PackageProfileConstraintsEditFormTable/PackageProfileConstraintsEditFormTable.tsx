@@ -234,6 +234,7 @@ const PackageProfileConstraintsEditFormTable: FC<
               className={classes.input}
               wrapperClassName={classes.inputWrapper}
               {...formik.getFieldProps(`version`)}
+              disabled={formik.values.rule === ""}
               onChange={(value) => handleConstraintPropChange("version", value)}
               error={getConstraintPropError("version")}
             />

@@ -200,9 +200,12 @@ describe("PackageProfileConstraintsEditForm", () => {
       );
       const versionInput = screen.getByRole("textbox", { name: "Version" });
       if (version) {
+        expect(versionInput).toBeEnabled();
         await user.clear(versionInput);
         await user.type(versionInput, version);
       } else {
+        expect(versionInput).toBeDisabled();
+        await user.type(versionInput, "9.0");
         expect(versionInput).toHaveValue("");
         expect(screen.queryByText("Required.")).not.toBeInTheDocument();
       }
@@ -223,80 +226,56 @@ describe("PackageProfileConstraintsEditForm", () => {
       });
     });
 
-    it.each([
-      { rule: ">=", version: "" },
-      { rule: "", version: "9.0" },
-    ])(
-      "allows correcting an incomplete restriction and saving directly: $rule $version",
-      async ({ rule, version }) => {
-        renderWithProviders(
-          <PackageProfileConstraintsEditForm profile={packageProfiles[0]} />,
-        );
+    it("allows correcting a missing version and saving directly", async () => {
+      renderWithProviders(
+        <PackageProfileConstraintsEditForm profile={packageProfiles[0]} />,
+      );
 
-        await user.click(
-          await screen.findByRole("button", {
-            name: `Edit ${constraint.package} constraint`,
-          }),
-        );
-        if (rule) {
-          await user.selectOptions(
-            screen.getByRole("combobox", { name: "Rule" }),
-            rule,
-          );
-        }
-        if (version) {
-          await user.type(
-            screen.getByRole("textbox", { name: "Version" }),
-            version,
-          );
-        }
-        await user.click(
+      await user.click(
+        await screen.findByRole("button", {
+          name: `Edit ${constraint.package} constraint`,
+        }),
+      );
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: "Rule" }),
+        ">=",
+      );
+      await user.click(
+        screen.getByRole("button", {
+          name: `Save changes to ${constraint.package} constraint`,
+        }),
+      );
+
+      expect(await screen.findByText("Required.")).toBeInTheDocument();
+      expect(submittedPayload).toBeUndefined();
+      expect(
+        screen.queryByText("Package profile constraint updated"),
+      ).not.toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(
           screen.getByRole("button", {
             name: `Save changes to ${constraint.package} constraint`,
           }),
-        );
+        ).not.toHaveAttribute("aria-disabled", "true");
+      });
 
-        expect(await screen.findByText("Required.")).toBeInTheDocument();
-        expect(submittedPayload).toBeUndefined();
-        expect(
-          screen.queryByText("Package profile constraint updated"),
-        ).not.toBeInTheDocument();
+      await user.type(screen.getByRole("textbox", { name: "Version" }), "9.0");
+      await user.click(
+        screen.getByRole("button", {
+          name: `Save changes to ${constraint.package} constraint`,
+        }),
+      );
 
-        await waitFor(() => {
-          expect(
-            screen.getByRole("button", {
-              name: `Save changes to ${constraint.package} constraint`,
-            }),
-          ).not.toHaveAttribute("aria-disabled", "true");
-        });
-
-        if (!rule) {
-          await user.selectOptions(
-            screen.getByRole("combobox", { name: "Rule" }),
-            ">=",
-          );
-        } else {
-          await user.type(
-            screen.getByRole("textbox", { name: "Version" }),
-            "9.0",
-          );
-        }
-        await user.click(
-          screen.getByRole("button", {
-            name: `Save changes to ${constraint.package} constraint`,
-          }),
-        );
-
-        expect(
-          await screen.findByText("Package profile constraint updated"),
-        ).toBeInTheDocument();
-        expect(submittedPayload).toEqual({
-          constraint: constraint.constraint,
-          package: constraint.package,
-          rule: ">=",
-          version: "9.0",
-        });
-      },
-    );
+      expect(
+        await screen.findByText("Package profile constraint updated"),
+      ).toBeInTheDocument();
+      expect(submittedPayload).toEqual({
+        constraint: constraint.constraint,
+        package: constraint.package,
+        rule: ">=",
+        version: "9.0",
+      });
+    });
   });
 });

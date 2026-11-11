@@ -122,23 +122,34 @@ describe("PackageProfileConstraintsEditFormTable", () => {
     const user = userEvent.setup();
     renderWithProviders(<ComponentWithFormik initialValues={{ id: -1 }} />);
 
-    // Setting then clearing the rule while the version is empty toggles
-    // notAnyVersion true and then back to false.
+    const getVersionInput = () =>
+      screen.getByRole("textbox", { name: "Version" });
+
+    expect(getVersionInput()).toBeDisabled();
+    await user.type(getVersionInput(), "1.0");
+    expect(getVersionInput()).toHaveValue("");
+
     await user.selectOptions(
       screen.getByRole("combobox", { name: "Rule" }),
       ">=",
     );
+    expect(getVersionInput()).toBeEnabled();
+    await user.type(getVersionInput(), "1.0");
+    await user.tab();
+    expect(getVersionInput()).toHaveValue("1.0");
+
     await user.selectOptions(
       screen.getByRole("combobox", { name: "Rule" }),
       "",
     );
-
-    await user.type(screen.getByRole("textbox", { name: "Version" }), "1.0");
+    expect(getVersionInput()).toBeDisabled();
+    expect(getVersionInput()).toHaveValue("");
 
     await user.type(
       screen.getByRole("textbox", { name: "Package name" }),
       "vim",
     );
+    await user.tab();
 
     await user.selectOptions(
       screen.getByRole("combobox", { name: "Constraint" }),
