@@ -1,6 +1,7 @@
 import ListTitle from "@/components/layout/ListTitle";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import {
   InstanceStatus,
@@ -10,6 +11,7 @@ import {
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import date from "@/libs/date";
+import { ROUTES } from "@/libs/routes";
 import type { Instance } from "@/types/Instance";
 import { Icon, Tooltip } from "@canonical/react-components";
 import classNames from "classnames";
@@ -35,11 +37,16 @@ const DateCell: FC<{ readonly value: string | null | undefined }> = ({
   );
 
 interface SupportInstancesListProps {
+  /** The account the instances belong to. */
+  readonly name: string;
   readonly instances: Instance[];
 }
 
 /** The account's instances, read-only: pills and tags filter the list. */
-const SupportInstancesList: FC<SupportInstancesListProps> = ({ instances }) => {
+const SupportInstancesList: FC<SupportInstancesListProps> = ({
+  name,
+  instances,
+}) => {
   const {
     disabledColumns,
     setPageParams,
@@ -114,7 +121,19 @@ const SupportInstancesList: FC<SupportInstancesListProps> = ({ instances }) => {
         ),
         Cell: ({ row: { original } }: CellProps<Instance>) => (
           <ListTitle>
-            <span>{original.title}</span>
+            <StaticLink
+              to={
+                original.parent
+                  ? ROUTES.superAdmin.sessionInstanceChild(
+                      name,
+                      original.parent.id,
+                      original.id,
+                    )
+                  : ROUTES.superAdmin.sessionInstance(name, original.id)
+              }
+            >
+              {original.title}
+            </StaticLink>
             <span className="u-text--muted">
               {original.hostname || <NoData />}
             </span>
@@ -235,6 +254,7 @@ const SupportInstancesList: FC<SupportInstancesListProps> = ({ instances }) => {
       toggleStatusFilter,
       toggleUpgradeFilter,
       titleId,
+      name,
     ],
   );
 
