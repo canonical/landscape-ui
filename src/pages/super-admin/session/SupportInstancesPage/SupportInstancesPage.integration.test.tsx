@@ -27,6 +27,10 @@ const INITECH = "initech";
 
 const [instance] = instances;
 const taggedInstance = instances.find(({ tags }) => tags.length > 0);
+const childInstance = instances.find(
+  (candidate): candidate is typeof candidate & { parent: { id: number } } =>
+    !!candidate.parent,
+);
 
 /** Signs in as staff whose session is already in `account`. */
 const signIn = (account: string) => {
@@ -84,6 +88,7 @@ describe("SupportInstancesPage (integration)", () => {
 
   assert(instance);
   assert(taggedInstance);
+  assert(childInstance);
 
   it("lists the account's instances", async () => {
     renderInstances();
@@ -94,7 +99,9 @@ describe("SupportInstancesPage (integration)", () => {
 
     const row = await findRow(instance.title);
 
-    expect(row.getByRole("rowheader")).toHaveTextContent(instance.hostname);
+    expect(row.getByRole("rowheader")).toHaveTextContent(
+      instance.hostname ?? "",
+    );
   });
 
   it("offers nothing that changes the account", async () => {
@@ -103,9 +110,6 @@ describe("SupportInstancesPage (integration)", () => {
     await findRow(instance.title);
 
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("link", { name: instance.title }),
-    ).not.toBeInTheDocument();
     for (const action of [
       "Restart",
       "Shut down",
@@ -117,6 +121,30 @@ describe("SupportInstancesPage (integration)", () => {
         screen.queryByRole("button", { name: new RegExp(action, "i") }),
       ).not.toBeInTheDocument();
     }
+  });
+
+  it("links each instance to its page in the session", async () => {
+    renderInstances();
+
+    const row = await findRow(instance.title);
+
+    expect(row.getByRole("link", { name: instance.title })).toHaveAttribute(
+      "href",
+      ROUTES.superAdmin.sessionInstance(ACME, instance.id),
+    );
+
+    const childRow = await findRow(childInstance.title);
+
+    expect(
+      childRow.getByRole("link", { name: childInstance.title }),
+    ).toHaveAttribute(
+      "href",
+      ROUTES.superAdmin.sessionInstanceChild(
+        ACME,
+        childInstance.parent.id,
+        childInstance.id,
+      ),
+    );
   });
 
   it("reads the account named in the address, not the session's own", async () => {
