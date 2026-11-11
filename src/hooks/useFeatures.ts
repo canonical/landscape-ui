@@ -14,7 +14,7 @@ interface DebarchiveFeatureResponse {
 }
 
 export default function useFeatures(userEmail: string | null) {
-  const { isSelfHosted } = useEnv();
+  const { isSelfHosted, envLoading } = useEnv();
 
   const { data: serverFeatures = [], isPending: isGettingFeatures } = useQuery<
     AxiosResponse<{ results: Feature[] }>,
@@ -44,7 +44,8 @@ export default function useFeatures(userEmail: string | null) {
     enabled: isSelfHosted || isRepositoryMirrorsEnabled,
   });
 
-  const isLoading = isGettingFeatures || isGettingDebarchiveFeatures;
+  const isLoading =
+    isGettingFeatures || isGettingDebarchiveFeatures || envLoading;
 
   const isFeatureEnabled = useCallback(
     (featureKey: FeatureKey) => {

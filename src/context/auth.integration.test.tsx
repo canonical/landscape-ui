@@ -157,12 +157,27 @@ describe("AuthProvider super admin gating (integration)", () => {
       },
     );
 
-    it("does not make everyone else wait for the mode", async () => {
+    it("holds everyone until the mode settles so feature discovery is final", async () => {
       vi.mocked(useEnv).mockReturnValue(pendingEnv);
       serveMe([]);
 
-      const result = await renderAuth();
+      const { result, rerender } = renderHook(() => useAuth(), {
+        wrapper: renderHookWithProviders(),
+      });
 
+      // Auth and features resolve, but the mode is still unknown, so we cannot
+      // yet tell whether the debarchive feature query will run.
+      await waitFor(() => {
+        expect(result.current.authorized).toBe(true);
+      });
+      expect(result.current.authLoading).toBe(true);
+
+      vi.mocked(useEnv).mockReturnValue(saasEnv);
+      rerender();
+
+      await waitFor(() => {
+        expect(result.current.authLoading).toBe(false);
+      });
       expect(result.current.isSuperAdmin).toBe(false);
     });
   });

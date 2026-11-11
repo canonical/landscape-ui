@@ -18,7 +18,7 @@ const alwaysEnabledFeatures = features.filter(
 export default [
   http.get(`${API_URL}features`, () => {
     if (shouldApplyEndpointStatus("features")) {
-      const { status } = getEndpointStatus();
+      const { status, response } = getEndpointStatus("features");
 
       if (status === "empty") {
         return HttpResponse.json({ results: alwaysEnabledFeatures });
@@ -26,6 +26,10 @@ export default [
 
       if (status === "error") {
         throw createEndpointStatusNetworkError();
+      }
+
+      if (status === "variant") {
+        return HttpResponse.json(response);
       }
     }
 
