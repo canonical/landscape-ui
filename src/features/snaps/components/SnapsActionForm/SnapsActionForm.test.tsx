@@ -1193,6 +1193,86 @@ describe("SnapsActionForm", () => {
     expect(deleteButton).toHaveIcon(ICONS.delete);
   });
 
+  describe("Fixed snaps", () => {
+    const fixedSnaps = [firstSnap, secondSnap];
+
+    it("renders the given snaps without a search box, delete buttons or instance counts", () => {
+      renderWithProviders(
+        <SnapsActionForm
+          selectedInstances={[instanceId]}
+          action="hold"
+          fixedSnaps={fixedSnaps}
+        />,
+      );
+
+      expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+      expect(screen.getByText("Snaps to hold")).toBeInTheDocument();
+      expect(screen.getByText(firstSnap.snap.name)).toBeInTheDocument();
+      expect(screen.getByText(secondSnap.snap.name)).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /^Delete / }),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/Installed on/)).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Hold 2 snaps" }),
+      ).toBeInTheDocument();
+    });
+
+    it("hides the instance count for change channel too", async () => {
+      renderWithProviders(
+        <SnapsActionForm
+          selectedInstances={[instanceId]}
+          action="change channel"
+          fixedSnaps={[secondSnap]}
+        />,
+      );
+
+      expect(
+        await screen.findByLabelText(
+          `Snap channel or revision for ${secondSnap.snap.name}`,
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Change to")).toBeInTheDocument();
+      expect(screen.queryByText(/Installed on/)).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /^Delete / }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("submits the given snaps", async () => {
+      let requestBody: SnapActionParams | null = null;
+      server.use(
+        http.post(`${API_URL}snaps`, async ({ request }) => {
+          requestBody = (await request.json()) as SnapActionParams;
+          return HttpResponse.json(successfulSnapInstallResponse);
+        }),
+      );
+
+      renderWithProviders(
+        <SnapsActionForm
+          selectedInstances={[instanceId]}
+          action="hold"
+          fixedSnaps={fixedSnaps}
+        />,
+      );
+
+      await user.click(screen.getByRole("button", { name: "Hold 2 snaps" }));
+      const modal = await screen.findByRole("dialog");
+      await user.click(
+        within(modal).getByRole("button", { name: "Hold 2 snaps" }),
+      );
+
+      expect(
+        await screen.findByText("Snaps successfully queued to hold"),
+      ).toBeInTheDocument();
+      expect(requestBody).toEqual({
+        action: "hold",
+        computer_ids: [instanceId],
+        snaps: [{ name: firstSnap.snap.name }, { name: secondSnap.snap.name }],
+      });
+    });
+  });
+
   describe("Delivery scheduling", () => {
     const captureRequest = () => {
       let requestBody: SnapActionParams | null = null;

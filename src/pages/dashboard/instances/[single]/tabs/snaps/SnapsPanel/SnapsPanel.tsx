@@ -12,8 +12,8 @@ import { lazy, Suspense, type FC } from "react";
 import { useParams } from "react-router";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
-const InstallSnaps = lazy(
-  () => import("@/features/snaps/components/InstallSnaps"),
+const InstanceSnapsActionForm = lazy(
+  () => import("@/features/snaps/components/InstanceSnapsActionForm"),
 );
 
 const SnapsPanel: FC = () => {
@@ -45,7 +45,7 @@ const SnapsPanel: FC = () => {
     setSidePanelContent(
       "Install snaps",
       <Suspense fallback={<LoadingState />}>
-        <InstallSnaps />
+        <InstanceSnapsActionForm action="install" />
       </Suspense>,
     );
   };
