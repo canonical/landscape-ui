@@ -40,8 +40,9 @@ jobs:
         id: install
         run: pnpm install --frozen-lockfile
 
-      # The only type check in CI (the e2e build no longer runs tsc). It lives
-      # in this job so it stays behind the required "ESLint" check.
+      # Validate's only type check (the e2e build no longer runs tsc; `pnpm
+      # build` elsewhere still does). It lives in this job so it stays behind
+      # the required "ESLint" check.
       - name: Type check (tsgo)
         run: pnpm run typecheck
 
@@ -199,7 +200,7 @@ jobs:
           retention-days: 30
 
   unit-tests:
-    name: Vitest (shard ${{ matrix.shard }}/4)
+    name: Vitest (shard ${{ matrix.shard }}/${{ strategy.job-total }})
     # Fork PR runs execute unreviewed code, so keep them off the persistent
     # self-hosted runners. Merge-queue runs need an approving review first.
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || fromJSON('["self-hosted", "Linux", "large"]') }}
@@ -240,21 +241,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Coverage thresholds only make sense for the whole suite, so they are
-      # zeroed here and enforced by the "Vitest" job on the merged report.
+      # VITEST_SHARD turns off the coverage thresholds in vitest.config.ts:
+      # they only make sense for the whole suite, so the "Vitest" job enforces
+      # them on the merged report. Failing tests are annotated by that job too.
       - name: Run tests with coverage
         run: >-
           pnpm exec vitest run --coverage
-          --shard=${{ matrix.shard }}/4
+          --shard=${{ matrix.shard }}/${{ strategy.job-total }}
           --reporter=default --reporter=blob
           --outputFile.blob=vitest-blob/blob-${{ matrix.shard }}.json
           --coverage.reporter=text-summary
-          --coverage.thresholds.statements=0
-          --coverage.thresholds.lines=0
-          --coverage.thresholds.functions=0
-          --coverage.thresholds.branches=0
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
+          VITEST_SHARD: ${{ matrix.shard }}
 
       - name: Upload blob report
         if: ${{ !cancelled() }}
@@ -266,41 +265,18 @@ jobs:
           if-no-files-found: error
 
   # The required "Vitest" check. GitHub counts a skipped required check as
-  # passing, so this job always runs and fails unless every shard succeeded.
+  # passing, so this job fails unless every shard succeeded. After a cancel
+  # (a newer push) it is skipped on PRs to main, where the merge queue re-runs
+  # Validate; release/point PRs have no merge queue, so there it still runs.
   unit-tests-merge:
     name: Vitest
     needs: unit-tests
-    if: ${{ always() }}
+    if: ${{ !cancelled() || github.base_ref != 'main' }}
     # Fork PR runs execute unreviewed code, so keep them off the persistent
     # self-hosted runners. Merge-queue runs need an approving review first.
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || fromJSON('["self-hosted", "Linux", "large"]') }}
     timeout-minutes: 15
-    permissions:
-      contents: read
-      pull-requests: write
-    environment: dev
-    env:
-      # vars are not passed to fork PRs; fall back to the .env.production
-      # paths only there, so a missing var still fails same-repo runs.
-      VITE_API_URL: ${{ github.event.pull_request.head.repo.fork && (vars.API_URL || '/api/v2/') || vars.API_URL }}
-      VITE_API_URL_OLD: ${{ github.event.pull_request.head.repo.fork && (vars.API_URL_OLD || '/api/') || vars.API_URL_OLD }}
-      VITE_API_URL_DEB_ARCHIVE: ${{ github.event.pull_request.head.repo.fork && (vars.API_URL_DEB_ARCHIVE || '/debarchive/v1/') || vars.API_URL_DEB_ARCHIVE }}
-      VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
-      VITE_APP_TITLE: Landscape
-      VITE_ROOT_PATH: /portal/
-      VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
-      VITE_APP_VERSION: "26.04.0.12"
-      VITE_APP_COMMIT: ${{ github.sha }}
-      VITE_SELF_HOSTED_ENV: true
     steps:
-      - name: Require every shard to pass
-        if: ${{ needs.unit-tests.result != 'success' }}
-        env:
-          SHARDS_RESULT: ${{ needs.unit-tests.result }}
-        run: |
-          echo "::error::Vitest shards finished with result '$SHARDS_RESULT'; see the 'Vitest (shard n/4)' jobs."
-          exit 1
-
       - name: Checkout repository
         uses: actions/checkout@v5
 
@@ -325,8 +301,11 @@ jobs:
           path: vitest-blob
           merge-multiple: true
 
-      # Fails on any failed test in the blobs and enforces the coverage
-      # thresholds from vitest.config.ts against the merged coverage.
+      # Merges whatever blobs the shards uploaded, so the summary, coverage
+      # report and failing-test annotations show up even when a shard failed.
+      # Fails on any failed test and enforces the vitest.config.ts coverage
+      # thresholds against the merged coverage. No --reporter, so Vitest keeps
+      # its github-actions reporter.
       - name: Merge reports and check coverage
         run: pnpm exec vitest --merge-reports=vitest-blob --coverage
         env:
@@ -339,6 +318,17 @@ jobs:
           name: vitest-report
           path: ${{ github.workspace }}/reports
           retention-days: 30
+
+      # Last, so the merged report above is still produced. A shard that
+      # crashed or was cancelled may have uploaded no blob, so a passing
+      # merge alone does not prove the whole suite passed.
+      - name: Require every shard to pass
+        if: ${{ !cancelled() && needs.unit-tests.result != 'success' }}
+        env:
+          SHARDS_RESULT: ${{ needs.unit-tests.result }}
+        run: |
+          echo "::error::Vitest shards finished with result '$SHARDS_RESULT'; see the 'Vitest (shard n/m)' jobs."
+          exit 1
 
   verify:
     name: Changeset
