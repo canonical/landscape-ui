@@ -1,0 +1,12 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.header {
+  align-items: center;
+  column-gap: $sph--small;
+  display: flex;
+  margin-bottom: $spv--large;
+}
+
+.heading {
+  margin-bottom: 0;
+}
