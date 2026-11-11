@@ -3,9 +3,12 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { ApiError } from "@/types/api/ApiError";
 import { getFormikError } from "@/utils/formikErrors";
 import { Button, Form, Icon, Input } from "@canonical/react-components";
+import { isAxiosError } from "axios";
 import { useFormik } from "formik";
+import type { FormikHelpers } from "formik";
 import type { FC } from "react";
 import { useRef } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -49,7 +52,10 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
   const { removeScriptAttachment } = useRemoveScriptAttachment();
   const { editScript, isEditing } = useEditScript();
 
-  const handleSubmit = async (values: ScriptFormValues) => {
+  const handleSubmit = async (
+    values: ScriptFormValues,
+    { setFieldError }: FormikHelpers<ScriptFormValues>,
+  ) => {
     try {
       const newAttachments = Object.values(values.attachments).filter(
         (a) => a !== null,
@@ -85,11 +91,25 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
       });
     } catch (error) {
       closeModal();
-      debug(error);
+
+      if (isAxiosError<ApiError>(error) && error.response?.data) {
+        const { error: errorCode } = error.response.data;
+        const isDuplicateTitleError = errorCode === "DuplicateScript";
+
+        if (isDuplicateTitleError) {
+          setFieldError(
+            "title",
+            "Title already used by an active, archived, or redacted script.",
+          );
+          return;
+        }
+      }
+
+      debug(error, { placement: "global" });
     }
   };
 
-  const formik = useFormik({
+  const formik = useFormik<ScriptFormValues>({
     initialValues: getInitialValues(script),
     validationSchema: getValidationSchema(),
     onSubmit: handleSubmit,

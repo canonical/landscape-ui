@@ -8,7 +8,9 @@ export const GlobalShell: FC<{ readonly children: ReactNode }> = ({
   const { notify, sidePanel } = useNotify();
 
   const showNotification =
-    !sidePanel.open || notify.notification?.type !== "negative";
+    !sidePanel.open ||
+    notify.notification?.type !== "negative" ||
+    notify.notification?.placement === "global";
 
   return (
     <>

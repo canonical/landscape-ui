@@ -23,11 +23,12 @@ const useNotificationHelper = (): NotificationHelper => {
   return {
     notification,
 
-    error: ({ message, error, actions, title }) => {
+    error: ({ message, error, actions, title, placement }) => {
       setNotification({
         actions,
         error,
         message,
+        placement,
         title,
         type: "negative",
       });

@@ -113,7 +113,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
       username: Yup.string().required("This field is required"),
     }),
 
-    onSubmit: async (values) => {
+    onSubmit: async (values, { setFieldError }) => {
       if (!values.trigger_type || values.script_id == undefined) {
         return;
       }
@@ -187,17 +187,15 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
           const isDuplicateTitleError = errorCode === "ScriptProfileDuplicate";
 
           if (isDuplicateTitleError) {
-            debug(
-              new Error(
-                "This script profile title is unavailable. It is either already in use or was previously archived. Script profile titles cannot be reused.",
-                { cause: error },
-              ),
+            setFieldError(
+              "title",
+              "Title already used by an active or archived script profile.",
             );
             return;
           }
         }
 
-        debug(error);
+        debug(error, { placement: "global" });
         return;
       }
 

@@ -207,7 +207,16 @@ export default [
       endpointStatus.status === "error" &&
       endpointStatus.path === "EditScript"
     ) {
-      throw createEndpointStatusError();
+      const { error } =
+        (endpointStatus.response as
+          | {
+              error?: string;
+            }
+          | undefined) ?? {};
+
+      throw createEndpointStatusError({
+        error,
+      });
     }
 
     return HttpResponse.json({});

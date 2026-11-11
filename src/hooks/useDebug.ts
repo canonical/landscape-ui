@@ -6,7 +6,7 @@ import useNotify from "./useNotify";
 export default function useDebug() {
   const { notify } = useNotify();
 
-  return (error: unknown) => {
+  return (error: unknown, options?: { placement?: "global" }) => {
     let errorMessage: string;
 
     if (isAxiosError<ApiError>(error) && error.response) {
@@ -25,7 +25,9 @@ export default function useDebug() {
       errorMessage = "Unknown error";
     }
 
-    notify.error({ message: errorMessage, error });
+    const placement = options?.placement;
+
+    notify.error({ message: errorMessage, error, placement });
 
     if (IS_DEV_ENV && !(error instanceof Error && error.cause === "test")) {
       console.error(errorMessage, error);

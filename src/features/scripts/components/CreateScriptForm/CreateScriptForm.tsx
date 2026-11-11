@@ -9,6 +9,7 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Button, Form, Icon, Input, Select } from "@canonical/react-components";
 import { isAxiosError } from "axios";
 import { useFormik } from "formik";
+import type { FormikHelpers } from "formik";
 import type { FC } from "react";
 import { useRef } from "react";
 import { useCreateScript, useCreateScriptAttachment } from "../../api";
@@ -43,7 +44,10 @@ const CreateScript: FC = () => {
     }),
   );
 
-  const handleSubmit = async (values: ScriptFormValues) => {
+  const handleSubmit = async (
+    values: ScriptFormValues,
+    { setFieldError }: FormikHelpers<ScriptFormValues>,
+  ) => {
     const newAttachments = Object.values(values.attachments).filter(
       (a) => a !== null,
     );
@@ -66,21 +70,19 @@ const CreateScript: FC = () => {
         const isDuplicateTitleError = errorCode === "DuplicateScript";
 
         if (isDuplicateTitleError) {
-          debug(
-            new Error(
-              "This script title is unavailable. It is either already in use or was previously archived or redacted. Script titles cannot be reused.",
-              { cause: error },
-            ),
+          setFieldError(
+            "title",
+            "Title already used by an active, archived, or redacted script.",
           );
           return;
         }
       }
 
-      debug(error);
+      debug(error, { placement: "global" });
     }
   };
 
-  const formik = useFormik({
+  const formik = useFormik<ScriptFormValues>({
     initialValues: SCRIPT_FORM_INITIAL_VALUES,
     validationSchema: getValidationSchema(),
     onSubmit: handleSubmit,

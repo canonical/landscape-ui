@@ -31,7 +31,11 @@ const ReactQueryProvider: FC<ReactQueryProviderProps> = ({ children }) => {
         retry: false,
       },
     },
-    queryCache: new QueryCache({ onError: debug }),
+    queryCache: new QueryCache({
+      onError: (error) => {
+        debug(error);
+      },
+    }),
   };
 
   const [queryClient] = useState(() => new QueryClient(config));
