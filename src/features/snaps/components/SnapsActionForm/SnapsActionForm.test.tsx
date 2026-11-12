@@ -1,7 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import SnapsActionForm from "./SnapsActionForm";
 import { SNAP_ACTION_ACTIVITY } from "@/tests/mocks/activity";
 import {
@@ -1323,6 +1323,48 @@ describe("SnapsActionForm", () => {
         ),
       ).toBeInTheDocument();
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+
+    it("closes the modal without sending when the scheduled time passes before confirming", async () => {
+      const getRequestBody = captureRequest();
+
+      renderWithProviders(
+        <SnapsActionForm
+          selectedInstances={[instanceId]}
+          action="refresh"
+          hasDeliveryScheduling
+        />,
+      );
+
+      await selectFirstSnap();
+
+      // "Scheduled" defaults to five minutes from now, which is valid.
+      await user.click(screen.getByLabelText("Scheduled"));
+      await user.click(screen.getByRole("button", { name: "Refresh 1 snap" }));
+      const modal = await screen.findByRole("dialog");
+
+      // Only Date is faked so that user-event and MSW keep their real timers.
+      vi.useFakeTimers({ toFake: ["Date"] });
+      try {
+        vi.setSystemTime(Date.now() + 10 * 60 * 1000);
+
+        await user.click(
+          within(modal).getByRole("button", { name: "Refresh 1 snap" }),
+        );
+
+        await waitFor(() => {
+          expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+        });
+      } finally {
+        vi.useRealTimers();
+      }
+
+      expect(
+        screen.getByText(
+          "You have to enter a valid date and time in the future.",
+        ),
+      ).toBeInTheDocument();
+      expect(getRequestBody()).toBeNull();
     });
   });
 });
