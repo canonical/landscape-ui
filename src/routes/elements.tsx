@@ -162,6 +162,9 @@ export const SupportSessionPage = Loadable(
 export const SupportInstancesPage = Loadable(
   lazy(() => import("@/pages/super-admin/session/SupportInstancesPage")),
 );
+export const SupportInstancePage = Loadable(
+  lazy(() => import("@/pages/super-admin/session/SupportInstancePage")),
+);
 export const SupportProfilesPage = Loadable(
   lazy(() => import("@/pages/super-admin/session/SupportProfilesPage")),
 );

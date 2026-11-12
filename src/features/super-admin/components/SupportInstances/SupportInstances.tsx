@@ -65,7 +65,7 @@ const SupportInstances: FC<SupportInstancesProps> = ({ name }) => {
       {isGettingStaffInstances ? (
         <LoadingState />
       ) : (
-        <SupportInstancesList instances={staffInstances} />
+        <SupportInstancesList name={name} instances={staffInstances} />
       )}
       <TablePagination
         totalItems={staffInstancesCount}
