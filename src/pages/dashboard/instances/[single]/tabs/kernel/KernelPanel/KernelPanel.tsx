@@ -34,64 +34,57 @@ const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
     id: instanceId,
   });
 
-  const kernelInfo =
-    getLivepatchInfoResult?.data.livepatch_info?.json?.output?.Status &&
-    getLivepatchInfoResult?.data.livepatch_info?.json?.output?.Status.length > 0
-      ? getLivepatchInfoResult?.data.livepatch_info?.json?.output?.Status[0]
-      : undefined;
+  const [kernelInfo] =
+    getLivepatchInfoResult?.data.livepatch_info?.json?.output?.Status ?? [];
 
-  const allLivepatchFixes = kernelInfo?.Livepatch.Fixes ?? [];
-
-  const getLivepatchFixes = (limit: number, offset: number) => {
-    return allLivepatchFixes.slice(offset, offset + limit);
-  };
+  const allLivepatchFixes = useMemo(
+    () => kernelInfo?.Livepatch.Fixes ?? [],
+    [kernelInfo],
+  );
 
   const livepatchFixes = useMemo(
-    () => getLivepatchFixes(pageSize, (currentPage - 1) * pageSize),
+    () =>
+      allLivepatchFixes.slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize,
+      ),
     [allLivepatchFixes, currentPage, pageSize],
   );
 
+  if (isLoadingKernelStatuses) return <LoadingState />;
+
+  if (!kernelStatuses?.data.installed)
+    return (
+      <EmptyState
+        title="Kernel information unavailable"
+        body={kernelStatuses?.data.message || "No kernel information available"}
+      />
+    );
+
   const kernelOverviewData: KernelOverviewInfo = {
     currentVersion:
-      kernelInfo?.Kernel ??
-      kernelStatuses?.data.installed?.version_rounded ??
-      "",
+      kernelInfo?.Kernel ?? kernelStatuses.data.installed.version_rounded,
     expirationDate:
       kernelInfo?.UpgradeRequiredDate &&
       date(kernelInfo?.UpgradeRequiredDate).isValid()
         ? kernelInfo.UpgradeRequiredDate
         : "",
-    status: kernelStatuses?.data.smart_status ?? "",
+    status: kernelStatuses.data.smart_status,
   };
 
   return (
     <>
-      {isLoadingKernelStatuses && <LoadingState />}
-      {!isLoadingKernelStatuses && !kernelStatuses?.data.installed && (
-        <EmptyState
-          title="Kernel information unavailable"
-          body={
-            kernelStatuses?.data.message || "No kernel information available"
-          }
-        />
-      )}
-      {!isLoadingKernelStatuses &&
-        kernelStatuses &&
-        kernelStatuses.data.installed && (
-          <>
-            <KernelHeader
-              instanceName={instanceTitle}
-              hasTableData={livepatchFixes.length > 0}
-              kernelStatuses={kernelStatuses.data}
-            />
-            <KernelOverview kernelOverview={kernelOverviewData} />
-            <KernelTableList kernelData={livepatchFixes} />
-            <TablePagination
-              totalItems={allLivepatchFixes.length}
-              currentItemCount={livepatchFixes.length}
-            />
-          </>
-        )}
+      <KernelHeader
+        instanceName={instanceTitle}
+        hasTableData={livepatchFixes.length > 0}
+        kernelStatuses={kernelStatuses.data}
+      />
+      <KernelOverview kernelOverview={kernelOverviewData} />
+      <KernelTableList kernelData={livepatchFixes} />
+      <TablePagination
+        totalItems={allLivepatchFixes.length}
+        currentItemCount={livepatchFixes.length}
+      />
     </>
   );
 };

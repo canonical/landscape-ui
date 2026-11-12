@@ -51,6 +51,7 @@ export { default as StaffPeopleContainer } from "./components/StaffPeopleContain
 export { default as SupportSessionContainer } from "./components/SupportSessionContainer";
 export { default as SupportInstanceContainer } from "./components/SupportInstanceContainer";
 export { default as SupportInstances } from "./components/SupportInstances";
+export { default as SupportInstanceKernel } from "./components/SupportInstanceKernel";
 export { default as SupportProfiles } from "./components/SupportProfiles";
 export { SUPPORT_PROFILE_PAGES, SUPPORT_SETTINGS_PAGES } from "./constants";
 export type {
