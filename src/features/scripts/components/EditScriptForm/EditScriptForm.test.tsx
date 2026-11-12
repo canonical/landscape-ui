@@ -1,11 +1,12 @@
 import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { features } from "@/tests/mocks/features";
 import { scripts } from "@/tests/mocks/script";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import server from "@/tests/server";
-import { fireEvent, screen, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
@@ -314,7 +315,27 @@ describe("EditScriptForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows duplicate script title errors inline", async () => {
+  it.each([
+    {
+      scriptProfilesEnabled: true,
+      message: "Title already used by an active, archived, or redacted script.",
+    },
+    {
+      scriptProfilesEnabled: false,
+      message: "Title already used by an active or archived script.",
+    },
+  ])("shows duplicate title errors inline with script-profiles=$scriptProfilesEnabled", async ({ scriptProfilesEnabled, message }) => {
+    server.use(
+      http.get(`${API_URL}features`, () =>
+        HttpResponse.json({
+          results: features.map((feature) =>
+            feature.key === "script-profiles"
+              ? { ...feature, enabled: scriptProfilesEnabled }
+              : feature,
+          ),
+        }),
+      ),
+    );
     const user = userEvent.setup();
     setEndpointStatus({
       status: "error",
@@ -334,11 +355,22 @@ describe("EditScriptForm", () => {
       within(dialog).getByRole("button", { name: "Submit new version" }),
     );
 
-    const titleError = await screen.findByText(
-      "Title already used by an active, archived, or redacted script.",
-    );
+    const titleError = await screen.findByText(message);
     expect(titleError).toHaveClass("p-form-validation__message");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Title" })).toHaveFocus();
+
+    await user.click(
+      screen.getByRole("button", { name: "Submit new version" }),
+    );
+    const retryDialog = await screen.findByRole("dialog");
+    await user.click(
+      within(retryDialog).getByRole("button", { name: "Submit new version" }),
+    );
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(screen.getByRole("textbox", { name: "Title" })).toHaveFocus();
+    });
   });
 
   it("shows error notification when removing attachment fails", async () => {

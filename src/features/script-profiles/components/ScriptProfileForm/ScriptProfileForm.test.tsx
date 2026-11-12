@@ -284,6 +284,12 @@ describe("ScriptProfileForm edge cases", () => {
       "Title already used by an active or archived script profile.",
     );
     expect(titleError).toHaveClass("p-form-validation__message");
+    expect(screen.getByRole("textbox", { name: "Title" })).toHaveFocus();
+
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+    await waitFor(() => {
+      expect(screen.getByRole("textbox", { name: "Title" })).toHaveFocus();
+    });
   });
 
   it("renders nothing when the script profile limits are unavailable", async () => {

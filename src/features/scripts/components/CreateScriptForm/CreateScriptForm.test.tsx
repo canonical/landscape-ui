@@ -1,8 +1,12 @@
+import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { features } from "@/tests/mocks/features";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import { beforeEach, describe, it, vi } from "vitest";
 import CreateScriptForm from "./CreateScriptForm";
 
@@ -134,7 +138,27 @@ describe("CreateScriptForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows duplicate script title errors inline", async () => {
+  it.each([
+    {
+      scriptProfilesEnabled: true,
+      message: "Title already used by an active, archived, or redacted script.",
+    },
+    {
+      scriptProfilesEnabled: false,
+      message: "Title already used by an active or archived script.",
+    },
+  ])("shows duplicate title errors inline with script-profiles=$scriptProfilesEnabled", async ({ scriptProfilesEnabled, message }) => {
+    server.use(
+      http.get(`${API_URL}features`, () =>
+        HttpResponse.json({
+          results: features.map((feature) =>
+            feature.key === "script-profiles"
+              ? { ...feature, enabled: scriptProfilesEnabled }
+              : feature,
+          ),
+        }),
+      ),
+    );
     setEndpointStatus({
       status: "error",
       path: "CreateScript",
@@ -153,11 +177,14 @@ describe("CreateScriptForm", () => {
     await user.type(screen.getByTestId("mock-monaco"), "echo run");
     await user.click(screen.getByRole("button", { name: "Add script" }));
 
-    const titleError = await screen.findByText(
-      "Title already used by an active, archived, or redacted script.",
-    );
+    const titleError = await screen.findByText(message);
     expect(titleError).toHaveClass("p-form-validation__message");
-    expect(screen.queryByText(ENDPOINT_STATUS_API_ERROR_MESSAGE)).toBeNull();
+    expect(screen.getByRole("textbox", { name: "Title" })).toHaveFocus();
+
+    await user.click(await screen.findByRole("button", { name: "Add script" }));
+    await waitFor(() => {
+      expect(screen.getByRole("textbox", { name: "Title" })).toHaveFocus();
+    });
   });
 
   it("shows error notification when create script attachment fails", async () => {
