@@ -1,0 +1,29 @@
+/* Layer: ds.components.global (@canonical/styles README, "Cascade layers"). */
+
+@layer ds.components.global {
+  /* Component tokens, sourced from @canonical/design-tokens */
+  :root {
+    --meter-color-track: var(--color-foreground-slider-track);
+    --meter-color-fill: var(--color-foreground-primary);
+    --meter-block-size: calc(var(--baseline-height) * 2);
+    --meter-border-radius: var(--dimension-radius-full);
+  }
+
+  .ds.meter {
+    background-color: var(--meter-color-track);
+    block-size: var(--meter-block-size);
+    border-radius: var(--meter-border-radius);
+    inline-size: 100%;
+    overflow: hidden;
+  }
+
+  .ds.meter > .fill {
+    background-color: var(
+      --modifier-color-foreground-primary,
+      var(--meter-color-fill)
+    );
+    block-size: 100%;
+    border-radius: inherit;
+    inline-size: var(--meter-fill, 0%);
+  }
+}

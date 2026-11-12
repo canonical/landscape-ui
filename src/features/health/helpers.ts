@@ -131,7 +131,7 @@ export const isInstanceMeasurable = (
 
 export const BAND_LABEL: Record<HealthBand, string> = {
   critical: "Critical",
-  warning: "Warning",
+  warning: "Needs attention",
   healthy: "Healthy",
 };
 
@@ -139,6 +139,15 @@ export const BAND_LABEL: Record<HealthBand, string> = {
 // `@canonical/react-components`'s built-in icon set so we don't ship any new
 // assets. Mapping is purposely tight: red x, amber warning, green tick.
 export const BAND_ICON: Record<HealthBand, string> = {
+  critical: "error",
+  warning: "warning",
+  healthy: "success",
+};
+
+export const BAND_CRITICALITY: Record<
+  HealthBand,
+  "error" | "warning" | "success"
+> = {
   critical: "error",
   warning: "warning",
   healthy: "success",

@@ -16,27 +16,35 @@
 // uniform across surfaces. Improvements (cross-cutting bulk health
 // actions, scheduling, etc.) are a separate follow-up feature.
 
-import { useFleetTopDetractors } from "../../hooks";
-import useHealthAction from "../../hooks/useHealthAction";
-import useFleetHealthSummary from "../../hooks/useFleetHealthSummary";
-import { useGetInstances } from "@/features/instances/api/useGetInstances";
-import { RestartModal } from "@/features/instances";
+import LoadingState from "@/components/layout/LoadingState";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
-import useUsns from "@/features/usns/hooks/useUsns";
+import { RestartModal, useGetInstances } from "@/features/instances";
+import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { ConfirmationModal, Icon } from "@canonical/react-components";
+import type { Instance } from "@/types/Instance";
+import { pluralize } from "@/utils/_helpers";
+import { Button, Chip, ConfirmationModal } from "@canonical/react-components";
+import type { IconName } from "@canonical/ds-assets";
+import { Card, Icon } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import type { FC } from "react";
-import { useMemo, useState } from "react";
-import type { Instance } from "@/types/Instance";
+import { useCallback, useMemo, useState } from "react";
+import { useFleetTopDetractors } from "../../hooks";
+import useFleetHealthSummary from "../../hooks/useFleetHealthSummary";
+import useHealthAction from "../../hooks/useHealthAction";
 import type { FleetTopDetractor, HealthActionKind } from "../../types";
 import classes from "./RemediationPile.module.scss";
+
+const FETCH_LIMIT = 50;
 
 interface CardSpec {
   action: HealthActionKind;
   title: string;
   subtitle: string;
+  actionLabel: string;
+  icon: IconName;
+  criticality: "error" | "warning" | "information";
   affectedRuleKeys: string[];
   emptyCopy: string;
 }
@@ -50,6 +58,9 @@ const CARDS: CardSpec[] = [
     action: "run-security-updates",
     title: "Apply security updates",
     subtitle: "Pending Ubuntu security notices on this fleet.",
+    actionLabel: "Apply updates",
+    icon: "security-warning",
+    criticality: "error",
     affectedRuleKeys: ["usn.critical", "usn.high", "usn.medium", "usn.low"],
     emptyCopy: "No outstanding security notices.",
   },
@@ -58,6 +69,9 @@ const CARDS: CardSpec[] = [
     title: "Reboot pending",
     subtitle:
       "Instances waiting for a reboot to apply kernel or system updates.",
+    actionLabel: "Reboot instances",
+    icon: "restart",
+    criticality: "warning",
     affectedRuleKeys: ["reboot_required"],
     emptyCopy: "No reboots needed.",
   },
@@ -65,39 +79,44 @@ const CARDS: CardSpec[] = [
     action: "refresh-facts",
     title: "Refresh stale instances",
     subtitle: "Instances that haven't exchanged with Landscape recently.",
+    actionLabel: "Refresh instances",
+    icon: "disconnected",
+    criticality: "information",
     affectedRuleKeys: ["instance.offline"],
     emptyCopy: "Every instance has checked in recently.",
   },
 ];
 
-interface AggregatedMetric {
-  computerCount: number;
-  penalty: number;
-}
-
-const aggregate = (
+// The server counts distinct instances per rule, so a card backed by one rule
+// has an exact count. Across several rules an instance can appear more than
+// once, so only the largest per-rule count is certain.
+const getRuleCounts = (
   detractors: FleetTopDetractor[],
   ruleKeys: string[],
-): AggregatedMetric => {
-  const set = new Set(ruleKeys);
-  let computerCount = 0;
-  let penalty = 0;
-  for (const d of detractors) {
-    if (!set.has(d.rule_key)) continue;
-    computerCount += d.computer_count;
-    penalty += d.weight * d.computer_count;
-  }
-  return { computerCount, penalty };
-};
+): number[] =>
+  detractors
+    .filter(({ rule_key }) => ruleKeys.includes(rule_key))
+    .map(({ computer_count }) => computer_count);
 
-const RemediationPile: FC = () => {
-  const detractorsQuery = useFleetTopDetractors(50);
+interface RemediationPileProps {
+  readonly className?: string;
+  readonly fullWidthClassName?: string;
+}
+
+const RemediationPile: FC<RemediationPileProps> = ({
+  className,
+  fullWidthClassName,
+}) => {
+  const detractorsQuery = useFleetTopDetractors(FETCH_LIMIT);
   const summaryQuery = useFleetHealthSummary();
-  const detractors = detractorsQuery.data?.data.results ?? [];
+  const detractors = useMemo(
+    () => detractorsQuery.data?.data.results ?? [],
+    [detractorsQuery.data],
+  );
   // The instance list scoped to "anything with a factor we can act on" —
   // critical + warning. Filtered client-side per card at action-time.
   const instancesQuery = useGetInstances({
-    limit: 50,
+    limit: FETCH_LIMIT,
     health_band: "critical,warning",
     with_health: true,
   });
@@ -115,24 +134,43 @@ const RemediationPile: FC = () => {
     null,
   );
 
+  const instancesForRuleKeys = useCallback(
+    (ruleKeys: string[]): Instance[] =>
+      instancesQuery.instances.filter(({ health }) =>
+        (health?.factors ?? []).some(({ rule_key }) =>
+          ruleKeys.includes(rule_key),
+        ),
+      ),
+    [instancesQuery.instances],
+  );
+
+  // Every critical or warning instance is loaded, so matches can be counted.
+  const isListComplete =
+    !instancesQuery.isGettingInstances &&
+    (instancesQuery.instancesCount ?? 0) <= FETCH_LIMIT;
+
   const cards = useMemo(
     () =>
-      CARDS.map((card) => ({
-        spec: card,
-        metric: aggregate(detractors, card.affectedRuleKeys),
-      })),
-    [detractors],
+      CARDS.map((spec) => {
+        const ruleCounts = getRuleCounts(detractors, spec.affectedRuleKeys);
+        const largest = Math.max(0, ...ruleCounts);
+        if (ruleCounts.length <= 1) {
+          return { spec, count: largest, isLowerBound: false };
+        }
+        // The loaded list can only be trusted when it holds every candidate
+        // and agrees with the per-rule counts.
+        const matched = isListComplete
+          ? instancesForRuleKeys(spec.affectedRuleKeys).length
+          : 0;
+        return matched >= largest
+          ? { spec, count: matched, isLowerBound: false }
+          : { spec, count: largest, isLowerBound: true };
+      }),
+    [detractors, instancesForRuleKeys, isListComplete],
   );
 
   const kernelWaivedCount =
     summaryQuery.data?.data.kernel_usns_waived_count ?? 0;
-
-  const instancesForRuleKeys = (ruleKeys: string[]): Instance[] => {
-    const set = new Set(ruleKeys);
-    return (instancesQuery.instances ?? []).filter((i) =>
-      (i.health?.factors ?? []).some((f) => set.has(f.rule_key)),
-    );
-  };
 
   const onCardClick = async (card: CardSpec): Promise<void> => {
     const matched = instancesForRuleKeys(card.affectedRuleKeys);
@@ -221,100 +259,100 @@ const RemediationPile: FC = () => {
     }
   };
 
-  const hasAnyWork = cards.some((c) => c.metric.computerCount > 0);
+  const hasAnyWork = cards.some(({ count }) => count > 0);
 
-  if (
-    detractorsQuery.isLoading ||
-    summaryQuery.isLoading ||
-    (!hasAnyWork && detractorsQuery.isSuccess)
-  ) {
+  if (detractorsQuery.isLoading || summaryQuery.isLoading) {
     return (
-      <div className={classes.container}>
-        {!hasAnyWork && detractorsQuery.isSuccess ? (
-          <div className={classes.empty}>
-            <Icon name="success" />
-            <p className="u-no-margin--bottom">Fleet is fully remediated.</p>
-          </div>
-        ) : (
-          <div className={classes.empty}>Loading remediation pile…</div>
-        )}
-      </div>
+      <Card className={fullWidthClassName}>
+        <Card.Content>
+          <LoadingState />
+        </Card.Content>
+      </Card>
+    );
+  }
+
+  if (!hasAnyWork && detractorsQuery.isSuccess) {
+    return (
+      <Card className={fullWidthClassName}>
+        <Card.Content>
+          <p className={classes.description}>Fleet is fully remediated.</p>
+        </Card.Content>
+      </Card>
     );
   }
 
   return (
     <>
-      <div className={classes.container}>
-        {cards.map(({ spec, metric }) => {
-          const disabled =
-            metric.computerCount === 0 ||
-            instancesQuery.isGettingInstances ||
-            (spec.action === "refresh-facts" && pendingRefreshIds !== null);
-          const isThisActionRunning =
-            (spec.action === "refresh-facts" && pendingRefreshIds !== null) ||
-            (spec.action === "reboot" && modalAction === "reboot") ||
-            (spec.action === "run-security-updates" &&
-              modalAction === "run-security-updates");
-          return (
-            <article key={spec.action} className={classes.card}>
-              <header className={classes.cardHeader}>
-                <p className="p-heading--5 u-no-margin--bottom">{spec.title}</p>
-              </header>
-              <p className={classes.cardSubtitle}>{spec.subtitle}</p>
-              {metric.computerCount === 0 ? (
-                <p
-                  className={classNames(
-                    classes.cardSubtitle,
-                    "u-no-margin--bottom",
-                  )}
-                >
-                  {spec.emptyCopy}
-                </p>
-              ) : (
-                <div className={classes.metricRow}>
-                  <p className={classes.metricCount}>
-                    {metric.computerCount} instance
-                    {metric.computerCount === 1 ? "" : "s"}
-                  </p>
-                  <p className={classes.metricPenalty}>
-                    −{metric.penalty} points
-                  </p>
-                </div>
-              )}
-              {spec.action === "run-security-updates" &&
-                kernelWaivedCount > 0 && (
-                  <div className={classes.proBadge}>
-                    <Icon name="security" />
-                    {kernelWaivedCount} kernel USN
-                    {kernelWaivedCount === 1 ? "" : "s"} waived by Livepatch
-                  </div>
+      {cards.map(({ spec, count, isLowerBound }) => {
+        const isRefresh = spec.action === "refresh-facts";
+        const isRunning =
+          (isRefresh && pendingRefreshIds !== null) ||
+          modalAction === spec.action;
+        const hasWork = count > 0;
+        return (
+          <Card key={spec.action} className={className}>
+            <Card.Header className={classes.header}>
+              <span
+                className={classNames(
+                  classes.icon,
+                  hasWork ? spec.criticality : "success",
                 )}
-              <div className={classes.actions}>
-                <button
-                  type="button"
-                  className={
-                    spec.action === "refresh-facts"
-                      ? "p-button"
-                      : "p-button--positive"
-                  }
-                  disabled={disabled}
-                  onClick={() => {
-                    void onCardClick(spec);
-                  }}
-                >
-                  {isThisActionRunning
-                    ? "Working…"
-                    : metric.computerCount === 0
-                      ? "Nothing to do"
-                      : `Run on ${metric.computerCount} instance${
-                          metric.computerCount === 1 ? "" : "s"
-                        }`}
-                </button>
-              </div>
-            </article>
-          );
-        })}
-      </div>
+                aria-hidden="true"
+              >
+                <Icon icon={hasWork ? spec.icon : "success"} />
+              </span>
+              <h2 className="p-heading--5 u-no-margin u-no-padding">
+                {spec.title}
+              </h2>
+            </Card.Header>
+            <Card.Content>
+              {hasWork ? (
+                <p className={classes.stat}>
+                  <span
+                    className={classes.value}
+                    title={isLowerBound ? `At least ${count}` : undefined}
+                  >
+                    {count.toLocaleString()}
+                    {isLowerBound ? "+" : null}
+                  </span>
+                  <span className={classes.label}>
+                    {pluralize(count, ["instance"])} affected
+                  </span>
+                </p>
+              ) : null}
+              <p className={classes.description}>
+                {hasWork ? spec.subtitle : spec.emptyCopy}
+              </p>
+              {spec.action === "run-security-updates" &&
+              kernelWaivedCount > 0 ? (
+                <Chip
+                  className={classes.chip}
+                  appearance="information"
+                  lead="Livepatch"
+                  value={`${kernelWaivedCount} kernel ${pluralize(kernelWaivedCount, ["USN"])} waived`}
+                  isDense
+                  isReadOnly
+                />
+              ) : null}
+            </Card.Content>
+            <Card.Footer>
+              <Button
+                type="button"
+                className="u-no-margin--bottom"
+                appearance={isRefresh ? "default" : "positive"}
+                disabled={
+                  !hasWork || instancesQuery.isGettingInstances || isRunning
+                }
+                onClick={() => {
+                  void onCardClick(spec);
+                }}
+              >
+                {isRunning ? "Working…" : spec.actionLabel}
+              </Button>
+            </Card.Footer>
+          </Card>
+        );
+      })}
       {modalAction === "reboot" && rebootInstances.length > 0 && (
         <RestartModal
           instances={rebootInstances}

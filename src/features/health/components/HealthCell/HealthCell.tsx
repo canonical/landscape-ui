@@ -4,6 +4,8 @@ import type {
   InstanceHealth,
   InstanceWithoutRelation,
 } from "@/types/Instance";
+import { Button } from "@canonical/react-components";
+import classNames from "classnames";
 import type { FC } from "react";
 import { Suspense, lazy } from "react";
 import LoadingState from "@/components/layout/LoadingState";
@@ -64,11 +66,7 @@ const HealthCell: FC<HealthCellProps> = ({ instance }) => {
 
   if (!measurable) {
     return (
-      <span
-        className={classes.notMeasurable}
-        title="Health is only measured on Ubuntu instances running the Landscape client."
-        aria-label="Health not measured: this instance does not run the Landscape client."
-      >
+      <span title="Health is only measured on Ubuntu instances running the Landscape client.">
         <HealthBar notMeasurable />
       </span>
     );
@@ -77,9 +75,10 @@ const HealthCell: FC<HealthCellProps> = ({ instance }) => {
   const canOpen = Boolean(health) && !isLoading && !isError;
 
   return (
-    <button
+    <Button
       type="button"
-      className={classes.trigger}
+      appearance="base"
+      className={classNames("u-no-margin--bottom", classes.trigger)}
       disabled={!canOpen}
       onClick={() => {
         setSidePanelContent(
@@ -97,7 +96,7 @@ const HealthCell: FC<HealthCellProps> = ({ instance }) => {
       }
     >
       <HealthBar health={health} isLoading={isLoading} isError={isError} />
-    </button>
+    </Button>
   );
 };
 

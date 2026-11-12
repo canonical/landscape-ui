@@ -1,0 +1,13 @@
+.root {
+  align-items: center;
+  display: grid;
+  gap: calc(var(--baseline-height) * 2);
+  grid-template-columns: 3ch minmax(0, 1fr);
+}
+
+.value {
+  color: var(--modifier-color-text);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--typography-text-primary-bold-font-weight);
+  text-align: start;
+}

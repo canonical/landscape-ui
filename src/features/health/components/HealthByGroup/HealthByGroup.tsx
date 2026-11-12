@@ -1,148 +1,149 @@
-// LA061 Phase 1.8: Health by Group widget. Stacked-bar grid showing band
-// counts grouped by tag / distribution / account. Top-10 + "other" rollup;
-// click a row to deep-link to the instance list with the right
-// `health_band` + `tag=` (or `distribution=`) pre-applied.
-
-import useHealthSummaryByGroup from "../../hooks/useHealthSummaryByGroup";
+import LoadingState from "@/components/layout/LoadingState";
 import { ROUTES } from "@/libs/routes";
-import { Select } from "@canonical/react-components";
+import { ModularTable, Select } from "@canonical/react-components";
+import { Card } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import type { FC } from "react";
-import { useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { Link } from "react-router";
-import type { FleetHealthSummaryGroupRow } from "@/tests/mocks/health";
-import type { HealthBand } from "../../types";
-import type { HealthGroupBy } from "../../types";
+import type { CellProps, Column } from "react-table";
+import { BAND_CRITICALITY, BAND_LABEL } from "../../helpers";
+import useHealthSummaryByGroup from "../../hooks/useHealthSummaryByGroup";
+import type {
+  HealthBand,
+  HealthGroupBy,
+  HealthGroupSummary,
+} from "../../types";
 import classes from "./HealthByGroup.module.scss";
 
-// The Overview is scoped to one account at a time, so "Account" isn't a
-// useful pivot here. The server endpoint still supports it for the future
-// super-admin cross-account view; we just don't surface it on the
-// dashboard.
+const OTHER_GROUP = "other";
+
 const GROUP_OPTIONS: { label: string; value: HealthGroupBy }[] = [
   { label: "Tag", value: "tag" },
   { label: "Distribution", value: "distribution" },
 ];
 
-interface GroupRowProps {
-  readonly row: FleetHealthSummaryGroupRow;
-  readonly groupBy: HealthGroupBy;
+const BANDS: HealthBand[] = ["critical", "warning", "healthy"];
+
+const getGroupRoute = (
+  row: HealthGroupSummary,
+  groupBy: HealthGroupBy,
+  band?: HealthBand,
+): string =>
+  ROUTES.instances.root({
+    ...(band ? { healthBand: [band] } : {}),
+    ...(groupBy === "tag" && row.group !== OTHER_GROUP
+      ? { tags: [row.group] }
+      : {}),
+  });
+
+interface HealthByGroupProps {
+  readonly className?: string;
 }
 
-const GroupRow: FC<GroupRowProps> = ({ row, groupBy }) => {
-  const total = row.total_count || 1;
-  const critPct = (row.band_critical_count / total) * 100;
-  const warnPct = (row.band_warning_count / total) * 100;
-  const healPct = (row.band_healthy_count / total) * 100;
-  // Deep-link target: the instance list, pre-filtered. The "other" rollup
-  // doesn't correspond to a concrete tag, so it isn't a navigable row.
-  const isOther = row.group === "other";
-  // Show worst-band first by default — operators clicking the row are
-  // usually chasing the red. The instance list reads `healthBand` (a
-  // page-params `string[]`) and `tags` from the URL, so we route through
-  // ROUTES.instances.root which goes through `buildUrl` (comma-joins
-  // arrays, the form pageParamsManager expects).
-  const worstBand: HealthBand | null =
-    row.band_critical_count > 0
-      ? "critical"
-      : row.band_warning_count > 0
-        ? "warning"
-        : null;
-  const href = ROUTES.instances.root({
-    ...(worstBand ? { healthBand: [worstBand] } : {}),
-    ...(groupBy === "tag" && !isOther ? { tags: [row.group] } : {}),
-  });
-  const labelCell = isOther ? (
-    <span className={classes.groupLabel}>Other</span>
-  ) : (
-    <Link className={classes.groupLabel} to={href}>
-      {row.group}
-    </Link>
-  );
-  return (
-    <>
-      {labelCell}
-      <div
-        className={classes.bar}
-        role="img"
-        aria-label={
-          `${row.group}: ${row.band_critical_count} critical, ` +
-          `${row.band_warning_count} warning, ${row.band_healthy_count} healthy`
-        }
-      >
-        {row.band_critical_count > 0 && (
-          <span
-            className={classNames(classes.segment, classes.segmentCritical)}
-            style={{ width: `${critPct}%` }}
-          />
-        )}
-        {row.band_warning_count > 0 && (
-          <span
-            className={classNames(classes.segment, classes.segmentWarning)}
-            style={{ width: `${warnPct}%` }}
-          />
-        )}
-        {row.band_healthy_count > 0 && (
-          <span
-            className={classNames(classes.segment, classes.segmentHealthy)}
-            style={{ width: `${healPct}%` }}
-          />
-        )}
-      </div>
-      <span className={classes.totalCell}>{row.total_count}</span>
-    </>
-  );
-};
-
-const HealthByGroup: FC = () => {
+const HealthByGroup: FC<HealthByGroupProps> = ({ className }) => {
+  const titleId = useId();
+  const selectId = useId();
   const [groupBy, setGroupBy] = useState<HealthGroupBy>("tag");
-  const query = useHealthSummaryByGroup(groupBy);
-  const groups = query.data?.data.groups ?? [];
+  const { data, isLoading } = useHealthSummaryByGroup(groupBy);
+  const groups = useMemo(() => data?.data.groups ?? [], [data]);
+
+  const columns = useMemo<Column<HealthGroupSummary>[]>(
+    () => [
+      {
+        accessor: "group",
+        Header:
+          GROUP_OPTIONS.find(({ value }) => value === groupBy)?.label ??
+          "Group",
+        Cell: ({ row: { original } }: CellProps<HealthGroupSummary>) =>
+          original.group === OTHER_GROUP ? (
+            "Other"
+          ) : (
+            <Link to={getGroupRoute(original, groupBy)}>{original.group}</Link>
+          ),
+      },
+      {
+        id: "distribution",
+        Header: "Distribution",
+        className: classes.distribution,
+        Cell: ({ row: { original } }: CellProps<HealthGroupSummary>) => (
+          <span
+            className={classes.bar}
+            role="img"
+            aria-label={BANDS.map(
+              (band) =>
+                `${BAND_LABEL[band]}: ${original[`band_${band}_count`]}`,
+            ).join(", ")}
+          >
+            {BANDS.map((band) => (
+              <span
+                key={band}
+                className={classNames(classes.segment, BAND_CRITICALITY[band])}
+                style={{ flexGrow: original[`band_${band}_count`] }}
+              />
+            ))}
+          </span>
+        ),
+      },
+      ...BANDS.map((band): Column<HealthGroupSummary> => ({
+        id: band,
+        Header: (
+          <>
+            <span className={classNames(classes.dot, BAND_CRITICALITY[band])} />
+            {BAND_LABEL[band]}
+          </>
+        ),
+        className: classes.count,
+        Cell: ({ row: { original } }: CellProps<HealthGroupSummary>) => (
+          <span
+            className={classNames({
+              [classes.zero]: original[`band_${band}_count`] === 0,
+            })}
+          >
+            {original[`band_${band}_count`]}
+          </span>
+        ),
+      })),
+      {
+        accessor: "total_count",
+        Header: "Total",
+        className: classNames(classes.count, classes.total),
+      },
+    ],
+    [groupBy],
+  );
 
   return (
-    <section className={classes.container}>
-      <header className={classes.header}>
-        <p className="p-heading--5 u-no-margin--bottom">Health by group</p>
-        <div className={classes.selectGroup}>
-          <label className={classes.selectLabel} htmlFor="health-group-by">
-            Group by
-          </label>
-          <Select
-            id="health-group-by"
-            value={groupBy}
-            options={GROUP_OPTIONS}
-            onChange={(e) => {
-              setGroupBy(e.target.value as HealthGroupBy);
-            }}
+    <Card className={className} aria-labelledby={titleId}>
+      <Card.Header>
+        <h2 id={titleId} className="p-heading--5 u-no-margin u-no-padding">
+          Health by group
+        </h2>
+        <Select
+          id={selectId}
+          aria-label="Group by"
+          wrapperClassName={classes.select}
+          className="u-no-margin--bottom"
+          value={groupBy}
+          options={GROUP_OPTIONS}
+          onChange={(event) => {
+            setGroupBy(event.target.value as HealthGroupBy);
+          }}
+        />
+      </Card.Header>
+      <Card.Content>
+        {isLoading ? (
+          <LoadingState />
+        ) : (
+          <ModularTable
+            className="u-no-margin--bottom"
+            columns={columns}
+            data={groups}
+            emptyMsg="No groups to show for this dimension yet."
           />
-        </div>
-      </header>
-      {query.isLoading && <div className={classes.empty}>Loading…</div>}
-      {!query.isLoading && groups.length === 0 && (
-        <div className={classes.empty}>
-          No groups to show for this dimension yet.
-        </div>
-      )}
-      {!query.isLoading && groups.length > 0 && (
-        <div className={classes.table}>
-          <span className={classNames(classes.tableHeader, classes.groupLabel)}>
-            {groupBy === "tag" ? "Tag" : "Distribution"}
-          </span>
-          <span className={classes.tableHeader}>Distribution</span>
-          <span
-            className={classNames(
-              classes.tableHeader,
-              classes.tableHeaderTotal,
-            )}
-          >
-            Total
-          </span>
-          {groups.map((row) => (
-            <GroupRow key={row.group} row={row} groupBy={groupBy} />
-          ))}
-        </div>
-      )}
-    </section>
+        )}
+      </Card.Content>
+    </Card>
   );
 };
 

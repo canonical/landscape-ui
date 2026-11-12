@@ -6,6 +6,7 @@ export { default as HealthByGroup } from "./components/HealthByGroup";
 export { default as HealthCell } from "./components/HealthCell";
 export { default as HealthFactorList } from "./components/HealthFactorList";
 export type { HealthFactorListProps } from "./components/HealthFactorList";
+export { default as HealthScore } from "./components/HealthScore";
 export { default as HealthScoreBadge } from "./components/HealthScoreBadge";
 export { default as HealthDetailsPanel } from "./components/HealthDetailsPanel";
 export { default as RemediationPile } from "./components/RemediationPile";
@@ -26,6 +27,7 @@ export {
   HEALTH_ACTION_META,
   BAND_LABEL,
   BAND_ICON,
+  BAND_CRITICALITY,
 } from "./helpers";
 export type {
   ComputerHealth,

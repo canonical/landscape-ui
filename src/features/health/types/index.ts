@@ -55,7 +55,7 @@ export interface FleetHealthSummary {
 
 // LA061 Phase 1.8: one row of the grouped `/health/summary?group_by=...`
 // breakdown. Backs the `HealthByGroup` widget on the Overview.
-export interface HealthGroupSummary {
+export interface HealthGroupSummary extends Record<string, unknown> {
   group: string;
   band_critical_count: number;
   band_warning_count: number;

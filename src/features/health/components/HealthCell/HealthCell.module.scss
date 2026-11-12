@@ -1,29 +1,8 @@
-@import "vanilla-framework/scss/settings_colors";
-
 .trigger {
-  background: transparent;
-  border: 0;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  display: inline-flex;
-  padding: 0;
-  text-align: left;
+  --health-cell-inset: calc(var(--baseline-height) * 2);
 
-  &:disabled {
-    cursor: default;
-  }
-
-  &:focus-visible {
-    outline: 2px solid $color-link;
-    outline-offset: 2px;
-  }
-
-  &:hover:not(:disabled) {
-    background: rgba($color-mid-light, 0.18);
-  }
-}
-
-.notMeasurable {
-  cursor: help;
-  display: inline-block;
+  /* Equal inset on both sides of the hover fill, pulled back so the score stays on the column edge. */
+  margin-inline: calc(var(--health-cell-inset) * -1);
+  padding: var(--baseline-height) var(--health-cell-inset);
+  text-align: start;
 }

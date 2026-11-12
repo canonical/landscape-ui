@@ -263,7 +263,7 @@ export const FILTERS = {
 // and the UI's `useFleetHealthSummary` counters.
 export const HEALTH_BAND_OPTIONS = [
   { label: "Critical", value: "critical" },
-  { label: "Warning", value: "warning" },
+  { label: "Needs attention", value: "warning" },
   { label: "Healthy", value: "healthy" },
 ] as const;
 
