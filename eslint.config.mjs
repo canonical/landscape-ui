@@ -7,6 +7,27 @@ import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
+// Components whose migration to Pragma is complete. Add a name once no file
+// imports it from @canonical/react-components, so new code cannot regress.
+// See "Pragma migration guardrail" in docs/FRONTEND.md.
+const PRAGMA_MIGRATED_COMPONENTS = ["Badge", "Card"];
+
+const pragmaMigratedRestriction = {
+  name: "@canonical/react-components",
+  importNames: PRAGMA_MIGRATED_COMPONENTS.flatMap((component) => [
+    component,
+    `${component}Props`,
+  ]),
+  message:
+    "This component has been migrated to Pragma. Import it from @canonical/react-ds-global instead.",
+};
+
+// Deep imports would bypass the importNames check above.
+const legacyDeepImportRestriction = {
+  group: ["@canonical/react-components/*"],
+  message: "Import from the @canonical/react-components package root.",
+};
+
 export default defineConfig(
   {
     ignores: [
@@ -96,7 +117,9 @@ export default defineConfig(
       "no-restricted-imports": [
         "error",
         {
+          paths: [pragmaMigratedRestriction],
           patterns: [
+            legacyDeepImportRestriction,
             {
               group: ["**/tests/mocks/**"],
               message:
@@ -152,7 +175,13 @@ export default defineConfig(
     rules: {
       "no-restricted-imports": [
         "error",
-        { patterns: [{ group: ["@/features/*/*"] }] },
+        {
+          paths: [pragmaMigratedRestriction],
+          patterns: [
+            legacyDeepImportRestriction,
+            { group: ["@/features/*/*"] },
+          ],
+        },
       ],
     },
   },
