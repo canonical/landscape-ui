@@ -30,7 +30,9 @@ describe("USGProfileAuditPassRate", () => {
     );
 
     await userEvent.hover(screen.getByTestId("passrate-line"));
-    const tooltip = await screen.findByRole("tooltip");
+    // TODO(pragma-web): drop `{ hidden: true }` once `useWindowFitment`
+    // includes `isOpen` in `bestPosition`'s dependencies.
+    const tooltip = await screen.findByRole("tooltip", { hidden: true });
 
     expect(within(tooltip).getByText(/Passed:/)).toBeInTheDocument();
     expect(within(tooltip).getByText(/Failed:/)).toBeInTheDocument();

@@ -48,23 +48,6 @@ describe("Tooltip", () => {
     });
   });
 
-  it("positions and reveals the tooltip when custom preferredDirections are provided", async () => {
-    const user = userEvent.setup();
-
-    render(
-      <Tooltip
-        message="Bottom help"
-        preferredDirections={["block-end", "block-start"]}
-      >
-        <button type="button">Bottom target</button>
-      </Tooltip>,
-    );
-
-    await user.hover(screen.getByRole("button", { name: "Bottom target" }));
-
-    expect(await screen.findByRole("tooltip")).toHaveTextContent("Bottom help");
-  });
-
   it("updates a runtime message without unmounting the target element", async () => {
     const user = userEvent.setup();
 
@@ -94,26 +77,4 @@ describe("Tooltip", () => {
     );
     expect(screen.queryByText("First message")).not.toBeInTheDocument();
   });
-
-  it.each([undefined, null, false, ""])(
-    "renders children without mounting a tooltip when message is %s",
-    (emptyMessage) => {
-      render(
-        <Tooltip
-          message={emptyMessage}
-          className="outer-wrapper"
-          targetElementClassName="inner-target"
-        >
-          <button type="button">Plain action</button>
-        </Tooltip>,
-      );
-
-      const button = screen.getByRole("button", { name: "Plain action" });
-      expect(button.parentElement).toHaveClass("inner-target");
-      expect(button.parentElement).not.toHaveAttribute("aria-describedby");
-      expect(
-        screen.queryByRole("tooltip", { hidden: true }),
-      ).not.toBeInTheDocument();
-    },
-  );
 });

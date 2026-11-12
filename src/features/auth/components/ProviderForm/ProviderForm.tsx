@@ -112,6 +112,19 @@ const ProviderForm: FC<ProviderFormProps> = (props) => {
   const disabled =
     action === "edit" && !props.canBeDisabled && props.singleProvider?.enabled;
 
+  const enabledInput = (
+    <Input
+      type="checkbox"
+      label="Enabled"
+      {...formik.getFieldProps("enabled")}
+      checked={formik.values.enabled}
+      disabled={disabled}
+      help={`If checked the identity provider will be enabled. ${
+        action === "add" ? "when it is created." : "for logging in."
+      }`}
+    />
+  );
+
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       {(action !== "edit" || provider.provider !== "ubuntu-one") && (
@@ -145,23 +158,13 @@ const ProviderForm: FC<ProviderFormProps> = (props) => {
         </div>
       )}
 
-      <Tooltip
-        message={
-          disabled &&
-          "At least one identity provider must be active on the Landscape account."
-        }
-      >
-        <Input
-          type="checkbox"
-          label="Enabled"
-          {...formik.getFieldProps("enabled")}
-          checked={formik.values.enabled}
-          disabled={disabled}
-          help={`If checked the identity provider will be enabled. ${
-            action === "add" ? "when it is created." : "for logging in."
-          }`}
-        />
-      </Tooltip>
+      {disabled ? (
+        <Tooltip message="At least one identity provider must be active on the Landscape account.">
+          {enabledInput}
+        </Tooltip>
+      ) : (
+        enabledInput
+      )}
 
       {(action !== "edit" || provider.provider !== "ubuntu-one") && (
         <>
