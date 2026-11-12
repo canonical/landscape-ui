@@ -27,7 +27,7 @@ checkout:
   - repository: canonical/landscape-documentation
     path: ./landscape-documentation
     fetch: ["*"]
-    github-token: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+    github-token: ${{ secrets.LANDSCAPE_DOCS_TOKEN }}
 
 engine:
   id: copilot
@@ -42,10 +42,10 @@ tools:
   edit:
 
 # The agent never pushes directly; its file edits are turned into a pull request.
-# One token governs both PR handlers (required when two handlers touch the same
-# repo); it must have write access to canonical/landscape-documentation.
+# The own-repo changeset PR uses the default GITHUB_TOKEN; only the docs-repo
+# handler needs a PAT (LANDSCAPE_DOCS_TOKEN, with write access to
+# canonical/landscape-documentation).
 safe-outputs:
-  github-token: ${{ secrets.COPILOT_GITHUB_TOKEN }}
   create-pull-request:
     title-prefix: "build: "
     labels: [changelog, automation]
@@ -53,7 +53,6 @@ safe-outputs:
     draft: false
     if-no-changes: ignore
     max: 2
-    allowed-repos: ["canonical/landscape-documentation"]
     preserve-branch-name: true
     recreate-ref: true
     # The bot only ever adds NEW changeset files here or edits release-notes
@@ -72,6 +71,7 @@ safe-outputs:
   push-to-pull-request-branch:
     target: "*"
     target-repo: canonical/landscape-documentation
+    github-token: ${{ secrets.LANDSCAPE_DOCS_TOKEN }}
     required-labels: [changelog, automation]
     # Docs PR updates may only touch release-notes pages (including index.md).
     allowed-files: ["docs/reference/release-notes/*.md"]
@@ -176,7 +176,7 @@ Your island content derives from ALL user-facing commits selected in the window 
    - Other Landscape bots push to this same shared branch, so the checkout (fetched at setup time) may be stale and another bot may push while you work. The agent environment has NO git credentials — `git fetch` fails here, so NEVER attempt to fetch or rebase. Work from the PR branch ref as fetched at setup; keep every edit strictly inside your own island markers so it applies cleanly over the other bots' island updates. `push_to_pull_request_branch` applies your patch to the branch's live tip in a credentialed job; if a concurrent push made it conflict, the delivery fails safely — do not retry, the next run redoes the work. NEVER force-push over another bot's commits.
    - Update ONLY your own island (see below). If the release-notes page for the in-development version does not exist on that branch, create it from the template below and add it to the toctree in `docs/reference/release-notes/index.md` (newest non-LTS page goes directly under the LTS entries, matching existing ordering).
    - Commit in the docs checkout and deliver via `push_to_pull_request_branch` with `pull_request_number` set to the docs PR number.
-4. If no docs PR exists, skip the docs work for this run entirely: make no changes in the `./landscape-documentation` checkout. NEVER create the shared docs PR yourself — only landscape-server's bot creates it; every other bot only ever updates an existing one. (Your own-repo changelog PR logic is unaffected.)
+4. If no docs PR exists, skip the docs work for this run entirely: make no changes in the `./landscape-documentation` checkout. NEVER create the shared docs PR yourself — it is created weekly by the `release-notes-draft` workflow in canonical/landscape-documentation, so it should already exist by the time you run. (Your own-repo changelog PR logic is unaffected.)
 5. If you have no user-facing changes this cycle, leave your island untouched; do not create or update the docs PR. (Your own-repo changelog PR logic is unaffected.)
 
 ### Your island
