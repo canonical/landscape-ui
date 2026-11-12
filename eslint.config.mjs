@@ -22,6 +22,12 @@ const pragmaMigratedRestriction = {
     "This component has been migrated to Pragma. Import it from @canonical/react-ds-global instead.",
 };
 
+// Deep imports would bypass the importNames check above.
+const legacyDeepImportRestriction = {
+  group: ["@canonical/react-components/*"],
+  message: "Import from the @canonical/react-components package root.",
+};
+
 export default defineConfig(
   {
     ignores: [
@@ -113,6 +119,7 @@ export default defineConfig(
         {
           paths: [pragmaMigratedRestriction],
           patterns: [
+            legacyDeepImportRestriction,
             {
               group: ["**/tests/mocks/**"],
               message:
@@ -170,7 +177,10 @@ export default defineConfig(
         "error",
         {
           paths: [pragmaMigratedRestriction],
-          patterns: [{ group: ["@/features/*/*"] }],
+          patterns: [
+            legacyDeepImportRestriction,
+            { group: ["@/features/*/*"] },
+          ],
         },
       ],
     },
