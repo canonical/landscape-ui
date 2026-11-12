@@ -1325,6 +1325,37 @@ describe("SnapsActionForm", () => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 
+    it("sends a single request when confirm is clicked twice", async () => {
+      let requestCount = 0;
+      server.use(
+        http.post(`${API_URL}snaps`, async () => {
+          requestCount += 1;
+          return HttpResponse.json(successfulSnapInstallResponse);
+        }),
+      );
+
+      renderWithProviders(
+        <SnapsActionForm
+          selectedInstances={[instanceId]}
+          action="refresh"
+          hasDeliveryScheduling
+        />,
+      );
+
+      await selectFirstSnap();
+      await user.click(screen.getByRole("button", { name: "Refresh 1 snap" }));
+      const modal = await screen.findByRole("dialog");
+
+      await user.dblClick(
+        within(modal).getByRole("button", { name: "Refresh 1 snap" }),
+      );
+
+      expect(
+        await screen.findByText("Snaps successfully queued to refresh"),
+      ).toBeInTheDocument();
+      expect(requestCount).toBe(1);
+    });
+
     it("closes the modal without sending when the scheduled time passes before confirming", async () => {
       const getRequestBody = captureRequest();
 

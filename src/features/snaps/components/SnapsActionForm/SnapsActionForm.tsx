@@ -56,6 +56,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     Record<string, SnapModeConfig>
   >({});
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
   const {
     value: isModalOpen,
     setTrue: openModal,
@@ -128,14 +129,23 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   };
 
   const handleConfirm = async () => {
-    // The scheduled time was in the future when the modal opened, but it can
-    // pass while the user reads the modal. The field keeps its inline error.
-    if (await hasDeliveryErrors()) {
-      closeModal();
+    // The request's pending flag only disables the confirm button after the
+    // next render, so guard the whole confirmation against a second click
+    // arriving while validation or the request is still starting.
+    if (isConfirming) {
       return;
     }
+    setIsConfirming(true);
 
     try {
+      // The scheduled time was in the future when the modal opened, but it
+      // can pass while the user reads the modal. The field keeps its inline
+      // error.
+      if (await hasDeliveryErrors()) {
+        closeModal();
+        return;
+      }
+
       const { data: activity } = await snapAction({
         action: getRequestAction(action),
         computer_ids: selectedInstances,
@@ -171,6 +181,8 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
     } catch (error) {
       closeModal();
       debug(error);
+    } finally {
+      setIsConfirming(false);
     }
   };
 
@@ -414,7 +426,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           instancesCount={selectedInstances.length}
           onClose={closeModal}
           onConfirm={handleConfirm}
-          isSubmitting={isSnapActionPending}
+          isSubmitting={isConfirming || isSnapActionPending}
           submitText={submitText}
           snapModeConfigs={snapModeConfigs}
         />
