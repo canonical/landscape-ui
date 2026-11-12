@@ -1,5 +1,13 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
 .details {
   width: 35%;
+}
+
+.ubuntuProTooltip {
+  margin-left: $sph--x-small;
+  vertical-align: middle;
 }
 
 .tooltipLink {
@@ -7,7 +15,6 @@
   &:hover,
   &:focus,
   &:visited {
-    color: inherit;
-    text-decoration: underline;
+    color: $colors--theme--text-default;
   }
 }

@@ -2,9 +2,10 @@ import classNames from "classnames";
 import { useId, useRef, useState, type FC, type ReactNode } from "react";
 import classes from "./InteractiveTooltip.module.scss";
 
-/* TODO: Pragma has no inline hover/focus disclosure for interactive content yet
-   (`TooltipEngine` portals with `role="tooltip"`, and `Popover` is click-only).
-   Keep existing Vanilla markup until an upstream interactive surface ships. */
+/* TODO: Migrate `InteractiveTooltip` (and its Vanilla `p-tooltip` /
+   `p-tooltip__message` classes below) to Pragma `Popover` once `Popover` is
+   stabilized upstream (`ds:global.component.popover` is currently in
+   `needsdefinition` / `_work_in_progress`). */
 type TooltipPosition =
   | "btm-center"
   | "btm-left"
