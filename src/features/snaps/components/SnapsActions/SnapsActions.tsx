@@ -84,18 +84,6 @@ const SnapsActions: FC<SnapsActionProps> = ({
       <ResponsiveButtons
         collapseFrom="lg"
         buttons={[
-          singleSnap && sidePanel && (
-            <Button
-              key="change-channel"
-              type="button"
-              className="p-segmented-control__button has-icon u-no-margin--bottom"
-              onClick={handleChangeChannel}
-              hasIcon
-            >
-              <Icon name="change-version" />
-              <span>Change channel</span>
-            </Button>
-          ),
           <Button
             type="button"
             key="uninstall"
@@ -143,6 +131,17 @@ const SnapsActions: FC<SnapsActionProps> = ({
           >
             <Icon name="restart" />
             <span>Refresh</span>
+          </Button>,
+          <Button
+            key="change-channel"
+            type="button"
+            className="p-segmented-control__button has-icon u-no-margin--bottom"
+            disabled={selectedSnaps.length === 0}
+            onClick={handleChangeChannel}
+            hasIcon
+          >
+            <Icon name="change-version" />
+            <span>Change channel</span>
           </Button>,
         ]}
       />
