@@ -1,6 +1,5 @@
 .tooltip {
   display: inline-block;
-  position: relative;
 }
 
 .trigger {
@@ -18,184 +17,13 @@
   }
 }
 
-.message {
-  --interactive-tooltip-arrow-depth: var(--dimension-100, 8px);
-  --interactive-tooltip-arrow-half-width: calc(var(--dimension-175, 14px) / 2);
-  --interactive-tooltip-gap: 6px;
-  --interactive-tooltip-offset: calc(
-    var(--interactive-tooltip-arrow-depth) + var(--interactive-tooltip-gap)
-  );
-
-  background-color: var(--surface-color-background, var(--color-background));
-  border-radius: var(--tooltip-border-radius, 0);
-  color: var(--surface-color-text, var(--color-text));
-  font-size: var(--font-size-small, 14px);
-  font-weight: var(--font-weight-default, 400);
-  line-height: var(--line-height-small, 20px);
+/* The message is rendered only while open, so it must not inherit the
+   hidden-until-hovered display from Vanilla. Text wrapping matches the
+   detached Vanilla tooltip styles in styles/partials/layout.scss. */
+.tooltip .message {
+  display: inline;
   max-width: 20rem;
-  padding-block: var(--dimension-100, 8px);
-  padding-inline: var(--dimension-200, 16px);
-  position: absolute;
-  text-align: left;
   white-space: normal;
   width: max-content;
   z-index: var(--z-tooltip);
-
-  a {
-    &,
-    &:hover,
-    &:focus,
-    &:visited {
-      color: inherit;
-      text-decoration: underline;
-    }
-  }
-
-  &::before {
-    content: "";
-    height: 0;
-    position: absolute;
-    width: 0;
-  }
-
-  /* Invisible hover bridge spanning the gap between trigger and popup so moving
-     the pointer onto links inside the popup does not trigger mouseleave. */
-  &::after {
-    content: "";
-    position: absolute;
-  }
-}
-
-.btmLeft,
-.btmCenter,
-.btmRight {
-  top: calc(100% + var(--interactive-tooltip-offset));
-
-  &::before {
-    border-inline: var(--interactive-tooltip-arrow-half-width) solid transparent;
-    border-bottom: var(--interactive-tooltip-arrow-depth) solid
-      var(--surface-color-background, var(--color-background));
-    top: calc(-1 * var(--interactive-tooltip-arrow-depth));
-  }
-
-  &::after {
-    height: var(--interactive-tooltip-offset);
-    left: 0;
-    right: 0;
-    top: calc(-1 * var(--interactive-tooltip-offset));
-  }
-}
-
-.btmLeft {
-  left: 0;
-
-  &::before {
-    left: 1px;
-  }
-}
-
-.btmCenter {
-  left: 50%;
-  transform: translateX(-50%);
-
-  &::before {
-    left: calc(50% - var(--interactive-tooltip-arrow-half-width));
-  }
-}
-
-.btmRight {
-  right: 0;
-
-  &::before {
-    right: 1px;
-  }
-}
-
-.topLeft,
-.topCenter,
-.topRight {
-  bottom: calc(100% + var(--interactive-tooltip-offset));
-
-  &::before {
-    border-inline: var(--interactive-tooltip-arrow-half-width) solid transparent;
-    border-top: var(--interactive-tooltip-arrow-depth) solid
-      var(--surface-color-background, var(--color-background));
-    bottom: calc(-1 * var(--interactive-tooltip-arrow-depth));
-  }
-
-  &::after {
-    bottom: calc(-1 * var(--interactive-tooltip-offset));
-    height: var(--interactive-tooltip-offset);
-    left: 0;
-    right: 0;
-  }
-}
-
-.topLeft {
-  left: 0;
-
-  &::before {
-    left: 1px;
-  }
-}
-
-.topCenter {
-  left: 50%;
-  transform: translateX(-50%);
-
-  &::before {
-    left: calc(50% - var(--interactive-tooltip-arrow-half-width));
-  }
-}
-
-.topRight {
-  right: 0;
-
-  &::before {
-    right: 1px;
-  }
-}
-
-.left,
-.right {
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.left {
-  right: calc(100% + var(--interactive-tooltip-offset));
-
-  &::before {
-    border-block: var(--interactive-tooltip-arrow-half-width) solid transparent;
-    border-left: var(--interactive-tooltip-arrow-depth) solid
-      var(--surface-color-background, var(--color-background));
-    right: calc(-1 * var(--interactive-tooltip-arrow-depth));
-    top: calc(50% - var(--interactive-tooltip-arrow-half-width));
-  }
-
-  &::after {
-    bottom: 0;
-    right: calc(-1 * var(--interactive-tooltip-offset));
-    top: 0;
-    width: var(--interactive-tooltip-offset);
-  }
-}
-
-.right {
-  left: calc(100% + var(--interactive-tooltip-offset));
-
-  &::before {
-    border-block: var(--interactive-tooltip-arrow-half-width) solid transparent;
-    border-right: var(--interactive-tooltip-arrow-depth) solid
-      var(--surface-color-background, var(--color-background));
-    left: calc(-1 * var(--interactive-tooltip-arrow-depth));
-    top: calc(50% - var(--interactive-tooltip-arrow-half-width));
-  }
-
-  &::after {
-    bottom: 0;
-    left: calc(-1 * var(--interactive-tooltip-offset));
-    top: 0;
-    width: var(--interactive-tooltip-offset);
-  }
 }

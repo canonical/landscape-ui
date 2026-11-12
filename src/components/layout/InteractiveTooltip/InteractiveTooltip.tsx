@@ -2,29 +2,18 @@ import classNames from "classnames";
 import { useId, useRef, useState, type FC, type ReactNode } from "react";
 import classes from "./InteractiveTooltip.module.scss";
 
-export type InteractiveTooltipPosition =
-  | "btm-left"
+/* TODO: Pragma has no inline hover/focus disclosure for interactive content yet
+   (`TooltipEngine` portals with `role="tooltip"`, and `Popover` is click-only).
+   Keep existing Vanilla markup until an upstream interactive surface ships. */
+type TooltipPosition =
   | "btm-center"
+  | "btm-left"
   | "btm-right"
-  | "top-left"
-  | "top-center"
-  | "top-right"
   | "left"
-  | "right";
-
-const POSITION_CLASS_MAP: Record<
-  InteractiveTooltipPosition,
-  string | undefined
-> = {
-  "btm-left": classes.btmLeft,
-  "btm-center": classes.btmCenter,
-  "btm-right": classes.btmRight,
-  "top-left": classes.topLeft,
-  "top-center": classes.topCenter,
-  "top-right": classes.topRight,
-  left: classes.left,
-  right: classes.right,
-};
+  | "right"
+  | "top-center"
+  | "top-left"
+  | "top-right";
 
 interface InteractiveTooltipProps {
   /** Accessible name of the trigger button. */
@@ -33,7 +22,7 @@ interface InteractiveTooltipProps {
   readonly message: ReactNode;
   /** Visual content of the trigger button, usually an icon. */
   readonly children: ReactNode;
-  readonly position?: InteractiveTooltipPosition;
+  readonly position?: TooltipPosition;
   readonly className?: string;
   readonly triggerClassName?: string;
   readonly tooltipClassName?: string;
@@ -51,9 +40,9 @@ interface InteractiveTooltipProps {
  * The message carries no `tooltip` role: the ARIA tooltip pattern is for
  * non-interactive supplemental text, so a focusable link inside one may be
  * flattened or ignored by assistive technology. The trigger exposes the
- * message as a disclosure instead, styled on Pragma's `contrasted` surface.
+ * message as a disclosure instead.
  *
- * Prefer `Tooltip` from `@/components/ui` for plain non-interactive messages.
+ * Prefer `Tooltip` from `@/components/ui` for plain text messages.
  */
 const InteractiveTooltip: FC<InteractiveTooltipProps> = ({
   label,
@@ -70,7 +59,14 @@ const InteractiveTooltip: FC<InteractiveTooltipProps> = ({
 
   return (
     <span
-      className={classNames(classes.tooltip, className)}
+      className={classNames(
+        // Bottom-left is Vanilla's default and has no modifier class.
+        position === "btm-left"
+          ? "p-tooltip"
+          : `p-tooltip p-tooltip--${position}`,
+        classes.tooltip,
+        className,
+      )}
       onMouseEnter={() => {
         setIsOpen(true);
       }}
@@ -124,9 +120,8 @@ const InteractiveTooltip: FC<InteractiveTooltipProps> = ({
         <span
           id={messageId}
           className={classNames(
-            "contrasted",
+            "p-tooltip__message",
             classes.message,
-            POSITION_CLASS_MAP[position],
             tooltipClassName,
           )}
         >

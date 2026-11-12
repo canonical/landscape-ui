@@ -16,27 +16,37 @@ const ReadOnlyField: FC<ReadOnlyFieldProps> = ({
   value,
   tooltipMessage,
   required,
-}) => (
-  <div className={classes.field}>
-    <label>
-      {required ? "* " : ""} {label}
-    </label>
-    <Tooltip
-      preferredDirections={[
-        "block-end",
-        "block-start",
-        "inline-end",
-        "inline-start",
-      ]}
-      className={classes.container}
-      message={tooltipMessage}
-    >
-      <div className={classes.locked}>
-        <span>{value || <NoData />}</span>
-        <Icon name="lock-locked" />
-      </div>
-    </Tooltip>
-  </div>
-);
+}) => {
+  const readOnlyContent = (
+    <div className={classes.locked}>
+      <span>{value || <NoData />}</span>
+      <Icon name="lock-locked" />
+    </div>
+  );
+
+  return (
+    <div className={classes.field}>
+      <label>
+        {required ? "* " : ""} {label}
+      </label>
+      {tooltipMessage ? (
+        <Tooltip
+          preferredDirections={[
+            "block-end",
+            "block-start",
+            "inline-end",
+            "inline-start",
+          ]}
+          className={classes.container}
+          message={tooltipMessage}
+        >
+          {readOnlyContent}
+        </Tooltip>
+      ) : (
+        readOnlyContent
+      )}
+    </div>
+  );
+};
 
 export default ReadOnlyField;
