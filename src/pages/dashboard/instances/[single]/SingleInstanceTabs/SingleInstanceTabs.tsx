@@ -128,7 +128,7 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
           )}
           {"tab-link-snaps" === currentTabLinkId && (
             <Suspense fallback={<LoadingState />}>
-              <SnapsPanel />
+              <SnapsPanel instanceTitle={instance.title} />
             </Suspense>
           )}
           {"tab-link-processes" === currentTabLinkId && (

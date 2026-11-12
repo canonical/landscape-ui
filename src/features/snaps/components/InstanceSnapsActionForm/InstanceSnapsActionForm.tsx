@@ -1,4 +1,3 @@
-import { useGetInstance } from "@/features/instances";
 import type { UrlParams } from "@/types/UrlParams";
 import type { FC } from "react";
 import { useParams } from "react-router";
@@ -7,6 +6,8 @@ import SnapsActionForm from "../SnapsActionForm";
 
 interface InstanceSnapsActionFormProps {
   readonly action: SnapAction;
+  /** Names the instance in the confirmation modal's title. */
+  readonly instanceTitle: string;
   /**
    * The snaps picked in the Snaps tab. Omit for "install", which searches the
    * store for snaps that aren't installed yet.
@@ -23,25 +24,21 @@ interface InstanceSnapsActionFormProps {
  */
 const InstanceSnapsActionForm: FC<InstanceSnapsActionFormProps> = ({
   action,
+  instanceTitle,
   installedSnaps,
 }) => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
-  const instanceId = Number(childInstanceId ?? urlInstanceId);
-
-  // Only the title is needed, for the confirmation modal's heading. The
-  // page already holds the instance, but under a different query key.
-  const { instance } = useGetInstance({ instanceId });
 
   return (
     <SnapsActionForm
-      selectedInstances={[instanceId]}
+      selectedInstances={[Number(childInstanceId ?? urlInstanceId)]}
       action={action}
       fixedSnaps={installedSnaps?.map(({ snap }) => ({
         snap,
         computer_count: 1,
       }))}
       hasDeliveryScheduling={action !== "install"}
-      instanceName={instance?.title}
+      instanceName={instanceTitle}
     />
   );
 };
