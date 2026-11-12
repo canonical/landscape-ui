@@ -1,5 +1,5 @@
 import { API_URL } from "@/constants";
-import { PATHS } from "@/libs/routes";
+import { PATHS, ROUTES } from "@/libs/routes";
 import {
   availableSnapInfo,
   bulkAvailableSnaps,
@@ -391,5 +391,76 @@ describe("InstanceSnapsActionForm", () => {
         ],
       });
     });
+
+    it("lets the user change by revision when snap info fails to load", async () => {
+      const getRequestBody = captureRequest();
+      server.use(
+        http.get(`${API_URL}computers/:computerId/snaps/:name/info`, () =>
+          HttpResponse.json(
+            { error: "InternalServerError", message: "Snap info failed" },
+            { status: 500 },
+          ),
+        ),
+      );
+
+      renderForm({ action: "change channel", installedSnaps: [unheldSnap] });
+
+      expect(
+        await screen.findByText("Failed to load channels for this snap"),
+      ).toBeInTheDocument();
+
+      // Channel mode can't proceed without channels.
+      await user.click(screen.getByRole("button", { name: "Change channel" }));
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      await user.selectOptions(
+        screen.getByRole("combobox", {
+          name: `Snap channel or revision for ${unheldSnap.snap.name}`,
+        }),
+        "revision",
+      );
+      await user.type(
+        screen.getByRole("textbox", {
+          name: `Revision for ${unheldSnap.snap.name}`,
+        }),
+        "5",
+      );
+
+      await user.click(screen.getByRole("button", { name: "Change channel" }));
+      const modal = await screen.findByRole("dialog", {
+        name: "Change revision of 1 snap on 1 instance",
+      });
+      await user.click(
+        within(modal).getByRole("button", { name: "Change channel" }),
+      );
+
+      expect(
+        await screen.findByText("Snaps successfully queued to change revision"),
+      ).toBeInTheDocument();
+      expect(getRequestBody()).toMatchObject({
+        action: "refresh",
+        snaps: [{ name: unheldSnap.snap.name, args: { revision: "5" } }],
+      });
+    });
+  });
+
+  it("targets the child instance on a child instance page", async () => {
+    const PARENT_ID = 1;
+    const CHILD_ID = 2;
+    const getRequestBody = captureRequest();
+
+    renderWithProviders(
+      <InstanceSnapsActionForm action="hold" installedSnaps={[unheldSnap]} />,
+      {},
+      ROUTES.instances.details.child(PARENT_ID, CHILD_ID),
+      `/${PATHS.instances.root}/${PATHS.instances.single}/${PATHS.instances.child}`,
+    );
+
+    await submitAndConfirm("Hold 1 snap");
+
+    expect(
+      await screen.findByText("Snaps successfully queued to hold"),
+    ).toBeInTheDocument();
+    expect(getRequestBody()).toMatchObject({ computer_ids: [CHILD_ID] });
   });
 });
