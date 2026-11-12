@@ -8,7 +8,6 @@ declare interface NotificationAction {
 export interface Notification {
   message: string;
   type: NotificationProps["severity"];
-  placement?: "global";
   actions?: NotificationAction[];
   error?: unknown;
   title?: string;
@@ -21,7 +20,6 @@ export type NotificationMethodArgs<T extends "default" | "error" = "default"> =
         message: string;
         actions?: NotificationAction[];
         error?: unknown;
-        placement?: "global";
         title?: string;
       }
     : {

@@ -1,5 +1,4 @@
 import { API_URL } from "@/constants";
-import useSidePanel from "@/hooks/useSidePanel";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { scripts } from "@/tests/mocks/script";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
@@ -10,8 +9,7 @@ import { fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
-import { afterEach, describe, it } from "vitest";
-import * as ScriptsApi from "../../api";
+import { describe, it } from "vitest";
 import EditScriptForm from "./EditScriptForm";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { ROUTES } from "@/libs/routes";
@@ -24,27 +22,9 @@ const props: ComponentProps<typeof EditScriptForm> = {
   onBack: vi.fn(),
 };
 
-const OpenEditScriptForm = () => {
-  const { setSidePanelContent } = useSidePanel();
-
-  return (
-    <button
-      onClick={() => {
-        setSidePanelContent("Edit script", <EditScriptForm script={script} />);
-      }}
-    >
-      Open edit script form
-    </button>
-  );
-};
-
 describe("EditScriptForm", () => {
   beforeEach(() => {
     setEndpointStatus("default");
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
   });
 
   it("should display edit script form", async () => {
@@ -316,46 +296,23 @@ describe("EditScriptForm", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it.each(["API", "non-API"])(
-    "shows %s submission errors globally with a side panel open",
-    async (errorType) => {
-      const user = userEvent.setup();
-      const errorMessage =
-        errorType === "API"
-          ? ENDPOINT_STATUS_API_ERROR_MESSAGE
-          : "Script submission failed";
+  it("shows error notification when edit script fails", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({ status: "error", path: "EditScript" });
+    renderWithProviders(<EditScriptForm script={script} />);
 
-      if (errorType === "API") {
-        setEndpointStatus({ status: "error", path: "EditScript" });
-      } else {
-        vi.spyOn(ScriptsApi, "useEditScript").mockReturnValue({
-          editScript: vi.fn().mockRejectedValue(new Error(errorMessage)),
-          isEditing: false,
-        });
-      }
+    await user.click(
+      screen.getByRole("button", { name: "Submit new version" }),
+    );
+    const dialog = await screen.findByRole("dialog");
+    await user.click(
+      within(dialog).getByRole("button", { name: "Submit new version" }),
+    );
 
-      renderWithProviders(<OpenEditScriptForm />);
-      await user.click(
-        screen.getByRole("button", { name: "Open edit script form" }),
-      );
-
-      await user.click(
-        screen.getByRole("button", { name: "Submit new version" }),
-      );
-      const dialog = await screen.findByRole("dialog");
-      await user.click(
-        within(dialog).getByRole("button", { name: "Submit new version" }),
-      );
-
-      const errorNotification = await screen.findByText(errorMessage);
-      expect(errorNotification.closest("aside")).toBeNull();
-      expect(screen.getAllByText(errorMessage)).toHaveLength(1);
-      expect(
-        screen.getByRole("textbox", { name: "Title" }).closest("aside"),
-      ).not.toBeNull();
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    },
-  );
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
+  });
 
   it("shows duplicate script title errors inline", async () => {
     const user = userEvent.setup();

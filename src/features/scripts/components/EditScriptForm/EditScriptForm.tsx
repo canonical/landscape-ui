@@ -105,7 +105,7 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
         }
       }
 
-      debug(error, { placement: "global" });
+      debug(error);
     }
   };
 

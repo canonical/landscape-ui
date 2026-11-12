@@ -1,10 +1,8 @@
 import { API_URL, INPUT_DATE_TIME_FORMAT } from "@/constants";
-import useSidePanel from "@/hooks/useSidePanel";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { scripts } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
-import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import date from "@/libs/date";
@@ -250,60 +248,18 @@ describe("ScriptProfileForm edge cases", () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it.each(["API", "non-API"])(
-    "shows %s submission errors globally with a side panel open",
-    async (errorType) => {
-      const message =
-        errorType === "API"
-          ? ENDPOINT_STATUS_API_ERROR_MESSAGE
-          : "submission failed";
-      const onSubmit = vi.fn();
+  it("reports an error when the submission fails", async () => {
+    const onSubmit = vi.fn().mockRejectedValue(new Error("submission failed"));
 
-      if (errorType === "API") {
-        setEndpointStatus({ status: "error", path: "script-profiles" });
-        onSubmit.mockImplementation(async () => {
-          await axios.post(`${API_URL}script-profiles`);
-        });
-      } else {
-        onSubmit.mockRejectedValue(new Error(message));
-      }
+    renderWithProviders(<ScriptProfileForm {...props} onSubmit={onSubmit} />);
 
-      const OpenProfileForm = () => {
-        const { setSidePanelContent } = useSidePanel();
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Submit" }),
+    );
 
-        return (
-          <button
-            onClick={() => {
-              setSidePanelContent(
-                "Test profile",
-                <ScriptProfileForm {...props} onSubmit={onSubmit} />,
-              );
-            }}
-          >
-            Open profile form
-          </button>
-        );
-      };
-
-      renderWithProviders(<OpenProfileForm />);
-
-      await userEvent.click(
-        screen.getByRole("button", { name: "Open profile form" }),
-      );
-
-      await userEvent.click(
-        await screen.findByRole("button", { name: "Submit" }),
-      );
-
-      const errorMessage = await screen.findByText(message);
-      expect(errorMessage.closest("aside")).toBeNull();
-      expect(screen.getAllByText(message)).toHaveLength(1);
-      expect(
-        screen.getByRole("textbox", { name: "Title" }).closest("aside"),
-      ).not.toBeNull();
-      expect(props.onSuccess).not.toHaveBeenCalled();
-    },
-  );
+    expect(await screen.findByText(/submission failed/i)).toBeInTheDocument();
+    expect(props.onSuccess).not.toHaveBeenCalled();
+  });
 
   it("shows duplicate script profile title errors inline", async () => {
     setEndpointStatus({

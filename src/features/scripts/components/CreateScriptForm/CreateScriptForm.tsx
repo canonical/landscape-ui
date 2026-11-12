@@ -78,7 +78,7 @@ const CreateScript: FC = () => {
         }
       }
 
-      debug(error, { placement: "global" });
+      debug(error);
     }
   };
 

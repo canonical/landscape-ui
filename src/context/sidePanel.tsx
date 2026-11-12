@@ -139,10 +139,9 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
             </div>
             <div className={classNames("p-panel__content", classes.outerDiv)}>
               <div className={classNames("p-panel__inner", classes.innerDiv)}>
-                {notify.notification?.type === "negative" &&
-                  notify.notification.placement !== "global" && (
-                    <AppNotification notify={notify} isSidePanelOpen={true} />
-                  )}
+                {notify.notification?.type === "negative" && (
+                  <AppNotification notify={notify} isSidePanelOpen={true} />
+                )}
                 <AppErrorBoundary>{body}</AppErrorBoundary>
               </div>
             </div>

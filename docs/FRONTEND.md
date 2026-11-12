@@ -139,34 +139,6 @@ Because the current repo still contains some domain hooks under `src/hooks/`, tr
 - Prefer feature-local state, hooks, and query composition over adding new global context by default.
 - Route guards and environment-aware behavior should stay close to routing and provider boundaries.
 
-### Error Notification Placement
-
-[`useDebug`](../src/hooks/useDebug.ts) accepts an optional second argument,
-`{ placement: "global" }`. [`useNotify`](../src/hooks/useNotify.ts)'s
-`notify.error` accepts the same property in its notification arguments:
-
-```ts
-debug(error, { placement: "global" });
-notify.error({ message: "Saving failed", placement: "global" });
-```
-
-Global placement displays an error notification at the bottom-right of the
-viewport, even when the legacy side panel is open. It is not a new severity:
-these notifications still have type `"negative"`. `notify.success` and
-`notify.info` do not accept a placement override and already display globally.
-
-Without an override, errors appear above the form when the legacy
-[`SidePanelProvider`](../src/context/sidePanel.tsx) is open, or bottom-right when
-it is closed. This routing uses the notification context's `sidePanel.open`
-flag; the newer [`SidePanel`](../src/components/layout/SidePanel/SidePanel.tsx)
-does not update that flag merely by opening.
-
-[`GlobalShell`](../src/components/layout/GlobalShell/GlobalShell.tsx) renders
-globally placed errors, and the legacy panel skips them, avoiding duplicate
-notifications. Script and script-profile create/edit forms explicitly use global
-placement for caught non-duplicate errors. Duplicate-title errors remain inline
-Formik errors on the title field, not notifications.
-
 ## Styling
 
 - Styling is primarily co-located with components using `*.module.scss`.

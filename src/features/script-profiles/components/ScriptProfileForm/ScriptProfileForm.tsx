@@ -195,7 +195,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
           }
         }
 
-        debug(error, { placement: "global" });
+        debug(error);
         return;
       }
 
