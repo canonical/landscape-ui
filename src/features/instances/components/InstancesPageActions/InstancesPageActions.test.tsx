@@ -465,10 +465,8 @@ describe("InstancesPageActions", () => {
         const labelElement = within(toggle).getByText(label);
         await userEvent.hover(labelElement);
 
-        // TODO(pragma-web): revert to `findByRole("tooltip")` once
-        // `useWindowFitment` includes `isOpen` in `bestPosition`'s deps so
-        // 0x0 jsdom rects flip `visibility: visible` when `preferredDirections`
-        // is passed.
+        // TODO: Revert to `findByRole("tooltip")` once a release containing
+        // https://github.com/canonical/pragma-web/pull/1596 is installed.
         const target = labelElement.closest("[aria-describedby]");
         const tooltipId = target?.getAttribute("aria-describedby");
         expect(tooltipId).toBeTruthy();
