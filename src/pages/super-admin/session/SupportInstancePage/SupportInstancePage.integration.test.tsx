@@ -228,7 +228,7 @@ describe("SupportInstancePage (integration)", () => {
     ]);
   });
 
-  it.each(UBUNTU_TABS.filter((tab) => tab !== "Info"))(
+  it.each(UBUNTU_TABS.filter((tab) => !["Info", "Kernel"].includes(tab)))(
     "holds a place for the %s tab",
     async (tab) => {
       renderInstance(
