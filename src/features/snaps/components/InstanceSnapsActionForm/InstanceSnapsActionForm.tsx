@@ -29,8 +29,17 @@ const InstanceSnapsActionForm: FC<InstanceSnapsActionFormProps> = ({
 }) => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
 
+  // The side panel swaps its body without remounting, so opening another
+  // action while one is open would keep the previous form's state, including
+  // its snaps. The key remounts the form for a new action or selection.
+  const formKey = [
+    action,
+    ...(installedSnaps?.map(({ snap }) => snap.id) ?? []),
+  ].join(":");
+
   return (
     <SnapsActionForm
+      key={formKey}
       selectedInstances={[Number(childInstanceId ?? urlInstanceId)]}
       action={action}
       fixedSnaps={installedSnaps?.map(({ snap }) => ({
