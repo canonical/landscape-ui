@@ -188,6 +188,38 @@ describe("InstanceSnapsActionForm", () => {
   });
 
   describe("actions on installed snaps", () => {
+    it("shows the new action's snaps when the side panel body is swapped", async () => {
+      const getRequestBody = captureRequest();
+
+      const { rerender } = renderForm({
+        action: "hold",
+        installedSnaps: [unheldSnap],
+      });
+      expect(screen.getByText("Snaps to hold")).toBeInTheDocument();
+      expect(screen.getByText(unheldSnap.snap.name)).toBeInTheDocument();
+
+      // The side panel replaces its body in place, so React sees the same
+      // component type and would keep the first form's state.
+      rerender(
+        <InstanceSnapsActionForm
+          instanceTitle={INSTANCE_TITLE}
+          action="refresh"
+          installedSnaps={[heldSnap]}
+        />,
+      );
+
+      expect(screen.getByText("Snaps to refresh")).toBeInTheDocument();
+      expect(screen.getByText(heldSnap.snap.name)).toBeInTheDocument();
+      expect(screen.queryByText(unheldSnap.snap.name)).not.toBeInTheDocument();
+
+      await submitAndConfirm("Refresh 1 snap");
+
+      expect(getRequestBody()).toMatchObject({
+        action: "refresh",
+        snaps: [{ name: heldSnap.snap.name }],
+      });
+    });
+
     it("lists the given snaps with no search box and no delete buttons", () => {
       renderForm({ action: "refresh", installedSnaps: [unheldSnap, heldSnap] });
 
