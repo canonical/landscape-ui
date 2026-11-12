@@ -46,6 +46,11 @@ interface SnapsActionFormProps {
    */
   readonly fixedSnaps?: SnapWithCount[];
   readonly hasDeliveryScheduling?: boolean;
+  /**
+   * Names the only selected instance in the confirmation modal's title
+   * instead of counting it.
+   */
+  readonly instanceName?: string;
 }
 
 const SnapsActionForm: FC<SnapsActionFormProps> = ({
@@ -53,6 +58,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   action,
   fixedSnaps,
   hasDeliveryScheduling = false,
+  instanceName,
 }) => {
   const hasFixedSnaps = fixedSnaps !== undefined;
   const [selectedSnaps, setSelectedSnaps] = useState<SnapWithCount[]>(
@@ -445,6 +451,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           snaps={selectedSnaps}
           snapModes={snapModes}
           instancesCount={selectedInstances.length}
+          instanceName={instanceName}
           onClose={closeModal}
           onConfirm={handleConfirm}
           isSubmitting={isConfirming || isSnapActionPending}

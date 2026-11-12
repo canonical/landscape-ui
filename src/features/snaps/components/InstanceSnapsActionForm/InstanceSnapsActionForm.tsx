@@ -1,3 +1,4 @@
+import { useGetInstance } from "@/features/instances";
 import type { UrlParams } from "@/types/UrlParams";
 import type { FC } from "react";
 import { useParams } from "react-router";
@@ -25,16 +26,22 @@ const InstanceSnapsActionForm: FC<InstanceSnapsActionFormProps> = ({
   installedSnaps,
 }) => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
+
+  // Only the title is needed, for the confirmation modal's heading. The
+  // page already holds the instance, but under a different query key.
+  const { instance } = useGetInstance({ instanceId });
 
   return (
     <SnapsActionForm
-      selectedInstances={[Number(childInstanceId ?? urlInstanceId)]}
+      selectedInstances={[instanceId]}
       action={action}
       fixedSnaps={installedSnaps?.map(({ snap }) => ({
         snap,
         computer_count: 1,
       }))}
       hasDeliveryScheduling={action !== "install"}
+      instanceName={instance?.title}
     />
   );
 };

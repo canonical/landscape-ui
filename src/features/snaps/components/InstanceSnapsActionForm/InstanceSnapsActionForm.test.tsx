@@ -1,5 +1,6 @@
 import { API_URL } from "@/constants";
 import { PATHS, ROUTES } from "@/libs/routes";
+import { instances } from "@/tests/mocks/instance";
 import {
   availableSnapInfo,
   bulkAvailableSnaps,
@@ -17,7 +18,10 @@ import type { SnapActionParams } from "../../types";
 import InstanceSnapsActionForm from "./InstanceSnapsActionForm";
 import type { ComponentProps } from "react";
 
-const INSTANCE_ID = 1;
+const INSTANCE_ID = 2;
+const instance = instances.find(({ id }) => id === INSTANCE_ID);
+assert(instance, `No mock instance has id ${INSTANCE_ID}.`);
+const INSTANCE_TITLE = instance.title;
 
 const snapToInstall = bulkAvailableSnaps.find(({ snap }) =>
   availableSnapInfo.some(
@@ -221,7 +225,7 @@ describe("InstanceSnapsActionForm", () => {
 
       expect(getRequestBody()).toBeNull();
       const modal = await screen.findByRole("dialog", {
-        name: "Uninstall 1 snap from 1 instance",
+        name: `Uninstall ${unheldSnap.snap.name} from ${INSTANCE_TITLE}`,
       });
       await user.click(
         within(modal).getByRole("button", { name: "Uninstall 1 snap" }),
@@ -287,6 +291,64 @@ describe("InstanceSnapsActionForm", () => {
   });
 
   describe("change channel", () => {
+    it("changes the channel of every selected snap at once", async () => {
+      const getRequestBody = captureRequest();
+
+      // Snaps whose default channel is strict, so the classic confinement
+      // warning doesn't replace the title under test.
+      const snapsWithChannels = installedSnaps
+        .filter((snap) => {
+          const channelMap = availableSnapInfo.find(
+            (info) => info.name === snap.snap.name,
+          )?.["channel-map"];
+          const [defaultChannel] = getChannelOptions(channelMap);
+          return (
+            defaultChannel &&
+            getChannelConfinement(channelMap, defaultChannel.value) !==
+              "classic"
+          );
+        })
+        .slice(0, 2);
+      assert(snapsWithChannels.length === 2);
+
+      renderForm({
+        action: "change channel",
+        installedSnaps: snapsWithChannels,
+      });
+
+      for (const snap of snapsWithChannels) {
+        expect(
+          screen.getByRole("combobox", {
+            name: `Snap channel or revision for ${snap.snap.name}`,
+          }),
+        ).toBeInTheDocument();
+        await waitFor(() => {
+          expect(
+            screen.getByRole("combobox", {
+              name: `Channel for ${snap.snap.name}`,
+            }),
+          ).not.toHaveValue("");
+        });
+      }
+
+      await user.click(screen.getByRole("button", { name: "Change channel" }));
+      const modal = await screen.findByRole("dialog", {
+        name: `Change channel of 2 snaps on ${INSTANCE_TITLE}`,
+      });
+      await user.click(
+        within(modal).getByRole("button", { name: "Change channel" }),
+      );
+
+      expect(
+        await screen.findByText("Snaps successfully queued to change channel"),
+      ).toBeInTheDocument();
+      expect(getRequestBody()).toMatchObject({
+        action: "refresh",
+        computer_ids: [INSTANCE_ID],
+        snaps: snapsWithChannels.map(({ snap }) => ({ name: snap.name })),
+      });
+    });
+
     it("changes to the selected channel with the bulk confirmation and notification", async () => {
       const getRequestBody = captureRequest();
 
@@ -319,7 +381,7 @@ describe("InstanceSnapsActionForm", () => {
 
       await user.click(screen.getByRole("button", { name: "Change channel" }));
       const modal = await screen.findByRole("dialog", {
-        name: "Change channel of 1 snap on 1 instance",
+        name: `Change channel of ${snapWithChannels.snap.name} on ${INSTANCE_TITLE}`,
       });
       await user.click(
         within(modal).getByRole("button", { name: "Change channel" }),
@@ -372,7 +434,7 @@ describe("InstanceSnapsActionForm", () => {
 
       await user.click(screen.getByRole("button", { name: "Change channel" }));
       const modal = await screen.findByRole("dialog", {
-        name: "Change revision of 1 snap on 1 instance",
+        name: `Change revision of ${snapWithNoChannels.snap.name} on ${INSTANCE_TITLE}`,
       });
       await user.click(
         within(modal).getByRole("button", { name: "Change channel" }),
@@ -428,7 +490,7 @@ describe("InstanceSnapsActionForm", () => {
 
       await user.click(screen.getByRole("button", { name: "Change channel" }));
       const modal = await screen.findByRole("dialog", {
-        name: "Change revision of 1 snap on 1 instance",
+        name: `Change revision of ${unheldSnap.snap.name} on ${INSTANCE_TITLE}`,
       });
       await user.click(
         within(modal).getByRole("button", { name: "Change channel" }),

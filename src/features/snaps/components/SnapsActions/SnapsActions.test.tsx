@@ -27,7 +27,14 @@ const mixedSelectedSnaps = [
 ];
 const INSTANCE_ID = 11;
 
-const tableSnapButtons = ["Install", "Hold", "Unhold", "Uninstall", "Refresh"];
+const tableSnapButtons = [
+  "Install",
+  "Hold",
+  "Unhold",
+  "Uninstall",
+  "Refresh",
+  "Change channel",
+];
 const formHeldSnapButtons = [
   "Unhold",
   "Uninstall",
@@ -76,6 +83,9 @@ describe("SnapsActions", () => {
       );
       expect(screen.getByRole("button", { name: "Hold" })).toHaveIcon("pause");
       expect(screen.getByRole("button", { name: "Unhold" })).toHaveIcon("play");
+      expect(screen.getByRole("button", { name: "Change channel" })).toHaveIcon(
+        "change-version",
+      );
     });
 
     describe("Check button disabled statuses", () => {
@@ -148,14 +158,30 @@ describe("SnapsActions", () => {
       expect(container).toHaveTexts(formUnheldSnapButtons);
     });
 
-    it("does not render change channel button for multiple snaps in sidepanel", () => {
-      renderWithProviders(
-        <SnapsActions selectedSnaps={mixedSelectedSnaps} sidePanel={true} />,
-      );
+    it("renders an enabled change channel button for multiple snaps", () => {
+      renderWithProviders(<SnapsActions selectedSnaps={mixedSelectedSnaps} />);
+
+      const button = screen.getByRole("button", { name: "Change channel" });
+      expect(button).not.toHaveAttribute("aria-disabled");
+      expect(button).toBeEnabled();
+    });
+
+    it("opens change channel side panel for all selected snaps", async () => {
+      const user = userEvent.setup();
+      renderOnInstancePage(<SnapsActions selectedSnaps={mixedSelectedSnaps} />);
+
+      await user.click(screen.getByRole("button", { name: "Change channel" }));
 
       expect(
-        screen.queryByRole("button", { name: "Change channel" }),
-      ).not.toBeInTheDocument();
+        await screen.findByRole("heading", { name: "Change snap channel" }),
+      ).toBeInTheDocument();
+      for (const snap of mixedSelectedSnaps) {
+        expect(
+          await screen.findByRole("combobox", {
+            name: `Snap channel or revision for ${snap.snap.name}`,
+          }),
+        ).toBeInTheDocument();
+      }
     });
 
     it("enables the change channel button without waiting for snap info", () => {
