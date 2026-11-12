@@ -1,9 +1,30 @@
-import type { TooltipProps } from "@canonical/react-components";
 import classNames from "classnames";
 import { useId, useRef, useState, type FC, type ReactNode } from "react";
 import classes from "./InteractiveTooltip.module.scss";
 
-type TooltipPosition = NonNullable<TooltipProps["position"]>;
+export type InteractiveTooltipPosition =
+  | "btm-left"
+  | "btm-center"
+  | "btm-right"
+  | "top-left"
+  | "top-center"
+  | "top-right"
+  | "left"
+  | "right";
+
+const POSITION_CLASS_MAP: Record<
+  InteractiveTooltipPosition,
+  string | undefined
+> = {
+  "btm-left": classes.btmLeft,
+  "btm-center": classes.btmCenter,
+  "btm-right": classes.btmRight,
+  "top-left": classes.topLeft,
+  "top-center": classes.topCenter,
+  "top-right": classes.topRight,
+  left: classes.left,
+  right: classes.right,
+};
 
 interface InteractiveTooltipProps {
   /** Accessible name of the trigger button. */
@@ -12,7 +33,7 @@ interface InteractiveTooltipProps {
   readonly message: ReactNode;
   /** Visual content of the trigger button, usually an icon. */
   readonly children: ReactNode;
-  readonly position?: TooltipPosition;
+  readonly position?: InteractiveTooltipPosition;
   readonly className?: string;
   readonly triggerClassName?: string;
   readonly tooltipClassName?: string;
@@ -21,18 +42,18 @@ interface InteractiveTooltipProps {
 /**
  * A tooltip whose message can hold interactive content such as links.
  *
- * Unlike the Vanilla `Tooltip`, the message is rendered inline next to its
+ * Unlike the portalled `Tooltip`, the message is rendered inline next to its
  * trigger instead of in a portal, so keyboard users can Tab from the trigger
- * straight into the message. The Vanilla component appends its message to the
- * end of the document, which places it after every other focusable element on
- * the page and closes the tooltip before focus can reach it.
+ * straight into the message. Portalling to `document.body` places the popup
+ * after every other focusable element on the page and closes it before focus
+ * can reach it.
  *
  * The message carries no `tooltip` role: the ARIA tooltip pattern is for
  * non-interactive supplemental text, so a focusable link inside one may be
  * flattened or ignored by assistive technology. The trigger exposes the
- * message as a disclosure instead.
+ * message as a disclosure instead, styled on Pragma's `contrasted` surface.
  *
- * Prefer the Vanilla `Tooltip` for plain text messages.
+ * Prefer `Tooltip` from `@/components/ui` for plain non-interactive messages.
  */
 const InteractiveTooltip: FC<InteractiveTooltipProps> = ({
   label,
@@ -49,14 +70,7 @@ const InteractiveTooltip: FC<InteractiveTooltipProps> = ({
 
   return (
     <span
-      className={classNames(
-        // Bottom-left is Vanilla's default and has no modifier class.
-        position === "btm-left"
-          ? "p-tooltip"
-          : `p-tooltip p-tooltip--${position}`,
-        classes.tooltip,
-        className,
-      )}
+      className={classNames(classes.tooltip, className)}
       onMouseEnter={() => {
         setIsOpen(true);
       }}
@@ -110,8 +124,9 @@ const InteractiveTooltip: FC<InteractiveTooltipProps> = ({
         <span
           id={messageId}
           className={classNames(
-            "p-tooltip__message",
+            "contrasted",
             classes.message,
+            POSITION_CLASS_MAP[position],
             tooltipClassName,
           )}
         >

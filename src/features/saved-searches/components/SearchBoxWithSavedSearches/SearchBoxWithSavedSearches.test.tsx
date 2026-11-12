@@ -28,6 +28,11 @@ describe("SearchBoxWithSavedSearches", () => {
     onChange: vi.fn(),
   };
 
+  const getSavedSearchButton = (dropdown: HTMLElement, title: string) =>
+    within(dropdown).getByRole("button", {
+      name: (accessibleName) => accessibleName.startsWith(title),
+    });
+
   it("should render search box and help button", () => {
     renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
 
@@ -60,10 +65,12 @@ describe("SearchBoxWithSavedSearches", () => {
     const searchBox = screen.getByRole("searchbox");
     await user.click(searchBox);
 
-    await screen.findByText("Saved searches");
+    const dropdown = await screen.findByRole("group", {
+      name: "Saved searches",
+    });
 
     savedSearches.forEach((search) => {
-      expect(screen.getByText(search.title)).toBeInTheDocument();
+      expect(getSavedSearchButton(dropdown, search.title)).toBeInTheDocument();
     });
   });
 
@@ -115,7 +122,9 @@ describe("SearchBoxWithSavedSearches", () => {
     const searchBox = screen.getByRole("searchbox");
     await user.click(searchBox);
 
-    await screen.findByText("Saved searches");
+    const dropdown = await screen.findByRole("group", {
+      name: "Saved searches",
+    });
     const securitySearch = savedSearches.find((matchedSearch) =>
       matchedSearch.title.includes("security"),
     );
@@ -126,14 +135,25 @@ describe("SearchBoxWithSavedSearches", () => {
     assert(securitySearch);
     assert(nonMatchingSearch);
 
-    expect(screen.getByText(securitySearch.title)).toBeInTheDocument();
-    expect(screen.getByText(nonMatchingSearch.title)).toBeInTheDocument();
+    expect(
+      getSavedSearchButton(dropdown, securitySearch.title),
+    ).toBeInTheDocument();
+    expect(
+      getSavedSearchButton(dropdown, nonMatchingSearch.title),
+    ).toBeInTheDocument();
 
     await user.type(searchBox, "security");
 
     expect(screen.getByText(/search for/i)).toBeInTheDocument();
-    expect(screen.getByText(securitySearch.title)).toBeInTheDocument();
-    expect(screen.queryByText(nonMatchingSearch.title)).not.toBeInTheDocument();
+    expect(
+      getSavedSearchButton(dropdown, securitySearch.title),
+    ).toBeInTheDocument();
+    expect(
+      within(dropdown).queryByRole("button", {
+        name: (accessibleName) =>
+          accessibleName.startsWith(nonMatchingSearch.title),
+      }),
+    ).not.toBeInTheDocument();
   });
 
   it("should clear input when clear button is clicked", async () => {
@@ -292,11 +312,12 @@ describe("SearchBoxWithSavedSearches", () => {
     const searchBox = screen.getByRole("searchbox");
     await user.click(searchBox);
 
-    await screen.findByText("Saved searches");
+    const dropdown = await screen.findByRole("group", {
+      name: "Saved searches",
+    });
 
     const [firstSearch] = savedSearches;
-    const titleElement = screen.getByText(firstSearch.title);
-    await user.click(titleElement);
+    await user.click(getSavedSearchButton(dropdown, firstSearch.title));
 
     expect(onChange).toHaveBeenCalled();
   });
@@ -348,12 +369,14 @@ describe("SearchBoxWithSavedSearches", () => {
     const searchBox = screen.getByRole("searchbox");
     await user.click(searchBox);
 
-    await screen.findByText("Saved searches");
+    const dropdown = await screen.findByRole("group", {
+      name: "Saved searches",
+    });
 
     const [firstSearch] = savedSearches;
-    const titleElement = screen.getByText(firstSearch.title);
+    const searchButton = getSavedSearchButton(dropdown, firstSearch.title);
 
-    expect(() => user.click(titleElement)).not.toThrow();
+    expect(() => user.click(searchButton)).not.toThrow();
   });
 
   it("should call handleSearch via keyUp Enter handler when dropdown is open", async () => {

@@ -6,7 +6,8 @@ import {
   getLivepatchCoverageDisplayValue,
   getStatusTooltipMessage,
 } from "./helpers";
-import { Icon, Tooltip } from "@canonical/react-components";
+import { Tooltip } from "@/components/ui";
+import { Icon } from "@canonical/react-components";
 
 const props: ComponentProps<typeof KernelOverview> = {
   kernelOverview: {

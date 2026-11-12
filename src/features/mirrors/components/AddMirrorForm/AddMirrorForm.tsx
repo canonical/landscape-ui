@@ -1,4 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { Tooltip } from "@/components/ui";
 import useDebug from "@/hooks/useDebug";
 import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
@@ -9,7 +10,6 @@ import {
   Input,
   Select,
   Textarea,
-  Tooltip,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { type ComponentProps, type FC, useEffect, useRef } from "react";
@@ -286,8 +286,6 @@ const AddMirrorForm: FC = () => {
                             .
                           </>
                         }
-                        position="top-center"
-                        tooltipClassName={classes.tooltip}
                       >
                         <Icon name="help" />
                       </Tooltip>

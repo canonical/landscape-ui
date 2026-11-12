@@ -1,5 +1,6 @@
+import { Tooltip } from "@/components/ui";
 import type { InputProps } from "@canonical/react-components";
-import { Icon, ICONS, Input, Tooltip } from "@canonical/react-components";
+import { Icon, ICONS, Input } from "@canonical/react-components";
 import classes from "./CheckboxInputWithHelp.module.scss";
 
 interface CheckboxInputWithHelpProps extends InputProps {
@@ -22,9 +23,8 @@ const CheckboxInputWithHelp = ({
           {label}
           <Tooltip
             message={tooltipMessage}
-            position="top-center"
             className={classes.tooltip}
-            positionElementClassName={classes.tooltipPositionElement}
+            targetElementClassName={classes.tooltipPositionElement}
           >
             <Icon name={ICONS.help} aria-hidden />
             <span className="u-off-screen">Help</span>

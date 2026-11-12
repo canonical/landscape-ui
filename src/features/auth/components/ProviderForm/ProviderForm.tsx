@@ -1,13 +1,8 @@
 import CheckboxGroup from "@/components/form/CheckboxGroup";
+import { Tooltip } from "@/components/ui";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
-import {
-  Button,
-  Form,
-  Icon,
-  Input,
-  Tooltip,
-} from "@canonical/react-components";
+import { Button, Form, Icon, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { Link } from "react-router";

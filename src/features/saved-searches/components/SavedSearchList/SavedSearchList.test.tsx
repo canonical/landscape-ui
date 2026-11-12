@@ -1,6 +1,6 @@
 import { savedSearches } from "@/tests/mocks/savedSearches";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
@@ -23,7 +23,11 @@ describe("SavedSearchList", () => {
     expect(screen.getByRole("button", { name: "Manage" })).toBeInTheDocument();
 
     savedSearches.forEach((search) => {
-      expect(screen.getByText(search.title)).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", {
+          name: `${search.title} ${search.search}`,
+        }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -45,7 +49,9 @@ describe("SavedSearchList", () => {
       />,
     );
 
-    const firstSearchButton = screen.getByText(savedSearches[0].title);
+    const firstSearchButton = screen.getByRole("button", {
+      name: `${savedSearches[0].title} ${savedSearches[0].search}`,
+    });
     await user.click(firstSearchButton);
 
     expect(onSavedSearchClick).toHaveBeenCalledWith(savedSearches[0]);
@@ -68,7 +74,10 @@ describe("SavedSearchList", () => {
     renderWithProviders(<SavedSearchList {...defaultProps} />);
 
     savedSearches.forEach((search) => {
-      expect(screen.getByText(search.search)).toBeInTheDocument();
+      const searchButton = screen.getByRole("button", {
+        name: `${search.title} ${search.search}`,
+      });
+      expect(within(searchButton).getByText(search.search)).toBeInTheDocument();
     });
   });
 

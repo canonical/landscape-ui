@@ -1,9 +1,9 @@
 import type { FC } from "react";
 import type { Local } from "@canonical/landscape-openapi";
-import { ResponsiveButtons } from "@/components/ui";
+import { ResponsiveButtons, Tooltip } from "@/components/ui";
 import { useGetRepositoryActions } from "../../../../hooks/useGetRepositoryActions";
 import { useBoolean } from "usehooks-ts";
-import { Button, Icon, Tooltip } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-components";
 import RemoveLocalRepositoryModal from "../../../RemoveLocalRepositoryModal";
 import classes from "./ViewRepositoryActionsBlock.module.scss";
 import PublishLocalRepositoryGuard from "../../../PublishLocalRepositoryGuard";
@@ -70,7 +70,12 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
           return action.disabled ? (
             <Tooltip
               message="You must wait for this action to be completed to import more packages."
-              position="btm-center"
+              preferredDirections={[
+                "block-end",
+                "block-start",
+                "inline-end",
+                "inline-start",
+              ]}
               key={action.label}
             >
               {button}

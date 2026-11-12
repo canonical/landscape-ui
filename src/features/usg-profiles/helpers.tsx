@@ -1,8 +1,9 @@
 import { ordinal } from "@/components/form/ScheduleBlock/components/ScheduleBlockBase/helpers";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
+import { Tooltip } from "@/components/ui";
 import type { NotificationHelper } from "@/types/Notification";
-import { Icon, Tooltip } from "@canonical/react-components";
+import { Icon } from "@canonical/react-components";
 import date, { parseServerDateTime } from "@/libs/date";
 import { USG_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "./constants";
 import classes from "./helpers.module.scss";
@@ -166,10 +167,7 @@ export const getStatus = (profile: USGProfile) => {
       label: (
         <div className={classes.statusWithIcon}>
           <span>Over limit</span>
-          <Tooltip
-            position="top-center"
-            message="Only the first 5,000 instances are covered. Instances beyond the limit are not covered."
-          >
+          <Tooltip message="Only the first 5,000 instances are covered. Instances beyond the limit are not covered.">
             <div className={classes.tooltipIcon}>
               <i className="p-icon--help" />
             </div>

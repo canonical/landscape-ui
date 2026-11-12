@@ -1,0 +1,19 @@
+.area {
+  :global(.target) :disabled {
+    pointer-events: none;
+  }
+}
+
+.message {
+  z-index: var(--z-tooltip);
+
+  a {
+    &,
+    &:hover,
+    &:focus,
+    &:visited {
+      color: inherit;
+      text-decoration: underline;
+    }
+  }
+}

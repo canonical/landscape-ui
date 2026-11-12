@@ -1,4 +1,5 @@
-import { Icon, Tooltip } from "@canonical/react-components";
+import { Tooltip } from "@/components/ui";
+import { Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./ReadOnlyField.module.scss";
 import NoData from "@/components/layout/NoData";
@@ -21,10 +22,14 @@ const ReadOnlyField: FC<ReadOnlyFieldProps> = ({
       {required ? "* " : ""} {label}
     </label>
     <Tooltip
-      position="btm-left"
+      preferredDirections={[
+        "block-end",
+        "block-start",
+        "inline-end",
+        "inline-start",
+      ]}
       className={classes.container}
       message={tooltipMessage}
-      followMouse
     >
       <div className={classes.locked}>
         <span>{value || <NoData />}</span>
