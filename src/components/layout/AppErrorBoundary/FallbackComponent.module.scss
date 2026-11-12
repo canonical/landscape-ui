@@ -13,7 +13,7 @@
   max-width: 40rem;
 }
 
-.icon:global(.p-icon--disconnect) {
+.icon {
   display: block;
   height: 2.25rem;
   margin-bottom: $spv--large;
@@ -32,12 +32,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: $spv--small;
-
-  :global(.p-button),
-  :global(.p-button--base),
-  :global(.p-button--positive) {
-    margin: 0;
-  }
 }
 
 .details {

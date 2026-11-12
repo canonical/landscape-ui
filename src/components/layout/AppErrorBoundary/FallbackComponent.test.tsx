@@ -28,12 +28,10 @@ describe("FallbackComponent", () => {
       "href",
       FEEDBACK_LINK,
     );
-    expect(
-      screen.getByRole("button", { name: "Try again" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Reload page" }),
-    ).toBeInTheDocument();
+    const tryAgainButton = screen.getByRole("button", { name: "Try again" });
+    const reloadButton = screen.getByRole("button", { name: "Reload page" });
+    expect(tryAgainButton).toHaveClass("ds", "button", "primary");
+    expect(reloadButton).toHaveClass("ds", "button", "tertiary");
   });
 
   it("calls resetError when 'Try again' is clicked", async () => {
@@ -67,7 +65,11 @@ describe("FallbackComponent", () => {
 
     renderFallback();
 
-    await userEvent.click(screen.getByRole("button", { name: /copy/i }));
+    const copyButton = screen.getByRole("button", { name: /copy/i });
+    expect(copyButton).toHaveClass("ds", "button", "tertiary");
+    expect(copyButton).toHaveIcon("copy");
+
+    await userEvent.click(copyButton);
 
     expect(writeText).toHaveBeenCalledOnce();
     expect(writeText).toHaveBeenCalledWith(
@@ -77,6 +79,7 @@ describe("FallbackComponent", () => {
       expect.stringContaining("Component stack:\n"),
     );
 
-    expect(await screen.findByText("Copied")).toBeInTheDocument();
+    const copiedButton = await screen.findByRole("button", { name: "Copied" });
+    expect(copiedButton).toHaveIcon("success");
   });
 });

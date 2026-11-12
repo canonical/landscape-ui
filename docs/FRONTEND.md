@@ -151,7 +151,9 @@ Pragma is Canonical's next-generation design system and the successor to vanilla
 `@canonical/react-components`. The app currently has Pragma's A1 setup in place through
 `@canonical/styles-vanilla-adapter`, `@canonical/react-ds-global`, `@canonical/react-ds-global-form`,
 and `@canonical/ds-assets`; component migration remains incremental, so many surfaces still use
-vanilla and `@canonical/react-components`.
+vanilla and `@canonical/react-components`. For component-specific mappings and migration rules, see:
+
+- [pragma/buttons.md](pragma/buttons.md): Pragma `Button` variant mappings, action/loading/disabled states, icon-only and navigation-link conventions
 
 ### Vanilla and Pragma cascade layers
 

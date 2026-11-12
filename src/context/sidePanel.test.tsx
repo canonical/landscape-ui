@@ -97,6 +97,7 @@ describe("SidePanelProvider", () => {
   });
 
   it("closes side panel when clicking the close button in the header", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockReturnValue(undefined);
     renderWithProviders(
       <SidePanelProvider>
         <TestConsumer />
@@ -108,10 +109,18 @@ describe("SidePanelProvider", () => {
       expect(screen.getByText("Panel Body")).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: /close side panel/i }));
+    const closeButton = screen.getByRole("button", {
+      name: /close side panel/i,
+    });
+    expect(closeButton).toHaveClass("ds", "button", "tertiary");
+    expect(closeButton).toHaveIcon("close");
+    expect(warnSpy).not.toHaveBeenCalled();
+
+    await user.click(closeButton);
     await waitFor(() => {
       expect(screen.queryByText("Panel Body")).not.toBeInTheDocument();
     });
+    warnSpy.mockRestore();
   });
 
   it("changes size when changeSidePanelSize is called", async () => {

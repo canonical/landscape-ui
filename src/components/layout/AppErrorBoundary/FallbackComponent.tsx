@@ -1,5 +1,6 @@
 import { FEEDBACK_LINK, IS_DEV_ENV } from "@/constants";
-import { Button, CodeSnippet, Icon } from "@canonical/react-components";
+import { CodeSnippet } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-ds-global";
 import type { FallbackRender } from "@sentry/react";
 import { useEffect, useRef, useState } from "react";
 import type { FC } from "react";
@@ -58,7 +59,7 @@ const ErrorFallback: FC<ErrorFallbackProps> = ({
   return (
     <div className={classes.wrapper} role="alert" aria-live="assertive">
       <div className={classes.panel}>
-        <Icon name="disconnect" className={classes.icon} aria-hidden />
+        <Icon icon="disconnected" className={classes.icon} />
 
         <p className="p-heading--3 u-no-margin--bottom">Something went wrong</p>
 
@@ -72,10 +73,10 @@ const ErrorFallback: FC<ErrorFallbackProps> = ({
         </p>
 
         <div className={classes.actions}>
-          <Button appearance="positive" onClick={resetError} type="button">
+          <Button importance="primary" onClick={resetError} type="button">
             Try again
           </Button>
-          <Button appearance="base" onClick={handleReload} type="button">
+          <Button importance="tertiary" onClick={handleReload} type="button">
             Reload page
           </Button>
         </div>
@@ -83,21 +84,19 @@ const ErrorFallback: FC<ErrorFallbackProps> = ({
         {IS_DEV_ENV && (
           <details className={classes.details}>
             <summary className={classes.summary}>
-              <Icon name="chevron-down" className={classes.summaryIcon} />
+              <Icon icon="chevron-down" className={classes.summaryIcon} />
               <span>Technical details</span>
             </summary>
 
             <div className={classes.detailsBody}>
               <div className={classes.copyRow}>
                 <Button
-                  appearance="base"
-                  className="u-no-margin--bottom"
-                  hasIcon
+                  importance="tertiary"
+                  icon={copied ? "success" : "copy"}
                   onClick={handleCopy}
                   type="button"
                 >
-                  <Icon name={copied ? "success" : "copy"} />
-                  <span>{copied ? "Copied" : "Copy"}</span>
+                  {copied ? "Copied" : "Copy"}
                 </Button>
               </div>
 

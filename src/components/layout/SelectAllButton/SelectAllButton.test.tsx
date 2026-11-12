@@ -27,9 +27,12 @@ describe("SelectAllButton", () => {
       screen.getByText(`Selected ${count} ${itemName.plural} currently.`),
     ).toBeInTheDocument();
 
-    await userEvent.click(
-      screen.getByText(`Select all ${totalCount} ${itemName.plural}.`),
-    );
+    const button = screen.getByRole("button", {
+      name: `Select all ${totalCount} ${itemName.plural}.`,
+    });
+    expect(button).toHaveClass("ds", "button", "link");
+
+    await userEvent.click(button);
 
     expect(onClick).toHaveBeenCalled();
   });

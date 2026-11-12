@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { Button, Icon } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-ds-global";
 import { pluralize } from "@/utils/_helpers";
 
 interface SelectAllButtonProps {
@@ -20,14 +20,9 @@ const SelectAllButton: FC<SelectAllButtonProps> = ({
 }) => {
   return (
     <div>
-      <Icon name="information" />
+      <Icon icon="information" />
       <span className="u-text--muted">{` Selected ${pluralize(count, [singular, plural], "exact")} currently. `}</span>
-      <Button
-        type="button"
-        appearance="link"
-        className="u-no-margin--bottom u-no-padding--top"
-        onClick={onClick}
-      >
+      <Button type="button" variant="link" onClick={onClick}>
         {`Select all ${totalCount} ${plural}.`}
       </Button>
     </div>

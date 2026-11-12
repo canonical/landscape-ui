@@ -2,7 +2,8 @@ import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import { boolToLabel } from "@/utils/output";
 import type { Publication } from "@canonical/landscape-openapi";
-import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
+import { Tooltip } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
@@ -76,33 +77,34 @@ const PublicationDetails = ({
             >
               <Button
                 type="button"
-                hasIcon
+                importance="secondary"
                 className="p-segmented-control__button"
+                loading
                 disabled
               >
-                <Icon name="spinner" className="u-animation--spin" />
-                <span>Publishing</span>
+                Publishing
               </Button>
             </Tooltip>
           ) : (
             <Button
               type="button"
+              importance="secondary"
+              icon="upload"
               className="p-segmented-control__button"
               onClick={openRepublishModal}
-              hasIcon
             >
-              <Icon name="upload" />
-              <span>Republish</span>
+              Republish
             </Button>
           )}
           <Button
             type="button"
+            importance="secondary"
+            anticipation="destructive"
+            icon="delete"
             className="p-segmented-control__button"
             onClick={openRemoveModal}
-            hasIcon
           >
-            <Icon name={`${ICONS.delete}--negative`} />
-            <span className="u-text--negative">Remove</span>
+            Remove
           </Button>
         </div>
       </div>

@@ -98,16 +98,14 @@ expect.extend({
     }
   },
   toHaveIcon(received: HTMLElement, icon: string) {
-    const iconElement = received.querySelector("i");
-
-    if (!iconElement) {
-      return {
-        pass: false,
-        message: () =>
-          `expected ${this.utils.printReceived(received)} to contain icon ${this.utils.printExpected(icon)}`,
-      };
-    }
-    const pass = iconElement.className.includes(icon);
+    const hasLegacyIcon = Array.from(received.querySelectorAll("i")).some(
+      (element) => element.className.includes(icon),
+    );
+    const pragmaHrefSuffix = `/${icon}.svg#${icon}`;
+    const hasPragmaIcon = Array.from(received.querySelectorAll("use")).some(
+      (element) => element.getAttribute("href")?.endsWith(pragmaHrefSuffix),
+    );
+    const pass = hasLegacyIcon || hasPragmaIcon;
 
     return {
       pass,

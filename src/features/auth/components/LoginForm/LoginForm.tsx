@@ -7,12 +7,8 @@ import {
 } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
-import {
-  ActionButton,
-  Form,
-  Input,
-  PasswordToggle,
-} from "@canonical/react-components";
+import { Form, Input, PasswordToggle } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useSearchParams } from "react-router";
@@ -101,15 +97,14 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
       />
 
       <div className={classes.buttonRow}>
-        <ActionButton
+        <Button
           type="submit"
-          appearance="positive"
+          importance="primary"
           loading={formik.isSubmitting || isLoggingIn}
-          disabled={formik.isSubmitting || !formik.isValid || isLoggingIn}
-          className="u-no-margin--bottom"
+          disabled={!formik.isValid}
         >
           Sign in
-        </ActionButton>
+        </Button>
       </div>
     </Form>
   );
