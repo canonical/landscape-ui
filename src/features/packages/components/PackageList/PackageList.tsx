@@ -1,11 +1,16 @@
+import InteractiveTooltip from "@/components/layout/InteractiveTooltip";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import useSidePanel from "@/hooks/useSidePanel";
 import { ROUTES } from "@/libs/routes";
 import type { UrlParams } from "@/types/UrlParams";
-import { Tooltip } from "@/components/ui";
-import { Button, CheckboxInput } from "@canonical/react-components";
+import {
+  Button,
+  CheckboxInput,
+  Icon,
+  ICONS,
+} from "@canonical/react-components";
 import type { FC } from "react";
 import {
   lazy,
@@ -121,7 +126,9 @@ const PackageList: FC<PackageListProps> = ({
           </>
         ),
         Cell: ({ row }: CellProps<InstancePackage>) => {
-          const getCellContent = (disabled = false) => (
+          const ubuntuProRequired = isUbuntuProRequired(row.original);
+
+          return (
             <>
               <CheckboxInput
                 inline
@@ -134,7 +141,7 @@ const PackageList: FC<PackageListProps> = ({
                 onChange={() => {
                   handleSelectPackage(row.original);
                 }}
-                disabled={disabled}
+                disabled={ubuntuProRequired}
               />
               <Button
                 type="button"
@@ -146,32 +153,33 @@ const PackageList: FC<PackageListProps> = ({
               >
                 {row.original.name}
               </Button>
+              {ubuntuProRequired && (
+                /* TODO: Migrate to Pragma `Popover` once `Popover` is
+                   stabilized upstream (`needsdefinition` / `_work_in_progress`). */
+                <InteractiveTooltip
+                  className={classes.ubuntuProTooltip}
+                  position="right"
+                  label={`Ubuntu Pro is required for ${row.original.name}`}
+                  message={
+                    <>
+                      Ubuntu Pro is required
+                      <br />
+                      <Link
+                        to={ROUTES.instances.details.fromParams({
+                          instanceId,
+                          childInstanceId,
+                        })}
+                        className={classes.tooltipLink}
+                      >
+                        learn more
+                      </Link>
+                    </>
+                  }
+                >
+                  <Icon name={ICONS.information} aria-hidden />
+                </InteractiveTooltip>
+              )}
             </>
-          );
-
-          return isUbuntuProRequired(row.original) ? (
-            <Tooltip
-              message={
-                <div>
-                  <p className="u-no-padding--top u-margin--bottom">
-                    Ubuntu Pro is required
-                  </p>
-                  <Link
-                    to={ROUTES.instances.details.fromParams({
-                      instanceId,
-                      childInstanceId,
-                    })}
-                    className={classes.tooltipLink}
-                  >
-                    learn more
-                  </Link>
-                </div>
-              }
-            >
-              {getCellContent(true)}
-            </Tooltip>
-          ) : (
-            getCellContent()
           );
         },
       },

@@ -158,7 +158,7 @@ describe("PackageList", () => {
     });
   });
 
-  it("shows Ubuntu Pro required tooltip for packages requiring Ubuntu Pro", () => {
+  it("shows Ubuntu Pro required tooltip for packages requiring Ubuntu Pro", async () => {
     renderWithProviders(
       <PackageList {...props} packages={[ubuntuProPackage]} />,
     );
@@ -167,6 +167,16 @@ describe("PackageList", () => {
       name: `Toggle ${ubuntuProPackage.name}`,
     });
     expect(checkbox).toBeDisabled();
+
+    const trigger = screen.getByRole("button", {
+      name: `Ubuntu Pro is required for ${ubuntuProPackage.name}`,
+    });
+    await user.hover(trigger);
+
+    expect(screen.getByText(/Ubuntu Pro is required/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "learn more" }),
+    ).toBeInTheDocument();
   });
 
   it("shows available version when it differs from current version", () => {
