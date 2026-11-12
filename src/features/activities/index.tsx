@@ -27,8 +27,14 @@ export {
 export { default as Activities } from "./components/Activities";
 export { default as ActivitiesActions } from "./components/ActivitiesActions";
 export { default as ActivitiesContainer } from "./components/ActivitiesContainer";
+export { default as ActivitiesDateFilter } from "./components/ActivitiesDateFilter";
 export { default as ActivitiesEmptyState } from "./components/ActivitiesEmptyState";
-export { ACTIVITY_STATUSES } from "./constants";
+export {
+  ACTIVITY_SEARCH_HELP_TERMS,
+  ACTIVITY_STATUS_OPTIONS,
+} from "./components/ActivitiesHeader/constants";
+export { default as ActivityTypeFilter } from "./components/ActivityTypeFilter";
+export { ACTIVITY_STATUSES, EXCLUDED_ACTIVITY_TYPE_OPTIONS } from "./constants";
 export { useOpenActivityDetails, useOpenActivityDetailsPanel } from "./hooks";
 export type {
   Activity,
