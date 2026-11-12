@@ -133,11 +133,25 @@ describe("useFeatures", () => {
       });
 
       await waitFor(() => {
-        expect(result.current.isFeaturesLoading).toBe(false);
+        expect(result.current.isFeatureEnabled("temporal-lros")).toBe(true);
       });
 
       expect(debarchiveRequests).not.toHaveLength(0);
-      expect(result.current.isFeatureEnabled("temporal-lros")).toBe(true);
+    });
+
+    it("settles isFeaturesLoading without waiting for the debarchive query", async () => {
+      vi.mocked(useEnv).mockReturnValue(selfHostedEnv);
+      setEndpointStatus({ status: "loading", path: "debarchive/features" });
+
+      const { result } = renderHook(() => useFeatures("test@example.com"), {
+        wrapper: renderHookWithProviders(),
+      });
+
+      await waitFor(() => {
+        expect(result.current.isFeaturesLoading).toBe(false);
+      });
+
+      expect(result.current.isFeatureEnabled("temporal-lros")).toBe(false);
     });
 
     it("requests DebArchive features in SaaS when repository-mirrors is enabled", async () => {
@@ -160,11 +174,10 @@ describe("useFeatures", () => {
       });
 
       await waitFor(() => {
-        expect(result.current.isFeaturesLoading).toBe(false);
+        expect(result.current.isFeatureEnabled("temporal-lros")).toBe(true);
       });
 
       expect(debarchiveRequests).not.toHaveLength(0);
-      expect(result.current.isFeatureEnabled("temporal-lros")).toBe(true);
     });
 
     it("does not request DebArchive features in SaaS when repository-mirrors is disabled", async () => {

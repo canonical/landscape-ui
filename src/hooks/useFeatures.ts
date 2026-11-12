@@ -44,8 +44,8 @@ export default function useFeatures(userEmail: string | null) {
     enabled: isSelfHosted || isRepositoryMirrorsEnabled,
   });
 
-  const isLoading =
-    isGettingFeatures || isGettingDebarchiveFeatures || envLoading;
+  const isAnyFeatureLoading =
+    isGettingFeatures || envLoading || isGettingDebarchiveFeatures;
 
   const isFeatureEnabled = useCallback(
     (featureKey: FeatureKey) => {
@@ -54,7 +54,7 @@ export default function useFeatures(userEmail: string | null) {
         debarchiveFeatures.find(({ featureId }) => featureId === featureKey);
 
       if (!match) {
-        if (IS_DEV_ENV && !isLoading) {
+        if (IS_DEV_ENV && !isAnyFeatureLoading) {
           console.warn(
             `Feature ${featureKey} not found in the features response.`,
           );
@@ -64,11 +64,11 @@ export default function useFeatures(userEmail: string | null) {
 
       return match.enabled;
     },
-    [serverFeatures, debarchiveFeatures, isLoading],
+    [serverFeatures, debarchiveFeatures, isAnyFeatureLoading],
   );
 
   return {
     isFeatureEnabled,
-    isFeaturesLoading: isLoading,
+    isFeaturesLoading: isGettingFeatures,
   };
 }
