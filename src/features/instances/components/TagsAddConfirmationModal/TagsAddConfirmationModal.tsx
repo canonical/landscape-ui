@@ -5,11 +5,11 @@ import type { ProfileChange } from "@/features/tags";
 import { useGetProfileChanges } from "@/features/tags";
 import type { InstanceWithoutRelation } from "@/types/Instance";
 import { pluralize, getSelectionLabel } from "@/utils/_helpers";
+import { Tooltip } from "@/components/ui";
 import {
   ConfirmationModal,
   Icon,
   ModularTable,
-  Tooltip,
 } from "@canonical/react-components";
 import { type ComponentProps, type FC, useMemo } from "react";
 import type { CellProps, Column } from "react-table";

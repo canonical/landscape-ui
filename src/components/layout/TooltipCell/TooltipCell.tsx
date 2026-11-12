@@ -1,21 +1,25 @@
-import type { TooltipProps } from "@canonical/react-components";
-import { Tooltip } from "@canonical/react-components";
+import { Tooltip, type TooltipProps } from "@/components/ui";
 import type { FC } from "react";
 import classes from "./TooltipCell.module.scss";
 import classNames from "classnames";
 
 const TooltipCell: FC<TooltipProps> = ({
-  positionElementClassName,
-  tooltipClassName,
+  maxWidth = "20rem",
+  messageElementClassName,
+  targetElementClassName,
   ...props
 }) => (
   <span className={classes.truncated}>
     <Tooltip
-      positionElementClassName={classNames(
+      maxWidth={maxWidth}
+      targetElementClassName={classNames(
         classes.tooltipWrapper,
-        positionElementClassName,
+        targetElementClassName,
       )}
-      tooltipClassName={classNames(classes.tooltipMessage, tooltipClassName)}
+      messageElementClassName={classNames(
+        classes.tooltipMessage,
+        messageElementClassName,
+      )}
       {...props}
     />
   </span>

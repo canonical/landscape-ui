@@ -1,5 +1,5 @@
 import NoData from "@/components/layout/NoData";
-import { Tooltip } from "@canonical/react-components";
+import { Tooltip } from "@/components/ui";
 import type { FC } from "react";
 import type { USGProfile } from "../../types";
 import classes from "./USGProfileLastRunWithSchedule.module.scss";
@@ -46,11 +46,7 @@ const USGProfileLastRunWithSchedule: FC<USGProfileLastRunWithScheduleProps> = ({
   );
 
   return (
-    <Tooltip
-      position="top-center"
-      positionElementClassName={classes.tooltip}
-      message={tooltipMessage}
-    >
+    <Tooltip targetElementClassName={classes.tooltip} message={tooltipMessage}>
       <div className={classes.truncated}>
         <span aria-label={`Last run for ${profile.title} profile`}>
           {lastRun}

@@ -1,5 +1,6 @@
 import InfoGrid from "@/components/layout/InfoGrid";
-import { Icon, Tooltip } from "@canonical/react-components";
+import { Tooltip } from "@/components/ui";
+import { Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import type { KernelOverviewInfo } from "../../types";
 import {

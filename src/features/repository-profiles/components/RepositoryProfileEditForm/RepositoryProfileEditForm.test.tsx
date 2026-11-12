@@ -132,7 +132,7 @@ describe("RepositoryProfileEditForm", () => {
     renderEditForm("view,edit");
 
     await screen.findByText(aptSources[0].name);
-    expect(screen.getByText("AAAA1111")).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "AAAA1111" })).toBeInTheDocument();
   });
 
   it("keeps source action buttons mounted when profile details change", async () => {

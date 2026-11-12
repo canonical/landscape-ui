@@ -1,7 +1,8 @@
 import LoadingState from "@/components/layout/LoadingState";
+import { Tooltip } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { UrlParams } from "@/types/UrlParams";
-import { Button, Icon, Tooltip } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useParams } from "react-router";
@@ -60,11 +61,7 @@ const SwitchChannelButton: FC<SwitchChannelButtonProps> = ({ snap }) => {
   );
 
   if (tooltip) {
-    return (
-      <Tooltip message={tooltip} position="top-center">
-        {button}
-      </Tooltip>
-    );
+    return <Tooltip message={tooltip}>{button}</Tooltip>;
   }
 
   return button;

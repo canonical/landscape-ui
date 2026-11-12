@@ -4,7 +4,8 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import useSidePanel from "@/hooks/useSidePanel";
 import { ROUTES } from "@/libs/routes";
 import type { UrlParams } from "@/types/UrlParams";
-import { Button, CheckboxInput, Tooltip } from "@canonical/react-components";
+import { Tooltip } from "@/components/ui";
+import { Button, CheckboxInput } from "@canonical/react-components";
 import type { FC } from "react";
 import {
   lazy,

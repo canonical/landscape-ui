@@ -1,6 +1,6 @@
 import NoData from "@/components/layout/NoData";
+import { Tooltip } from "@/components/ui";
 import { ROUTES } from "@/libs/routes";
-import { Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import { Link } from "react-router";
 import classes from "./USGProfileAuditPassRate.module.scss";
@@ -89,8 +89,13 @@ const USGProfileAuditPassRate: FC<USGProfileAuditPassRateProps> = ({
       </div>
 
       <Tooltip
-        position="btm-center"
-        positionElementClassName={classes.tooltip}
+        preferredDirections={[
+          "block-end",
+          "block-start",
+          "inline-end",
+          "inline-start",
+        ]}
+        targetElementClassName={classes.tooltip}
         message={tooltipMessage}
       >
         <div className={classes.lineContainer} data-testid="passrate-line">

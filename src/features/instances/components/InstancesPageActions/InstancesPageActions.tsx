@@ -15,12 +15,12 @@ import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
+import { Tooltip } from "@/components/ui";
 import {
   Button,
   ContextualMenu,
   Icon,
   Modal,
-  Tooltip,
 } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean, useMediaQuery } from "usehooks-ts";
@@ -654,7 +654,15 @@ const InstancesPageActions = memo(function InstancesPageActions({
   ) =>
     hasSelectedInstances && isUnsupported ? (
       <>
-        <Tooltip message={message} position="btm-center">
+        <Tooltip
+          message={message}
+          preferredDirections={[
+            "block-end",
+            "block-start",
+            "inline-end",
+            "inline-start",
+          ]}
+        >
           <span>{label}</span>
         </Tooltip>{" "}
         <span className="u-off-screen">{message}</span>
