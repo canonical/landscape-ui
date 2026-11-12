@@ -28,9 +28,7 @@ const renderPageParams = (url: string) => {
 
 describe("usePageParams tab slots", () => {
   it("exposes the page tab and slot values separately", () => {
-    const { result } = renderPageParams(
-      "/scripts?tab=profiles&tab=panel:code",
-    );
+    const { result } = renderPageParams("/scripts?tab=profiles&tab=panel:code");
 
     expect(result.current.pageParams.tab).toBe("profiles");
     expect(result.current.pageParams.tabSlots).toEqual({ panel: "code" });
@@ -86,9 +84,7 @@ describe("usePageParams tab slots", () => {
     );
 
     set({ sidePath: ["view", "edit"] });
-    expect(search()).toBe(
-      "?tab=upgrades:packages&sidePath=view,edit&name=1",
-    );
+    expect(search()).toBe("?tab=upgrades:packages&sidePath=view,edit&name=1");
 
     set({ sidePath: ["view"], tabSlots: { panel: "history" } });
     expect(search()).toBe(

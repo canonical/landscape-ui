@@ -253,9 +253,10 @@ describe("SingleInstanceTabs", () => {
 
       await user.click(screen.getByRole("link", { name: /activities/i }));
 
-      expect(
-        screen.getByRole("link", { name: /activities/i }),
-      ).toHaveAttribute("aria-current", "page");
+      expect(screen.getByRole("link", { name: /activities/i })).toHaveAttribute(
+        "aria-current",
+        "page",
+      );
     });
   });
 
@@ -281,8 +282,10 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("link", { name: /packages/i }),
-        ).toHaveAttribute("aria-current", "page");
+        expect(screen.getByRole("link", { name: /packages/i })).toHaveAttribute(
+          "aria-current",
+          "page",
+        );
       });
     });
 
@@ -294,8 +297,10 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("link", { name: /^kernel/i }),
-        ).toHaveAttribute("aria-current", "page");
+        expect(screen.getByRole("link", { name: /^kernel/i })).toHaveAttribute(
+          "aria-current",
+          "page",
+        );
       });
     });
 
@@ -321,8 +326,10 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("link", { name: /snaps/i }),
-        ).toHaveAttribute("aria-current", "page");
+        expect(screen.getByRole("link", { name: /snaps/i })).toHaveAttribute(
+          "aria-current",
+          "page",
+        );
       });
     });
 
@@ -334,7 +341,8 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("link", { name: /processes/i }),
+        expect(
+          screen.getByRole("link", { name: /processes/i }),
         ).toHaveAttribute("aria-current", "page");
       });
     });
@@ -361,8 +369,10 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("link", { name: /users/i }),
-        ).toHaveAttribute("aria-current", "page");
+        expect(screen.getByRole("link", { name: /users/i })).toHaveAttribute(
+          "aria-current",
+          "page",
+        );
       });
     });
 
@@ -374,8 +384,10 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("link", { name: /hardware/i }),
-        ).toHaveAttribute("aria-current", "page");
+        expect(screen.getByRole("link", { name: /hardware/i })).toHaveAttribute(
+          "aria-current",
+          "page",
+        );
       });
     });
 
@@ -387,8 +399,10 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("link", { name: /wsl/i }),
-        ).toHaveAttribute("aria-current", "page");
+        expect(screen.getByRole("link", { name: /wsl/i })).toHaveAttribute(
+          "aria-current",
+          "page",
+        );
       });
     });
 

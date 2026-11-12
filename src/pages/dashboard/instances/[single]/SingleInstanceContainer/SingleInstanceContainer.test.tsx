@@ -29,9 +29,10 @@ describe("SingleInstanceContainer", () => {
       expect(
         await screen.findByRole("link", { name: "Info" }),
       ).toBeInTheDocument();
-      expect(
-        screen.getByRole("link", { name: "Activities" }),
-      ).toHaveAttribute("aria-current", "page");
+      expect(screen.getByRole("link", { name: "Activities" })).toHaveAttribute(
+        "aria-current",
+        "page",
+      );
     });
 
     it("shows the upgradable package count on the Packages tab", async () => {
@@ -83,9 +84,10 @@ describe("SingleInstanceContainer", () => {
       expect(
         await screen.findByRole("link", { name: "Info" }),
       ).toBeInTheDocument();
-      expect(
-        screen.getByRole("link", { name: "Activities" }),
-      ).toHaveAttribute("aria-current", "page");
+      expect(screen.getByRole("link", { name: "Activities" })).toHaveAttribute(
+        "aria-current",
+        "page",
+      );
     });
 
     it("redirects to root route when current account changes", async () => {

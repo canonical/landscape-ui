@@ -134,12 +134,10 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
       <AppTabs
         aria-label="Upgrades"
         slot="panel"
-        items={tabItems.map(
-          (item): AppTabItem<UpgradesTabId> => ({
-            ...item,
-            panel: panels[item.id],
-          }),
-        )}
+        items={tabItems.map((item): AppTabItem<UpgradesTabId> => ({
+          ...item,
+          panel: panels[item.id],
+        }))}
       />
 
       <SidePanelFormButtons

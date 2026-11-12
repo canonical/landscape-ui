@@ -22,8 +22,7 @@ export const getActiveTabId = <Id extends string>({
   const requested = items.find(({ id }) => id === value);
   const fallback = items.find(({ id }) => id === defaultId);
 
-  return [requested, fallback, items.find(isSelectable)].find(isSelectable)
-    ?.id;
+  return [requested, fallback, items.find(isSelectable)].find(isSelectable)?.id;
 };
 
 /**

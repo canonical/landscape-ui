@@ -58,11 +58,10 @@ const usePageParams = (): UsePageParamsReturnType => {
               ? { ...current.tabSlots, panel: "" }
               : current.tabSlots;
 
-          setTabValues(
-            updatedSearchParams,
-            newParams.tab ?? current.tab,
-            { ...nextTabSlots, ...tabSlots },
-          );
+          setTabValues(updatedSearchParams, newParams.tab ?? current.tab, {
+            ...nextTabSlots,
+            ...tabSlots,
+          });
 
           return pageParamsManager.sanitizeSearchParams(updatedSearchParams);
         },

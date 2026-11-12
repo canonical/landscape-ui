@@ -16,8 +16,7 @@ const isTabSlot = (value: string): value is TabSlot =>
   KNOWN_TAB_SLOTS.includes(value);
 
 type TabValue =
-  | { kind: "page"; id: string }
-  | { kind: "slot"; slot: TabSlot; id: string };
+  { kind: "page"; id: string } | { kind: "slot"; slot: TabSlot; id: string };
 
 /**
  * Classifies one raw "tab" value: a bare id is the page-level strip, and

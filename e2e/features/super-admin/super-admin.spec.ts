@@ -93,7 +93,9 @@ test.describe("@saas Canonical staff", () => {
     await expect(
       page.getByRole("heading", { name: "Globex Corporation" }),
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: "Info", exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Info", exact: true }),
+    ).toBeVisible();
   });
 
   test("toggle a feature and find it kept after a reload", async ({

@@ -132,7 +132,9 @@ describe("Upgrades", () => {
     expect(
       screen.queryByRole("link", { name: /packages/i }),
     ).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /instances/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /instances/i }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /usns/i })).toBeInTheDocument();
   });
 
@@ -148,7 +150,9 @@ describe("Upgrades", () => {
       <Upgrades selectedInstances={noSecurityUpgradeInstances} />,
     );
 
-    expect(screen.getByRole("link", { name: /instances/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /instances/i }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /packages/i })).toBeInTheDocument();
     expect(
       screen.queryByRole("link", { name: /usns/i }),

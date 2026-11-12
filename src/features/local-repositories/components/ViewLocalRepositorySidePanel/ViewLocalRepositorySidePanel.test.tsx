@@ -61,9 +61,9 @@ describe("ViewLocalRepositorySidePanel", () => {
     const packagesTab = nav.getByRole("link", { name: "Packages" });
 
     expect(detailsTab).toHaveAttribute("aria-current", "page");
-    expect(decodeURIComponent(packagesTab.getAttribute("href") ?? "")).toContain(
-      "tab=panel:packages",
-    );
+    expect(
+      decodeURIComponent(packagesTab.getAttribute("href") ?? ""),
+    ).toContain("tab=panel:packages");
     expect(packagesTab.getAttribute("href")).toContain("sidePath=view");
 
     await user.click(packagesTab);

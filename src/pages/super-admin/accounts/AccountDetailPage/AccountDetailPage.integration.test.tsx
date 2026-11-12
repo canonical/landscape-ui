@@ -407,7 +407,8 @@ describe("AccountDetailPage (integration)", () => {
     expect(
       screen.getByRole("link", { name: "Back to accounts" }),
     ).toHaveAttribute("href", ROUTES.superAdmin.accounts());
-    expect(screen.queryByRole("navigation", { name: "Account details" }))
-      .not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("navigation", { name: "Account details" }),
+    ).not.toBeInTheDocument();
   });
 });
