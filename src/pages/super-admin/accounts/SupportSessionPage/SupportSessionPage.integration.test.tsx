@@ -132,7 +132,7 @@ interface RenderOptions {
   extra?: ReactNode;
 }
 
-/** The super admin routes as the app declares them, with a stand-in events log. */
+/** The super admin routes as the app declares them, with stand-in session pages. */
 const renderApp = (
   initialPath: string,
   { strict = false, extra = null }: RenderOptions = {},
@@ -159,8 +159,12 @@ const renderApp = (
             <Route
               index
               element={
-                <Navigate to={PATHS.superAdmin.sessionEventsLog} replace />
+                <Navigate to={PATHS.superAdmin.sessionInstances} replace />
               }
+            />
+            <Route
+              path={PATHS.superAdmin.sessionInstances}
+              element={<h1>Instances page</h1>}
             />
             <Route
               path={PATHS.superAdmin.sessionEventsLog}
@@ -194,7 +198,7 @@ describe("SupportSessionPage (integration)", () => {
     signInWith();
   });
 
-  it("enters the account from its page and opens its events log", async () => {
+  it("enters the account from its page and opens its instances", async () => {
     const switches = recordSwitches();
 
     renderApp(ROUTES.superAdmin.account(ACME));
@@ -204,7 +208,7 @@ describe("SupportSessionPage (integration)", () => {
     );
 
     expect(
-      await screen.findByRole("heading", { name: "Events log page" }),
+      await screen.findByRole("heading", { name: "Instances page" }),
     ).toBeInTheDocument();
     expect(switches).toEqual([{ account_name: ACME }]);
 
@@ -219,7 +223,7 @@ describe("SupportSessionPage (integration)", () => {
     renderApp(ROUTES.superAdmin.session(ACME));
 
     expect(
-      await screen.findByRole("heading", { name: "Events log page" }),
+      await screen.findByRole("heading", { name: "Instances page" }),
     ).toBeInTheDocument();
     expect(switches).toEqual([{ account_name: ACME }]);
   });
@@ -232,7 +236,7 @@ describe("SupportSessionPage (integration)", () => {
     renderApp(ROUTES.superAdmin.session(ACME), { strict: true });
 
     expect(
-      await screen.findByRole("heading", { name: "Events log page" }),
+      await screen.findByRole("heading", { name: "Instances page" }),
     ).toBeInTheDocument();
     expect(switches).toEqual([{ account_name: ACME }]);
   });

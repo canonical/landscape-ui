@@ -99,7 +99,7 @@ describe("super admin routes (integration)", () => {
     ).toBeInTheDocument();
   });
 
-  it("serves a support session in its own shell, opening on the events log", async () => {
+  it("serves a support session in its own shell, opening on the instances", async () => {
     const switches = recordSwitches();
 
     renderAt(ROUTES.superAdmin.session(ACME));
@@ -110,10 +110,10 @@ describe("super admin routes (integration)", () => {
 
     expect(bar.getByText(ACME_TITLE)).toBeInTheDocument();
     expect(
-      await screen.findByRole("heading", { name: "Events log" }),
+      await screen.findByRole("heading", { name: "Instances" }),
     ).toBeInTheDocument();
     expect(getLocationDisplay()).toHaveTextContent(
-      ROUTES.superAdmin.sessionEventsLog(ACME),
+      ROUTES.superAdmin.sessionInstances(ACME),
     );
     expect(switches).toEqual([{ account_name: ACME }]);
     expect(
