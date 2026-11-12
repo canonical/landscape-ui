@@ -12,6 +12,7 @@ const InstanceSnapsActionForm = lazy(
 );
 
 interface SnapsActionProps {
+  readonly instanceTitle: string;
   readonly selectedSnaps: InstalledSnap[];
   readonly sidePanel?: boolean;
 }
@@ -19,6 +20,7 @@ interface SnapsActionProps {
 // Labels, panel titles and icons match the bulk "Snap management" menu in
 // InstancesPageActions.
 const SnapsActions: FC<SnapsActionProps> = ({
+  instanceTitle,
   selectedSnaps,
   sidePanel = false,
 }) => {
@@ -38,6 +40,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
       <Suspense fallback={<LoadingState />}>
         <InstanceSnapsActionForm
           action={action}
+          instanceTitle={instanceTitle}
           installedSnaps={installedSnaps}
         />
       </Suspense>,

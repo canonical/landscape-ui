@@ -6,11 +6,13 @@ import classes from "./SnapsHeader.module.scss";
 
 interface SnapsHeaderProps {
   readonly handleClearSelection: () => void;
+  readonly instanceTitle: string;
   readonly selectedSnaps: InstalledSnap[];
 }
 
 const SnapsHeader: FC<SnapsHeaderProps> = ({
   handleClearSelection,
+  instanceTitle,
   selectedSnaps,
 }) => {
   return (
@@ -18,7 +20,10 @@ const SnapsHeader: FC<SnapsHeaderProps> = ({
       afterSearch={handleClearSelection}
       actions={
         <div className={classes.actions}>
-          <SnapsActions selectedSnaps={selectedSnaps} />
+          <SnapsActions
+            instanceTitle={instanceTitle}
+            selectedSnaps={selectedSnaps}
+          />
         </div>
       }
     />

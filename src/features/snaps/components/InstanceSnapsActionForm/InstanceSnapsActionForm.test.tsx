@@ -1,6 +1,5 @@
 import { API_URL } from "@/constants";
 import { PATHS, ROUTES } from "@/libs/routes";
-import { instances } from "@/tests/mocks/instance";
 import {
   availableSnapInfo,
   bulkAvailableSnaps,
@@ -18,10 +17,8 @@ import type { SnapActionParams } from "../../types";
 import InstanceSnapsActionForm from "./InstanceSnapsActionForm";
 import type { ComponentProps } from "react";
 
-const INSTANCE_ID = 2;
-const instance = instances.find(({ id }) => id === INSTANCE_ID);
-assert(instance, `No mock instance has id ${INSTANCE_ID}.`);
-const INSTANCE_TITLE = instance.title;
+const INSTANCE_ID = 1;
+const INSTANCE_TITLE = "Application Server 1";
 
 const snapToInstall = bulkAvailableSnaps.find(({ snap }) =>
   availableSnapInfo.some(
@@ -48,9 +45,11 @@ const snapWithNoChannels = installedSnaps.find((snap) =>
 );
 assert(snapWithNoChannels, "No installed snap has zero available channels.");
 
-const renderForm = (props: ComponentProps<typeof InstanceSnapsActionForm>) =>
+const renderForm = (
+  props: Omit<ComponentProps<typeof InstanceSnapsActionForm>, "instanceTitle">,
+) =>
   renderWithProviders(
-    <InstanceSnapsActionForm {...props} />,
+    <InstanceSnapsActionForm instanceTitle={INSTANCE_TITLE} {...props} />,
     {},
     `/instances/${INSTANCE_ID}`,
     `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -512,7 +511,11 @@ describe("InstanceSnapsActionForm", () => {
     const getRequestBody = captureRequest();
 
     renderWithProviders(
-      <InstanceSnapsActionForm action="hold" installedSnaps={[unheldSnap]} />,
+      <InstanceSnapsActionForm
+        instanceTitle={INSTANCE_TITLE}
+        action="hold"
+        installedSnaps={[unheldSnap]}
+      />,
       {},
       ROUTES.instances.details.child(PARENT_ID, CHILD_ID),
       `/${PATHS.instances.root}/${PATHS.instances.single}/${PATHS.instances.child}`,

@@ -21,7 +21,7 @@ async function clickSnapOnTable(name: string) {
 }
 
 const props = {
-  instanceId: 1,
+  instanceTitle: "Application Server 1",
   installedSnaps: installedSnaps,
   selectedSnaps: [],
   isSnapsLoading: false,

@@ -16,7 +16,11 @@ const InstanceSnapsActionForm = lazy(
   () => import("@/features/snaps/components/InstanceSnapsActionForm"),
 );
 
-const SnapsPanel: FC = () => {
+interface SnapsPanelProps {
+  readonly instanceTitle: string;
+}
+
+const SnapsPanel: FC<SnapsPanelProps> = ({ instanceTitle }) => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const { search, currentPage, pageSize } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
@@ -45,7 +49,10 @@ const SnapsPanel: FC = () => {
     setSidePanelContent(
       "Install snaps",
       <Suspense fallback={<LoadingState />}>
-        <InstanceSnapsActionForm action="install" />
+        <InstanceSnapsActionForm
+          action="install"
+          instanceTitle={instanceTitle}
+        />
       </Suspense>,
     );
   };
@@ -77,10 +84,12 @@ const SnapsPanel: FC = () => {
         installedSnaps.length > 0) && (
         <>
           <SnapsHeader
+            instanceTitle={instanceTitle}
             selectedSnaps={selectedSnaps}
             handleClearSelection={handleClearSelection}
           />
           <SnapsList
+            instanceTitle={instanceTitle}
             selectedSnaps={selectedSnaps}
             setSelectedSnaps={setSelectedSnaps}
             installedSnaps={installedSnaps}

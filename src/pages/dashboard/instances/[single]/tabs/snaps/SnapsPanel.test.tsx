@@ -11,7 +11,7 @@ import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 describe("SnapsPanel", () => {
   it("renders empty state", async () => {
     setEndpointStatus("empty");
-    renderWithProviders(<SnapsPanel />);
+    renderWithProviders(<SnapsPanel instanceTitle="Application Server 1" />);
     await expectLoadingState();
 
     const emptyStateTitle = await screen.findByText(
@@ -22,7 +22,7 @@ describe("SnapsPanel", () => {
 
   it("opens form from empty state", async () => {
     setEndpointStatus("empty");
-    renderWithProviders(<SnapsPanel />);
+    renderWithProviders(<SnapsPanel instanceTitle="Application Server 1" />);
     await expectLoadingState();
 
     const installSnapButton = await screen.findByRole("button", {
@@ -36,7 +36,7 @@ describe("SnapsPanel", () => {
   });
 
   it("renders filtered list of installed snaps", async () => {
-    renderWithProviders(<SnapsPanel />);
+    renderWithProviders(<SnapsPanel instanceTitle="Application Server 1" />);
     await expectLoadingState();
 
     for (const installedSnap of installedSnaps.slice(0, DEFAULT_PAGE_SIZE)) {

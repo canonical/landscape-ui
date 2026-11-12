@@ -18,7 +18,10 @@ describe("Snap details", () => {
     "should show correct side panel details for a snap",
     async (snap) => {
       const { container } = renderWithProviders(
-        <SnapDetails installedSnap={snap} />,
+        <SnapDetails
+          installedSnap={snap}
+          instanceTitle="Application Server 1"
+        />,
       );
       const getFieldsToCheck = (installedSnap: InstalledSnap) => {
         return [

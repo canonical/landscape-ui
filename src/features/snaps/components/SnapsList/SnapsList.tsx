@@ -15,6 +15,7 @@ import { handleCellProps } from "./helpers";
 
 interface SnapsListProps {
   readonly installedSnaps: InstalledSnap[];
+  readonly instanceTitle: string;
   readonly selectedSnaps: InstalledSnap[];
   readonly setSelectedSnaps: (items: InstalledSnap[]) => void;
   readonly isSnapsLoading: boolean;
@@ -22,6 +23,7 @@ interface SnapsListProps {
 
 const SnapsList: FC<SnapsListProps> = ({
   installedSnaps,
+  instanceTitle,
   selectedSnaps,
   isSnapsLoading,
   setSelectedSnaps,
@@ -48,11 +50,11 @@ const SnapsList: FC<SnapsListProps> = ({
       setSidePanelContent(
         `${snap.snap.name} details`,
         <Suspense fallback={<LoadingState />}>
-          <SnapDetails installedSnap={snap} />
+          <SnapDetails installedSnap={snap} instanceTitle={instanceTitle} />
         </Suspense>,
       );
     },
-    [setSidePanelContent],
+    [setSidePanelContent, instanceTitle],
   );
 
   const columns = useMemo<Column<InstalledSnap>[]>(
