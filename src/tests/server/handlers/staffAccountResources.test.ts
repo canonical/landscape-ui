@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { API_URL, API_URL_OLD } from "@/constants";
+import { API_URL, API_URL_OLD, API_VERSION } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { activityTypes } from "@/tests/mocks/activity";
@@ -13,6 +13,7 @@ import { setStaffGlobalRoles } from "./staffAccounts";
 const OK = 200;
 const FORBIDDEN = 403;
 const NOT_FOUND = 404;
+const SERVER_ERROR = 500;
 
 const [{ id: INSTANCE_ID }] = instances;
 
@@ -51,7 +52,7 @@ const getStaff = async (account: string, path: string) =>
 const getCustomer = async (path: string, legacyAction?: string) =>
   fetch(
     legacyAction
-      ? `${API_URL_OLD}?action=${legacyAction}&version=2011-08-01`
+      ? `${API_URL_OLD}?action=${legacyAction}&version=${API_VERSION}`
       : `${API_URL}${path}`,
   );
 
@@ -161,6 +162,15 @@ describe("account-scoped staff reads", () => {
     expect(await types.json()).toEqual(activityTypes);
   });
 
+  it("passes a list on to a legacy read in its indexed form", async () => {
+    setStaffGlobalRoles(["SupportProvider"]);
+    const [, { name }] = accessGroups;
+
+    const response = await getStaff("acme", `access-groups?names=${name}`);
+
+    expect(await response.json()).toEqual([accessGroups[1]]);
+  });
+
   it("follows the endpoint status set for the customer path", async () => {
     setStaffGlobalRoles(["SupportProvider"]);
     setEndpointStatus({ status: "empty", path: "computers" });
@@ -168,6 +178,15 @@ describe("account-scoped staff reads", () => {
     const response = await getStaff("acme", "computers?limit=20");
 
     expect((await response.json()).results).toEqual([]);
+  });
+
+  it("follows the endpoint status for an account with no instances too", async () => {
+    setStaffGlobalRoles(["SupportProvider"]);
+    setEndpointStatus({ status: "error", path: "computers" });
+
+    const response = await getStaff("initech", "computers?limit=20");
+
+    expect(response.status).toBe(SERVER_ERROR);
   });
 
   it("has no writes: a mutation under the prefix is an unhandled request", async () => {

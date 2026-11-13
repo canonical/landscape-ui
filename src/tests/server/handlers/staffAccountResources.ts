@@ -1,8 +1,11 @@
 import type { HttpHandler } from "msw";
 import { http, HttpResponse } from "msw";
-import { API_URL, API_URL_OLD } from "@/constants";
+import { API_URL, API_URL_OLD, API_VERSION } from "@/constants";
 import type { StaffAccount } from "@/features/super-admin";
-import { generatePaginatedResponse } from "./_helpers";
+import {
+  generatePaginatedResponse,
+  shouldApplyEndpointStatus,
+} from "./_helpers";
 import accessGroup from "./accessGroup";
 import activity from "./activity";
 import availabilityZones from "./availabilityZones";
@@ -37,8 +40,6 @@ import wsl from "./wsl";
 // The backend for these routes does not exist yet; this file is the contract
 // the UI is built against.
 
-const LEGACY_API_VERSION = "2011-08-01";
-
 interface StaffRead {
   /** The customer path, relative to `API_URL`, in MSW's `:param` syntax. */
   readonly path: string;
@@ -50,6 +51,11 @@ interface StaffRead {
    * response body.
    */
   readonly legacyAction?: string;
+  /**
+   * The query parameters of `legacyAction` that are lists. V2 sends a list
+   * comma-joined (`names=a,b`); the legacy API reads it indexed (`names.1=a`).
+   */
+  readonly legacyArrayParams?: readonly string[];
   /** Answers from the account itself, before the customer handlers are tried. */
   readonly respond?: (
     account: StaffAccount,
@@ -76,7 +82,9 @@ export const STAFF_READS: readonly StaffRead[] = [
     path: "computers",
     handlers: instance,
     respond: (account, request) =>
-      account.computers ? undefined : emptyPage(request),
+      account.computers || shouldApplyEndpointStatus("computers")
+        ? undefined
+        : emptyPage(request),
   },
   { path: "computers/availability-zones", handlers: availabilityZones },
   { path: "tags", handlers: tag },
@@ -84,6 +92,7 @@ export const STAFF_READS: readonly StaffRead[] = [
     path: "access-groups",
     handlers: accessGroup,
     legacyAction: "GetAccessGroups",
+    legacyArrayParams: ["names"],
   },
 
   // Single instance: the page itself, and the Info, Ubuntu Pro and Hardware tabs
@@ -130,16 +139,25 @@ export const STAFF_READS: readonly StaffRead[] = [
 /** The customer request a staff request stands for. */
 const toCustomerRequest = (
   request: Request,
-  legacyAction?: string,
+  { legacyAction, legacyArrayParams = [] }: StaffRead,
 ): Request => {
   const url = new URL(request.url);
 
   if (legacyAction) {
     const legacyUrl = new URL(API_URL_OLD, url);
 
-    legacyUrl.search = url.search;
+    for (const [key, value] of url.searchParams) {
+      if (legacyArrayParams.includes(key)) {
+        value.split(",").forEach((item, index) => {
+          legacyUrl.searchParams.set(`${key}.${index + 1}`, item);
+        });
+      } else {
+        legacyUrl.searchParams.append(key, value);
+      }
+    }
+
     legacyUrl.searchParams.set("action", legacyAction);
-    legacyUrl.searchParams.set("version", LEGACY_API_VERSION);
+    legacyUrl.searchParams.set("version", API_VERSION);
 
     return new Request(legacyUrl, { headers: request.headers });
   }
@@ -149,14 +167,9 @@ const toCustomerRequest = (
   return new Request(url, { headers: request.headers });
 };
 
-const toHandler = ({
-  path,
-  handlers,
-  legacyAction,
-  respond,
-}: StaffRead): HttpHandler =>
+const toHandler = (read: StaffRead): HttpHandler =>
   http.get<{ name: string }>(
-    `${API_URL}accounts/:name/${path}`,
+    `${API_URL}accounts/:name/${read.path}`,
     async ({ request, requestId, params }) => {
       const gate = resolveStaffAccount(params.name);
 
@@ -164,15 +177,15 @@ const toHandler = ({
         return gate.rejection;
       }
 
-      const own = respond?.(gate.account, request);
+      const own = read.respond?.(gate.account, request);
 
       if (own) {
         return own;
       }
 
-      for (const handler of handlers) {
+      for (const handler of read.handlers) {
         const result = await handler.run({
-          request: toCustomerRequest(request, legacyAction),
+          request: toCustomerRequest(request, read),
           requestId,
         });
 
