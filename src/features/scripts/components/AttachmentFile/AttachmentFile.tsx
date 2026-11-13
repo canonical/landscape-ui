@@ -1,10 +1,5 @@
-import {
-  ActionButton,
-  Button,
-  Icon,
-  ICONS,
-  Tooltip,
-} from "@canonical/react-components";
+import { Tooltip } from "@/components/ui";
+import { ActionButton, Button, Icon, ICONS } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
 import useDebug from "@/hooks/useDebug";
@@ -52,7 +47,7 @@ const AttachmentFile: FC<AttachmentFileProps> = ({
       <span>{filename}</span>
       <div className={classes.attachmentActions}>
         {scriptId ? (
-          <Tooltip message="Download" position="top-center">
+          <Tooltip message="Download">
             <ActionButton
               className={classNames(
                 "u-no-margin--bottom u-no-margin--right",
@@ -70,7 +65,7 @@ const AttachmentFile: FC<AttachmentFileProps> = ({
           </Tooltip>
         ) : null}
         {onInitialAttachmentDelete ? (
-          <Tooltip message="Remove" position="top-center">
+          <Tooltip message="Remove">
             <Button
               type="button"
               hasIcon

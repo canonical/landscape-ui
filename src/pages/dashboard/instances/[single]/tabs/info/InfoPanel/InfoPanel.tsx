@@ -42,12 +42,12 @@ import type {
   WslInstance,
 } from "@/types/Instance";
 import { hasOneItem } from "@/utils/_helpers";
+import { Tooltip } from "@/components/ui";
 import {
   Button,
   ConfirmationModal,
   Icon,
   ICONS,
-  Tooltip,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import date from "@/libs/date";
@@ -465,7 +465,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                     Recovery key
                     {shouldShowRecoveryKeyWarningInLabel && (
                       <Tooltip
-                        position="top-center"
                         message={recoveryKeyRegenerationAttemptMessage}
                         className={classes.recoveryKeyTooltip}
                       >

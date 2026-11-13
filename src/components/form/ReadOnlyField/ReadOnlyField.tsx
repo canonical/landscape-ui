@@ -1,4 +1,5 @@
-import { Icon, Tooltip } from "@canonical/react-components";
+import { Tooltip } from "@/components/ui";
+import { Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./ReadOnlyField.module.scss";
 import NoData from "@/components/layout/NoData";
@@ -15,23 +16,28 @@ const ReadOnlyField: FC<ReadOnlyFieldProps> = ({
   value,
   tooltipMessage,
   required,
-}) => (
-  <div className={classes.field}>
-    <label>
-      {required ? "* " : ""} {label}
-    </label>
-    <Tooltip
-      position="btm-left"
-      className={classes.container}
-      message={tooltipMessage}
-      followMouse
-    >
-      <div className={classes.locked}>
-        <span>{value || <NoData />}</span>
-        <Icon name="lock-locked" />
-      </div>
-    </Tooltip>
-  </div>
-);
+}) => {
+  const readOnlyContent = (
+    <div className={classes.locked}>
+      <span>{value || <NoData />}</span>
+      <Icon name="lock-locked" />
+    </div>
+  );
+
+  return (
+    <div className={classes.field}>
+      <label>
+        {required ? "* " : ""} {label}
+      </label>
+      {tooltipMessage ? (
+        <Tooltip className={classes.container} message={tooltipMessage}>
+          {readOnlyContent}
+        </Tooltip>
+      ) : (
+        readOnlyContent
+      )}
+    </div>
+  );
+};
 
 export default ReadOnlyField;

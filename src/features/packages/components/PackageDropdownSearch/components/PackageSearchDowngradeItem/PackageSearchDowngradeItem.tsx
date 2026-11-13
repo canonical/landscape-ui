@@ -7,13 +7,8 @@ import type { FC } from "react";
 import { useCallback } from "react";
 import classes from "./PackageSearchDowngradeItem.module.scss";
 import type { MultiSelectItem } from "@canonical/react-components";
-import {
-  Button,
-  Icon,
-  ICONS,
-  Notification,
-  Tooltip,
-} from "@canonical/react-components";
+import { Tooltip } from "@/components/ui";
+import { Button, Icon, ICONS, Notification } from "@canonical/react-components";
 import { pluralize, toInstanceQuery } from "@/utils/_helpers";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import LoadingState from "@/components/layout/LoadingState";
@@ -117,7 +112,7 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
             )}
           </div>
         </div>
-        <Tooltip message="Remove" position="top-center">
+        <Tooltip message="Remove">
           <Button
             type="button"
             appearance="base"

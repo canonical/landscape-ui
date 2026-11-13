@@ -1,8 +1,9 @@
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
+import { Tooltip, TOOLTIP_DIRECTIONS } from "@/components/ui";
 import { boolToLabel } from "@/utils/output";
 import type { Publication } from "@canonical/landscape-openapi";
-import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
@@ -72,7 +73,7 @@ const PublicationDetails = ({
           {!canCancelOperations && isPublishing ? (
             <Tooltip
               message="You must wait for this action to be completed to republish it."
-              position="btm-center"
+              preferredDirections={TOOLTIP_DIRECTIONS.bottom}
             >
               <Button
                 type="button"

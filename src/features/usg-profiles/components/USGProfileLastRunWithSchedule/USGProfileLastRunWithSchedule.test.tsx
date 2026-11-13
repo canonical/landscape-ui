@@ -41,7 +41,9 @@ describe("USGProfileLastRunWithSchedule", () => {
     );
 
     const lastRun = screen.getByText("May 15, 2024, 15:47");
-    expect(screen.getByText("On a date"));
+    expect(
+      screen.getByLabelText(`Schedule for ${profileWithRuns.title} profile`),
+    ).toHaveTextContent("On a date");
 
     await user.hover(lastRun);
 

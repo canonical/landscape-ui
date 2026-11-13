@@ -1,6 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
+import { Tooltip } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Col, Row, Tooltip } from "@canonical/react-components";
+import { Button, Col, Row } from "@canonical/react-components";
 import classNames from "classnames";
 import { Suspense, useEffect, type FC } from "react";
 import type { SavedSearch } from "../../types";
@@ -99,7 +100,7 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
                   <Col size={4}>
                     <Tooltip
                       message={savedSearch.title}
-                      positionElementClassName={classes.truncated}
+                      targetElementClassName={classes.truncated}
                     >
                       <span>{savedSearch.title}</span>
                     </Tooltip>
@@ -112,7 +113,7 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
                   >
                     <Tooltip
                       message={savedSearch.search}
-                      positionElementClassName={classes.truncated}
+                      targetElementClassName={classes.truncated}
                     >
                       <code>{savedSearch.search}</code>
                     </Tooltip>
