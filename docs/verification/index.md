@@ -29,6 +29,7 @@ When the failing-test step is skipped, document why in the work summary.
 For most application changes, verify the smallest applicable set from:
 
 - `pnpm run lint`
+- `pnpm typecheck` (`tsgo` over the app, node and e2e projects; the CI type check)
 - `pnpm prettier --check` for changed Markdown or formatted assets
 - targeted Vitest and React Testing Library coverage for unit or component behavior
 - targeted Playwright coverage for end-to-end behavior
