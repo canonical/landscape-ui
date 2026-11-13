@@ -63,6 +63,10 @@ safe-outputs:
     team-reviewers: [canonical/landscape]
     draft: false
     if-no-changes: ignore
+    # The own-repo changeset PR uses the default GITHUB_TOKEN. Set it
+    # explicitly so the docs push handler's LANDSCAPE_DOCS_TOKEN is not picked
+    # up as the shared safe-outputs credential for this in-repo path.
+    github-token: ${{ secrets.GITHUB_TOKEN }}
     # Exactly one changeset PR per run; the docs update goes through the
     # separate push-to-pull-request-branch handler below.
     max: 1
@@ -82,6 +86,11 @@ safe-outputs:
     # protection via a "<dir>/" prefix entry (globs are not matched here).
     protected-files:
       exclude: [".changeset/"]
+  # gh-aw defaults threat detection to the Codex engine, which needs a Codex
+  # credential this repo does not carry. Pin it to the Copilot CLI so it uses
+  # COPILOT_GITHUB_TOKEN, matching the documented secret contract.
+  threat-detection:
+    engine: copilot
   push-to-pull-request-branch:
     target: "*"
     target-repo: canonical/landscape-documentation
