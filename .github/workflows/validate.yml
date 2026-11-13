@@ -255,6 +255,8 @@ jobs:
           NODE_OPTIONS: "--max_old_space_size=4096"
           VITEST_SHARD: ${{ matrix.shard }}
 
+      # A missing blob only warns: a shard without one has already failed,
+      # and the "Vitest" job fails on any shard that did not succeed.
       - name: Upload blob report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -262,7 +264,7 @@ jobs:
           name: vitest-blob-${{ matrix.shard }}
           path: vitest-blob
           retention-days: 1
-          if-no-files-found: error
+          if-no-files-found: warn
 
   # The required "Vitest" check. GitHub counts a skipped required check as
   # passing, so this job fails unless every shard succeeded. After a cancel
