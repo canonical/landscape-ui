@@ -46,7 +46,9 @@ Current behavior:
 - project selection is driven by `@saas` and `@self-hosted` tags
 - local runs use `pnpm dev`
 - CI runs use `pnpm preview`
-- failed retries keep traces, and failed tests retain videos
+- CI runs tests in parallel across 4 workers; tests must not depend on each other or on running order
+- a `setup` project logs in once per run (`e2e/support/auth.setup.ts`) and saves the session to `playwright/.auth/user.json`; `saas` and `self-hosted` depend on it, so it runs first even when filtering by file, project, or `--grep`
+- failed tests are retried on CI; the first retry records a trace and a video
 
 The config also starts the app automatically and sets:
 
@@ -61,9 +63,9 @@ Most E2E specs should import `test` and `expect` from `e2e/support/fixtures/auth
 
 That fixture layer currently provides:
 
-- `authenticatedPage`: a page that has already logged in and closed the welcome modal
+- `authenticatedPage`: a page signed in with the session the `setup` project saved, with the welcome modal closed
 - `standaloneAccountMock`: an option for self-hosted account-existence scenarios
-- `staffPage` and `staffApi`: a page logged in as Canonical staff, with the staff (super admin) endpoints mocked over the real session; `staffApiMock` is the option that picks the global roles
+- `staffPage` and `staffApi`: a page signed in as Canonical staff, with the staff (super admin) endpoints mocked over the saved session; `staffApiMock` is the option that picks the global roles
 - console, page-error, and request-failure logging written to the test output directory
 
 This is the default starting point for new specs because it keeps authentication setup and basic diagnostics consistent.
@@ -82,6 +84,7 @@ Use raw `page` when:
 - redirect handling during auth is the subject of the test
 - the spec needs to install routes or environment mocks before navigation
 
+`authenticatedPage` and `staffPage` share one session across the run, so a spec that logs out or otherwise ends the session must log in itself through raw `page`.
 This split is already visible in the auth, activities, and repositories specs.
 
 ## Navigation And Auth Helpers
