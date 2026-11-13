@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { API_URL, API_URL_DEB_ARCHIVE } from "@/constants";
 import { debarchiveFeatures, features } from "@/tests/mocks/features";
 import { getEndpointStatus } from "@/tests/controllers/controller";
@@ -18,7 +18,7 @@ const alwaysEnabledFeatures = features.filter(
 export default [
   http.get(`${API_URL}features`, () => {
     if (shouldApplyEndpointStatus("features")) {
-      const { status } = getEndpointStatus();
+      const { status, response } = getEndpointStatus("features");
 
       if (status === "empty") {
         return HttpResponse.json({ results: alwaysEnabledFeatures });
@@ -27,12 +27,16 @@ export default [
       if (status === "error") {
         throw createEndpointStatusNetworkError();
       }
+
+      if (status === "variant") {
+        return HttpResponse.json(response);
+      }
     }
 
     return HttpResponse.json({ results: features });
   }),
 
-  http.get(`${API_URL_DEB_ARCHIVE}features`, () => {
+  http.get(`${API_URL_DEB_ARCHIVE}features`, async () => {
     if (shouldApplyEndpointStatus("debarchive/features")) {
       const { status } = getEndpointStatus();
 
@@ -42,6 +46,10 @@ export default [
 
       if (status === "error") {
         throw createEndpointStatusNetworkError();
+      }
+
+      if (status === "loading") {
+        await delay("infinite");
       }
     }
 

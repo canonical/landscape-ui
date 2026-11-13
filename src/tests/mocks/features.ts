@@ -133,6 +133,17 @@ export const features: Feature[] = [
       configuration: true,
     },
   },
+  {
+    name: "Repository Mirrors",
+    description:
+      "Use Landscape DebArchive to mirror Debian package repositories.",
+    key: "repository-mirrors",
+    database_key: 13,
+    enabled: false,
+    details: {
+      configuration: false,
+    },
+  },
 ];
 
 export const debarchiveFeatures: DebarchiveFeature[] = [

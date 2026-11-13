@@ -15,7 +15,7 @@ import { pluralize } from "@/utils/_helpers";
 import type { OperationStatus } from "@/features/operations";
 import type { PackagesValidationState } from "../../types";
 import { getPackageList } from "./helpers";
-import ValidationResult from "./ValidationResult/ValidationResult";
+import ValidationResult from "./ValidationResult";
 import { DEFAULT_POLLING_INTERVAL } from "@/constants";
 
 const ImportRepositoryPackagesSidePanel: FC = () => {
