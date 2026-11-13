@@ -4,17 +4,11 @@ import { Button, Notification } from "@canonical/react-components";
 import type { UrlParams } from "@/types/UrlParams";
 import { ROUTES } from "@/libs/routes";
 
-interface UbuntuProNotificationProps {
-  readonly onDismiss: () => void;
-}
-
-const UbuntuProNotification: FC<UbuntuProNotificationProps> = ({
-  onDismiss,
-}) => {
+const UbuntuProNotification: FC = () => {
   const navigate = useNavigate();
   const { instanceId, childInstanceId } = useParams<UrlParams>();
   return (
-    <Notification severity="caution" onDismiss={onDismiss}>
+    <Notification severity="caution">
       <strong>Some upgrades require Ubuntu Pro: </strong>
       <span>
         Your current Ubuntu package upgrades are limited. To unlock full

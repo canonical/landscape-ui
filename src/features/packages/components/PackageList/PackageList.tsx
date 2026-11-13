@@ -6,15 +6,7 @@ import { Tooltip } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import type { FC } from "react";
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef } from "react";
 import type { CellProps, Column } from "react-table";
 import type { InstancePackage } from "../../types";
 import PackageListActions from "../PackageListActions";
@@ -44,7 +36,6 @@ const PackageList: FC<PackageListProps> = ({
   selectAll,
 }) => {
   const selectedByTabRef = useRef(false);
-  const [hideUbuntuProInfo, setHideUbuntuProInfo] = useState(false);
 
   const { setSidePanelContent } = useSidePanel();
 
@@ -204,13 +195,7 @@ const PackageList: FC<PackageListProps> = ({
 
   return (
     <>
-      {!hideUbuntuProInfo && packages.some(isUbuntuProRequired) && (
-        <UbuntuProNotification
-          onDismiss={() => {
-            setHideUbuntuProInfo(true);
-          }}
-        />
-      )}
+      {packages.some(isUbuntuProRequired) && <UbuntuProNotification />}
       <ResponsiveTable
         columns={columns}
         data={packages}
