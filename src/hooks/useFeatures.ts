@@ -6,6 +6,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import axios from "axios";
 import type { ApiError } from "@/types/api/ApiError";
 import { API_URL, API_URL_DEB_ARCHIVE, IS_DEV_ENV } from "@/constants";
+import useEnv from "@/hooks/useEnv";
 
 interface DebarchiveFeatureResponse {
   readonly features: DebarchiveFeature[];
@@ -13,6 +14,8 @@ interface DebarchiveFeatureResponse {
 }
 
 export default function useFeatures(userEmail: string | null) {
+  const { isSelfHosted, envLoading } = useEnv();
+
   const { data: serverFeatures = [], isPending: isGettingFeatures } = useQuery<
     AxiosResponse<{ results: Feature[] }>,
     AxiosError<ApiError>,
@@ -23,9 +26,13 @@ export default function useFeatures(userEmail: string | null) {
     select: (response) => response.data?.results,
   });
 
+  const isRepositoryMirrorsEnabled = serverFeatures.some(
+    ({ key, enabled }) => key === "repository-mirrors" && enabled,
+  );
+
   const {
     data: debarchiveFeatures = [],
-    isPending: isGettingDebarchiveFeatures,
+    isLoading: isGettingDebarchiveFeatures,
   } = useQuery<
     AxiosResponse<DebarchiveFeatureResponse>,
     AxiosError<ApiError>,
@@ -34,9 +41,11 @@ export default function useFeatures(userEmail: string | null) {
     queryKey: ["debarchive", "features", userEmail],
     queryFn: async () => axios.get(`${API_URL_DEB_ARCHIVE}features`),
     select: (response) => response.data?.features,
+    enabled: isSelfHosted || isRepositoryMirrorsEnabled,
   });
 
-  const isLoading = isGettingFeatures || isGettingDebarchiveFeatures;
+  const isAnyFeatureLoading =
+    isGettingFeatures || envLoading || isGettingDebarchiveFeatures;
 
   const isFeatureEnabled = useCallback(
     (featureKey: FeatureKey) => {
@@ -45,7 +54,7 @@ export default function useFeatures(userEmail: string | null) {
         debarchiveFeatures.find(({ featureId }) => featureId === featureKey);
 
       if (!match) {
-        if (IS_DEV_ENV && !isLoading) {
+        if (IS_DEV_ENV && !isAnyFeatureLoading) {
           console.warn(
             `Feature ${featureKey} not found in the features response.`,
           );
@@ -55,11 +64,11 @@ export default function useFeatures(userEmail: string | null) {
 
       return match.enabled;
     },
-    [serverFeatures, debarchiveFeatures, isLoading],
+    [serverFeatures, debarchiveFeatures, isAnyFeatureLoading],
   );
 
   return {
     isFeatureEnabled,
-    isFeaturesLoading: isLoading,
+    isFeaturesLoading: isGettingFeatures,
   };
 }
