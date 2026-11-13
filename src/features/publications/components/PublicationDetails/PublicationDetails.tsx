@@ -1,6 +1,6 @@
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import { Tooltip } from "@/components/ui";
+import { Tooltip, TOOLTIP_DIRECTIONS } from "@/components/ui";
 import { boolToLabel } from "@/utils/output";
 import type { Publication } from "@canonical/landscape-openapi";
 import { Button, Icon, ICONS } from "@canonical/react-components";
@@ -73,12 +73,7 @@ const PublicationDetails = ({
           {!canCancelOperations && isPublishing ? (
             <Tooltip
               message="You must wait for this action to be completed to republish it."
-              preferredDirections={[
-                "block-end",
-                "block-start",
-                "inline-end",
-                "inline-start",
-              ]}
+              preferredDirections={TOOLTIP_DIRECTIONS.bottom}
             >
               <Button
                 type="button"

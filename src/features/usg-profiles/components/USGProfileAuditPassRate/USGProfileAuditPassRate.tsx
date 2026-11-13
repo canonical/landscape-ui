@@ -1,5 +1,5 @@
 import NoData from "@/components/layout/NoData";
-import { Tooltip } from "@/components/ui";
+import { Tooltip, TOOLTIP_DIRECTIONS } from "@/components/ui";
 import { ROUTES } from "@/libs/routes";
 import type { FC } from "react";
 import { Link } from "react-router";
@@ -89,12 +89,7 @@ const USGProfileAuditPassRate: FC<USGProfileAuditPassRateProps> = ({
       </div>
 
       <Tooltip
-        preferredDirections={[
-          "block-end",
-          "block-start",
-          "inline-end",
-          "inline-start",
-        ]}
+        preferredDirections={TOOLTIP_DIRECTIONS.bottom}
         targetElementClassName={classes.tooltip}
         message={tooltipMessage}
       >

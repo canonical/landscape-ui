@@ -1,4 +1,4 @@
-import { Tooltip } from "@/components/ui";
+import { Tooltip, TOOLTIP_DIRECTIONS } from "@/components/ui";
 import { Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 
@@ -14,9 +14,7 @@ const ReportHelpTooltip: FC<ReportHelpTooltipProps> = ({
   <Tooltip
     message={message}
     preferredDirections={
-      position === "btm-left"
-        ? ["block-end", "block-start", "inline-end", "inline-start"]
-        : undefined
+      position === "btm-left" ? TOOLTIP_DIRECTIONS.bottomStart : undefined
     }
   >
     <Icon name={ICONS.help} aria-hidden />
