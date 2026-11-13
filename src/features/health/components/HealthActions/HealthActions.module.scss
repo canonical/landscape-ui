@@ -1,0 +1,30 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  align-items: center;
+  border-top: var(--dimension-stroke-thickness-medium) solid
+    var(--color-border-muted);
+  display: grid;
+  gap: var(--container-gap-default);
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin: 0;
+  padding-block: var(--component-padding-block);
+
+  &:first-child {
+    border-top: 0;
+    padding-block-start: 0;
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+}
+
+.description {
+  color: var(--color-text-muted);
+}

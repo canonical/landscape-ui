@@ -7,7 +7,9 @@ export { default as HealthCell } from "./components/HealthCell";
 export { default as HealthFactorList } from "./components/HealthFactorList";
 export type { HealthFactorListProps } from "./components/HealthFactorList";
 export { default as HealthScore } from "./components/HealthScore";
-export { default as HealthScoreBadge } from "./components/HealthScoreBadge";
+export { default as HealthScoreInfo } from "./components/HealthScoreInfo";
+export { default as HealthScoreSummary } from "./components/HealthScoreSummary";
+export { default as HealthActions } from "./components/HealthActions";
 export { default as HealthDetailsPanel } from "./components/HealthDetailsPanel";
 export { default as RemediationPile } from "./components/RemediationPile";
 export { default as TopDetractors } from "./components/TopDetractors";
@@ -23,6 +25,7 @@ export {
 export {
   isHealthMeasurable,
   isInstanceMeasurable,
+  effectiveRecommendedActions,
   recommendedActionsFor,
   HEALTH_ACTION_META,
   BAND_LABEL,

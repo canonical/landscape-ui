@@ -1,5 +1,9 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { HealthScoreBadge, isHealthMeasurable } from "@/features/health";
+import {
+  BAND_CRITICALITY,
+  BAND_LABEL,
+  isHealthMeasurable,
+} from "@/features/health";
 import type { HealthBand } from "@/features/health";
 import { getFeatures } from "@/features/instances";
 import useAuth from "@/hooks/useAuth";
@@ -82,7 +86,12 @@ const getTabLabel = ({
     return (
       <>
         <span>{label}</span>
-        <HealthScoreBadge score={healthScore} band={healthBand} />
+        <Badge
+          value={healthScore}
+          criticality={BAND_CRITICALITY[healthBand]}
+          title={`Health score ${healthScore}, ${BAND_LABEL[healthBand]}`}
+          aria-label={`Health score ${healthScore}, ${BAND_LABEL[healthBand]}`}
+        />
       </>
     );
   }

@@ -10,7 +10,6 @@
 }
 
 .updated,
-.hint,
 .footnote {
   color: var(--color-text-muted);
   font-size: var(--typography-text-secondary-font-size);
@@ -20,40 +19,8 @@
   padding: 0;
 }
 
-.score {
-  display: flex;
-  flex-direction: column;
-  gap: var(--container-gap-tight);
-}
-
-.scoreLine {
-  align-items: baseline;
-  display: flex;
-  gap: calc(var(--baseline-height) * 2);
-  margin: 0;
-  max-width: none;
-  padding: 0;
-}
-
-.scoreValue {
-  font-size: var(--typography-heading-1-bold-font-size);
-  font-variant-numeric: tabular-nums;
-  font-weight: var(--typography-heading-1-bold-font-weight);
-  line-height: 1;
-}
-
-.scoreMax,
 .rowPercent {
   color: var(--color-text-muted);
-}
-
-.band {
-  align-items: center;
-  color: var(--modifier-color-text);
-  display: inline-flex;
-  font-weight: var(--typography-text-primary-bold-font-weight);
-  gap: calc(var(--baseline-height) * 2);
-  margin-inline-start: auto;
 }
 
 .distribution {

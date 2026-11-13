@@ -91,6 +91,7 @@ export const effectiveRecommendedActions = (
 
 interface HealthActionMeta {
   label: string;
+  cta: string;
   icon: string;
   description: string;
 }
@@ -98,28 +99,33 @@ interface HealthActionMeta {
 export const HEALTH_ACTION_META: Record<HealthActionKind, HealthActionMeta> = {
   "run-security-updates": {
     label: "Run security updates",
+    cta: "Run updates",
     icon: "security-tick",
     description: "Queues an apt upgrade limited to packages with pending USNs.",
   },
   reboot: {
     label: "Reboot now",
+    cta: "Reboot",
     icon: "restart",
     description: "Schedules a graceful reboot via systemd.",
   },
   "refresh-facts": {
     label: "Refresh facts",
+    cta: "Refresh",
     icon: "begin-downloading",
     description:
       "Forces a fresh check-in so stale data clears as soon as the agent reports.",
   },
   "attach-ubuntu-pro": {
     label: "Attach Ubuntu Pro",
+    cta: "Attach",
     icon: "lock-locked",
     description:
       "Enrols the instance into Ubuntu Pro, enabling Livepatch and ESM.",
   },
   "run-diagnostic-script": {
     label: "Run diagnostic script",
+    cta: "Run script",
     icon: "code",
     description: "Collects logs and runtime state into a downloadable bundle.",
   },
@@ -128,6 +134,13 @@ export const HEALTH_ACTION_META: Record<HealthActionKind, HealthActionMeta> = {
 export const isInstanceMeasurable = (
   instance: Instance | InstanceWithoutRelation,
 ): boolean => isHealthMeasurable(instance);
+
+// Band thresholds mirror the server-side defaults.
+export const CRITICAL_SCORE_CEILING = 25;
+export const HEALTHY_SCORE_FLOOR = 61;
+
+// A single factor at or above this weight drives the score to 0.
+export const CRITICAL_FACTOR_POINTS = 100;
 
 export const BAND_LABEL: Record<HealthBand, string> = {
   critical: "Critical",

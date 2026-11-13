@@ -1,56 +1,36 @@
-import Blocks from "@/components/layout/Blocks";
 import EmptyState from "@/components/layout/EmptyState";
-import HeaderActions from "@/components/layout/HeaderActions";
 import LoadingState from "@/components/layout/LoadingState";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import {
-  BAND_LABEL,
-  HEALTH_ACTION_META,
+  effectiveRecommendedActions,
+  HealthActions,
   HealthFactorList,
+  HealthScoreInfo,
+  HealthScoreSummary,
   isHealthMeasurable,
-  recommendedActionsFor,
   useComputerHealth,
-  useHealthAction,
 } from "@/features/health";
-import type {
-  HealthActionKind,
-  HealthBand,
-  HealthFactor,
-} from "@/features/health";
-import useNotify from "@/hooks/useNotify";
-import { ROUTES } from "@/libs/routes";
-import type { Instance } from "@/types/Instance";
-import { Button, Icon } from "@canonical/react-components";
-import classNames from "classnames";
 import date from "@/libs/date";
+import type { Instance } from "@/types/Instance";
+import { pluralize } from "@/utils/_helpers";
+import { Button } from "@canonical/react-components";
+import { Card, Cards } from "@canonical/react-ds-global";
+import classNames from "classnames";
 import type { FC } from "react";
-import { Link } from "react-router";
+import { useId } from "react";
 import classes from "./HealthPanel.module.scss";
-
-const DATE_FORMAT = "MMM D, YYYY [at] HH:mm";
-
-const BAND_ICON: Record<HealthBand, string> = {
-  critical: "error",
-  warning: "warning",
-  healthy: "success",
-};
 
 interface HealthPanelProps {
   readonly instance: Instance;
 }
 
-const bandClassName = (band: HealthBand): string =>
-  classes[`band_${band}`] ?? "";
-
 const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
   const measurable = isHealthMeasurable(instance);
   const query = useComputerHealth(measurable ? instance.id : 0);
-  const action = useHealthAction();
-  const { notify } = useNotify();
+  const titleIds = { score: useId(), factors: useId(), actions: useId() };
 
   if (!measurable) {
-    // Phase 1.7 also gates the tab away from non-Ubuntu instances in
-    // SingleInstanceTabs/helpers.tsx, but keep the guard here so direct deep
-    // links still render a useful page instead of a crash.
+    // The tab is hidden for these instances, but a deep link can still land here.
     return (
       <EmptyState
         title="Health isn’t measured for this instance"
@@ -81,9 +61,6 @@ const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
   }
 
   if (query.isError || !query.data?.data) {
-    // LA061 Phase 1.7: the whole tab is unrenderable when health can't load,
-    // so surface a proper EmptyState rather than an inline Notification.
-    // Notification-style banners are reserved for partial-content failures.
     return (
       <EmptyState
         title="Health unavailable"
@@ -91,7 +68,7 @@ const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
         body={
           <p>
             We couldn&apos;t load the health details for this instance. This is
-            usually transient — check back in a moment, or refresh to retry.
+            usually transient, so check back in a moment or retry.
           </p>
         }
         cta={[
@@ -112,180 +89,76 @@ const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
   }
 
   const health = query.data.data;
-  const { score, band, factors, critical_factor_count, updated_at } = health;
-  const recommended: HealthActionKind[] = recommendedActionsFor(factors);
-
-  const dispatch = (kind: HealthActionKind) => {
-    action.mutate(
-      { computerId: instance.id, action: kind },
-      {
-        onSuccess: () => {
-          notify.success({
-            message: `${HEALTH_ACTION_META[kind].label} dispatched.`,
-          });
-        },
-      },
-    );
-  };
-
-  const isDispatching = action.isPending;
+  const { score, band, factors, updated_at } = health;
+  const recommended = effectiveRecommendedActions(health);
 
   return (
-    <>
-      <HeaderActions
-        title={
-          <div className={classes.titleRow}>
+    <div className={classNames("grid", classes.layout)}>
+      <Cards>
+        <Card className={classes.third} aria-labelledby={titleIds.score}>
+          <Card.Header>
             <h2
-              className={classNames(
-                "p-heading--4 u-no-padding--top u-no-margin--bottom",
-                classes.heading,
-              )}
+              id={titleIds.score}
+              className="p-heading--5 u-no-margin u-no-padding"
             >
-              Health for {instance.title}
+              Health score
             </h2>
-            <span className={classNames(classes.bandPill, bandClassName(band))}>
-              <Icon name={BAND_ICON[band]} />
-              <strong>{score}</strong>
-              <span>/ 100 · {BAND_LABEL[band]}</span>
-              {critical_factor_count > 1 && (
-                <span className={classes.criticalChip}>
-                  ×{critical_factor_count} critical
-                </span>
-              )}
-            </span>
-          </div>
-        }
-        actions={{
-          nondestructive: recommended.map((kind) => {
-            const meta = HEALTH_ACTION_META[kind];
-            return {
-              icon: meta.icon,
-              label: meta.label,
-              onClick: () => {
-                dispatch(kind);
-              },
-              disabled: isDispatching,
-            };
-          }),
-        }}
-      />
+          </Card.Header>
+          <Card.Content>
+            <HealthScoreSummary
+              score={score}
+              band={band}
+              hint={
+                updated_at ? (
+                  <>
+                    Last evaluated{" "}
+                    <time dateTime={updated_at}>
+                      {date(updated_at).format(DISPLAY_DATE_TIME_FORMAT)}
+                    </time>
+                  </>
+                ) : null
+              }
+            />
+          </Card.Content>
+        </Card>
 
-      <Blocks spaced>
-        <Blocks.Item title="Why this score?">
-          {factors.length === 0 ? (
-            <p className={classes.cleanState}>
-              <Icon name="success" /> Nothing is dragging this instance&apos;s
-              score down right now.
-            </p>
-          ) : (
-            <>
-              <p className={classes.bodyHint}>
-                {factors.length === 1
-                  ? "One rule is currently subtracting from this instance's score."
-                  : `${factors.length} rules are currently subtracting from this instance's score.`}{" "}
-                Click any recommended action above to dispatch the matching
-                remedy.
-              </p>
-              <HealthFactorList factors={factors} />
-            </>
-          )}
-          {updated_at && (
-            <p className={classes.footnote}>
-              Last evaluated{" "}
-              <time dateTime={updated_at}>
-                {date(updated_at).format(DATE_FORMAT)}
-              </time>
-              .
-            </p>
-          )}
-        </Blocks.Item>
+        <Card className={classes.twoThirds} aria-labelledby={titleIds.factors}>
+          <Card.Header>
+            <h2
+              id={titleIds.factors}
+              className="p-heading--5 u-no-margin u-no-padding"
+            >
+              What is lowering the score
+              <HealthScoreInfo />
+            </h2>
+            {factors.length > 0 ? (
+              <span className="u-text--muted">
+                {factors.length} {pluralize(factors.length, ["rule"])}
+              </span>
+            ) : null}
+          </Card.Header>
+          <Card.Content>
+            <HealthFactorList factors={factors} />
+          </Card.Content>
+        </Card>
 
-        <Blocks.Item title="Recommended actions">
-          <ul className={classes.actionExplainer}>
-            {recommended.map((kind) => {
-              const meta = HEALTH_ACTION_META[kind];
-              const triggeringFactor = factors.find(
-                (f: HealthFactor) =>
-                  // The mapping mirrors `suggestedActionFor` in helpers.ts.
-                  (kind === "run-security-updates" &&
-                    f.rule_key.startsWith("usn.")) ||
-                  (kind === "run-security-updates" &&
-                    f.rule_key === "package.updates_available") ||
-                  (kind === "reboot" && f.rule_key === "reboot_required") ||
-                  (kind === "refresh-facts" &&
-                    f.rule_key === "instance.offline"),
-              );
-              return (
-                <li key={kind} className={classes.actionRow}>
-                  <span className={classes.actionIcon} aria-hidden="true">
-                    <Icon name={meta.icon} />
-                  </span>
-                  <div className={classes.actionBody}>
-                    <strong>{meta.label}</strong>
-                    <span className={classes.actionDescription}>
-                      {meta.description}
-                    </span>
-                    {triggeringFactor && (
-                      <span className={classes.actionBecause}>
-                        Triggered by: <em>{triggeringFactor.description}</em> (−
-                        {triggeringFactor.points})
-                      </span>
-                    )}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </Blocks.Item>
-
-        <Blocks.Item title="Related signals">
-          <ul className={classes.relatedList}>
-            <li>
-              <Link
-                to={ROUTES.instances.details.single(instance.id, {
-                  tab: "activities",
-                })}
-                className={classes.relatedLink}
+        {recommended.length > 0 ? (
+          <Card className={classes.full} aria-labelledby={titleIds.actions}>
+            <Card.Header>
+              <h2
+                id={titleIds.actions}
+                className="p-heading--5 u-no-margin u-no-padding"
               >
-                <Icon name="status-in-progress" />
-                <span>Activities</span>
-                <span className={classes.relatedHint}>
-                  Recent agent activity, scheduled jobs, results
-                </span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to={ROUTES.instances.details.single(instance.id, {
-                  tab: "security-issues",
-                })}
-                className={classes.relatedLink}
-              >
-                <Icon name="security-tick" />
-                <span>Security issues</span>
-                <span className={classes.relatedHint}>
-                  USN-priority breakdown driving the score
-                </span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to={ROUTES.instances.details.single(instance.id, {
-                  tab: "packages",
-                })}
-                className={classes.relatedLink}
-              >
-                <Icon name="applications" />
-                <span>Packages</span>
-                <span className={classes.relatedHint}>
-                  Pending updates feed the score subtractions
-                </span>
-              </Link>
-            </li>
-          </ul>
-        </Blocks.Item>
-      </Blocks>
-    </>
+                Recommended actions
+              </h2>
+            </Card.Header>
+            <Card.Content>
+              <HealthActions instance={instance} actions={recommended} />
+            </Card.Content>
+          </Card>
+        ) : null}
+      </Cards>
+    </div>
   );
 };
 

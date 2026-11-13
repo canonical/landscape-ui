@@ -5,19 +5,21 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import date from "@/libs/date";
 import { ROUTES } from "@/libs/routes";
 import { pluralize } from "@/utils/_helpers";
-import { Button, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import { Card } from "@canonical/react-ds-global";
-import classNames from "classnames";
 import type { FC, ReactNode } from "react";
 import { useId } from "react";
 import { Link } from "react-router";
-import { BAND_CRITICALITY, BAND_ICON, BAND_LABEL } from "../../helpers";
+import {
+  BAND_CRITICALITY,
+  BAND_LABEL,
+  CRITICAL_SCORE_CEILING,
+  HEALTHY_SCORE_FLOOR,
+} from "../../helpers";
 import type { FleetHealthSummary, HealthBand } from "../../types";
+import HealthScoreSummary from "../HealthScoreSummary";
 import classes from "./FleetHealthWidget.module.scss";
 
-// Band thresholds mirror the server-side defaults.
-const HEALTHY_FLOOR = 61;
-const CRITICAL_CEILING = 25;
 const PERCENT_BASE = 100;
 
 // Band midpoints, used only when the server omits `average_score`.
@@ -30,10 +32,10 @@ const BAND_MIDPOINT: Record<HealthBand, number> = {
 const BANDS: HealthBand[] = ["critical", "warning", "healthy"];
 
 const bandForScore = (score: number): HealthBand => {
-  if (score <= CRITICAL_CEILING) {
+  if (score <= CRITICAL_SCORE_CEILING) {
     return "critical";
   }
-  if (score < HEALTHY_FLOOR) {
+  if (score < HEALTHY_SCORE_FLOOR) {
     return "warning";
   }
   return "healthy";
@@ -162,26 +164,12 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
 
   return renderCard(
     <div className={classes.layout}>
-      <div className={classes.score}>
-        <p className={classes.scoreLine}>
-          <span className={classes.scoreValue}>{score}</span>
-          <span className={classes.scoreMax}>/ 100</span>
-          <span
-            className={classNames(classes.band, BAND_CRITICALITY[scoreBand])}
-          >
-            <Icon name={BAND_ICON[scoreBand]} />
-            {BAND_LABEL[scoreBand]}
-          </span>
-        </p>
-        <Meter
-          value={score}
-          criticality={BAND_CRITICALITY[scoreBand]}
-          aria-label={`Average health score ${score} of 100, ${BAND_LABEL[scoreBand]}`}
-        />
-        <p className={classes.hint}>
-          Average score across measurable instances.
-        </p>
-      </div>
+      <HealthScoreSummary
+        score={score}
+        band={scoreBand}
+        label="Average health score"
+        hint="Average score across measurable instances."
+      />
 
       <ul className={classes.distribution}>
         {BANDS.map((band) => {

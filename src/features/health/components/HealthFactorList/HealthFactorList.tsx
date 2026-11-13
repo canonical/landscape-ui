@@ -1,14 +1,9 @@
 import { Icon } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
+import { CRITICAL_FACTOR_POINTS } from "../../helpers";
 import type { HealthFactor } from "../../types";
 import classes from "./HealthFactorList.module.scss";
-
-// Critical factors have weight ≥ 100 (drives the score to 0 on a single
-// match — see LA061 spec's "MVP algorithm"). Knowing the threshold here
-// lets us tag rows visually without an extra round-trip to look up the
-// originating rule.
-const CRITICAL_THRESHOLD = 100;
 
 export interface HealthFactorListProps {
   readonly factors: HealthFactor[];
@@ -19,35 +14,39 @@ export interface HealthFactorListProps {
 const HealthFactorList: FC<HealthFactorListProps> = ({
   factors,
   className,
-  emptyMessage = "No detractors — fully healthy.",
+  emptyMessage = "Nothing is lowering this instance's score right now.",
 }) => {
   if (factors.length === 0) {
     return (
-      <div className={classNames(classes.empty, className)}>
+      <p className={classNames(classes.empty, className)}>
         <Icon name="success" />
         <span>{emptyMessage}</span>
-      </div>
+      </p>
     );
   }
 
   return (
     <ul className={classNames(classes.list, className)}>
       {factors.map((factor) => {
-        const isCritical = factor.points >= CRITICAL_THRESHOLD;
+        const isCritical = factor.points >= CRITICAL_FACTOR_POINTS;
         return (
-          <li
-            key={factor.rule_id}
-            className={classNames(classes.row, {
-              [classes.rowCritical]: isCritical,
-            })}
-          >
-            <span className={classes.icon} aria-hidden="true">
-              <Icon name={isCritical ? "error" : "warning"} />
-            </span>
+          <li key={factor.rule_id} className={classes.item}>
+            <Icon
+              name={isCritical ? "error" : "warning"}
+              aria-label={isCritical ? "Critical" : "Warning"}
+            />
             <span className={classes.description}>
               {factor.description || factor.rule_key}
             </span>
-            <span className={classes.points}>−{factor.points}</span>
+            <span className={classes.points}>
+              {isCritical ? (
+                <strong>Sets score to 0</strong>
+              ) : (
+                <>
+                  <strong>−{factor.points}</strong> points
+                </>
+              )}
+            </span>
           </li>
         );
       })}
