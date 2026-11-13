@@ -1,6 +1,3 @@
-/* Keep tooltips above Landscape modals (--z-modal: 1000) and notifications
-   (--z-notification: 1100). Pragma 0.44.1 sets no z-index on .ds.tooltip
-   (0.45+ adds `var(--z-index-overlay, 1000)` in canonical/pragma-web#1471). */
 .message {
   z-index: var(--z-tooltip);
 }
