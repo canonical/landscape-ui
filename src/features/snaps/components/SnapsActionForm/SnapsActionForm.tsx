@@ -39,15 +39,31 @@ import type { SnapDeliveryFormValues } from "./types";
 interface SnapsActionFormProps {
   readonly selectedInstances: number[];
   readonly action: SnapAction;
+  /**
+   * Acts on exactly these snaps. The search box and per-snap delete buttons
+   * are hidden, so the selection can't change. Used by the single-instance
+   * Snaps tab, where the snaps are picked in the table first.
+   */
+  readonly fixedSnaps?: SnapWithCount[];
   readonly hasDeliveryScheduling?: boolean;
+  /**
+   * Names the only selected instance in the confirmation modal's title
+   * instead of counting it.
+   */
+  readonly instanceName?: string;
 }
 
 const SnapsActionForm: FC<SnapsActionFormProps> = ({
   selectedInstances,
   action,
+  fixedSnaps,
   hasDeliveryScheduling = false,
+  instanceName,
 }) => {
-  const [selectedSnaps, setSelectedSnaps] = useState<SnapWithCount[]>([]);
+  const hasFixedSnaps = fixedSnaps !== undefined;
+  const [selectedSnaps, setSelectedSnaps] = useState<SnapWithCount[]>(
+    fixedSnaps ?? [],
+  );
   const [loadingSnapIds, setLoadingSnapIds] = useState<Record<string, boolean>>(
     {},
   );
@@ -302,14 +318,20 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
         {hasNotification(action) && (
           <SnapNotification action={action} snapModeConfigs={snapModeConfigs} />
         )}
-        <SnapBulkSearch
-          instanceIds={selectedInstances}
-          selectedItems={selectedSnaps}
-          setSelectedItems={setSelectedSnaps}
-          action={action}
-        />
+        {!hasFixedSnaps && (
+          <SnapBulkSearch
+            instanceIds={selectedInstances}
+            selectedItems={selectedSnaps}
+            setSelectedItems={setSelectedSnaps}
+            action={action}
+          />
+        )}
 
-        <div className={classNames("p-text--small-caps", classes.header)}>
+        <div
+          className={classNames("p-text--small-caps", classes.header, {
+            [classes.headerWithoutSearch]: hasFixedSnaps,
+          })}
+        >
           Snaps to {action}
         </div>
 
@@ -318,9 +340,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
         ) : (
           <ul className="p-list u-no-margin--bottom">
             {selectedSnaps.map((item) => {
-              const handleDelete = () => {
-                handleDeleteSnap(item.snap.id);
-              };
+              const handleDelete = hasFixedSnaps
+                ? undefined
+                : () => {
+                    handleDeleteSnap(item.snap.id);
+                  };
 
               const config = snapModeConfigs[item.snap.id] ?? {
                 mode: "channel",
@@ -362,11 +386,13 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                         name={item.snap.name}
                         onDelete={handleDelete}
                       />
-                      <SnapItemSubtitle
-                        scope="Installed"
-                        computerCount={item.computer_count ?? 0}
-                        instancesCount={selectedInstances.length}
-                      />
+                      {!hasFixedSnaps && (
+                        <SnapItemSubtitle
+                          scope="Installed"
+                          computerCount={item.computer_count ?? 0}
+                          instancesCount={selectedInstances.length}
+                        />
+                      )}
                       <div className={classes.changeToLabel}>Change to</div>
                       {channelRevisionFields}
                     </li>
@@ -393,6 +419,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                         onDelete={handleDelete}
                         isUnhold={action === "unhold"}
                         instancesCount={selectedInstances.length}
+                        hasSubtitle={!hasFixedSnaps}
                       />
                     </li>
                   );
@@ -424,6 +451,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           snaps={selectedSnaps}
           snapModes={snapModes}
           instancesCount={selectedInstances.length}
+          instanceName={instanceName}
           onClose={closeModal}
           onConfirm={handleConfirm}
           isSubmitting={isConfirming || isSnapActionPending}

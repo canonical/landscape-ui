@@ -5,9 +5,10 @@ import SnapItemSubtitle from "../SnapItemSubtitle";
 
 interface SnapInstalledItemProps {
   readonly selectedSnap: SnapWithCount;
-  readonly onDelete: () => void;
   readonly isUnhold: boolean;
   readonly instancesCount: number;
+  readonly onDelete?: () => void;
+  readonly hasSubtitle?: boolean;
 }
 
 const SnapInstalledItem: FC<SnapInstalledItemProps> = ({
@@ -15,15 +16,18 @@ const SnapInstalledItem: FC<SnapInstalledItemProps> = ({
   selectedSnap,
   isUnhold,
   instancesCount,
+  hasSubtitle = true,
 }) => {
   return (
     <>
       <SnapItemTitleRow name={selectedSnap.snap.name} onDelete={onDelete} />
-      <SnapItemSubtitle
-        scope={isUnhold ? "Held" : "Installed"}
-        computerCount={selectedSnap.computer_count ?? 0}
-        instancesCount={instancesCount}
-      />
+      {hasSubtitle && (
+        <SnapItemSubtitle
+          scope={isUnhold ? "Held" : "Installed"}
+          computerCount={selectedSnap.computer_count ?? 0}
+          instancesCount={instancesCount}
+        />
+      )}
     </>
   );
 };

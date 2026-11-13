@@ -65,6 +65,67 @@ describe("ConfirmSnapActionModal", () => {
     ).toBeInTheDocument();
   });
 
+  it("names the instance and a single snap when the instance name is given", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal
+        {...props}
+        snaps={[firstSnap]}
+        instancesCount={1}
+        instanceName="Application Server 1"
+        actionVerb="change channel"
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: `Change channel of ${firstSnap.snap.name} on Application Server 1`,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("names the instance and counts several snaps when the instance name is given", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal
+        {...props}
+        instancesCount={1}
+        instanceName="Application Server 1"
+        actionVerb="change channel"
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Change channel of 2 snaps on Application Server 1",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the classic confinement title when the instance name is given", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal
+        {...props}
+        snaps={[classicSnap]}
+        instancesCount={1}
+        instanceName="Application Server 1"
+        actionVerb="change channel"
+        snapModeConfigs={{
+          [classicSnap.snap.id]: {
+            mode: "channel",
+            value: "",
+            channel: "latest/stable",
+            confinement: "classic",
+          },
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: "1 of 1 snap requires classic confinement",
+      }),
+    ).toBeInTheDocument();
+  });
+
   it("uses singular 'has' phrasing for a single snap", () => {
     renderWithProviders(
       <ConfirmSnapActionModal {...props} snaps={[firstSnap]} />,

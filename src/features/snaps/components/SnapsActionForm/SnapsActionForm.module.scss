@@ -12,6 +12,12 @@
   padding-top: $spv--small;
 }
 
+.headerWithoutSearch {
+  border-top: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+
 .selectedItem {
   background-color: $colors--theme--background-alt;
   margin-bottom: 0;

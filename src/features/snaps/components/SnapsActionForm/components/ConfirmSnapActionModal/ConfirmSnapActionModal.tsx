@@ -15,6 +15,12 @@ interface ConfirmSnapActionModalProps {
   readonly snapModes?: SnapMode[];
   readonly snaps: SnapWithCount[];
   readonly instancesCount: number;
+  /**
+   * Names the instance in the title instead of counting it, and names a
+   * single snap too. Used by the single-instance Snaps tab, where
+   * "1 snap on 1 instance" says nothing the user doesn't already know.
+   */
+  readonly instanceName?: string;
   readonly onClose: () => void;
   readonly onConfirm: () => void;
   readonly isSubmitting: boolean;
@@ -27,6 +33,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   snaps,
   snapModes = [],
   instancesCount,
+  instanceName,
   onClose,
   onConfirm,
   isSubmitting,
@@ -79,17 +86,23 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   };
 
   const getTitle = () => {
-    const snapsText = pluralize(snaps.length, ["snap"], "exact");
+    const snapsCountText = pluralize(snaps.length, ["snap"], "exact");
 
     if (hasClassicSnaps) {
       return `${pluralize(
         snapsToShow.length,
-        [`of ${snapsText} requires`, `of ${snapsText} require`],
+        [`of ${snapsCountText} requires`, `of ${snapsCountText} require`],
         "exact",
       )} classic confinement`;
     }
 
-    const instancesText = pluralize(instancesCount, ["instance"], "exact");
+    const [onlySnap] = snaps;
+    const snapsText =
+      instanceName && onlySnap && snaps.length === 1
+        ? onlySnap.snap.name
+        : snapsCountText;
+    const instancesText =
+      instanceName ?? pluralize(instancesCount, ["instance"], "exact");
 
     switch (actionVerb) {
       case "uninstall":
