@@ -1,8 +1,12 @@
+import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { features } from "@/tests/mocks/features";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import { beforeEach, describe, it, vi } from "vitest";
 import CreateScriptForm from "./CreateScriptForm";
 
@@ -134,31 +138,59 @@ describe("CreateScriptForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("Updates server script title exists error to a more detailed message", async () => {
-    setEndpointStatus({
-      status: "error",
-      path: "CreateScript",
-      response: {
-        error: "DuplicateScript",
-      },
-    });
+  it.each([
+    {
+      scriptProfilesEnabled: true,
+      message: "Title already used by an active, archived, or redacted script.",
+    },
+    {
+      scriptProfilesEnabled: false,
+      message: "Title already used by an active or archived script.",
+    },
+  ])(
+    "shows duplicate title errors inline with script-profiles=$scriptProfilesEnabled",
+    async ({ scriptProfilesEnabled, message }) => {
+      server.use(
+        http.get(`${API_URL}features`, () =>
+          HttpResponse.json({
+            results: features.map((feature) =>
+              feature.key === "script-profiles"
+                ? { ...feature, enabled: scriptProfilesEnabled }
+                : feature,
+            ),
+          }),
+        ),
+      );
+      setEndpointStatus({
+        status: "error",
+        path: "CreateScript",
+        response: {
+          error: "DuplicateScript",
+        },
+      });
 
-    const user = userEvent.setup();
-    renderWithProviders(<CreateScriptForm />);
+      const user = userEvent.setup();
+      renderWithProviders(<CreateScriptForm />);
 
-    await user.type(
-      screen.getByRole("textbox", { name: "Title" }),
-      "Existing script",
-    );
-    await user.type(screen.getByTestId("mock-monaco"), "echo run");
-    await user.click(screen.getByRole("button", { name: "Add script" }));
+      await user.type(
+        screen.getByRole("textbox", { name: "Title" }),
+        "Existing script",
+      );
+      await user.type(screen.getByTestId("mock-monaco"), "echo run");
+      await user.click(screen.getByRole("button", { name: "Add script" }));
 
-    expect(
-      await screen.findByText(
-        "This script title is unavailable. It is either already in use or was previously archived or redacted. Script titles cannot be reused.",
-      ),
-    ).toBeInTheDocument();
-  });
+      const titleError = await screen.findByText(message);
+      expect(titleError).toHaveClass("p-form-validation__message");
+      expect(screen.getByRole("textbox", { name: "Title" })).toHaveFocus();
+
+      await user.click(
+        await screen.findByRole("button", { name: "Add script" }),
+      );
+      await waitFor(() => {
+        expect(screen.getByRole("textbox", { name: "Title" })).toHaveFocus();
+      });
+    },
+  );
 
   it("shows error notification when create script attachment fails", async () => {
     const user = userEvent.setup();

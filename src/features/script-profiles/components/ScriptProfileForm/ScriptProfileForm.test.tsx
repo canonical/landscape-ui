@@ -261,7 +261,7 @@ describe("ScriptProfileForm edge cases", () => {
     expect(props.onSuccess).not.toHaveBeenCalled();
   });
 
-  it("updates server script profile title exists error to a more detailed message", async () => {
+  it("shows duplicate script profile title errors inline", async () => {
     setEndpointStatus({
       status: "error",
       path: "script-profiles",
@@ -280,11 +280,16 @@ describe("ScriptProfileForm edge cases", () => {
       await screen.findByRole("button", { name: "Submit" }),
     );
 
-    expect(
-      await screen.findByText(
-        "This script profile title is unavailable. It is either already in use or was previously archived. Script profile titles cannot be reused.",
-      ),
-    ).toBeInTheDocument();
+    const titleError = await screen.findByText(
+      "Title already used by an active or archived script profile.",
+    );
+    expect(titleError).toHaveClass("p-form-validation__message");
+    expect(screen.getByRole("textbox", { name: "Title" })).toHaveFocus();
+
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+    await waitFor(() => {
+      expect(screen.getByRole("textbox", { name: "Title" })).toHaveFocus();
+    });
   });
 
   it("renders nothing when the script profile limits are unavailable", async () => {

@@ -1,13 +1,17 @@
 import CodeEditor from "@/components/form/CodeEditor";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { ApiError } from "@/types/api/ApiError";
 import { getFormikError } from "@/utils/formikErrors";
 import { Button, Form, Icon, Input } from "@canonical/react-components";
+import { isAxiosError } from "axios";
 import { useFormik } from "formik";
+import type { FormikHelpers } from "formik";
 import type { FC } from "react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useBoolean } from "usehooks-ts";
 import {
   useCreateScriptAttachment,
@@ -35,6 +39,16 @@ interface EditScriptFormProps {
 
 const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [titleFocusRequest, setTitleFocusRequest] = useState(0);
+
+  useEffect(() => {
+    if (titleFocusRequest > 0) {
+      formRef.current
+        ?.querySelector<HTMLInputElement>('input[name="title"]')
+        ?.focus();
+    }
+  }, [titleFocusRequest]);
   const {
     value: showConfirmationModal,
     setTrue: showModal,
@@ -42,6 +56,7 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
   } = useBoolean();
 
   const { closeSidePanel } = useSidePanel();
+  const { isFeatureEnabled } = useAuth();
   const debug = useDebug();
   const { notify } = useNotify();
 
@@ -49,7 +64,10 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
   const { removeScriptAttachment } = useRemoveScriptAttachment();
   const { editScript, isEditing } = useEditScript();
 
-  const handleSubmit = async (values: ScriptFormValues) => {
+  const handleSubmit = async (
+    values: ScriptFormValues,
+    { setFieldError }: FormikHelpers<ScriptFormValues>,
+  ) => {
     try {
       const newAttachments = Object.values(values.attachments).filter(
         (a) => a !== null,
@@ -85,11 +103,28 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
       });
     } catch (error) {
       closeModal();
+
+      if (isAxiosError<ApiError>(error) && error.response?.data) {
+        const { error: errorCode } = error.response.data;
+        const isDuplicateTitleError = errorCode === "DuplicateScript";
+
+        if (isDuplicateTitleError) {
+          setFieldError(
+            "title",
+            isFeatureEnabled("script-profiles")
+              ? "Title already used by an active, archived, or redacted script."
+              : "Title already used by an active or archived script.",
+          );
+          setTitleFocusRequest((count) => count + 1);
+          return;
+        }
+      }
+
       debug(error);
     }
   };
 
-  const formik = useFormik({
+  const formik = useFormik<ScriptFormValues>({
     initialValues: getInitialValues(script),
     validationSchema: getValidationSchema(),
     onSubmit: handleSubmit,
@@ -122,7 +157,7 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
   const clickFileInput = () => inputRef.current?.click();
 
   return (
-    <Form onSubmit={formik.handleSubmit} noValidate>
+    <Form ref={formRef} onSubmit={formik.handleSubmit} noValidate>
       <Input
         type="text"
         label="Title"
