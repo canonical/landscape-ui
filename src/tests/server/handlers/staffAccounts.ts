@@ -717,17 +717,11 @@ export default [
   }),
 
   http.get<{ name: string }>(`${API_URL}accounts/:name`, ({ params }) => {
-    if (!hasViewAllAccounts()) {
-      return unauthorizedAccessResponse();
-    }
+    const gate = resolveStaffAccount(params.name);
 
-    const account = getStaffAccountByName(params.name);
-
-    if (!account) {
-      return notFoundResponse();
-    }
-
-    return HttpResponse.json(account);
+    return "rejection" in gate
+      ? gate.rejection
+      : HttpResponse.json(gate.account);
   }),
 
   http.patch<{ name: string }, AccountPatchBody>(
@@ -789,15 +783,11 @@ export default [
   http.get<{ name: string }>(
     `${API_URL}accounts/:name/wsl-feature-limits`,
     ({ params }) => {
-      if (!hasViewAllAccounts()) {
-        return unauthorizedAccessResponse();
-      }
+      const gate = resolveStaffAccount(params.name);
 
-      if (!getStaffAccountByName(params.name)) {
-        return notFoundResponse();
-      }
-
-      return HttpResponse.json(getWslLimits(params.name));
+      return "rejection" in gate
+        ? gate.rejection
+        : HttpResponse.json(getWslLimits(params.name));
     },
   ),
 
@@ -824,12 +814,10 @@ export default [
         return validationErrorResponse(detail);
       }
 
-      if (!hasCreateAccount()) {
-        return unauthorizedAccessResponse();
-      }
+      const gate = resolveStaffAccount(params.name, hasCreateAccount);
 
-      if (!getStaffAccountByName(params.name)) {
-        return notFoundResponse();
+      if ("rejection" in gate) {
+        return gate.rejection;
       }
 
       const limits = body as WslFeatureLimits;
