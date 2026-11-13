@@ -12,6 +12,11 @@ import { PATHS } from "@/libs/routes";
 const oidcProviders = identityProviders.filter(({ enabled }) => enabled);
 const redirectToExternalUrl = vi.hoisted(() => vi.fn());
 
+vi.mock("../../helpers", async (importOriginal) => ({
+  ...(await importOriginal()),
+  redirectToExternalUrl,
+}));
+
 const props: AvailableProviderListProps = {
   oidcProviders,
   isUbuntuOneEnabled: true,
@@ -21,11 +26,6 @@ const props: AvailableProviderListProps = {
 describe("AvailableProviderList", () => {
   beforeEach(() => {
     vi.resetModules();
-
-    vi.mock("../../helpers", async (importOriginal) => ({
-      ...(await importOriginal()),
-      redirectToExternalUrl,
-    }));
 
     vi.doMock("@/features/auth", async () => {
       const actual = await vi.importActual("@/features/auth");

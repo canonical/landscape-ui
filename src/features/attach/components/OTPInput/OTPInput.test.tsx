@@ -82,7 +82,7 @@ describe("OTPInput", () => {
     expect(props.onChange).toHaveBeenCalledWith(["1", "", "", "", "", ""]);
   });
 
-  it("should handle pasting a valid OTP value", () => {
+  it("should handle pasting a valid OTP value", async () => {
     const pastedValue = "123456";
     render(<OTPInput {...props} />);
     const [firstInput] = screen.getAllByRole("textbox");
@@ -93,7 +93,9 @@ describe("OTPInput", () => {
     });
 
     expect(props.onChange).toHaveBeenCalledWith(pastedValue.split(""));
-    expect(props.onComplete).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(props.onComplete).toHaveBeenCalled();
+    });
   });
 
   it("should handle pasting a value shorter than the OTP length", async () => {
@@ -116,7 +118,7 @@ describe("OTPInput", () => {
     expect(props.onChange).toHaveBeenCalledWith(newValue);
   });
 
-  it("should truncate a pasted value that is too long", () => {
+  it("should truncate a pasted value that is too long", async () => {
     const pastedValue = "123456789";
     render(<OTPInput {...props} />);
     const [firstInput] = screen.getAllByRole("textbox");
@@ -128,10 +130,12 @@ describe("OTPInput", () => {
 
     const expectedValue = pastedValue.slice(0, OTP_LENGTH).split("");
     expect(props.onChange).toHaveBeenCalledWith(expectedValue);
-    expect(props.onComplete).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(props.onComplete).toHaveBeenCalled();
+    });
   });
 
-  it("should filter out non-alphanumeric characters on paste", () => {
+  it("should filter out non-alphanumeric characters on paste", async () => {
     const pastedValue = "1a-2b 3c";
     render(<OTPInput {...props} />);
     const [firstInput] = screen.getAllByRole("textbox");
@@ -143,6 +147,8 @@ describe("OTPInput", () => {
 
     const expectedValue = "1a2b3c".split("");
     expect(props.onChange).toHaveBeenCalledWith(expectedValue);
-    expect(props.onComplete).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(props.onComplete).toHaveBeenCalled();
+    });
   });
 });
