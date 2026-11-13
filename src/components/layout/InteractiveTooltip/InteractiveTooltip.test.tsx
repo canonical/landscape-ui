@@ -152,4 +152,54 @@ describe("InteractiveTooltip", () => {
       expect(onDocumentEscape).toHaveBeenCalledOnce();
     });
   });
+
+  describe("triggerElement='span'", () => {
+    it("wraps form controls without a nested button while preserving keyboard disclosure", async () => {
+      const user = userEvent.setup();
+
+      render(
+        <>
+          <InteractiveTooltip
+            triggerElement="span"
+            label="Disabled option info"
+            message={
+              <>
+                {MESSAGE_TEXT}
+                <br />
+                <a href="https://example.com">{LINK_TEXT}</a>
+              </>
+            }
+          >
+            <label>
+              <input type="checkbox" disabled />
+              <span>Toggle item</span>
+            </label>
+          </InteractiveTooltip>
+          <button type="button">After</button>
+        </>,
+      );
+
+      const checkbox = screen.getByRole("checkbox", { name: "Toggle item" });
+      const trigger = screen.getByRole("button", {
+        name: "Disabled option info",
+      });
+      expect(checkbox).toBeDisabled();
+      expect(trigger.tagName).toBe("SPAN");
+      expect(trigger).toContainElement(checkbox);
+
+      await user.tab();
+      expect(trigger).toHaveFocus();
+      expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+      await user.tab();
+      expect(screen.getByRole("link", { name: LINK_TEXT })).toHaveFocus();
+
+      await user.keyboard("{Escape}");
+      expect(trigger).toHaveFocus();
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
+
+      await user.keyboard("{Enter}");
+      expect(trigger).toHaveAttribute("aria-expanded", "true");
+    });
+  });
 });
