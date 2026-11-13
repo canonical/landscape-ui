@@ -30,7 +30,7 @@ const AppNotification: FC<AppNotificationProps> = ({
         actions={actions}
         title={title}
       >
-        {message}
+        {message || "Something went wrong"}
       </Notification>
     </div>
   );
