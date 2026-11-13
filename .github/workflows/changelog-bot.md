@@ -1,5 +1,5 @@
 ---
-# Biweekly missing-changesets PR bot (GitHub Agentic Workflow).
+# Weekly missing-changesets PR bot (GitHub Agentic Workflow).
 #
 # This is the gh-aw SOURCE file. After editing, regenerate the compiled
 # GitHub Actions workflow with:
@@ -9,10 +9,9 @@
 # and commit the generated `.github/workflows/changelog-bot.lock.yml` alongside it.
 
 on:
-  # Cron cannot express "every other Saturday", so we fire every Saturday at
-  # around 12:00 UTC and the prompt gates on ISO-week parity (see the body below).
+  # Fires every Saturday at around 12:00 UTC.
   schedule: weekly on saturday around 12:00 UTC
-  # Allow maintainers to trigger a run on demand (ignores the biweekly gate).
+  # Allow maintainers to trigger a run on demand.
   workflow_dispatch:
 
 permissions:
@@ -99,7 +98,7 @@ safe-outputs:
     max: 1
 ---
 
-# Biweekly missing changesets
+# Weekly missing changesets
 
 You backfill missing Changesets for Landscape UI. This repo's `CHANGELOG.md` and version bumps are produced by the Changesets release automation (`changesets/action`), so your job is NOT to write the changelog yourself. Your job is to author `.changeset/*.md` entries for user-facing pull requests that were merged without one (the gap documented in `RELEASES.md` section 7), then open a single pull request containing all of the new changesets.
 
@@ -109,18 +108,9 @@ You backfill missing Changesets for Landscape UI. This repo's `CHANGELOG.md` and
 - NEVER edit an existing `.changeset/*.md` file.
 - Only ever create NEW files under `.changeset/`.
 
-## Biweekly gate
-
-This workflow is scheduled every Saturday but should only act every **other** Saturday. Releases publish on **odd** ISO weeks.
-
-This run was triggered by the `${{ github.event_name }}` event. Use that value literally to decide whether the gate applies:
-
-1. If the triggering event is `workflow_dispatch`, always proceed regardless of the week number (manual runs bypass the biweekly gate entirely).
-2. Otherwise (a `schedule` run), run `date +%V` to get the current ISO week number. If that week number is **even**, stop immediately and make no changes — do not open a pull request. Only proceed on **odd** weeks.
-
 ## Gather the commits
 
-1. The scan window is time-based: list the commits from the last four weeks with `git log --since="4 weeks ago" --no-merges --pretty=%H%x09%s`. `main` is squash-merged, so each merged PR is a single commit on this list. Do NOT anchor on `CHANGELOG.md` commits: the `Version Packages` PR on `main` is closed rather than merged before each cut (RELEASES.md section 3), so `CHANGELOG.md` on `main` is stale and a changelog anchor would silently treat undocumented commits as covered. Four weeks against a biweekly schedule gives two weeks of overlap with the previous run, so omissions leapfrogged by later merges are still caught; the deduplication rules below prevent double-filing.
+1. The scan window is time-based: list the commits from the last four weeks with `git log --since="4 weeks ago" --no-merges --pretty=%H%x09%s`. `main` is squash-merged, so each merged PR is a single commit on this list. Do NOT anchor on `CHANGELOG.md` commits: the `Version Packages` PR on `main` is closed rather than merged before each cut (RELEASES.md section 3), so `CHANGELOG.md` on `main` is stale and a changelog anchor would silently treat undocumented commits as covered. Four weeks against a weekly schedule gives three weeks of overlap with the previous run, so omissions leapfrogged by later merges are still caught; the deduplication rules below prevent double-filing.
 2. Skip any commit whose subject has no trailing pull request reference ` (#1234)`. Such commits cannot carry the `(backfills #<N>)` marker the deduplication relies on, so they can never be filed safely; if one looks user-facing, mention it in the PR body under `Changesets to review` instead of backfilling it.
 3. Deduplicate the rest by pull request number. For each commit, extract its PR number `<N>` from the trailing ` (#1234)` reference in the subject. Skip the commit if ANY of the following hold:
    a. Its own commit added a NON-EMPTY changeset: run `git show --name-status --format= <commit>` and look for a line with status `A` (added) whose path matches `.changeset/*.md` (ignoring `.changeset/README.md` and `.changeset/config.json`), then read that file — it counts as coverage only if its frontmatter assigns a bump (`major`/`minor`/`patch`) to a package. Only status `A` counts — a modified (`M`) or deleted (`D`) changeset path is NOT coverage. If the commit added ONLY empty changesets (no package/bump in the frontmatter), do NOT backfill one: an empty changeset can be a deliberate choice (e.g. one shared non-empty changeset for a whole PR stack, as in #799). Flag it in the review section below instead.
