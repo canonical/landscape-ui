@@ -1,0 +1,1 @@
+import{c as e,r as t,t as n}from"./jsx-runtime-DanBxBBP.js";import{n as r}from"./routes-D93tpQ55.js";import{a as i}from"./hooks-CexamaVX.js";import{t as a}from"./LoadingState-DKfOwuXZ.js";var o=e(t(),1),s=n(),c=()=>{let e=i();return(0,o.useEffect)(()=>{e(r.repositories.mirrors(),{replace:!0})},[e]),(0,s.jsx)(a,{})};export{c as default};

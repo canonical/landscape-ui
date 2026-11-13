@@ -1,0 +1,153 @@
+@import 'settings';
+
+// List Grid
+@mixin vf-p-matrix {
+  $matrix-img-width: map-get($icon-sizes, heading-icon--small);
+  $matrix-img-gutter: $sph--large;
+
+  .p-matrix {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin-bottom: $spv--x-large;
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .p-matrix__item {
+    border-top: 1px solid $colors--theme--border-low-contrast;
+    display: flex;
+    flex: 1 1 auto;
+    padding-bottom: $spv--large;
+    padding-top: calc($spv--large - 1px);
+
+    &:first-child {
+      border-top: none;
+    }
+
+    @media (min-width: $threshold-4-6-col) {
+      display: flex;
+      flex-wrap: wrap;
+      width: 33.333%;
+    }
+
+    @media ($threshold-4-6-col <= width < $threshold-6-12-col) {
+      flex-direction: column;
+
+      &:nth-child(2),
+      &:nth-child(3) {
+        border-top: none;
+      }
+    }
+
+    // TODO: Multiple redundant properties between this media query and the one
+    // below
+    @media (min-width: $threshold-6-12-col) {
+      border-right: 1px solid $colors--theme--border-low-contrast;
+      padding-left: $spv--large;
+      padding-right: $spv--large;
+      width: 33.333%;
+
+      &:empty {
+        display: block; // hide orphans
+      }
+
+      &:nth-child(3n + 1) {
+        padding-left: 0;
+      }
+
+      &:nth-child(3n + 3) {
+        border-right: 0;
+      }
+
+      &:nth-child(1),
+      &:nth-child(2),
+      &:nth-child(3) {
+        border-top: 0;
+      }
+    }
+
+    @media (min-width: $threshold-6-12-col) {
+      // 3 items per row
+      border-right: 1px solid $colors--theme--border-low-contrast;
+      width: 33.333%;
+
+      &:empty {
+        display: block; // hide orphans
+      }
+
+      &:nth-child(3n + 1) {
+        padding-left: 0;
+      }
+
+      &:nth-child(3n + 3) {
+        border-right: 0;
+        padding-right: 0;
+      }
+
+      &:nth-last-child(1),
+      &:nth-last-child(2),
+      &:nth-last-child(3) {
+        border-bottom: 0;
+      }
+    }
+  }
+
+  .p-matrix__img {
+    align-self: flex-start;
+    flex-shrink: 0;
+    height: auto;
+    margin-right: $matrix-img-gutter;
+    margin-top: 0;
+    width: $matrix-img-width;
+
+    @media (min-width: $breakpoint-heading-threshold) {
+      // place image in the middle of the heading text
+      margin-top: calc(map-get($settings-text-h4, nudge) + (map-get($settings-text-h4, line-height) - $matrix-img-width) / 2);
+    }
+
+    @if ($increase-font-size-on-larger-screens) {
+      @media (min-width: $breakpoint-x-large) {
+        // place image in the middle of the heading text
+        margin-top: calc(map-get($settings-text-h4-large, nudge) + (map-get($settings-text-h4, line-height) - $matrix-img-width) / 2);
+      }
+    }
+  }
+
+  .p-matrix__content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    padding-right: $sph--large;
+
+    @media (min-width: $breakpoint-large) {
+      width: calc(100% - ($matrix-img-width + $matrix-img-gutter));
+    }
+  }
+
+  .p-matrix__title {
+    @extend %vf-heading-4;
+
+    @media (min-width: $breakpoint-heading-threshold) {
+      margin-bottom: -#{map-get($settings-text-h4, nudge)};
+    }
+
+    @if ($increase-font-size-on-larger-screens) {
+      @media (min-width: $breakpoint-x-large) {
+        margin-bottom: -#{map-get($settings-text-h4-large, nudge)};
+      }
+    }
+  }
+
+  .p-matrix__desc {
+    margin-bottom: $spv-nudge-compensation;
+
+    @media (width < $breakpoint-heading-threshold) {
+      margin-top: -#{$sp-unit};
+    }
+
+    > :last-child {
+      margin: 0;
+    }
+  }
+}

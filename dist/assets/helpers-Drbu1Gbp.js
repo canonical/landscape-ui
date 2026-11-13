@@ -1,0 +1,1 @@
+var e=`yaml`,t=`.${e}`,n=[e,`yml`],r=e=>e.replace(RegExp(`\\.(${n.join(`|`)})$`),``);export{n as i,t as n,e as r,r as t};

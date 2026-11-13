@@ -1,0 +1,1 @@
+{"version":3,"file":"streaming.d.ts","sourceRoot":"","sources":["../../../../src/tracing/workers-ai/streaming.ts"],"names":[],"mappings":"AACA,OAAO,KAAK,EAAE,IAAI,EAAE,MAAM,kBAAkB,CAAC;AAwI7C;;;;;GAKG;AACH,wBAAgB,yBAAyB,CACvC,MAAM,EAAE,cAAc,CAAC,UAAU,CAAC,EAClC,IAAI,EAAE,IAAI,EACV,aAAa,EAAE,OAAO,GACrB,cAAc,CAAC,UAAU,CAAC,CAiF5B"}

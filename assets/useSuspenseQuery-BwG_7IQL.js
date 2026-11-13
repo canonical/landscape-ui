@@ -1,0 +1,1 @@
+import{ct as e,ft as t,st as n}from"./auth-BEBqGr1i.js";function r(r,i){return n({...r,enabled:!0,suspense:!0,throwOnError:e,placeholderData:void 0},t,i)}export{r as t};

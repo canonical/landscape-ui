@@ -1,0 +1,165 @@
+@import 'settings';
+
+// Default button styling
+@mixin vf-p-buttons {
+  @include vf-button-plain;
+  @include vf-button-brand;
+  @include vf-button-positive;
+  @include vf-button-negative;
+  @include vf-button-base;
+  @include vf-button-link;
+  @include vf-button-inline;
+  @include vf-button-processing;
+  @include vf-button-icon;
+}
+
+@mixin vf-button-plain {
+  .p-button {
+    @extend %vf-button-base;
+    @include vf-button-pattern;
+  }
+}
+
+// DEPRECATED: brand coloured button is deprecated, please use other type of button instead
+@mixin vf-button-brand {
+  %p-button--brand-light {
+    @include vf-button-pattern(
+      $button-background-color: $color-brand,
+      $button-hover-background-color: adjust-color($color-brand, $lightness: -$hover-background-opacity-percentage),
+      $button-active-background-color: adjust-color($color-brand, $lightness: -$active-background-opacity-percentage),
+      $button-disabled-background-color: $color-brand,
+      $button-border-color: $color-brand,
+      $button-hover-border-color: adjust-color($color-brand, $lightness: -$hover-background-opacity-percentage),
+      $button-active-border-color: adjust-color($color-brand, $lightness: -$active-background-opacity-percentage),
+      $button-disabled-border-color: $color-brand,
+      $button-text-color: vf-contrast-text-color($color-brand)
+    );
+  }
+
+  %p-button--brand-dark {
+    @include vf-button-pattern(
+      $button-background-color: $color-brand-dark,
+      $button-hover-background-color: adjust-color($color-brand-dark, $lightness: -$hover-background-opacity-percentage),
+      $button-active-background-color: adjust-color($color-brand-dark, $lightness: -$active-background-opacity-percentage),
+      $button-disabled-background-color: $color-brand-dark,
+      $button-border-color: $color-brand-dark,
+      $button-hover-border-color: adjust-color($color-brand-dark, $lightness: -$hover-background-opacity-percentage),
+      $button-active-border-color: adjust-color($color-brand-dark, $lightness: -$active-background-opacity-percentage),
+      $button-disabled-border-color: $color-brand-dark,
+      $button-text-color: vf-contrast-text-color($color-brand-dark)
+    );
+  }
+
+  .p-button--brand {
+    @extend %vf-button-base;
+
+    // Theming
+    @extend %p-button--brand-light;
+
+    &.is-dark {
+      @extend %p-button--brand-dark;
+    }
+
+    @extend %vf-button-white-success-icon;
+  }
+}
+
+@mixin vf-button-positive {
+  .p-button--positive {
+    @extend %vf-button-base;
+    @extend %vf-button-white-success-icon;
+
+    @include vf-button-pattern(
+      $button-background-color: $colors--theme--button-positive-default,
+      $button-hover-background-color: $colors--theme--button-positive-hover,
+      $button-active-background-color: $colors--theme--button-positive-active,
+      $button-disabled-background-color: $colors--theme--button-positive-default,
+      $button-border-color: $colors--theme--button-positive-default,
+      $button-hover-border-color: $colors--theme--button-positive-hover,
+      $button-active-border-color: $colors--theme--button-positive-active,
+      $button-disabled-border-color: $colors--theme--button-positive-default,
+      $button-text-color: $colors--theme--button-positive-text
+    );
+    @include vf-focus-themed($light-color: $color-focus-positive);
+  }
+}
+
+@mixin vf-button-negative {
+  .p-button--negative {
+    @extend %vf-button-base;
+    @extend %vf-button-white-success-icon;
+
+    @include vf-button-pattern(
+      $button-background-color: $colors--theme--button-negative-default,
+      $button-hover-background-color: $colors--theme--button-negative-hover,
+      $button-active-background-color: $colors--theme--button-negative-active,
+      $button-disabled-background-color: $colors--theme--button-negative-default,
+      $button-border-color: $colors--theme--button-negative-default,
+      $button-hover-border-color: $colors--theme--button-negative-hover,
+      $button-active-border-color: $colors--theme--button-negative-active,
+      $button-disabled-border-color: $colors--theme--button-negative-default,
+      $button-text-color: $colors--theme--button-negative-text
+    );
+  }
+}
+
+@mixin vf-button-base {
+  .p-button--base {
+    @extend %vf-button-base;
+
+    // override default button styles with transparent background and border
+    @include vf-button-pattern(
+      $button-background-color: $color-transparent,
+      $button-border-color: $color-transparent,
+      $button-hover-border-color: $color-transparent,
+      $button-active-border-color: $color-transparent,
+      $button-disabled-border-color: $color-transparent
+    );
+  }
+}
+
+@mixin vf-button-link {
+  .p-button--link {
+    @extend %vf-link-base;
+
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    margin-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+
+    // stylelint-disable-next-line selector-max-type -- buttons should not affect paragraph spacing
+    p & {
+      margin-bottom: 0;
+      padding-top: 0;
+    }
+
+    &:hover {
+      background: transparent;
+    }
+
+    &.u-no-margin--bottom {
+      @extend %u-no-margin--bottom--default-text;
+    }
+  }
+}
+
+@mixin vf-button-inline {
+  [class*='p-button'].is-inline {
+    margin-left: $sph--large;
+  }
+}
+
+@mixin vf-button-processing {
+  [class*='p-button'].is-processing {
+    opacity: 1 !important;
+  }
+}
+
+@mixin vf-button-icon {
+  [class*='p-button'].has-icon {
+    @extend %vf-button-has-icon;
+  }
+}

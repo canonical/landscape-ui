@@ -1,0 +1,121 @@
+@mixin vf-p-navigation-reduced {
+  .p-navigation--reduced {
+    // height of reduced navigation calculated from line height and padding
+    $reduced-nav-height: calc(map-get($settings-text-x-small, line-height) + 2 * $spv--small);
+
+    background-color: $colors--theme--background-alt;
+    position: relative;
+    z-index: 99; // display above sticky top navigation, but below modals/overlays
+
+    // LOGO OVERRIDES FOR REDUCED NAVIGATION
+
+    // orange logo tag is hidden in reduced navigation
+    .p-navigation__tagged-logo {
+      .p-navigation__logo-tag {
+        display: none;
+      }
+
+      @media (min-width: $breakpoint-navigation-threshold) {
+        // on large screens align the logo with the grid start
+        .p-navigation__link {
+          padding-left: 0;
+        }
+      }
+    }
+
+    // reduced nav logo text uses default font size (on small screens)
+    .p-navigation__logo-title {
+      color: $colors--theme--text-muted;
+      font-size: #{map-get($settings-text-default, font-size)}rem;
+      font-weight: $font-weight-regular-text;
+    }
+
+    // reduced padding on small screens
+    .p-navigation__link {
+      padding-bottom: $spv--medium;
+      padding-top: $spv--medium;
+    }
+
+    // links in the banner (Menu toggle, search toggle) use muted text colour
+    .p-navigation__banner .p-navigation__link {
+      color: $colors--theme--text-muted;
+    }
+
+    // REDUCED SIZE OF NAVIGATION ON LARGE SCREENS
+    @media (min-width: $breakpoint-navigation-threshold) {
+      // adjust font size for reduced nav on large screens
+      .p-navigation__link,
+      .p-navigation__logo-title {
+        color: $colors--theme--text-muted;
+        font-size: #{map-get($settings-text-small, font-size)}rem;
+        line-height: map-get($settings-text-x-small, line-height);
+      }
+
+      .p-navigation__link {
+        padding-bottom: $spv--small;
+        padding-top: $spv--small;
+      }
+
+      .p-navigation__item--dropdown-toggle .p-navigation__link {
+        &::after {
+          @include vf-icon-chevron-muted;
+          top: $spv--small;
+        }
+      }
+
+      .p-navigation__item--dropdown-toggle.is-active {
+        background-color: $colors--theme--background-default;
+
+        .p-navigation__link {
+          color: $colors--theme--text-default;
+        }
+
+        .p-navigation__link::after {
+          @include vf-icon-chevron-themed;
+        }
+      }
+
+      .p-navigation__link--search-toggle {
+        &::after {
+          @include vf-icon-search-muted;
+        }
+      }
+    }
+
+    // SEARCH IN REDUCED NAVIGATION
+
+    .p-navigation__link--search-toggle {
+      // use muted icon to align with text colour
+      &::after {
+        @include vf-icon-search-muted;
+        top: calc($spv--medium + map-get($settings-text-x-small, nudge));
+      }
+
+      // search label is always hidden in reduced navigation
+      .p-navigation__search-label {
+        display: none;
+      }
+
+      @media (min-width: $breakpoint-navigation-threshold) {
+        &::after {
+          top: $spv--small;
+        }
+      }
+    }
+
+    @media (min-width: $breakpoint-navigation-threshold) {
+      &.has-search-open {
+        // make sure reduced navigation items remain visible when search is open
+        // both classes needed for specificity
+        .p-navigation__nav .p-navigation__items {
+          display: inline-flex;
+        }
+
+        // position the search under the reduced navigation
+        .p-navigation__search {
+          top: $reduced-nav-height;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+export { registerSpanErrorInstrumentation } from './errors';
+export { setCapturedScopesOnSpan, getCapturedScopesOnSpan, markSpanForOtelSourceInference, spanShouldInferOtelSource, markSpanSourceAsExplicit, spanSourceWasExplicitlySet, markSpanAsTracerProviderSpan, spanIsTracerProviderSpan, } from './utils';
+export { startIdleSpan, TRACING_DEFAULTS } from './idleSpan';
+export { SentrySpan } from './sentrySpan';
+export { _INTERNAL_setDeferSegmentSpanCapture } from './deferSegmentSpanCapture';
+export { SentryNonRecordingSpan } from './sentryNonRecordingSpan';
+export { setHttpStatus, getSpanStatusFromHttpCode } from './spanstatus';
+export { SPAN_STATUS_ERROR, SPAN_STATUS_OK, SPAN_STATUS_UNSET } from './spanstatus';
+export { startSpan, startInactiveSpan, _INTERNAL_startInactiveSpan, startSpanManual, continueTrace, withActiveSpan, suppressTracing, isTracingSuppressed, startNewTrace, spanIsIgnored, SUPPRESS_TRACING_KEY, } from './trace';
+export { bindScopeToEmitter } from './bindScopeToEmitter';
+export { getDynamicSamplingContextFromClient, getDynamicSamplingContextFromSpan, getDynamicSamplingContextFromScope, spanToBaggageHeader, } from './dynamicSamplingContext';
+export { setMeasurement, timedEventsToMeasurements } from './measurement';
+export { sampleSpan } from './sampling';
+export { logSpanEnd, logSpanStart } from './logSpans';
+export { captureSpan } from './spans/captureSpan';
+//# sourceMappingURL=index.d.ts.map

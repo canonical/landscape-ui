@@ -1,0 +1,1 @@
+import{o as e,t}from"./jsx-runtime-DanBxBBP.js";import{t as n}from"./InfoGrid-C8ldTkjL.js";var r=t(),i=({profile:e})=>(0,r.jsx)(n.Item,{label:`Removal Timeframe`,value:`${e.days_without_exchange} days`}),a=e({default:()=>i});export{a as t};

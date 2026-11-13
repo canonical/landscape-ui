@@ -1,0 +1,32 @@
+@use 'sass:color';
+@import 'settings_font';
+
+@mixin vf-u-visualise-baseline($horizontal-bleed: 2rem) {
+  .u-visualise-font-metrics {
+    position: relative;
+
+    &::before {
+      border-bottom-color: color.scale($color-information, $alpha: -50%);
+      border-bottom-style: solid;
+      border-top-color: color.scale($color-positive, $alpha: -50%);
+      border-top-style: solid;
+      border-width: 1px;
+      content: '';
+      height: calc($cap-height - $x-height);
+      left: -#{$horizontal-bleed};
+      position: absolute;
+      top: calc($baseline-position - $cap-height - 1px);
+      width: calc($horizontal-bleed * 2 + 100%);
+    }
+
+    &::after {
+      background-color: color.scale($color-negative, $alpha: -50%);
+      content: '';
+      height: 1px;
+      left: -#{$horizontal-bleed};
+      position: absolute;
+      top: calc($baseline-position - 1px);
+      width: calc($horizontal-bleed * 2 + 100%);
+    }
+  }
+}

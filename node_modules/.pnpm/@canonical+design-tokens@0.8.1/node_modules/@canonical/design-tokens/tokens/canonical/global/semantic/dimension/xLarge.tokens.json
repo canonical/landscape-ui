@@ -1,0 +1,12 @@
+{
+  "$schema": "https://designtokens.org/schemas/2025.10/format.json",
+  "dimension": {
+    "$type": "dimension",
+    "size": {
+      "rootFontSize": {
+        "$value": "{dimension.225}",
+        "$description": "Base font size defining the root rem unit for extra-large breakpoint layouts (18px)"
+      }
+    }
+  }
+}

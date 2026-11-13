@@ -1,0 +1,59 @@
+import { defineIntegration, hasSpanStreamingEnabled } from '@sentry/core/browser';
+import { registerInpInteractionListener, startTrackingWebVitals, addWebVitalsToSpan, trackLcpAsSpan, trackClsAsSpan, trackInpAsSpan, startTrackingINP } from '@sentry/browser-utils';
+
+const WEB_VITALS_INTEGRATION_NAME = "WebVitals";
+const webVitalsIntegration = defineIntegration((options = {}) => {
+  const ignored = new Set(options.ignore ?? []);
+  return {
+    name: WEB_VITALS_INTEGRATION_NAME,
+    setup(client) {
+      const spanStreamingEnabled = hasSpanStreamingEnabled(client);
+      const { enableStandaloneClsSpans, enableStandaloneLcpSpans } = options._experiments ?? {};
+      const recordClsStandaloneSpans = spanStreamingEnabled || ignored.has("cls") ? void 0 : enableStandaloneClsSpans || false;
+      const recordLcpStandaloneSpans = spanStreamingEnabled || ignored.has("lcp") ? void 0 : enableStandaloneLcpSpans || false;
+      const finalizeWebVitals = startTrackingWebVitals({
+        recordClsStandaloneSpans,
+        recordLcpStandaloneSpans,
+        client
+      });
+      const pageloadSpans = /* @__PURE__ */ new WeakSet();
+      client.on("afterStartPageLoadSpan", (span) => {
+        pageloadSpans.add(span);
+      });
+      client.on("spanEnd", (span) => {
+        if (!pageloadSpans.delete(span)) {
+          return;
+        }
+        finalizeWebVitals();
+        addWebVitalsToSpan(span, {
+          // CLS/LCP are recorded as pageload span measurements only when they're neither
+          // tracked as standalone spans nor handled by span streaming (and not ignored).
+          recordClsOnPageloadSpan: recordClsStandaloneSpans === false,
+          recordLcpOnPageloadSpan: recordLcpStandaloneSpans === false,
+          spanStreamingEnabled
+        });
+      });
+      if (spanStreamingEnabled) {
+        if (!ignored.has("lcp")) {
+          trackLcpAsSpan(client);
+        }
+        if (!ignored.has("cls")) {
+          trackClsAsSpan(client);
+        }
+        if (!ignored.has("inp")) {
+          trackInpAsSpan();
+        }
+      } else if (!ignored.has("inp")) {
+        startTrackingINP();
+      }
+    },
+    afterAllSetup() {
+      if (!ignored.has("inp")) {
+        registerInpInteractionListener();
+      }
+    }
+  };
+});
+
+export { WEB_VITALS_INTEGRATION_NAME, webVitalsIntegration };
+//# sourceMappingURL=webVitals.js.map

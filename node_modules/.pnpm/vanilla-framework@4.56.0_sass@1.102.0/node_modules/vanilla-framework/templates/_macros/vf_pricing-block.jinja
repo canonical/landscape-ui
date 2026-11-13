@@ -1,0 +1,110 @@
+{#
+  Params
+  - title_text (string) (required): The text to be displayed as the heading
+  - top_rule_variant (string) (optional): Variant of the top rule, default is "default". Options are "muted", "highlighted", "default", "none".
+  - attrs (dictionary) (optional): A dictionary of attributes to apply to the Pricing block section.
+  - tiers (Array<{
+      tier_name_text: String (optional),
+      tier_price_text: String,
+      tier_price_explanation: String,
+      tier_description_html?: String,
+      tier_label_text: String,
+      tier_offerings: Array<{
+        list_item_style?: ‘ticked’ | ‘crossed’,
+        list_item_content_html: string
+      }>‘,
+      cta_html?: String
+    }>) (required)
+  Slots
+  - description (optional): paragraph-style content below the title
+#}
+{%- macro vf_pricing_block(
+  top_rule_variant="default",
+  title_text="",
+  attrs={},
+  tiers=[]
+  ) -%}
+  {% set top_rule_variant = top_rule_variant | trim %}
+  {% if top_rule_variant not in ['muted', 'highlighted', 'default', 'none'] %}
+    {% set top_rule_variant = "highlighted" %}
+  {% endif %}
+  {% set section_description = caller('section_description') %}
+  {% set has_tier_descriptions = (tiers | selectattr("tier_description_html") | list | length) > 0 %}
+  {% if tiers|length == 2 %}
+    {% set base_class_name = "p-pricing-block--50-50" %}
+  {% elif tiers|length == 3 %}
+    {% set base_class_name = "p-pricing-block--25-75" %}
+  {% else %}
+    {% set base_class_name = "p-pricing-block" %}
+  {% endif %}
+  {%- macro _tier_offerings_list(tier) %}
+    <p class="u-text--muted">What's included</p>
+    <hr class="p-rule--muted u-no-margin--bottom" />
+    <ul class="p-list--divided">
+      {%- for offering in tier.get("tier_offerings") %}
+        {%- set item_style = offering.get('list_item_style', 'undefined') -%}
+        {% if item_style == 'ticked' -%}
+          {% set item_class = "is-ticked" -%}
+        {% elif item_style == 'crossed' -%}
+          {% set item_class = "is-crossed u-text--muted" -%}
+          {% set sr_prefix = '<span class="u-off-screen">Does not include</span>' -%}
+        {% else -%}
+          {% set item_class = "has-bullet" -%}
+        {%- endif -%}
+        <li class="p-list__item {{ item_class }}">{{ sr_prefix }}{{ offering.list_item_content_html }}</li>
+      {% endfor -%}
+    </ul>
+  {%- endmacro -%}
+  {%- macro _tiers() -%}
+    {%- for tier in tiers %}
+      <div class="p-pricing-block__tier">
+        <div class="p-pricing-block__section">
+          <div class="p-section--shallow">
+            <h3 class="p-heading--{% if tiers|length == 1 and (not 'tier_name_text' in tier) %}2{% else %}4{% endif %}">
+              {% if 'tier_name_text' in tier %}
+                {{ tier.get("tier_name_text") }}
+                <br />
+              {% endif %}
+              <strong>{{ tier.get("tier_price_text") }}</strong>
+              <span class="u-text--muted">{{ tier.get("tier_price_explanation") }}</span>
+            </h3>
+          </div>
+        </div>
+        {%- if has_tier_descriptions -%}
+          {% set description = tier.get("tier_description_html") if tier.get("tier_description_html") else '' %}
+          <div class="p-pricing-block__section"
+               {% if not description %}role="presentation"{% endif %}>{{ description }}</div>
+        {%- endif %}
+        <div class="p-pricing-block__section">{{ _tier_offerings_list(tier) }}</div>
+        {% if tier.cta_html %}
+          <div class="p-pricing-block__section">{{ tier.cta_html }}</div>
+        {% endif -%}
+      </div>
+    {%- endfor -%}
+  {%- endmacro -%}
+  {%- macro _top_rule() -%}
+    {% if top_rule_variant != 'none' %}
+      {% set rule_class = 'muted' if top_rule_variant == 'muted' else 'highlight' if top_rule_variant == 'highlighted' %}
+      <hr class="p-rule{% if top_rule_variant != 'default' %}--{{ rule_class }}{% endif %} is-fixed-width" />
+    {% endif %}
+  {%- endmacro -%}
+  <div class="p-section {{ attrs.get("class", "") -}}"
+    {%- for attr, value in attrs.items() -%}
+      {% if attr != "class" %}
+        {{ attr }}="{{ value }}"
+      {%- endif -%}
+    {%- endfor -%}
+  >
+    {{ _top_rule() }}
+    <div class="grid-row">
+      <div class="grid-col-4 grid-col-medium-4 grid-col-small-4">
+        <h2>{{ title_text }}</h2>
+      </div>
+      <div class="grid-col-4 grid-col-medium-4 grid-col-small-4">
+        {% if section_description %}<div class="p-section--shallow">{{ section_description }}</div>{% endif %}
+        {% if tiers|length == 1 %}{{ _tiers() }}{% endif %}
+      </div>
+    </div>
+    {% if tiers|length > 1 %}<div class="{{ base_class_name }}">{{ _tiers() }}</div>{% endif %}
+  </div>
+{% endmacro -%}
