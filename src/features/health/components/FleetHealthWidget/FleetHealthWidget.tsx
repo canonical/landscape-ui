@@ -198,6 +198,7 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
           <li className={classes.row}>
             <span className={classes.rowLabel}>Unmeasured</span>
             <Meter
+              className={classes.unmeasured}
               value={getPercent(unmeasurable, fleetTotal)}
               aria-hidden="true"
             />

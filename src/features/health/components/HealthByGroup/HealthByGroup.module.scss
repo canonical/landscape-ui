@@ -5,6 +5,11 @@
   width: 5.75rem;
 }
 
+/* Wide enough for the "Needs attention" header. */
+.wide {
+  width: 9.5rem;
+}
+
 .zero {
   color: var(--color-text-muted);
 }

@@ -9,6 +9,7 @@ import type { FC } from "react";
 import { useId, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
+import { CRITICAL_FACTOR_POINTS } from "../../helpers";
 import type { HealthFactor } from "../../types";
 import HealthScore from "../HealthScore";
 import classes from "./TopDetractors.module.scss";
@@ -79,7 +80,11 @@ const TopDetractors: FC<TopDetractorsProps> = ({ className }) => {
           return factor ? (
             <>
               {factor.description}{" "}
-              <span className={classes.points}>−{factor.points}</span>
+              <span className={classes.points}>
+                {factor.points >= CRITICAL_FACTOR_POINTS
+                  ? "Sets score to 0"
+                  : `−${factor.points} points`}
+              </span>
             </>
           ) : (
             <NoData />

@@ -93,7 +93,9 @@ const HealthByGroup: FC<HealthByGroupProps> = ({ className }) => {
             {BAND_LABEL[band]}
           </>
         ),
-        className: classes.count,
+        className: classNames(classes.count, {
+          [classes.wide]: band === "warning",
+        }),
         Cell: ({ row: { original } }: CellProps<HealthGroupSummary>) => (
           <span
             className={classNames({

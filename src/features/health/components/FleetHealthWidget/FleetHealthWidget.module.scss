@@ -44,6 +44,11 @@
   gap: var(--container-gap-default);
   grid-template-columns: 8.5rem minmax(0, 1fr) 4ch 5ch;
 
+  /* Visited band links keep the row's text color. */
+  &:is(a):visited {
+    color: inherit;
+  }
+
   &:is(a):hover {
     text-decoration: none;
 
@@ -51,6 +56,10 @@
       text-decoration: underline;
     }
   }
+}
+
+.unmeasured {
+  --meter-color-fill: var(--color-text-muted);
 }
 
 .rowCount,
