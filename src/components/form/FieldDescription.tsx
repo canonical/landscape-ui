@@ -1,4 +1,8 @@
-import { Tooltip, type TooltipProps } from "@/components/ui";
+import {
+  Tooltip,
+  TOOLTIP_DIRECTIONS,
+  type TooltipProps,
+} from "@/components/ui";
 import type { FC, ReactNode } from "react";
 import classes from "./FieldDescription.module.scss";
 import { Icon, ICONS } from "@canonical/react-components";
@@ -17,14 +21,14 @@ const PREFERRED_DIRECTIONS: Record<
   TooltipPosition,
   NonNullable<TooltipProps["preferredDirections"]>
 > = {
-  "top-left": ["block-start", "block-end", "inline-start", "inline-end"],
-  "top-center": ["block-start", "block-end", "inline-start", "inline-end"],
-  "top-right": ["block-start", "block-end", "inline-start", "inline-end"],
-  "btm-left": ["block-end", "block-start", "inline-end", "inline-start"],
-  "btm-center": ["block-end", "block-start", "inline-end", "inline-start"],
-  "btm-right": ["block-end", "block-start", "inline-end", "inline-start"],
-  left: ["inline-start", "inline-end", "block-start", "block-end"],
-  right: ["inline-end", "inline-start", "block-start", "block-end"],
+  "top-left": TOOLTIP_DIRECTIONS.topStart,
+  "top-center": TOOLTIP_DIRECTIONS.top,
+  "top-right": TOOLTIP_DIRECTIONS.topEnd,
+  "btm-left": TOOLTIP_DIRECTIONS.bottomStart,
+  "btm-center": TOOLTIP_DIRECTIONS.bottom,
+  "btm-right": TOOLTIP_DIRECTIONS.bottomEnd,
+  left: TOOLTIP_DIRECTIONS.left,
+  right: TOOLTIP_DIRECTIONS.right,
 };
 
 interface FieldDescriptionProps {

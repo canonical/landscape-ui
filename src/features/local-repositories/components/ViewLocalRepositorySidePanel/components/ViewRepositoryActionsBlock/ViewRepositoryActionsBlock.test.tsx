@@ -78,10 +78,12 @@ describe("ViewRepositoryActionsBlock", () => {
 
     await user.hover(importingButton);
 
+    // TODO: Revert to `findByRole("tooltip", { name: ... })` once a release
+    // containing https://github.com/canonical/pragma-web/pull/1596 is installed.
     expect(
-      await screen.findByRole("tooltip", {
-        name: "You must wait for this action to be completed to import more packages.",
-      }),
-    ).toBeInTheDocument();
+      await screen.findByRole("tooltip", { hidden: true }),
+    ).toHaveTextContent(
+      "You must wait for this action to be completed to import more packages.",
+    );
   });
 });

@@ -15,7 +15,7 @@ import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
-import { Tooltip } from "@/components/ui";
+import { Tooltip, TOOLTIP_DIRECTIONS } from "@/components/ui";
 import {
   Button,
   ContextualMenu,
@@ -656,12 +656,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       <>
         <Tooltip
           message={message}
-          preferredDirections={[
-            "block-end",
-            "block-start",
-            "inline-end",
-            "inline-start",
-          ]}
+          preferredDirections={TOOLTIP_DIRECTIONS.bottom}
         >
           <span>{label}</span>
         </Tooltip>{" "}
