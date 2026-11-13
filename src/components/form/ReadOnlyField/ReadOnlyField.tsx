@@ -1,4 +1,4 @@
-import { Tooltip, TOOLTIP_DIRECTIONS } from "@/components/ui";
+import { Tooltip } from "@/components/ui";
 import { Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./ReadOnlyField.module.scss";
@@ -30,11 +30,7 @@ const ReadOnlyField: FC<ReadOnlyFieldProps> = ({
         {required ? "* " : ""} {label}
       </label>
       {tooltipMessage ? (
-        <Tooltip
-          preferredDirections={TOOLTIP_DIRECTIONS.bottomStart}
-          className={classes.container}
-          message={tooltipMessage}
-        >
+        <Tooltip className={classes.container} message={tooltipMessage}>
           {readOnlyContent}
         </Tooltip>
       ) : (

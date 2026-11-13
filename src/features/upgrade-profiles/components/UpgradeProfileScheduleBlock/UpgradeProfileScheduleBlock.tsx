@@ -1,5 +1,5 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
-import { Tooltip, TOOLTIP_DIRECTIONS } from "@/components/ui";
+import { Tooltip } from "@/components/ui";
 import { PROFILE_DAY_OPTIONS } from "@/features/profiles";
 import { Icon, Input, RadioInput } from "@canonical/react-components";
 import classNames from "classnames";
@@ -106,10 +106,7 @@ const UpgradeProfileScheduleBlock: FC<UpgradeProfileScheduleBlockProps> = ({
             label={
               <>
                 <span>Expires after </span>
-                <Tooltip
-                  message={EXPIRATION_TOOLTIP_MESSAGE}
-                  preferredDirections={TOOLTIP_DIRECTIONS.topEnd}
-                >
+                <Tooltip message={EXPIRATION_TOOLTIP_MESSAGE}>
                   <Icon name="help" />
                 </Tooltip>
               </>
