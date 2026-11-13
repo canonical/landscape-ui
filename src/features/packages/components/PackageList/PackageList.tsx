@@ -145,12 +145,13 @@ const PackageList: FC<PackageListProps> = ({
                    stabilized upstream (`needsdefinition` / `_work_in_progress`). */
                 <InteractiveTooltip
                   triggerElement="span"
-                  position="right"
+                  position="top-left"
                   label={`Ubuntu Pro is required for ${row.original.name}`}
                   message={
                     <>
-                      Ubuntu Pro is required
-                      <br />
+                      <span className={classes.tooltipTitle}>
+                        Ubuntu Pro is required
+                      </span>
                       <Link
                         to={ROUTES.instances.details.fromParams({
                           instanceId,
