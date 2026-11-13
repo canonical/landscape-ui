@@ -117,6 +117,25 @@ const notFoundResponse = () =>
     { status: 404 },
   );
 
+/**
+ * The gate every account-scoped staff handler runs before its own work: the
+ * global permission (403), then the account lookup (404), in that order so
+ * account existence is never disclosed to unauthorized callers. Returns the
+ * rejection, or the account. `isPermitted` defaults to the read tier.
+ */
+export const resolveStaffAccount = (
+  name: string,
+  isPermitted: () => boolean = hasViewAllAccounts,
+): { account: StaffAccount } | { rejection: Response } => {
+  if (!isPermitted()) {
+    return { rejection: unauthorizedAccessResponse() };
+  }
+
+  const account = getStaffAccountByName(name);
+
+  return account ? { account } : { rejection: notFoundResponse() };
+};
+
 interface PydanticErrorDetail {
   type: string;
   loc: (string | number)[];
@@ -698,17 +717,11 @@ export default [
   }),
 
   http.get<{ name: string }>(`${API_URL}accounts/:name`, ({ params }) => {
-    if (!hasViewAllAccounts()) {
-      return unauthorizedAccessResponse();
-    }
+    const gate = resolveStaffAccount(params.name);
 
-    const account = getStaffAccountByName(params.name);
-
-    if (!account) {
-      return notFoundResponse();
-    }
-
-    return HttpResponse.json(account);
+    return "rejection" in gate
+      ? gate.rejection
+      : HttpResponse.json(gate.account);
   }),
 
   http.patch<{ name: string }, AccountPatchBody>(
@@ -770,15 +783,11 @@ export default [
   http.get<{ name: string }>(
     `${API_URL}accounts/:name/wsl-feature-limits`,
     ({ params }) => {
-      if (!hasViewAllAccounts()) {
-        return unauthorizedAccessResponse();
-      }
+      const gate = resolveStaffAccount(params.name);
 
-      if (!getStaffAccountByName(params.name)) {
-        return notFoundResponse();
-      }
-
-      return HttpResponse.json(getWslLimits(params.name));
+      return "rejection" in gate
+        ? gate.rejection
+        : HttpResponse.json(getWslLimits(params.name));
     },
   ),
 
@@ -805,12 +814,10 @@ export default [
         return validationErrorResponse(detail);
       }
 
-      if (!hasCreateAccount()) {
-        return unauthorizedAccessResponse();
-      }
+      const gate = resolveStaffAccount(params.name, hasCreateAccount);
 
-      if (!getStaffAccountByName(params.name)) {
-        return notFoundResponse();
+      if ("rejection" in gate) {
+        return gate.rejection;
       }
 
       const limits = body as WslFeatureLimits;
