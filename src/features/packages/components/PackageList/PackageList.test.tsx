@@ -158,7 +158,7 @@ describe("PackageList", () => {
     });
   });
 
-  it("shows Ubuntu Pro required tooltip for packages requiring Ubuntu Pro", async () => {
+  it("shows Ubuntu Pro required tooltip on the disabled checkbox for packages requiring Ubuntu Pro", async () => {
     renderWithProviders(
       <PackageList {...props} packages={[ubuntuProPackage]} />,
     );
@@ -171,7 +171,9 @@ describe("PackageList", () => {
     const trigger = screen.getByRole("button", {
       name: `Ubuntu Pro is required for ${ubuntuProPackage.name}`,
     });
-    await user.hover(trigger);
+    expect(trigger).toContainElement(checkbox);
+
+    await user.hover(checkbox);
 
     expect(screen.getByText(/Ubuntu Pro is required/)).toBeInTheDocument();
     expect(

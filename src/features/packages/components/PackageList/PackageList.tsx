@@ -5,12 +5,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import useSidePanel from "@/hooks/useSidePanel";
 import { ROUTES } from "@/libs/routes";
 import type { UrlParams } from "@/types/UrlParams";
-import {
-  Button,
-  CheckboxInput,
-  Icon,
-  ICONS,
-} from "@canonical/react-components";
+import { Button, CheckboxInput } from "@canonical/react-components";
 import type { FC } from "react";
 import {
   lazy,
@@ -127,37 +122,29 @@ const PackageList: FC<PackageListProps> = ({
         ),
         Cell: ({ row }: CellProps<InstancePackage>) => {
           const ubuntuProRequired = isUbuntuProRequired(row.original);
+          const checkbox = (
+            <CheckboxInput
+              inline
+              label={
+                <span className="u-off-screen">{`Toggle ${row.original.name}`}</span>
+              }
+              checked={selectedPackages.some(
+                ({ name }) => name === row.original.name,
+              )}
+              onChange={() => {
+                handleSelectPackage(row.original);
+              }}
+              disabled={ubuntuProRequired}
+            />
+          );
 
           return (
             <>
-              <CheckboxInput
-                inline
-                label={
-                  <span className="u-off-screen">{`Toggle ${row.original.name}`}</span>
-                }
-                checked={selectedPackages.some(
-                  ({ name }) => name === row.original.name,
-                )}
-                onChange={() => {
-                  handleSelectPackage(row.original);
-                }}
-                disabled={ubuntuProRequired}
-              />
-              <Button
-                type="button"
-                appearance="link"
-                className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-                onClick={() => {
-                  handlePackageClick(row.original);
-                }}
-              >
-                {row.original.name}
-              </Button>
-              {ubuntuProRequired && (
+              {ubuntuProRequired ? (
                 /* TODO: Migrate to Pragma `Popover` once `Popover` is
                    stabilized upstream (`needsdefinition` / `_work_in_progress`). */
                 <InteractiveTooltip
-                  className={classes.ubuntuProTooltip}
+                  triggerElement="span"
                   position="right"
                   label={`Ubuntu Pro is required for ${row.original.name}`}
                   message={
@@ -176,9 +163,21 @@ const PackageList: FC<PackageListProps> = ({
                     </>
                   }
                 >
-                  <Icon name={ICONS.information} aria-hidden />
+                  {checkbox}
                 </InteractiveTooltip>
+              ) : (
+                checkbox
               )}
+              <Button
+                type="button"
+                appearance="link"
+                className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+                onClick={() => {
+                  handlePackageClick(row.original);
+                }}
+              >
+                {row.original.name}
+              </Button>
             </>
           );
         },

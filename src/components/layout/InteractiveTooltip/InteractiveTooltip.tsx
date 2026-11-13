@@ -17,13 +17,15 @@ type TooltipPosition =
   | "top-right";
 
 interface InteractiveTooltipProps {
-  /** Accessible name of the trigger button. */
+  /** Accessible name of the trigger. */
   readonly label: string;
   /** Tooltip content. May contain links and other focusable elements. */
   readonly message: ReactNode;
-  /** Visual content of the trigger button, usually an icon. */
+  /** Visual content of the trigger, usually an icon or disabled control. */
   readonly children: ReactNode;
   readonly position?: TooltipPosition;
+  /** Element used for the focusable trigger. Use `"span"` when wrapping form controls that cannot sit inside a `<button>`. */
+  readonly triggerElement?: "button" | "span";
   readonly className?: string;
   readonly triggerClassName?: string;
   readonly tooltipClassName?: string;
@@ -50,13 +52,14 @@ const InteractiveTooltip: FC<InteractiveTooltipProps> = ({
   message,
   children,
   position = "btm-left",
+  triggerElement = "button",
   className,
   triggerClassName,
   tooltipClassName,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const messageId = useId();
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLElement>(null);
 
   return (
     <span
@@ -107,16 +110,38 @@ const InteractiveTooltip: FC<InteractiveTooltipProps> = ({
         setIsOpen(false);
       }}
     >
-      <button
-        type="button"
-        ref={triggerRef}
-        className={classNames(classes.trigger, triggerClassName)}
-        aria-label={label}
-        aria-expanded={isOpen}
-        aria-controls={isOpen ? messageId : undefined}
-      >
-        {children}
-      </button>
+      {triggerElement === "span" ? (
+        <span
+          role="button"
+          tabIndex={0}
+          ref={triggerRef}
+          className={triggerClassName}
+          aria-label={label}
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? messageId : undefined}
+          onKeyDown={(event) => {
+            if (event.key === " " || event.key === "Enter") {
+              event.preventDefault();
+              setIsOpen((prev) => !prev);
+            }
+          }}
+        >
+          {children}
+        </span>
+      ) : (
+        <button
+          type="button"
+          ref={(node) => {
+            triggerRef.current = node;
+          }}
+          className={classNames(classes.trigger, triggerClassName)}
+          aria-label={label}
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? messageId : undefined}
+        >
+          {children}
+        </button>
+      )}
       {isOpen && (
         <span
           id={messageId}
