@@ -2,8 +2,12 @@ import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
-import { getInstanceListParams } from "@/features/instances";
+import {
+  getInstanceListParams,
+  isFilteringInstances,
+} from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
+import { Notification } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import { useGetStaffInstances } from "../../api";
@@ -38,22 +42,25 @@ const SupportInstances: FC<SupportInstancesProps> = ({ name }) => {
     offset: (currentPage - 1) * pageSize,
   });
 
+  // A failed request keeps the search and filters, so the query that failed
+  // can be changed.
   if (staffInstancesError) {
-    throw staffInstancesError;
+    return (
+      <>
+        <SupportInstancesHeader name={name} />
+        <Notification severity="negative" title="Could not load the instances">
+          {staffInstancesError.response?.data.message ??
+            staffInstancesError.message}
+        </Notification>
+      </>
+    );
   }
 
-  const isFiltering =
-    !!filters.query ||
-    !!filters.status ||
-    !!filters.os ||
-    !!filters.contractExpiryDays ||
-    filters.accessGroups.length > 0 ||
-    filters.availabilityZones.length > 0 ||
-    filters.tags.length > 0 ||
-    filters.upgrades.length > 0 ||
-    wsl.length > 0;
-
-  if (!isGettingStaffInstances && !staffInstancesCount && !isFiltering) {
+  if (
+    !isGettingStaffInstances &&
+    !staffInstancesCount &&
+    !isFilteringInstances({ ...filters, wsl })
+  ) {
     return (
       <EmptyState title="This account has no instances." icon="connected" />
     );
