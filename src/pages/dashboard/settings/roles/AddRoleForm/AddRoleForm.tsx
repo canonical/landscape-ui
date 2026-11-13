@@ -49,7 +49,7 @@ const AddRoleForm: FC = () => {
   const handleSubmit = async (values: FormProps) => {
     try {
       await createRole({
-        description: values.description,
+        description: values.description || undefined,
         name: values.name,
       });
 
