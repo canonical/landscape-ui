@@ -17,12 +17,11 @@
   }
 }
 
-.detachedAnchor {
-  z-index: var(--z-tooltip);
-}
-
-/* Text wrapping matches the detached Vanilla tooltip styles. */
+/* The message is rendered only while open, so it must not inherit the
+   hidden-until-hovered display from Vanilla. Text wrapping matches the
+   detached Vanilla tooltip styles in styles/partials/layout.scss. */
 .tooltip .message {
+  display: inline;
   max-width: 20rem;
   white-space: normal;
   width: max-content;

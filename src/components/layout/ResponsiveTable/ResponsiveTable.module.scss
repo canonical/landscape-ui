@@ -23,9 +23,5 @@
     left: 0;
     position: sticky;
     z-index: var(--z-table-edge);
-
-    &:has([aria-expanded="true"]) {
-      z-index: var(--z-sticky);
-    }
   }
 }
