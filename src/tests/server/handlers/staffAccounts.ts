@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import type {
   StaffAccount,
   StaffAccountListItem,
@@ -9,6 +10,8 @@ import type {
   WslFeatureLimits,
 } from "@/features/super-admin";
 import { features } from "@/tests/mocks/features";
+import { createEndpointStatusError } from "./_constants";
+import { shouldApplyEndpointStatus } from "./_helpers";
 import type {
   StaffInvitationRow,
   StaffPersonRow,
@@ -782,6 +785,18 @@ export default [
   http.post<{ name: string }, Partial<WslFeatureLimits>>(
     `${API_URL}accounts/:name/wsl-feature-limits`,
     async ({ request, params }) => {
+      if (shouldApplyEndpointStatus("wsl-feature-limits")) {
+        const { status, response } = getEndpointStatus("wsl-feature-limits");
+
+        if (status === "error") {
+          throw createEndpointStatusError();
+        }
+
+        if (status === "variant") {
+          return HttpResponse.json(response, { status: 400 });
+        }
+      }
+
       const body = await request.json();
 
       const detail = wslLimitErrors(body);

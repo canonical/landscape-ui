@@ -1,6 +1,7 @@
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import LoadingState from "@/components/layout/LoadingState";
 import { useInstanceHealthSignal } from "@/features/health";
+import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance, WindowsInstance } from "@/types/Instance";
@@ -67,6 +68,7 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
   kernelCount,
   kernelLoading,
 }) => {
+  const { isFeatureEnabled } = useAuth();
   const { closeSidePanel } = useSidePanel();
   const { tab, setPageParams } = usePageParams();
   const healthSignal = useInstanceHealthSignal(instance);
@@ -76,6 +78,7 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
   const tabLinks = getTabLinks({
     activeTabId: currentTabLinkId,
     instance,
+    isFeatureEnabled,
     onActiveTabChange: (tabId) => {
       setPageParams({ tab: tabId.replace("tab-link-", "") });
       closeSidePanel();

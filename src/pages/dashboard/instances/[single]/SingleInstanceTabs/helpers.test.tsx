@@ -49,9 +49,11 @@ const TabLabelsConsumer: FC<TabLabelProps> = ({
   healthBand,
   healthLoading = false,
 }) => {
+  const { isFeatureEnabled } = useAuth();
   const links = getTabLinks({
     activeTabId: "tab-link-packages",
     instance: ubuntuInstance,
+    isFeatureEnabled,
     onActiveTabChange: vi.fn(),
     packageCount,
     packagesLoading,
@@ -137,9 +139,11 @@ describe("getTabLinks helpers", () => {
 
   it("marks active tab correctly", () => {
     const ActiveConsumer = () => {
+      const { isFeatureEnabled } = useAuth();
       const links = getTabLinks({
         activeTabId: "tab-link-info",
         instance: ubuntuInstance,
+        isFeatureEnabled,
         onActiveTabChange: vi.fn(),
         packageCount: undefined,
         packagesLoading: false,

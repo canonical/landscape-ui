@@ -8,12 +8,32 @@ import {
 } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import type { Instance } from "@/types/Instance";
+import type { FeatureKey } from "@/types/FeatureKey";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe } from "vitest";
 import SingleInstanceTabs from "./SingleInstanceTabs";
 
 vi.mock("@/hooks/useAuth");
+
+const mockUseAuth = (
+  isFeatureEnabled: (feature: FeatureKey) => boolean = () => true,
+) => {
+  vi.mocked(useAuth).mockReturnValue({
+    authLoading: false,
+    authorized: true,
+    isFeatureEnabled,
+    logout: vi.fn(),
+    redirectToExternalUrl: vi.fn(),
+    setUser: vi.fn(),
+    user: authUser,
+    safeRedirect: vi.fn(),
+    hasAccounts: true,
+    isSuperAdmin: false,
+    canManageAccounts: false,
+    canEnterAccounts: false,
+  });
+};
 
 const validateTabs = (instance: Instance, tabNames: string[]) => {
   renderWithProviders(
@@ -40,20 +60,7 @@ const validateTabs = (instance: Instance, tabNames: string[]) => {
 describe("SingleInstanceTabs", () => {
   describe("getTabLinks", () => {
     beforeEach(() => {
-      vi.mocked(useAuth).mockReturnValue({
-        authLoading: false,
-        authorized: true,
-        isFeatureEnabled: () => true,
-        logout: vi.fn(),
-        redirectToExternalUrl: vi.fn(),
-        setUser: vi.fn(),
-        user: authUser,
-        safeRedirect: vi.fn(),
-        hasAccounts: true,
-        isSuperAdmin: false,
-        canManageAccounts: false,
-        canEnterAccounts: false,
-      });
+      mockUseAuth();
     });
 
     it("should use the correct tabs for ubuntu", () => {
@@ -95,6 +102,12 @@ describe("SingleInstanceTabs", () => {
       ]);
     });
 
+    it("hides the WSL tab when the feature is disabled", () => {
+      mockUseAuth((feature) => feature !== "wsl-child-instance-profiles");
+
+      validateTabs(windowsInstance, ["Info", "Activities", "Ubuntu Pro"]);
+    });
+
     it("should use the correct tabs for other linux", () => {
       // LA061 Phase 1.7: Health tab is hidden for non-Ubuntu instances.
       validateTabs(debianInstance, [
@@ -110,20 +123,7 @@ describe("SingleInstanceTabs", () => {
 
   describe("tab state and badges", () => {
     beforeEach(() => {
-      vi.mocked(useAuth).mockReturnValue({
-        authLoading: false,
-        authorized: true,
-        isFeatureEnabled: () => true,
-        logout: vi.fn(),
-        redirectToExternalUrl: vi.fn(),
-        setUser: vi.fn(),
-        user: authUser,
-        safeRedirect: vi.fn(),
-        hasAccounts: true,
-        isSuperAdmin: false,
-        canManageAccounts: false,
-        canEnterAccounts: false,
-      });
+      mockUseAuth();
     });
 
     it("renders the Info tab as active by default", () => {
@@ -271,20 +271,7 @@ describe("SingleInstanceTabs", () => {
     };
 
     beforeEach(() => {
-      vi.mocked(useAuth).mockReturnValue({
-        authLoading: false,
-        authorized: true,
-        isFeatureEnabled: () => true,
-        logout: vi.fn(),
-        redirectToExternalUrl: vi.fn(),
-        setUser: vi.fn(),
-        user: authUser,
-        safeRedirect: vi.fn(),
-        hasAccounts: true,
-        isSuperAdmin: false,
-        canManageAccounts: false,
-        canEnterAccounts: false,
-      });
+      mockUseAuth();
     });
 
     it("renders PackagesPanel when packages tab is active", async () => {

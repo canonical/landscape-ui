@@ -6,7 +6,7 @@ import {
 } from "@/features/health";
 import type { HealthBand } from "@/features/health";
 import { getFeatures } from "@/features/instances";
-import useAuth from "@/hooks/useAuth";
+import type { FeatureKey } from "@/types/FeatureKey";
 import type { Instance } from "@/types/Instance";
 import { Badge } from "@canonical/react-ds-global";
 
@@ -102,6 +102,7 @@ const getTabLabel = ({
 interface GetTabLinksProps {
   activeTabId: string;
   instance: Instance;
+  isFeatureEnabled: (feature: FeatureKey) => boolean;
   onActiveTabChange: (tabId: string) => void;
   packageCount: number | undefined;
   packagesLoading: boolean;
@@ -117,6 +118,7 @@ interface GetTabLinksProps {
 export const getTabLinks = ({
   activeTabId,
   instance,
+  isFeatureEnabled,
   onActiveTabChange,
   packageCount,
   packagesLoading,
@@ -128,8 +130,6 @@ export const getTabLinks = ({
   healthBand,
   healthLoading,
 }: GetTabLinksProps) => {
-  const { isFeatureEnabled } = useAuth();
-
   const tabLinks: {
     label: string;
     id: string;

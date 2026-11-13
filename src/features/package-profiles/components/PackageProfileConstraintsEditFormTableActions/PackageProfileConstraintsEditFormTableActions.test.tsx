@@ -1,4 +1,3 @@
-import { createFormik } from "@/tests/formik";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -18,15 +17,14 @@ const constraint: Constraint = {
 describe("PackageProfileConstraintsEditFormTableActions", () => {
   it("starts editing when the edit action is clicked", async () => {
     const setValues = vi.fn();
-    const formik = {
-      ...createFormik<Constraint>({ ...constraint, id: 0 }),
-      setValues,
-    };
-
     renderWithProviders(
       <PackageProfileConstraintsEditFormTableActions
         constraint={constraint}
-        formik={formik}
+        editingConstraintId={0}
+        isSubmitting={false}
+        onEdit={setValues}
+        onCancel={vi.fn()}
+        onSave={vi.fn()}
       />,
     );
 
@@ -40,16 +38,14 @@ describe("PackageProfileConstraintsEditFormTableActions", () => {
   it("shows save and cancel actions while editing the current row", async () => {
     const handleSubmit = vi.fn();
     const resetForm = vi.fn();
-    const formik = {
-      ...createFormik<Constraint>(constraint),
-      handleSubmit,
-      resetForm,
-    };
-
     renderWithProviders(
       <PackageProfileConstraintsEditFormTableActions
         constraint={constraint}
-        formik={formik}
+        editingConstraintId={constraint.id}
+        isSubmitting={false}
+        onEdit={vi.fn()}
+        onCancel={resetForm}
+        onSave={handleSubmit}
       />,
     );
 
