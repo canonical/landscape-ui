@@ -168,17 +168,13 @@ describe("PackageList", () => {
     });
     expect(checkbox).toBeDisabled();
 
-    const trigger = screen.getByRole("button", {
-      name: `Ubuntu Pro is required for ${ubuntuProPackage.name}`,
-    });
-    expect(trigger).toContainElement(checkbox);
+    const checkboxLabel = checkbox.closest("label");
+    assert(checkboxLabel);
+    await user.hover(checkboxLabel);
 
-    await user.hover(checkbox);
-
-    expect(screen.getByText(/Ubuntu Pro is required/)).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: "learn more" }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(
+      "Ubuntu Pro is required",
+    );
   });
 
   it("shows available version when it differs from current version", () => {

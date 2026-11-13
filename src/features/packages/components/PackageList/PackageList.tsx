@@ -1,10 +1,9 @@
-import InteractiveTooltip from "@/components/layout/InteractiveTooltip";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import { Tooltip } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
-import { ROUTES } from "@/libs/routes";
-import type { UrlParams } from "@/types/UrlParams";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import type { FC } from "react";
 import {
@@ -16,7 +15,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { Link, useParams } from "react-router";
 import type { CellProps, Column } from "react-table";
 import type { InstancePackage } from "../../types";
 import PackageListActions from "../PackageListActions";
@@ -27,7 +25,6 @@ import {
   isUbuntuProRequired,
 } from "./helpers";
 import classes from "./PackageList.module.scss";
-import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const PackageDetails = lazy(async () => import("../PackageDetails"));
 
@@ -49,7 +46,6 @@ const PackageList: FC<PackageListProps> = ({
   const selectedByTabRef = useRef(false);
   const [hideUbuntuProInfo, setHideUbuntuProInfo] = useState(false);
 
-  const { instanceId, childInstanceId } = useParams<UrlParams>();
   const { setSidePanelContent } = useSidePanel();
 
   const handleSelectPackage = useCallback(
@@ -141,31 +137,7 @@ const PackageList: FC<PackageListProps> = ({
           return (
             <>
               {ubuntuProRequired ? (
-                /* TODO: Migrate to Pragma `Popover` once `Popover` is
-                   stabilized upstream (`needsdefinition` / `_work_in_progress`). */
-                <InteractiveTooltip
-                  triggerElement="span"
-                  position="top-left"
-                  label={`Ubuntu Pro is required for ${row.original.name}`}
-                  message={
-                    <>
-                      <span className={classes.tooltipTitle}>
-                        Ubuntu Pro is required
-                      </span>
-                      <Link
-                        to={ROUTES.instances.details.fromParams({
-                          instanceId,
-                          childInstanceId,
-                        })}
-                        className={classes.tooltipLink}
-                      >
-                        learn more
-                      </Link>
-                    </>
-                  }
-                >
-                  {checkbox}
-                </InteractiveTooltip>
+                <Tooltip message="Ubuntu Pro is required">{checkbox}</Tooltip>
               ) : (
                 checkbox
               )}
@@ -221,11 +193,9 @@ const PackageList: FC<PackageListProps> = ({
       },
     ],
     [
-      childInstanceId,
       handlePackageClick,
       handleSelectPackage,
       handleToggleAllPackages,
-      instanceId,
       packages,
       selectablePackages,
       selectedPackages,
