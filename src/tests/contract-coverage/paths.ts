@@ -2,11 +2,11 @@ import path from "path";
 
 const TESTS_DIR = path.resolve(import.meta.dirname, "..");
 
-/** Raw traffic log, appended by every vitest worker (see setup.ts). */
+/** Raw traffic log, appended by every vitest worker (see recorder.ts). */
 export const REGISTRY_PATH = path.join(TESTS_DIR, "msw-api-registry.jsonl");
 
 /**
- * Declared MSW handler patterns, dumped during the test run (see setup.ts).
+ * Declared MSW handler patterns, dumped during the test run (see recorder.ts).
  * Needed because the handler modules read import.meta.env and therefore cannot
  * be imported by the aggregator CLI outside of Vite/Vitest.
  */
