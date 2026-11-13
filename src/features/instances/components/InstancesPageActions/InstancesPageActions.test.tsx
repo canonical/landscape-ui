@@ -462,17 +462,9 @@ describe("InstancesPageActions", () => {
         });
         expect(toggle).toHaveAttribute("aria-disabled", "true");
 
-        const labelElement = within(toggle).getByText(label);
-        await userEvent.hover(labelElement);
+        await userEvent.hover(within(toggle).getByText(label));
 
-        // TODO: Revert to `findByRole("tooltip")` once a release containing
-        // https://github.com/canonical/pragma-web/pull/1596 is installed.
-        const target = labelElement.closest("[aria-describedby]");
-        const tooltipId = target?.getAttribute("aria-describedby");
-        expect(tooltipId).toBeTruthy();
-        const tooltip = document.getElementById(tooltipId ?? "");
-        expect(tooltip).toHaveAttribute("role", "tooltip");
-        expect(tooltip).toHaveTextContent(message);
+        expect(await screen.findByRole("tooltip")).toHaveTextContent(message);
       },
     );
 
@@ -488,15 +480,9 @@ describe("InstancesPageActions", () => {
         });
         expect(toggle).toHaveAttribute("aria-disabled", "true");
 
-        const labelElement = within(toggle).getByText(label);
-        await userEvent.hover(labelElement);
+        await userEvent.hover(within(toggle).getByText(label));
 
-        const target = labelElement.closest("[aria-describedby]");
-        const tooltipId = target?.getAttribute("aria-describedby");
-        expect(tooltipId).toBeTruthy();
-        const tooltip = document.getElementById(tooltipId ?? "");
-        expect(tooltip).toHaveAttribute("role", "tooltip");
-        expect(tooltip).toHaveTextContent(message);
+        expect(await screen.findByRole("tooltip")).toHaveTextContent(message);
       },
     );
 

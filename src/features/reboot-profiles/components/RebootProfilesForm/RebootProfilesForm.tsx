@@ -10,7 +10,7 @@ import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import { getFormikError } from "@/utils/formikErrors";
 import { getTitleByName } from "@/utils/_helpers";
-import { Tooltip, TOOLTIP_DIRECTIONS } from "@/components/ui";
+import { Tooltip } from "@/components/ui";
 import { Form, Icon, Input, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import { FormikProvider, useFormik } from "formik";
@@ -178,10 +178,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
                 label={
                   <>
                     <span>Expires after </span>
-                    <Tooltip
-                      message={EXPIRATION_TOOLTIP_MESSAGE}
-                      preferredDirections={TOOLTIP_DIRECTIONS.topEnd}
-                    >
+                    <Tooltip message={EXPIRATION_TOOLTIP_MESSAGE}>
                       <Icon name="help" />
                     </Tooltip>
                   </>

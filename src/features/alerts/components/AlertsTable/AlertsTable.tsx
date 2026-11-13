@@ -1,5 +1,5 @@
 import InfoItem from "@/components/layout/InfoItem";
-import { Tooltip, TOOLTIP_DIRECTIONS } from "@/components/ui";
+import { Tooltip } from "@/components/ui";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import { boolToLabel } from "@/utils/output";
@@ -57,7 +57,6 @@ const AlertsTable: FC<AlertsTableProps> = ({ alerts, availableTagOptions }) => {
             <span>Email </span>
             {user && (
               <Tooltip
-                preferredDirections={TOOLTIP_DIRECTIONS.bottomStart}
                 message={`Enabling email notifications will send alerts to ${user.email}, associated with your account`}
               >
                 <Icon name="help" />

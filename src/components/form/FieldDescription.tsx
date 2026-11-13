@@ -1,8 +1,4 @@
-import {
-  Tooltip,
-  TOOLTIP_DIRECTIONS,
-  type TooltipProps,
-} from "@/components/ui";
+import { Tooltip, type TooltipProps } from "@/components/ui";
 import type { FC, ReactNode } from "react";
 import classes from "./FieldDescription.module.scss";
 import { Icon, ICONS } from "@canonical/react-components";
@@ -16,7 +12,7 @@ interface FieldDescriptionProps {
 const FieldDescription: FC<FieldDescriptionProps> = ({
   description,
   label,
-  preferredDirections = TOOLTIP_DIRECTIONS.topStart,
+  preferredDirections,
 }) => {
   return (
     <div className={classes.wrapper}>

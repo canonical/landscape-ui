@@ -15,7 +15,7 @@ import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
-import { Tooltip, TOOLTIP_DIRECTIONS } from "@/components/ui";
+import { Tooltip } from "@/components/ui";
 import {
   Button,
   ContextualMenu,
@@ -654,10 +654,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
   ) =>
     hasSelectedInstances && isUnsupported ? (
       <>
-        <Tooltip
-          message={message}
-          preferredDirections={TOOLTIP_DIRECTIONS.bottom}
-        >
+        <Tooltip message={message}>
           <span>{label}</span>
         </Tooltip>{" "}
         <span className="u-off-screen">{message}</span>
