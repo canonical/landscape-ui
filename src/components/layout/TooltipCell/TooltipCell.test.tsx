@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { assert, describe, expect, it } from "vitest";
 import TooltipCell from "./TooltipCell";
 
 describe("TooltipCell", () => {
@@ -16,9 +16,9 @@ describe("TooltipCell", () => {
     const cellButtonTarget = screen
       .getAllByText("deb https://archive.ubuntu.com/ubuntu noble main")
       .find((el) => el.closest("[aria-describedby]"));
-    expect(cellButtonTarget).toBeDefined();
+    assert(cellButtonTarget);
 
-    await user.hover(cellButtonTarget!);
+    await user.hover(cellButtonTarget);
 
     expect(await screen.findByRole("tooltip")).toHaveTextContent(
       "deb https://archive.ubuntu.com/ubuntu noble main",
