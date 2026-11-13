@@ -1,10 +1,12 @@
 import useAuth from "@/hooks/useAuth";
 import { getProfileTypes } from "@/features/instances";
+import type { FeatureKey } from "@/types/FeatureKey";
 import type { ReactElement } from "react";
 
-const useInstanceSearchHelpTerms = () => {
-  const { isFeatureEnabled } = useAuth();
-
+/** The instance search terms available with the features `isFeatureEnabled` reports. */
+export const getInstanceSearchHelpTerms = (
+  isFeatureEnabled: (feature: FeatureKey) => boolean,
+) => {
   const profileTypes = getProfileTypes({
     isScriptProfilesEnabled: isFeatureEnabled("script-profiles"),
     isUsgProfilesEnabled: isFeatureEnabled("usg-profiles"),
@@ -485,6 +487,12 @@ const useInstanceSearchHelpTerms = () => {
   }
 
   return instanceSearchHelpTerms;
+};
+
+const useInstanceSearchHelpTerms = () => {
+  const { isFeatureEnabled } = useAuth();
+
+  return getInstanceSearchHelpTerms(isFeatureEnabled);
 };
 
 export default useInstanceSearchHelpTerms;

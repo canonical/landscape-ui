@@ -225,3 +225,36 @@ export const getStatusRouteParams = ({
   UPGRADE_ALERT_TYPES.includes(alertType)
     ? { upgrades: [filterValue] }
     : { status: filterValue };
+
+/** Whether any search or filter of the instance list is set. */
+export const isFilteringInstances = ({
+  query,
+  status,
+  os,
+  contractExpiryDays,
+  accessGroups,
+  availabilityZones,
+  tags,
+  upgrades,
+  wsl,
+}: Pick<
+  PageParams,
+  | "query"
+  | "status"
+  | "os"
+  | "contractExpiryDays"
+  | "accessGroups"
+  | "availabilityZones"
+  | "tags"
+  | "upgrades"
+  | "wsl"
+>): boolean =>
+  !!query ||
+  !!status ||
+  !!os ||
+  !!contractExpiryDays ||
+  accessGroups.length > 0 ||
+  availabilityZones.length > 0 ||
+  tags.length > 0 ||
+  upgrades.length > 0 ||
+  wsl.length > 0;

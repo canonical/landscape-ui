@@ -122,11 +122,24 @@ describe("SupportInstancesPage (integration)", () => {
   it("reads the account named in the address, not the session's own", async () => {
     const requested: string[] = [];
 
-    server.events.on("request:start", ({ request }) => {
-      requested.push(new URL(request.url).pathname);
-    });
+    server.use(
+      http.get(`${API_URL}*`, ({ request }) => {
+        requested.push(new URL(request.url).pathname);
+      }),
+    );
+    setStaffGlobalRoles(["SupportProvider"]);
 
-    renderInstances();
+    // Outside the session shell, so the session stays in its own account.
+    renderWithProviders(
+      <Routes>
+        <Route
+          path={`/${PATHS.superAdmin.root}/${PATHS.superAdmin.session}/${PATHS.superAdmin.sessionInstances}`}
+          element={<SupportInstancesPage />}
+        />
+      </Routes>,
+      undefined,
+      ROUTES.superAdmin.sessionInstances(ACME),
+    );
 
     await findRow(instance.title);
 
@@ -135,8 +148,6 @@ describe("SupportInstancesPage (integration)", () => {
     expect(requested).toContain(`${prefix}accounts/${ACME}/computers`);
     expect(requested).not.toContain(`${prefix}computers`);
     expect(requested).not.toContain(`${prefix}tags`);
-
-    server.events.removeAllListeners("request:start");
   });
 
   it("links to the list from the session navigation", async () => {
@@ -196,12 +207,25 @@ describe("SupportInstancesPage (integration)", () => {
     });
   });
 
-  it("surfaces a failed list request", async () => {
-    vi.spyOn(console, "error").mockImplementation(() => undefined);
+  it("keeps the search when the list request fails", async () => {
     setEndpointStatus({ status: "error", path: "computers" });
 
+    renderInstances(ACME, "?query=alert:bogus");
+
+    expect(
+      await screen.findByText("Could not load the instances"),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("searchbox")).toHaveValue("alert:bogus");
+    expect(screen.queryByText("Something went wrong")).not.toBeInTheDocument();
+  });
+
+  it("explains the search without saved searches", async () => {
     renderInstances();
 
-    expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
+    await findRow(instance.title);
+    await user.click(screen.getByRole("button", { name: "Help" }));
+
+    expect(await screen.findByText("tag:<keyword>")).toBeInTheDocument();
+    expect(screen.queryByText("search:<name>")).not.toBeInTheDocument();
   });
 });

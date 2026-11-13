@@ -5,6 +5,7 @@ import {
   InstanceList,
   InstancesHeader,
   InstancesEmptyState,
+  isFilteringInstances,
   PendingInstancesNotification,
 } from "@/features/instances";
 import type { Instance } from "@/types/Instance";
@@ -38,31 +39,12 @@ const InstancesContainer = memo(function InstancesContainer({
     ColumnFilterOption[]
   >([]);
 
-  const {
-    query,
-    status,
-    os,
-    contractExpiryDays,
-    accessGroups,
-    availabilityZones,
-    tags,
-    upgrades,
-    wsl,
-  } = usePageParams();
-
-  const isFilteringInstances =
-    !!query ||
-    !!status ||
-    !!os ||
-    !!contractExpiryDays ||
-    accessGroups.length > 0 ||
-    availabilityZones.length > 0 ||
-    tags.length > 0 ||
-    upgrades.length > 0 ||
-    wsl.length > 0;
+  const pageParams = usePageParams();
 
   const hasNoInstances =
-    !isGettingInstances && instanceCount === 0 && !isFilteringInstances;
+    !isGettingInstances &&
+    instanceCount === 0 &&
+    !isFilteringInstances(pageParams);
 
   return (
     <>

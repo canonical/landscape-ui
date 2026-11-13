@@ -11,7 +11,6 @@ import {
   FILTERS,
   TagFilter,
   UpgradesFilter,
-  useInstanceSearchHelpTerms,
   WslFilter,
 } from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
@@ -24,6 +23,7 @@ import {
   useGetStaffTags,
 } from "../../api";
 import { SUPPORT_INSTANCE_COLUMN_OPTIONS } from "./constants";
+import { useSupportInstanceSearchHelpTerms } from "./hooks";
 import classes from "./SupportInstancesHeader.module.scss";
 
 const getOptions = (filter: (typeof FILTERS)[keyof typeof FILTERS]) =>
@@ -43,7 +43,7 @@ interface SupportInstancesHeaderProps {
 /** The search and filters of the instance list. Saved searches are left out. */
 const SupportInstancesHeader: FC<SupportInstancesHeaderProps> = ({ name }) => {
   const { query, setPageParams } = usePageParams();
-  const searchHelpTerms = useInstanceSearchHelpTerms();
+  const searchHelpTerms = useSupportInstanceSearchHelpTerms(name);
   const hasRoomOnRight = useMediaQuery(`(min-width: ${BREAKPOINT_PX.xl}px)`);
 
   const [inputText, setInputText] = useState(query);
