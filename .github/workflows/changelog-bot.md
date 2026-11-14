@@ -42,6 +42,12 @@ engine:
 network:
   allowed: [defaults]
 
+# Run on the Canonical self-hosted fleet: the agent and threat-detection jobs
+# need Docker/AWF and target the noble/amd64 runners; the framework and
+# safe_outputs jobs use the slim self-hosted label.
+runs-on: [self-hosted, noble, amd64]
+runs-on-slim: self-hosted
+
 # Shell access for inspecting history and formatting dates. The pi engine
 # cannot allowlist individual commands, so bash is open; the AWF sandbox and
 # safe-output handlers still confine network and writes.
@@ -58,6 +64,8 @@ tools:
 # own-repo changeset PR and the docs release-notes push.
 safe-outputs:
   github-token: ${{ secrets.LANDSCAPE_CHANGELOG_TOKEN }}
+  # The safe_outputs job runs on the slim self-hosted label (no Docker needed).
+  runs-on: self-hosted
   create-pull-request:
     title-prefix: "build: "
     labels: [changelog, automation]
@@ -88,6 +96,8 @@ safe-outputs:
   # COPILOT_GITHUB_TOKEN, matching the documented secret contract.
   threat-detection:
     engine: copilot
+    # Threat detection needs Docker/AWF like the agent job.
+    runs-on: [self-hosted, noble, amd64]
   push-to-pull-request-branch:
     target: "*"
     target-repo: canonical/landscape-documentation
