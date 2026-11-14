@@ -1,11 +1,16 @@
 import { API_URL } from "@/constants";
+import { mockDeletePackageChangePlan } from "@/tests/mockDeletePackageChangePlan";
 import { activities } from "@/tests/mocks/activity";
+import {
+  OPEN_SIDE_PANEL_LABEL,
+  OpenInSidePanel,
+} from "@/tests/OpenInSidePanel";
 import { http, HttpResponse } from "msw";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { assert, describe, expect, it } from "vitest";
+import { assert, describe, expect, it, vi } from "vitest";
 import type { GetPackageChangePlanSummaryResponse } from "../../api";
 import PackagesActionSummary from "./PackagesActionSummary";
 
@@ -168,6 +173,61 @@ describe("PackagesActionSummary", () => {
         "You queued qa-repro-actionable to be uninstalled.",
       ),
     ).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Details" }));
+
+    expect(
+      await screen.findByRole("heading", { name: activities[0].summary }),
+    ).toBeInTheDocument();
+  });
+
+  it("deletes the plan and calls the back callback when Back is clicked", async () => {
+    const deletedIds = mockDeletePackageChangePlan();
+    const onBackButtonPress = vi.fn();
+    renderWithProviders(
+      <PackagesActionSummary
+        actionType="remove"
+        onBackButtonPress={onBackButtonPress}
+        packageChangePlanId={2}
+      />,
+    );
+
+    await userEvent.click(await screen.findByRole("button", { name: "Back" }));
+
+    await waitFor(() => {
+      expect(deletedIds).toEqual(["2"]);
+    });
+    expect(onBackButtonPress).toHaveBeenCalledTimes(1);
+  });
+
+  it("deletes the plan and closes the side panel when Cancel is clicked", async () => {
+    const deletedIds = mockDeletePackageChangePlan();
+    renderWithProviders(
+      <OpenInSidePanel title="Package summary">
+        <PackagesActionSummary
+          actionType="remove"
+          onBackButtonPress={() => undefined}
+          packageChangePlanId={2}
+        />
+      </OpenInSidePanel>,
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", { name: OPEN_SIDE_PANEL_LABEL }),
+    );
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Cancel" }),
+    );
+
+    await waitFor(() => {
+      expect(deletedIds).toEqual(["2"]);
+    });
+    expect(
+      screen.queryByRole("heading", { name: "Package summary" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Close side panel" }),
+    ).not.toBeInTheDocument();
   });
 
   it("keeps the partial-exclusion link for an actionable package", async () => {

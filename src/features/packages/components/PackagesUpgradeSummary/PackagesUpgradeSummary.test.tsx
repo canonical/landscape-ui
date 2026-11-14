@@ -1,5 +1,10 @@
 import { API_URL } from "@/constants";
+import { mockDeletePackageChangePlan } from "@/tests/mockDeletePackageChangePlan";
 import { activities } from "@/tests/mocks/activity";
+import {
+  OPEN_SIDE_PANEL_LABEL,
+  OpenInSidePanel,
+} from "@/tests/OpenInSidePanel";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { screen, waitFor, within } from "@testing-library/react";
@@ -33,6 +38,34 @@ const mockExecute = () => {
 };
 
 describe("PackagesUpgradeSummary", () => {
+  it("deletes the plan and closes the side panel when Cancel is clicked", async () => {
+    const user = userEvent.setup();
+    const deletedIds = mockDeletePackageChangePlan();
+    renderWithProviders(
+      <OpenInSidePanel title="Upgrade summary">
+        <PackagesUpgradeSummary
+          packageChangePlanId={6}
+          onBackButtonPress={() => undefined}
+        />
+      </OpenInSidePanel>,
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: OPEN_SIDE_PANEL_LABEL }),
+    );
+    await user.click(await screen.findByRole("button", { name: "Cancel" }));
+
+    await waitFor(() => {
+      expect(deletedIds).toEqual(["6"]);
+    });
+    expect(
+      screen.queryByRole("heading", { name: "Upgrade summary" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Close side panel" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("disables execution and shows an empty state when the plan has no upgrades", async () => {
     const executeRequests = mockExecute();
     const onBackButtonPress = vi.fn();

@@ -1,9 +1,14 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import PackagesActionForm from "./PackagesActionForm";
 import { packages } from "@/tests/mocks/packages";
+import { mockDeletePackageChangePlan } from "@/tests/mockDeletePackageChangePlan";
+import {
+  OPEN_SIDE_PANEL_LABEL,
+  OpenInSidePanel,
+} from "@/tests/OpenInSidePanel";
 
 const instanceId = 1;
 
@@ -106,6 +111,68 @@ describe("PackagesActionForm", () => {
       expect(
         await screen.findByRole("button", { name: /back/i }),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("Side panel lifecycle", () => {
+    let deletedIds: string[];
+
+    beforeEach(async () => {
+      deletedIds = mockDeletePackageChangePlan();
+
+      renderWithProviders(
+        <OpenInSidePanel title="Install packages">
+          <PackagesActionForm instanceIds={[instanceId]} actionType="install" />
+        </OpenInSidePanel>,
+      );
+      await user.click(
+        screen.getByRole("button", { name: OPEN_SIDE_PANEL_LABEL }),
+      );
+      await user.type(screen.getByRole("searchbox"), firstPackage.name);
+      await user.click(await screen.findByText(firstPackage.name));
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      await screen.findByRole("heading", { name: "Summary" });
+      await screen.findByRole("button", { name: /back/i });
+    });
+
+    it("deletes the pending plan and closes the side panel when Summary is closed", async () => {
+      await user.click(
+        screen.getByRole("button", { name: "Close side panel" }),
+      );
+
+      await waitFor(() => {
+        expect(deletedIds).toEqual(["1"]);
+      });
+      expect(
+        screen.queryByRole("heading", { name: "Summary" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Close side panel" }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("restores the form and title on Back and clears the close override", async () => {
+      await user.click(screen.getByRole("button", { name: /back/i }));
+
+      expect(
+        screen.getByRole("heading", { name: "Install packages" }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole("searchbox")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: `Delete ${firstPackage.name}` }),
+      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(deletedIds).toEqual(["1"]);
+      });
+
+      await user.click(
+        screen.getByRole("button", { name: "Close side panel" }),
+      );
+
+      expect(
+        screen.queryByRole("heading", { name: "Install packages" }),
+      ).not.toBeInTheDocument();
+      expect(deletedIds).toEqual(["1"]);
     });
   });
 
