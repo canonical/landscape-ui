@@ -96,6 +96,7 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
       initialValues={getInitialValues(disabledColumns)}
       isSubmitting={isExportInstancesTsvLoading}
       onGenerate={handleGenerate}
+      onCancel={popSidePath}
     />
   );
 };

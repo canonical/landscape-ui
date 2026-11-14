@@ -5,6 +5,19 @@
   width: 40%;
 }
 
+.descriptionContent {
+  display: flex;
+  min-width: 0;
+}
+
+.descriptionText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .subhead {
   background: $colors--theme--background-alt;
   border-bottom: 1px solid $colors--theme--border-low-contrast;

@@ -6,20 +6,20 @@ import {
 } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
 import { ConfirmationButton } from "@canonical/react-components";
 import type { FC } from "react";
 
 interface ActivityDetailsButtonsProps {
   readonly activity: Activity;
+  readonly onClose: () => void;
 }
 
 const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
   activity,
+  onClose,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
   const { approveActivities, isApprovingActivities } = useApproveActivities();
   const { cancelActivities, isCancelingActivities } = useCancelActivities();
   const { redoActivities, isRedoingActivities } = useRedoActivities();
@@ -28,7 +28,7 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
     try {
       await approveActivities({ query: `id:${a.id}` });
 
-      closeSidePanel();
+      onClose();
 
       notify.success({
         title: "You have successfully approved an activity.",
@@ -44,7 +44,7 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
     try {
       await cancelActivities({ query: `id:${a.id}` });
 
-      closeSidePanel();
+      onClose();
 
       notify.success({
         title: "You have successfully canceled an activity.",
@@ -60,7 +60,7 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
     try {
       await redoActivities({ activity_ids: [a.id] });
 
-      closeSidePanel();
+      onClose();
 
       notify.success({
         title: "You have successfully redone an activity.",

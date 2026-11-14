@@ -21,6 +21,34 @@ export const SNAP_ACTION_ACTIVITY: ActivityGroup = {
   deliver_delay_window: 0,
 };
 
+const PAGINATED_ACTIVITY_GROUP_ID = 1100;
+const ADDITIONAL_ACTIVITY_GROUP_BASE_ID = 1200;
+
+export const activityParents: ActivityGroup[] = [
+  { ...SNAP_ACTION_ACTIVITY, actions: undefined },
+  {
+    ...SNAP_ACTION_ACTIVITY,
+    actions: undefined,
+    id: 1008,
+    summary: "Start instances",
+    activity_status: "delivered",
+    result_text: "Starting 2 instances...",
+  },
+  {
+    ...SNAP_ACTION_ACTIVITY,
+    actions: undefined,
+    id: PAGINATED_ACTIVITY_GROUP_ID,
+    summary: "Start many instances",
+    activity_status: "delivered",
+  },
+  ...Array.from({ length: 18 }, (_, index) => ({
+    ...SNAP_ACTION_ACTIVITY,
+    actions: undefined,
+    id: ADDITIONAL_ACTIVITY_GROUP_BASE_ID + index,
+    summary: `Install snaps batch ${index + 1}`,
+  })),
+];
+
 export const RELEASE_UPGRADE_ACTIVITY: Activity = {
   id: 9001,
   type: "ReleaseUpgradeRequest",
@@ -348,6 +376,18 @@ export const activities = [
     children: [],
   },
 ] as const satisfies Activity[];
+
+export const activityGroupChildren: Activity[] = Array.from(
+  { length: 23 },
+  (_, index) => ({
+    ...activities[1],
+    id: PAGINATED_ACTIVITY_GROUP_ID + index + 1,
+    parent_id: PAGINATED_ACTIVITY_GROUP_ID,
+    summary: `Start instance ${index + 1}`,
+    activity_status: index < 10 ? "unapproved" : "delivered",
+    delivery_time: index < 10 ? null : activities[1].delivery_time,
+  }),
+);
 
 export const MANY_UNAPPROVED_ACTIVITY_BASE_ID = 2000;
 export const MANY_DELIVERED_ACTIVITY_BASE_ID = 3000;

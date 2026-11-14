@@ -4,7 +4,12 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Activity, ActivityCommon } from "@/features/activities";
-import { useApproveActivities, useGetActivities } from "@/features/activities";
+import {
+  ActivitiesPanelList,
+  useApproveActivities,
+  useGetActivities,
+  useOpenActivityDetailsPanel,
+} from "@/features/activities";
 import { useGetInstances } from "@/features/instances";
 import type { Package } from "@/features/packages";
 import { usePackages } from "@/features/packages";
@@ -12,6 +17,7 @@ import { useUsns } from "@/features/usns";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance } from "@/types/Instance";
 import type { Usn } from "@/types/Usn";
@@ -49,6 +55,8 @@ const InfoTablesContainer: FC = () => {
   >("unapproved");
 
   const navigate = useNavigate();
+  const openActivityDetails = useOpenActivityDetailsPanel();
+  const { setSidePanelContent } = useSidePanel();
   const debug = useDebug();
   const { notify } = useNotify();
   const { isFeatureEnabled } = useAuth();
@@ -295,40 +303,50 @@ const InfoTablesContainer: FC = () => {
   const activitiesTableColumns = useMemo<Column<ActivityCommon>[]>(
     () => [
       {
-        Header: "Description",
+        Header: "Activity",
         accessor: "summary",
         className: classes.description,
         Cell: ({ row }: CellProps<ActivityCommon>): ReactNode => (
-          <Link
-            to={ROUTES.activities.root()}
-            state={{ activity: row.original as Activity }}
-            className="u-no-margin--bottom"
+          <Button
+            type="button"
+            appearance="link"
+            onClick={() => {
+              openActivityDetails(row.original);
+            }}
+            className={`u-no-margin--bottom u-no-padding--top u-align-text--left ${classes.activityTitle}`}
           >
             {row.original.summary}
-          </Link>
+          </Button>
         ),
       },
       {
         Header: "Creator",
         accessor: "creator.name",
+        className: classes.creator,
         Cell: ({ row }: CellProps<ActivityCommon>): ReactNode => (
-          <>{row.original.creator?.name ?? <NoData />}</>
+          <span className={classes.singleLineCell}>
+            {row.original.creator?.name ?? <NoData />}
+          </span>
         ),
       },
       {
         Header: "Created at",
         accessor: "creation_time",
+        className: classes.createdAt,
         Cell: ({ row }: CellProps<ActivityCommon>): ReactNode => {
           const createdAt = date(row.original.creation_time);
           return (
-            <span className="font-monospace">
+            <span
+              className={`font-monospace ${classes.singleLineCell}`}
+              title={createdAt.local().format(DISPLAY_DATE_TIME_FORMAT)}
+            >
               {createdAt.local().format(DISPLAY_DATE_TIME_FORMAT)}
             </span>
           );
         },
       },
     ],
-    [currentUpgradesTab],
+    [openActivityDetails],
   );
 
   const handleClickUpgradesTab = (tab: typeof currentUpgradesTab): void => {
@@ -419,18 +437,25 @@ const InfoTablesContainer: FC = () => {
     }
   };
 
-  const handleActivitiesLimitChange = async () => {
-    switch (currentActivitiesTab) {
-      case "unapproved": {
-        await navigate(ROUTES.activities.root({ status: "unapproved" }));
-        break;
-      }
-
-      case "inProgress": {
-        await navigate(ROUTES.activities.root({ status: "delivered" }));
-        break;
-      }
-    }
+  const handleActivitiesLimitChange = () => {
+    const status =
+      currentActivitiesTab === "unapproved" ? "unapproved" : "delivered";
+    setSidePanelContent(
+      status === "unapproved"
+        ? "Activities requiring approval"
+        : "Activities in progress",
+      <ActivitiesPanelList
+        key={status}
+        status={status}
+        size="large"
+        availableActions={{
+          approve: status === "unapproved",
+          cancel: true,
+          redo: false,
+        }}
+      />,
+      "large",
+    );
   };
 
   return (
@@ -611,7 +636,7 @@ const InfoTablesContainer: FC = () => {
             <ModularTable
               data={activitiesTableData}
               columns={activitiesTableColumns}
-              className="u-no-margin--bottom"
+              className={`u-no-margin--bottom ${classes.activitiesTable}`}
             />
             {getTotalTableItemsCount("activities") > MAX_ACTIVITY_COUNT && (
               <ExpandableTableFooter

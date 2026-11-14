@@ -4,17 +4,24 @@ import type { ExportJob } from "@/features/exports";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   activities,
+  activityGroupChildren,
+  activityParents,
   activityTypes,
   INVALID_ACTIVITY_SEARCH_QUERY,
 } from "@/tests/mocks/activity";
 import date from "@/libs/date";
 import { http, HttpResponse } from "msw";
-import { createEndpointStatusError } from "./_constants";
+import {
+  createEndpointStatusError,
+  createEndpointStatusNetworkError,
+} from "./_constants";
 import {
   generatePaginatedResponse,
   isAction,
   shouldApplyEndpointStatus,
 } from "./_helpers";
+
+const childActivities = [...activities, ...activityGroupChildren];
 
 const STATUS_QUERY_REGEX = /(?:^|\s)status:([^\s]+)/;
 const TYPE_QUERY_REGEX = /(?:^|\s)type:([^\s]+)/;
@@ -147,7 +154,7 @@ export default [
           .split(" OR ")
           .map((term) => Number(term.slice("parent-id:".length)))
       : undefined;
-    const filteredActivities = activities.filter((activity) => {
+    const filteredActivities = childActivities.filter((activity) => {
       if (status && activity.activity_status !== status) {
         return false;
       }
@@ -193,6 +200,30 @@ export default [
     );
   }),
 
+  http.get(`${API_URL}activities/parents`, ({ request }) => {
+    const DEFAULT_PAGE_SIZE = 20;
+    const { searchParams } = new URL(request.url);
+    let parents = activityParents;
+
+    if (shouldApplyEndpointStatus("activities/parents")) {
+      const { status } = getEndpointStatus("activities/parents");
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
+      }
+      if (status === "empty") {
+        parents = [];
+      }
+    }
+
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: parents,
+        limit: Number(searchParams.get("limit")) || DEFAULT_PAGE_SIZE,
+        offset: Number(searchParams.get("offset")) || 0,
+      }),
+    );
+  }),
+
   http.get(`${API_URL}activities/:id`, async ({ params: { id } }) => {
     if (shouldApplyEndpointStatus("activities/:id")) {
       const { status, response } = getEndpointStatus("activities/:id");
@@ -207,7 +238,9 @@ export default [
     }
 
     return HttpResponse.json<Activity>(
-      activities.find((activity) => activity.id === parseInt(id as string)) ?? {
+      [...childActivities, ...activityParents].find(
+        (activity) => activity.id === parseInt(id as string),
+      ) ?? {
         activity_status: "succeeded",
         approval_time: null,
         children: [],

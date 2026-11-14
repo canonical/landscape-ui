@@ -1,6 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { INPUT_DATE_FORMAT } from "@/constants";
-import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Accordion,
@@ -34,6 +33,7 @@ interface ExportFormProps {
     values: ExportFormValues;
     fieldsToExport: ExportField[];
   }) => Promise<void>;
+  readonly onCancel: () => void;
   readonly onStepChange?: (step: StepIndex) => void;
   readonly sortableNote?: ReactNode;
 }
@@ -43,10 +43,10 @@ const ExportForm: FC<ExportFormProps> = ({
   initialValues,
   isSubmitting,
   onGenerate,
+  onCancel,
   onStepChange,
   sortableNote,
 }) => {
-  const { popSidePath } = usePageParams();
   const [step, setStep] = useState<StepIndex>(0);
   const [attributeSearch, setAttributeSearch] = useState("");
   const [orderedFields, setOrderedFields] = useState<ExportField[]>([]);
@@ -293,7 +293,7 @@ const ExportForm: FC<ExportFormProps> = ({
         onBackButtonPress={step === 1 ? handleBack : undefined}
         submitButtonLoading={isSubmitting || formik.isSubmitting}
         submitButtonText={step === 0 ? "Next" : "Generate TSV"}
-        onCancel={popSidePath}
+        onCancel={onCancel}
       />
     </Form>
   );

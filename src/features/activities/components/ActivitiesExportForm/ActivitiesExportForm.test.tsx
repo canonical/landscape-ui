@@ -1,15 +1,15 @@
-import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import ActivitiesExportForm from "./ActivitiesExportForm";
 
 type ActivitiesExportFormProps = ComponentProps<typeof ActivitiesExportForm>;
 
 const defaultProps = {
   exportParams: { query: "status:succeeded" },
+  onClose: vi.fn(),
 } satisfies ActivitiesExportFormProps;
 
 const openAttributeGroup = async (
@@ -144,16 +144,16 @@ describe("ActivitiesExportForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("pops one sidePath entry on successful export", async () => {
+  it("calls onClose after a successful export", async () => {
     const user = userEvent.setup();
+    const onClose = vi.fn();
 
     renderWithProviders(
-      <>
-        <ActivitiesExportForm {...defaultProps} selectedActivityIds={[1, 2]} />
-        <LocationDisplay />
-      </>,
-      undefined,
-      "/?sidePath=view,export",
+      <ActivitiesExportForm
+        {...defaultProps}
+        selectedActivityIds={[1, 2]}
+        onClose={onClose}
+      />,
     );
 
     await user.type(
@@ -171,12 +171,19 @@ describe("ActivitiesExportForm", () => {
     await user.click(screen.getByRole("button", { name: "Generate TSV" }));
 
     expect(await screen.findByText("TSV export in progress")).toBeVisible();
+    expect(onClose).toHaveBeenCalledOnce();
+  });
 
-    await waitFor(() => {
-      expect(getLocationDisplay()).toHaveTextContent("sidePath=view");
-      expect(getLocationDisplay()).not.toHaveTextContent(
-        "sidePath=view,export",
-      );
-    });
+  it("calls onClose on cancel", async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+
+    renderWithProviders(
+      <ActivitiesExportForm {...defaultProps} onClose={onClose} />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(onClose).toHaveBeenCalledOnce();
   });
 });

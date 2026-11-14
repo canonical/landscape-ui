@@ -3,7 +3,6 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import SnapsActionForm from "./SnapsActionForm";
-import { SNAP_ACTION_ACTIVITY } from "@/tests/mocks/activity";
 import {
   bulkInstalledSnaps,
   successfulSnapInstallResponse,
@@ -197,7 +196,7 @@ describe("SnapsActionForm", () => {
     await user.click(viewDetailsButton);
 
     expect(
-      await screen.findByText(SNAP_ACTION_ACTIVITY.summary),
+      await screen.findByText("Refresh snaps on 1 computer"),
     ).toBeInTheDocument();
   });
 
