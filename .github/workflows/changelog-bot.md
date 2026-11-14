@@ -58,6 +58,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
+  detection:
+    pre-steps:
+      # gh-aw's install_copilot_cli.sh uses --prefer-toolcache, which does not
+      # land the binary on PATH on this self-hosted runner image, so the
+      # detection step exits 127 ("Copilot CLI executable not found on PATH").
+      # Install it globally with npm so `command -v copilot` resolves.
+      - name: Install GitHub Copilot CLI
+        run: |
+          npm install -g @github/copilot@1.0.103
+          copilot --version
 
 # The self-hosted runner image also ships an old gh that lacks 'gh attestation
 # verify', which the agent job's AWF install requires. Install a
