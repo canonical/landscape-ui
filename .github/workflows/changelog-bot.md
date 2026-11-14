@@ -66,8 +66,11 @@ jobs:
       # Install it globally with npm so `command -v copilot` resolves.
       - name: Install GitHub Copilot CLI
         run: |
+          export NPM_CONFIG_PREFIX="$HOME/.npm-global"
+          mkdir -p "$NPM_CONFIG_PREFIX"
           npm install -g @github/copilot@1.0.103
-          copilot --version
+          echo "$NPM_CONFIG_PREFIX/bin" >> "$GITHUB_PATH"
+          "$NPM_CONFIG_PREFIX/bin/copilot" --version
 
 # The self-hosted runner image also ships an old gh that lacks 'gh attestation
 # verify', which the agent job's AWF install requires. Install a
