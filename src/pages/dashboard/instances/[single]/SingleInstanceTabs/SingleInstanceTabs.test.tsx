@@ -48,7 +48,9 @@ const validateTabs = (instance: Instance, tabNames: string[]) => {
     />,
   );
 
-  const tabs = within(screen.getByRole("tablist")).getAllByRole("tab");
+  const tabs = within(
+    screen.getByRole("navigation", { name: "Instance details" }),
+  ).getAllByRole("link");
 
   expect(tabs).toHaveLength(tabNames.length);
   for (const index in tabs) {
@@ -134,8 +136,9 @@ describe("SingleInstanceTabs", () => {
         />,
       );
 
-      const allTabs = screen.getAllByRole("tab");
-      expect(allTabs[0]).toHaveAttribute("aria-selected", "true");
+      const allTabs = screen.getAllByRole("link");
+      expect(allTabs[0]).toHaveTextContent("Info");
+      expect(allTabs[0]).toHaveAttribute("aria-current", "page");
     });
 
     it("shows package badge count on Packages tab when packageCount > 0", () => {
@@ -234,7 +237,7 @@ describe("SingleInstanceTabs", () => {
       expect(screen.getAllByRole("status").length).toBeGreaterThan(0);
     });
 
-    it("clicking a tab sets that tab's aria-selected to true", async () => {
+    it("clicking a tab marks it as the current page", async () => {
       const user = userEvent.setup();
       renderWithProviders(
         <SingleInstanceTabs
@@ -248,10 +251,12 @@ describe("SingleInstanceTabs", () => {
         />,
       );
 
-      const activitiesTab = screen.getByRole("tab", { name: /activities/i });
-      await user.click(activitiesTab);
+      await user.click(screen.getByRole("link", { name: /activities/i }));
 
-      expect(activitiesTab).toHaveAttribute("aria-selected", "true");
+      expect(screen.getByRole("link", { name: /activities/i })).toHaveAttribute(
+        "aria-current",
+        "page",
+      );
     });
   });
 
@@ -277,9 +282,9 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: /packages/i })).toHaveAttribute(
-          "aria-selected",
-          "true",
+        expect(screen.getByRole("link", { name: /packages/i })).toHaveAttribute(
+          "aria-current",
+          "page",
         );
       });
     });
@@ -292,9 +297,9 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: /^kernel/i })).toHaveAttribute(
-          "aria-selected",
-          "true",
+        expect(screen.getByRole("link", { name: /^kernel/i })).toHaveAttribute(
+          "aria-current",
+          "page",
         );
       });
     });
@@ -308,8 +313,8 @@ describe("SingleInstanceTabs", () => {
       );
       await waitFor(() => {
         expect(
-          screen.getByRole("tab", { name: /security issues/i }),
-        ).toHaveAttribute("aria-selected", "true");
+          screen.getByRole("link", { name: /security issues/i }),
+        ).toHaveAttribute("aria-current", "page");
       });
     });
 
@@ -321,9 +326,9 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: /snaps/i })).toHaveAttribute(
-          "aria-selected",
-          "true",
+        expect(screen.getByRole("link", { name: /snaps/i })).toHaveAttribute(
+          "aria-current",
+          "page",
         );
       });
     });
@@ -336,10 +341,9 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: /processes/i })).toHaveAttribute(
-          "aria-selected",
-          "true",
-        );
+        expect(
+          screen.getByRole("link", { name: /processes/i }),
+        ).toHaveAttribute("aria-current", "page");
       });
     });
 
@@ -352,8 +356,8 @@ describe("SingleInstanceTabs", () => {
       );
       await waitFor(() => {
         expect(
-          screen.getByRole("tab", { name: /ubuntu pro/i }),
-        ).toHaveAttribute("aria-selected", "true");
+          screen.getByRole("link", { name: /ubuntu pro/i }),
+        ).toHaveAttribute("aria-current", "page");
       });
     });
 
@@ -365,9 +369,9 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: /users/i })).toHaveAttribute(
-          "aria-selected",
-          "true",
+        expect(screen.getByRole("link", { name: /users/i })).toHaveAttribute(
+          "aria-current",
+          "page",
         );
       });
     });
@@ -380,9 +384,9 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: /hardware/i })).toHaveAttribute(
-          "aria-selected",
-          "true",
+        expect(screen.getByRole("link", { name: /hardware/i })).toHaveAttribute(
+          "aria-current",
+          "page",
         );
       });
     });
@@ -395,14 +399,14 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: /wsl/i })).toHaveAttribute(
-          "aria-selected",
-          "true",
+        expect(screen.getByRole("link", { name: /wsl/i })).toHaveAttribute(
+          "aria-current",
+          "page",
         );
       });
     });
 
-    it("calls closeSidePanel and setPageParams when a tab is clicked", async () => {
+    it("navigates to the tab's URL when a tab is clicked", async () => {
       const user = userEvent.setup();
       renderWithProviders(
         <SingleInstanceTabs instance={ubuntuInstance} {...defaultProps} />,
@@ -411,10 +415,15 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
 
-      const kernelTab = screen.getByRole("tab", { name: /^kernel/i });
+      const kernelTab = screen.getByRole("link", { name: /^kernel/i });
+      expect(kernelTab).toHaveAttribute("href", "/computers/1?tab=kernel");
+
       await user.click(kernelTab);
 
-      expect(kernelTab).toHaveAttribute("aria-selected", "true");
+      expect(screen.getByRole("link", { name: /^kernel/i })).toHaveAttribute(
+        "aria-current",
+        "page",
+      );
     });
   });
 });

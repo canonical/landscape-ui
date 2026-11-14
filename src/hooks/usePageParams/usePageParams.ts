@@ -1,5 +1,5 @@
 import type { PageParams } from "@/libs/pageParamsManager";
-import { pageParamsManager } from "@/libs/pageParamsManager";
+import { pageParamsManager, setTabValues } from "@/libs/pageParamsManager";
 import { useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router";
 
@@ -27,10 +27,13 @@ const usePageParams = (): UsePageParamsReturnType => {
   const parsedSearchParams = pageParamsManager.getParsedParams(searchParams);
 
   const setPageParams = useCallback(
-    (newParams: Partial<PageParams>): void => {
+    ({ tabSlots, ...newParams }: Partial<PageParams>): void => {
       setSearchParams(
         (prevSearchParams) => {
-          if (newParams.tab && newParams.tab !== parsedSearchParams.tab) {
+          const current = pageParamsManager.parseTabValues(prevSearchParams);
+
+          // Switching the page-level tab starts the new tab from a clean URL.
+          if (newParams.tab && newParams.tab !== current.tab) {
             return new URLSearchParams({ tab: newParams.tab });
           }
 
@@ -43,7 +46,21 @@ const usePageParams = (): UsePageParamsReturnType => {
           }
 
           Object.entries(newParams).forEach(([key, value]) => {
-            updatedSearchParams.set(key, String(value));
+            if (key !== "tab") {
+              updatedSearchParams.set(key, String(value));
+            }
+          });
+
+          // The panel slot belongs to the panel being shown, so opening,
+          // pushing, popping or closing a side path resets it to its default.
+          const nextTabSlots =
+            "sidePath" in newParams
+              ? { ...current.tabSlots, panel: "" }
+              : current.tabSlots;
+
+          setTabValues(updatedSearchParams, newParams.tab ?? current.tab, {
+            ...nextTabSlots,
+            ...tabSlots,
           });
 
           return pageParamsManager.sanitizeSearchParams(updatedSearchParams);
@@ -51,7 +68,7 @@ const usePageParams = (): UsePageParamsReturnType => {
         { replace: true },
       );
     },
-    [parsedSearchParams.tab, setSearchParams],
+    [setSearchParams],
   );
 
   const lastSidePathSegment =

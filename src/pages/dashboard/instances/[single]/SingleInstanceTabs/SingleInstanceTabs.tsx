@@ -1,14 +1,10 @@
-import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
-import LoadingState from "@/components/layout/LoadingState";
+import AppTabs from "@/components/AppTabs";
 import useAuth from "@/hooks/useAuth";
-import usePageParams from "@/hooks/usePageParams";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance, WindowsInstance } from "@/types/Instance";
-import { Tabs } from "@canonical/react-components";
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
+import type { FC, ReactNode } from "react";
+import { lazy } from "react";
+import type { SingleInstanceTabId } from "./helpers";
 import { getTabLinks } from "./helpers";
-import classes from "./SingleInstanceTabs.module.scss";
 
 const InfoPanel = lazy(
   async () => import("@/pages/dashboard/instances/[single]/tabs/info"),
@@ -65,96 +61,33 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
   kernelLoading,
 }) => {
   const { isFeatureEnabled } = useAuth();
-  const { closeSidePanel } = useSidePanel();
-  const { tab, setPageParams } = usePageParams();
 
-  const currentTabLinkId = tab ? `tab-link-${tab}` : "tab-link-info";
+  const panels: Record<SingleInstanceTabId, ReactNode> = {
+    info: <InfoPanel instance={instance} />,
+    wsl: <WslPanel instance={instance as WindowsInstance} />,
+    activities: <ActivityPanel instanceId={instance.id} />,
+    kernel: <KernelPanel instanceTitle={instance.title} />,
+    "security-issues": <SecurityIssuesPanel instance={instance} />,
+    packages: <PackagesPanel />,
+    snaps: <SnapsPanel />,
+    processes: <ProcessesPanel />,
+    "ubuntu-pro": <UbuntuProPanel instance={instance} />,
+    users: <UserPanel />,
+    hardware: <HardwarePanel instance={instance} />,
+  };
 
-  const tabLinks = getTabLinks({
-    activeTabId: currentTabLinkId,
+  const items = getTabLinks({
     instance,
     isFeatureEnabled,
-    onActiveTabChange: (tabId) => {
-      setPageParams({ tab: tabId.replace("tab-link-", "") });
-      closeSidePanel();
-    },
     packageCount,
     packagesLoading,
     usnCount,
     usnLoading,
     kernelCount,
     kernelLoading,
-  });
+  }).map((item) => ({ ...item, panel: panels[item.id] }));
 
-  return (
-    <>
-      <Tabs listClassName="u-no-margin--bottom" links={tabLinks} />
-      <div
-        tabIndex={0}
-        role="tabpanel"
-        aria-labelledby={currentTabLinkId}
-        className={classes.tabPanel}
-      >
-        <AppErrorBoundary>
-          {"tab-link-info" === currentTabLinkId && (
-            <Suspense fallback={<LoadingState />}>
-              <InfoPanel instance={instance} />
-            </Suspense>
-          )}
-          {"tab-link-wsl" === currentTabLinkId && (
-            <Suspense fallback={<LoadingState />}>
-              <WslPanel instance={instance as WindowsInstance} />
-            </Suspense>
-          )}
-          {"tab-link-activities" === currentTabLinkId && (
-            <Suspense fallback={<LoadingState />}>
-              <ActivityPanel instanceId={instance.id} />
-            </Suspense>
-          )}
-          {"tab-link-kernel" === currentTabLinkId && (
-            <Suspense fallback={<LoadingState />}>
-              <KernelPanel instanceTitle={instance.title} />
-            </Suspense>
-          )}
-          {"tab-link-security-issues" === currentTabLinkId && (
-            <Suspense fallback={<LoadingState />}>
-              <SecurityIssuesPanel instance={instance} />
-            </Suspense>
-          )}
-          {"tab-link-packages" === currentTabLinkId && (
-            <Suspense fallback={<LoadingState />}>
-              <PackagesPanel />
-            </Suspense>
-          )}
-          {"tab-link-snaps" === currentTabLinkId && (
-            <Suspense fallback={<LoadingState />}>
-              <SnapsPanel />
-            </Suspense>
-          )}
-          {"tab-link-processes" === currentTabLinkId && (
-            <Suspense fallback={<LoadingState />}>
-              <ProcessesPanel />
-            </Suspense>
-          )}
-          {"tab-link-ubuntu-pro" === currentTabLinkId && (
-            <Suspense fallback={<LoadingState />}>
-              <UbuntuProPanel instance={instance} />
-            </Suspense>
-          )}
-          {"tab-link-users" === currentTabLinkId && (
-            <Suspense fallback={<LoadingState />}>
-              <UserPanel />
-            </Suspense>
-          )}
-          {"tab-link-hardware" === currentTabLinkId && (
-            <Suspense fallback={<LoadingState />}>
-              <HardwarePanel instance={instance} />
-            </Suspense>
-          )}
-        </AppErrorBoundary>
-      </div>
-    </>
-  );
+  return <AppTabs aria-label="Instance details" items={items} />;
 };
 
 export default SingleInstanceTabs;

@@ -27,11 +27,12 @@ describe("SingleInstanceContainer", () => {
       );
 
       expect(
-        await screen.findByRole("tab", { name: "Info" }),
+        await screen.findByRole("link", { name: "Info" }),
       ).toBeInTheDocument();
-      expect(
-        screen.getByRole("tab", { name: "Activities" }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: "Activities" })).toHaveAttribute(
+        "aria-current",
+        "page",
+      );
     });
 
     it("shows the upgradable package count on the Packages tab", async () => {
@@ -52,7 +53,7 @@ describe("SingleInstanceContainer", () => {
         `/${PATHS.instances.root}/${PATHS.instances.single}`,
       );
 
-      const packagesTab = await screen.findByRole("tab", { name: /Packages/ });
+      const packagesTab = await screen.findByRole("link", { name: /Packages/ });
 
       expect(
         await within(packagesTab).findByText(String(upgradableCount)),
@@ -81,11 +82,12 @@ describe("SingleInstanceContainer", () => {
       );
 
       expect(
-        await screen.findByRole("tab", { name: "Info" }),
+        await screen.findByRole("link", { name: "Info" }),
       ).toBeInTheDocument();
-      expect(
-        screen.getByRole("tab", { name: "Activities" }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: "Activities" })).toHaveAttribute(
+        "aria-current",
+        "page",
+      );
     });
 
     it("redirects to root route when current account changes", async () => {
@@ -158,7 +160,7 @@ describe("SingleInstanceContainer", () => {
       );
 
       expect(
-        await screen.findByRole("tab", { name: "Info" }),
+        await screen.findByRole("link", { name: "Info" }),
       ).toBeInTheDocument();
 
       await user.click(screen.getByRole("button", { name: "Switch account" }));

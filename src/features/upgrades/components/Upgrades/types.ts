@@ -4,3 +4,5 @@ export interface UpgradesFormProps {
   excludedPackages: InstancePackagesToExclude[];
   excludedUsns: string[];
 }
+
+export type UpgradesTabId = "instances" | "packages" | "usns";

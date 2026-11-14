@@ -51,7 +51,9 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
 
   const { pathname } = useLocation();
   const { notify, sidePanel } = useNotify();
-  const { tab } = usePageParams();
+  const { tab, tabSlots, sidePath, setPageParams } = usePageParams();
+  const [isPanelTabCleanupPending, setIsPanelTabCleanupPending] =
+    useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -67,7 +69,25 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
     return handleClose;
   }, [pathname, tab]);
 
+  // Closing a context panel drops its "tab=panel:<id>" value once the close
+  // has rendered, so the URL no longer describes a panel that is not shown.
+  useEffect(() => {
+    if (!isPanelTabCleanupPending) {
+      return;
+    }
+
+    setIsPanelTabCleanupPending(false);
+
+    if (!open && !sidePath.length && tabSlots.panel) {
+      setPageParams({ tabSlots: { panel: "" } });
+    }
+  }, [isPanelTabCleanupPending]);
+
   const handleSidePanelClose = () => {
+    if (open) {
+      setIsPanelTabCleanupPending(true);
+    }
+
     handleClose();
     notify.clear();
   };

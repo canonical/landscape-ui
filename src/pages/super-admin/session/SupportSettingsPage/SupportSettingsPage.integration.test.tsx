@@ -134,7 +134,7 @@ describe("SupportSettingsPage (integration)", () => {
     renderSettings("administrators");
 
     expect(
-      await screen.findByRole("tab", { name: /Invites/ }),
+      await screen.findByRole("link", { name: /Invites/ }),
     ).toHaveTextContent("25");
   });
 
@@ -180,11 +180,11 @@ describe("SupportSettingsPage (integration)", () => {
       screen.queryByRole("button", { name: /invite/i }),
     ).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("tab", { name: /Invites/ }));
+    await user.click(screen.getByRole("link", { name: /Invites/ }));
 
-    expect(screen.getByRole("tab", { name: /Invites/ })).toHaveAttribute(
-      "aria-controls",
-      screen.getByRole("tabpanel").id,
+    expect(screen.getByRole("link", { name: /Invites/ })).toHaveAttribute(
+      "aria-current",
+      "page",
     );
 
     const invitationRow = await findRow(invitation.email);

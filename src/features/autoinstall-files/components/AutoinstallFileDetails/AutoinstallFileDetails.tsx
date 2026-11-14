@@ -3,19 +3,17 @@ import { ActionButton, Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useAutoinstallFileActions } from "../../hooks";
-import type { AutoinstallFile, AutoinstallFileTabId } from "../../types";
+import type { AutoinstallFile } from "../../types";
 import AutoinstallFileDeleteModal from "../AutoinstallFileDeleteModal";
 import AutoinstallFileTabs from "../AutoinstallFileTabs";
 import classes from "./AutoinstallFileDetails.module.scss";
 
 interface AutoinstallFileDetailsProps {
   readonly autoinstallFile: AutoinstallFile;
-  readonly initialTabId?: AutoinstallFileTabId;
 }
 
 const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
   autoinstallFile,
-  initialTabId,
 }) => {
   const {
     value: isDeleteModalVisible,
@@ -73,7 +71,6 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
       />
 
       <AutoinstallFileTabs
-        initialTabId={initialTabId}
         file={autoinstallFile}
         viewVersionHistory={viewVersionHistory}
       />

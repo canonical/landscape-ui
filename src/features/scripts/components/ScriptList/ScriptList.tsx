@@ -7,6 +7,7 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useAuth from "@/hooks/useAuth";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { ROUTES } from "@/libs/routes";
@@ -31,6 +32,7 @@ interface ScriptListProps {
 
 const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
   const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
   const { isFeatureEnabled } = useAuth();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse } = getAccessGroupQuery();
@@ -45,8 +47,9 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
           <ScriptDetails scriptId={script.id} />
         </Suspense>,
       );
+      setPageParams({ tabSlots: { panel: "" } });
     },
-    [setSidePanelContent],
+    [setPageParams, setSidePanelContent],
   );
 
   useOpenScriptDetails((profile) => {
