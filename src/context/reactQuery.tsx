@@ -31,7 +31,24 @@ const ReactQueryProvider: FC<ReactQueryProviderProps> = ({ children }) => {
         retry: false,
       },
     },
-    queryCache: new QueryCache({ onError: debug }),
+    queryCache: new QueryCache({
+      onError: (error, query) => {
+        const isHandledByBoundary = query.observers.some(({ options }) => {
+          const { throwOnError } = options;
+
+          return typeof throwOnError === "function"
+            ? throwOnError(error, query)
+            : !!throwOnError;
+        });
+
+        // Error boundaries render their own fallback; avoid a duplicate notification.
+        if (isHandledByBoundary) {
+          return;
+        }
+
+        debug(error);
+      },
+    }),
   };
 
   const [queryClient] = useState(() => new QueryClient(config));
