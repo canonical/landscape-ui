@@ -4,9 +4,9 @@ import type { ExportJob } from "@/features/exports";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   activities,
-  activityGroupChildren,
   activityParents,
   activityTypes,
+  childActivities,
   INVALID_ACTIVITY_SEARCH_QUERY,
 } from "@/tests/mocks/activity";
 import date from "@/libs/date";
@@ -21,13 +21,13 @@ import {
   shouldApplyEndpointStatus,
 } from "./_helpers";
 
-const childActivities = [...activities, ...activityGroupChildren];
-
 const STATUS_QUERY_REGEX = /(?:^|\s)status:([^\s]+)/;
 const TYPE_QUERY_REGEX = /(?:^|\s)type:([^\s]+)/;
 const COMPUTER_ID_REGEX = /(?:^|\s)computer:id:(\d+)/;
 const CREATED_AFTER_QUERY_REGEX = /(?:^|\s)created-after:([^\s]+)/;
 const CREATED_BEFORE_QUERY_REGEX = /(?:^|\s)created-before:([^\s]+)/;
+const PARENT_IDS_QUERY_REGEX =
+  /(?:^|\s)parent-id:\d+(?: OR parent-id:\d+)*(?=\s|$)/;
 
 const parseActivitiesQuery = (
   rawQuery: string,
@@ -37,6 +37,7 @@ const parseActivitiesQuery = (
   computerId?: string;
   createdAfter?: number;
   createdBefore?: number;
+  parentIds?: number[];
   searchQuery: string;
 } => {
   const statusMatch = rawQuery.match(STATUS_QUERY_REGEX);
@@ -44,6 +45,7 @@ const parseActivitiesQuery = (
   const computerMatch = rawQuery.match(COMPUTER_ID_REGEX);
   const createdAfterMatch = rawQuery.match(CREATED_AFTER_QUERY_REGEX);
   const createdBeforeMatch = rawQuery.match(CREATED_BEFORE_QUERY_REGEX);
+  const parentIdsMatch = rawQuery.match(PARENT_IDS_QUERY_REGEX);
 
   let searchQuery = rawQuery;
 
@@ -62,11 +64,18 @@ const parseActivitiesQuery = (
   if (createdBeforeMatch) {
     searchQuery = searchQuery.replace(CREATED_BEFORE_QUERY_REGEX, "").trim();
   }
+  if (parentIdsMatch) {
+    searchQuery = searchQuery.replace(PARENT_IDS_QUERY_REGEX, "").trim();
+  }
 
   return {
     status: statusMatch?.[1],
     type: typeMatch?.[1],
     computerId: computerMatch?.[1],
+    parentIds: parentIdsMatch?.[0]
+      .trim()
+      .split(" OR ")
+      .map((term) => Number(term.slice("parent-id:".length))),
     createdAfter: createdAfterMatch?.[1]
       ? Date.parse(createdAfterMatch[1])
       : undefined,
@@ -91,6 +100,7 @@ export default [
       searchQuery,
       createdAfter,
       createdBefore,
+      parentIds,
     } = parseActivitiesQuery(query);
 
     if (shouldApplyEndpointStatus("activities")) {
@@ -149,11 +159,6 @@ export default [
     const activityIds = /^id:\d+(?: OR id:\d+)*$/.test(searchQuery)
       ? searchQuery.split(" OR ").map((term) => Number(term.slice(3)))
       : undefined;
-    const parentIds = /^parent-id:\d+(?: OR parent-id:\d+)*$/.test(searchQuery)
-      ? searchQuery
-          .split(" OR ")
-          .map((term) => Number(term.slice("parent-id:".length)))
-      : undefined;
     const filteredActivities = childActivities.filter((activity) => {
       if (status && activity.activity_status !== status) {
         return false;
@@ -194,7 +199,7 @@ export default [
         data: filteredActivities,
         limit,
         offset,
-        search: activityIds || parentIds ? undefined : searchQuery,
+        search: activityIds ? undefined : searchQuery,
         searchFields: ["summary"],
       }),
     );

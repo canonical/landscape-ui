@@ -109,7 +109,7 @@ describe("ActivityDetails", () => {
     let table = await screen.findByRole("table");
     expect(
       within(table).getByRole("columnheader", {
-        name: /^Toggle all\s*Activity$/,
+        name: /^Toggle all\s*Activity\s*Instance$/,
       }),
     ).toBeInTheDocument();
     expect(within(table).getByText("Instance")).toBeInTheDocument();
@@ -128,7 +128,7 @@ describe("ActivityDetails", () => {
     ).toBeInTheDocument();
   });
 
-  it("opens the child export panel at the same size as its parent panel", async () => {
+  it("opens the child export panel at medium size", async () => {
     vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
     const user = userEvent.setup();
     const [source, child] = activities;
@@ -141,7 +141,7 @@ describe("ActivityDetails", () => {
       ),
     );
 
-    renderActivityDetails({ activityId: group.id, size: "large" });
+    renderActivityDetails({ activityId: group.id });
 
     await user.click(
       await screen.findByRole("checkbox", { name: child.summary }),
@@ -156,7 +156,7 @@ describe("ActivityDetails", () => {
     });
     const exportPanel = exportInput.closest("aside");
     assert(exportPanel);
-    expect(exportPanel).toHaveClass(sidePanelClasses.large);
+    expect(exportPanel).toHaveClass(sidePanelClasses.medium);
   });
 
   it("shows an Activities block and empty state for a group without children or output", async () => {
@@ -186,8 +186,7 @@ describe("ActivityDetails", () => {
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 
-  it("shows group output only when its Output tab is selected", async () => {
-    const user = userEvent.setup();
+  it("does not show group output but retains the Activities block", async () => {
     const group = {
       ...activities[0],
       type: "ActivityGroup",
@@ -205,15 +204,12 @@ describe("ActivityDetails", () => {
       ),
     );
     renderActivityDetails({ activityId: group.id });
-    await screen.findByRole("tab", { name: "Activities" });
+    await screen.findByRole("heading", { name: "Activities" });
     expect(screen.queryByText("Group output")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("tab", { name: "Output" }));
-    expect(screen.getByText("Group output")).toBeInTheDocument();
-    await user.click(screen.getByRole("tab", { name: "Activities" }));
-    expect(screen.queryByText("Group output")).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab")).not.toBeInTheDocument();
   });
 
-  it("resets child-table search and pagination when switching tabs", async () => {
+  it("keeps child-table search and pagination while details remain open", async () => {
     const user = userEvent.setup();
     const group = {
       ...activities[0],
@@ -245,15 +241,12 @@ describe("ActivityDetails", () => {
     await screen.findByRole("table");
     await user.click(screen.getByRole("button", { name: "Next page" }));
     await screen.findByRole("button", { name: "Child activity 21" });
-    await user.click(screen.getByRole("tab", { name: "Output" }));
-    expect(screen.queryByRole("table")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("tab", { name: "Activities" }));
-    expect(screen.getByRole("searchbox")).toHaveValue("");
+    expect(screen.getByRole("searchbox")).toHaveValue("status:succeeded");
     expect(
-      screen.getByRole("button", { name: "Child activity 1" }),
+      screen.getByRole("button", { name: "Child activity 21" }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "Child activity 21" }),
+      screen.queryByRole("button", { name: "Child activity 1" }),
     ).not.toBeInTheDocument();
   });
 

@@ -1,5 +1,6 @@
 import { API_URL } from "@/constants";
 import SidePanelProvider, { SidePanelContext } from "@/context/sidePanel";
+import sidePanelClasses from "@/context/SidePanelProvider.module.scss";
 import type { Activity } from "@/features/activities";
 import { PATHS, ROUTES } from "@/libs/routes";
 import ActivitiesPage from "@/pages/dashboard/activities/ActivitiesPage";
@@ -263,7 +264,7 @@ describe("EditUserForm", () => {
     ).closest("aside");
     assert(panel);
     await waitFor(() => {
-      expect(panel).not.toHaveClass("is-wide");
+      expect(panel).toHaveClass(sidePanelClasses.medium);
     });
   });
 
@@ -456,7 +457,7 @@ describe("EditUserForm", () => {
       "href",
       ROUTES.instances.details.fromInstance(ubuntuInstance),
     );
-    expect(panel).not.toHaveClass("is-wide");
+    expect(panel).toHaveClass(sidePanelClasses.medium);
     expect(
       within(panel).getByRole("button", { name: "Approve" }),
     ).toBeEnabled();

@@ -1,15 +1,27 @@
+import ListTitle from "@/components/layout/ListTitle";
+import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
 import SidePanel from "@/components/layout/SidePanel";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
-import { TSV_EXPORTS_ENABLED } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT, TSV_EXPORTS_ENABLED } from "@/constants";
 import { getExportTitle } from "@/features/exports";
 import useSelection from "@/hooks/useSelection";
+import date from "@/libs/date";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
-import { lazy, useState, type FC } from "react";
+import { ROUTES } from "@/libs/routes";
+import { Button, CheckboxInput } from "@canonical/react-components";
+import classNames from "classnames";
+import { lazy, useCallback, useMemo, useState, type FC } from "react";
+import { Link } from "react-router";
+import type { CellProps, Column } from "react-table";
 import { useGetActivities } from "../../api";
+import { ACTIVITY_STATUSES } from "../../constants";
 import type { ActivityCommon } from "../../types";
 import ActivitiesHeader from "../ActivitiesHeader";
 import type { ActivitiesFilters } from "../ActivitiesHeader/types";
-import ActivitiesList from "../ActivitiesList";
+import classes from "./ActivitiesPanelList.module.scss";
 
 const ActivitiesExportForm = lazy(
   async () => import("../ActivitiesExportForm"),
@@ -21,16 +33,18 @@ interface ActivitiesPanelListProps {
   readonly availableActions: Readonly<
     Record<"approve" | "cancel" | "redo", boolean>
   >;
+  readonly hiddenColumns: {
+    creator: boolean;
+  };
   readonly parentId?: number;
   readonly status?: string;
-  readonly size?: "small" | "medium" | "large";
 }
 
 const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
   availableActions,
   parentId,
+  hiddenColumns,
   status = "",
-  size,
 }) => {
   const [filters, setFilters] = useState<ActivitiesFilters>({
     query: "",
@@ -67,10 +81,10 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
     setSelectedItems: setSelectedActivities,
   } = useSelection<ActivityCommon>(activities, isGettingActivities);
 
-  const clearSelection = () => {
+  const clearSelection = useCallback(() => {
     setSelectedActivities([]);
     setIsAllSelected(false);
-  };
+  }, [setSelectedActivities]);
 
   const closeExport = () => {
     setIsExportOpen(false);
@@ -89,6 +103,195 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
     setCurrentPage(page);
     clearSelection();
   };
+
+  const columns = useMemo<Column<ActivityCommon>[]>(
+    () =>
+      [
+        {
+          accessor: "summary",
+          className: "large-cell",
+          Header: (
+            <div className={classes.descriptionContent}>
+              <CheckboxInput
+                label={<span className="u-off-screen">Toggle all</span>}
+                inline
+                onChange={() => {
+                  if (isAllSelected || selectedActivities.length > 0) {
+                    clearSelection();
+                  } else {
+                    setSelectedActivities(activities);
+                  }
+                }}
+                checked={
+                  isAllSelected ||
+                  (activities.length > 0 &&
+                    selectedActivities.length === activities.length)
+                }
+                indeterminate={
+                  !isAllSelected &&
+                  selectedActivities.length > 0 &&
+                  selectedActivities.length < activities.length
+                }
+                disabled={!activities.length}
+              />
+              <ListTitle>
+                <span>Activity</span>
+                <span className="u-text--muted">Instance</span>
+              </ListTitle>
+            </div>
+          ),
+          Cell: ({ row }: CellProps<ActivityCommon>) => (
+            <div className={classes.descriptionContent}>
+              <CheckboxInput
+                label={
+                  <span className="u-off-screen">{row.original.summary}</span>
+                }
+                inline
+                labelClassName="u-no-margin--bottom u-no-padding--top"
+                checked={
+                  isAllSelected || selectedActivities.includes(row.original)
+                }
+                onChange={() => {
+                  if (isAllSelected) {
+                    clearSelection();
+                    return;
+                  }
+                  setSelectedActivities(
+                    selectedActivities.includes(row.original)
+                      ? selectedActivities.filter(
+                          (activity) => activity !== row.original,
+                        )
+                      : [...selectedActivities, row.original],
+                  );
+                }}
+              />
+              <ListTitle>
+                <Button
+                  type="button"
+                  appearance="link"
+                  className={classNames(
+                    "u-no-margin--bottom u-no-padding--top u-align-text--left",
+                    classes.descriptionText,
+                  )}
+                  onClick={() => {
+                    setSelectedActivity(row.original);
+                  }}
+                >
+                  {row.original.summary}
+                </Button>
+                {row.original.computer_id ? (
+                  <Link
+                    to={ROUTES.instances.details.single(
+                      row.original.computer_id,
+                    )}
+                    className="u-text--muted"
+                  >
+                    {row.original.computer_title}
+                  </Link>
+                ) : (
+                  <span className="u-text--muted">
+                    <NoData />
+                  </span>
+                )}
+              </ListTitle>
+            </div>
+          ),
+        },
+        {
+          accessor: "activity_status",
+          Header: (
+            <ListTitle>
+              <span>Status</span>
+              <span className="u-text--muted">Completed at</span>
+            </ListTitle>
+          ),
+          className: "large-cell",
+          Cell: ({ row }: CellProps<ActivityCommon>) => (
+            <span className={classes.statusContent}>
+              <span>
+                {ACTIVITY_STATUSES[row.original.activity_status].label}
+              </span>
+
+              <span className="u-text--muted">
+                {row.original.completion_time ? (
+                  <span className="font-monospace">
+                    {date(row.original.completion_time).format(
+                      DISPLAY_DATE_TIME_FORMAT,
+                    )}
+                  </span>
+                ) : (
+                  <NoData />
+                )}
+              </span>
+            </span>
+          ),
+          getCellIcon: ({
+            row: {
+              original: { activity_status },
+            },
+          }: CellProps<ActivityCommon>) =>
+            ACTIVITY_STATUSES[activity_status].icon,
+        },
+        {
+          accessor: "creator.name",
+          Header: (
+            <ListTitle>
+              <span>Creator</span>
+
+              <span className="u-text--muted">Created at</span>
+            </ListTitle>
+          ),
+          className: "large-cell",
+          Cell: ({ row }: CellProps<ActivityCommon>) => (
+            <ListTitle>
+              <span>{row.original.creator?.name ?? <NoData />}</span>
+
+              <span className="font-monospace u-text--muted">
+                {date(row.original.creation_time).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
+              </span>
+            </ListTitle>
+          ),
+        },
+      ]
+        .filter(
+          (column) =>
+            !hiddenColumns.creator || column.accessor !== "creator.name",
+        )
+        .filter((column) => !status || column.accessor !== "activity_status"),
+    [
+      activities,
+      clearSelection,
+      hiddenColumns,
+      isAllSelected,
+      selectedActivities,
+      setSelectedActivities,
+      status,
+    ],
+  );
+
+  const showSubhead =
+    TSV_EXPORTS_ENABLED &&
+    (isAllSelected || selectedActivities.length > 0) &&
+    activitiesCount !== undefined &&
+    activitiesCount > activities.length;
+
+  const subhead = showSubhead ? (
+    <tr>
+      <td colSpan={columns.length} className="u-no-padding">
+        <ResponsiveTableSubhead
+          itemName={["activity", "activities"]}
+          selectedCount={selectedActivities.length}
+          totalCount={activitiesCount}
+          canSelectAll
+          isAllSelected={isAllSelected}
+          onSelectAll={selectAll}
+          onClearSelection={clearSelection}
+        />
+      </td>
+    </tr>
+  ) : undefined;
 
   return (
     <>
@@ -121,20 +324,18 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
           setIsExportOpen(true);
         }}
       />
-      <ActivitiesList
-        header="Activity"
-        activities={activities}
-        activitiesCount={activitiesCount}
-        isGettingActivities={isGettingActivities}
-        selectionEnabled
-        selectedActivities={selectedActivities}
-        setSelectedActivities={setSelectedActivities}
-        isAllSelected={isAllSelected}
-        onSelectAll={selectAll}
-        onClearSelection={clearSelection}
-        showInstanceColumn
-        onActivityDetailsOpen={setSelectedActivity}
-      />
+      {isGettingActivities ? (
+        <LoadingState />
+      ) : (
+        <ResponsiveTable
+          emptyMsg="No activities found according to your search parameters."
+          columns={columns}
+          data={activities}
+          minWidth={0}
+          subhead={subhead}
+          sticky={false}
+        />
+      )}
       <SidePanelTablePagination
         currentPage={currentPage}
         pageSize={pageSize}
@@ -144,11 +345,7 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
         currentItemCount={activities.length}
       />
       {TSV_EXPORTS_ENABLED && isExportOpen && (
-        <SidePanel
-          isOpen
-          size={size === "small" ? "medium" : size}
-          onClose={closeExport}
-        >
+        <SidePanel isOpen size="medium" onClose={closeExport}>
           <SidePanel.Suspense>
             <SidePanel.Header>
               {getExportTitle({
@@ -173,12 +370,11 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
         </SidePanel>
       )}
       {selectedActivity && (
-        <SidePanel isOpen size={size} onClose={closeDetails}>
+        <SidePanel isOpen size="medium" onClose={closeDetails}>
           <SidePanel.Suspense>
             <ActivityDetails
               key={selectedActivity.id}
               activityId={selectedActivity.id}
-              size={size}
               onClose={closeDetails}
               renderInSidePanel
             />

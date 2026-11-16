@@ -1,3 +1,4 @@
+import sidePanelClasses from "@/context/SidePanelProvider.module.scss";
 import type { Activity } from "@/features/activities";
 import { PATHS, ROUTES } from "@/libs/routes";
 import ActivitiesPage from "@/pages/dashboard/activities/ActivitiesPage";
@@ -76,7 +77,7 @@ describe("PendingUserActivity", () => {
       "href",
       ROUTES.instances.details.fromInstance(ubuntuInstance),
     );
-    expect(panel).not.toHaveClass("is-wide");
+    expect(panel).toHaveClass(sidePanelClasses.medium);
     expect(
       within(panel).getByRole("button", { name: "Cancel activity" }),
     ).toBeEnabled();

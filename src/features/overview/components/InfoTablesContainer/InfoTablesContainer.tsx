@@ -447,14 +447,16 @@ const InfoTablesContainer: FC = () => {
       <ActivitiesPanelList
         key={status}
         status={status}
-        size="large"
         availableActions={{
           approve: status === "unapproved",
           cancel: true,
           redo: false,
         }}
+        hiddenColumns={{
+          creator: false,
+        }}
       />,
-      "large",
+      "medium",
     );
   };
 

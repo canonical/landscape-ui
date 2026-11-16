@@ -9,7 +9,6 @@ const ActivityDetails = lazy(
 
 export interface OpenActivityDetailsPanelOptions {
   hideInstanceField?: boolean;
-  size?: "small" | "medium" | "large";
 }
 
 const useOpenActivityDetailsPanel = () => {
@@ -28,10 +27,9 @@ const useOpenActivityDetailsPanel = () => {
             activityId={activity.id}
             onClose={closeSidePanel}
             hideInstanceField={options?.hideInstanceField}
-            size={options?.size}
           />
         </Suspense>,
-        options?.size ?? "small",
+        "medium",
       );
     },
     [closeSidePanel, setSidePanelContent],

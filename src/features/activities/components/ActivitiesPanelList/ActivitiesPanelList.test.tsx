@@ -1,5 +1,8 @@
-import { API_URL } from "@/constants";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { API_URL, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import * as Constants from "@/constants";
+import date from "@/libs/date";
+import { ROUTES } from "@/libs/routes";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { activities } from "@/tests/mocks/activity";
@@ -17,11 +20,12 @@ import sidePanelClasses from "@/components/layout/SidePanel/SidePanel.module.scs
 
 const ActivitiesPanelList: FC<
   Partial<ComponentProps<typeof ActivitiesPanelListComponent>>
-> = ({ availableActions, ...props }) => (
+> = ({ availableActions, hiddenColumns, ...props }) => (
   <ActivitiesPanelListComponent
     availableActions={
       availableActions ?? { approve: true, cancel: true, redo: true }
     }
+    hiddenColumns={hiddenColumns ?? { creator: true }}
     {...props}
   />
 );
@@ -57,6 +61,175 @@ describe("ActivityChildren", () => {
   afterEach(() => {
     resetScreenSize();
     vi.restoreAllMocks();
+  });
+
+  it.each([
+    {
+      context: "overview",
+      parentId: undefined,
+      status: "unapproved",
+      hiddenColumns: { creator: false },
+      headers: ["Toggle allActivityInstance", "CreatorCreated at"],
+    },
+    {
+      context: "activity group",
+      parentId,
+      hiddenColumns: { creator: true },
+      headers: ["Toggle allActivityInstance", "StatusCompleted at"],
+    },
+  ])(
+    "uses double rows in the $context panel",
+    async ({ headers, ...props }) => {
+      renderWithProviders(<ActivitiesPanelList {...props} />);
+
+      const table = await screen.findByRole("table");
+      expect(
+        within(table)
+          .getAllByRole("columnheader")
+          .map((cell) => cell.textContent),
+      ).toEqual(headers);
+    },
+  );
+
+  it("stacks side-panel fields with muted secondary content", async () => {
+    const [activity] = activities;
+    server.use(
+      http.get(`${API_URL}activities`, () =>
+        HttpResponse.json(
+          generatePaginatedResponse({ data: [activity], limit: 20, offset: 0 }),
+        ),
+      ),
+    );
+    renderWithProviders(
+      <ActivitiesPanelList hiddenColumns={{ creator: false }} />,
+    );
+
+    const table = await screen.findByRole("table");
+    const [descriptionCell, statusCell, creatorCell] =
+      within(table).getAllByRole("cell");
+    assert(descriptionCell && statusCell && creatorCell);
+    const instanceLink = within(descriptionCell).getByRole("link", {
+      name: activity.computer_title,
+    });
+    expect(instanceLink).toHaveClass("u-text--muted");
+    expect(instanceLink).toHaveAttribute(
+      "href",
+      ROUTES.instances.details.single(activity.computer_id),
+    );
+    const completedAt = date(activity.completion_time).format(
+      DISPLAY_DATE_TIME_FORMAT,
+    );
+    expect(within(statusCell).getByText(completedAt).parentElement).toHaveClass(
+      "u-text--muted",
+    );
+    const createdAt = date(activity.creation_time).format(
+      DISPLAY_DATE_TIME_FORMAT,
+    );
+    expect(creatorCell).toHaveTextContent(
+      `${activity.creator.name}${createdAt}`,
+    );
+    expect(within(creatorCell).getByText(createdAt)).toHaveClass(
+      "u-text--muted",
+    );
+    expect(
+      within(creatorCell).getByText(activity.creator.name),
+    ).not.toHaveClass("u-text--muted");
+
+    await userEvent.click(
+      within(descriptionCell).getByRole("button", { name: activity.summary }),
+    );
+    expect(
+      await screen.findByRole("heading", { name: activity.summary }),
+    ).toBeInTheDocument();
+  });
+
+  it.each([
+    { creator: false, expectedHeader: "CreatorCreated at" },
+    { creator: true, expectedHeader: undefined },
+  ])(
+    "respects whether the Creator column is hidden: $creator",
+    async ({ creator, expectedHeader }) => {
+      server.use(
+        http.get(`${API_URL}activities`, () =>
+          HttpResponse.json(
+            generatePaginatedResponse({
+              data: [{ ...activities[0], completion_time: null }],
+              limit: 20,
+              offset: 0,
+            }),
+          ),
+        ),
+      );
+      renderWithProviders(<ActivitiesPanelList hiddenColumns={{ creator }} />);
+
+      const table = await screen.findByRole("table");
+      expect(
+        within(table)
+          .getAllByRole("columnheader")
+          .map((cell) => cell.textContent),
+      ).toEqual([
+        "Toggle allActivityInstance",
+        "StatusCompleted at",
+        ...(expectedHeader ? [expectedHeader] : []),
+      ]);
+      expect(
+        within(table).getByRole("link", { name: activities[0].computer_title }),
+      ).toBeInTheDocument();
+      expect(within(table).getByText(NO_DATA_TEXT)).toHaveClass(
+        "u-text--muted",
+      );
+      const creationTime = date(activities[0].creation_time).format(
+        DISPLAY_DATE_TIME_FORMAT,
+      );
+      if (creator) {
+        expect(within(table).queryByText(creationTime)).not.toBeInTheDocument();
+      } else {
+        expect(within(table).getByText(creationTime)).toBeInTheDocument();
+      }
+      if (creator) {
+        expect(
+          within(table).queryByText(activities[0].creator.name),
+        ).not.toBeInTheDocument();
+      }
+    },
+  );
+
+  it("toggles visible activities and clears cross-page selection from a row", async () => {
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
+    const user = userEvent.setup();
+    renderWithProviders(<ActivitiesPanelList parentId={parentId} />);
+
+    const toggleAll = await screen.findByRole("checkbox", {
+      name: "Toggle all",
+    });
+    await user.click(toggleAll);
+    screen.getAllByRole("checkbox").forEach((checkbox) => {
+      expect(checkbox).toBeChecked();
+    });
+
+    const firstCheckbox = screen.getByRole("checkbox", {
+      name: "Child activity 1",
+    });
+    await user.click(firstCheckbox);
+    expect(firstCheckbox).not.toBeChecked();
+    expect(toggleAll).toBePartiallyChecked();
+    await user.click(
+      screen.getByRole("button", { name: "Select all 21 activities" }),
+    );
+    expect(toggleAll).toBeChecked();
+    expect(
+      screen.getByRole("checkbox", { name: "Child activity 1" }),
+    ).toBeChecked();
+
+    await user.click(
+      screen.getByRole("checkbox", { name: "Child activity 1" }),
+    );
+    screen.getAllByRole("checkbox").forEach((checkbox) => {
+      expect(checkbox).not.toBeChecked();
+    });
+    expect(
+      screen.queryByText("All 21 activities selected"),
+    ).not.toBeInTheDocument();
   });
 
   it("omits parent-id search help when activities are scoped to one parent", async () => {
@@ -131,7 +304,7 @@ describe("ActivityChildren", () => {
     });
   });
 
-  it("supports overview status filters and preserves state while large details are open", async () => {
+  it("supports overview status filters and preserves state while medium details are open", async () => {
     const user = userEvent.setup();
     server.use(
       http.get(`${API_URL}activities/:id`, ({ params }) =>
@@ -140,7 +313,7 @@ describe("ActivityChildren", () => {
     );
     renderWithProviders(
       <>
-        <ActivitiesPanelList status="unapproved" size="large" />
+        <ActivitiesPanelList status="unapproved" />
         <LocationDisplay />
       </>,
       undefined,
@@ -149,7 +322,7 @@ describe("ActivityChildren", () => {
 
     const [firstChild] = children;
     assert(firstChild);
-    await screen.findByRole("columnheader", { name: "Instance" });
+    await screen.findByRole("columnheader", { name: /Activity.*Instance/ });
     await user.click(screen.getByRole("button", { name: /help/i }));
     const helpDialog = screen.getByRole("dialog", { name: /search help/i });
     const terms = within(helpDialog)
@@ -183,7 +356,7 @@ describe("ActivityChildren", () => {
     });
     const panel = heading.closest("aside");
     assert(panel);
-    expect(panel).toHaveClass(sidePanelClasses.large);
+    expect(panel).toHaveClass(sidePanelClasses.medium);
     await within(panel).findByText("Created at");
     await user.click(within(panel).getByRole("button", { name: "Close" }));
 
@@ -316,7 +489,7 @@ describe("ActivityChildren", () => {
     const user = userEvent.setup();
     renderWithProviders(
       <>
-        <ActivitiesPanelList parentId={parentId} size="small" />
+        <ActivitiesPanelList parentId={parentId} />
         <LocationDisplay />
       </>,
       undefined,

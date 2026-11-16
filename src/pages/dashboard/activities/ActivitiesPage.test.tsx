@@ -1,6 +1,6 @@
 import * as Constants from "@/constants";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
@@ -8,6 +8,7 @@ import sidePanelClasses from "@/components/layout/SidePanel/SidePanel.module.scs
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { activityParents } from "@/tests/mocks/activity";
+import { ACTIVITY_STATUSES } from "@/features/activities";
 import server from "@/tests/server";
 import userEvent from "@testing-library/user-event";
 import { HttpStatusCode } from "axios";
@@ -39,6 +40,10 @@ describe("ActivitiesPage", () => {
     expect(screen.queryByText("No activities found")).not.toBeInTheDocument();
     expect(screen.getAllByRole("row")).toHaveLength(DEFAULT_PAGE_SIZE + 1);
     expect(screen.getByText("Showing 20 of 21 results")).toBeInTheDocument();
+    const table = screen.getByRole("table");
+    for (const { label } of Object.values(ACTIVITY_STATUSES)) {
+      expect(within(table).getAllByText(label).length).toBeGreaterThan(0);
+    }
 
     await user.click(screen.getByRole("button", { name: "Next page" }));
     const lastGroup = activityParents.at(-1);
@@ -202,7 +207,7 @@ describe("ActivitiesPage", () => {
     });
     expect(activityHeading).toBeInTheDocument();
     expect(activityHeading.closest("aside")).toHaveClass(
-      sidePanelClasses.large,
+      sidePanelClasses.medium,
     );
     expect(getLocationDisplay()).toHaveTextContent(
       `sidePath=activity&name=${activity.id}`,

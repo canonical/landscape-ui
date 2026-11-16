@@ -1,0 +1,17 @@
+.descriptionContent {
+  display: flex;
+  min-width: 0;
+}
+
+.statusContent {
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.descriptionText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

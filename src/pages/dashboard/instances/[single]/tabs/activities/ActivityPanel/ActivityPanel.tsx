@@ -92,7 +92,6 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
     (activity: ActivityCommon) => {
       openActivityDetailsPanel(activity, {
         hideInstanceField: instanceId !== undefined,
-        size: instanceId === undefined ? "large" : "small",
       });
     },
     [instanceId, openActivityDetailsPanel],

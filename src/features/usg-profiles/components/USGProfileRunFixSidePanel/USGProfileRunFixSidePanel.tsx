@@ -44,7 +44,7 @@ const USGProfileRunFixSidePanel: FC = () => {
           {
             label: "View details",
             onClick: () => {
-              openActivityDetails(activity, { size: "large" });
+              openActivityDetails(activity);
             },
           },
         ],

@@ -22,11 +22,7 @@ const ScriptProfileActivitiesList: FC<ScriptProfileActivitiesListProps> = ({
         Header: "Run",
         accessor: "creation_time",
         Cell: ({ row: { original: activity } }: CellProps<ActivityCommon>) => (
-          <ActivityDetailsLink
-            activity={activity}
-            size="large"
-            className="font-monospace"
-          >
+          <ActivityDetailsLink activity={activity} className="font-monospace">
             {date(activity.creation_time)
               .utc()
               .format(DISPLAY_DATE_TIME_FORMAT)}

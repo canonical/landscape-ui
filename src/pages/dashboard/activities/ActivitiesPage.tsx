@@ -68,16 +68,16 @@ const ActivitiesPage: FC = () => {
       <SidePanel
         isOpen={lastSidePathSegment === "activity"}
         onClose={popSidePathUntilClear}
-        size="large"
+        size="medium"
         contentKey={`activity-${name}`}
       >
         {lastSidePathSegment === "activity" && (
           <SidePanel.Suspense key={`activity-${name}`}>
             <ActivityDetails
               activityId={Number(name)}
-              size="large"
               onClose={popSidePathUntilClear}
               renderInSidePanel
+              hideInstanceField
             />
           </SidePanel.Suspense>
         )}

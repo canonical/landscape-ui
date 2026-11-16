@@ -1,4 +1,36 @@
-import type { Activity, ActivityGroup } from "@/features/activities";
+import type {
+  Activity,
+  ActivityGroup,
+  ActivityStatus,
+} from "@/features/activities";
+
+const MOCK_ACTIVITY_STATUSES = [
+  "succeeded",
+  "scheduled",
+  "waiting",
+  "undelivered",
+  "delivered",
+  "blocked",
+  "unapproved",
+  "canceled",
+  "failed",
+] as const satisfies readonly ActivityStatus[];
+
+const COMPLETED_ACTIVITY_STATUSES: readonly ActivityStatus[] = [
+  "succeeded",
+  "canceled",
+  "failed",
+];
+
+const getMockActivityStatus = (index: number): ActivityStatus =>
+  MOCK_ACTIVITY_STATUSES[index % MOCK_ACTIVITY_STATUSES.length] ?? "succeeded";
+
+const getMockStatusFields = (status: ActivityStatus) => ({
+  activity_status: status,
+  completion_time: COMPLETED_ACTIVITY_STATUSES.includes(status)
+    ? "2024-04-15T15:24:03Z"
+    : null,
+});
 
 export const SNAP_ACTION_ACTIVITY: ActivityGroup = {
   id: 1000,
@@ -23,6 +55,19 @@ export const SNAP_ACTION_ACTIVITY: ActivityGroup = {
 
 const PAGINATED_ACTIVITY_GROUP_ID = 1100;
 const ADDITIONAL_ACTIVITY_GROUP_BASE_ID = 1200;
+const FIRST_ACTIVITY_GROUP_CHILD_BASE_ID = 1301;
+const ADDITIONAL_ACTIVITY_GROUP_CHILD_BASE_ID = 1401;
+
+const additionalActivityParents: ActivityGroup[] = Array.from(
+  { length: 18 },
+  (_, index) => ({
+    ...SNAP_ACTION_ACTIVITY,
+    actions: undefined,
+    id: ADDITIONAL_ACTIVITY_GROUP_BASE_ID + index,
+    summary: `Install snaps batch ${index + 1}`,
+    ...getMockStatusFields(getMockActivityStatus(index)),
+  }),
+);
 
 export const activityParents: ActivityGroup[] = [
   { ...SNAP_ACTION_ACTIVITY, actions: undefined },
@@ -41,12 +86,7 @@ export const activityParents: ActivityGroup[] = [
     summary: "Start many instances",
     activity_status: "delivered",
   },
-  ...Array.from({ length: 18 }, (_, index) => ({
-    ...SNAP_ACTION_ACTIVITY,
-    actions: undefined,
-    id: ADDITIONAL_ACTIVITY_GROUP_BASE_ID + index,
-    summary: `Install snaps batch ${index + 1}`,
-  })),
+  ...additionalActivityParents,
 ];
 
 export const RELEASE_UPGRADE_ACTIVITY: Activity = {
@@ -347,7 +387,6 @@ export const activities = [
     type: "GenerateFDERecoveryKeyRequest",
   },
   RELEASE_UPGRADE_ACTIVITY,
-  SNAP_ACTION_ACTIVITY,
   {
     id: 10101,
     actions: {
@@ -388,6 +427,67 @@ export const activityGroupChildren: Activity[] = Array.from(
     delivery_time: index < 10 ? null : activities[1].delivery_time,
   }),
 );
+
+const createGroupChild = (
+  id: number,
+  parentId: number,
+  summary: string,
+  status: ActivityStatus,
+): Activity => {
+  const isCompleted = COMPLETED_ACTIVITY_STATUSES.includes(status);
+
+  return {
+    ...SNAP_ACTION_ACTIVITY,
+    ...getMockStatusFields(status),
+    id,
+    parent_id: parentId,
+    summary,
+    type: "InstallSnaps",
+    actions: {
+      approvable: status === "unapproved",
+      cancelable: !isCompleted,
+      reappliable: isCompleted,
+    },
+    approval_time: null,
+    children: [],
+    deliver_after_time: null,
+    deliver_before_time: null,
+    delivery_time: ["delivered", "succeeded", "failed"].includes(status)
+      ? "2024-04-15T15:23:03Z"
+      : null,
+    modification_time: SNAP_ACTION_ACTIVITY.creation_time,
+    schedule_after_time: null,
+    schedule_before_time: null,
+  };
+};
+
+const snapActionActivityChildren: Activity[] = Array.from(
+  { length: 21 },
+  (_, index) =>
+    createGroupChild(
+      FIRST_ACTIVITY_GROUP_CHILD_BASE_ID + index,
+      SNAP_ACTION_ACTIVITY.id,
+      `Install snap ${index + 1}`,
+      getMockActivityStatus(index),
+    ),
+);
+
+const additionalActivityGroupChildren: Activity[] =
+  additionalActivityParents.map((group, index) =>
+    createGroupChild(
+      ADDITIONAL_ACTIVITY_GROUP_CHILD_BASE_ID + index,
+      group.id,
+      `${group.summary} on Computer 1`,
+      group.activity_status,
+    ),
+  );
+
+export const childActivities: Activity[] = [
+  ...activities,
+  ...snapActionActivityChildren,
+  ...activityGroupChildren,
+  ...additionalActivityGroupChildren,
+];
 
 export const MANY_UNAPPROVED_ACTIVITY_BASE_ID = 2000;
 export const MANY_DELIVERED_ACTIVITY_BASE_ID = 3000;

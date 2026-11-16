@@ -3,7 +3,6 @@ import { DISPLAY_DATE_TIME_FORMAT, API_URL } from "@/constants";
 import sidePanelClasses from "@/components/layout/SidePanel/SidePanel.module.scss";
 import globalSidePanelClasses from "@/context/SidePanelProvider.module.scss";
 import date from "@/libs/date";
-import { ROUTES } from "@/libs/routes";
 import { activities } from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
@@ -47,7 +46,6 @@ const ActivitiesListWithPanel: FC<ActivitiesListWithPanelProps> = ({
       onActivityDetailsOpen={(activity) => {
         openActivityDetailsPanel(activity, {
           hideInstanceField: instanceId !== undefined,
-          size: isActivityGroup ? "large" : "small",
         });
       }}
     />
@@ -65,7 +63,11 @@ describe("ActivitiesList rendering", () => {
     );
 
     const table = screen.getByRole("table");
-    expect(table).toHaveTexts([
+    expect(
+      within(table)
+        .getAllByRole("columnheader")
+        .map((cell) => cell.textContent),
+    ).toEqual([
       "Activity group",
       "Status",
       "Created at",
@@ -115,29 +117,12 @@ describe("ActivitiesList rendering", () => {
     ).toBeInTheDocument();
   });
 
-  it("does not render instance links when the Instance column is hidden", () => {
+  it("does not render an Instance column in the single-row list", () => {
     renderWithProviders(<ActivitiesList {...defaultProps} />);
 
-    expect(
-      within(screen.getByRole("table")).queryAllByRole("link"),
-    ).toHaveLength(0);
-  });
-
-  it("renders the Instance column when requested", () => {
-    renderWithProviders(
-      <ActivitiesList {...defaultProps} showInstanceColumn />,
-    );
-
     const table = screen.getByRole("table");
-    expect(within(table).getByText("Instance")).toBeInTheDocument();
-    const instanceLinks = within(table).getAllByRole("link");
-    expect(instanceLinks.map((link) => link.textContent)).toEqual(
-      activities.map((activity) => activity.computer_title),
-    );
-    expect(instanceLinks[0]).toHaveAttribute(
-      "href",
-      ROUTES.instances.details.single(activities[0].computer_id),
-    );
+    expect(within(table).queryByText("Instance")).not.toBeInTheDocument();
+    expect(within(table).queryAllByRole("link")).toHaveLength(0);
   });
 
   it("renders the status label for each activity", () => {
@@ -157,6 +142,9 @@ describe("ActivitiesList rendering", () => {
     expect(screen.getByText("Succeeded")).toBeInTheDocument();
     expect(screen.getByText("Failed")).toBeInTheDocument();
     expect(screen.getByText("Waiting")).toBeInTheDocument();
+    const succeededCell = screen.getByText("Succeeded").closest("td");
+    assert(succeededCell);
+    expect(succeededCell).toHaveIcon("success");
   });
 
   it("opens activity details when its summary is clicked", async () => {
@@ -171,7 +159,7 @@ describe("ActivitiesList rendering", () => {
     );
   });
 
-  it("resets the tab and closes child details when another activity is opened", async () => {
+  it("closes child details when another activity is opened", async () => {
     const parent = {
       ...activities[0],
       type: "ActivityGroup",
@@ -214,9 +202,6 @@ describe("ActivitiesList rendering", () => {
     await userEvent.click(
       within(mainTable).getByRole("button", { name: parent.summary }),
     );
-    await screen.findByRole("tab", { name: "Activities" });
-    await userEvent.click(screen.getByRole("tab", { name: "Output" }));
-    await userEvent.click(screen.getByRole("tab", { name: "Activities" }));
     const parentHeading = screen.getByRole("heading", {
       name: parent.summary,
     });
@@ -229,7 +214,6 @@ describe("ActivitiesList rendering", () => {
     expect(
       await screen.findByRole("heading", { name: child.summary }),
     ).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("tab", { name: "Output" }));
 
     await userEvent.click(
       within(mainTable).getByRole("button", { name: nextActivity.summary }),
@@ -240,27 +224,17 @@ describe("ActivitiesList rendering", () => {
     const nextPanel = nextHeading.closest("aside");
     assert(nextPanel);
     expect(
-      await within(nextPanel).findByRole("tab", { name: "Activities" }),
-    ).toHaveAttribute("aria-selected", "true");
-    expect(
       screen.queryByRole("heading", { name: child.summary }),
     ).not.toBeInTheDocument();
     expect(await within(nextPanel).findByRole("table")).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: parent.summary }),
     ).not.toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Activities" })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
   });
 
-  it.each([
-    { instanceId: undefined, size: "large" as const },
-    { instanceId: 6, size: "small" as const },
-  ])(
-    "opens children in a $size local panel for instanceId=$instanceId",
-    async ({ instanceId, size }) => {
+  it.each([undefined, 6])(
+    "opens children in a medium local panel for instanceId=%s",
+    async (instanceId) => {
       const parent = {
         ...activities[0],
         type: "ActivityGroup",
@@ -296,16 +270,9 @@ describe("ActivitiesList rendering", () => {
       const parentHeading = await screen.findByRole("heading", {
         name: parent.summary,
       });
-      if (size === "small") {
-        expect(parentHeading.closest("aside")).not.toHaveClass("is-wide");
-      } else {
-        expect(parentHeading.closest("aside")).toHaveClass("is-wide");
-      }
-      expect(parentHeading.closest("aside")).not.toHaveClass(
+      expect(parentHeading.closest("aside")).toHaveClass(
         globalSidePanelClasses.medium,
       );
-      await screen.findByRole("tab", { name: "Activities" });
-
       const parentPanel = parentHeading.closest("aside");
       assert(parentPanel);
       const table = await within(parentPanel).findByRole("table");
@@ -316,16 +283,9 @@ describe("ActivitiesList rendering", () => {
       const childHeading = await screen.findByRole("heading", {
         name: child.summary,
       });
-      if (size === "small") {
-        expect(childHeading.closest("aside")).not.toHaveClass(
-          sidePanelClasses.medium,
-          sidePanelClasses.large,
-        );
-      } else {
-        expect(childHeading.closest("aside")).toHaveClass(
-          sidePanelClasses.large,
-        );
-      }
+      expect(childHeading.closest("aside")).toHaveClass(
+        sidePanelClasses.medium,
+      );
       expect(parentHeading).toBeInTheDocument();
       const childPanel = childHeading.closest("aside");
       assert(childPanel);
@@ -340,10 +300,6 @@ describe("ActivitiesList rendering", () => {
       ).not.toBeInTheDocument();
       expect(parentHeading).toBeInTheDocument();
       expect(table).toBeInTheDocument();
-      expect(screen.getByRole("tab", { name: "Activities" })).toHaveAttribute(
-        "aria-selected",
-        "true",
-      );
     },
   );
 });

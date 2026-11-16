@@ -271,7 +271,7 @@ export const getScriptColumns = (): Column<Profile>[] => [
       if (isScriptProfile(profile)) {
         const { last_activity } = profile.activities;
         return last_activity ? (
-          <ActivityDetailsLink activity={last_activity} size="large">
+          <ActivityDetailsLink activity={last_activity}>
             {date(last_activity.creation_time)
               .utc()
               .format(DISPLAY_DATE_TIME_FORMAT)}

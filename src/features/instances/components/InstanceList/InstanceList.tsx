@@ -417,7 +417,7 @@ const InstanceList = memo(function InstanceList({
     <tr>
       <td colSpan={filteredColumns.length} className="u-no-padding">
         <ResponsiveTableSubhead
-          itemName="instance"
+          itemName={["instance"]}
           onClearSelection={onClearSelection}
           selectedCount={selectedInstances.length}
           totalCount={instanceCount}

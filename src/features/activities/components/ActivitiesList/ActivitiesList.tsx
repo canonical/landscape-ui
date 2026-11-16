@@ -1,19 +1,12 @@
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import {
-  BREAKPOINT_PX,
-  DISPLAY_DATE_TIME_FORMAT,
-  TSV_EXPORTS_ENABLED,
-} from "@/constants";
-import { ROUTES } from "@/libs/routes";
+import { DISPLAY_DATE_TIME_FORMAT, TSV_EXPORTS_ENABLED } from "@/constants";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import date from "@/libs/date";
 import type { FC, ReactNode } from "react";
 import { useCallback, useMemo } from "react";
-import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
-import { useMediaQuery } from "usehooks-ts";
 import { ACTIVITY_STATUSES } from "../../constants";
 import type { ActivityCommon } from "../../types";
 import classes from "./ActivitiesList.module.scss";
@@ -28,7 +21,6 @@ interface ActivitiesListProps {
   readonly selectionEnabled: boolean;
   readonly selectedActivities?: ActivityCommon[];
   readonly setSelectedActivities?: (activities: ActivityCommon[]) => void;
-  readonly showInstanceColumn?: boolean;
   readonly isAllSelected?: boolean;
   readonly onSelectAll?: () => void;
   readonly onClearSelection?: () => void;
@@ -38,7 +30,6 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
   activities,
   onActivityDetailsOpen,
   activitiesCount: activityCount,
-  showInstanceColumn,
   isGettingActivities,
   header,
   selectionEnabled,
@@ -48,8 +39,6 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
   onSelectAll,
   onClearSelection,
 }) => {
-  const isMedium = useMediaQuery(`(max-width: ${BREAKPOINT_PX.md}px)`);
-
   const handleClearSelection = useCallback(() => {
     if (onClearSelection) {
       onClearSelection();
@@ -95,135 +84,117 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
   );
 
   const columns = useMemo<Column<ActivityCommon>[]>(
-    () =>
-      [
-        {
-          accessor: "summary",
-          className: isMedium ? undefined : classes.description,
-          Header: (
-            <>
-              {selectionEnabled && (
-                <CheckboxInput
-                  label={<span className="u-off-screen">Toggle all</span>}
-                  inline
-                  onChange={toggleAll}
-                  checked={
-                    isAllSelected ||
-                    (activities.length > 0 &&
-                      selectedActivities.length === activities.length)
-                  }
-                  indeterminate={
-                    !isAllSelected &&
-                    selectedActivities.length > 0 &&
-                    selectedActivities.length < activities.length
-                  }
-                  disabled={!activities.length}
-                />
-              )}
-              <span>{header}</span>
-            </>
-          ),
-          Cell: ({ row }: CellProps<ActivityCommon>) => (
-            <div className={classes.descriptionContent}>
-              {selectionEnabled && (
-                <CheckboxInput
-                  label={
-                    <span className="u-off-screen">{row.original.summary}</span>
-                  }
-                  inline
-                  labelClassName="u-no-margin--bottom u-no-padding--top"
-                  checked={
-                    isAllSelected || selectedActivities.includes(row.original)
-                  }
-                  onChange={() => {
-                    handleToggleActivity(row.original);
-                  }}
-                />
-              )}
-              <Button
-                type="button"
-                appearance="link"
-                className={classNames(
-                  "u-no-margin--bottom u-no-padding--top u-align-text--left",
-                  classes.descriptionText,
-                )}
-                onClick={() => {
-                  onActivityDetailsOpen(row.original);
+    () => [
+      {
+        accessor: "summary",
+        className: "large-cell",
+        Header: (
+          <>
+            {selectionEnabled && (
+              <CheckboxInput
+                label={<span className="u-off-screen">Toggle all</span>}
+                inline
+                onChange={toggleAll}
+                checked={
+                  isAllSelected ||
+                  (activities.length > 0 &&
+                    selectedActivities.length === activities.length)
+                }
+                indeterminate={
+                  !isAllSelected &&
+                  selectedActivities.length > 0 &&
+                  selectedActivities.length < activities.length
+                }
+                disabled={!activities.length}
+              />
+            )}
+            <span>{header}</span>
+          </>
+        ),
+        Cell: ({ row }: CellProps<ActivityCommon>) => (
+          <div className={classes.descriptionContent}>
+            {selectionEnabled && (
+              <CheckboxInput
+                label={
+                  <span className="u-off-screen">{row.original.summary}</span>
+                }
+                inline
+                labelClassName="u-no-margin--bottom u-no-padding--top"
+                checked={
+                  isAllSelected || selectedActivities.includes(row.original)
+                }
+                onChange={() => {
+                  handleToggleActivity(row.original);
                 }}
-              >
-                {row.original.summary}
-              </Button>
-            </div>
-          ),
-        },
-        {
-          accessor: "activity_status",
-          Header: "Status",
-          className: "medium-cell",
-          Cell: ({
-            row: {
-              original: { activity_status },
-            },
-          }: CellProps<ActivityCommon>) =>
-            ACTIVITY_STATUSES[activity_status].label,
-          getCellIcon: ({
-            row: {
-              original: { activity_status },
-            },
-          }: CellProps<ActivityCommon>) =>
-            ACTIVITY_STATUSES[activity_status].icon,
-        },
-        {
-          accessor: "computer_id",
-          Header: "Instance",
-          className: "large-cell",
-          Cell: ({ row }: CellProps<ActivityCommon>) =>
-            row.original.computer_id ? (
-              <Link
-                to={ROUTES.instances.details.single(row.original.computer_id)}
-              >
-                {row.original.computer_title}
-              </Link>
-            ) : (
-              <NoData />
-            ),
-        },
-        {
-          accessor: "creation_time",
-          Header: "Created at",
-          className: "large-cell",
-          Cell: ({ row }: CellProps<ActivityCommon>) => (
+              />
+            )}
+            <Button
+              type="button"
+              appearance="link"
+              className={classNames(
+                "u-no-margin--bottom u-no-padding--top u-align-text--left",
+                classes.descriptionText,
+              )}
+              onClick={() => {
+                onActivityDetailsOpen(row.original);
+              }}
+            >
+              {row.original.summary}
+            </Button>
+          </div>
+        ),
+      },
+      {
+        accessor: "activity_status",
+        Header: "Status",
+        className: "medium-cell",
+        Cell: ({
+          row: {
+            original: { activity_status },
+          },
+        }: CellProps<ActivityCommon>) =>
+          ACTIVITY_STATUSES[activity_status].label,
+        getCellIcon: ({
+          row: {
+            original: { activity_status },
+          },
+        }: CellProps<ActivityCommon>) =>
+          ACTIVITY_STATUSES[activity_status].icon,
+      },
+      {
+        accessor: "creation_time",
+        Header: "Created at",
+        className: "large-cell",
+        Cell: ({ row }: CellProps<ActivityCommon>) => (
+          <span className="font-monospace">
+            {date(row.original.creation_time).format(DISPLAY_DATE_TIME_FORMAT)}
+          </span>
+        ),
+      },
+      {
+        accessor: "completion_time",
+        Header: "Completed at",
+        className: "large-cell",
+        Cell: ({ row }: CellProps<ActivityCommon>) =>
+          row.original.completion_time ? (
             <span className="font-monospace">
-              {date(row.original.creation_time).format(
+              {date(row.original.completion_time).format(
                 DISPLAY_DATE_TIME_FORMAT,
               )}
             </span>
+          ) : (
+            <NoData />
           ),
-        },
-        {
-          accessor: "completion_time",
-          Header: "Completed at",
-          className: "large-cell",
-          Cell: ({ row }: CellProps<ActivityCommon>) =>
-            row.original.completion_time ? (
-              <span className="font-monospace">
-                {date(row.original.completion_time).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )}
-              </span>
-            ) : (
-              <NoData />
-            ),
-        },
-        {
-          accessor: "creator.name",
-          Header: "Creator",
-          className: "medium-cell",
-          Cell: ({ row }: CellProps<ActivityCommon>) => (
-            <>{row.original.creator?.name ?? <NoData />}</>
-          ),
-        },
-      ].filter((col) => showInstanceColumn || col.accessor !== "computer_id"),
+      },
+      {
+        accessor: "creator.name",
+        Header: "Creator",
+        className: "medium-cell",
+        Cell: ({ row }: CellProps<ActivityCommon>) => (
+          <>{row.original.creator?.name ?? <NoData />}</>
+        ),
+      },
+    ],
     [
       activities,
       header,
@@ -233,8 +204,6 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
       toggleAll,
       handleToggleActivity,
       onActivityDetailsOpen,
-      showInstanceColumn,
-      isMedium,
     ],
   );
 

@@ -4,8 +4,7 @@ import SidePanel from "@/components/layout/SidePanel";
 import StaticLink from "@/components/layout/StaticLink";
 import { useGetInstance } from "@/features/instances";
 import { ROUTES } from "@/libs/routes/routes";
-import { CodeSnippet, Icon, Tabs } from "@canonical/react-components";
-import { useState } from "react";
+import { CodeSnippet, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { useGetSingleActivity } from "../../api";
 import classes from "./ActivityDetails.module.scss";
@@ -20,7 +19,6 @@ interface ActivityDetailsProps {
   readonly activityId: number;
   readonly onClose: () => void;
   readonly hideInstanceField?: boolean;
-  readonly size?: "small" | "medium" | "large";
   readonly renderInSidePanel?: boolean;
 }
 
@@ -28,7 +26,6 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({
   activityId,
   hideInstanceField,
   onClose,
-  size = "small",
   renderInSidePanel,
 }) => {
   const { activity, isGettingActivity, activityError } = useGetSingleActivity({
@@ -43,8 +40,6 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({
     { instanceId: instanceId as number },
     { enabled: instanceQueryEnabled },
   );
-
-  const [tabId, setTabId] = useState("activities");
 
   if (isGettingActivity) {
     return renderInSidePanel ? <SidePanel.LoadingState /> : <LoadingState />;
@@ -71,11 +66,13 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({
   const activityChildren = (
     <ActivitiesPanelList
       parentId={activity.id}
-      size={size}
       availableActions={{
         approve: true,
         cancel: true,
         redo: true,
+      }}
+      hiddenColumns={{
+        creator: true,
       }}
     />
   );
@@ -153,39 +150,10 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({
           <Blocks.Item title="Output">{output}</Blocks.Item>
         )}
 
-        {isActivityGroup && !output && (
+        {isActivityGroup && (
           <Blocks.Item title="Activities">{activityChildren}</Blocks.Item>
         )}
       </Blocks>
-
-      {isActivityGroup && output && (
-        <>
-          <Tabs
-            className={classes.tabs}
-            links={[
-              {
-                label: "Activities",
-                active: tabId === "activities",
-                role: "tab",
-                onClick: (): void => {
-                  setTabId("activities");
-                },
-              },
-              {
-                label: "Output",
-                active: tabId === "output",
-                role: "tab",
-                onClick: (): void => {
-                  setTabId("output");
-                },
-              },
-            ]}
-          />
-
-          {tabId === "activities" && activityChildren}
-          {tabId === "output" && output}
-        </>
-      )}
     </>
   );
 

@@ -1,4 +1,5 @@
 import { API_URL } from "@/constants";
+import sidePanelClasses from "@/context/SidePanelProvider.module.scss";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { activities, activityParents } from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
@@ -25,10 +26,7 @@ describe("ActivityDetailsLink", () => {
       const user = userEvent.setup();
       renderWithProviders(
         <>
-          <ActivityDetailsLink
-            activity={activity}
-            size={isActivityGroup ? "large" : "small"}
-          >
+          <ActivityDetailsLink activity={activity}>
             View activity
           </ActivityDetailsLink>
           <LocationDisplay />
@@ -48,13 +46,12 @@ describe("ActivityDetailsLink", () => {
       );
       expect(getLocationDisplay()).not.toHaveTextContent("sidePath");
       expect(getLocationDisplay()).not.toHaveTextContent("/activities");
+      expect(panel).toHaveClass(sidePanelClasses.medium);
       if (isActivityGroup) {
-        expect(panel).toHaveClass("is-wide");
         expect(
           await within(panel).findByRole("heading", { name: "Activities" }),
         ).toBeInTheDocument();
       } else {
-        expect(panel).not.toHaveClass("is-wide");
         expect(
           within(panel).queryByRole("heading", { name: "Activities" }),
         ).not.toBeInTheDocument();

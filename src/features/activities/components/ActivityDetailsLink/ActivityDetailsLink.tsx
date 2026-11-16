@@ -3,10 +3,10 @@ import usePageParams from "@/hooks/usePageParams";
 import type { FC, ReactNode } from "react";
 import { useOpenActivityDetailsPanel } from "../../hooks";
 import type { ActivityCommon } from "../../types";
+import classNames from "classnames";
 
 interface ActivityDetailsLinkProps {
   readonly activity: Pick<ActivityCommon, "id" | "summary">;
-  readonly size?: "small" | "medium" | "large";
   readonly children: ReactNode;
   readonly className?: string;
   readonly "aria-label"?: string;
@@ -14,7 +14,6 @@ interface ActivityDetailsLinkProps {
 
 const ActivityDetailsLink: FC<ActivityDetailsLinkProps> = ({
   activity,
-  size,
   ...props
 }) => {
   const openActivityDetails = useOpenActivityDetailsPanel();
@@ -25,15 +24,16 @@ const ActivityDetailsLink: FC<ActivityDetailsLinkProps> = ({
     <Button
       type="button"
       appearance="link"
-      className="u-no-margin--bottom u-no-padding--top"
       {...props}
+      className={classNames(
+        "u-no-margin--bottom u-no-padding--top",
+        props.className,
+      )}
       onClick={() => {
         if (sidePath.length) {
           closeSidePanel();
         }
-        openActivityDetails(activity, {
-          size,
-        });
+        openActivityDetails(activity);
       }}
     />
   );

@@ -2,7 +2,7 @@ import type { AuthContextProps } from "@/context/auth";
 import useAuth from "@/hooks/useAuth";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { ROUTES } from "@/libs/routes";
-import { activities, activityGroupChildren } from "@/tests/mocks/activity";
+import { activities, childActivities } from "@/tests/mocks/activity";
 import { instances } from "@/tests/mocks/instance";
 import { usns } from "@/tests/mocks/usn";
 import { renderWithProviders } from "@/tests/render";
@@ -160,7 +160,7 @@ describe("InfoTablesContainer", () => {
       expect(createdAtText).toHaveClass(classes.singleLineCell);
     });
 
-    it("opens child activity details locally in the original small panel", async () => {
+    it("opens child activity details locally in a medium panel", async () => {
       const activity = activities.find(
         (item) => item.activity_status === "unapproved",
       );
@@ -173,8 +173,7 @@ describe("InfoTablesContainer", () => {
       });
       const panel = heading.closest("aside");
       assert(panel);
-      expect(panel).not.toHaveClass("is-wide");
-      expect(panel).not.toHaveClass(globalSidePanelClasses.medium);
+      expect(panel).toHaveClass(globalSidePanelClasses.medium);
       expect(mockNavigate).not.toHaveBeenCalled();
       expect(
         screen.queryByRole("link", { name: activity.summary }),
@@ -410,19 +409,18 @@ describe("InfoTablesContainer activities footer", () => {
       tab: "Requires approval",
       status: "unapproved",
       title: "Activities requiring approval",
-      total: 11,
+      total: 15,
     },
     {
       tab: "In progress",
       status: "delivered",
       title: "Activities in progress",
-      total: 21,
+      total: 25,
     },
   ])(
-    "opens a local large child-activity list from the $tab footer using default mocks",
+    "opens a local medium child-activity list from the $tab footer using default mocks",
     async ({ tab, status, title, total }) => {
-      const allActivities = [...activities, ...activityGroupChildren];
-      const expectedActivities = allActivities.filter(
+      const expectedActivities = childActivities.filter(
         (activity) => activity.activity_status === status,
       );
       expect(expectedActivities).toHaveLength(total);
@@ -443,10 +441,20 @@ describe("InfoTablesContainer activities footer", () => {
       const heading = await screen.findByRole("heading", { name: title });
       const panel = heading.closest("aside");
       assert(panel);
-      expect(panel).toHaveClass("is-wide");
+      expect(panel).toHaveClass(globalSidePanelClasses.medium);
       expect(
-        await within(panel).findByRole("columnheader", { name: "Instance" }),
+        await within(panel).findByRole("columnheader", {
+          name: /^Toggle all\s*Activity\s*Instance$/,
+        }),
       ).toBeInTheDocument();
+      expect(
+        within(panel).getByRole("columnheader", {
+          name: /^Creator\s*Created at$/,
+        }),
+      ).toBeInTheDocument();
+      expect(
+        within(panel).queryByRole("columnheader", { name: /^Status/ }),
+      ).not.toBeInTheDocument();
       const firstPageActivities = expectedActivities.slice(
         0,
         DEFAULT_PAGE_SIZE,
@@ -463,16 +471,22 @@ describe("InfoTablesContainer activities footer", () => {
         await userEvent.click(
           within(panel).getByRole("button", { name: "Next page" }),
         );
-        const lastActivity = expectedActivities.at(-1);
+        const secondPageActivities =
+          expectedActivities.slice(DEFAULT_PAGE_SIZE);
+        const lastActivity = secondPageActivities.at(-1);
         assert(lastActivity);
         expect(
           await within(panel).findByRole("button", {
             name: lastActivity.summary,
           }),
         ).toBeInTheDocument();
-        expect(within(panel).getAllByRole("row")).toHaveLength(2);
+        expect(within(panel).getAllByRole("row")).toHaveLength(
+          secondPageActivities.length + 1,
+        );
         expect(
-          within(panel).getByText("Showing 1 of 21 results"),
+          within(panel).getByText(
+            `Showing ${secondPageActivities.length} of ${total} results`,
+          ),
         ).toBeInTheDocument();
       }
       expect(mockNavigate).not.toHaveBeenCalled();
