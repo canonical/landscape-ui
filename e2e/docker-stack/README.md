@@ -27,8 +27,9 @@ The **Integration Tests** workflow (`.github/workflows/integration-tests.yml`) r
 1. Go to **Actions → Integration Tests** in GitHub
 2. Click **Run workflow**
 3. Set `packaging_ref` to a branch, tag, or SHA from `canonical/landscape-packaging`
-   containing `docker/configs/.env.testing` and `.env.ui.testing` (leave blank only
-   once `main` contains them). CI fails explicitly if this prerequisite is missing.
+   containing `docker/configs/.env.testing` and `.env.ui.testing`. Use the default
+   `main` only once it contains them; a blank input also falls back to `main`.
+   CI fails explicitly if this prerequisite is missing.
 
 ---
 

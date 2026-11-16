@@ -1,4 +1,4 @@
-import { chromium, type FullConfig } from "@playwright/test";
+import { chromium, expect, type FullConfig } from "@playwright/test";
 import fs from "fs";
 import path from "path";
 import { getAuthToken } from "./helpers/auth";
@@ -42,7 +42,7 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
     );
   }
 
-  // Log in once and write storageState so individual tests skip the login flow.
+  // Prepare shared storageState so individual tests skip the login flow.
   fs.mkdirSync(path.dirname(STORAGE_STATE_PATH), { recursive: true });
 
   const browser = await chromium.launch();
@@ -76,6 +76,19 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
     await getAuthToken(context.request);
     await page.goto("/overview");
     await page.waitForURL(/overview/, { timeout: 30_000 });
+
+    const sessionResponse = await context.request.get(`${BASE_URL}/api/v2/me`);
+    expect(
+      sessionResponse.ok(),
+      `GET /me failed: ${sessionResponse.status()}`,
+    ).toBe(true);
+    const sessionBody = (await sessionResponse.json()) as {
+      current_account?: string;
+    };
+    expect(
+      sessionBody.current_account,
+      "Browser session must select the seeded fixture account before saving state",
+    ).toBe("standalone");
 
     // Bake the welcome-modal dismissal into the shared storageState so every
     // spec reusing it skips the first-run popup without repeating this call.

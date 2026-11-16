@@ -295,6 +295,10 @@ jobs:
       - name: Start backend stack
         working-directory: .landscape-packaging/docker/ui-dev
         run: |
+          trap 'status=$?; docker compose \
+            -p "ls-integration-${{ github.run_id }}" \
+            -f compose.yaml -f compose.ci-override.yaml \
+            logs --tail=100 builder schema || true; exit "$status"' ERR
           _uid=$(id -u)
           _gid=$(id -g)
           _uname=$(whoami)

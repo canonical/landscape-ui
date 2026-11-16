@@ -173,8 +173,10 @@ its browser session to the same account and loads a new document before saving
 storage state, keeping browser reads consistent with API mutations (including the
 preferences round-trip). CI's archive-cache warmup also selects `standalone`.
 This preserves existing fixture assertions without changing user defaults or
-duplicating server data. The fresh-session login test remains independent and
-continues to exercise the backend's default selection.
+duplicating server data. Before saving shared storage state, setup verifies through
+the same-origin `/api/v2/me` endpoint that the cookie-authenticated session selects
+`standalone`. The fresh-session login test remains independent: it verifies UI login
+without specifying an account, not the backend's default-account selection policy.
 
 ## Key design decisions
 
