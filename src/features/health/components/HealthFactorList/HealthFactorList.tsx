@@ -2,7 +2,11 @@ import { Icon } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
 import { pluralize } from "@/utils/_helpers";
-import { CRITICAL_FACTOR_POINTS, pendingRebootCount } from "../../helpers";
+import {
+  CRITICAL_FACTOR_POINTS,
+  pendingRebootCount,
+  ruleTitle,
+} from "../../helpers";
 import type { HealthFactor } from "../../types";
 import classes from "./HealthFactorList.module.scss";
 
@@ -32,13 +36,13 @@ const HealthFactorList: FC<HealthFactorListProps> = ({
         const isCritical = factor.points >= CRITICAL_FACTOR_POINTS;
         const pending = pendingRebootCount(factor);
         return (
-          <li key={factor.rule_id} className={classes.item}>
+          <li key={factor.rule_key} className={classes.item}>
             <Icon
               name={isCritical ? "error" : "warning"}
               aria-label={isCritical ? "Critical" : "Warning"}
             />
             <span className={classes.description}>
-              {factor.description || factor.rule_key}
+              {ruleTitle(factor)}
               {pending > 0 && (
                 <span className={classes.note}>
                   {pending} {pluralize(pending, ["fix", "fixes"])} installed.

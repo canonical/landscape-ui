@@ -210,9 +210,10 @@ export interface InstanceHealth {
   band: "critical" | "warning" | "healthy";
   critical_factor_count: number;
   factors: {
-    rule_id: number;
+    rule_id?: number;
     rule_key: string;
-    description: string;
+    title?: string;
+    description?: string;
     points: number;
     count?: number;
     pending_reboot_count?: number;

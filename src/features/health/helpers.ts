@@ -57,6 +57,11 @@ export const suggestedActionFor = (
   factor: HealthFactor,
 ): HealthActionKind | null => ACTION_BY_RULE_KEY[factor.rule_key] ?? null;
 
+/** Returns the display text of a rule, falling back to its key. */
+export const ruleTitle = (
+  rule: Pick<HealthFactor, "rule_key" | "title" | "description">,
+): string => rule.title || rule.description || rule.rule_key;
+
 /** Returns how many of the factor's fixes are installed and wait for a reboot. */
 export const pendingRebootCount = (
   factor: Pick<HealthFactor, "pending_reboot_count">,

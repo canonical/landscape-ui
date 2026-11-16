@@ -5,7 +5,6 @@ import HealthFactorList from "./HealthFactorList";
 
 const factor = (overrides: Partial<HealthFactor>): HealthFactor =>
   ({
-    rule_id: 1,
     rule_key: "reboot_required",
     description: "Reboot required",
     points: 20,
@@ -17,8 +16,12 @@ describe("HealthFactorList", () => {
     render(
       <HealthFactorList
         factors={[
-          factor({ rule_id: 1, description: "Critical USN", points: 100 }),
-          factor({ rule_id: 2 }),
+          factor({
+            rule_key: "usn.critical",
+            description: "Critical USN",
+            points: 100,
+          }),
+          factor({}),
         ]}
       />,
     );
@@ -34,9 +37,9 @@ describe("HealthFactorList", () => {
     render(
       <HealthFactorList
         factors={[
-          factor({ rule_id: 1, count: 3, pending_reboot_count: 2 }),
-          factor({ rule_id: 2, count: 1, pending_reboot_count: 1 }),
-          factor({ rule_id: 3, count: 2, pending_reboot_count: 0 }),
+          factor({ rule_key: "usn.high", count: 3, pending_reboot_count: 2 }),
+          factor({ rule_key: "usn.medium", count: 1, pending_reboot_count: 1 }),
+          factor({ rule_key: "usn.low", count: 2, pending_reboot_count: 0 }),
         ]}
       />,
     );

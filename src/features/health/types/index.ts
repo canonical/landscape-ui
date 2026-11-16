@@ -3,9 +3,11 @@
 export type HealthBand = "critical" | "warning" | "healthy";
 
 export interface HealthFactor {
-  rule_id: number;
+  rule_id?: number;
   rule_key: string;
-  description: string;
+  // The rule's display text. `description` is the older name for it.
+  title?: string;
+  description?: string;
   points: number;
   // How many items matched the rule.
   count?: number;
@@ -75,9 +77,10 @@ export type HealthGroupBy = "tag" | "distribution" | "account";
 // Fleet-wide top detractor: a single rule and the count of instances it's
 // currently dragging down. Backs the "Top issues now" panel on the Overview.
 export interface FleetTopDetractor {
-  rule_id: number;
+  rule_id?: number;
   rule_key: string;
-  description: string;
+  title?: string;
+  description?: string;
   weight: number;
   computer_count: number;
 }

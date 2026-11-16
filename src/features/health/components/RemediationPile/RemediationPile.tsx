@@ -30,10 +30,15 @@ import { Card, Icon } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import type { FC } from "react";
 import { useCallback, useMemo, useState } from "react";
+import { actionsForFactor } from "../../helpers";
 import { useFleetTopDetractors } from "../../hooks";
 import useFleetHealthSummary from "../../hooks/useFleetHealthSummary";
 import useHealthAction from "../../hooks/useHealthAction";
-import type { FleetTopDetractor, HealthActionKind } from "../../types";
+import type {
+  FleetTopDetractor,
+  HealthActionKind,
+  HealthFactor,
+} from "../../types";
 import classes from "./RemediationPile.module.scss";
 
 const FETCH_LIMIT = 50;
@@ -87,16 +92,35 @@ const CARDS: CardSpec[] = [
   },
 ];
 
+/** Returns whether the card's action would clear the factor. */
+const isFactorForCard = (factor: HealthFactor, spec: CardSpec): boolean =>
+  spec.affectedRuleKeys.includes(factor.rule_key) &&
+  actionsForFactor(factor).includes(spec.action);
+
+const CARD_BY_ACTION = new Map(CARDS.map((spec) => [spec.action, spec]));
+
 // The server counts distinct instances per rule, so a card backed by one rule
 // has an exact count. Across several rules an instance can appear more than
-// once, so only the largest per-rule count is certain.
+// once, so only the largest per-rule count is certain. A rule's count also
+// includes instances the card's action cannot help, such as a security fix
+// that is installed and waits for a reboot. Those are subtracted where the
+// loaded list shows them.
 const getRuleCounts = (
   detractors: FleetTopDetractor[],
-  ruleKeys: string[],
+  spec: CardSpec,
+  instances: Instance[],
 ): number[] =>
   detractors
-    .filter(({ rule_key }) => ruleKeys.includes(rule_key))
-    .map(({ computer_count }) => computer_count);
+    .filter(({ rule_key }) => spec.affectedRuleKeys.includes(rule_key))
+    .map(({ rule_key, computer_count }) => {
+      const notHelped = instances.filter(({ health }) =>
+        (health?.factors ?? []).some(
+          (factor) =>
+            factor.rule_key === rule_key && !isFactorForCard(factor, spec),
+        ),
+      ).length;
+      return Math.max(0, computer_count - notHelped);
+    });
 
 interface RemediationPileProps {
   readonly className?: string;
@@ -134,13 +158,14 @@ const RemediationPile: FC<RemediationPileProps> = ({
     null,
   );
 
-  const instancesForRuleKeys = useCallback(
-    (ruleKeys: string[]): Instance[] =>
-      instancesQuery.instances.filter(({ health }) =>
-        (health?.factors ?? []).some(({ rule_key }) =>
-          ruleKeys.includes(rule_key),
-        ),
-      ),
+  const instancesForAction = useCallback(
+    (action: HealthActionKind): Instance[] => {
+      const spec = CARD_BY_ACTION.get(action);
+      if (!spec) return [];
+      return instancesQuery.instances.filter(({ health }) =>
+        (health?.factors ?? []).some((factor) => isFactorForCard(factor, spec)),
+      );
+    },
     [instancesQuery.instances],
   );
 
@@ -152,7 +177,11 @@ const RemediationPile: FC<RemediationPileProps> = ({
   const cards = useMemo(
     () =>
       CARDS.map((spec) => {
-        const ruleCounts = getRuleCounts(detractors, spec.affectedRuleKeys);
+        const ruleCounts = getRuleCounts(
+          detractors,
+          spec,
+          instancesQuery.instances,
+        );
         const largest = Math.max(0, ...ruleCounts);
         if (ruleCounts.length <= 1) {
           return { spec, count: largest, isLowerBound: false };
@@ -160,20 +189,20 @@ const RemediationPile: FC<RemediationPileProps> = ({
         // The loaded list can only be trusted when it holds every candidate
         // and agrees with the per-rule counts.
         const matched = isListComplete
-          ? instancesForRuleKeys(spec.affectedRuleKeys).length
+          ? instancesForAction(spec.action).length
           : 0;
         return matched >= largest
           ? { spec, count: matched, isLowerBound: false }
           : { spec, count: largest, isLowerBound: true };
       }),
-    [detractors, instancesForRuleKeys, isListComplete],
+    [detractors, instancesForAction, instancesQuery.instances, isListComplete],
   );
 
   const kernelWaivedCount =
     summaryQuery.data?.data.kernel_usns_waived_count ?? 0;
 
   const onCardClick = async (card: CardSpec): Promise<void> => {
-    const matched = instancesForRuleKeys(card.affectedRuleKeys);
+    const matched = instancesForAction(card.action);
     if (matched.length === 0) return;
     if (card.action === "reboot") {
       // RestartModal opens its own confirmation; we just record which
@@ -211,15 +240,10 @@ const RemediationPile: FC<RemediationPileProps> = ({
   };
 
   const rebootInstances =
-    modalAction === "reboot" ? instancesForRuleKeys(["reboot_required"]) : [];
+    modalAction === "reboot" ? instancesForAction("reboot") : [];
   const securityInstances =
     modalAction === "run-security-updates"
-      ? instancesForRuleKeys([
-          "usn.critical",
-          "usn.high",
-          "usn.medium",
-          "usn.low",
-        ])
+      ? instancesForAction("run-security-updates")
       : [];
 
   const handleApplyUpgrade = async (): Promise<void> => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { actionsForFactor, recommendedActionsFor } from "./helpers";
+import { actionsForFactor, recommendedActionsFor, ruleTitle } from "./helpers";
 import type { HealthFactor } from "./types";
 
 const factor = (overrides: Partial<HealthFactor>): HealthFactor => ({
@@ -38,6 +38,16 @@ describe("actionsForFactor", () => {
 
   it("offers nothing for a rule without a mapped action", () => {
     expect(actionsForFactor(factor({ rule_key: "unknown.rule" }))).toEqual([]);
+  });
+});
+
+describe("ruleTitle", () => {
+  it("prefers the title, then the description, then the rule key", () => {
+    expect(
+      ruleTitle({ rule_key: "usn.high", title: "T", description: "D" }),
+    ).toBe("T");
+    expect(ruleTitle({ rule_key: "usn.high", description: "D" })).toBe("D");
+    expect(ruleTitle({ rule_key: "usn.high" })).toBe("usn.high");
   });
 });
 

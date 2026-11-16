@@ -6,6 +6,7 @@ import { Card } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import { useId } from "react";
 import { Link } from "react-router";
+import { ruleTitle } from "../../helpers";
 import type { FleetTopDetractor } from "../../types";
 import classes from "./FleetTopIssues.module.scss";
 
@@ -47,7 +48,7 @@ const FleetTopIssues: FC<FleetTopIssuesProps> = ({
             {visible.map((detractor) => {
               const isCritical = detractor.weight >= CRITICAL_WEIGHT;
               return (
-                <li key={detractor.rule_id} className={classes.item}>
+                <li key={detractor.rule_key} className={classes.item}>
                   <Icon name={isCritical ? "error" : "warning"} />
                   <Link
                     to={ROUTES.instances.root({
@@ -57,7 +58,7 @@ const FleetTopIssues: FC<FleetTopIssuesProps> = ({
                     })}
                     className={classes.description}
                   >
-                    {detractor.description}
+                    {ruleTitle(detractor)}
                   </Link>
                   <span className={classes.count}>
                     <strong>{detractor.computer_count}</strong>{" "}

@@ -327,7 +327,7 @@ const MIXED_SEEDS: readonly [number, number, HealthFactor[], number?][] = [
   [11, 64, [factorHigh, factorMedium, factorUpdates]],
   [12, 71, [factorReboot, factorMedium, factorLow]],
   [20, 18, [factorCritical, factorOffline], 1],
-  [21, 52, [factorHighPendingReboot, factorReboot, factorMedium]],
+  [21, 52, [factorHighPendingReboot, factorReboot, factorOffline]],
   [33, 94, [factorLow, factorMedium]],
   [65, 86, [factorReboot]],
 
