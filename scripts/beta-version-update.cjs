@@ -74,28 +74,7 @@ function parseBetaVersion(input) {
 
 // "Thu, 08 Jan 2026 11:01:29 +0000" (RFC 2822, UTC) as debchange writes it.
 function rfc2822(date = new Date()) {
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const pad = (n) => String(n).padStart(2, "0");
-  return (
-    `${days[date.getUTCDay()]}, ${pad(date.getUTCDate())} ` +
-    `${months[date.getUTCMonth()]} ${date.getUTCFullYear()} ` +
-    `${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:` +
-    `${pad(date.getUTCSeconds())} +0000`
-  );
+  return date.toUTCString().replace("GMT", "+0000");
 }
 
 function prependDebianStanza(changelogPath, debVersion, version) {
@@ -181,4 +160,10 @@ function main() {
   );
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+// Exported so the workflow derives the version through this single parser
+// rather than re-implementing the branch-name regex in bash.
+module.exports = { parseBetaVersion };

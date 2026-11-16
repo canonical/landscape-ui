@@ -150,7 +150,7 @@ The current version and commit hash are baked into `VITE_APP_VERSION` / `VITE_AP
 - `YY.MM.0.X-rc` → a cycle-base **candidate** (`release/YY.MM`, not yet promoted)
 - `YY.MM.0.X` (no suffix) → a **released** cycle base (`release/YY.MM`)
 - `<cycle>.0.<count>-beta` → `main`'s version label only; never installed
-- `YY.MM-beta.N` → a **beta** build (`beta/YY.MM-beta.N`, §5a)
+- `YY.MM-beta.N` → a **beta** branch (`beta/YY.MM-beta.N`, §5a); beta builds land with the beta-builds work
 
 A production install should always show a clean `YY.MM.N.X` version with no `-rc` or `-beta` suffix.
 
