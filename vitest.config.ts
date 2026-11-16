@@ -64,12 +64,16 @@ export default defineConfig({
       reporter: ["cobertura", "json-summary", "html"],
       reportOnFailure: true,
       reportsDirectory: resolve(import.meta.dirname, "reports"),
-      thresholds: {
-        statements: 80,
-        lines: 80,
-        functions: 80,
-        branches: 70,
-      },
+      // A CI shard (VITEST_SHARD set) covers only part of the suite, so the
+      // thresholds are enforced on the merged report instead.
+      thresholds: process.env.VITEST_SHARD
+        ? undefined
+        : {
+            statements: 80,
+            lines: 80,
+            functions: 80,
+            branches: 70,
+          },
       include: ["src/**/*.{ts,tsx}"],
       exclude: [
         "**/tests/**",

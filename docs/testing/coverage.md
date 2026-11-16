@@ -34,7 +34,7 @@ Coverage is currently produced by Vitest, not by Playwright.
 The repo already defines:
 
 - `pnpm coverage` -> `vitest run --coverage`
-- global thresholds: `80` for statements, lines, and functions, and `70` for branches
+- global thresholds: `80` for statements, lines, and functions, and `70` for branches. They are skipped when `VITEST_SHARD` is set, as in the CI shard jobs, and enforced on the merged report by the `Vitest` job
 
 Additional provider, reporter, output, include, and exclude details are configured in [`vitest.config.ts`](../../vitest.config.ts). Agents should inspect the config directly when they need those exact mechanics.
 
