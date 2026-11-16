@@ -292,6 +292,9 @@ jobs:
           fi
           echo "landscape-debarchive database ready"
 
+      # api and appserver depend on schema with service_completed_successfully, so
+      # `up -d` blocks until bootstrap and the testing fixtures finish. On failure,
+      # the trap dumps builder/schema logs before the step exits.
       - name: Start backend stack
         working-directory: .landscape-packaging/docker/ui-dev
         run: |
@@ -312,26 +315,6 @@ jobs:
               postgresql rabbitmq rsyslog builder \
               package-search api appserver \
               debarchive
-
-      # The schema service bootstraps the testing fixtures; builder only prepares
-      # the image. Wait for schema, not merely an HTTP healthcheck or builder.
-      - name: Wait for schema migrations and testing fixtures
-        working-directory: .landscape-packaging/docker/ui-dev
-        run: |
-          SCHEMA=$(docker compose \
-            -p "ls-integration-${{ github.run_id }}" \
-            -f compose.yaml -f compose.ci-override.yaml ps -aq schema)
-          if [ -z "$SCHEMA" ]; then
-            echo "::error::Schema container was not created"
-            exit 1
-          fi
-          EXIT=$(docker wait "$SCHEMA")
-          if [ "$EXIT" != "0" ]; then
-            echo "::error::Schema failed with exit code $EXIT"
-            docker logs "$SCHEMA" --tail=100
-            exit 1
-          fi
-          echo "Schema and testing fixtures finished successfully"
 
       # debarchive uses a pre-built CI image (no runtime Go compilation), so it
       # starts in ~10 s. The seeder is started here (not in the main up step) so
@@ -375,7 +358,7 @@ jobs:
           echo "Debarchive seeder finished (exit $EXIT)"
 
       # /api/v2/ root may 404; login/methods is always 200 when the API is serving.
-      # 120 s is sufficient once schema has exited.
+      # 120 s is sufficient: api/appserver only start after schema completes.
       - name: Wait for API and appserver to be ready
         run: |
           timeout 120 bash -c \
