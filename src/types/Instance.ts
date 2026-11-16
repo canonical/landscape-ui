@@ -214,6 +214,8 @@ export interface InstanceHealth {
     rule_key: string;
     description: string;
     points: number;
+    count?: number;
+    pending_reboot_count?: number;
   }[];
   recommended_actions: string[];
   updated_at: string | null;

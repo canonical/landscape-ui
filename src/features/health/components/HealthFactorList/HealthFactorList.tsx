@@ -1,7 +1,8 @@
 import { Icon } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
-import { CRITICAL_FACTOR_POINTS } from "../../helpers";
+import { pluralize } from "@/utils/_helpers";
+import { CRITICAL_FACTOR_POINTS, pendingRebootCount } from "../../helpers";
 import type { HealthFactor } from "../../types";
 import classes from "./HealthFactorList.module.scss";
 
@@ -29,6 +30,7 @@ const HealthFactorList: FC<HealthFactorListProps> = ({
     <ul className={classNames(classes.list, className)}>
       {factors.map((factor) => {
         const isCritical = factor.points >= CRITICAL_FACTOR_POINTS;
+        const pending = pendingRebootCount(factor);
         return (
           <li key={factor.rule_id} className={classes.item}>
             <Icon
@@ -37,6 +39,12 @@ const HealthFactorList: FC<HealthFactorListProps> = ({
             />
             <span className={classes.description}>
               {factor.description || factor.rule_key}
+              {pending > 0 && (
+                <span className={classes.note}>
+                  {pending} {pluralize(pending, ["fix", "fixes"])} installed.
+                  Reboot to apply {pluralize(pending, ["it", "them"])}.
+                </span>
+              )}
             </span>
             <span className={classes.points}>
               {isCritical ? (

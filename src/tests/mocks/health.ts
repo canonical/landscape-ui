@@ -8,6 +8,8 @@ export interface HealthFactor {
   rule_key: string;
   description: string;
   points: number;
+  count?: number;
+  pending_reboot_count?: number;
 }
 
 // LA061 Phase 1.7: kept aligned with `src/features/health/types`. The MSW
@@ -225,6 +227,12 @@ const factorHigh: HealthFactor = {
   description: "Pending USN with Ubuntu Priority `high`.",
   points: 20,
 };
+// The fix is installed and takes effect after a reboot.
+const factorHighPendingReboot: HealthFactor = {
+  ...factorHigh,
+  count: 1,
+  pending_reboot_count: 1,
+};
 const factorMedium: HealthFactor = {
   rule_id: 3,
   rule_key: "usn.medium",
@@ -319,7 +327,7 @@ const MIXED_SEEDS: readonly [number, number, HealthFactor[], number?][] = [
   [11, 64, [factorHigh, factorMedium, factorUpdates]],
   [12, 71, [factorReboot, factorMedium, factorLow]],
   [20, 18, [factorCritical, factorOffline], 1],
-  [21, 52, [factorHigh, factorReboot, factorMedium]],
+  [21, 52, [factorHighPendingReboot, factorReboot, factorMedium]],
   [33, 94, [factorLow, factorMedium]],
   [65, 86, [factorReboot]],
 

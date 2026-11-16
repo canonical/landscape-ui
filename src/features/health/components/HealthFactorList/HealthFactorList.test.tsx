@@ -30,6 +30,26 @@ describe("HealthFactorList", () => {
     expect(screen.getByText("−20")).toBeInTheDocument();
   });
 
+  it("says how many fixes are installed and wait for a reboot", () => {
+    render(
+      <HealthFactorList
+        factors={[
+          factor({ rule_id: 1, count: 3, pending_reboot_count: 2 }),
+          factor({ rule_id: 2, count: 1, pending_reboot_count: 1 }),
+          factor({ rule_id: 3, count: 2, pending_reboot_count: 0 }),
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getByText("2 fixes installed. Reboot to apply them."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("1 fix installed. Reboot to apply it."),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/Reboot to apply/)).toHaveLength(2);
+  });
+
   it("says so when nothing lowers the score", () => {
     render(<HealthFactorList factors={[]} />);
 

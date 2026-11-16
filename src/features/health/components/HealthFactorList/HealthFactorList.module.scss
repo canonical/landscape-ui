@@ -24,6 +24,11 @@
   overflow-wrap: anywhere;
 }
 
+.note {
+  color: var(--color-text-muted);
+  display: block;
+}
+
 .points {
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;

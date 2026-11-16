@@ -57,13 +57,29 @@ export const suggestedActionFor = (
   factor: HealthFactor,
 ): HealthActionKind | null => ACTION_BY_RULE_KEY[factor.rule_key] ?? null;
 
+/** Returns how many of the factor's fixes are installed and wait for a reboot. */
+export const pendingRebootCount = (
+  factor: Pick<HealthFactor, "pending_reboot_count">,
+): number => factor.pending_reboot_count ?? 0;
+
+/** Returns the actions that clear a factor, a reboot first when fixes wait for one. */
+export const actionsForFactor = (factor: HealthFactor): HealthActionKind[] => {
+  const action = suggestedActionFor(factor);
+  const pending = pendingRebootCount(factor);
+  if (pending === 0) {
+    return action ? [action] : [];
+  }
+  // With every fix installed, an update would change nothing.
+  const isAllPending = factor.count !== undefined && pending >= factor.count;
+  return action && !isAllPending ? ["reboot", action] : ["reboot"];
+};
+
 export const recommendedActionsFor = (
   factors: HealthFactor[],
 ): HealthActionKind[] => {
   const seen = new Set<HealthActionKind>();
   for (const factor of factors) {
-    const action = suggestedActionFor(factor);
-    if (action && !seen.has(action)) {
+    for (const action of actionsForFactor(factor)) {
       seen.add(action);
     }
   }

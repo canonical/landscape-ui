@@ -7,6 +7,10 @@ export interface HealthFactor {
   rule_key: string;
   description: string;
   points: number;
+  // How many items matched the rule.
+  count?: number;
+  // The part of `count` whose fix is installed and waits for a reboot.
+  pending_reboot_count?: number;
 }
 
 export interface ComputerHealth {

@@ -44,7 +44,13 @@ const enrichWithRecommendedActions = (
   const seen = new Set<HealthActionKind>();
   for (const factor of health.factors) {
     const action = ACTION_BY_RULE_KEY[factor.rule_key];
-    if (action) {
+    const pending = factor.pending_reboot_count ?? 0;
+    if (pending > 0) {
+      seen.add("reboot");
+    }
+    // With every fix installed, an update would change nothing.
+    const isAllPending = factor.count !== undefined && pending >= factor.count;
+    if (action && !isAllPending) {
       seen.add(action);
     }
   }
