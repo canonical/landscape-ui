@@ -1,3 +1,9 @@
+landscape-dashboard (27.04~beta.99-0landscape0) jammy; urgency=medium
+
+  * Release 27.04-beta.99 for jammy
+
+ -- Landscape Team <landscape-team@canonical.com>  Mon, 16 Nov 2026 23:16:17 +0000
+
 landscape-dashboard (1.23.0-0landscape0) jammy; urgency=medium
 
   * Release 1.23.0 for jammy
