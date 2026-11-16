@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import PackagesActionForm from "./PackagesActionForm";
 import { packages } from "@/tests/mocks/packages";
-import { mockDeletePackageChangePlan } from "@/tests/mockDeletePackageChangePlan";
+import { mockDeletePackageChangePlan } from "../../tests/mockDeletePackageChangePlan";
 import {
   OPEN_SIDE_PANEL_LABEL,
   OpenInSidePanel,

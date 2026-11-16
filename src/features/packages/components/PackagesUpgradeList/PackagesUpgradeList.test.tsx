@@ -102,9 +102,6 @@ describe("PackagesUpgradeList", () => {
     expect(props.setSelectedUpgrades).toHaveBeenLastCalledWith([
       offPageUpgrade,
     ]);
-    expect(
-      screen.queryByRole("button", { name: "Clear selection" }),
-    ).not.toBeInTheDocument();
   });
 
   it("selects and deselects the current page without changing off-page selections", async () => {

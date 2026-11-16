@@ -9,7 +9,7 @@ import { API_URL } from "@/constants";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import { instances, ubuntuInstance } from "@/tests/mocks/instance";
 import { packages } from "@/tests/mocks/packages";
-import { mockDeletePackageChangePlan } from "@/tests/mockDeletePackageChangePlan";
+import { mockDeletePackageChangePlan } from "../../tests/mockDeletePackageChangePlan";
 import {
   OPEN_SIDE_PANEL_LABEL,
   OpenInSidePanel,

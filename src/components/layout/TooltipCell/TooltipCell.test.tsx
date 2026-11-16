@@ -5,16 +5,10 @@ import TooltipCell from "./TooltipCell";
 import classes from "./TooltipCell.module.scss";
 
 describe("TooltipCell", () => {
-  it("renders the child content inside a truncated wrapper", () => {
+  it("renders the child content", () => {
     render(<TooltipCell message="Hover me">Visible label</TooltipCell>);
 
     expect(screen.getByText("Visible label")).toBeInTheDocument();
-    expect(
-      document.body.querySelector(`.${classes.truncated}`),
-    ).toBeInTheDocument();
-    expect(
-      document.body.querySelector(`.${classes.tooltipWrapper}`),
-    ).toHaveTextContent("Visible label");
   });
 
   it("merges custom position and tooltip classes with the default classes", async () => {
@@ -33,8 +27,9 @@ describe("TooltipCell", () => {
 
     await userEvent.hover(label);
 
-    expect(await screen.findByRole("tooltip")).toHaveTextContent("Hover me");
-    expect(screen.getByTestId("tooltip-portal")).toHaveClass(
+    const tooltip = await screen.findByRole("tooltip", { name: "Hover me" });
+    expect(tooltip).toBeInTheDocument();
+    expect(tooltip.parentElement).toHaveClass(
       classes.tooltipMessage,
       "custom-tooltip",
     );

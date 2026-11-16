@@ -1,5 +1,5 @@
 import { API_URL } from "@/constants";
-import { mockDeletePackageChangePlan } from "@/tests/mockDeletePackageChangePlan";
+import { mockDeletePackageChangePlan } from "../../tests/mockDeletePackageChangePlan";
 import { activities } from "@/tests/mocks/activity";
 import {
   OPEN_SIDE_PANEL_LABEL,

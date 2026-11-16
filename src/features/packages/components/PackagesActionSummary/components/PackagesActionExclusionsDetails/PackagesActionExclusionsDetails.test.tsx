@@ -9,6 +9,7 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { describe, expect, it, onTestFinished, vi } from "vitest";
 import PackagesActionExclusionsDetails from "./PackagesActionExclusionsDetails";
+import { expectLoadingState } from "@/tests/helpers";
 
 const props = { id: 1, packageName: "libthai0" };
 
@@ -16,7 +17,7 @@ describe("PackagesActionExclusionsDetails", () => {
   it("shows loading before rendering the first page of excluded instances", async () => {
     renderWithProviders(<PackagesActionExclusionsDetails {...props} />);
 
-    expect(screen.getByRole("status")).toHaveTextContent("Loading...");
+    await expectLoadingState();
 
     const table = await screen.findByRole("table");
     expect(
