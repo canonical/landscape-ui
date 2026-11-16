@@ -23,7 +23,14 @@ import classNames from "classnames";
 import { isAxiosError } from "axios";
 import { useFormik } from "formik";
 import date from "@/libs/date";
-import { useLayoutEffect, useRef, type ComponentProps, type FC } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+  type FC,
+} from "react";
 import * as Yup from "yup";
 import { useGetScriptProfileLimits } from "../../api";
 import type { ScriptProfile } from "../../types";
@@ -71,6 +78,16 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
   const associationLimitReachedRef = useRef(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [titleFocusRequest, setTitleFocusRequest] = useState(0);
+
+  useEffect(() => {
+    if (titleFocusRequest > 0) {
+      formRef.current
+        ?.querySelector<HTMLInputElement>('input[name="title"]')
+        ?.focus();
+    }
+  }, [titleFocusRequest]);
 
   const formik = useFormik<ScriptProfileFormValues>({
     initialValues,
@@ -113,7 +130,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
       username: Yup.string().required("This field is required"),
     }),
 
-    onSubmit: async (values) => {
+    onSubmit: async (values, { setFieldError }) => {
       if (!values.trigger_type || values.script_id == undefined) {
         return;
       }
@@ -187,12 +204,11 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
           const isDuplicateTitleError = errorCode === "ScriptProfileDuplicate";
 
           if (isDuplicateTitleError) {
-            debug(
-              new Error(
-                "This script profile title is unavailable. It is either already in use or was previously archived. Script profile titles cannot be reused.",
-                { cause: error },
-              ),
+            setFieldError(
+              "title",
+              "Title already used by an active or archived script profile.",
             );
+            setTitleFocusRequest((count) => count + 1);
             return;
           }
         }
@@ -231,7 +247,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   }
 
   return (
-    <Form noValidate onSubmit={formik.handleSubmit}>
+    <Form ref={formRef} noValidate onSubmit={formik.handleSubmit}>
       <Input
         type="text"
         label="Title"
