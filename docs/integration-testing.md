@@ -75,6 +75,19 @@ packaging_ref: landscape-packaging branch/tag/SHA to test against (default: main
 
 Since `landscape-go` and `landscape-server` are submodules of `landscape-packaging`, this single input pins the entire backend stack. On automatic triggers (PR, push, nightly) it always resolves to `main`.
 
+The selected packaging revision **must** contain `docker/configs/.env.testing` and
+`.env.ui.testing`. The workflow checks this explicitly and logs the resolved SHA.
+These configurations are a packaging prerequisite, not supplied by this UI change:
+until they merge into packaging `main`, use a `packaging_ref` containing them for
+manual runs; automatic runs against an older `main` will fail the prerequisite check.
+No submodule bump is required for the existing server two-organisation fixtures.
+
+All Compose steps use job-level `LANDSCAPE_DEPLOYMENT_MODE=testing`, so both
+`schema` and runtime services load the same testing configuration. Bootstrap keeps
+the full existing sample-data arguments and `LANDSCAPE_RUN_SCHEMA=1`; CI waits for
+`schema`, not just `builder`. Backend testing mode does not select the frontend:
+the self-hosted and SaaS suites still start Vite with their respective explicit modes.
+
 ## Cold-start time (GitHub-hosted `ubuntu-latest`)
 
 | Step                                              | Duration       |
@@ -98,13 +111,27 @@ The dominant cost is the cold Docker image build. A self-hosted runner with cach
 
 ### 1. Start the backend stack
 
-From your `landscape-packaging/docker/ui-dev/` directory, start the stack with the schema
-bootstrapping arguments matching CI (the builder bootstraps the schema on first `make up`,
-so sample data must be requested from the start):
+Use a **dedicated disposable VM/runner with no existing Landscape stack**. Packaging
+uses fixed container names and published ports, so a different Compose project name
+alone does not isolate a second stack. Never wipe shared developer volumes or
+reseed an existing standalone database to enable testing.
+
+From `landscape-packaging/docker/ui-dev/`, with the testing configuration available,
+build and bootstrap a fresh environment using the same sample-data arguments as CI:
 
 ```bash
-LANDSCAPE_BOOTSTRAP_SCHEMA_ARGS="--with-computers --with-free-disk-space --with-free-memory-and-swap --with-load-averages --with-temperatures --with-network-traffic --with-active-processes --with-packages --with-package-activities --with-script-activities --with-users-and-groups --with-cpu-usage --with-ceph-usage --with-compute-usage --with-swift-usage --with-user-and-group-activities --with-custom-graph --with-scripts --with-account-password foo" make up
+export LANDSCAPE_DEPLOYMENT_MODE=testing
+# Leave LANDSCAPE_UI unset: Playwright starts Vite on port 5173.
+docker compose config -q
+make vendor
+make build
+LANDSCAPE_BOOTSTRAP_SCHEMA_ARGS="--with-computers --with-free-disk-space --with-free-memory-and-swap --with-load-averages --with-temperatures --with-network-traffic --with-active-processes --with-packages --with-package-activities --with-script-activities --with-users-and-groups --with-cpu-usage --with-ceph-usage --with-compute-usage --with-swift-usage --with-user-and-group-activities --with-custom-graph --with-scripts --with-account-password foo" make schema
+make up
 ```
+
+`make schema` sets `LANDSCAPE_RUN_SCHEMA=1` and waits for bootstrap. `make up` alone
+does not seed fixtures. Keep the exported backend mode for subsequent Compose
+commands, including diagnostics and shutdown.
 
 Wait until both of these respond:
 
@@ -135,6 +162,19 @@ pnpm exec playwright test --config e2e/docker-stack/playwright.integration.saas.
 ```
 
 Reports are written to `playwright-integration-report/` and `playwright-integration-saas-report/`.
+
+### Testing-profile compatibility
+
+The testing profile can default login to `second-account`. With the existing full
+bootstrap arguments, that account has computers but no seeded computer users;
+`standalone` has seeded users. The API authentication helper explicitly requests
+`account: "standalone"` and asserts the selected account. Global setup authenticates
+its browser session to the same account and loads a new document before saving
+storage state, keeping browser reads consistent with API mutations (including the
+preferences round-trip). CI's archive-cache warmup also selects `standalone`.
+This preserves existing fixture assertions without changing user defaults or
+duplicating server data. The fresh-session login test remains independent and
+continues to exercise the backend's default selection.
 
 ## Key design decisions
 

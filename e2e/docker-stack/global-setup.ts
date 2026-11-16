@@ -1,6 +1,7 @@
 import { chromium, type FullConfig } from "@playwright/test";
 import fs from "fs";
 import path from "path";
+import { getAuthToken } from "./helpers/auth";
 
 const STORAGE_STATE_PATH = "e2e/docker-stack/.auth/state.json";
 // Must match e2e/docker-stack/playwright.integration.config.ts › use.baseURL; FullConfig is not
@@ -68,6 +69,12 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
     await form.fill(email);
     await page.locator('input[name="password"]').fill(password);
     await page.locator('button[type="submit"]').click();
+    await page.waitForURL(/overview/, { timeout: 30_000 });
+
+    // Keep browser fixtures on the same account as API helpers. Reauthenticate
+    // the real session, then load a new document to discard the old auth cache.
+    await getAuthToken(context.request);
+    await page.goto("/overview");
     await page.waitForURL(/overview/, { timeout: 30_000 });
 
     // Bake the welcome-modal dismissal into the shared storageState so every
