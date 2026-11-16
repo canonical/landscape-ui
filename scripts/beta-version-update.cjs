@@ -35,7 +35,11 @@ const {
  *   4. .changeset/*.md  -> consumed files are deleted
  *
  * The script is idempotent: re-running it on an already-prepared tree is a
- * no-op (no duplicate CHANGELOG section or debian stanza).
+ * no-op (no duplicate CHANGELOG section or debian stanza). One exception:
+ * if the version's CHANGELOG section already exists AND new changesets are
+ * pending (i.e. the prep PR was merged and more changes landed on the beta
+ * branch), it aborts rather than silently consuming them into nothing —
+ * a respin is a new beta branch, not new changesets on a frozen one.
  *
  * Usage:
  *   node scripts/beta-version-update.cjs [beta/YY.MM-beta.N | YY.MM-beta.N]
@@ -145,9 +149,20 @@ function main() {
     const existing = fs.existsSync(changelogPath)
       ? fs.readFileSync(changelogPath, "utf8")
       : "";
-    if (!existing.includes(`## ${version}\n`)) {
-      prependChangelog(changelogPath, renderChangelogSection(version, entries));
+    if (existing.includes(`## ${version}\n`)) {
+      // The prep PR for this beta was already merged: its CHANGELOG section
+      // is frozen. Deleting the pending changesets here would silently drop
+      // their release notes, so fail instead — a respin is a new beta
+      // branch, not new changesets on this one.
+      console.error(
+        `CHANGELOG.md already has a ${version} section, but ${entries.length} ` +
+          `changeset(s) are pending. Release notes for this beta are frozen — ` +
+          `cut a new beta branch (beta/YY.MM-beta.N+1) or remove the pending ` +
+          `changesets from the branch.`,
+      );
+      process.exit(1);
     }
+    prependChangelog(changelogPath, renderChangelogSection(version, entries));
   }
   for (const file of files) {
     fs.unlinkSync(file);
