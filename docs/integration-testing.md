@@ -9,6 +9,7 @@ See [e2e/docker-stack/README.md](../e2e/docker-stack/README.md) for a quick-star
 **Self-hosted mode** (`*.integration.spec.ts`)
 
 - Login via standalone auth with a seeded admin account
+- Organisation switching updates the sidebar after the asynchronous switch handler completes, without navigation or reload
 - Instances list rendered from a real `GET /api/v2/computers` response
 - Preferences mutation round-trip through the real API
 - Debarchive publication targets listed and CRUD round-trip against the real debarchive service
@@ -162,6 +163,36 @@ pnpm exec playwright test --config e2e/docker-stack/playwright.integration.saas.
 ```
 
 Reports are written to `playwright-integration-report/` and `playwright-integration-saas-report/`.
+
+### Organisation-switch regression
+
+`e2e/docker-stack/ui/auth/organisation-switch.integration.spec.ts` is discovered by
+the self-hosted suite's `*.integration.spec.ts` pattern. Run it alone with:
+
+```bash
+pnpm exec playwright test --config e2e/docker-stack/playwright.integration.config.ts organisation-switch --retries=0
+```
+
+The test logs in with a fresh browser session rather than sharing global setup's
+authentication. It explicitly requires `/api/v2/me` to expose both `standalone`
+(**Organization**) and `second-account` (**Second Account**); missing fixtures fail,
+not skip. John Smith (`john@example.com`, password `pwd`) owns both. Login may
+default to either account, so the test switches to the other without relying on
+array ordering. No organisation preferences or user defaults are mutated.
+
+The test opens the **Add script** side panel without submitting it, selects an
+organisation, and verifies the real `POST /api/v2/switch-account` succeeds.
+`OrganisationSwitch` closes the panel only after awaiting `switchAccount`, whose
+mutation callback removes/refetches queries before applying the new auth state.
+Waiting for panel closure therefore puts the sidebar assertion after that
+asynchronous sequence, unlike the select's immediate native value or HTTP response.
+The test also rejects main-frame navigation/reload.
+
+To validate regression sensitivity, temporarily replace the filtered cache removal
+in `src/features/auth/hooks/useAuthHandle.ts`'s switch mutation callback with
+`queryClient.removeQueries()`. Run the same command with retries disabled: the
+post-closure organisation assertion must fail. Restore the callback and rerun
+successfully. Never commit the mutation.
 
 ### Testing-profile compatibility
 

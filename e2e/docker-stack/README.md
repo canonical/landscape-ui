@@ -65,6 +65,10 @@ access to both `standalone` (**Organization**) and `second-account` (**Second Ac
 Shared API/browser setup explicitly selects `standalone` to preserve existing
 fixture prerequisites; see [testing-profile compatibility](../../docs/integration-testing.md#testing-profile-compatibility).
 
+The organisation-switch regression uses its own fresh session and explicitly
+requires both organisations. See the [regression validation procedure](../../docs/integration-testing.md#organisation-switch-regression)
+for its post-handler completion signal and mutation check.
+
 Wait for both services to respond:
 
 ```bash
