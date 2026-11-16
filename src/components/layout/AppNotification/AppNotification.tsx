@@ -3,7 +3,6 @@ import { Notification } from "@canonical/react-components";
 import type { NotificationHelper } from "@/types/Notification";
 import classes from "./AppNotification.module.scss";
 import classNames from "classnames";
-import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants/constants";
 
 interface AppNotificationProps {
   readonly notify: NotificationHelper;
@@ -21,7 +20,7 @@ const AppNotification: FC<AppNotificationProps> = ({
   const { type, message, actions, title } = notify.notification;
 
   const defaultMessage =
-    type === "negative" ? CONTACT_SUPPORT_TEAM_MESSAGE : "Success";
+    type === "negative" ? "Something went wrong" : "Success";
 
   return (
     <div className={classNames({ [classes.container]: !isSidePanelOpen })}>

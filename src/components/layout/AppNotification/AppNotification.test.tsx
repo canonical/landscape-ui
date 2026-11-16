@@ -3,7 +3,8 @@ import { describe, it } from "vitest";
 import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/render";
 import type { NotificationHelper } from "@/types/Notification";
-import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants/constants";
+
+const CONTACT_SUPPORT_TEAM_MESSAGE = "Something went wrong";
 
 const notify: NotificationHelper = {
   notification: {
