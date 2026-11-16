@@ -32,10 +32,10 @@ checkout:
 engine:
   id: pi
   # Inference runs on OpenRouter via the pi engine. The vendored model id
-  # (moonshotai/kimi-k3) requires gh-aw v1.3.0+: earlier compilers reject the
-  # two-slash form under the model-identifier grammar (github/gh-aw#77514,
-  # fixed by #77562). OPENROUTER_API_KEY supplies the credential.
-  model: openrouter/moonshotai/kimi-k3
+  # requires gh-aw v1.3.0+: earlier compilers reject the two-slash form under
+  # the model-identifier grammar (github/gh-aw#77514, fixed by #77562).
+  # OPENROUTER_API_KEY supplies the credential.
+  model: openrouter/deepseek/deepseek-v4.1-flash-1017
   model-provider: openai
   env:
     OPENAI_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -158,6 +158,10 @@ safe-outputs:
     max: 1
     preserve-branch-name: true
     recreate-ref: true
+    # Push with a plain git push rather than the createCommitOnBranch GraphQL
+    # path: that path produces commits GitHub does not mark verified for this
+    # bot token, and pushSignedCommits then refuses to publish the branch.
+    signed-commits: false
     # The bot only ever adds NEW changeset files in this repo; docs edits are
     # delivered by the push handler, so the create handler rejects any other
     # path outright.
@@ -179,13 +183,27 @@ safe-outputs:
     engine: copilot
     # Threat detection needs Docker/AWF like the agent job.
     runs-on: [self-hosted, noble, amd64]
+    # Detection must also pin its own model: detection is Copilot-only
+    # (github/gh-aw#78414), so without this pin the job inherits the agent's
+    # OpenRouter model id, which the Copilot CLI cannot serve (HTTP 400
+    # "model is retired or unavailable"). Use a Copilot-catalog model.
+    model: claude-haiku-5.5
   push-to-pull-request-branch:
     target: "*"
     target-repo: canonical/landscape-documentation
     github-token: ${{ secrets.LANDSCAPE_CHANGELOG_TOKEN }}
     required-labels: [changelog, automation]
+    # Push with a plain git push rather than the createCommitOnBranch GraphQL
+    # path: that path produces commits GitHub does not mark verified for this
+    # bot token, and pushSignedCommits then refuses to publish the branch.
+    signed-commits: false
     # Docs PR updates may only touch release-notes pages (including index.md).
     allowed-files: ["docs/reference/release-notes/*.md"]
+    max: 1
+  # When a run finds no user-facing commits, the agent comments its
+  # classification table on the open changelog PR instead of stopping silently.
+  add-comment:
+    github-token: ${{ secrets.LANDSCAPE_CHANGELOG_TOKEN }}
     max: 1
 ---
 
@@ -201,7 +219,7 @@ You backfill missing Changesets for Landscape UI. This repo's `CHANGELOG.md` and
 
 ## Gather the commits
 
-1. The scan window is time-based: list the commits from the last four weeks with `git log --since="4 weeks ago" --no-merges --pretty=%H%x09%s`. `main` is squash-merged, so each merged PR is a single commit on this list. Do NOT anchor on `CHANGELOG.md` commits: the `Version Packages` PR on `main` is closed rather than merged before each cut (RELEASES.md section 3), so `CHANGELOG.md` on `main` is stale and a changelog anchor would silently treat undocumented commits as covered. Four weeks against a weekly schedule gives three weeks of overlap with the previous run, so omissions leapfrogged by later merges are still caught; the deduplication rules below prevent double-filing.
+1. The scan window is time-based: list the commits from the last four weeks against the repository's default branch, not the ref this run was dispatched on: `git log --since="4 weeks ago" --no-merges --pretty=%H%x09%s origin/main`. Always use `origin/main` for the range — a `workflow_dispatch` run may check out a bot or feature branch whose own commits are automation churn, and those must never be classified as product changes. If `origin/main` is not present locally, use the checked-out HEAD and say so in the run output. `main` is squash-merged, so each merged PR is a single commit on this list. Do NOT anchor on `CHANGELOG.md` commits: the `Version Packages` PR on `main` is closed rather than merged before each cut (RELEASES.md section 3), so `CHANGELOG.md` on `main` is stale and a changelog anchor would silently treat undocumented commits as covered. Four weeks against a weekly schedule gives three weeks of overlap with the previous run, so omissions leapfrogged by later merges are still caught; the deduplication rules below prevent double-filing.
 2. Skip any commit whose subject has no trailing pull request reference ` (#1234)`. Such commits cannot carry the `(backfills #<N>)` marker the deduplication relies on, so they can never be filed safely; if one looks user-facing, mention it in the PR body under `Changesets to review` instead of backfilling it.
 3. Deduplicate the rest by pull request number. For each commit, extract its PR number `<N>` from the trailing ` (#1234)` reference in the subject. Skip the commit if ANY of the following hold:
    a. Its own commit added a NON-EMPTY changeset: run `git show --name-status --format= <commit>` and look for a line with status `A` (added) whose path matches `.changeset/*.md` (ignoring `.changeset/README.md` and `.changeset/config.json`), then read that file — it counts as coverage only if its frontmatter assigns a bump (`major`/`minor`/`patch`) to a package. Only status `A` counts — a modified (`M`) or deleted (`D`) changeset path is NOT coverage. If the commit added ONLY empty changesets (no package/bump in the frontmatter), do NOT backfill one: an empty changeset can be a deliberate choice (e.g. one shared non-empty changeset for a whole PR stack, as in #799). Flag it in the review section below instead.
@@ -210,12 +228,29 @@ You backfill missing Changesets for Landscape UI. This repo's `CHANGELOG.md` and
 
 ## Select user-facing commits only
 
-Include only commits that a Landscape administrator would notice. Commit subjects in this repo are usually conventional commits, but the type prefix is sometimes capitalized (e.g. `Fix:`) and occasionally missing entirely — match prefixes case-insensitively and use your judgment for non-conforming subjects.
+Include only commits that a Landscape administrator would notice. Do not decide from memory or by skimming. Work from the exact `git log` output you collected and classify every commit, one line at a time.
 
-- **Include**: `feat:`, `fix:`, `perf:`, and any breaking change (a `!` before the colon, e.g. `feat!:` / `fix!:`).
-- **Maybe Include**: `refactor: ` commits, only if they are user-facing.
-- **Exclude**: `chore:`, `ci:`, `test:`, `build:`, `docs:`, and `style:`, commits,
-  plus anything that only touches tooling, tests, or CI, and any dependency bumps.
+First, write out a classification table with one row per commit, in this exact format:
+
+```
+| # | type | user-facing? | subject |
+|---|------|--------------|---------|
+| 1 | feat | yes | add hash-id component to snap |
+```
+
+Commit subjects in this repo are usually conventional commits, but the type prefix is sometimes capitalized (e.g. `Fix:`) and occasionally missing entirely — match prefixes case-insensitively and use your judgment for non-conforming subjects.
+
+Rules for the `user-facing?` column:
+
+- **yes**: `feat:`, `fix:`, `perf:`, and any breaking change (a `!` before the colon, e.g. `feat!:` / `fix!:`).
+- **maybe**: `refactor:` commits, only if they are user-facing.
+- **no**: `chore:`, `ci:`, `test:`, `build:`, `docs:`, and `style:` commits, plus anything that only touches tooling, tests, or CI, and any dependency bumps.
+
+After the table, write the count: `Included: N of M`. `N` is the number of rows marked `yes` (count a `maybe` as included only if you marked it yes). If the table has fewer rows than the number of lines in your `git log` output, you dropped commits — redo the table until every commit appears.
+
+**Only if `N` is 0** may you skip authoring changesets and opening a pull request. In that case do not stay silent: find the open changelog pull request in this repository (label `changelog`) and post a comment on it containing the full classification table and the line `Included: 0 of M`, so a human can see exactly which commits were considered and why nothing was drafted. If no open changelog PR exists, report the table in your run summary instead.
+
+If `N` is 1 or more, you MUST continue and open a pull request. Never stop just because most commits are chores; a single `feat:` or `fix:` means proceed.
 
 Breaking changes are not always flagged in the subject. For every selected commit, also inspect the full commit message with `git show -s --format=%B <sha>` and look for `BREAKING CHANGE:` or `BREAKING-CHANGE:` footers. A commit carrying such a footer is a breaking change even when its subject has no `!` — classify it as breaking (a `major` bump in the changeset) and note the breaking nature in the docs island bullet.
 
@@ -261,7 +296,14 @@ Exclude flagged entries from the docs release-notes island. If a pull request is
 
 ## Open the pull request
 
-Open a single pull request containing all of the new changeset files. Use the title `add missing changesets` (the `build: ` prefix is added automatically) and a body that lists the backfilled entries in the sorted order from above, notes the merged PR each entry covers, explains that these PRs were merged without a changeset so the Changesets automation had nothing to roll up, and includes the `Changesets to review` heading when any entries were flagged. If no changesets were needed, do nothing — do not open an empty pull request.
+Before making any edit, create your working branch from the default branch, not from the ref this run was dispatched on: `git checkout -b <branch> origin/main`. The dispatch ref may be a bot or feature branch carrying automation commits; if you commit on top of it, the resulting PR contains all of those commits. The PR must contain ONLY the changeset commit on top of `origin/main`.
+
+First check for an existing open changelog pull request in this repository (label `changelog`). Exactly one should ever be open at a time.
+
+- If one is already open, do NOT open a second. Check whether its changesets already cover the commits you selected (the `(backfills #<N>)` markers). If they do, make no changes and note that the existing PR is already current. If it is missing any of your selected commits, update that PR's branch with the missing changesets rather than opening a new PR.
+- Only if no changelog PR is open, open a single pull request containing all of the new changeset files. Use the title `add missing changesets` (the `build: ` prefix is added automatically) and a body that lists the backfilled entries in the sorted order from above, notes the merged PR each entry covers, explains that these PRs were merged without a changeset so the Changesets automation had nothing to roll up, and includes the `Changesets to review` heading when any entries were flagged.
+
+Never open a second changelog PR while one is open.
 
 ## Docs release notes (shared PR)
 
