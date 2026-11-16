@@ -1,0 +1,107 @@
+name: Beta Release Prep
+
+# Beta branches (beta/YY.MM-beta.N, cut once per pulse) carry the beta
+# identity in their name. When a new one is cut, this workflow prepares the
+# release on a beta-prep/<version> branch and opens a PR back against the
+# beta branch. The PR (scripts/beta-version-update.cjs):
+#   - rolls the pending .changeset/*.md files into CHANGELOG.md under the
+#     beta version,
+#   - adds the matching YY.MM~beta.N stanza to debian/changelog,
+#   - deletes the consumed changesets,
+#   - bumps package.json to YY.MM-beta.N.
+# Merging the PR is what stamps the beta branch with its release identity.
+#
+# Push runs fire only on branch CREATION — later pushes to the beta branch
+# don't regenerate the PR. Use manual dispatch to regenerate it (e.g. after
+# the branch's content changed before the PR was merged).
+on:
+  push:
+    branches: ["beta/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# One prep PR per beta branch; serialize against re-dispatches.
+concurrency:
+  group: beta-prep-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.created == true
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Validate branch name and derive version
+        id: version
+        run: |
+          BRANCH="${GITHUB_REF_NAME}"
+          if [[ ! "$BRANCH" =~ ^beta/[0-9]{2}\.(04|10)-beta\.[0-9]+$ ]]; then
+            echo "Invalid beta branch name: '${BRANCH}'." >&2
+            echo "Expected beta/YY.MM-beta.N (e.g. beta/27.04-beta.4)." >&2
+            exit 1
+          fi
+          echo "version=${BRANCH#beta/}" >> "$GITHUB_OUTPUT"
+
+      - name: Update version files
+        run: node scripts/beta-version-update.cjs
+
+      - name: Push beta-prep branch
+        id: prep
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          PREP_BRANCH="beta-prep/${VERSION}"
+          git checkout -B "$PREP_BRANCH"
+          git add CHANGELOG.md package.json debian/changelog .changeset
+          if git diff --cached --quiet; then
+            echo "Version files already up to date — nothing to push."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "chore: prepare beta release ${VERSION}"
+          # Plain --force: this branch is owned exclusively by this workflow
+          # and is deterministic per beta branch; --force-with-lease can fail
+          # on a fresh checkout that has no local tracking ref for it.
+          git push --force origin "$PREP_BRANCH"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Open release-prep PR
+        if: steps.prep.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+          BASE: ${{ github.ref_name }}
+        run: |
+          PREP_BRANCH="beta-prep/${VERSION}"
+          EXISTING=$(gh pr list --head "$PREP_BRANCH" --state open --json number -q '.[0].number')
+          if [[ -n "$EXISTING" ]]; then
+            echo "PR #${EXISTING} already open — branch updated, nothing to create."
+            exit 0
+          fi
+          BODY="Automated release preparation for this beta branch.
+
+          - Rolled pending changesets into CHANGELOG.md under the beta version
+          - Added the matching debian/changelog stanza (~beta.N, tilde form)
+          - Deleted the consumed .changeset/*.md files
+          - Bumped package.json to the beta version
+
+          Merging this PR stamps the beta branch with its release identity."
+          gh pr create \
+            --base "$BASE" \
+            --head "$PREP_BRANCH" \
+            --title "chore: prepare beta release ${VERSION}" \
+            --body "$BODY"

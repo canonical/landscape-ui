@@ -137,6 +137,10 @@ To **demote**, remove the branch from the variable. Note this only applies going
 
 Each point release gets its own `ppa-build-YY.MM.N` target, so concurrent point releases in the same cycle (e.g. `26.10.1` and `26.10.2`) never collide.
 
+## 5a. Beta Branches (`beta/YY.MM-beta.N`)
+
+A beta branch is cut once per pulse, named for the `landscape-server` beta it ships with (e.g. `beta/27.04-beta.4`); numbers may be skipped to stay aligned with the server. When the branch is created, the `Beta Release Prep` workflow opens a `beta-prep/<version>` PR against it that rolls the pending changesets into `CHANGELOG.md`, adds the matching `YY.MM~beta.N` stanza to `debian/changelog`, deletes the consumed changesets, and bumps `package.json` to `YY.MM-beta.N`. **Merging that PR is what stamps the beta branch with its release identity** — until then the branch carries whatever version it inherited from its cut point. The workflow can be re-run via manual dispatch. The full beta release process is documented separately; this section covers only the branch's version bookkeeping.
+
 ## 6. UI Version Identification
 
 The current version and commit hash are baked into `VITE_APP_VERSION` / `VITE_APP_COMMIT` and surfaced in `UserInfo.tsx`. As a quick sanity check:
@@ -145,7 +149,8 @@ The current version and commit hash are baked into `VITE_APP_VERSION` / `VITE_AP
 - `YY.MM.N.X` (N ≥ 1, no suffix) → a **released** point release (`point/YY.MM.N`)
 - `YY.MM.0.X-rc` → a cycle-base **candidate** (`release/YY.MM`, not yet promoted)
 - `YY.MM.0.X` (no suffix) → a **released** cycle base (`release/YY.MM`)
-- `*-beta` → `main`'s version label only; never installed
+- `<cycle>.0.<count>-beta` → `main`'s version label only; never installed
+- `YY.MM-beta.N` → a **beta** build (`beta/YY.MM-beta.N`, §5a)
 
 A production install should always show a clean `YY.MM.N.X` version with no `-rc` or `-beta` suffix.
 
