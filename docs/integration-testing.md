@@ -85,8 +85,9 @@ No submodule bump is required for the existing server two-organisation fixtures.
 
 All Compose steps use job-level `LANDSCAPE_DEPLOYMENT_MODE=testing`, so both
 `schema` and runtime services load the same testing configuration. Bootstrap keeps
-the full existing sample-data arguments and `LANDSCAPE_RUN_SCHEMA=1`; CI waits for
-`schema`, not just `builder`. Backend testing mode does not select the frontend:
+the full existing sample-data arguments and `LANDSCAPE_RUN_SCHEMA=1`. `api` and `appserver`
+depend on `schema` completing successfully, so `docker compose up -d` blocks until
+the fixtures are seeded; on failure CI prints the `builder` and `schema` logs. Backend testing mode does not select the frontend:
 the self-hosted and SaaS suites still start Vite with their respective explicit modes.
 
 ## Cold-start time (GitHub-hosted `ubuntu-latest`)
