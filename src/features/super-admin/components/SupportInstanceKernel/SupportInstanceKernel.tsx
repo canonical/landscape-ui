@@ -1,75 +1,39 @@
 import type { FC } from "react";
-import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
-import { TablePagination } from "@/components/layout/TablePagination";
-import type { KernelOverviewInfo } from "@/features/kernel";
-import { KernelOverview, KernelTableList, useKernel } from "@/features/kernel";
-import usePageParams from "@/hooks/usePageParams";
-import date from "@/libs/date";
-import { useMemo } from "react";
-import type { Instance } from "@/types/Instance";
+import { KernelDetails } from "@/features/kernel";
+import { useGetStaffKernel, useGetStaffLivepatchInfo } from "../../api";
+import type { SupportInstanceTabProps } from "../../types";
 
-interface SupportInstanceKernelProps {
-  readonly instance: Instance;
-}
 /** The Kernel tab of an instance in a support session. */
-const SupportInstanceKernel: FC<SupportInstanceKernelProps> = ({
+const SupportInstanceKernel: FC<SupportInstanceTabProps> = ({
+  name,
   instance,
 }) => {
-  const { pageSize, currentPage } = usePageParams();
-  const { getKernelQuery, getLivepatchInfoQuery } = useKernel();
+  const { staffKernel: kernelStatuses, isGettingStaffKernel } =
+    useGetStaffKernel(name, instance.id);
 
-  const { data: kernelStatuses, isPending: isLoadingKernelStatuses } =
-    getKernelQuery({ id: instance.id });
+  const {
+    staffLivepatchInfo,
+    isGettingStaffLivepatchInfo,
+    staffLivepatchInfoError,
+  } = useGetStaffLivepatchInfo(name, instance.id);
 
-  const { data: getLivepatchInfoResult } = getLivepatchInfoQuery({
-    id: instance.id,
-  });
+  if (isGettingStaffKernel || isGettingStaffLivepatchInfo)
+    return <LoadingState />;
 
-  const [kernelInfo] =
-    getLivepatchInfoResult?.data.livepatch_info?.json?.output?.Status ?? [];
-
-  const allLivepatchFixes = useMemo(
-    () => kernelInfo?.Livepatch.Fixes ?? [],
-    [kernelInfo],
-  );
-
-  const livepatchFixes = useMemo(
-    () => allLivepatchFixes.slice((currentPage - 1) * pageSize, pageSize),
-    [allLivepatchFixes, currentPage, pageSize],
-  );
-
-  if (isLoadingKernelStatuses) return <LoadingState />;
-
-  if (!kernelStatuses?.data.installed)
-    return (
-      <EmptyState
-        title="Kernel information unavailable"
-        body={kernelStatuses?.data.message || "No kernel information available"}
-      />
-    );
-
-  const kernelOverviewData: KernelOverviewInfo = {
-    currentVersion:
-      kernelInfo?.Kernel ?? kernelStatuses.data.installed.version_rounded,
-    expirationDate:
-      kernelInfo?.UpgradeRequiredDate &&
-      date(kernelInfo.UpgradeRequiredDate).isValid()
-        ? kernelInfo.UpgradeRequiredDate
-        : "",
-    status: kernelStatuses.data.smart_status,
-  };
+  if (!kernelStatuses) {
+    throw new Error("The kernel information could not be loaded.");
+  }
 
   return (
-    <>
-      <h2 className="p-heading--4 u-no-padding--top">Kernel overview</h2>
-      <KernelOverview kernelOverview={kernelOverviewData} />
-      <KernelTableList kernelData={livepatchFixes} />
-      <TablePagination
-        totalItems={allLivepatchFixes.length}
-        currentItemCount={livepatchFixes.length}
-      />
-    </>
+    <KernelDetails
+      kernelStatuses={kernelStatuses}
+      livepatchInfo={staffLivepatchInfo}
+      livepatchInfoError={staffLivepatchInfoError}
+      renderHeader={() => (
+        <h2 className="p-heading--4 u-no-padding--top">Kernel overview</h2>
+      )}
+    />
   );
 };
 

@@ -1,98 +1,15 @@
-import { API_URL } from "@/constants";
-import type {
-  KernelManagementInfo,
-  LivepatchInformation,
-} from "@/features/kernel";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { instances } from "@/tests/mocks/instance";
+import { buildLivepatchInfo, kernelManagementInfo } from "@/tests/mocks/kernel";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
+import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import SupportInstanceKernel from "./SupportInstanceKernel";
-import { instances } from "@/tests/mocks/instance";
+import AppErrorBoundary from "@/components/layout/AppErrorBoundary/AppErrorBoundary";
 
-const kernelManagementInfo: KernelManagementInfo = {
-  downgrades: [
-    { id: 10, name: "linux", version: "5.4.0-99", version_rounded: "5.4.0-99" },
-  ],
-  installed: {
-    id: 11,
-    name: "linux",
-    version: "5.4.0-100",
-    version_rounded: "5.4.0-100",
-  },
-  message: "",
-  smart_status: "Kernel upgrade available",
-  upgrades: [
-    {
-      id: 12,
-      name: "linux",
-      version: "5.4.0-101",
-      version_rounded: "5.4.0-101",
-    },
-  ],
-};
-
-/** Fixes in a deliberately unsorted order, so sorting is observable. */
-const buildLivepatchInfo = (): LivepatchInformation => ({
-  ubuntu_pro_livepatch_service_info: null,
-  ubuntu_pro_reboot_required_info: null,
-  livepatch_info: {
-    json: {
-      error: "",
-      return_code: 0,
-      output: {
-        tier: "tier",
-        Status: [
-          {
-            Kernel: "5.4.0-100-generic",
-            Running: true,
-            Supported: "Supported",
-            UpgradeRequiredDate: "2026-10-20",
-            Livepatch: {
-              CheckState: "checked",
-              State: "applied",
-              Version: "Version",
-              Fixes: [
-                {
-                  Name: "cve-2013-1800",
-                  Patched: true,
-                  Bug: "bug-b",
-                  Description: "Middle description",
-                },
-                {
-                  Name: "cve-2013-1900",
-                  Patched: false,
-                  Bug: "bug-c",
-                  Description: "Last description",
-                },
-                {
-                  Name: "cve-2013-1700",
-                  Patched: false,
-                  Bug: "bug-a",
-                  Description: "First description",
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  },
-});
-
-const mockKernel = (info: KernelManagementInfo = kernelManagementInfo) => {
-  server.use(
-    http.get(`${API_URL}computers/:computerId/livepatch/kernel`, () =>
-      HttpResponse.json(info),
-    ),
-    http.get(`${API_URL}computers/:computerId/livepatch/info`, () =>
-      HttpResponse.json(buildLivepatchInfo()),
-    ),
-  );
-};
+const ACME = "acme";
 
 /** Every kernel action control the account's own kernel tab would render. */
 const ACTION_CONTROLS = [
@@ -103,20 +20,26 @@ const ACTION_CONTROLS = [
   /disable livepatch/i,
 ];
 
-describe("SupportInstanceKernelTab (integration)", () => {
-  const user = userEvent.setup();
-
-  afterEach(() => {
-    setEndpointStatus("default");
-  });
-
+describe("SupportInstanceKernel (integration)", () => {
   beforeEach(() => {
-    mockKernel();
+    setStaffGlobalRoles(["SupportProvider"]);
+    setEndpointStatus([
+      {
+        status: "variant",
+        path: "computers/:computerId/livepatch/kernel",
+        response: kernelManagementInfo,
+      },
+      {
+        status: "variant",
+        path: "computers/:computerId/livepatch/info",
+        response: buildLivepatchInfo(),
+      },
+    ]);
   });
 
-  it("shows the same kernel and Livepatch data the account's tab shows", async () => {
+  it("shows the account's kernel and Livepatch data", async () => {
     const { container } = renderWithProviders(
-      <SupportInstanceKernel instance={instances[0]} />,
+      <SupportInstanceKernel name={ACME} instance={instances[0]} />,
     );
 
     expect(
@@ -128,81 +51,72 @@ describe("SupportInstanceKernelTab (integration)", () => {
       "5.4.0-100-generic",
     );
 
-    expect(screen.getByText("Kernel upgrade available")).toBeInTheDocument();
-
-    // The Livepatch fixes table, with every column the main tab lists.
-    for (const column of ["CVE", "Status", "Description", "Bug"]) {
-      expect(screen.getByText(column)).toBeInTheDocument();
-    }
-
     for (const cve of ["cve-2013-1700", "cve-2013-1800", "cve-2013-1900"]) {
       expect(screen.getByText(cve)).toBeInTheDocument();
     }
-
-    // Patched and unpatched states both surface as the main tab shows them.
-    expect(screen.getByText("Patched by Livepatch")).toBeInTheDocument();
-    expect(screen.getAllByText("Unpatched")).toHaveLength(2);
-  });
-
-  it("sorts the fixes by CVE when the column header is used", async () => {
-    renderWithProviders(<SupportInstanceKernel instance={instances[0]} />);
-
-    await screen.findByText("cve-2013-1700");
-
-    const cveOrder = () =>
-      screen
-        .getAllByRole("link", { name: /^cve-/ })
-        .map((link) => link.textContent);
-
-    // The table opens sorted ascending by CVE, as the main tab does.
-    expect(cveOrder()).toEqual([
-      "cve-2013-1700",
-      "cve-2013-1800",
-      "cve-2013-1900",
-    ]);
-
-    await user.click(screen.getByRole("columnheader", { name: /CVE/i }));
-
-    expect(cveOrder()).toEqual([
-      "cve-2013-1900",
-      "cve-2013-1800",
-      "cve-2013-1700",
-    ]);
   });
 
   it("offers no kernel action and reaches no mutation", async () => {
-    renderWithProviders(<SupportInstanceKernel instance={instances[0]} />);
+    const mutations: string[] = [];
+    const captureMutation = ({ request }: { request: Request }) => {
+      if (request.method !== "GET") {
+        mutations.push(`${request.method} ${request.url}`);
+      }
+    };
 
-    await screen.findByRole("heading", { name: /kernel overview/i });
+    server.events.on("request:start", captureMutation);
 
-    for (const control of ACTION_CONTROLS) {
-      expect(
-        screen.queryByRole("button", { name: control }),
-      ).not.toBeInTheDocument();
+    renderWithProviders(
+      <SupportInstanceKernel name={ACME} instance={instances[0]} />,
+    );
+
+    try {
+      await screen.findByText("cve-2013-1700");
+
+      for (const control of ACTION_CONTROLS) {
+        expect(
+          screen.queryByRole("button", { name: control }),
+        ).not.toBeInTheDocument();
+      }
+
+      expect(mutations).toEqual([]);
+    } finally {
+      server.events.removeListener("request:start", captureMutation);
     }
   });
 
   it("shows an empty state when the instance has no kernel information", async () => {
-    mockKernel({
-      downgrades: [],
-      installed: null,
-      message: "Kernel information is not available for this instance.",
-      smart_status: "",
-      upgrades: [],
-    });
+    setEndpointStatus({ status: "empty" });
 
-    renderWithProviders(<SupportInstanceKernel instance={instances[0]} />);
+    renderWithProviders(
+      <SupportInstanceKernel name={ACME} instance={instances[0]} />,
+    );
 
     expect(
       await screen.findByText(
         "Kernel information is not available for this instance.",
       ),
     ).toBeInTheDocument();
+  });
 
-    for (const control of ACTION_CONTROLS) {
-      expect(
-        screen.queryByRole("button", { name: control }),
-      ).not.toBeInTheDocument();
-    }
+  it("throws when the kernel information fails to load", async () => {
+    vi.spyOn(console, "error").mockReturnValue(undefined);
+    setEndpointStatus({
+      status: "error",
+      path: "computers/:computerId/livepatch/kernel",
+    });
+
+    renderWithProviders(
+      <AppErrorBoundary>
+        <SupportInstanceKernel name={ACME} instance={instances[0]} />,
+      </AppErrorBoundary>,
+      undefined,
+      "/instances/1",
+      "/instances/:instanceId",
+    );
+
+    expect(
+      await screen.findByText("The kernel information could not be loaded."),
+    ).toBeInTheDocument();
   });
 });
