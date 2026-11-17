@@ -1,0 +1,1 @@
+import{ct as e,lt as t,pt as n}from"./auth-CDkwwSdz.js";function r(r,i){return e({...r,enabled:!0,suspense:!0,throwOnError:t,placeholderData:void 0},n,i)}export{r as t};

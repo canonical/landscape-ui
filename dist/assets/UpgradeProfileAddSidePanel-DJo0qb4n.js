@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-DanBxBBP.js";import{t}from"./SidePanel-CYei0UXt.js";import{t as n}from"./SingleUpgradeProfileForm-Di7PFyK-.js";var r=e(),i=()=>(0,r.jsxs)(r.Fragment,{children:[(0,r.jsx)(t.Header,{children:`Add upgrade profile`}),(0,r.jsx)(t.Content,{children:(0,r.jsx)(n,{action:`add`})})]});export{i as default};

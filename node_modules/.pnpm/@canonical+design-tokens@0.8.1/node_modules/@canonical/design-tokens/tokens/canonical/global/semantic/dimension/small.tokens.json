@@ -1,0 +1,18 @@
+{
+  "$schema": "https://designtokens.org/schemas/2025.10/format.json",
+  "dimension": {
+    "$type": "dimension",
+    "size": {
+      "rootFontSize": {
+        "$value": "{dimension.200}",
+        "$description": "Base font size defining the root rem unit for small breakpoint layouts (16px)"
+      },
+      "height": {
+        "baseline": {
+          "$value": "{dimension.100}",
+          "$description": "Baseline grid unit for vertical rhythm and component alignment (8px)"
+        }
+      }
+    }
+  }
+}

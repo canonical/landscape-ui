@@ -1,0 +1,1 @@
+var e=5e3,t={lock:`locked`,unlock:`unlocked`,delete:`deleted`},n=e=>`This user has a pending activity to be ${t[e]}.`;export{n,e as t};

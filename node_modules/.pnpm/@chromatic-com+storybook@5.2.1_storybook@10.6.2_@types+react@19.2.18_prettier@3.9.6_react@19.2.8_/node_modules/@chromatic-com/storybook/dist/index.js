@@ -1,0 +1,10 @@
+'use strict';
+
+var csf = require('storybook/internal/csf');
+var highlight = require('storybook/highlight');
+var previewApi = require('storybook/preview-api');
+
+var x=Object.defineProperty;var S=(o,n)=>{for(var r in n)x(o,r,{get:n[r],enumerable:!0});};var E={};S(E,{decorators:()=>N,initialGlobals:()=>$});var t="chromaui/addon-visual-tests";var I="highlightIgnored",c=`${t}/highlightIgnored`,h=`${t}/highlightIgnored/count`,m=`${t}/highlightIgnored/select`,d=['[data-chromatic="ignore"]','[class~="chromatic-ignore"]'];var G={backgroundColor:"rgba(255, 173, 51, 0.2)",outline:"1px solid rgba(255, 173, 51, 0.7)",outlineOffset:"-1px"},T={backgroundColor:"rgba(255, 173, 51, 0.1)",outlineWidth:"2px"},R={backgroundColor:"transparent",outlineWidth:"2px"},D=o=>{if(!o)return !1;if(typeof document>"u")return !0;try{return document.createDocumentFragment().querySelector(o),!0}catch{return console.warn(`Invalid ignoreSelector: ${o}`),!1}},u=o=>{let n=o?.ignoreSelectors??[],r=Array.from(new Set(d.concat(n.filter(D))));return {id:c,selectors:r,styles:G,hoverStyles:T,focusStyles:R,menu:r.map(e=>{let l=d.includes(e);return [{id:`${e}-info`,title:"Element ignored in visual tests",description:l?`${e} will be ignored by Chromatic`:`${e} matches an ignored selector`,selectors:[e]},{id:`${e}-link`,iconLeft:"info",iconRight:"shareAlt",title:"Learn how to configure ignored elements",clickEvent:m,selectors:[e]}]})}};var A=(o,{globals:n,parameters:r,id:e})=>{let l=!!n[I],s=previewApi.useChannel({}),i=u(r.chromatic),f=i?.selectors.join(`
+`)??"";return previewApi.useEffect(()=>{if(s(highlight.REMOVE_HIGHLIGHT,c),!i?.selectors.length){s(h,0);return}l&&s(highlight.HIGHLIGHT,i);let H=document.getElementById("storybook-root"),O=i.selectors.reduce((a,g)=>(document.querySelectorAll(`:is(${g}):not([id^="storybook-"], [id^="storybook-"] *, [class^="sb-"], [class^="sb-"] *)`).forEach(p=>a.add(p)),(H?.querySelectorAll(g)??[]).forEach(p=>a.add(p)),a),new Set);return s(h,O.size),()=>s(highlight.REMOVE_HIGHLIGHT,c)},[s,i,e,f,l]),o()},N=[A],$={[I]:!1};var dt=()=>csf.definePreviewAddon(E);
+
+module.exports = dt;

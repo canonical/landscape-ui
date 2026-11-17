@@ -1,0 +1,107 @@
+@import 'settings';
+
+@mixin vf-p-links {
+  .p-link--soft {
+    color: $colors--theme--text-default;
+
+    &:visited {
+      color: $colors--theme--text-default;
+      text-decoration: none;
+    }
+
+    &:hover {
+      color: $colors--theme--link-default;
+    }
+
+    &.is-selected {
+      font-weight: $font-weight-bold;
+    }
+  }
+
+  // "inverted" links are meant for undefined dark backgrounds
+  // and they use the default text color
+  .p-link--inverted {
+    color: $colors--theme--text-default;
+    font-weight: $font-weight-bold;
+
+    &:hover {
+      color: $colors--theme--text-default;
+    }
+
+    &:visited {
+      color: $colors--theme--text-muted;
+    }
+  }
+
+  .p-link--skip {
+    background: $colors--theme--background-alt;
+    color: $colors--theme--link-default;
+    display: block;
+    left: -999px;
+    position: absolute;
+    top: -999px;
+
+    &:focus {
+      @include vf-focus-themed;
+
+      left: $sph--small;
+      padding: $spv--large $sph--large;
+      position: fixed;
+      top: $spv--small;
+      z-index: 999999;
+    }
+  }
+
+  .p-top {
+    align-items: center;
+    display: flex;
+
+    &::before {
+      border-bottom: 1px solid $colors--theme--border-default;
+      content: '';
+      flex-grow: 1;
+      margin: $spv--x-large 0 calc($spv--x-large - 1px) 0;
+    }
+
+    &::after {
+      @extend %icon;
+      // FIXME: to do when icons are themed
+      @include vf-icon-back-to-top($color-mid-dark);
+
+      content: '';
+      margin-right: $sph--small;
+    }
+  }
+
+  .p-top__link {
+    color: $colors--theme--text-default;
+    padding: 0 $sph--small 0 $sph--large;
+    text-decoration: none;
+  }
+
+  .p-link--anchor-heading {
+    color: $colors--theme--text-default;
+
+    &:visited {
+      color: $colors--theme--text-default;
+    }
+
+    &::after {
+      @extend %icon;
+      @include vf-icon-get-link-themed;
+
+      content: '';
+      margin-left: $sph--small;
+      padding: $spv--small $sph--small;
+      vertical-align: baseline;
+      visibility: hidden;
+    }
+
+    &:hover,
+    &:focus {
+      &::after {
+        visibility: visible;
+      }
+    }
+  }
+}

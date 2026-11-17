@@ -1,0 +1,571 @@
+{
+  "$schema": "https://designtokens.org/schemas/2025.10/format.json",
+  "dimension": {
+    "$type": "dimension",
+    "025": {
+      "$value": {
+        "value": 0.125,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 025 (2px)"
+    },
+    "050": {
+      "$value": {
+        "value": 0.25,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 050 (4px)"
+    },
+    "100": {
+      "$value": {
+        "value": 0.5,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 100 (8px)"
+    },
+    "150": {
+      "$value": {
+        "value": 0.75,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 150 (12px)"
+    },
+    "175": {
+      "$value": {
+        "value": 0.875,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 175 (14px)"
+    },
+    "200": {
+      "$value": {
+        "value": 1,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 200 (16px)"
+    },
+    "225": {
+      "$value": {
+        "value": 1.125,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 225 (18px)"
+    },
+    "250": {
+      "$value": {
+        "value": 1.25,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 250 (20px)"
+    },
+    "300": {
+      "$value": {
+        "value": 1.5,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 300 (24px)"
+    },
+    "400": {
+      "$value": {
+        "value": 2,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 400 (32px)"
+    },
+    "500": {
+      "$value": {
+        "value": 2.5,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 500 (40px)"
+    },
+    "600": {
+      "$value": {
+        "value": 3,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 600 (48px)"
+    },
+    "700": {
+      "$value": {
+        "value": 3.5,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 700 (56px)"
+    },
+    "800": {
+      "$value": {
+        "value": 4,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 800 (64px)"
+    },
+    "900": {
+      "$value": {
+        "value": 4.5,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 900 (72px)"
+    },
+    "1000": {
+      "$value": {
+        "value": 5,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 1000 (80px)"
+    },
+    "1100": {
+      "$value": {
+        "value": 5.5,
+        "unit": "rem"
+      },
+      "$description": "Primitive dimension 1100 (88px)"
+    },
+    "size": {
+      "fontSize": {
+        "200": {
+          "$value": {
+            "value": 0.625,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 200 (10px)"
+        },
+        "250": {
+          "$value": {
+            "value": 0.75,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 250 (12px)"
+        },
+        "300": {
+          "$value": {
+            "value": 0.875,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 300 (14px)"
+        },
+        "350": {
+          "$value": {
+            "value": 1,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 350 (16px)"
+        },
+        "400": {
+          "$value": {
+            "value": 1.125,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 400 (18px)"
+        },
+        "450": {
+          "$value": {
+            "value": 1.3125,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 450 (21px)"
+        },
+        "500": {
+          "$value": {
+            "value": 1.5,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 500 (24px)"
+        },
+        "550": {
+          "$value": {
+            "value": 1.75,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 550 (28px)"
+        },
+        "600": {
+          "$value": {
+            "value": 2,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 600 (32px)"
+        },
+        "650": {
+          "$value": {
+            "value": 2.25,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 650 (36px)"
+        },
+        "700": {
+          "$value": {
+            "value": 2.625,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 700 (42px)"
+        },
+        "750": {
+          "$value": {
+            "value": 3,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 750 (48px)"
+        },
+        "800": {
+          "$value": {
+            "value": 3.4375,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 800 (55px)"
+        },
+        "850": {
+          "$value": {
+            "value": 3.9375,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 850 (63px)"
+        },
+        "900": {
+          "$value": {
+            "value": 4.5625,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 900 (73px)"
+        },
+        "950": {
+          "$value": {
+            "value": 5.25,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 950 (84px)"
+        },
+        "1000": {
+          "$value": {
+            "value": 6,
+            "unit": "rem"
+          },
+          "$description": "Primitive font size 1000 (96px)"
+        }
+      }
+    },
+    "letterSpacing": {
+      "default": {
+        "$value": {
+          "value": 0,
+          "unit": "rem"
+        },
+        "$description": "Primitive letter spacing default (0px)"
+      },
+      "wide": {
+        "$description": "Primitive letter spacing wide (0.8px)",
+        "$value": {
+          "value": 0.05,
+          "unit": "rem"
+        }
+      }
+    },
+    "stroke": {
+      "thickness": {
+        "medium": {
+          "$value": {
+            "value": 1,
+            "unit": "px"
+          },
+          "$description": "Primitive stroke thickness medium (1px)"
+        },
+        "large": {
+          "$value": {
+            "value": 3,
+            "unit": "px"
+          },
+          "$description": "Primitive stroke thickness large (3px)"
+        }
+      }
+    },
+    "radius": {
+      "none": {
+        "$value": {
+          "value": 0,
+          "unit": "rem"
+        },
+        "$description": "Primitive radius none (0px)"
+      },
+      "small": {
+        "$value": {
+          "value": 0,
+          "unit": "rem"
+        },
+        "$description": "Primitive radius small (0px)"
+      },
+      "medium": {
+        "$value": {
+          "value": 0,
+          "unit": "rem"
+        },
+        "$description": "Primitive radius medium (0px)"
+      },
+      "large": {
+        "$value": {
+          "value": 0,
+          "unit": "rem"
+        },
+        "$description": "Primitive radius large (0px)"
+      },
+      "full": {
+        "$value": {
+          "value": 9999,
+          "unit": "px"
+        },
+        "$description": "Primitive radius full"
+      }
+    },
+    "space": {
+      "top": {
+        "text": {
+          "baselineNudge": {
+            "200": {
+              "$value": {
+                "value": 0.4375,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 200 (7px)"
+            },
+            "250": {
+              "$value": {
+                "value": 0.25,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 250 (4px)"
+            },
+            "300": {
+              "$value": {
+                "value": 0.125,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 300 (2px)"
+            },
+            "350": {
+              "$value": {
+                "value": 0.4375,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 350 (7px)"
+            },
+            "400": {
+              "$value": {
+                "value": 0.375,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 400 (6px)"
+            },
+            "450": {
+              "$value": {
+                "value": 0.1875,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 450 (3px)"
+            },
+            "500": {
+              "$value": {
+                "value": 0,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 500 (0px)"
+            },
+            "550": {
+              "$value": {
+                "value": 0.3125,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 550 (5px)"
+            },
+            "600": {
+              "$value": {
+                "value": 0.0625,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 600 (1px)"
+            },
+            "650": {
+              "$value": {
+                "value": 0.375,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 650 (6px)"
+            },
+            "700": {
+              "$value": {
+                "value": 0.125,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 700 (2px)"
+            },
+            "750": {
+              "$value": {
+                "value": 0.25,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 750 (4px)"
+            },
+            "800": {
+              "$value": {
+                "value": 0.3125,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 800 (5px)"
+            },
+            "850": {
+              "$value": {
+                "value": 0.4375,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 850 (7px)"
+            },
+            "900": {
+              "$value": {
+                "value": 0.4375,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 900 (7px)"
+            },
+            "950": {
+              "$value": {
+                "value": 0.375,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 950 (6px)"
+            },
+            "1000": {
+              "$value": {
+                "value": 0.25,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge top 1000 (4px)"
+            }
+          }
+        }
+      },
+      "bottom": {
+        "text": {
+          "baselineNudge": {
+            "200": {
+              "$value": {
+                "value": 0.3125,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 200 (5px)"
+            },
+            "250": {
+              "$value": {
+                "value": 0.25,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 250 (4px)"
+            },
+            "300": {
+              "$value": {
+                "value": 0.125,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 300 (2px)"
+            },
+            "350": {
+              "$value": {
+                "value": 0.0625,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 350 (1px)"
+            },
+            "400": {
+              "$value": {
+                "value": 0.125,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 400 (2px)"
+            },
+            "450": {
+              "$value": {
+                "value": 0.0625,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 450 (1px)"
+            },
+            "500": {
+              "$value": {
+                "value": 0,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 500 (0px)"
+            },
+            "550": {
+              "$value": {
+                "value": 0.4375,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 550 (7px)"
+            },
+            "600": {
+              "$value": {
+                "value": 0.4375,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 600 (7px)"
+            },
+            "650": {
+              "$value": {
+                "value": 0.375,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 650 (6px)"
+            },
+            "700": {
+              "$value": {
+                "value": 0.375,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 700 (6px)"
+            },
+            "750": {
+              "$value": {
+                "value": 0.25,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 750 (4px)"
+            },
+            "800": {
+              "$value": {
+                "value": 0.1875,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 800 (3px)"
+            },
+            "850": {
+              "$value": {
+                "value": 0.0625,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 850 (1px)"
+            },
+            "900": {
+              "$value": {
+                "value": 0.0625,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 900 (1px)"
+            },
+            "950": {
+              "$value": {
+                "value": 0.375,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 950 (6px)"
+            },
+            "1000": {
+              "$value": {
+                "value": 0.25,
+                "unit": "rem"
+              },
+              "$description": "Primitive baseline nudge bottom 1000 (4px)"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+
+const browser = require('@sentry/core/browser');
+const helpers = require('../helpers.js');
+const attributes = require('@sentry/conventions/attributes');
+
+const httpContextIntegration = browser.defineIntegration(() => {
+  return {
+    name: "HttpContext",
+    preprocessEvent(event) {
+      if (!helpers.WINDOW.navigator && !helpers.WINDOW.location && !helpers.WINDOW.document) {
+        return;
+      }
+      const reqData = helpers.getHttpRequestData();
+      const headers = {
+        ...reqData.headers,
+        ...event.request?.headers
+      };
+      event.request = {
+        ...reqData,
+        ...event.request,
+        headers
+      };
+    },
+    processSegmentSpan(span) {
+      const spanOp = span.attributes?.[browser.SEMANTIC_ATTRIBUTE_SENTRY_OP];
+      if (!helpers.WINDOW.navigator && !helpers.WINDOW.location && !helpers.WINDOW.document) {
+        return;
+      }
+      const reqData = helpers.getHttpRequestData();
+      browser.safeSetSpanJSONAttributes(span, {
+        // Coerce empty string to undefined so the helper's nullish check drops it,
+        // rather than writing an empty `url.full` attribute onto the span.
+        [attributes.URL_FULL]: spanOp !== "http.client" ? reqData.url : void 0,
+        "http.request.header.user_agent": reqData.headers["User-Agent"],
+        "http.request.header.referer": reqData.headers["Referer"]
+      });
+    }
+  };
+});
+
+exports.httpContextIntegration = httpContextIntegration;
+//# sourceMappingURL=httpcontext.js.map

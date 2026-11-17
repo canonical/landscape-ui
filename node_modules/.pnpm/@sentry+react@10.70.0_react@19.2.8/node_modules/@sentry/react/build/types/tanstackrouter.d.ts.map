@@ -1,0 +1,1 @@
+{"version":3,"file":"tanstackrouter.d.ts","sourceRoot":"","sources":["../../src/tanstackrouter.ts"],"names":[],"mappings":"AAAA,OAAO,EACL,yBAAyB,IAAI,iCAAiC,EAK/D,MAAM,iBAAiB,CAAC;AACzB,OAAO,KAAK,EAAE,WAAW,EAAE,MAAM,sBAAsB,CAAC;AAqBxD;;;;;;;GAOG;AACH,wBAAgB,uCAAuC,CAErD,MAAM,EAAE,GAAG,EAAE,iGAAiG;AAC9G,OAAO,GAAE,UAAU,CAAC,OAAO,iCAAiC,CAAC,CAAC,CAAC,CAAM,GACpE,WAAW,CA+Hb"}

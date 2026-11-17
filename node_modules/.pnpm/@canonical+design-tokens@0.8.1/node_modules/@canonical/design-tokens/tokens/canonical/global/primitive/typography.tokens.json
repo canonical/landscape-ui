@@ -1,0 +1,181 @@
+{
+  "$schema": "https://designtokens.org/schemas/2025.10/format.json",
+  "typography": {
+    "fontFamily": {
+      "$type": "fontFamily",
+      "sansSerif": {
+        "$value": [
+          "Ubuntu Sans",
+          "Ubuntu",
+          "Cantarell",
+          "Adwaita Sans",
+          "Noto Sans",
+          "Oxygen",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "Noto Color Emoji",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "sans-serif"
+        ],
+        "$description": "Primitive font family stack sansSerif (primary: Ubuntu Sans)"
+      },
+      "monospace": {
+        "$value": [
+          "Ubuntu Sans Mono",
+          "Ubuntu Mono",
+          "Noto Color Emoji",
+          "Adwaita Mono",
+          "Source Code Pro",
+          "Hack",
+          "ui-monospace",
+          "SF Mono",
+          "Apple Color Emoji",
+          "Cascadia Code",
+          "Consolas",
+          "Segoe UI Emoji",
+          "Roboto Mono",
+          "monospace"
+        ],
+        "$description": "Primitive font family stack monospace (primary: Ubuntu Sans Mono)"
+      }
+    },
+    "weight": {
+      "$type": "fontWeight",
+      "thin": {
+        "$value": 100,
+        "$description": "Primitive font weight thin"
+      },
+      "extraLight": {
+        "$value": 200,
+        "$description": "Primitive font weight extraLight"
+      },
+      "light": {
+        "$value": 300,
+        "$description": "Primitive font weight light"
+      },
+      "regular": {
+        "$value": 400,
+        "$description": "Primitive font weight regular"
+      },
+      "medium": {
+        "$value": 500,
+        "$description": "Primitive font weight medium"
+      },
+      "semiBold": {
+        "$value": 600,
+        "$description": "Primitive font weight semiBold"
+      },
+      "bold": {
+        "$value": 700,
+        "$description": "Primitive font weight bold"
+      },
+      "extraBold": {
+        "$value": 800,
+        "$description": "Primitive font weight extraBold"
+      }
+    },
+    "fontStyle": {
+      "italic": {
+        "$extensions": {
+          "com.canonical.typography": {
+            "$type": "fontStyle",
+            "$value": "italic"
+          }
+        },
+        "$description": "Primitive font style italic (This token type is not yet supported by the W3C DTCG specification, so it is stored in $extensions and requires a token transformer compatible with Canonical design system extensions.)"
+      }
+    },
+    "fontPosition": {
+      "subscript": {
+        "$extensions": {
+          "com.canonical.typography": {
+            "$type": "fontPosition",
+            "$value": "sub"
+          }
+        },
+        "$description": "Primitive font position subscript (This token type is not yet supported by the W3C DTCG specification, so it is stored in $extensions and requires a token transformer compatible with Canonical design system extensions.)"
+      },
+      "superscript": {
+        "$extensions": {
+          "com.canonical.typography": {
+            "$type": "fontPosition",
+            "$value": "super"
+          }
+        },
+        "$description": "Primitive font position superscript (This token type is not yet supported by the W3C DTCG specification, so it is stored in $extensions and requires a token transformer compatible with Canonical design system extensions.)"
+      }
+    },
+    "figureStyle": {
+      "normal": {
+        "$extensions": {
+          "com.canonical.typography": {
+            "$type": "figureStyle",
+            "$value": "normal"
+          }
+        },
+        "$description": "Primitive figure style normal (This token type is not yet supported by the W3C DTCG specification, so it is stored in $extensions and requires a token transformer compatible with Canonical design system extensions.)"
+      },
+      "oldStyleFigure": {
+        "$extensions": {
+          "com.canonical.typography": {
+            "$type": "figureStyle",
+            "$value": "oldstyle-nums"
+          }
+        },
+        "$description": "Primitive figure style oldStyleFigure (This token type is not yet supported by the W3C DTCG specification, so it is stored in $extensions and requires a token transformer compatible with Canonical design system extensions.)"
+      },
+      "liningFigures": {
+        "$extensions": {
+          "com.canonical.typography": {
+            "$type": "figureStyle",
+            "$value": "lining-nums"
+          }
+        },
+        "$description": "Primitive figure style liningFigures (This token type is not yet supported by the W3C DTCG specification, so it is stored in $extensions and requires a token transformer compatible with Canonical design system extensions.)"
+      }
+    },
+    "textDecoration": {
+      "underline": {
+        "$extensions": {
+          "com.canonical.typography": {
+            "$type": "textDecoration",
+            "$value": "underline solid"
+          }
+        },
+        "$description": "Primitive text decoration underline (This token type is not yet supported by the W3C DTCG specification, so it is stored in $extensions and requires a token transformer compatible with Canonical design system extensions.)"
+      },
+      "strikethrough": {
+        "$extensions": {
+          "com.canonical.typography": {
+            "$type": "textDecoration",
+            "$value": "line-through"
+          }
+        },
+        "$description": "Primitive text decoration strikethrough (This token type is not yet supported by the W3C DTCG specification, so it is stored in $extensions and requires a token transformer compatible with Canonical design system extensions.)"
+      }
+    },
+    "letterCase": {
+      "default": {
+        "$extensions": {
+          "com.canonical.typography": {
+            "$type": "letterCase",
+            "$value": "normal"
+          }
+        },
+        "$description": "Primitive letter case default (This token type is not yet supported by the W3C DTCG specification, so it is stored in $extensions and requires a token transformer compatible with Canonical design system extensions.)"
+      },
+      "smallcaps": {
+        "$extensions": {
+          "com.canonical.typography": {
+            "$type": "letterCase",
+            "$value": "small-caps"
+          }
+        },
+        "$description": "Primitive letter case smallcaps (This token type is not yet supported by the W3C DTCG specification, so it is stored in $extensions and requires a token transformer compatible with Canonical design system extensions.)"
+      }
+    }
+  }
+}
