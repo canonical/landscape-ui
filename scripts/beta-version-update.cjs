@@ -40,10 +40,11 @@ const {
  * pending (i.e. the prep PR was merged and more changes landed on the beta
  * branch), it aborts rather than silently consuming them into nothing.
  *
- * Respins (YY.MM~beta.N.R, made on the SAME beta branch per the beta release
- * design) are not supported yet: if package.json or debian/changelog already
- * carries a respin of this beta, the script aborts instead of rewinding the
- * branch to the base beta version.
+ * Respins (YY.MM~beta.N.R) are out of this script's scope: per the beta
+ * release design, the release owner prepares one by hand in a single PR on
+ * the same beta branch (fix + package.json + debian/changelog + CHANGELOG.md).
+ * If package.json or debian/changelog already carries a respin of this beta,
+ * the script aborts instead of rewinding the branch to the base beta version.
  *
  * Usage:
  *   node scripts/beta-version-update.cjs [beta/YY.MM-beta.N | YY.MM-beta.N]
@@ -125,7 +126,7 @@ function main() {
 
   // A respin (YY.MM~beta.N.R) of this beta is already stamped on the branch.
   // Re-preparing would rewind package.json and stack an older stanza above
-  // the respin's, so stop until respins are supported.
+  // the respin's, so stop: respins are prepared by hand, not by this script.
   const debUpstream = debVersion.replace(/-[^-]+$/, "");
   const debTop = readDebianTopVersion(debianChangelogPath);
   const respun = [
@@ -137,7 +138,8 @@ function main() {
     console.error(
       `This branch already carries a respin of ${version} ` +
         `(package.json: ${pkg.version}, debian/changelog: ${debTop}). ` +
-        `Respins are not supported by this script yet — prepare them by hand.`,
+        `Respins are prepared by hand in a PR on this branch (see the beta ` +
+        `release process); this script only prepares the base beta.`,
     );
     process.exit(1);
   }
@@ -168,8 +170,8 @@ function main() {
       console.error(
         `CHANGELOG.md already has a ${version} section, but ${entries.length} ` +
           `changeset(s) are pending. Release notes for this beta are frozen — ` +
-          `ship these changes in a respin (not yet automated) or the next ` +
-          `beta, or remove the pending changesets from this branch.`,
+          `ship these changes in a respin PR (see the beta release process) ` +
+          `or the next beta, or remove the pending changesets from this branch.`,
       );
       process.exit(1);
     }
