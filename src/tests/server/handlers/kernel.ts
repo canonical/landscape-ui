@@ -8,11 +8,26 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
 import { http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";
+import { shouldApplyEndpointStatus } from "./_helpers";
 
 export default [
   http.get<never, never, KernelManagementInfo>(
     `${API_URL}computers/:computerId/livepatch/kernel`,
     async () => {
+      if (shouldApplyEndpointStatus("computers/:computerId/livepatch/kernel")) {
+        const { status, response } = getEndpointStatus(
+          "computers/:computerId/livepatch/kernel",
+        );
+
+        if (status === "error") {
+          throw createEndpointStatusError();
+        }
+
+        if (status === "variant") {
+          return HttpResponse.json(response as KernelManagementInfo);
+        }
+      }
+
       const endpointStatus = getEndpointStatus();
 
       if (endpointStatus.status === "empty") {
@@ -43,6 +58,20 @@ export default [
   http.get<never, never, LivepatchInformation>(
     `${API_URL}computers/:computerId/livepatch/info`,
     async () => {
+      if (shouldApplyEndpointStatus("computers/:computerId/livepatch/info")) {
+        const { status, response } = getEndpointStatus(
+          "computers/:computerId/livepatch/info",
+        );
+
+        if (status === "error") {
+          throw createEndpointStatusError();
+        }
+
+        if (status === "variant") {
+          return HttpResponse.json(response as LivepatchInformation);
+        }
+      }
+
       return HttpResponse.json<LivepatchInformation>({
         ubuntu_pro_livepatch_service_info: null,
         ubuntu_pro_reboot_required_info: null,
