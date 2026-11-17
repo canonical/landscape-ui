@@ -1,3 +1,4 @@
+import { ROOT_PATH } from "@/constants";
 import { ROUTES } from "@/libs/routes";
 import { hasProperty } from "@/utils/_helpers";
 import { SUPPORTED_PROVIDERS } from "./constants";
@@ -39,6 +40,22 @@ export const getSameOriginPath = (input?: string | null) => {
   }
 
   return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+};
+
+/** Returns where the login page sends the user once they are signed in. */
+export const getLoginRedirect = (
+  searchParams: URLSearchParams,
+  rootPath: string = ROOT_PATH,
+) => {
+  const redirectTo = searchParams.get("redirect-to");
+
+  // Served under a sub-path, the site root belongs to the server, which
+  // knows the default location of the account.
+  if (!redirectTo && rootPath !== "/") {
+    return { redirectTo: "/", external: true };
+  }
+
+  return { redirectTo, external: searchParams.has("external") };
 };
 
 export const getInvitationPath = (

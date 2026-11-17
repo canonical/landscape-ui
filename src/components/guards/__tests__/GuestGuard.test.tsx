@@ -43,7 +43,12 @@ describe("GuestGuard", () => {
     vi.resetAllMocks();
   });
 
-  const setup = async (authState: AuthContextProps, params = {}) => {
+  const setup = async (
+    authState: AuthContextProps,
+    params = {},
+    rootPath = "/",
+  ) => {
+    vi.stubEnv("VITE_ROOT_PATH", rootPath);
     mockSearchParams(params);
 
     // We import the component AFTER mocking modules to apply doMock
@@ -123,6 +128,16 @@ describe("GuestGuard", () => {
 
       expect(navigate).toHaveBeenCalledWith(HOMEPAGE_PATH, { replace: true });
       expect(screen.queryByText("Guest Content")).not.toBeInTheDocument();
+    });
+
+    it("should leave the default location to the server under a sub-path", async () => {
+      await setup(authorizedState, {}, "/portal/");
+
+      expect(safeRedirect).toHaveBeenCalledWith("/", {
+        external: true,
+        replace: true,
+      });
+      expect(navigate).not.toHaveBeenCalled();
     });
 
     it("should redirect to internal 'redirect-to' url", async () => {
