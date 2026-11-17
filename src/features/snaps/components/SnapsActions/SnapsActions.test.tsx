@@ -59,11 +59,50 @@ const renderOnInstancePage = (element: ReactElement) =>
 
 describe("SnapsActions", () => {
   beforeEach(() => {
-    setScreenSize("lg");
+    setScreenSize("xl");
   });
 
   afterEach(() => {
     resetScreenSize();
+  });
+
+  describe("Responsive collapse", () => {
+    it("collapses the table actions below the xl breakpoint and keeps Install visible", () => {
+      setScreenSize("lg");
+      renderWithProviders(
+        <SnapsActions
+          instanceTitle={INSTANCE_TITLE}
+          selectedSnaps={mixedSelectedSnaps}
+        />,
+      );
+
+      expect(screen.getByRole("button", { name: "Install" })).toBeVisible();
+      expect(
+        screen.getByRole("button", { name: "Actions" }),
+      ).toBeInTheDocument();
+      for (const button of tableSnapButtons.filter((b) => b !== "Install")) {
+        expect(
+          screen.queryByRole("button", { name: button }),
+        ).not.toBeInTheDocument();
+      }
+    });
+
+    it("keeps the side panel actions expanded at the lg breakpoint", () => {
+      assert(snapData.single.unheldSnap);
+      setScreenSize("lg");
+      const { container } = renderOnInstancePage(
+        <SnapsActions
+          instanceTitle={INSTANCE_TITLE}
+          selectedSnaps={[snapData.single.unheldSnap]}
+          sidePanel={true}
+        />,
+      );
+
+      expect(container).toHaveTexts(formUnheldSnapButtons);
+      expect(
+        screen.queryByRole("button", { name: "Actions" }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe("Snap buttons in table", () => {

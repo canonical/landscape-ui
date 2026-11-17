@@ -85,7 +85,10 @@ const SnapsActions: FC<SnapsActionProps> = ({
         </Button>
       )}
       <ResponsiveButtons
-        collapseFrom="lg"
+        // The table toolbar has five actions beside the search box, so it
+        // collapses as early as the Packages tab's. The details panel keeps
+        // its original breakpoint.
+        collapseFrom={sidePanel ? "lg" : "xl"}
         buttons={[
           <Button
             type="button"
