@@ -149,19 +149,47 @@ Because the current repo still contains some domain hooks under `src/hooks/`, tr
 
 Pragma is Canonical's next-generation design system and the successor to vanilla-framework and
 `@canonical/react-components`. The app currently has Pragma's A1 setup in place through
-`@canonical/styles`, `@canonical/react-ds-global`, `@canonical/react-ds-global-form`, and
-`@canonical/ds-assets`; component migration remains incremental, so many surfaces still use vanilla
-and `@canonical/react-components`.
+`@canonical/styles-vanilla-adapter`, `@canonical/react-ds-global`, `@canonical/react-ds-global-form`,
+and `@canonical/ds-assets`; component migration remains incremental, so many surfaces still use
+vanilla and `@canonical/react-components`.
 
-`src/main.tsx` loads the Vanilla SCSS bundle first, then `@canonical/styles`, then
-`@canonical/react-ds-global-form/dist/esm/index.css`. `@canonical/styles` brings in the active
-global design tokens, reset, and typography rules; the form stylesheet provides package-level CSS
-variables for future Pragma form components. These are Vite side-effect imports rather than SCSS
-`@import`s because the package CSS entrypoints resolve correctly from the Vite entrypoint.
+### Vanilla and Pragma cascade layers
+
+Vanilla and Pragma share the page through `@canonical/styles-vanilla-adapter`, which puts both
+frameworks in cascade layers and confines each to its own elements:
+
+- The layer order statement (`vanilla.escapes, vanilla, boundary, normalize, ds.*, lib, app`)
+  must be the first rule the browser reads. `src/styles/index.scss` starts with the adapter's
+  `layers.css`, and `index.html` repeats the statement inline before any stylesheet, because
+  production CSS chunks can mention `ds.*` layers before the entry stylesheet loads. Keep the
+  inline copy in sync with the adapter's `layers.css` when upgrading.
+- Everything Vanilla-era goes directly in `@layer vanilla`: `src/styles/index.scss` wraps the
+  Vanilla SCSS bundle, and `vanillaLayerPlugin` in `vite.config.ts` wraps
+  `@canonical/react-components` CSS and every `*.module.scss` at build time. Do not use sublayers of
+  `vanilla`: the adapter's own rules (for example its text-size rules) are written directly in
+  `vanilla` and would outrank every sublayer.
+- `src/main.tsx` imports `@canonical/styles-vanilla-adapter/adapter.css` (Pragma's tokens, reset,
+  typography and the boundary) instead of `@canonical/styles`, followed by
+  `src/styles/vanilla-text-size-shim.css` (a temporary local copy of `text-size.css` from
+  `canonical/pragma-web#1585`, wrapped in `@layer vanilla`, to delete once the adapter release
+  includes it) and `@canonical/react-ds-global-form/dist/esm/index.css`. `index.html` sets Pragma's
+  `app` context class on `<html>`.
+- The adapter's boundary reverts Vanilla inside every Pragma `.ds` element. When a Pragma container
+  holds Vanilla content (for example a `Card.Content` with a Vanilla table, or an `Accordion.Item`
+  with Vanilla checkboxes), add `ds-permeable` to the element that directly wraps the Vanilla
+  content so its children get Vanilla styling again. Prefer a permeable inner wrapper over making a
+  Pragma element with its own native-element styling (such as the Accordion `summary`) permeable.
+- Rules in a CSS module that target Pragma elements (`.ds` roots, or classes passed to Pragma
+  components) must go in a top-level `@layer app { … }` block; the plugin leaves that block in
+  `app`, above Pragma's component layers. Rules for Vanilla elements stay unlayered in the module
+  and land in `vanilla`.
+
+### Fonts and icons
 
 `src/main.tsx` also imports `@canonical/styles/fonts`, which provides the `Ubuntu Sans` font
-family used by Pragma's typography tokens. This is required even while vanilla-framework remains
-in use because Vanilla's `Ubuntu variable` font family is registered under a different name.
+family used by Pragma's typography tokens. `src/styles/partials/_vanilla-config.scss` points
+Vanilla's `$font-base-family` at the same family, so both frameworks render one font face.
+
 Pragma icon assets come from `@canonical/ds-assets/icons` and are served at `/icons` by
 `createPragmaIconsPlugin` in `vite.config.ts`; production builds copy the same assets to
 `dist/icons`, and Debian packaging includes that directory in the deployed dashboard files. The
@@ -177,7 +205,7 @@ components from `@canonical/react-ds-global-form`. `vitest.config.ts` currently 
 `@canonical/react-ds-global` so its side-effect CSS imports are handled by the existing
 `styleMock` alias and its dangling sourcemap references are stripped during tests.
 
-#### Pragma migration guardrail
+### Pragma migration guardrail
 
 `PRAGMA_MIGRATED_COMPONENTS` in `eslint.config.mjs` lists the components whose migration is
 complete. Importing a listed component, or its `Props` type, from `@canonical/react-components` is
@@ -188,11 +216,6 @@ components stay off the list until no legacy imports remain. Only list names tha
 
 Lint checks imports only, so follow this by convention: if Pragma ships the component, use it. Do
 not recreate it with Vanilla `p-*` classes or custom classes.
-
-Vanilla's unlayered base styles can override Pragma's layered component styles. For example,
-`PageHeader.module.scss` uses a scoped `revert-layer` on the breadcrumb list to preserve Pragma's
-spacing without changing other lists. Revisit this override when Vanilla's base styles are layered
-or removed.
 
 ### Pragma CLI, MCP server, and agent skill
 

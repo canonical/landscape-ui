@@ -1,8 +1,11 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.cardGrid {
-  --grid-row-gap: 0;
+/* Styles the Pragma grid wrapper, so it sits above Pragma's layers. */
+@layer app {
+  .cardGrid {
+    --grid-row-gap: 0;
+  }
 }
 
 .body {

@@ -1,10 +1,6 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.cardGrid {
-  --grid-row-gap: 0;
-}
-
 .root {
   align-items: center;
   background-color: $colors--theme--background-alt;
@@ -14,12 +10,19 @@
   min-height: 100vh;
 }
 
-.card {
-  background-color: $colors--theme--background-default;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0;
-  width: 500px;
+/* These rules style Pragma elements, so they sit above Pragma's layers. */
+@layer app {
+  .cardGrid {
+    --grid-row-gap: 0;
+  }
+
+  .card {
+    background-color: $colors--theme--background-default;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+    width: 500px;
+  }
 }
 
 .inner {

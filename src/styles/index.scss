@@ -1,19 +1,25 @@
-/* Overridden Vanilla variables */
+/* Cascade layer order shared by Vanilla and Pragma. It must be the first rule
+   the browser reads; `index.html` repeats it inline for production chunks. */
+@use "@canonical/styles-vanilla-adapter/layers.css";
+
+/* Overridden Vanilla variables (settings only, emits no CSS) */
 @import "partials/vanilla-config";
 
-/* Vanilla */
-@import "vanilla-framework";
-@include vanilla;
+/* Everything Vanilla-era goes directly in `vanilla`, below Pragma's layers.
+   Do not open named sublayers of `vanilla`: rules written directly into the
+   layer, such as the adapter's text-size rules, would outrank them. */
+@layer vanilla {
+  /* Vanilla */
+  @import "vanilla-framework";
+  @include vanilla;
 
-/* Custom styles */
-@import "partials/base";
-@import "partials/layout";
-@import "partials/utils";
-@import "partials/form";
-@import "partials/icons";
-@import "partials/modal";
-@import "partials/table";
-@import "partials/elevation";
-
-/* Temporary — delete when Pragma layers its normalize import */
-@import "partials/pragma-cascade-shims";
+  /* Custom styles */
+  @import "partials/base";
+  @import "partials/layout";
+  @import "partials/utils";
+  @import "partials/form";
+  @import "partials/icons";
+  @import "partials/modal";
+  @import "partials/table";
+  @import "partials/elevation";
+}

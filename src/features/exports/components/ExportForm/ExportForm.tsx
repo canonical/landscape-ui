@@ -194,7 +194,10 @@ const ExportForm: FC<ExportFormProps> = ({
       groupIds.some((id) => formik.values.selectedFieldIds.includes(id));
 
     return (
-      <div className={classes.attributeGroup} key={group.key}>
+      <div
+        className={classNames("ds-permeable", classes.attributeGroup)}
+        key={group.key}
+      >
         <CheckboxInput
           className={classes.groupCheckbox}
           label=""
@@ -219,7 +222,7 @@ const ExportForm: FC<ExportFormProps> = ({
             handleFieldGroupExpandedChange(group.key, expanded);
           }}
         >
-          <div className={classes.optionList}>
+          <div className={classNames("ds-permeable", classes.optionList)}>
             {group.fields.map((field) => (
               <CheckboxInput
                 key={field.id}
@@ -285,9 +288,7 @@ const ExportForm: FC<ExportFormProps> = ({
             </p>
           )}
           {filteredFieldGroups.length ? (
-            <Accordion className={classes.accordion}>
-              {accordionItems}
-            </Accordion>
+            <Accordion>{accordionItems}</Accordion>
           ) : (
             <p className={classes.emptyState}>
               No attributes match your search.

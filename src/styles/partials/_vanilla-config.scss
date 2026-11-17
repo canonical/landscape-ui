@@ -1,2 +1,6 @@
 $increase-font-size-on-larger-screens: false;
 $assets-path: "/assets/";
+
+// One typeface for both frameworks: Vanilla names Pragma's family, whose faces
+// `@canonical/styles/fonts` declares (see the adapter README, step 6).
+$font-base-family: '"Ubuntu Sans", "Ubuntu", "Cantarell", system-ui, -apple-system, "Segoe UI", sans-serif';

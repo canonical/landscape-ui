@@ -30,10 +30,13 @@
   z-index: calc(var(--z-navigation) + 1);
 }
 
-.icon {
-  flex-shrink: 0;
-  height: 1rem;
-  width: 1rem;
+/* Styles the Pragma Icon, so it sits above Pragma's layers. */
+@layer app {
+  .icon {
+    flex-shrink: 0;
+    height: 1rem;
+    width: 1rem;
+  }
 }
 
 .title {
