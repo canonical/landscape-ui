@@ -1,5 +1,14 @@
 ---
-# Weekly missing-changesets PR bot (GitHub Agentic Workflow).
+# Weekly changelog maintenance bot
+#
+# Three jobs, one PR:
+#   1. Backfill missing .changeset/*.md files for user-facing PRs merged
+#      without one (the Changesets CI gate gap, RELEASES.md section 7).
+#   2. Draft the next Debian changelog block in debian/changelog, with
+#      CHANGELOG.md as the source of truth for what changed (the way
+#      landscape-server's bot maintains standalone/debian/changelog).
+#   3. Write the Web portal island of the shared docs release-notes PR in
+#      canonical/landscape-documentation, also sourced from CHANGELOG.md.
 #
 # This is the gh-aw SOURCE file. After editing, regenerate the compiled
 # GitHub Actions workflow with:
@@ -74,7 +83,11 @@ jobs:
           curl -fsSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o "$tmp/gh.tgz"
           echo "${GH_SHA256}  $tmp/gh.tgz" | sha256sum -c -
           tar -xzf "$tmp/gh.tgz" -C "$tmp"
-          install -m 0755 "$tmp/gh_${GH_VERSION}_linux_amd64/bin/gh" /usr/local/bin/gh
+          # /usr/local/bin is root-owned on the self-hosted fleet and the
+          # runner user is non-root; install to a writable prefix on PATH.
+          mkdir -p "$HOME/.local/bin"
+          install -m 0755 "$tmp/gh_${GH_VERSION}_linux_amd64/bin/gh" "$HOME/.local/bin/gh"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           rm -rf "$tmp"
           gh version
         env:
@@ -86,8 +99,9 @@ jobs:
       - name: Install GitHub Copilot CLI
         run: |
           export NPM_CONFIG_PREFIX="$HOME/.npm-global"
+          export NPM_CONFIG_IGNORE_SCRIPTS=true
           mkdir -p "$NPM_CONFIG_PREFIX"
-          npm install -g @github/copilot@1.0.103
+          npm install -g --ignore-scripts @github/copilot@1.0.103
           echo "$NPM_CONFIG_PREFIX/bin" >> "$GITHUB_PATH"
           "$NPM_CONFIG_PREFIX/bin/copilot" --version
 
@@ -103,7 +117,11 @@ pre-steps:
       curl -fsSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o "$tmp/gh.tgz"
       echo "${GH_SHA256}  $tmp/gh.tgz" | sha256sum -c -
       tar -xzf "$tmp/gh.tgz" -C "$tmp"
-      install -m 0755 "$tmp/gh_${GH_VERSION}_linux_amd64/bin/gh" /usr/local/bin/gh
+      # /usr/local/bin is root-owned on the self-hosted fleet and the
+      # runner user is non-root; install to a writable prefix on PATH.
+      mkdir -p "$HOME/.local/bin"
+      install -m 0755 "$tmp/gh_${GH_VERSION}_linux_amd64/bin/gh" "$HOME/.local/bin/gh"
+      echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       rm -rf "$tmp"
       gh version
     env:
@@ -123,9 +141,11 @@ steps:
         exit 0
       fi
       COMPOSE_VERSION="v5.5.0"
+      COMPOSE_SHA256="c57ab918abd5b05ca7e7d0f275875dd1330a695074f309dc9eab1b49efafcd4b"
       mkdir -p ~/.docker/cli-plugins
       curl -fsSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-x86_64" \
         -o ~/.docker/cli-plugins/docker-compose
+      echo "${COMPOSE_SHA256}  $HOME/.docker/cli-plugins/docker-compose" | sha256sum -c -
       chmod +x ~/.docker/cli-plugins/docker-compose
       docker compose version
 
@@ -162,15 +182,18 @@ safe-outputs:
     # path: that path produces commits GitHub does not mark verified for this
     # bot token, and pushSignedCommits then refuses to publish the branch.
     signed-commits: false
-    # The bot only ever adds NEW changeset files in this repo; docs edits are
-    # delivered by the push handler, so the create handler rejects any other
-    # path outright.
-    allowed-files: [".changeset/*.md"]
-    # Stripped from any delivered patch: CHANGELOG.md belongs to the Version
-    # Packages automation, and .changeset/README.md / config.json match the
-    # allowlist above, so they are excluded explicitly. (gh-aw allowed-files
-    # filters by path only, not diff status, so "new files only" for other
-    # existing changesets is enforced by the prompt, not the handler.)
+    # The bot adds NEW changeset files and prepends ONE new block to
+    # debian/changelog; docs edits are delivered by the push handler, so the
+    # create handler rejects any other path outright.
+    allowed-files: [".changeset/*.md", "debian/changelog"]
+    # Stripped from any delivered patch: CHANGELOG.md is the bot's READ-ONLY
+    # source of truth (written by the Changesets "Version Packages"
+    # automation, never by this bot), and .changeset/README.md / config.json
+    # match the allowlist above, so they are excluded explicitly. (gh-aw
+    # allowed-files filters by path only, not diff status, so "new files
+    # only" for existing changesets and "prepend only, never rewrite existing
+    # blocks" for debian/changelog are enforced by the prompt, not the
+    # handler.)
     excluded-files: ["CHANGELOG.md", ".changeset/README.md", ".changeset/config.json"]
     # gh-aw v0.89.21 only opts a dot-folder out of the top-level dot-folder
     # protection via a "<dir>/" prefix entry (globs are not matched here).
@@ -207,15 +230,20 @@ safe-outputs:
     max: 1
 ---
 
-# Weekly missing changesets
+# Weekly changelog maintenance
 
-You backfill missing Changesets for Landscape UI. This repo's `CHANGELOG.md` and version bumps are produced by the Changesets release automation (`changesets/action`), so your job is NOT to write the changelog yourself. Your job is to author `.changeset/*.md` entries for user-facing pull requests that were merged without one (the gap documented in `RELEASES.md` section 7), then open a single pull request containing all of the new changesets.
+You maintain three changelog artifacts for Landscape UI, all delivered as ONE pull request against this repository (plus a push to the shared docs PR):
+
+1. **Missing changesets**: author `.changeset/*.md` entries for user-facing pull requests that were merged without one (the gap documented in `RELEASES.md` section 7). The Changesets release automation (`changesets/action`) consumes them; you never write `CHANGELOG.md` yourself.
+2. **Debian changelog**: draft the next release block at the top of `debian/changelog`, using this repo's `CHANGELOG.md` as the source of truth for what changed (the way landscape-server's bot maintains `standalone/debian/changelog`).
+3. **Docs release notes**: write the Web portal island of the shared release-notes PR in `canonical/landscape-documentation`, also sourced from `CHANGELOG.md`.
 
 ## Hard prohibitions
 
-- NEVER create, edit, or delete `CHANGELOG.md`, `package.json`, or any lockfile. Those are outputs of the Changesets "Version Packages" automation; touching them fights that automation. This is mechanically enforced by the pull-request handler: `CHANGELOG.md` is stripped from any patch it delivers, and `package.json` plus the lockfiles stay in the default protected-file set.
-- NEVER edit an existing `.changeset/*.md` file.
-- Only ever create NEW files under `.changeset/`.
+- NEVER create, edit, or delete `CHANGELOG.md`, `package.json`, or any lockfile. `CHANGELOG.md` is your READ-ONLY source of truth; it is written by the Changesets "Version Packages" automation. This is mechanically enforced by the pull-request handler: `CHANGELOG.md` is stripped from any patch it delivers, and `package.json` plus the lockfiles stay in the default protected-file set.
+- NEVER edit an existing `.changeset/*.md` file. Only ever create NEW files under `.changeset/`.
+- NEVER rewrite or reorder existing `debian/changelog` blocks. Only ever PREPEND one new block at the top.
+- NEVER open a second changelog PR while one is open, and never push to another PR's branch: the safe-output handlers can only CREATE a pull request in this repository. If an open changelog PR is missing entries, report them in a comment (see "Open the pull request") instead of pushing.
 
 ## Gather the commits
 
@@ -292,16 +320,40 @@ The CI `Changeset` check only guarantees that a changeset file was added. For ea
 - **Non-empty changeset with no user impact**: every path in `git show --name-only --format= <commit>` is a test (`*.test.*`, `*.spec.*`, `e2e/`), mock (`src/tests/mocks/`), CI/tooling (`.github/`, `scripts/`, root config files), or docs file.
 - **Fix for an unreleased regression**: for a `fix:` commit F, take the hunks F modified (`git show -U0 F`) and run `git blame --porcelain -L <start>,<end> F^ -- <file>` to find the commits that introduced those lines. If they all fall inside the window, the bug never shipped and the entry should be emptied or removed. A PR title or body that references another PR merged in the same window is supporting evidence. If blame results are mixed, mark the entry "possible", not certain.
 
-Exclude flagged entries from the docs release-notes island. If a pull request is opened, list the flagged entries under a `Changesets to review` heading in its body, one bullet per PR with the reason and evidence (commit/PR links). If no pull request is opened (nothing to backfill), report the flagged entries in your run summary instead — do not open a pull request that contains no files.
+Exclude flagged entries from the docs release-notes island. If a pull request is opened, list the flagged entries under a `Changesets to review` heading in its body, one bullet per PR with the reason and evidence (commit/PR links). If no pull request is opened (nothing to backfill and no changelog block to draft), report the flagged entries in your run summary instead — do not open a pull request that contains no files.
+
+## Draft the Debian changelog block
+
+`CHANGELOG.md` is the source of truth for what changed. `debian/changelog` is the deb-compatible artifact consumed by the PPA builds (`scripts/debian-build.sh`), and you maintain it the way landscape-server's bot maintains `standalone/debian/changelog`: prepend one new release block per run.
+
+1. Read the TOP section of `CHANGELOG.md` (the latest release — everything from the first `## ` heading up to the second `## ` heading). Collect every bullet under its `### Major Changes` / `### Minor Changes` / `### Patch Changes` subsections. These are the user-facing changes; do NOT re-derive them from commit subjects. If the top section has no bullets, skip the Debian changelog work for this run.
+2. Read the current top block of `debian/changelog` to find the most recent version, which looks like `landscape-dashboard (1.23.0-0landscape0) jammy; urgency=medium`. Also note the version heading of the `CHANGELOG.md` top section you just read (e.g. `## 26.10.0.1081-beta`).
+3. Idempotency: if the top `debian/changelog` block's version already corresponds to the `CHANGELOG.md` top-section version, the block has already been drafted — make no change to `debian/changelog` this run.
+4. Otherwise compose the new version. This repo follows CalVer `YY.MM.Point.Build` aligned with the Ubuntu release cadence (RELEASES.md section 0/1): `main`'s version label is `<cycle>.0.<count>-beta` and is computed by `scripts/calculate-version.cjs`. Run `node scripts/calculate-version.cjs` (read-only — it prints the version) and use its output for the new block's version. Use the package name from the existing top block (`landscape-dashboard`), `-0landscape0` for the Debian revision, and the same distribution and urgency as the existing top block (e.g. `jammy; urgency=medium`).
+5. Prepend the new block to the top of `debian/changelog`, matching the exact existing format (see https://manpages.debian.org/testing/dpkg-dev/deb-changelog.5.en.html):
+
+   ```
+   landscape-dashboard (<version>-0landscape0) jammy; urgency=medium
+
+     * <CHANGELOG.md bullet>
+     * <CHANGELOG.md bullet>
+
+    -- Landscape Bot <landscape-server-bot@canonical.com>  <date>
+   ```
+
+   - Each bullet is indented with two spaces and begins with `* `. Use the `CHANGELOG.md` bullets verbatim except for stripping any leading `- ` and any trailing PR/issue reference such as ` (#1234)`.
+   - The signature line is indented with one space and begins with `-- `.
+   - Use `date -R` for `<date>` (RFC 2822, e.g. `Sat, 18 Jul 2026 12:00:00 +0000`), with two spaces between the email and the date.
+   - Leave every existing block below the new one byte-for-byte untouched.
 
 ## Open the pull request
 
-Before making any edit, create your working branch from the default branch, not from the ref this run was dispatched on: `git checkout -b <branch> origin/main`. The dispatch ref may be a bot or feature branch carrying automation commits; if you commit on top of it, the resulting PR contains all of those commits. The PR must contain ONLY the changeset commit on top of `origin/main`.
+Before making any edit, create your working branch from the default branch, not from the ref this run was dispatched on: `git checkout -b <branch> origin/main`. The dispatch ref may be a bot or feature branch carrying automation commits; if you commit on top of it, the resulting PR contains all of those commits. The PR must contain ONLY the changeset and debian/changelog commit(s) on top of `origin/main`.
 
 First check for an existing open changelog pull request in this repository (label `changelog`). Exactly one should ever be open at a time.
 
-- If one is already open, do NOT open a second. Check whether its changesets already cover the commits you selected (the `(backfills #<N>)` markers). If they do, make no changes and note that the existing PR is already current. If it is missing any of your selected commits, update that PR's branch with the missing changesets rather than opening a new PR.
-- Only if no changelog PR is open, open a single pull request containing all of the new changeset files. Use the title `add missing changesets` (the `build: ` prefix is added automatically) and a body that lists the backfilled entries in the sorted order from above, notes the merged PR each entry covers, explains that these PRs were merged without a changeset so the Changesets automation had nothing to roll up, and includes the `Changesets to review` heading when any entries were flagged.
+- If one is already open, do NOT open a second and do NOT push to its branch — the safe-output handlers can only CREATE a pull request in this repository, never update an existing one. Check whether its changesets already cover the commits you selected (the `(backfills #<N>)` markers) and whether its `debian/changelog` block already covers the `CHANGELOG.md` top section. If both are current, make no changes and note that the existing PR is already up to date. If anything is missing, post ONE comment on that PR (via `add_comment`) listing the missing backfill entries and/or the missing Debian changelog block, so a human can refresh it; make no file changes this run.
+- Only if no changelog PR is open, open a single pull request containing all of the new changeset files and the new `debian/changelog` block. Use the title `add missing changesets and changelog block` (the `build: ` prefix is added automatically) and a body that lists the backfilled entries in the sorted order from above, notes the merged PR each entry covers, names the Debian changelog version drafted and the `CHANGELOG.md` section it was sourced from, explains that the backfilled PRs were merged without a changeset so the Changesets automation had nothing to roll up, and includes the `Changesets to review` heading when any entries were flagged.
 
 Never open a second changelog PR while one is open.
 
@@ -311,13 +363,13 @@ You also maintain the user-facing release notes. All Landscape changelog bots sh
 
 The docs work happens in the separate `./landscape-documentation` checkout. The hard prohibitions above apply to this repository (landscape-ui) only; editing the release-notes page in the docs checkout is expected and allowed.
 
-Your island content derives from ALL user-facing commits selected in the window above — not only the ones missing a changeset: a PR that brought its own changeset still belongs in the release notes. Rewrite those selected commits into docs-appropriate bullets, excluding any entries flagged in `Changesets to review`.
+Your island content derives from `CHANGELOG.md`, the same source of truth as the Debian changelog block — NOT from the commit scan. Read the TOP section of this repo's `CHANGELOG.md` (the latest release: everything from the first `## ` heading up to the second) and rewrite its `### Major Changes` / `### Minor Changes` / `### Patch Changes` bullets into docs-appropriate bullets, excluding any entries flagged in `Changesets to review`. Major Changes map to `#### Features`; Minor and Patch Changes map to `#### Features` and `#### Fixes` respectively by their nature. Because it comes from `CHANGELOG.md`, a PR that brought its own changeset is already included — you do not need the commit scan to find it.
 
-1. Determine the in-development Landscape release `YY.MM`: Landscape releases are `YY.04` and `YY.10`. From today's date, the in-development release is the next boundary strictly in the future (before April -> `YY.04`; before October -> `YY.10`; otherwise `(YY+1).04`). As of November 2026 this is **27.04** (betas are underway), so the target page is `docs/reference/release-notes/27.04-release-notes.md`.
+1. Determine the in-development Landscape release `YY.MM`: Landscape releases are `YY.04` and `YY.10`. From today's date, the in-development release is the next boundary strictly in the future (before April -> `YY.04`; before October -> `YY.10`; otherwise `(YY+1).04`). Work out the current boundary from today's date and name the target page accordingly — for example, a run in November 2026 targets `docs/reference/release-notes/27.04-release-notes.md`.
 2. Find the shared docs PR: use the GitHub tools to list open PRs in `canonical/landscape-documentation` with labels `changelog` and `automation` (title starts with `build: `). If one exists, this is THE docs PR — use it regardless of which `YY.MM` page it targets.
 3. If a docs PR exists:
-   - In the `./landscape-documentation` checkout, check out that PR's head branch (branches were fetched via the wildcard fetch at setup: `git checkout <branch>`). If the branch is not among the fetched refs, skip the docs work for this run — the agent has no credentials to fetch it.
-   - Other Landscape bots push to this same shared branch, so the checkout (fetched at setup time) may be stale and another bot may push while you work. The agent environment has NO git credentials — `git fetch` fails here, so NEVER attempt to fetch or rebase. Work from the PR branch ref as fetched at setup; keep every edit strictly inside your own island markers so it applies cleanly over the other bots' island updates. `push_to_pull_request_branch` applies your patch to the branch's live tip in a credentialed job; if a concurrent push made it conflict, the delivery fails safely — do not retry, the next run redoes the work. NEVER force-push over another bot's commits.
+   - In the `./landscape-documentation` checkout, check out that PR's head branch. First read the PR's `headRepositoryOwner`/`headRepository` and head ref with the GitHub tools: the head may live in a FORK (for example a contributor's `landscape-documentation` fork), not in `canonical/landscape-documentation`. The setup checkout fetched only `canonical/landscape-documentation` refs, so a fork head is NOT among them. When the head is in a fork, add that fork as a temporary read-only remote and fetch the head ref from it over HTTPS (the docs repo and its forks are public, so an unauthenticated fetch works): `git -C ./landscape-documentation remote add pr-head https://github.com/<owner>/landscape-documentation.git 2>/dev/null || true; git -C ./landscape-documentation fetch pr-head <head-ref> && git -C ./landscape-documentation checkout FETCH_HEAD`. If the head is in `canonical/landscape-documentation` itself, the branch is already among the fetched refs: `git checkout <branch>`. If the head ref cannot be fetched either way, skip the docs work for this run.
+   - Other Landscape bots push to this same shared branch, so the checkout may be stale and another bot may push while you work. Apart from the one fork-head fetch above, the agent environment has NO git credentials — NEVER attempt any other fetch or a rebase. Work from the head ref you just checked out; keep every edit strictly inside your own island markers so it applies cleanly over the other bots' island updates. `push_to_pull_request_branch` applies your patch to the branch's live tip in a credentialed job; if a concurrent push made it conflict, the delivery fails safely — do not retry, the next run redoes the work. NEVER force-push over another bot's commits.
    - Update ONLY your own island (see below). If the release-notes page for the in-development version does not exist on that branch, create it from the template below and add it to the toctree in `docs/reference/release-notes/index.md` (newest non-LTS page goes directly under the LTS entries, matching existing ordering).
    - Commit in the docs checkout and deliver via `push_to_pull_request_branch` with `pull_request_number` set to the docs PR number.
 4. If no docs PR exists, skip the docs work for this run entirely: make no changes in the `./landscape-documentation` checkout. NEVER create the shared docs PR yourself — it is created weekly by the `release-notes-draft` workflow in canonical/landscape-documentation, so it should already exist by the time you run. (Your own-repo changelog PR logic is unaffected.)
@@ -352,7 +404,7 @@ Island format inside `## Additional updates`:
 
 Rules:
 - BEFORE writing, read `.github/instructions/release-notes.instructions.md` and `.github/instructions/documentation.instructions.md` in the docs checkout and follow them (applicability: state self-hosted vs SaaS and the component; factual, non-promotional; do not invent benefits, migration steps, or breaking-change claims).
-- Rewrite your selected commits into user-facing docs bullets: no conventional-commit prefixes, no `(scope)`, no `(#1234)`, no Jira keys. Keep Launchpad references but format them as `[LP: #NNNN](https://bugs.launchpad.net/landscape/+bug/NNNN)`. Write in the style of existing release notes (see any `docs/reference/release-notes/*.md` page): complete sentences, no trailing period inconsistency, admin-focused.
+- Rewrite the `CHANGELOG.md` bullets into user-facing docs bullets: no conventional-commit prefixes, no `(scope)`, no `(#1234)`, no Jira keys. Keep Launchpad references but format them as `[LP: #NNNN](https://bugs.launchpad.net/landscape/+bug/NNNN)`. Write in the style of existing release notes (see any `docs/reference/release-notes/*.md` page): complete sentences, no trailing period inconsistency, admin-focused.
 - Omit `#### Features` / `#### Fixes` when empty. If your island has no entries yet, put `(pending)` as the island body.
 - NEVER edit outside your own island markers. Other sections belong to other bots.
 - When creating the page, include ALL eight islands in the fixed order above (yours filled, the rest with `(pending)`), so later bot runs find their markers.
@@ -371,7 +423,7 @@ myst:
 (reference-release-notes-YY-MM)=
 # YY.MM release notes
 
-> Landscape Server YY.MM runs on Ubuntu 26.04 LTS Resolute Raccoon, 24.04 LTS Noble Numbat, or 22.04 LTS Jammy Jellyfish.
+> Landscape Server YY.MM runs on the Ubuntu LTS releases it supports. Copy the exact support statement (releases and codenames) verbatim from the most recent existing `docs/reference/release-notes/*.md` page — do not invent or hard-code codenames here, they change over time.
 
 ```{note}
 This page is a draft maintained automatically until release.
