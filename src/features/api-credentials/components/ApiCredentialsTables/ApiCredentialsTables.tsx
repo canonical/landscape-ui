@@ -102,7 +102,7 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
         className={classNames(classes.container, "grid")}
       >
         <Card>
-          <Card.Header className={classes.header}>
+          <Card.Header className={classNames("ds-permeable", classes.header)}>
             <strong>{account.title}</strong>
             <ConfirmationButton
               className={classNames("u-no-margin--bottom", {
@@ -129,7 +129,9 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
               {action} API credentials
             </ConfirmationButton>
           </Card.Header>
-          <Card.Content className={classes.tableWrapper}>
+          <Card.Content
+            className={classNames("ds-permeable", classes.tableWrapper)}
+          >
             {isLargeScreen ? (
               <ModularTable
                 columns={columns}

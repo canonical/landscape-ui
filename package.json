@@ -36,6 +36,7 @@
     "@canonical/react-ds-global": "0.44.1",
     "@canonical/react-ds-global-form": "0.44.1",
     "@canonical/styles": "0.44.1",
+    "@canonical/styles-vanilla-adapter": "0.44.1",
     "@monaco-editor/react": "4.7.0",
     "@sentry/react": "10.76.2",
     "@tanstack/react-query": "5.104.2",

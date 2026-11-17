@@ -11,45 +11,25 @@
   margin-bottom: $spv--large;
 }
 
-.optionList {
-  display: grid;
-  gap: $sph--small;
-}
-
 .emptyState {
   color: $colors--theme--text-muted;
   margin-top: $spv--small;
 }
 
-/*
- * Vanilla's unlayered `details` and `summary` base rules outrank Pragma's
- * layered Accordion rules (e.g. `summary { display: list-item }` hides the
- * chevron). `revert-layer` drops only those unlayered values so Pragma's own
- * declarations apply again, without restating Pragma values here.
- *
- * TODO: Temporary workaround. Remove this block once Vanilla is layered via
- * `@canonical/styles-vanilla-adapter` (add `ds-permeable` to `Accordion.Item`).
- * See https://github.com/canonical/pragma-web/issues/1449
- */
+// The Accordion is Pragma territory: the adapter's boundary reverts Vanilla
+// inside it, and `ds-permeable` wrappers hand the group checkbox and the
+// option list back to Vanilla. Rules on those wrappers, and on the Pragma
+// elements themselves, sit above Pragma's layers.
+@layer app {
+  .optionList {
+    display: grid;
+    gap: $sph--small;
+  }
+}
+
 .accordion {
-  :global(.ds.accordion-item) {
-    margin-bottom: revert-layer;
-    overflow: revert-layer;
-  }
-
-  :global(.ds.accordion-item > .header) {
-    box-sizing: revert-layer;
-    display: revert-layer;
-    font: revert-layer;
-    margin-bottom: revert-layer;
-    max-width: revert-layer;
-    padding: revert-layer;
-  }
-
-  /*
-   * The nested Vanilla checkbox keeps its own control styling; only its
-   * baseline spacing is removed so it centres on the Pragma header row.
-   */
+  // The nested Vanilla checkbox keeps its own control styling; only its
+  // baseline spacing is removed so it centres on the Pragma header row.
   .groupCheckbox {
     margin-bottom: 0;
     padding-top: 0;

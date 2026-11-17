@@ -20,10 +20,10 @@ const AlertsList: FC<AlertsListProps> = ({ alerts, availableTagOptions }) => {
   return (
     <div className={classNames("grid", classes.cardGrid)}>
       <Card className={classes.card}>
-        <Card.Header className={classes.header}>
+        <Card.Header className={classNames("ds-permeable", classes.header)}>
           <strong>{account?.title || "Alerts"}</strong>
         </Card.Header>
-        <Card.Content className={classes.content}>
+        <Card.Content className={classNames("ds-permeable", classes.content)}>
           <AlertsTable
             alerts={alerts}
             availableTagOptions={availableTagOptions}

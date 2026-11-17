@@ -2,20 +2,23 @@
 @import "vanilla-framework/scss/settings_spacing";
 @import "../../../../styles/partials/pragma-card-table";
 
-.cardGrid {
-  --grid-row-gap: 0;
-}
+// These rules style Pragma elements, so they sit above Pragma's layers.
+@layer app {
+  .cardGrid {
+    --grid-row-gap: 0;
+  }
 
-.header {
-  @include pragma-card-table-header;
-}
+  .header {
+    @include pragma-card-table-header;
+  }
 
-.card {
-  min-height: 0;
-}
+  .card {
+    min-height: 0;
+  }
 
-.content {
-  @include pragma-card-table-content;
+  .content {
+    @include pragma-card-table-content;
 
-  min-height: 0;
+    min-height: 0;
+  }
 }

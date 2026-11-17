@@ -1,7 +1,10 @@
 @import "vanilla-framework/scss/settings_spacing";
 @import "vanilla-framework/scss/settings_colors";
 
+/* Pragma's breadcrumb list has no bottom margin of its own; this keeps the gap
+   above the title that Vanilla's list margin used to provide. */
 .breadcrumbs {
+  margin-bottom: $sp-unit * 3;
   margin-top: $spv--large;
 }
 
