@@ -198,7 +198,7 @@ const ExportForm: FC<ExportFormProps> = ({
         key={group.key}
         expanded={isFieldGroupExpanded(group.key)}
         heading={
-          <h5 aria-label={group.title}>
+          <span role="heading" aria-level={5} aria-label={group.title}>
             <CheckboxInput
               label={group.title}
               labelClassName={classes.groupCheckbox}
@@ -219,7 +219,7 @@ const ExportForm: FC<ExportFormProps> = ({
                 }
               }}
             />
-          </h5>
+          </span>
         }
         onExpandedChange={(expanded) => {
           handleFieldGroupExpandedChange(group.key, expanded);
