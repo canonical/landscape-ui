@@ -17,7 +17,12 @@ const setUser = vi.fn();
 
 const loginSpy = vi.fn().mockResolvedValue({ data: authUser });
 
-const mockTestParams = (searchParams?: Record<string, string>) => {
+const mockTestParams = (
+  searchParams?: Record<string, string>,
+  rootPath = "/",
+) => {
+  vi.stubEnv("VITE_ROOT_PATH", rootPath);
+
   vi.doMock("react-router", async () => ({
     ...(await vi.importActual("react-router")),
     useSearchParams: () => [new URLSearchParams(searchParams)],
@@ -175,6 +180,34 @@ describe("LoginForm", () => {
       expect(setUser).toHaveBeenCalledWith(authUser);
       expect(safeRedirect).toHaveBeenCalledWith(HOMEPAGE_PATH, {
         external: false,
+        replace: true,
+      });
+    });
+  });
+
+  describe("when served under a sub-path", () => {
+    beforeEach(async () => {
+      vi.doUnmock("react-router");
+      vi.doUnmock("@/hooks/useAuth");
+      vi.resetModules();
+      vi.clearAllMocks();
+
+      loginSpy.mockResolvedValue({ data: authUser });
+
+      mockTestParams({}, "/portal/");
+
+      const { default: Component } = await import("./LoginForm");
+
+      renderWithProviders(<Component isIdentityAvailable={false} />);
+
+      await userEvent.type(screen.getByTestId("identifier"), user.email);
+      await userEvent.type(screen.getByTestId("password"), user.password);
+      await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    });
+
+    it("should sign in and leave the default location to the server", async () => {
+      expect(safeRedirect).toHaveBeenCalledWith("/", {
+        external: true,
         replace: true,
       });
     });

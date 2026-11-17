@@ -11,6 +11,7 @@ export { default as ConsentBannerModal } from "./components/consent-banner/Conse
 export {
   redirectToExternalUrl,
   getInvitationPath,
+  getLoginRedirect,
   getSameOriginPath,
   getSameOriginUrl,
 } from "./helpers";
