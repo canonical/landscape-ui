@@ -1,9 +1,9 @@
 // Shared overrides for tables rendered inside a Pragma `Card`.
 // Pragma's Card sets its own padding and does not expose a table-content
-// variant, so these declarations need `!important` to beat its unlayered
-// cascade. The `!important` declarations are the removal trigger: once Pragma
-// ships a table variant, both mixins become redundant and this file should go.
-// Compatibility target: `@canonical/react-ds-global` 0.34.0. Re-audit before
+// variant. Include these mixins inside `@layer app`, which outranks Pragma's
+// component layers. Once Pragma ships a table variant, both mixins become
+// redundant and this file should go.
+// Compatibility target: `@canonical/react-ds-global` 0.44.1. Re-audit before
 // upgrading.
 
 @import "vanilla-framework/scss/settings_colors";
@@ -12,12 +12,12 @@
 @mixin pragma-card-table-header {
   background-color: $colors--theme--background-alt;
   border-bottom: 1px solid $colors--theme--border-default;
-  padding-bottom: $spv--small !important;
-  padding-top: $spv--small !important;
+  padding-bottom: $spv--small;
+  padding-top: $spv--small;
 }
 
 @mixin pragma-card-table-content {
-  padding-bottom: 0 !important;
+  padding-bottom: 0;
 
   table {
     margin-bottom: 0;

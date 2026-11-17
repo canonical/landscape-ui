@@ -1,9 +1,8 @@
 /// <reference types="vite/client" />
 
-// Pragma ships CSS-only entrypoints under a bare package name, which the
-// `*.css` ambient glob does not match. Declare them so the side-effect
-// imports in main.tsx type-check.
-declare module "@canonical/styles";
+// Pragma ships a CSS-only entrypoint under a bare package subpath, which the
+// `*.css` ambient glob does not match. Declare it so the side-effect import in
+// main.tsx type-checks.
 declare module "@canonical/styles/fonts";
 
 interface ImportMetaEnv {

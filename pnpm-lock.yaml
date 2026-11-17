@@ -26,6 +26,9 @@ importers:
       '@canonical/styles':
         specifier: 0.44.1
         version: 0.44.1(@canonical/ds-assets@0.44.1)
+      '@canonical/styles-vanilla-adapter':
+        specifier: 0.44.1
+        version: 0.44.1(@canonical/ds-assets@0.44.1)
       '@monaco-editor/react':
         specifier: 4.7.0
         version: 4.7.0(monaco-editor@0.57.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -371,6 +374,9 @@ packages:
   '@canonical/styles-typography@0.44.1':
     resolution: {integrity: sha512-jWjLz4xYFGyk8TjnwA/G97+yE/hi4ao35gsWYgPzssD4HdCeU8fM3CA8wo3O7ChNI8aMibzd7m//toFOeW0KlQ==}
     hasBin: true
+
+  '@canonical/styles-vanilla-adapter@0.44.1':
+    resolution: {integrity: sha512-eauE/ArAdWTiUHpbyBBjNFDklUWutZP4nMjBDD8z//G3TKCz7haW3pQAvbD0ICHSLWqJgN6R8bKjXKghD5qrmg==}
 
   '@canonical/styles@0.44.1':
     resolution: {integrity: sha512-sS3si5Van05aywn98EtHsf6K7T7vdJfgmeY0GmmSqX1y3tH2sdN3foYQKJRRvcMbz0//Ypu87oYsEcj3QLIWdA==}
@@ -5501,6 +5507,12 @@ snapshots:
     dependencies:
       '@canonical/design-tokens': 0.43.0
       opentype.js: 1.3.4
+
+  '@canonical/styles-vanilla-adapter@0.44.1(@canonical/ds-assets@0.44.1)':
+    dependencies:
+      '@canonical/styles': 0.44.1(@canonical/ds-assets@0.44.1)
+    transitivePeerDependencies:
+      - '@canonical/ds-assets'
 
   '@canonical/styles@0.44.1(@canonical/ds-assets@0.44.1)':
     dependencies:

@@ -17,7 +17,7 @@ const AuthTemplate: FC<AuthTemplateProps> = ({ title, children }) => {
       <Row className="p-strip">
         <Col emptyLarge={4} size={6}>
           <div className={classNames("grid", classes.cardGrid)}>
-            <Card className={classes.card}>
+            <Card className={classNames("ds-permeable", classes.card)}>
               <Navigation
                 logo={{
                   src: Logo,
