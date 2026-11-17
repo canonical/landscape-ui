@@ -19,4 +19,6 @@ export type { GetStaffInstanceParams } from "./useGetStaffInstance";
 export { useGetStaffInstance } from "./useGetStaffInstance";
 export type { GetStaffInstancesParams } from "./useGetStaffInstances";
 export { useGetStaffInstances } from "./useGetStaffInstances";
+export { useGetStaffKernel } from "./useGetStaffKernel";
+export { useGetStaffLivepatchInfo } from "./useGetStaffLivepatchInfo";
 export { useGetStaffTags } from "./useGetStaffTags";

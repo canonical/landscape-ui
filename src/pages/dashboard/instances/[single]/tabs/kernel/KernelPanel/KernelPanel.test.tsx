@@ -1,5 +1,6 @@
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import { screen } from "@testing-library/react";
-import { describe, expect, it, afterEach } from "vitest";
+import { describe, expect, it, afterEach, vi } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
@@ -7,6 +8,7 @@ import KernelPanel from "./KernelPanel";
 
 afterEach(() => {
   setEndpointStatus("default");
+  vi.restoreAllMocks();
 });
 
 describe("KernelPanel", () => {
@@ -39,6 +41,27 @@ describe("KernelPanel", () => {
 
     expect(
       await screen.findByText(/kernel information is not available/i),
+    ).toBeInTheDocument();
+  });
+
+  it("throws when the kernel information fails to load", async () => {
+    vi.spyOn(console, "error").mockReturnValue(undefined);
+    setEndpointStatus({
+      status: "error",
+      path: "computers/:computerId/livepatch/kernel",
+    });
+
+    renderWithProviders(
+      <AppErrorBoundary>
+        <KernelPanel instanceTitle="Test Instance" />
+      </AppErrorBoundary>,
+      undefined,
+      "/instances/1",
+      "/instances/:instanceId",
+    );
+
+    expect(
+      await screen.findByText("The kernel information could not be loaded."),
     ).toBeInTheDocument();
   });
 });
