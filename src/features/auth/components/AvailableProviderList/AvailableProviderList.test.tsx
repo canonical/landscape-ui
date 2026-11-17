@@ -8,9 +8,12 @@ import {
 } from "@/tests/mocks/identityProviders";
 import type { AvailableProviderListProps } from "@/features/auth";
 import { PATHS } from "@/libs/routes";
+import type * as AuthHelpers from "../../helpers";
 
 const oidcProviders = identityProviders.filter(({ enabled }) => enabled);
 const redirectToExternalUrl = vi.hoisted(() => vi.fn());
+const rootPath = vi.hoisted(() => ({ value: "/" }));
+const ubuntuOneParams = vi.fn();
 
 const props: AvailableProviderListProps = {
   oidcProviders,
@@ -22,16 +25,24 @@ describe("AvailableProviderList", () => {
   beforeEach(() => {
     vi.resetModules();
 
-    vi.mock("../../helpers", async (importOriginal) => ({
-      ...(await importOriginal()),
-      redirectToExternalUrl,
-    }));
+    vi.mock("../../helpers", async (importOriginal) => {
+      const actual = await importOriginal<typeof AuthHelpers>();
+
+      return {
+        ...actual,
+        getLoginRedirect: (searchParams: URLSearchParams) =>
+          actual.getLoginRedirect(searchParams, rootPath.value),
+        redirectToExternalUrl,
+      };
+    });
 
     vi.doMock("@/features/auth", async () => {
       const actual = await vi.importActual("@/features/auth");
       return {
         ...actual,
-        useGetUbuntuOneUrl: (_params: never, enabled: boolean) => {
+        useGetUbuntuOneUrl: (params: never, enabled: boolean) => {
+          ubuntuOneParams(params);
+
           if (enabled) {
             return {
               location: "https://login.ubuntu.com/mock",
@@ -59,6 +70,7 @@ describe("AvailableProviderList", () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    rootPath.value = "/";
   });
 
   it("should redirect to an external url when clicking OIDC provider", async () => {
@@ -170,5 +182,35 @@ describe("AvailableProviderList", () => {
     expect(redirectToExternalUrl).toHaveBeenCalledWith(
       "https://login.ubuntu.com/mock",
     );
+  });
+
+  describe("when served under a sub-path", () => {
+    beforeEach(() => {
+      rootPath.value = "/portal/";
+    });
+
+    it("returns to the server root without a redirect param", async () => {
+      const { AvailableProviderList } = await import("./AvailableProviderList");
+      renderWithProviders(<AvailableProviderList {...props} />);
+
+      expect(ubuntuOneParams).toHaveBeenCalledWith({
+        return_to: `${window.origin}/`,
+        external: true,
+      });
+    });
+
+    it("keeps an invitation return internal", async () => {
+      const { AvailableProviderList } = await import("./AvailableProviderList");
+      renderWithProviders(
+        <AvailableProviderList {...props} />,
+        {},
+        "/?invitation_id=abc123",
+      );
+
+      expect(ubuntuOneParams).toHaveBeenCalledWith({
+        invitation_id: "abc123",
+        return_to: "/accept-invitation/abc123",
+      });
+    });
   });
 });
