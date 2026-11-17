@@ -138,24 +138,6 @@ export const mapActionTypeToSearch = (
   }
 };
 
-export const mapSummaryToTitle = (
-  packageName: string,
-  actionType: Exclude<PackageChangePlanActionType, "upgrade">,
-  summaryVersion?: string,
-) => {
-  if (summaryVersion) {
-    if (actionType == "change_version") {
-      return `Instances downgradable to ${packageName} ${summaryVersion}`;
-    }
-    const status =
-      actionType == "hold" ? "installed" : mapActionTypeToSearch(actionType);
-    return `Instances with ${packageName} ${summaryVersion} ${status}`;
-  } else if (summaryVersion == "") {
-    return `Instances with ${packageName} not installed`;
-  }
-  return `Instances that won't ${actionType} ${packageName}`;
-};
-
 export const getActionFormTitle = (
   actionType: Exclude<PackageChangePlanActionType, "upgrade">,
 ) => {

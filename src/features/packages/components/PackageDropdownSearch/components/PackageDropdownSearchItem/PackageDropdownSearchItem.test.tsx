@@ -23,6 +23,17 @@ const props: ComponentProps<typeof PackageDropdownSearchItem> = {
 describe("PackageDropdownSearchItem", () => {
   const user = userEvent.setup();
 
+  it.each([
+    { actionType: "install", label: "Available on" },
+    { actionType: "remove", label: "Installed on" },
+  ] as const)("shows '$label' for $actionType", ({ actionType, label }) => {
+    renderWithProviders(
+      <PackageDropdownSearchItem {...props} actionType={actionType} />,
+    );
+
+    expect(screen.getByText(`${label} 4 instances`)).toBeInTheDocument();
+  });
+
   it("renders package with delete button", async () => {
     renderWithProviders(<PackageDropdownSearchItem {...props} />);
 
