@@ -1,21 +1,12 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import { Tooltip } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
-import { ROUTES } from "@/libs/routes";
-import type { UrlParams } from "@/types/UrlParams";
-import { Button, CheckboxInput, Tooltip } from "@canonical/react-components";
+import { Button, CheckboxInput } from "@canonical/react-components";
 import type { FC } from "react";
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { Link, useParams } from "react-router";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef } from "react";
 import type { CellProps, Column } from "react-table";
 import type { InstancePackage } from "../../types";
 import PackageListActions from "../PackageListActions";
@@ -26,7 +17,6 @@ import {
   isUbuntuProRequired,
 } from "./helpers";
 import classes from "./PackageList.module.scss";
-import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const PackageDetails = lazy(async () => import("../PackageDetails"));
 
@@ -46,9 +36,7 @@ const PackageList: FC<PackageListProps> = ({
   selectAll,
 }) => {
   const selectedByTabRef = useRef(false);
-  const [hideUbuntuProInfo, setHideUbuntuProInfo] = useState(false);
 
-  const { instanceId, childInstanceId } = useParams<UrlParams>();
   const { setSidePanelContent } = useSidePanel();
 
   const handleSelectPackage = useCallback(
@@ -120,21 +108,30 @@ const PackageList: FC<PackageListProps> = ({
           </>
         ),
         Cell: ({ row }: CellProps<InstancePackage>) => {
-          const getCellContent = (disabled = false) => (
+          const ubuntuProRequired = isUbuntuProRequired(row.original);
+          const checkbox = (
+            <CheckboxInput
+              inline
+              label={
+                <span className="u-off-screen">{`Toggle ${row.original.name}`}</span>
+              }
+              checked={selectedPackages.some(
+                ({ name }) => name === row.original.name,
+              )}
+              onChange={() => {
+                handleSelectPackage(row.original);
+              }}
+              disabled={ubuntuProRequired}
+            />
+          );
+
+          return (
             <>
-              <CheckboxInput
-                inline
-                label={
-                  <span className="u-off-screen">{`Toggle ${row.original.name}`}</span>
-                }
-                checked={selectedPackages.some(
-                  ({ name }) => name === row.original.name,
-                )}
-                onChange={() => {
-                  handleSelectPackage(row.original);
-                }}
-                disabled={disabled}
-              />
+              {ubuntuProRequired ? (
+                <Tooltip message="Ubuntu Pro is required">{checkbox}</Tooltip>
+              ) : (
+                checkbox
+              )}
               <Button
                 type="button"
                 appearance="link"
@@ -146,31 +143,6 @@ const PackageList: FC<PackageListProps> = ({
                 {row.original.name}
               </Button>
             </>
-          );
-
-          return isUbuntuProRequired(row.original) ? (
-            <Tooltip
-              message={
-                <div>
-                  <p className="u-no-padding--top u-margin--bottom">
-                    Ubuntu Pro is required
-                  </p>
-                  <Link
-                    to={ROUTES.instances.details.fromParams({
-                      instanceId,
-                      childInstanceId,
-                    })}
-                    className={classes.tooltipLink}
-                  >
-                    learn more
-                  </Link>
-                </div>
-              }
-            >
-              {getCellContent(true)}
-            </Tooltip>
-          ) : (
-            getCellContent()
           );
         },
       },
@@ -212,11 +184,9 @@ const PackageList: FC<PackageListProps> = ({
       },
     ],
     [
-      childInstanceId,
       handlePackageClick,
       handleSelectPackage,
       handleToggleAllPackages,
-      instanceId,
       packages,
       selectablePackages,
       selectedPackages,
@@ -225,13 +195,7 @@ const PackageList: FC<PackageListProps> = ({
 
   return (
     <>
-      {!hideUbuntuProInfo && packages.some(isUbuntuProRequired) && (
-        <UbuntuProNotification
-          onDismiss={() => {
-            setHideUbuntuProInfo(true);
-          }}
-        />
-      )}
+      {packages.some(isUbuntuProRequired) && <UbuntuProNotification />}
       <ResponsiveTable
         columns={columns}
         data={packages}

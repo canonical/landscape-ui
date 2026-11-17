@@ -1,11 +1,8 @@
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import {
-  CheckboxInput,
-  ModularTable,
-  Tooltip,
-} from "@canonical/react-components";
+import { Tooltip } from "@/components/ui";
+import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import NoData from "@/components/layout/NoData";
 import type { PendingInstance } from "@/types/Instance";
 import type { SelectOption } from "@/types/SelectOption";
@@ -88,7 +85,7 @@ const PendingInstanceList: FC<PendingInstanceListProps> = ({
           original.client_tags.length ? (
             <Tooltip
               message={original.client_tags.join(", ")}
-              positionElementClassName={classes.truncate}
+              targetElementClassName={classes.truncate}
             >
               {original.client_tags.join(", ")}
             </Tooltip>
@@ -102,7 +99,7 @@ const PendingInstanceList: FC<PendingInstanceListProps> = ({
         Cell: ({ row: { original } }: CellProps<PendingInstance>) => (
           <Tooltip
             message={getCreationTime(original.creation_time)}
-            positionElementClassName={classes.truncate}
+            targetElementClassName={classes.truncate}
           >
             {getCreationTime(original.creation_time)}
           </Tooltip>

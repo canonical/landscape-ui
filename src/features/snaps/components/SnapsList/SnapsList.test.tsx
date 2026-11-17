@@ -81,7 +81,8 @@ describe("SnapsList", () => {
       assert(versionInfo);
 
       await userEvent.hover(versionInfo);
-      const tooltip = await screen.findByText("This snap is held");
+      const tooltip = await screen.findByRole("tooltip");
+      expect(tooltip).toHaveTextContent("This snap is held");
       expect(tooltip).toBeVisible();
     });
 

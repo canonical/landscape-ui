@@ -1,9 +1,20 @@
-import type { TooltipProps } from "@canonical/react-components";
 import classNames from "classnames";
 import { useId, useRef, useState, type FC, type ReactNode } from "react";
 import classes from "./InteractiveTooltip.module.scss";
 
-type TooltipPosition = NonNullable<TooltipProps["position"]>;
+/* TODO: Migrate `InteractiveTooltip` (and its Vanilla `p-tooltip` /
+   `p-tooltip__message` classes below) to Pragma `Popover` once `Popover` is
+   stabilized upstream (`ds:global.component.popover` is currently in
+   `needsdefinition` / `_work_in_progress`). */
+type TooltipPosition =
+  | "btm-center"
+  | "btm-left"
+  | "btm-right"
+  | "left"
+  | "right"
+  | "top-center"
+  | "top-left"
+  | "top-right";
 
 interface InteractiveTooltipProps {
   /** Accessible name of the trigger button. */
@@ -21,18 +32,18 @@ interface InteractiveTooltipProps {
 /**
  * A tooltip whose message can hold interactive content such as links.
  *
- * Unlike the Vanilla `Tooltip`, the message is rendered inline next to its
+ * Unlike the portalled `Tooltip`, the message is rendered inline next to its
  * trigger instead of in a portal, so keyboard users can Tab from the trigger
- * straight into the message. The Vanilla component appends its message to the
- * end of the document, which places it after every other focusable element on
- * the page and closes the tooltip before focus can reach it.
+ * straight into the message. Portalling to `document.body` places the popup
+ * after every other focusable element on the page and closes it before focus
+ * can reach it.
  *
  * The message carries no `tooltip` role: the ARIA tooltip pattern is for
  * non-interactive supplemental text, so a focusable link inside one may be
  * flattened or ignored by assistive technology. The trigger exposes the
  * message as a disclosure instead.
  *
- * Prefer the Vanilla `Tooltip` for plain text messages.
+ * Prefer `Tooltip` from `@/components/ui` for plain text messages.
  */
 const InteractiveTooltip: FC<InteractiveTooltipProps> = ({
   label,

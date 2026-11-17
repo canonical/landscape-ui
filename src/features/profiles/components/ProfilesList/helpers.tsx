@@ -1,4 +1,5 @@
-import { Icon, ICONS, Tooltip } from "@canonical/react-components";
+import { Tooltip } from "@/components/ui";
+import { Button, Icon, ICONS, Link } from "@canonical/react-components";
 import type { Profile, ProfileActions } from "../../types";
 import {
   getTriggerText,
@@ -15,7 +16,6 @@ import ProfileAssociatedInstancesLink from "../ProfileAssociatedInstancesLink";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
 import { getTitleByName } from "@/utils/_helpers";
-import { Button, Link } from "@canonical/react-components";
 import type { CellProps, Column } from "react-table";
 import ProfilesListActions from "./components/ProfilesListActions";
 import date from "@/libs/date";
@@ -46,10 +46,7 @@ const getStatus = (profile: ScriptProfile | USGProfile) => {
       label: (
         <div style={{ display: "inline-flex", gap: "1rem" }}>
           <span>Over limit</span>
-          <Tooltip
-            position="top-center"
-            message="Only the first 5,000 instances are covered. Instances beyond the limit are not covered."
-          >
+          <Tooltip message="Only the first 5,000 instances are covered. Instances beyond the limit are not covered.">
             <div style={{ transform: "translateX(16px)" }}>
               <Icon name={ICONS.help} />
             </div>

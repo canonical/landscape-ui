@@ -48,15 +48,6 @@
   }
 }
 
-.is-detached {
-  .p-tooltip__message {
-    max-width: 20rem;
-    white-space: normal;
-    width: max-content;
-    z-index: var(--z-tooltip);
-  }
-}
-
 .p-contextual-menu__dropdown {
   background-color: $colors--theme--background-default;
   min-width: 14rem;

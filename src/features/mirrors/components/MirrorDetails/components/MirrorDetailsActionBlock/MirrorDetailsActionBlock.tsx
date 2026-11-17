@@ -1,5 +1,6 @@
 import { useEffect, type FC } from "react";
-import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
+import { Tooltip, TOOLTIP_DIRECTIONS } from "@/components/ui";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { Mirror } from "@canonical/landscape-openapi";
 import { useBoolean } from "usehooks-ts";
 import usePageParams from "@/hooks/usePageParams";
@@ -82,7 +83,7 @@ const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
           (isUpdateDisabled ? (
             <Tooltip
               message="You must wait for this action to be completed to trigger a new update."
-              position="btm-center"
+              preferredDirections={TOOLTIP_DIRECTIONS.bottom}
             >
               <Button
                 type="button"

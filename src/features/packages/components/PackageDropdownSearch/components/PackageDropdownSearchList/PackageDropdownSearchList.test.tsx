@@ -57,11 +57,12 @@ const props = {
 } as const satisfies ComponentProps<typeof PackageDropdownSearchList>;
 
 describe("PackageDropdownSearchList", () => {
-  it("renders list of packages when query is completed", async () => {
+  it("renders list of packages when query is completed", () => {
     renderWithProviders(<PackageDropdownSearchList {...props} />);
 
+    const list = screen.getByRole("list");
     for (const pkg of packages.slice(1, 10)) {
-      screen.getByText(`${pkg.name} ${pkg.version}`);
+      expect(list).toHaveTextContent(`${pkg.name} ${pkg.version}`);
     }
   });
 

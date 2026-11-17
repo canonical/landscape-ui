@@ -1,8 +1,9 @@
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import { Tooltip } from "@/components/ui";
 import { MASKED_VALUE } from "@/constants";
 import { ACTIVITY_STATUSES } from "@/features/activities";
-import { Icon, Tooltip } from "@canonical/react-components";
+import { Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import useGetRecoveryKey from "../../api/useGetRecoveryKey";
 import {
@@ -50,7 +51,6 @@ const RecoveryKeyStatus: FC<RecoveryKeyStatusProps> = ({
       <>
         <span>{MASKED_VALUE}</span>
         <Tooltip
-          position="top-center"
           message={recoveryKeyRegenerationAttemptMessage}
           className={classes.tooltip}
         >

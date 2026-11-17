@@ -1,11 +1,7 @@
 import classNames from "classnames";
 import type { FC } from "react";
-import {
-  ActionButton,
-  Button,
-  Icon,
-  Tooltip,
-} from "@canonical/react-components";
+import { Tooltip } from "@/components/ui";
+import { ActionButton, Button, Icon } from "@canonical/react-components";
 import type { Constraint } from "../../types";
 import classes from "./PackageProfileConstraintsEditFormTableActions.module.scss";
 
@@ -44,7 +40,7 @@ const PackageProfileConstraintsEditFormTableActions: FC<
         aria-label={`Save changes to ${constraint.package} constraint`}
         loading={isSubmitting}
       >
-        <Tooltip tooltipClassName={classes.tooltip} message="Save changes">
+        <Tooltip message="Save changes">
           <Icon
             name="success-grey"
             className="u-no-margin--left u-no-margin--right"
@@ -61,7 +57,7 @@ const PackageProfileConstraintsEditFormTableActions: FC<
         }}
         aria-label={`Cancel editing ${constraint.package} constraint`}
       >
-        <Tooltip tooltipClassName={classes.tooltip} message="Cancel">
+        <Tooltip message="Cancel">
           <Icon
             name="error-grey"
             className="u-no-margin--left u-no-margin--right"
@@ -81,7 +77,7 @@ const PackageProfileConstraintsEditFormTableActions: FC<
       disabled={editingConstraintId !== 0}
       aria-label={`Edit ${constraint.package} constraint`}
     >
-      <Tooltip tooltipClassName={classes.tooltip} message="Edit constraint">
+      <Tooltip message="Edit constraint">
         <Icon name="edit" className="u-no-margin--left u-no-margin--right" />
       </Tooltip>
     </Button>

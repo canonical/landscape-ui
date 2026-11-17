@@ -1,6 +1,6 @@
 import { getInstancePackages } from "@/tests/mocks/packagesOld";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -135,30 +135,12 @@ describe("PackageList", () => {
     expect(
       screen.getByText(/some upgrades require ubuntu pro/i),
     ).toBeInTheDocument();
-  });
-
-  it("hides UbuntuProNotification when dismissed", async () => {
-    renderWithProviders(
-      <PackageList {...props} packages={[ubuntuProPackage]} />,
-    );
-
     expect(
-      screen.getByText(/some upgrades require ubuntu pro/i),
-    ).toBeInTheDocument();
-
-    const dismissButton = screen.getByRole("button", {
-      name: /close notification/i,
-    });
-    await user.click(dismissButton);
-
-    await waitFor(() => {
-      expect(
-        screen.queryByText(/some upgrades require ubuntu pro/i),
-      ).not.toBeInTheDocument();
-    });
+      screen.queryByRole("button", { name: /close notification/i }),
+    ).not.toBeInTheDocument();
   });
 
-  it("shows Ubuntu Pro required tooltip for packages requiring Ubuntu Pro", () => {
+  it("shows Ubuntu Pro required tooltip on the disabled checkbox for packages requiring Ubuntu Pro", async () => {
     renderWithProviders(
       <PackageList {...props} packages={[ubuntuProPackage]} />,
     );
@@ -167,6 +149,14 @@ describe("PackageList", () => {
       name: `Toggle ${ubuntuProPackage.name}`,
     });
     expect(checkbox).toBeDisabled();
+
+    const checkboxLabel = checkbox.closest("label");
+    assert(checkboxLabel);
+    await user.hover(checkboxLabel);
+
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(
+      "Ubuntu Pro is required",
+    );
   });
 
   it("shows available version when it differs from current version", () => {
