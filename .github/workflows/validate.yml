@@ -340,7 +340,9 @@ jobs:
         with: { fetch-depth: 0 }
 
       - name: Verify changeset present
-        if: github.event.pull_request.base.ref
+        # beta-prep/* PRs (Beta Release Prep workflow) consume changesets
+        # rather than adding one, so they are exempt.
+        if: github.event.pull_request.base.ref && !startsWith(github.event.pull_request.head.ref, 'beta-prep/')
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: | # js

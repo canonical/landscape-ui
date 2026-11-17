@@ -30,9 +30,17 @@ Independent jobs, except that **Vitest** waits for its shards:
 
 **Trigger:** push → `main`.
 
-Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual-version-update.cjs`. No build, no tag, no publish — `main` is the integration trunk and CHANGELOG baseline, not a publish target; betas ship from `point/**`, stable from `release/**`.
+Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual-version-update.cjs`. No build, no tag, no publish — `main` is the integration trunk and CHANGELOG baseline, not a publish target; betas are cut on `beta/**` (see Beta Release Prep below), point releases ship from `point/**`, stable from `release/**`.
 
 **Rule:** do not add a build or `ppa-build-*` step here.
+
+## Beta Release Prep (`beta-release-prep.yml`)
+
+**Trigger:** creation of a `beta/YY.MM-beta.N` branch; `workflow_dispatch`.
+
+Runs `scripts/beta-version-update.cjs` and opens a `beta-prep/<version>` PR against the beta branch that rolls pending changesets into `CHANGELOG.md`, adds the `YY.MM~beta.N` stanza to `debian/changelog`, and sets `package.json` to `YY.MM-beta.N`. No build yet; beta builds are separate follow-up work. See `RELEASES.md` §5a.
+
+**Rule:** the prep PR is opened with `GITHUB_TOKEN`, so PR checks do not run on it until a bot token is used; close and reopen it to trigger them. `validate.yml` exempts `beta-prep/*` heads from the changeset check.
 
 ## Release and PPA Build (`release-and-build.yml`)
 

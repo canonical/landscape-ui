@@ -38,8 +38,12 @@ const {
  * no-op (no duplicate CHANGELOG section or debian stanza). One exception:
  * if the version's CHANGELOG section already exists AND new changesets are
  * pending (i.e. the prep PR was merged and more changes landed on the beta
- * branch), it aborts rather than silently consuming them into nothing —
- * a respin is a new beta branch, not new changesets on a frozen one.
+ * branch), it aborts rather than silently consuming them into nothing.
+ *
+ * Respins (YY.MM~beta.N.R, made on the SAME beta branch per the beta release
+ * design) are not supported yet: if package.json or debian/changelog already
+ * carries a respin of this beta, the script aborts instead of rewinding the
+ * branch to the base beta version.
  *
  * Usage:
  *   node scripts/beta-version-update.cjs [beta/YY.MM-beta.N | YY.MM-beta.N]
@@ -77,6 +81,14 @@ function rfc2822(date = new Date()) {
   return date.toUTCString().replace("GMT", "+0000");
 }
 
+function readDebianTopVersion(changelogPath) {
+  if (!fs.existsSync(changelogPath)) return null;
+  const m = fs
+    .readFileSync(changelogPath, "utf8")
+    .match(/^\S+ \(([^)]+)\) [^;]+;/m);
+  return m ? m[1] : null;
+}
+
 function prependDebianStanza(changelogPath, debVersion, version) {
   const existing = fs.existsSync(changelogPath)
     ? fs.readFileSync(changelogPath, "utf8")
@@ -104,11 +116,32 @@ function prependDebianStanza(changelogPath, debVersion, version) {
 
 function main() {
   const { version, debVersion } = parseBetaVersion(getBranchOrVersion());
+  const debianChangelogPath = path.join(projectRoot, "debian", "changelog");
 
   // 1. package.json — keep the -beta.N suffix (beta identity), unlike
   // manual-version-update.cjs which strips pre-release suffixes.
   const pkgPath = path.join(projectRoot, "package.json");
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+
+  // A respin (YY.MM~beta.N.R) of this beta is already stamped on the branch.
+  // Re-preparing would rewind package.json and stack an older stanza above
+  // the respin's, so stop until respins are supported.
+  const debUpstream = debVersion.replace(/-[^-]+$/, "");
+  const debTop = readDebianTopVersion(debianChangelogPath);
+  const respun = [
+    [pkg.version, `${version}.`],
+    [pkg.version, `${debUpstream}.`],
+    [debTop, `${debUpstream}.`],
+  ].some(([v, prefix]) => typeof v === "string" && v.startsWith(prefix));
+  if (respun) {
+    console.error(
+      `This branch already carries a respin of ${version} ` +
+        `(package.json: ${pkg.version}, debian/changelog: ${debTop}). ` +
+        `Respins are not supported by this script yet — prepare them by hand.`,
+    );
+    process.exit(1);
+  }
+
   if (pkg.version !== version) {
     pkg.version = version;
     fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
@@ -131,13 +164,12 @@ function main() {
     if (existing.includes(`## ${version}\n`)) {
       // The prep PR for this beta was already merged: its CHANGELOG section
       // is frozen. Deleting the pending changesets here would silently drop
-      // their release notes, so fail instead — a respin is a new beta
-      // branch, not new changesets on this one.
+      // their release notes, so fail instead.
       console.error(
         `CHANGELOG.md already has a ${version} section, but ${entries.length} ` +
           `changeset(s) are pending. Release notes for this beta are frozen — ` +
-          `cut a new beta branch (beta/YY.MM-beta.N+1) or remove the pending ` +
-          `changesets from the branch.`,
+          `ship these changes in a respin (not yet automated) or the next ` +
+          `beta, or remove the pending changesets from this branch.`,
       );
       process.exit(1);
     }
@@ -153,11 +185,7 @@ function main() {
   }
 
   // 3. debian/changelog stanza.
-  prependDebianStanza(
-    path.join(projectRoot, "debian", "changelog"),
-    debVersion,
-    version,
-  );
+  prependDebianStanza(debianChangelogPath, debVersion, version);
 }
 
 if (require.main === module) {
