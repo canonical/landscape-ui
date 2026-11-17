@@ -92,18 +92,10 @@ jobs:
           gh version
         env:
           GH_TOKEN: ${{ github.token }}
-      # gh-aw's install_copilot_cli.sh uses --prefer-toolcache, which does not
-      # land the binary on PATH on this self-hosted runner image, so the
-      # detection step exits 127 ("Copilot CLI executable not found on PATH").
-      # Install it globally with npm so `command -v copilot` resolves.
-      - name: Install GitHub Copilot CLI
-        run: |
-          export NPM_CONFIG_PREFIX="$HOME/.npm-global"
-          export NPM_CONFIG_IGNORE_SCRIPTS=true
-          mkdir -p "$NPM_CONFIG_PREFIX"
-          npm install -g --ignore-scripts @github/copilot@1.0.103
-          echo "$NPM_CONFIG_PREFIX/bin" >> "$GITHUB_PATH"
-          "$NPM_CONFIG_PREFIX/bin/copilot" --version
+      # No Copilot CLI pre-install here: threat-detection pins
+      # version+checksums-sha256 below, which makes gh-aw's built-in installer
+      # bypass --prefer-toolcache and land the verified binary on PATH itself.
+      # (A previous npm pre-step double-installed the CLI on every run.)
 
 # The self-hosted runner image also ships an old gh that lacks 'gh attestation
 # verify', which the agent job's AWF install requires. Install a
@@ -203,7 +195,13 @@ safe-outputs:
   # credential this repo does not carry. Pin it to the Copilot CLI so it uses
   # COPILOT_GITHUB_TOKEN, matching the documented secret contract.
   threat-detection:
-    engine: copilot
+    # Pin version + release-manifest checksum: the pair makes gh-aw's built-in
+    # installer bypass --prefer-toolcache and verify the download, so the CLI
+    # lands on PATH on the self-hosted fleet without a second npm install.
+    engine:
+      id: copilot
+      version: "1.0.103"
+      checksums-sha256: "26cd3e4b32cde498e4961fb4d48e7b85d7859fc69af1a645a19201fdd577bdb2"
     # Threat detection needs Docker/AWF like the agent job.
     runs-on: [self-hosted, noble, amd64]
     # Detection must also pin its own model: detection is Copilot-only
@@ -251,7 +249,7 @@ You maintain three changelog artifacts for Landscape UI, all delivered as ONE pu
 2. Skip any commit whose subject has no trailing pull request reference ` (#1234)`. Such commits cannot carry the `(backfills #<N>)` marker the deduplication relies on, so they can never be filed safely; if one looks user-facing, mention it in the PR body under `Changesets to review` instead of backfilling it.
 3. Deduplicate the rest by pull request number. For each commit, extract its PR number `<N>` from the trailing ` (#1234)` reference in the subject. Skip the commit if ANY of the following hold:
    a. Its own commit added a NON-EMPTY changeset: run `git show --name-status --format= <commit>` and look for a line with status `A` (added) whose path matches `.changeset/*.md` (ignoring `.changeset/README.md` and `.changeset/config.json`), then read that file — it counts as coverage only if its frontmatter assigns a bump (`major`/`minor`/`patch`) to a package. Only status `A` counts — a modified (`M`) or deleted (`D`) changeset path is NOT coverage. If the commit added ONLY empty changesets (no package/bump in the frontmatter), do NOT backfill one: an empty changeset can be a deliberate choice (e.g. one shared non-empty changeset for a whole PR stack, as in #799). Flag it in the review section below instead.
-   b. A pending changeset already covers it: search the existing `.changeset/*.md` files in the working tree for the exact reference `#<N>` (match the full number — `#123` must not match `#1234`). Every backfilled changeset ends its summary with `(backfills #<N>)`, so a pending changeset containing `#<N>` means this PR is already covered.
+   b. A pending changeset already covers it: search the existing `.changeset/*.md` files in the working tree for the PR-specific marker `(backfills #<N>)` (match the full number — `#123` must not match `#1234`). Do NOT treat a bare `#<N>` as coverage: that token can be an unrelated issue, Launchpad, or linked-PR reference. Only the `(backfills #<N>)` marker — which every backfilled changeset ends its summary with — means this PR is already covered.
    c. The changelog already covers it: check whether the TOP section of `CHANGELOG.md` (the latest release — everything from the first `## ` heading up to the second) references `#<N>`. `CHANGELOG.md` on `main` is stale (see step 1), so treat this only as an extra deduplication signal, never as proof that older commits are covered.
 
 ## Select user-facing commits only
@@ -355,6 +353,8 @@ First check for an existing open changelog pull request in this repository (labe
 - If one is already open, do NOT open a second and do NOT push to its branch — the safe-output handlers can only CREATE a pull request in this repository, never update an existing one. Check whether its changesets already cover the commits you selected (the `(backfills #<N>)` markers) and whether its `debian/changelog` block already covers the `CHANGELOG.md` top section. If both are current, make no changes and note that the existing PR is already up to date. If anything is missing, post ONE comment on that PR (via `add_comment`) listing the missing backfill entries and/or the missing Debian changelog block, so a human can refresh it; make no file changes this run.
 - Only if no changelog PR is open, open a single pull request containing all of the new changeset files and the new `debian/changelog` block. Use the title `add missing changesets and changelog block` (the `build: ` prefix is added automatically) and a body that lists the backfilled entries in the sorted order from above, notes the merged PR each entry covers, names the Debian changelog version drafted and the `CHANGELOG.md` section it was sourced from, explains that the backfilled PRs were merged without a changeset so the Changesets automation had nothing to roll up, and includes the `Changesets to review` heading when any entries were flagged.
 
+Before submitting the pull request, run a final status audit: `git status --porcelain -- .changeset/ debian/changelog`. Every `.changeset/*.md` line must be `??` (untracked, i.e. a NEW file). If any line shows `M` or `D`, you edited or deleted an existing changeset — discard that change (`git checkout -- <path>` or remove the edit) and re-audit until only new files remain. The pull-request handler filters by path only, not diff status, so this check is the mechanical guard for the "new files only" rule; for `debian/changelog`, verify your diff only PREPENDS one block (`git diff debian/changelog` must show only added lines above the previous top block).
+
 Never open a second changelog PR while one is open.
 
 ## Docs release notes (shared PR)
@@ -371,7 +371,7 @@ Your island content derives from `CHANGELOG.md`, the same source of truth as the
    - In the `./landscape-documentation` checkout, check out that PR's head branch. First read the PR's `headRepositoryOwner`/`headRepository` and head ref with the GitHub tools: the head may live in a FORK (for example a contributor's `landscape-documentation` fork), not in `canonical/landscape-documentation`. The setup checkout fetched only `canonical/landscape-documentation` refs, so a fork head is NOT among them. When the head is in a fork, add that fork as a temporary read-only remote and fetch the head ref from it over HTTPS (the docs repo and its forks are public, so an unauthenticated fetch works): `git -C ./landscape-documentation remote add pr-head https://github.com/<owner>/landscape-documentation.git 2>/dev/null || true; git -C ./landscape-documentation fetch pr-head <head-ref> && git -C ./landscape-documentation checkout FETCH_HEAD`. If the head is in `canonical/landscape-documentation` itself, the branch is already among the fetched refs: `git checkout <branch>`. If the head ref cannot be fetched either way, skip the docs work for this run.
    - Other Landscape bots push to this same shared branch, so the checkout may be stale and another bot may push while you work. Apart from the one fork-head fetch above, the agent environment has NO git credentials — NEVER attempt any other fetch or a rebase. Work from the head ref you just checked out; keep every edit strictly inside your own island markers so it applies cleanly over the other bots' island updates. `push_to_pull_request_branch` applies your patch to the branch's live tip in a credentialed job; if a concurrent push made it conflict, the delivery fails safely — do not retry, the next run redoes the work. NEVER force-push over another bot's commits.
    - Update ONLY your own island (see below). If the release-notes page for the in-development version does not exist on that branch, create it from the template below and add it to the toctree in `docs/reference/release-notes/index.md` (newest non-LTS page goes directly under the LTS entries, matching existing ordering).
-   - Commit in the docs checkout and deliver via `push_to_pull_request_branch` with `pull_request_number` set to the docs PR number.
+   - Commit in the docs checkout and deliver via `push_to_pull_request_branch` with `pull_request_number` set to the docs PR number. Before committing, audit island containment: run `git -C ./landscape-documentation diff` and confirm every changed hunk sits between your `<!-- changelog-bot:landscape-ui:start -->` and `<!-- changelog-bot:landscape-ui:end -->` markers (or, when creating a brand-new page or the toctree entry, is exactly that new page / that one index.md line). The push handler filters by filename only — it cannot see island boundaries — so if any hunk touches another bot's island or any other section, discard it and redo the edit before delivering.
 4. If no docs PR exists, skip the docs work for this run entirely: make no changes in the `./landscape-documentation` checkout. NEVER create the shared docs PR yourself — it is created weekly by the `release-notes-draft` workflow in canonical/landscape-documentation, so it should already exist by the time you run. (Your own-repo changelog PR logic is unaffected.)
 5. If you have no user-facing changes this cycle, leave your island untouched; do not create or update the docs PR. (Your own-repo changelog PR logic is unaffected.)
 
