@@ -14,19 +14,21 @@ const [profile] = packageProfiles;
 
 describe("PackageProfileEditForm", () => {
   it("submits edited values and notifies on success", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<PackageProfileEditForm profile={profile} />);
 
     const titleInput = screen.getByRole("textbox", { name: "Title" });
-    await userEvent.clear(titleInput);
-    await userEvent.type(titleInput, "New title");
+    expect(titleInput).toBeRequired();
+    await user.clear(titleInput);
+    await user.type(titleInput, "New title");
 
     const descriptionInput = screen.getByRole("textbox", {
       name: "Description",
     });
-    await userEvent.clear(descriptionInput);
-    await userEvent.type(descriptionInput, "Updated description");
+    await user.clear(descriptionInput);
+    await user.type(descriptionInput, "Updated description");
 
-    await userEvent.click(
+    await user.click(
       await screen.findByRole("button", { name: "Save changes" }),
     );
 
@@ -38,6 +40,7 @@ describe("PackageProfileEditForm", () => {
   });
 
   it("shows a required error without sending an update when the description is cleared", async () => {
+    const user = userEvent.setup();
     const updateRequest = vi.fn(() => HttpResponse.json());
     server.use(
       http.put(`${API_URL}packageprofiles/${profile.name}`, updateRequest),
@@ -48,8 +51,8 @@ describe("PackageProfileEditForm", () => {
     const descriptionInput = screen.getByRole("textbox", {
       name: "Description",
     });
-    await userEvent.clear(descriptionInput);
-    await userEvent.click(screen.getByRole("button", { name: "Save changes" }));
+    await user.clear(descriptionInput);
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
 
     expect(
       await screen.findByText("This field is required."),
@@ -59,6 +62,7 @@ describe("PackageProfileEditForm", () => {
   });
 
   it("surfaces an error notification when the update fails", async () => {
+    const user = userEvent.setup();
     setEndpointStatus({
       status: "error",
       path: "packageprofiles/:profileName",
@@ -66,7 +70,7 @@ describe("PackageProfileEditForm", () => {
 
     renderWithProviders(<PackageProfileEditForm profile={profile} />);
 
-    await userEvent.click(
+    await user.click(
       await screen.findByRole("button", { name: "Save changes" }),
     );
 

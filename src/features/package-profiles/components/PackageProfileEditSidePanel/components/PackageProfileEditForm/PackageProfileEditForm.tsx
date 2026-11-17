@@ -66,6 +66,7 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
       <Input
         type="text"
         label="Title"
+        required
         {...formik.getFieldProps("title")}
         error={getFormikError(formik, "title")}
       />
