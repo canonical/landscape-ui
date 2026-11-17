@@ -17,7 +17,8 @@ import type { Observation } from "./contract-coverage/types";
 const DEB_ARCHIVE_MOUNT = "/debarchive";
 
 // Both inputs are produced by the test run: the registry by the traffic
-// recorder, the manifest by the handler dump (see setup.ts).
+// recorder, the manifest by the handler dump (see contract-coverage/recorder.ts).
+// The recorder only runs when MSW_CONTRACT_COVERAGE=true.
 const missingInputs = [REGISTRY_PATH, MANIFEST_PATH].filter(
   (file) => !fs.existsSync(file),
 );
@@ -25,7 +26,9 @@ if (missingInputs.length > 0) {
   for (const file of missingInputs) {
     console.error(`[-] Missing generated input: ${file}`);
   }
-  console.error(`    Run the test suite first: pnpm coverage`);
+  console.error(
+    `    Run the test suite with the recorder first: pnpm coverage:full`,
+  );
   process.exit(1);
 }
 
