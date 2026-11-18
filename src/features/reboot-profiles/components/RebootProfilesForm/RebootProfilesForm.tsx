@@ -59,7 +59,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
         at_hour: Number(values.at_hour),
         at_minute: Number(values.at_minute),
         deliver_delay_window: values.deliver_delay_window,
-        deliver_within: values.deliver_within,
+        deliver_within: Number(values.deliver_within),
         every: "week",
         on_days: values.on_days,
         tags: values.tags,
@@ -153,6 +153,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
                   type="number"
                   label="Time"
                   aria-label="at hour"
+                  required
                   placeholder="HH"
                   className={classes.timeInput}
                   wrapperClassName={classNames({ "is-error": timeErrors[0] })}
@@ -167,6 +168,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
                 type="number"
                 label="At minute"
                 labelClassName="u-off-screen"
+                required
                 aria-label="at minute"
                 className={classes.timeInput}
                 wrapperClassName={classNames({ "is-error": timeErrors[1] })}
@@ -177,6 +179,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
 
               <Input
                 type="number"
+                required
                 label={
                   <>
                     <span>Expires after </span>

@@ -6,6 +6,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { PATHS, ROUTES } from "@/libs/routes";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import EditRoleForm from "./EditRoleForm";
 
 const props: ComponentProps<typeof EditRoleForm> = {
@@ -30,6 +31,21 @@ describe("EditRoleForm", () => {
     expect(screen.getByText("Access Groups")).toBeInTheDocument();
     expect(screen.getByText(/save changes/i)).toBeInTheDocument();
   });
+
+  it.each(["", props.role.description])(
+    "displays description %j as read-only",
+    async (description) => {
+      renderWithProviders(
+        <EditRoleForm role={{ ...props.role, description }} />,
+      );
+
+      await screen.findAllByRole("checkbox");
+
+      expect(screen.getByText("Description")).toBeInTheDocument();
+      expect(screen.getByText(description || NO_DATA_TEXT)).toBeInTheDocument();
+      expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    },
+  );
 
   it("preselects role permissions and access groups", async () => {
     renderWithProviders(

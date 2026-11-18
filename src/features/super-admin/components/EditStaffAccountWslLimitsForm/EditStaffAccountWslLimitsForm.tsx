@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useEditStaffAccountWslLimits } from "../../api";
 import { WSL_LIMIT_FIELDS } from "../../constants";
 import type { StaffAccount, WslFeatureLimits } from "../../types";
-import { VALIDATION_SCHEMA, WSL_LIMIT_MIN } from "./constants";
+import { VALIDATION_SCHEMA, WSL_LIMIT_MAX, WSL_LIMIT_MIN } from "./constants";
 import { describeChanges, getFieldErrors, getLimits } from "./helpers";
 import type { FormProps } from "./types";
 
@@ -87,6 +87,7 @@ const EditStaffAccountWslLimitsForm: FC<EditStaffAccountWslLimitsFormProps> = ({
             help={`The default is ${defaultValue.toLocaleString("en")}.`}
             required
             min={WSL_LIMIT_MIN}
+            max={WSL_LIMIT_MAX}
             {...formik.getFieldProps(name)}
             error={getFormikError(formik, name)}
           />

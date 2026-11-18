@@ -45,7 +45,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
       all_computers: values.all_computers,
       at_minute: values.at_minute as number,
       autoremove: values.autoremove,
-      deliver_within: values.deliver_within,
+      deliver_within: Number(values.deliver_within),
       every: values.every,
       on_days: values.on_days,
       title: values.title,

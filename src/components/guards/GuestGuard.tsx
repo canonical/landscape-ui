@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import useAuth from "@/hooks/useAuth";
 import { HOMEPAGE_PATH } from "@/constants";
-import { getInvitationPath } from "@/features/auth";
+import { getInvitationPath, getLoginRedirect } from "@/features/auth";
 import LoadingState from "@/components/layout/LoadingState";
 import Redirecting from "@/components/layout/Redirecting";
 
@@ -30,7 +30,7 @@ export const GuestGuard: FC<Props> = ({ children }) => {
 
     if (!hasAccounts) return;
 
-    const redirectTo = searchParams.get("redirect-to");
+    const { redirectTo, external } = getLoginRedirect(searchParams);
 
     if (!redirectTo) {
       navigate(HOMEPAGE_PATH, { replace: true });
@@ -38,7 +38,7 @@ export const GuestGuard: FC<Props> = ({ children }) => {
     }
 
     safeRedirect(redirectTo, {
-      external: searchParams.has("external"),
+      external,
       replace: true,
     });
   }, [

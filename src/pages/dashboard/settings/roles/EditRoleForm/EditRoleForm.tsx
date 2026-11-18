@@ -14,6 +14,7 @@ import {
 } from "@/pages/dashboard/settings/roles/helpers";
 import PermissionBlock from "@/pages/dashboard/settings/roles/PermissionBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 import type { Role } from "@/types/Role";
 import AccessGroupBlock from "@/pages/dashboard/settings/roles/AccessGroupBlock";
 import { getPromisesToEditRole, getRoleFormProps } from "./helpers";
@@ -125,6 +126,8 @@ const EditRoleForm: FC<EditRoleFormProps> = ({ role }) => {
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
+      <ReadOnlyField label="Description" value={role.description} />
+
       <PermissionBlock
         description="These permissions are for managing the account as a whole. They are not limited to the specified access groups, but instead apply globally."
         onPermissionChange={(newPermissions) =>

@@ -31,7 +31,9 @@ export default function useGetPublicationTargets(
               params: {
                 pageSize: pageSize ?? 1000,
                 pageToken,
-                filter: filter ? `display_name="${filter}*"` : undefined,
+                filter: filter
+                  ? `display_name=${JSON.stringify(`${filter}*`)}`
+                  : undefined,
               },
             },
           );

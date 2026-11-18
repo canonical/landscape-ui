@@ -1,5 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen, act } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import HeaderActions from "./HeaderActions";
 import type { Action } from "@/types/Action";
@@ -28,6 +29,37 @@ describe("HeaderActions", () => {
     expect(screen.getByRole("button", { name: /edit/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /copy/i })).toBeInTheDocument();
   });
+
+  it.each([false, true])(
+    "uses the latest callback after rerender (collapsed: %s)",
+    async (collapsed) => {
+      const user = userEvent.setup();
+      const originalOnClick = vi.fn();
+      const updatedOnClick = vi.fn();
+      const actions = (onClick: Action["onClick"]) => ({
+        nondestructive: [
+          { icon: "edit", label: "Edit", onClick, collapsed },
+          { icon: "copy", label: "Copy", onClick: vi.fn(), collapsed },
+        ],
+      });
+      const { rerender } = renderWithProviders(
+        <HeaderActions actions={actions(originalOnClick)} />,
+      );
+
+      rerender(<HeaderActions actions={actions(updatedOnClick)} />);
+
+      if (collapsed) {
+        await user.click(screen.getByRole("button", { name: "Actions" }));
+      }
+
+      await user.click(
+        screen.getByRole(collapsed ? "menuitem" : "button", { name: "Edit" }),
+      );
+
+      expect(updatedOnClick).toHaveBeenCalledOnce();
+      expect(originalOnClick).not.toHaveBeenCalled();
+    },
+  );
 
   it("renders action with icon and label", () => {
     renderWithProviders(

@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "vite",
     "build": "pnpm run lint && pnpm run tcm:run && tsc && vite build",
-    "build:e2e": "pnpm run build --mode e2e",
+    "build:e2e": "vite build --mode e2e",
+    "typecheck": "pnpm run tcm:run && tsgo && tsgo -p tsconfig.node.json --noEmit --incremental false --composite false && tsgo -p e2e",
     "lint": "eslint --fix src e2e",
     "preview": "vite preview",
     "test": "pnpm exec playwright test",
@@ -19,7 +20,7 @@
     "vitest": "vitest",
     "coverage": "vitest run --coverage",
     "coverage-report": "tsx src/tests/aggregate-coverage.ts",
-    "coverage:full": "pnpm run coverage && pnpm run coverage-report",
+    "coverage:full": "MSW_CONTRACT_COVERAGE=true pnpm run coverage && pnpm run coverage-report",
     "eval:collect": "tsx src/tests/contract-coverage/eval-loop/collect-gaps.ts",
     "eval:suggest": "tsx src/tests/contract-coverage/eval-loop/run-eval-loop.ts",
     "eval:full": "pnpm run coverage:full && pnpm run eval:collect && pnpm run eval:suggest",
@@ -51,6 +52,7 @@
     "yup": "1.7.1"
   },
   "devDependencies": {
+    "@canonical/pragma-cli": "0.44.0",
     "@changesets/cli": "3.0.3",
     "@eslint/js": "9.39.5",
     "@playwright/test": "1.64.0",
@@ -61,6 +63,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@types/react-table": "7.7.20",
+    "@typescript/native-preview": "7.0.0-dev.20260707.2",
     "@vitejs/plugin-react": "6.1.2",
     "@vitest/coverage-v8": "4.1.11",
     "eslint": "9.39.5",

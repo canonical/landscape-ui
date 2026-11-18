@@ -1,3 +1,4 @@
+import { API_URL, MASKED_VALUE } from "@/constants";
 import type { AuthContextProps } from "@/context/auth";
 import type { EnvContextState } from "@/context/env";
 import type { Account } from "@/features/auth";
@@ -8,18 +9,19 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { accountsDefault } from "@/tests/mocks/accounts";
 import { authUser } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import EditUserForm from "./EditUserForm";
-import { MASKED_VALUE } from "@/constants";
 
 vi.mock("@/hooks/useEnv");
 vi.mock("@/hooks/useAuth");
 vi.mock("@/hooks/useAuthAccounts");
 
-vi.mocked(useAuthAccounts).mockReturnValue({
+const accountsContextValues: ReturnType<typeof useAuthAccounts> = {
   currentAccount: accountsDefault.find(
     (account) => !!account.default,
   ) as Account,
@@ -29,7 +31,7 @@ vi.mocked(useAuthAccounts).mockReturnValue({
     value: name,
   })),
   handleAccountSwitch: vi.fn(),
-});
+};
 
 const props = {
   userDetails: {
@@ -82,11 +84,23 @@ const mockSaas: EnvContextState = {
   displayDisaStigBanner: false,
 };
 
+const capturePersonRequest = () => {
+  const captured: { body: Record<string, unknown> | null } = { body: null };
+  server.use(
+    http.post(`${API_URL}person`, async ({ request }) => {
+      captured.body = (await request.json()) as Record<string, unknown>;
+      return HttpResponse.json(props.userDetails);
+    }),
+  );
+  return captured;
+};
+
 describe("EditUserForm", () => {
   beforeEach(() => {
     setEndpointStatus("default");
     vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
     vi.mocked(useAuth).mockReturnValue(authContextValues);
+    vi.mocked(useAuthAccounts).mockReturnValue(accountsContextValues);
   });
 
   describe("tests for saas and self-hosted", () => {
@@ -163,6 +177,165 @@ describe("EditUserForm", () => {
       expect(saveButton).toHaveAttribute("aria-disabled");
     });
 
+    it("accepts a plus-addressed email when saving", async () => {
+      const email = "user+tag@example.com";
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{
+            ...props.userDetails,
+            email,
+            allowable_emails: [email, "another@example.com"],
+          }}
+        />,
+      );
+
+      const nameInput = screen.getByRole("textbox");
+      await userEvent.type(nameInput, " Updated");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText("Please provide a valid email address"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("saves other changes when the stored email fails the legacy rules", async () => {
+      // Account creation accepts a non-ASCII local part; the person endpoint
+      // does not.
+      const email = "用户@example.com";
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{
+            ...props.userDetails,
+            email,
+            allowable_emails: [email, "another@example.com"],
+          }}
+        />,
+      );
+
+      const nameInput = screen.getByRole("textbox");
+      await userEvent.type(nameInput, " Updated");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).not.toHaveProperty("email");
+    });
+
+    it("sends a server-supplied email verbatim, even if it fails the legacy rules", async () => {
+      const allowedEmail = "用户@Example.COM";
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{
+            ...props.userDetails,
+            allowable_emails: [props.userDetails.email, allowedEmail],
+          }}
+        />,
+      );
+
+      await userEvent.selectOptions(
+        screen.getByRole("combobox", { name: "Email address" }),
+        allowedEmail,
+      );
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toHaveProperty("email", allowedEmail);
+    });
+
+    it("normalizes a typed email before sending it", async () => {
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, allowable_emails: [] }}
+        />,
+      );
+
+      const emailInput = screen.getByRole("textbox", { name: "Email" });
+      await userEvent.clear(emailInput);
+      await userEvent.type(emailInput, " New@EXAMPLE.COM ");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toHaveProperty("email", "New@example.com");
+    });
+
+    it("maps a Unicode dot in the domain to the form used at login", async () => {
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, allowable_emails: [] }}
+        />,
+      );
+
+      const emailInput = screen.getByRole("textbox", { name: "Email" });
+      await userEvent.clear(emailInput);
+      await userEvent.type(emailInput, "user@example\u3002com");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toHaveProperty("email", "user@example.com");
+    });
+
+    it("rejects a non-ASCII local part like the person endpoint", async () => {
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, allowable_emails: [] }}
+        />,
+      );
+
+      const emailInput = screen.getByRole("textbox", { name: "Email" });
+      await userEvent.clear(emailInput);
+      await userEvent.type(emailInput, "用户@example.com");
+      await userEvent.tab();
+
+      expect(
+        await screen.findByText("Please provide a valid email address"),
+      ).toBeInTheDocument();
+    });
+
+    it("accepts a special-use domain like the person endpoint", async () => {
+      const request = capturePersonRequest();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, allowable_emails: [] }}
+        />,
+      );
+
+      const emailInput = screen.getByRole("textbox", { name: "Email" });
+      await userEvent.clear(emailInput);
+      await userEvent.type(emailInput, "ops@corp.local");
+      await userEvent.click(
+        screen.getByRole("button", { name: /save changes/i }),
+      );
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toHaveProperty("email", "ops@corp.local");
+    });
+
     it("should show an empty option for default organisation select if user has not yet selected one", async () => {
       renderWithProviders(
         <EditUserForm
@@ -237,6 +410,126 @@ describe("EditUserForm", () => {
         name: /change password/i,
       });
       expect(changePassword).toBeInTheDocument();
+    });
+  });
+
+  describe.each([
+    { environment: "self-hosted", env: mockSelfHosted },
+    { environment: "SaaS", env: mockSaas },
+  ])("request payload in $environment", ({ env }) => {
+    const accountOptions = props.userDetails.accounts.map(
+      ({ name, title }) => ({
+        label: title,
+        value: name,
+      }),
+    );
+    let request: ReturnType<typeof capturePersonRequest>;
+
+    beforeEach(() => {
+      vi.mocked(useEnv).mockReturnValue(env);
+      vi.mocked(useAuthAccounts).mockReturnValue({
+        ...accountsContextValues,
+        options: accountOptions,
+      });
+      request = capturePersonRequest();
+    });
+
+    it.each([
+      {
+        scenario: "multiple organizations",
+        isOnSubdomain: false,
+        options: accountOptions,
+      },
+      {
+        scenario: "a single organization",
+        isOnSubdomain: false,
+        options: accountOptions.slice(0, 1),
+      },
+      {
+        scenario: "a subdomain",
+        isOnSubdomain: true,
+        options: [],
+      },
+    ])(
+      "omits an unset preferred account for $scenario",
+      async ({ isOnSubdomain, options }) => {
+        const user = userEvent.setup();
+        vi.mocked(useAuthAccounts).mockReturnValue({
+          ...accountsContextValues,
+          isOnSubdomain,
+          options,
+        });
+        renderWithProviders(
+          <EditUserForm
+            userDetails={{ ...props.userDetails, preferred_account: null }}
+          />,
+        );
+
+        const organizationSelect = screen.queryByRole("combobox", {
+          name: /default organization/i,
+        });
+        if (!isOnSubdomain && options.length > 1) {
+          expect(organizationSelect).toHaveValue("");
+        } else {
+          expect(organizationSelect).not.toBeInTheDocument();
+        }
+
+        const nameInput = screen.getByRole("textbox", { name: "Name" });
+        await user.clear(nameInput);
+        await user.type(nameInput, "Updated Name");
+        await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+        expect(
+          await screen.findByText("User details updated successfully"),
+        ).toBeInTheDocument();
+        expect(request.body).toEqual({
+          name: "Updated Name",
+          timezone: props.userDetails.timezone,
+        });
+      },
+    );
+
+    it("preserves an existing preferred account on a name-only edit", async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<EditUserForm {...props} />);
+
+      const nameInput = screen.getByRole("textbox", { name: "Name" });
+      await user.clear(nameInput);
+      await user.type(nameInput, "Updated Name");
+      await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toEqual({
+        name: "Updated Name",
+        timezone: props.userDetails.timezone,
+        preferred_account: props.userDetails.preferred_account,
+      });
+    });
+
+    it("submits a newly selected preferred account", async () => {
+      const user = userEvent.setup();
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, preferred_account: null }}
+        />,
+      );
+
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: /default organization/i }),
+        "another-account",
+      );
+      await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(request.body).toEqual({
+        name: props.userDetails.name,
+        timezone: props.userDetails.timezone,
+        preferred_account: "another-account",
+      });
     });
   });
 });

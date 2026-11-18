@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import type { FormikContextType } from "formik";
 import type { FC } from "react";
 import {
   ActionButton,
@@ -12,13 +11,24 @@ import classes from "./PackageProfileConstraintsEditFormTableActions.module.scss
 
 interface PackageProfileConstraintsEditFormTableActionsProps {
   readonly constraint: Constraint;
-  readonly formik: FormikContextType<Constraint>;
+  readonly editingConstraintId: number;
+  readonly isSubmitting: boolean;
+  readonly onEdit: (constraint: Constraint) => void;
+  readonly onCancel: () => void;
+  readonly onSave: () => void;
 }
 
 const PackageProfileConstraintsEditFormTableActions: FC<
   PackageProfileConstraintsEditFormTableActionsProps
-> = ({ constraint, formik }) => {
-  return formik.values.id === constraint.id ? (
+> = ({
+  constraint,
+  editingConstraintId,
+  isSubmitting,
+  onEdit,
+  onCancel,
+  onSave,
+}) => {
+  return editingConstraintId === constraint.id ? (
     <>
       <ActionButton
         type="button"
@@ -29,10 +39,10 @@ const PackageProfileConstraintsEditFormTableActions: FC<
           classes.actionButton,
         )}
         onClick={() => {
-          formik.handleSubmit();
+          onSave();
         }}
         aria-label={`Save changes to ${constraint.package} constraint`}
-        loading={formik.isSubmitting}
+        loading={isSubmitting}
       >
         <Tooltip tooltipClassName={classes.tooltip} message="Save changes">
           <Icon
@@ -47,7 +57,7 @@ const PackageProfileConstraintsEditFormTableActions: FC<
         hasIcon
         className="u-no-margin--bottom u-no-padding"
         onClick={() => {
-          formik.resetForm();
+          onCancel();
         }}
         aria-label={`Cancel editing ${constraint.package} constraint`}
       >
@@ -65,8 +75,10 @@ const PackageProfileConstraintsEditFormTableActions: FC<
       appearance="base"
       hasIcon
       className="u-no-margin--bottom u-no-padding"
-      onClick={() => formik.setValues(constraint)}
-      disabled={formik.values.id !== 0}
+      onClick={() => {
+        onEdit(constraint);
+      }}
+      disabled={editingConstraintId !== 0}
       aria-label={`Edit ${constraint.package} constraint`}
     >
       <Tooltip tooltipClassName={classes.tooltip} message="Edit constraint">
