@@ -9,7 +9,7 @@
 
 - Serve the new web portal under `/portal/` instead of `/new_dashboard/`
 - Add package management at scale: manage deb packages across the selected instances from the instances page, with warnings when a selection exceeds the limits
-- Add bulk snap management actions to the instances page
+- Add bulk snap management actions to the instances page. Confirmations show the chosen channel or revision for each snap, and instances that can't manage snaps, such as Windows, are left out.
 - Redesign instance status, upgrade and tag indicators as accessible labelled pills (colour, icon and text), move the Upgrades column before Status, collapse overflowing table tags behind a counter like statuses, add a dedicated Upgrades filter (security/regular), show a neutral "N/A" pill when upgrades don't apply, and let status, upgrade and tag pills filter the table when clicked. Expanded status/tag cells now collapse when clicking anywhere outside the pop-over, including elsewhere in the same row.
 - Add an instance compliance report side panel
 - Add TSV export UI for instances and activities, gated by a feature flag
