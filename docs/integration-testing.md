@@ -9,6 +9,7 @@ See [e2e/docker-stack/README.md](../e2e/docker-stack/README.md) for a quick-star
 **Self-hosted mode** (`*.integration.spec.ts`)
 
 - Login via standalone auth with a seeded admin account
+- Organisation switching updates the sidebar after the asynchronous switch handler completes, without navigation or reload
 - Instances list rendered from a real `GET /api/v2/computers` response
 - Preferences mutation round-trip through the real API
 - Debarchive publication targets listed and CRUD round-trip against the real debarchive service
@@ -163,6 +164,41 @@ pnpm exec playwright test --config e2e/docker-stack/playwright.integration.saas.
 ```
 
 Reports are written to `playwright-integration-report/` and `playwright-integration-saas-report/`.
+
+### Organisation-switch regression
+
+`e2e/docker-stack/ui/auth/organisation-switch.integration.spec.ts` is discovered by
+the self-hosted suite's `*.integration.spec.ts` pattern. Run it alone with:
+
+```bash
+pnpm exec playwright test --config e2e/docker-stack/playwright.integration.config.ts organisation-switch --retries=0
+```
+
+The test logs in with a fresh browser session rather than sharing global setup's
+authentication. It explicitly requires `/api/v2/me` to expose both `standalone`
+and `second-account` by account name; missing fixtures fail, not skip. Display titles
+are read from that response rather than hard-coded, since preferences tests can
+rename an organisation. John Smith (`john@example.com`, password `pwd`) owns both. Login may
+default to either account, so the test switches to the other without relying on
+array ordering. No organisation preferences or user defaults are mutated.
+
+The test opens the **Add script** side panel without submitting it, selects an
+organisation, and verifies the real `POST /api/v2/switch-account` succeeds. It also
+requires the browser to refetch `GET /api/v2/me` with the selected account: preserving
+the active auth query during cache removal keeps it available for this refetch.
+This checks the regression mechanism independently of a later render repairing the
+display. `OrganisationSwitch` closes the panel only after awaiting `switchAccount`,
+including query refetching and applying auth state, so panel closure remains the
+completion signal before asserting the selected account and its response-derived
+title. The controlled select's value can be restored by React; its retrying value
+assertion alone does not prove that the async handler has completed. The test also
+rejects main-frame navigation/reload.
+
+To validate regression sensitivity, temporarily replace the filtered cache removal
+in `src/features/auth/hooks/useAuthHandle.ts`'s switch mutation callback with
+`queryClient.removeQueries()`. Run the same command with retries disabled: the
+post-switch auth refetch check must fail (the organisation display also remains on
+the old account). Restore the callback and rerun successfully. Never commit the mutation.
 
 ### Testing-profile compatibility
 
