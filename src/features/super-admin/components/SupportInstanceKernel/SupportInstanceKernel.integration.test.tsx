@@ -108,7 +108,7 @@ describe("SupportInstanceKernel (integration)", () => {
 
     renderWithProviders(
       <AppErrorBoundary>
-        <SupportInstanceKernel name={ACME} instance={instances[0]} />,
+        <SupportInstanceKernel name={ACME} instance={instances[0]} />
       </AppErrorBoundary>,
       undefined,
       "/instances/1",

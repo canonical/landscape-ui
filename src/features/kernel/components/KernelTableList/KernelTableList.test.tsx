@@ -14,21 +14,18 @@ describe("KernelTableList", () => {
     expect(container).toHaveTexts(columns);
   });
 
-  it("reverses the CVE order when the column header is used", async () => {
+  it("toggles the CVE sort direction when the column header is used", async () => {
     const user = userEvent.setup();
 
     renderWithProviders(<KernelTableList kernelData={patches} />);
 
-    const cveOrder = () =>
-      screen
-        .getAllByRole("link", { name: /^cve-/ })
-        .map((link) => link.textContent);
+    const header = screen.getByRole("columnheader", { name: /CVE/i });
 
-    expect(cveOrder()).toEqual(patches.map(({ Name }) => Name));
+    expect(header).toHaveAttribute("aria-sort", "ascending");
 
-    await user.click(screen.getByRole("columnheader", { name: /CVE/i }));
+    await user.click(screen.getByRole("button", { name: /CVE/i }));
 
-    expect(cveOrder()).toEqual(patches.map(({ Name }) => Name).toReversed());
+    expect(header).toHaveAttribute("aria-sort", "descending");
   });
 
   it("shows the patch status of each fix", () => {

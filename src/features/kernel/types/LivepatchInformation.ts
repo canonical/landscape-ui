@@ -21,7 +21,7 @@ interface InstanceInformation {
 
 export interface KernelStatus {
   Kernel: string;
-  Livepatch: Livepatch;
+  Livepatch?: Livepatch;
   Running: boolean;
   Supported: string;
   UpgradeRequiredDate: string | null;

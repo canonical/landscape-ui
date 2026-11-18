@@ -9,10 +9,11 @@ import { getStaffAccountPath } from "./helpers";
 export const useGetStaffKernel = (name: string, instanceId: number) => {
   const authFetch = useFetch();
 
-  const { data: response, isPending } = useQuery<
-    AxiosResponse<KernelManagementInfo>,
-    AxiosError<ApiError>
-  >({
+  const {
+    data: response,
+    isPending,
+    error,
+  } = useQuery<AxiosResponse<KernelManagementInfo>, AxiosError<ApiError>>({
     queryKey: ["staffKernel", name, instanceId],
     queryFn: async () =>
       authFetch.get(
@@ -24,5 +25,6 @@ export const useGetStaffKernel = (name: string, instanceId: number) => {
   return {
     staffKernel: response?.data,
     isGettingStaffKernel: isPending,
+    staffKernelError: error,
   };
 };

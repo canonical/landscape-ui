@@ -1,6 +1,7 @@
 import { API_URL } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type {
+  Fix,
   KernelManagementInfo,
   LivepatchInformation,
 } from "@/features/kernel";
@@ -9,6 +10,23 @@ import { activities } from "@/tests/mocks/activity";
 import { http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";
 import { shouldApplyEndpointStatus } from "./_helpers";
+
+const MULTI_PAGE_COUNT = 25;
+
+const livepatchFixes: Fix[] = Array.from(
+  { length: MULTI_PAGE_COUNT },
+  (_, index) => {
+    // scramble the order to test sorting
+    const id = 1000 + ((index * 7) % MULTI_PAGE_COUNT);
+
+    return {
+      Name: `cve-2024-${id}`,
+      Bug: `lp-${id}`,
+      Description: `Fix for cve-2024-${id}`,
+      Patched: id % 3 === 0,
+    };
+  },
+);
 
 export default [
   http.get<never, never, KernelManagementInfo>(
@@ -84,32 +102,7 @@ export default [
               Status: [
                 {
                   Livepatch: {
-                    Fixes: [
-                      {
-                        Bug: "Bug",
-                        Description: "Description",
-                        Name: "Name",
-                        Patched: false,
-                      },
-                      {
-                        Bug: "Bug",
-                        Description: "Description",
-                        Name: "Name",
-                        Patched: false,
-                      },
-                      {
-                        Bug: "Bug",
-                        Description: "Description",
-                        Name: "Name",
-                        Patched: false,
-                      },
-                      {
-                        Bug: "Bug",
-                        Description: "Description",
-                        Name: "Name",
-                        Patched: false,
-                      },
-                    ],
+                    Fixes: livepatchFixes,
                     CheckState: "CheckState",
                     State: "State",
                     Version: "Version",
