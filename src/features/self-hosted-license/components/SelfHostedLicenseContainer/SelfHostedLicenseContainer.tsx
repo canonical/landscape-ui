@@ -1,5 +1,6 @@
 import FormSection from "@/components/form/FormSection";
 import EmptyState from "@/components/layout/EmptyState";
+import LoadingState from "@/components/layout/LoadingState";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useGetSelfHostedLicense } from "../../api/useGetSelfHostedLicense";
@@ -38,6 +39,10 @@ const SelfHostedLicenseContainer: FC = () => {
         ]}
       />
     );
+  }
+
+  if (isGettingSelfHostedLicense) {
+    return <LoadingState />;
   }
 
   return (
