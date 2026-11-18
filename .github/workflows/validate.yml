@@ -341,8 +341,13 @@ jobs:
 
       - name: Verify changeset present
         # beta-prep/* PRs (Beta Release Prep workflow) consume changesets
-        # rather than adding one, so they are exempt.
-        if: github.event.pull_request.base.ref && !startsWith(github.event.pull_request.head.ref, 'beta-prep/')
+        # rather than adding one, so they are exempt — but only when they
+        # target a beta branch; the head branch name alone is
+        # attacker-controlled and must not skip this check for other bases.
+        if: >-
+          github.event.pull_request.base.ref &&
+          !(startsWith(github.event.pull_request.head.ref, 'beta-prep/') &&
+            startsWith(github.event.pull_request.base.ref, 'beta/'))
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: | # js

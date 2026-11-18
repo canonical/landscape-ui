@@ -36,9 +36,10 @@ const {
  *
  * The script is idempotent: re-running it on an already-prepared tree is a
  * no-op (no duplicate CHANGELOG section or debian stanza). One exception:
- * if the version's CHANGELOG section already exists AND new changesets are
- * pending (i.e. the prep PR was merged and more changes landed on the beta
- * branch), it aborts rather than silently consuming them into nothing.
+ * if the prep PR was already merged — detected via package.json already
+ * carrying the beta version (section existence alone misses an initial
+ * prep that had only empty changesets) — AND new changesets are pending,
+ * it aborts rather than silently consuming them into nothing.
  *
  * Respins (YY.MM~beta.N.R) are out of this script's scope: per the beta
  * release design, the release owner prepares one by hand in a single PR on
@@ -124,6 +125,13 @@ function main() {
   const pkgPath = path.join(projectRoot, "package.json");
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
 
+  // "Already prepared" means the prep PR merged: the version stamp lives on
+  // beta-prep/* until then, so package.json on the beta branch only matches
+  // post-merge. This must be captured before the stamp below, and it covers
+  // an initial prep that wrote no CHANGELOG section (only empty changesets
+  // were pending) — section existence alone misses that case.
+  const alreadyPrepared = pkg.version === version;
+
   // A respin (YY.MM~beta.N.R) of this beta is already stamped on the branch.
   // Re-preparing would rewind package.json and stack an older stanza above
   // the respin's, so stop: respins are prepared by hand, not by this script.
@@ -163,12 +171,12 @@ function main() {
     const existing = fs.existsSync(changelogPath)
       ? fs.readFileSync(changelogPath, "utf8")
       : "";
-    if (existing.includes(`## ${version}\n`)) {
-      // The prep PR for this beta was already merged: its CHANGELOG section
-      // is frozen. Deleting the pending changesets here would silently drop
+    if (alreadyPrepared || existing.includes(`## ${version}\n`)) {
+      // The prep PR for this beta was already merged: its release notes are
+      // frozen. Deleting the pending changesets here would silently drop
       // their release notes, so fail instead.
       console.error(
-        `CHANGELOG.md already has a ${version} section, but ${entries.length} ` +
+        `Release prep for ${version} is already merged, but ${entries.length} ` +
           `changeset(s) are pending. Release notes for this beta are frozen — ` +
           `ship these changes in a respin PR (see the beta release process) ` +
           `or the next beta, or remove the pending changesets from this branch.`,
