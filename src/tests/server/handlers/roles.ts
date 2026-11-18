@@ -44,7 +44,7 @@ export default [
     return HttpResponse.json(permissions);
   }),
 
-  http.get<never, never, Role>(API_URL_OLD, ({ request }) => {
+  http.get<never, never>(API_URL_OLD, ({ request }) => {
     if (!isAction(request, "CreateRole")) {
       return;
     }
@@ -52,17 +52,32 @@ export default [
     const { status } = getEndpointStatus("createRole");
 
     if (status === "error") {
-      throw createEndpointStatusError();
+      return createEndpointStatusError();
     }
 
     const { searchParams } = new URL(request.url);
+    const description = searchParams.get("description");
+
+    if (description === "") {
+      return createEndpointStatusError({
+        status: 400,
+        error: "MissingParameter",
+        message:
+          "The request must contain the parameter 'description' (unicode)",
+      });
+    }
+
     const roleName = searchParams.get("name") ?? "NewRole";
     const [role] = roleMocks;
     if (!role) {
       throw new Error("Expected at least one role in mock role data");
     }
 
-    return HttpResponse.json({ ...role, name: roleName });
+    return HttpResponse.json<Role>({
+      ...role,
+      name: roleName,
+      description: description ?? "",
+    });
   }),
 
   http.get(API_URL_OLD, ({ request }) => {
