@@ -26,7 +26,10 @@ The **Integration Tests** workflow (`.github/workflows/integration-tests.yml`) r
 
 1. Go to **Actions → Integration Tests** in GitHub
 2. Click **Run workflow**
-3. Set `packaging_ref` to any branch, tag, or SHA from `canonical/landscape-packaging` (leave blank to use `main`)
+3. Set `packaging_ref` to a branch, tag, or SHA from `canonical/landscape-packaging`
+   containing `docker/configs/.env.testing` and `.env.ui.testing`. Use the default
+   `main` only once it contains them; a blank input also falls back to `main`.
+   CI fails explicitly if this prerequisite is missing.
 
 ---
 
@@ -40,12 +43,27 @@ The **Integration Tests** workflow (`.github/workflows/integration-tests.yml`) r
 
 ### 1. Start the backend with sample data
 
-Start the stack with the schema bootstrapping arguments matching CI:
+Use a dedicated disposable VM/runner without an existing Landscape stack; packaging
+has fixed container names and ports, so project names alone do not isolate stacks.
+Do not wipe shared volumes. Follow the [testing-mode startup instructions](../../docs/integration-testing.md#1-start-the-backend-stack)
+to build the backend, then bootstrap with the full CI arguments:
 
 ```bash
 # In your landscape-packaging/docker/ui-dev/ directory
-LANDSCAPE_BOOTSTRAP_SCHEMA_ARGS="--with-computers --with-free-disk-space --with-free-memory-and-swap --with-load-averages --with-temperatures --with-network-traffic --with-active-processes --with-packages --with-package-activities --with-script-activities --with-users-and-groups --with-cpu-usage --with-ceph-usage --with-compute-usage --with-swift-usage --with-user-and-group-activities --with-custom-graph --with-scripts --with-account-password foo" make up
+export LANDSCAPE_DEPLOYMENT_MODE=testing
+LANDSCAPE_BOOTSTRAP_SCHEMA_ARGS="--with-computers --with-free-disk-space --with-free-memory-and-swap --with-load-averages --with-temperatures --with-network-traffic --with-active-processes --with-packages --with-package-activities --with-script-activities --with-users-and-groups --with-cpu-usage --with-ceph-usage --with-compute-usage --with-swift-usage --with-user-and-group-activities --with-custom-graph --with-scripts --with-account-password foo" make schema
+make up
 ```
+
+`make schema` enables `LANDSCAPE_RUN_SCHEMA=1` and waits for the `schema` service;
+`builder` alone does not seed data. Keep testing mode exported for backend runtime
+and diagnostics. Leave `LANDSCAPE_UI` unset so Playwright can start its own Vite.
+Frontend modes remain explicitly `e2e.selfHosted` and `e2e.saas`.
+
+The testing profile gives John Smith (`john@example.com`, `pwd`)
+access to both `standalone` (**Organization**) and `second-account` (**Second Account**).
+Shared API/browser setup explicitly selects `standalone` to preserve existing
+fixture prerequisites; see [testing-profile compatibility](../../docs/integration-testing.md#testing-profile-compatibility).
 
 Wait for both services to respond:
 
