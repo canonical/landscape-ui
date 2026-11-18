@@ -27,17 +27,20 @@ const KernelDetails: FC<KernelDetailsProps> = ({
   livepatchInfoError,
   renderHeader,
 }) => {
-  const { pageSize, currentPage } = usePageParams();
+  const { pageSize, currentPage, sort, sortBy } = usePageParams();
+  const isDescending = sortBy === "Name" && sort === "desc";
 
   const [kernelInfo] =
     livepatchInfo?.livepatch_info?.json?.output?.Status ?? [];
 
   const allLivepatchFixes = useMemo(
     () =>
-      [...(kernelInfo?.Livepatch.Fixes ?? [])].sort((a, b) =>
-        a.Name.localeCompare(b.Name, undefined, { numeric: true }),
+      [...(kernelInfo?.Livepatch?.Fixes ?? [])].sort(
+        (a, b) =>
+          a.Name.localeCompare(b.Name, undefined, { numeric: true }) *
+          (isDescending ? -1 : 1),
       ),
-    [kernelInfo],
+    [kernelInfo, isDescending],
   );
 
   const livepatchFixes = useMemo(

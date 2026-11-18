@@ -1,9 +1,14 @@
 import EmptyState from "@/components/layout/EmptyState";
 import NoData from "@/components/layout/NoData";
-import { Link } from "@canonical/react-components";
-import type { FC } from "react";
+import {
+  Link,
+  type ModularTableProps,
+  type TableHeader,
+} from "@canonical/react-components";
+import type { ComponentProps, FC } from "react";
 import { useMemo } from "react";
-import type { CellProps, Column } from "react-table";
+import type { CellProps, Column, HeaderGroup } from "react-table";
+import usePageParams from "@/hooks/usePageParams";
 import type { Fix } from "../../types";
 import { EMPTY_TABLE_MESSAGE } from "./constants";
 import { generateCveLink, handleCellProps } from "./helpers";
@@ -14,7 +19,33 @@ interface KernelTableListProps {
   readonly kernelData: Fix[];
 }
 
+// ModularTable forwards these to TableHeader, though its type omits them.
+type HeaderProps = ReturnType<
+  NonNullable<ModularTableProps<Fix>["getHeaderProps"]>
+> &
+  Pick<ComponentProps<typeof TableHeader>, "sort" | "onSort">;
+
 const KernelTableList: FC<KernelTableListProps> = ({ kernelData }) => {
+  const { sort, sortBy, setPageParams } = usePageParams();
+  const isDescending = sortBy === "Name" && sort === "desc";
+
+  // kernelData is a single page; sorting happens on the full list upstream.
+  const getHeaderProps = (column: HeaderGroup<Fix>): HeaderProps => {
+    if (column.id !== "Name") {
+      return {};
+    }
+
+    return {
+      sort: isDescending ? "descending" : "ascending",
+      onSort: () => {
+        setPageParams({
+          sortBy: "Name",
+          sort: isDescending ? "asc" : "desc",
+        });
+      },
+    };
+  };
+
   const columns = useMemo<Column<Fix>[]>(
     () => [
       {
@@ -43,7 +74,6 @@ const KernelTableList: FC<KernelTableListProps> = ({ kernelData }) => {
             return "status-failed-small";
           }
         },
-        disableSortBy: true,
       },
       {
         Header: "Description",
@@ -51,13 +81,11 @@ const KernelTableList: FC<KernelTableListProps> = ({ kernelData }) => {
         className: classes.description,
         Cell: ({ row }: CellProps<Fix>) =>
           row.original.Description || <NoData />,
-        disableSortBy: true,
       },
       {
         Header: "Bug",
         accessor: "Bug",
         Cell: ({ row }: CellProps<Fix>) => row.original.Bug || <NoData />,
-        disableSortBy: true,
       },
     ],
     [],
@@ -80,9 +108,7 @@ const KernelTableList: FC<KernelTableListProps> = ({ kernelData }) => {
             columns={columns}
             data={kernelData}
             getCellProps={handleCellProps}
-            sortable
-            initialSortColumn="Name"
-            initialSortDirection="ascending"
+            getHeaderProps={getHeaderProps}
           />
         </>
       )}

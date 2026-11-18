@@ -6,6 +6,7 @@ import {
 } from "@/tests/mocks/kernel";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { AxiosError } from "axios";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -94,6 +95,34 @@ describe("KernelDetails", () => {
     );
 
     expect(cveOrder()).toEqual(cveNames.slice(DEFAULT_PAGE_SIZE));
+  });
+
+  it("sorts descending across pages when the CVE header is used", async () => {
+    const user = userEvent.setup();
+    const cveNames = Array.from(
+      { length: DEFAULT_PAGE_SIZE + 5 },
+      (_, index) => `cve-2013-${String(1000 + index)}`,
+    );
+
+    renderWithProviders(
+      <KernelDetails
+        {...props}
+        livepatchInfo={buildLivepatchInfo(
+          cveNames.map((Name) => ({
+            Name,
+            Patched: false,
+            Bug: "",
+            Description: "",
+          })),
+        )}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: /CVE/i }));
+
+    expect(cveOrder()).toEqual(
+      cveNames.toReversed().slice(0, DEFAULT_PAGE_SIZE),
+    );
   });
 
   it("shows an empty state instead of the details when no kernel is installed", () => {

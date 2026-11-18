@@ -15,8 +15,11 @@ const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
 
   const instanceId = Number(childInstanceId ?? urlInstanceId);
 
-  const { data: kernelStatuses, isPending: isLoadingKernelStatuses } =
-    getKernelQuery({ id: instanceId });
+  const {
+    data: kernelStatuses,
+    isPending: isLoadingKernelStatuses,
+    error: kernelError,
+  } = getKernelQuery({ id: instanceId });
 
   const {
     data: getLivepatchInfoResult,
@@ -28,7 +31,9 @@ const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
     return <LoadingState />;
 
   if (!kernelStatuses) {
-    throw new Error("The kernel information could not be loaded.");
+    throw (
+      kernelError ?? new Error("The kernel information could not be loaded.")
+    );
   }
 
   return (

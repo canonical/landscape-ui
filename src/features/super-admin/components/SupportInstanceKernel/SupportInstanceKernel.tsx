@@ -9,8 +9,11 @@ const SupportInstanceKernel: FC<SupportInstanceTabProps> = ({
   name,
   instance,
 }) => {
-  const { staffKernel: kernelStatuses, isGettingStaffKernel } =
-    useGetStaffKernel(name, instance.id);
+  const {
+    staffKernel: kernelStatuses,
+    isGettingStaffKernel,
+    staffKernelError,
+  } = useGetStaffKernel(name, instance.id);
 
   const {
     staffLivepatchInfo,
@@ -22,7 +25,10 @@ const SupportInstanceKernel: FC<SupportInstanceTabProps> = ({
     return <LoadingState />;
 
   if (!kernelStatuses) {
-    throw new Error("The kernel information could not be loaded.");
+    throw (
+      staffKernelError ??
+      new Error("The kernel information could not be loaded.")
+    );
   }
 
   return (

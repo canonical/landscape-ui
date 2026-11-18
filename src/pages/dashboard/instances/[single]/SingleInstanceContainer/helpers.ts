@@ -37,7 +37,7 @@ export const getBreadcrumbs = (
 export const getKernelCount = (kernelStatus?: KernelStatus[]) => {
   const [kernelInfo] = kernelStatus ?? [];
 
-  return kernelInfo?.Livepatch.Fixes?.length;
+  return kernelInfo?.Livepatch?.Fixes?.length;
 };
 
 export const getPackageCount = (instance: Instance, requestResult: number) =>
