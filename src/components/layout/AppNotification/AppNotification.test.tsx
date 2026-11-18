@@ -4,7 +4,7 @@ import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/render";
 import type { NotificationHelper } from "@/types/Notification";
 
-const CONTACT_SUPPORT_TEAM_MESSAGE = "Something went wrong";
+const DEFAULT_ERROR_MESSAGE = "Something went wrong";
 
 const notify: NotificationHelper = {
   notification: {
@@ -37,7 +37,7 @@ describe("AppNotification", () => {
     };
     renderWithProviders(<AppNotification notify={emptyNotify} />);
 
-    expect(screen.getByText(CONTACT_SUPPORT_TEAM_MESSAGE)).toBeInTheDocument();
+    expect(screen.getByText(DEFAULT_ERROR_MESSAGE)).toBeInTheDocument();
   });
 
   it("renders success fallback when message is empty and type is not negative", () => {
@@ -52,8 +52,6 @@ describe("AppNotification", () => {
     renderWithProviders(<AppNotification notify={emptyPositiveNotify} />);
 
     expect(screen.getByText("Success")).toBeInTheDocument();
-    expect(
-      screen.queryByText(CONTACT_SUPPORT_TEAM_MESSAGE),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(DEFAULT_ERROR_MESSAGE)).not.toBeInTheDocument();
   });
 });
