@@ -5,7 +5,7 @@ import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
 import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import SupportInstanceKernel from "./SupportInstanceKernel";
 import AppErrorBoundary from "@/components/layout/AppErrorBoundary/AppErrorBoundary";
 
@@ -115,8 +115,9 @@ describe("SupportInstanceKernel (integration)", () => {
       "/instances/:instanceId",
     );
 
+    expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
     expect(
-      await screen.findByText("The kernel information could not be loaded."),
+      screen.getByText("Request failed with status code 500"),
     ).toBeInTheDocument();
   });
 });

@@ -31,9 +31,7 @@ const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
     return <LoadingState />;
 
   if (!kernelStatuses) {
-    throw (
-      kernelError ?? new Error("The kernel information could not be loaded.")
-    );
+    throw kernelError;
   }
 
   return (

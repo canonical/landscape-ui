@@ -60,8 +60,9 @@ describe("KernelPanel", () => {
       "/instances/:instanceId",
     );
 
+    expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
     expect(
-      await screen.findByText("The kernel information could not be loaded."),
+      screen.getByText("Request failed with status code 500"),
     ).toBeInTheDocument();
   });
 });
