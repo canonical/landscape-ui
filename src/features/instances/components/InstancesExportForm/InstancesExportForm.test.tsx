@@ -9,7 +9,14 @@ const openAttributeGroup = async (
   user: ReturnType<typeof userEvent.setup>,
   name: RegExp,
 ) => {
-  await user.click(screen.getByRole("tab", { name }));
+  const heading = screen.getByRole("heading", { name });
+  const summary = heading.closest("summary");
+
+  if (!summary) {
+    throw new Error(`Missing accordion summary for ${name.toString()}`);
+  }
+
+  await user.click(summary);
 };
 
 describe("InstancesExportForm", () => {
@@ -35,10 +42,10 @@ describe("InstancesExportForm", () => {
       screen.getByRole("searchbox", { name: "Search attributes" }),
     ).toBeVisible();
     expect(
-      screen.getByRole("tab", { name: /primary identity/i }),
+      screen.getByRole("heading", { name: /primary identity/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("tab", { name: /system ids & agent logs/i }),
+      screen.getByRole("heading", { name: /system ids & agent logs/i }),
     ).toBeInTheDocument();
     await openAttributeGroup(user, /business logic/i);
     expect(
@@ -97,7 +104,7 @@ describe("InstancesExportForm", () => {
       screen.getByText("No attributes match your search."),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("tab", { name: /primary identity/i }),
+      screen.queryByRole("heading", { name: /primary identity/i }),
     ).not.toBeInTheDocument();
   });
 
