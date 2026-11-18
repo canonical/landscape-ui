@@ -30,6 +30,10 @@ on:
 
 permissions:
   contents: read
+  # The agent must list open pull requests to enforce "never open a second
+  # changelog PR". Without this the token is Contents:read only and every
+  # list_pull_requests call returns 403 "Resource not accessible by integration".
+  pull-requests: read
 
 # The agent and threat-detection jobs need Docker/AWF, so they target the noble
 # amd64 runners; the framework and safe_outputs jobs use the generic
@@ -205,7 +209,7 @@ Before making any edit, create your working branch from the default branch, not 
 
 First check for an existing open changelog pull request in this repository (label `changelog`). Exactly one should ever be open at a time.
 
-- If one is already open, do NOT open a second and do NOT push to its branch — the safe-output handlers can only CREATE a pull request in this repository, never update an existing one. Check whether its changesets already cover the commits you selected (the `(backfills #<N>)` markers) and whether its `debian/changelog` block already covers the `CHANGELOG.md` top section. If both are current, make no changes and note that the existing PR is already up to date. If anything is missing, post ONE comment on that PR (via `add_comment`) listing the missing backfill entries and/or the missing Debian changelog block, so a human can refresh it; make no file changes this run.
+- If one is already open, do NOT open a second and do NOT push to its branch — the safe-output handlers can only CREATE a pull request in this repository, never update an existing one. Check whether its changesets already cover the commits you selected (the `(backfills #<N>)` markers) and whether its `debian/changelog` block already covers the `CHANGELOG.md` top section. If both are current, make no changes and note that the existing PR is already up to date. If anything is missing, post ONE comment on that PR with `add_comment` listing the missing backfill entries and/or the missing Debian changelog block and stop; there is no handler that pushes to an existing own-repo pull request branch, so do not claim you updated the PR and do not open a second PR. Make no file changes this run.
 - Only if no changelog PR is open, open a single pull request containing all of the new changeset files and, when one was drafted, the new `debian/changelog` block. Use the title `add missing changesets and changelog block` (the `build: ` prefix is added automatically) and a body that lists the backfilled entries in the sorted order from above, notes the merged PR each entry covers, names the Debian changelog version drafted and the `CHANGELOG.md` section it was sourced from (or states that the Debian stanza was skipped because the `CHANGELOG.md` top heading carries no shippable `YY.MM-beta.N` version), explains that the backfilled PRs were merged without a changeset so the Changesets automation had nothing to roll up, and includes the `Changesets to review` heading when any entries were flagged.
 
 Before submitting the pull request, run a final status audit: `git status --porcelain -- .changeset/ debian/changelog`. Every `.changeset/*.md` line must be `??` (untracked, i.e. a NEW file). If any line shows `M` or `D`, you edited or deleted an existing changeset — discard that change (`git checkout -- <path>` or remove the edit) and re-audit until only new files remain. The pull-request handler filters by path only, not diff status, so this check is the mechanical guard for the "new files only" rule; for `debian/changelog`, verify your diff only PREPENDS one block (`git diff debian/changelog` must show only added lines above the previous top block).
