@@ -174,9 +174,12 @@ safe-outputs:
     # path: that path produces commits GitHub does not mark verified for this
     # bot token, and pushSignedCommits then refuses to publish the branch.
     signed-commits: false
-    # The bot adds NEW changeset files and prepends ONE new block to
-    # debian/changelog; docs edits are delivered by the push handler, so the
-    # create handler rejects any other path outright.
+    # The bot adds NEW changeset files and, only when a shippable YY.MM-beta.N
+    # version is derivable from CHANGELOG.md, prepends ONE twin of the
+    # beta-prep stanza to debian/changelog (see "Draft the Debian changelog
+    # block": no calculated main label, no per-bullet enumeration); docs edits
+    # are delivered by the push handler, so the create handler rejects any
+    # other path outright.
     allowed-files: [".changeset/*.md", "debian/changelog"]
     # Stripped from any delivered patch: CHANGELOG.md is the bot's READ-ONLY
     # source of truth (written by the Changesets "Version Packages"
@@ -233,7 +236,7 @@ safe-outputs:
 You maintain three changelog artifacts for Landscape UI, all delivered as ONE pull request against this repository (plus a push to the shared docs PR):
 
 1. **Missing changesets**: author `.changeset/*.md` entries for user-facing pull requests that were merged without one (the gap documented in `RELEASES.md` section 7). The Changesets release automation (`changesets/action`) consumes them; you never write `CHANGELOG.md` yourself.
-2. **Debian changelog**: draft the next release block at the top of `debian/changelog`, using this repo's `CHANGELOG.md` as the source of truth for what changed (the way landscape-server's bot maintains `standalone/debian/changelog`).
+2. **Debian changelog**: when `CHANGELOG.md`'s top section carries a shippable `YY.MM-beta.N` version, prepend the matching `landscape-dashboard (YY.MM~beta.N-0landscape0)` stanza — a byte-compatible twin of the block `scripts/beta-version-update.cjs` writes (that script owns the format and is the beta prep flow's writer). Never stamp a computed `main` label and never re-spell a release the prep flow already stamped.
 3. **Docs release notes**: write the Web portal island of the shared release-notes PR in `canonical/landscape-documentation`, also sourced from `CHANGELOG.md`.
 
 ## Hard prohibitions
@@ -322,25 +325,25 @@ Exclude flagged entries from the docs release-notes island. If a pull request is
 
 ## Draft the Debian changelog block
 
-`CHANGELOG.md` is the source of truth for what changed. `debian/changelog` is the deb-compatible artifact consumed by the PPA builds (`scripts/debian-build.sh`), and you maintain it the way landscape-server's bot maintains `standalone/debian/changelog`: prepend one new release block per run.
+`CHANGELOG.md` is the source of truth for what changed. `debian/changelog` is the deb-compatible artifact consumed by the PPA builds (`scripts/debian-build.sh`), and its format is OWNED by the beta release prep flow: `scripts/beta-version-update.cjs`, run by `.github/workflows/beta-release-prep.yml` on a `beta/YY.MM-beta.N` branch, rolls the pending changesets into a `## YY.MM-beta.N` `CHANGELOG.md` section and prepends the matching stanza `landscape-dashboard (YY.MM~beta.N-0landscape0) <dist>; urgency=medium`. Your block must be a byte-compatible twin of that stanza — same package name, same tilde version form, same revision, same distribution inherited from the current top block — never a competing spelling of the same release. You only ever fill a gap that flow has not already filled.
 
-1. Read the TOP section of `CHANGELOG.md` (the latest release — everything from the first `## ` heading up to the second `## ` heading). Collect every bullet under its `### Major Changes` / `### Minor Changes` / `### Patch Changes` subsections. These are the user-facing changes; do NOT re-derive them from commit subjects. If the top section has no bullets, skip the Debian changelog work for this run.
-2. Read the current top block of `debian/changelog` to find the most recent version, which looks like `landscape-dashboard (1.23.0-0landscape0) jammy; urgency=medium`. Also note the version heading of the `CHANGELOG.md` top section you just read (e.g. `## 26.10.0.1081-beta`).
-3. Idempotency: if the top `debian/changelog` block's version already corresponds to the `CHANGELOG.md` top-section version, the block has already been drafted — make no change to `debian/changelog` this run.
-4. Otherwise compose the new version. This repo follows CalVer `YY.MM.Point.Build` aligned with the Ubuntu release cadence (RELEASES.md section 0/1): `main`'s version label is `<cycle>.0.<count>-beta` and is computed by `scripts/calculate-version.cjs`. Run `node scripts/calculate-version.cjs` (read-only — it prints the version) and use its output for the new block's version. Use the package name from the existing top block (`landscape-dashboard`), `-0landscape0` for the Debian revision, and the same distribution and urgency as the existing top block (e.g. `jammy; urgency=medium`).
-5. Prepend the new block to the top of `debian/changelog`, matching the exact existing format (see https://manpages.debian.org/testing/dpkg-dev/deb-changelog.5.en.html):
+1. Read the TOP section of `CHANGELOG.md` (the latest release — everything from the first `## ` heading up to the second `## ` heading). Those bullets are the user-facing changes; do NOT re-derive them from commit subjects. They go in the pull request body and the docs island, not in the Debian stanza.
+2. Derive the version from the `CHANGELOG.md` top heading, in the exact shape `parseBetaVersion` in `scripts/beta-version-update.cjs` produces: a heading `## YY.MM-beta.N` (cycle `YY.04` or `YY.10`) maps to the Debian upstream version `YY.MM~beta.N` — TILDE, so the beta sorts before the final `YY.MM` release — and the block version is `YY.MM~beta.N-0landscape0`. NEVER run `node scripts/calculate-version.cjs` to fill this in: on `main` it prints the `<cycle>.0.<count>-beta` label, which `RELEASES.md` §1 defines as never shipped, so stamping it would record a non-installable development release and make this bot a second source of package release history.
+3. If the top heading is not in that `YY.MM-beta.N` form — for example an older `YY.MM.Point.Build-beta` section, or a lagging section that predates the beta prep flow — do NOT invent or approximate a version. Skip the Debian changelog work for the run, deliver the changesets only, and say so in the pull request body (or the run summary when no pull request is opened): the stanza is skipped because no shippable beta version is derivable from `CHANGELOG.md`. If the top section has no bullets, skip the Debian changelog work for this run as well.
+4. Idempotency: read the current top block of `debian/changelog` to find the most recent version (e.g. `landscape-dashboard (26.10~beta.4-0landscape0) jammy; urgency=medium`). If its upstream version already equals the derived `YY.MM~beta.N`, the beta prep flow — or an earlier run — has stamped this release already: make no change to `debian/changelog` this run.
+5. Otherwise prepend ONE new block, copying the package name, distribution, and urgency from the current top block (one changelog serves every build series — jammy, noble, resolute — so the distribution is inherited, never hardcoded), matching the format (see https://manpages.debian.org/testing/dpkg-dev/deb-changelog.5.en.html):
 
    ```
-   landscape-dashboard (<version>-0landscape0) jammy; urgency=medium
+   landscape-dashboard (YY.MM~beta.N-0landscape0) jammy; urgency=medium
 
-     * <CHANGELOG.md bullet>
-     * <CHANGELOG.md bullet>
+     * Release YY.MM-beta.N for jammy
 
-    -- Landscape Bot <landscape-server-bot@canonical.com>  <date>
+    -- Landscape Team <landscape-team@canonical.com>  <date>
    ```
 
-   - Each bullet is indented with two spaces and begins with `* `. Use the `CHANGELOG.md` bullets verbatim except for stripping any leading `- ` and any trailing PR/issue reference such as ` (#1234)`.
-   - The signature line is indented with one space and begins with `-- `.
+   - The body is the single `* Release <version> for <dist>` line `beta-version-update.cjs` writes, with `<version>` in the dash form (`YY.MM-beta.N`). Do NOT enumerate `CHANGELOG.md` bullets here; that prose belongs to the pull request body and the docs island, and the stanza must stay identical to what the beta prep flow produces.
+   - The Debian revision is always `-0landscape0`.
+   - The bullet is indented with two spaces and begins with `* `. The signature line is indented with one space and begins with `-- `, crediting `Landscape Team <landscape-team@canonical.com>` as the beta prep flow does.
    - Use `date -R` for `<date>` (RFC 2822, e.g. `Sat, 18 Jul 2026 12:00:00 +0000`), with two spaces between the email and the date.
    - Leave every existing block below the new one byte-for-byte untouched.
 
@@ -351,7 +354,7 @@ Before making any edit, create your working branch from the default branch, not 
 First check for an existing open changelog pull request in this repository (label `changelog`). Exactly one should ever be open at a time.
 
 - If one is already open, do NOT open a second and do NOT push to its branch — the safe-output handlers can only CREATE a pull request in this repository, never update an existing one. Check whether its changesets already cover the commits you selected (the `(backfills #<N>)` markers) and whether its `debian/changelog` block already covers the `CHANGELOG.md` top section. If both are current, make no changes and note that the existing PR is already up to date. If anything is missing, post ONE comment on that PR (via `add_comment`) listing the missing backfill entries and/or the missing Debian changelog block, so a human can refresh it; make no file changes this run.
-- Only if no changelog PR is open, open a single pull request containing all of the new changeset files and the new `debian/changelog` block. Use the title `add missing changesets and changelog block` (the `build: ` prefix is added automatically) and a body that lists the backfilled entries in the sorted order from above, notes the merged PR each entry covers, names the Debian changelog version drafted and the `CHANGELOG.md` section it was sourced from, explains that the backfilled PRs were merged without a changeset so the Changesets automation had nothing to roll up, and includes the `Changesets to review` heading when any entries were flagged.
+- Only if no changelog PR is open, open a single pull request containing all of the new changeset files and, when one was drafted, the new `debian/changelog` block. Use the title `add missing changesets and changelog block` (the `build: ` prefix is added automatically) and a body that lists the backfilled entries in the sorted order from above, notes the merged PR each entry covers, names the Debian changelog version drafted and the `CHANGELOG.md` section it was sourced from (or states that the Debian stanza was skipped because the `CHANGELOG.md` top heading carries no shippable `YY.MM-beta.N` version), explains that the backfilled PRs were merged without a changeset so the Changesets automation had nothing to roll up, and includes the `Changesets to review` heading when any entries were flagged.
 
 Before submitting the pull request, run a final status audit: `git status --porcelain -- .changeset/ debian/changelog`. Every `.changeset/*.md` line must be `??` (untracked, i.e. a NEW file). If any line shows `M` or `D`, you edited or deleted an existing changeset — discard that change (`git checkout -- <path>` or remove the edit) and re-audit until only new files remain. The pull-request handler filters by path only, not diff status, so this check is the mechanical guard for the "new files only" rule; for `debian/changelog`, verify your diff only PREPENDS one block (`git diff debian/changelog` must show only added lines above the previous top block).
 
@@ -364,6 +367,8 @@ You also maintain the user-facing release notes. All Landscape changelog bots sh
 The docs work happens in the separate `./landscape-documentation` checkout. The hard prohibitions above apply to this repository (landscape-ui) only; editing the release-notes page in the docs checkout is expected and allowed.
 
 Your island content derives from `CHANGELOG.md`, the same source of truth as the Debian changelog block — NOT from the commit scan. Read the TOP section of this repo's `CHANGELOG.md` (the latest release: everything from the first `## ` heading up to the second) and rewrite its `### Major Changes` / `### Minor Changes` / `### Patch Changes` bullets into docs-appropriate bullets, excluding any entries flagged in `Changesets to review`. Major Changes map to `#### Features`; Minor and Patch Changes map to `#### Features` and `#### Fixes` respectively by their nature. Because it comes from `CHANGELOG.md`, a PR that brought its own changeset is already included — you do not need the commit scan to find it.
+
+Cycle guard: `main`'s `CHANGELOG.md` lags (its `Version Packages` PR is closed, not merged — RELEASES.md §1), so the top section can still belong to the PREVIOUS cycle. Compare the top heading's `YY.MM` (e.g. `## 26.10.0.1081-beta` -> `26.10`) with the target page's release from step 1. If they differ, do NOT rewrite the island from that section: publishing another cycle's entries onto this page would be worse than a stale island. Leave your island exactly as it is, make no docs change this run, and state the mismatch (top section version vs target page) in the run summary and, if you open a pull request, in its body.
 
 1. Determine the in-development Landscape release `YY.MM`: Landscape releases are `YY.04` and `YY.10`. From today's date, the in-development release is the next boundary strictly in the future (before April -> `YY.04`; before October -> `YY.10`; otherwise `(YY+1).04`). Work out the current boundary from today's date and name the target page accordingly — for example, a run in November 2026 targets `docs/reference/release-notes/27.04-release-notes.md`.
 2. Find the shared docs PR: use the GitHub tools to list open PRs in `canonical/landscape-documentation` with labels `changelog` and `automation` (title starts with `build: `). If one exists, this is THE docs PR — use it regardless of which `YY.MM` page it targets.
