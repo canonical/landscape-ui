@@ -1,5 +1,5 @@
-# gh-aw-metadata: {"schema_version":"v4","frontmatter_hash":"e50df609d88fa51d41f6c8d8da0fa9612e318e10d066963c33c6729a03c69495","body_hash":"adfc4bf50dfa4420055b9e97287e11967c04f241d912ee910416da7a04f457a2","compiler_version":"v1.3.0","strict":true,"agent_id":"pi","agent_model":"openrouter/deepseek/deepseek-v4.1-flash-1017","detection_agent_id":"copilot","detection_agent_model":"claude-haiku-5.5","engine_versions":{"copilot":"1.0.103","pi":"1.5.0"},"agent_image_runner":"[\"self-hosted\",\"noble\",\"amd64\"]"}
-# gh-aw-manifest: {"version":1,"secrets":["CODEX_API_KEY","COPILOT_GITHUB_TOKEN","GH_AW_CI_TRIGGER_TOKEN","GH_AW_DEFAULT_OTLP_ENDPOINT","GH_AW_DEFAULT_OTLP_HEADERS","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN","LANDSCAPE_CHANGELOG_TOKEN","OPENAI_API_KEY","OPENROUTER_API_KEY"],"actions":[{"repo":"actions/checkout","sha":"3d3c42e5aac5ba805825da76410c181273ba90b1","version":"v7.0.1"},{"repo":"actions/download-artifact","sha":"9000827ccba6bdab643e8b6fd33ac0654aef8333","version":"v8.0.2"},{"repo":"actions/github-script","sha":"3a2844b7e9c422d3c10d287c895573f7108da1b3","version":"v9.0.0"},{"repo":"actions/setup-node","sha":"49933ea5288caeca8642d1e84afbd3f7d6820020","version":"v4"},{"repo":"actions/setup-node","sha":"949feb2413d6458794dcd2491c4babbbce0c15c1","version":"v7.1.0"},{"repo":"actions/upload-artifact","sha":"cf430e030ddbb5b0abf93d22962f4752f3646cd9","version":"v7.0.2"},{"repo":"github/gh-aw-actions/setup","sha":"8126d6cb07dea9221848de275af8a41474d839ca","version":"v1.3.0"}],"containers":[{"image":"ghcr.io/github/gh-aw-firewall/agent:0.29.14","digest":"sha256:7f649a02f2cc235325ab512f546854e0fad32b7abdc6c24c5475ddc0639e0aaa","pinned_image":"ghcr.io/github/gh-aw-firewall/agent:0.29.14@sha256:7f649a02f2cc235325ab512f546854e0fad32b7abdc6c24c5475ddc0639e0aaa"},{"image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.29.14","digest":"sha256:136785634c9207d7328c701d31d53941542ef307840bda6b348274c8842557c0","pinned_image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.29.14@sha256:136785634c9207d7328c701d31d53941542ef307840bda6b348274c8842557c0"},{"image":"ghcr.io/github/gh-aw-firewall/squid:0.29.14","digest":"sha256:878b9c1aaeca076004bf2157dd2be28586b68b2b3d69c3ff8fd2b5add2a3126c","pinned_image":"ghcr.io/github/gh-aw-firewall/squid:0.29.14@sha256:878b9c1aaeca076004bf2157dd2be28586b68b2b3d69c3ff8fd2b5add2a3126c"},{"image":"ghcr.io/github/gh-aw-mcpg:v0.5.10","digest":"sha256:629ddcd68a48ab02e7db8af527d2756c6db563b00c1d31d8aa8fcbac96f01c59","pinned_image":"ghcr.io/github/gh-aw-mcpg:v0.5.10@sha256:629ddcd68a48ab02e7db8af527d2756c6db563b00c1d31d8aa8fcbac96f01c59"},{"image":"ghcr.io/github/gh-aw-node","digest":"sha256:8735428c2d4e602f90781ba0c571c400e8ff93c7ee1508a75d71f87e34e415cc","pinned_image":"ghcr.io/github/gh-aw-node@sha256:8735428c2d4e602f90781ba0c571c400e8ff93c7ee1508a75d71f87e34e415cc"},{"image":"ghcr.io/github/github-mcp-server:v2.1.0","digest":"sha256:f6056fc10bfffcc8c81a6417a2e9ca12808647e8dd6049642a4feaadee0e0f8a","pinned_image":"ghcr.io/github/github-mcp-server:v2.1.0@sha256:f6056fc10bfffcc8c81a6417a2e9ca12808647e8dd6049642a4feaadee0e0f8a"}],"mcp_servers":[{"name":"github","tools":["get_commit","get_file_contents","get_latest_release","get_me","get_pull_request","get_pull_request_comments","get_pull_request_diff","get_pull_request_files","get_pull_request_review_comments","get_pull_request_reviews","get_pull_request_status","get_release_by_tag","get_tag","issue_read","list_branches","list_commits","list_issue_types","list_issues","list_pull_requests","list_releases","list_starred_repositories","list_tags","pull_request_read","search_code","search_issues","search_pull_requests","search_repositories"]},{"name":"safeoutputs","tools":["add_comment","create_pull_request","noop","push_to_pull_request_branch","report_incomplete","report_missing_data","report_missing_tool"]}],"threat_detection":{"mode":"enabled"},"admission":false,"agent_metadata":{}}
+# gh-aw-metadata: {"schema_version":"v4","frontmatter_hash":"412f7e6ab9d14274c61c797c085c3e73611124a64ff4632aac8050eff55237a2","body_hash":"adfc4bf50dfa4420055b9e97287e11967c04f241d912ee910416da7a04f457a2","compiler_version":"v1.3.0","strict":true,"agent_id":"pi","agent_model":"openrouter/deepseek/deepseek-v4.1-flash-1017","detection_agent_id":"copilot","detection_agent_model":"claude-haiku-5.5","engine_versions":{"copilot":"1.0.103","pi":"1.5.0"},"agent_image_runner":"[\"self-hosted\",\"noble\",\"amd64\"]"}
+# gh-aw-manifest: {"version":1,"secrets":["CODEX_API_KEY","COPILOT_GITHUB_TOKEN","GH_AW_CI_TRIGGER_TOKEN","GH_AW_DEFAULT_OTLP_ENDPOINT","GH_AW_DEFAULT_OTLP_HEADERS","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN","LANDSCAPE_CHANGELOG_TOKEN","OPENAI_API_KEY","OPENROUTER_API_KEY"],"actions":[{"repo":"actions/checkout","sha":"3d3c42e5aac5ba805825da76410c181273ba90b1","version":"v7.0.1"},{"repo":"actions/download-artifact","sha":"9000827ccba6bdab643e8b6fd33ac0654aef8333","version":"v8.0.2"},{"repo":"actions/github-script","sha":"3a2844b7e9c422d3c10d287c895573f7108da1b3","version":"v9.0.0"},{"repo":"actions/setup-node","sha":"949feb2413d6458794dcd2491c4babbbce0c15c1","version":"v7.1.0"},{"repo":"actions/upload-artifact","sha":"cf430e030ddbb5b0abf93d22962f4752f3646cd9","version":"v7.0.2"},{"repo":"github/gh-aw-actions/setup","sha":"8126d6cb07dea9221848de275af8a41474d839ca","version":"v1.3.0"}],"containers":[{"image":"ghcr.io/github/gh-aw-firewall/agent:0.29.14","digest":"sha256:7f649a02f2cc235325ab512f546854e0fad32b7abdc6c24c5475ddc0639e0aaa","pinned_image":"ghcr.io/github/gh-aw-firewall/agent:0.29.14@sha256:7f649a02f2cc235325ab512f546854e0fad32b7abdc6c24c5475ddc0639e0aaa"},{"image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.29.14","digest":"sha256:136785634c9207d7328c701d31d53941542ef307840bda6b348274c8842557c0","pinned_image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.29.14@sha256:136785634c9207d7328c701d31d53941542ef307840bda6b348274c8842557c0"},{"image":"ghcr.io/github/gh-aw-firewall/squid:0.29.14","digest":"sha256:878b9c1aaeca076004bf2157dd2be28586b68b2b3d69c3ff8fd2b5add2a3126c","pinned_image":"ghcr.io/github/gh-aw-firewall/squid:0.29.14@sha256:878b9c1aaeca076004bf2157dd2be28586b68b2b3d69c3ff8fd2b5add2a3126c"},{"image":"ghcr.io/github/gh-aw-mcpg:v0.5.10","digest":"sha256:629ddcd68a48ab02e7db8af527d2756c6db563b00c1d31d8aa8fcbac96f01c59","pinned_image":"ghcr.io/github/gh-aw-mcpg:v0.5.10@sha256:629ddcd68a48ab02e7db8af527d2756c6db563b00c1d31d8aa8fcbac96f01c59"},{"image":"ghcr.io/github/gh-aw-node","digest":"sha256:8735428c2d4e602f90781ba0c571c400e8ff93c7ee1508a75d71f87e34e415cc","pinned_image":"ghcr.io/github/gh-aw-node@sha256:8735428c2d4e602f90781ba0c571c400e8ff93c7ee1508a75d71f87e34e415cc"},{"image":"ghcr.io/github/github-mcp-server:v2.1.0","digest":"sha256:f6056fc10bfffcc8c81a6417a2e9ca12808647e8dd6049642a4feaadee0e0f8a","pinned_image":"ghcr.io/github/github-mcp-server:v2.1.0@sha256:f6056fc10bfffcc8c81a6417a2e9ca12808647e8dd6049642a4feaadee0e0f8a"}],"mcp_servers":[{"name":"github","tools":["get_commit","get_file_contents","get_latest_release","get_me","get_pull_request","get_pull_request_comments","get_pull_request_diff","get_pull_request_files","get_pull_request_review_comments","get_pull_request_reviews","get_pull_request_status","get_release_by_tag","get_tag","issue_read","list_branches","list_commits","list_issue_types","list_issues","list_pull_requests","list_releases","list_starred_repositories","list_tags","pull_request_read","search_code","search_issues","search_pull_requests","search_repositories"]},{"name":"safeoutputs","tools":["add_comment","create_pull_request","noop","push_to_pull_request_branch","report_incomplete","report_missing_data","report_missing_tool"]}],"threat_detection":{"mode":"enabled"},"admission":false,"agent_metadata":{}}
 # This file was automatically generated by gh-aw (v1.3.0). DO NOT EDIT. To debug this workflow, load the skill at https://github.com/github/gh-aw/blob/main/debug.md
 #
 #    ___                   _   _
@@ -24,6 +24,10 @@
 # For more information: https://github.github.com/gh-aw/introduction/overview/
 #
 #
+# Resolved workflow manifest:
+#   Imports:
+#     - canonical/landscape-internal-docs/.github/workflows/shared/changelog-bot-infra.md@c11434ac07328e440a933b1c5b763f6d850b594a
+#
 # Secrets used:
 #   - CODEX_API_KEY
 #   - COPILOT_GITHUB_TOKEN
@@ -41,7 +45,6 @@
 #   - actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 #   - actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
 #   - actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-#   - actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
 #   - actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
 #   - actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
 #   - github/gh-aw-actions/setup@8126d6cb07dea9221848de275af8a41474d839ca # v1.3.0
@@ -133,7 +136,7 @@ jobs:
           GH_AW_INFO_ENGINE_ID: "pi"
           GH_AW_SETUP_AW_CONTEXT: ${{ inputs.aw_context }}
       - name: Setup modern Node for gh-aw runtime
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "24"
       - name: Mask OTLP telemetry headers
@@ -310,7 +313,7 @@ jobs:
           GH_AW_OTLP_LOGS_ENABLED: ""
           GH_AW_OTLP_LOGS_MAX_BYTES: ""
           GH_AW_PROMPT: ${{ runner.temp }}/gh-aw/aw-prompts/prompt.txt
-          GH_AW_PROMPT_CONFIG: "{\"items\":[{\"content_env\":\"GH_AW_PROMPT_CONTENT_0000\"},{\"file\":\"xpia.md\"},{\"file\":\"temp_folder_prompt.md\"},{\"file\":\"markdown.md\"},{\"file\":\"safe_outputs_mcp_transport_prompt.md\"},{\"file\":\"safe_outputs_prompt.md\"},{\"content_env\":\"GH_AW_PROMPT_CONTENT_0001\"},{\"file\":\"safe_outputs_create_pull_request.md\"},{\"file\":\"safe_outputs_push_to_pr_branch.md\"},{\"content_env\":\"GH_AW_PROMPT_CONTENT_0002\"},{\"file\":\"mcp_cli_tools_with_safeoutputs_prompt.md\"},{\"content_env\":\"GH_AW_PROMPT_CONTENT_0003\"},{\"file\":\"github_mcp_tools_with_safeoutputs_prompt.md\"},{\"content_env\":\"GH_AW_PROMPT_CONTENT_0004\"},{\"author_file\":\".github/workflows/changelog-bot.md\"}],\"system_item_count\":14}"
+          GH_AW_PROMPT_CONFIG: "{\"items\":[{\"content_env\":\"GH_AW_PROMPT_CONTENT_0000\"},{\"file\":\"xpia.md\"},{\"file\":\"temp_folder_prompt.md\"},{\"file\":\"markdown.md\"},{\"file\":\"safe_outputs_mcp_transport_prompt.md\"},{\"file\":\"safe_outputs_prompt.md\"},{\"content_env\":\"GH_AW_PROMPT_CONTENT_0001\"},{\"file\":\"safe_outputs_create_pull_request.md\"},{\"file\":\"safe_outputs_push_to_pr_branch.md\"},{\"content_env\":\"GH_AW_PROMPT_CONTENT_0002\"},{\"file\":\"mcp_cli_tools_with_safeoutputs_prompt.md\"},{\"content_env\":\"GH_AW_PROMPT_CONTENT_0003\"},{\"file\":\"github_mcp_tools_with_safeoutputs_prompt.md\"},{\"content_env\":\"GH_AW_PROMPT_CONTENT_0004\"},{\"content_env\":\"GH_AW_PROMPT_CONTENT_0005\"},{\"author_file\":\".github/workflows/changelog-bot.md\"}],\"system_item_count\":14}"
           GH_AW_PROMPT_CONTENT_0000: |
             <system>
           GH_AW_PROMPT_CONTENT_0001: |
@@ -362,7 +365,9 @@ jobs:
 
           GH_AW_PROMPT_CONTENT_0004: |
             </system>
-          GH_AW_PROMPT_ENV: "[\"GH_AW_ACTIONS_DIR\",\"GH_AW_EXPR_76DF9333\",\"GH_AW_EXPR_77C1A4D2\",\"GH_AW_EXPR_7C248226\",\"GH_AW_EXPR_C19C384F\",\"GH_AW_GITHUB_ACTOR\",\"GH_AW_GITHUB_REPOSITORY\",\"GH_AW_GITHUB_RUN_ID\",\"GH_AW_GITHUB_WORKSPACE\",\"GH_AW_PROMPT\",\"GH_AW_PROMPT_CONFIG\",\"GH_AW_PROMPT_CONTENT_0000\",\"GH_AW_PROMPT_CONTENT_0001\",\"GH_AW_PROMPT_CONTENT_0002\",\"GH_AW_PROMPT_CONTENT_0003\",\"GH_AW_PROMPT_CONTENT_0004\",\"GH_AW_SAFE_OUTPUTS\"]"
+          GH_AW_PROMPT_CONTENT_0005: |
+            {{#runtime-import .github/aw/imports/canonical/landscape-internal-docs/c11434ac07328e440a933b1c5b763f6d850b594a/.github_workflows_shared_changelog-bot-infra.md}}
+          GH_AW_PROMPT_ENV: "[\"GH_AW_ACTIONS_DIR\",\"GH_AW_EXPR_76DF9333\",\"GH_AW_EXPR_77C1A4D2\",\"GH_AW_EXPR_7C248226\",\"GH_AW_EXPR_C19C384F\",\"GH_AW_GITHUB_ACTOR\",\"GH_AW_GITHUB_REPOSITORY\",\"GH_AW_GITHUB_RUN_ID\",\"GH_AW_GITHUB_WORKSPACE\",\"GH_AW_PROMPT\",\"GH_AW_PROMPT_CONFIG\",\"GH_AW_PROMPT_CONTENT_0000\",\"GH_AW_PROMPT_CONTENT_0001\",\"GH_AW_PROMPT_CONTENT_0002\",\"GH_AW_PROMPT_CONTENT_0003\",\"GH_AW_PROMPT_CONTENT_0004\",\"GH_AW_PROMPT_CONTENT_0005\",\"GH_AW_SAFE_OUTPUTS\"]"
           GH_AW_SAFE_OUTPUTS: ${{ runner.temp }}/gh-aw/safeoutputs/outputs.jsonl
           OTEL_EXPORTER_OTLP_ENDPOINT: ""
           OTEL_EXPORTER_OTLP_HEADERS: ""
@@ -625,7 +630,16 @@ jobs:
       - env:
           GH_TOKEN: ${{ github.token }}
         name: Install modern gh CLI
-        run: "GH_VERSION=\"2.83.1\"\nGH_SHA256=\"1c5252d4ce3db07b51c01ff0b909583da6364ff3fdc06d0c2e75e62dc0380a34\"\ntmp=\"$(mktemp -d)\"\ncurl -fsSL \"https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz\" -o \"$tmp/gh.tgz\"\necho \"${GH_SHA256}  $tmp/gh.tgz\" | sha256sum -c -\ntar -xzf \"$tmp/gh.tgz\" -C \"$tmp\"\n# /usr/local/bin is root-owned on the self-hosted fleet and the\n# runner user is non-root; install to a writable prefix on PATH.\nmkdir -p \"$HOME/.local/bin\"\ninstall -m 0755 \"$tmp/gh_${GH_VERSION}_linux_amd64/bin/gh\" \"$HOME/.local/bin/gh\"\necho \"$HOME/.local/bin\" >> \"$GITHUB_PATH\"\nrm -rf \"$tmp\"\ngh version"
+        run: |
+          GH_VERSION="2.83.1"
+          GH_SHA256="1c5252d4ce3db07b51c01ff0b909583da6364ff3fdc06d0c2e75e62dc0380a34"
+          tmp="$(mktemp -d)"
+          curl -fsSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o "$tmp/gh.tgz"
+          echo "${GH_SHA256}  $tmp/gh.tgz" | sha256sum -c -
+          tar -xzf "$tmp/gh.tgz" -C "$tmp"
+          install -m 0755 "$tmp/gh_${GH_VERSION}_linux_amd64/bin/gh" /usr/local/bin/gh
+          rm -rf "$tmp"
+          gh version
 
       - name: Checkout repository (gh-aw default)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -700,7 +714,7 @@ jobs:
           name: activation
           path: /tmp/gh-aw
       - name: Install Docker Compose plugin
-        run: "if docker compose version >/dev/null 2>&1; then\n  echo \"Docker Compose plugin already present, skipping install.\"\n  docker compose version\n  exit 0\nfi\nCOMPOSE_VERSION=\"v5.5.0\"\nCOMPOSE_SHA256=\"c57ab918abd5b05ca7e7d0f275875dd1330a695074f309dc9eab1b49efafcd4b\"\nmkdir -p ~/.docker/cli-plugins\ncurl -fsSL \"https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-x86_64\" \\\n  -o ~/.docker/cli-plugins/docker-compose\necho \"${COMPOSE_SHA256}  $HOME/.docker/cli-plugins/docker-compose\" | sha256sum -c -\nchmod +x ~/.docker/cli-plugins/docker-compose\ndocker compose version"
+        run: "if docker compose version >/dev/null 2>&1; then\n  echo \"Docker Compose plugin already present, skipping install.\"\n  docker compose version\n  exit 0\nfi\nCOMPOSE_VERSION=\"v5.5.0\"\nCOMPOSE_SHA256=\"c57ab918abd5b05ca7e7d0f275875dd1330a695074f309dc9eab1b49efafcd4b\"\nmkdir -p ~/.docker/cli-plugins\ncurl -fsSL \"https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-x86_64\" \\\n  -o ~/.docker/cli-plugins/docker-compose\necho \"${COMPOSE_SHA256}  $HOME/.docker/cli-plugins/docker-compose\" | sha256sum -c -\nchmod +x ~/.docker/cli-plugins/docker-compose\ndocker compose version\n"
 
       - name: Configure Git credentials
         env:
@@ -1949,6 +1963,21 @@ jobs:
           GH_AW_INFO_AWF_VERSION: "v0.29.14"
           GH_AW_INFO_ENGINE_ID: "pi"
           GH_AW_SETUP_AW_CONTEXT: ${{ inputs.aw_context }}
+      - name: Install Docker Compose plugin
+        run: |
+          if docker compose version >/dev/null 2>&1; then
+            echo "Docker Compose plugin already present, skipping install."
+            docker compose version
+            exit 0
+          fi
+          COMPOSE_VERSION="v5.5.0"
+          COMPOSE_SHA256="c57ab918abd5b05ca7e7d0f275875dd1330a695074f309dc9eab1b49efafcd4b"
+          mkdir -p ~/.docker/cli-plugins
+          curl -fsSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-x86_64" \
+            -o ~/.docker/cli-plugins/docker-compose
+          echo "${COMPOSE_SHA256}  $HOME/.docker/cli-plugins/docker-compose" | sha256sum -c -
+          chmod +x ~/.docker/cli-plugins/docker-compose
+          docker compose version
       - name: Install modern gh CLI
         run: |
           GH_VERSION="2.83.1"
@@ -1957,15 +1986,19 @@ jobs:
           curl -fsSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o "$tmp/gh.tgz"
           echo "${GH_SHA256}  $tmp/gh.tgz" | sha256sum -c -
           tar -xzf "$tmp/gh.tgz" -C "$tmp"
-          # /usr/local/bin is root-owned on the self-hosted fleet and the
-          # runner user is non-root; install to a writable prefix on PATH.
-          mkdir -p "$HOME/.local/bin"
-          install -m 0755 "$tmp/gh_${GH_VERSION}_linux_amd64/bin/gh" "$HOME/.local/bin/gh"
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          install -m 0755 "$tmp/gh_${GH_VERSION}_linux_amd64/bin/gh" /usr/local/bin/gh
           rm -rf "$tmp"
           gh version
         env:
           GH_TOKEN: ${{ github.token }}
+      - name: Install GitHub Copilot CLI
+        run: |
+          export NPM_CONFIG_PREFIX="$HOME/.npm-global"
+          export NPM_CONFIG_IGNORE_SCRIPTS=true
+          mkdir -p "$NPM_CONFIG_PREFIX"
+          npm install -g --ignore-scripts @github/copilot@1.0.103
+          echo "$NPM_CONFIG_PREFIX/bin" >> "$GITHUB_PATH"
+          "$NPM_CONFIG_PREFIX/bin/copilot" --version
       - name: Download activation artifact
         continue-on-error: true
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
@@ -2071,7 +2104,7 @@ jobs:
           node-version: '24'
           package-manager-cache: false
       - name: Install GitHub Copilot CLI
-        run: bash "${RUNNER_TEMP}/gh-aw/actions/install_copilot_cli.sh" 1.0.103 --checksums-sha256 26cd3e4b32cde498e4961fb4d48e7b85d7859fc69af1a645a19201fdd577bdb2 --cooldown-days 3
+        run: bash "${RUNNER_TEMP}/gh-aw/actions/install_copilot_cli.sh" 1.0.103 --checksums-sha256 26cd3e4b32cde498e4961fb4d48e7b85d7859fc69af1a645a19201fdd577bdb2 --prefer-toolcache --cooldown-days 3
         env:
           GH_HOST: github.com
           GITHUB_TOKEN: ${{ github.token }}
