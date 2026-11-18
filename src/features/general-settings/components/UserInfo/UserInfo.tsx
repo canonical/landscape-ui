@@ -1,7 +1,6 @@
 import type { FC } from "react";
 import type { UserDetails } from "../../types";
-import InfoItem from "@/components/layout/InfoItem";
-import classes from "./UserInfo.module.scss";
+import InfoGrid from "@/components/layout/InfoGrid";
 
 interface UserInfoProps {
   readonly userDetails: UserDetails;
