@@ -194,50 +194,45 @@ const ExportForm: FC<ExportFormProps> = ({
       groupIds.some((id) => formik.values.selectedFieldIds.includes(id));
 
     return (
-      <Accordion.Item
-        key={group.key}
-        expanded={isFieldGroupExpanded(group.key)}
-        heading={
-          <span role="heading" aria-level={5} aria-label={group.title}>
-            <CheckboxInput
-              label={group.title}
-              labelClassName={classes.groupCheckbox}
-              checked={allSelected}
-              indeterminate={someSelected}
-              aria-label={`${group.title} select all`}
-              aria-labelledby={undefined}
-              disabled={isSearching}
-              onClick={(event) => {
-                event.stopPropagation();
-              }}
-              onKeyDown={(event) => {
-                event.stopPropagation();
-              }}
-              onChange={() => {
-                if (!isSearching) {
-                  toggleGroupSelect(group.fields);
-                }
-              }}
-            />
-          </span>
-        }
-        onExpandedChange={(expanded) => {
-          handleFieldGroupExpandedChange(group.key, expanded);
-        }}
-      >
-        <div className={classes.optionList}>
-          {group.fields.map((field) => (
-            <CheckboxInput
-              key={field.id}
-              checked={formik.values.selectedFieldIds.includes(field.id)}
-              label={field.label}
-              onChange={() => {
-                toggleField(field.id);
-              }}
-            />
-          ))}
-        </div>
-      </Accordion.Item>
+      <div className={classes.attributeGroup} key={group.key}>
+        <CheckboxInput
+          className={classes.groupCheckbox}
+          label=""
+          labelClassName={classes.groupCheckboxLabel}
+          checked={allSelected}
+          indeterminate={someSelected}
+          aria-label={`${group.title} select all`}
+          aria-labelledby={undefined}
+          disabled={isSearching}
+          onChange={() => {
+            toggleGroupSelect(group.fields);
+          }}
+        />
+        <Accordion.Item
+          expanded={isFieldGroupExpanded(group.key)}
+          heading={
+            <span className={classes.groupTitle} role="heading" aria-level={5}>
+              {group.title}
+            </span>
+          }
+          onExpandedChange={(expanded) => {
+            handleFieldGroupExpandedChange(group.key, expanded);
+          }}
+        >
+          <div className={classes.optionList}>
+            {group.fields.map((field) => (
+              <CheckboxInput
+                key={field.id}
+                checked={formik.values.selectedFieldIds.includes(field.id)}
+                label={field.label}
+                onChange={() => {
+                  toggleField(field.id);
+                }}
+              />
+            ))}
+          </div>
+        </Accordion.Item>
+      </div>
     );
   });
 

@@ -21,6 +21,28 @@
   margin-top: $spv--small;
 }
 
+.attributeGroup {
+  position: relative;
+}
+
+.groupTitle {
+  display: block;
+  padding-inline-start: $form-tick-box-size + $sph--large;
+}
+
+/* Align the separate checkbox with the title without nesting it in summary. */
+.groupCheckbox {
+  inset-block-start: var(--accordion-item-header-padding-block);
+  inset-inline-start: var(--accordion-item-content-indent);
+  position: absolute;
+  z-index: 1;
+}
+
+.groupCheckboxLabel {
+  margin-bottom: 0;
+  padding-top: 0;
+}
+
 /*
  * Vanilla's unlayered `details` and `summary` base rules outrank Pragma's
  * layered Accordion rules (e.g. `summary { display: list-item }` hides the
@@ -44,14 +66,5 @@
     margin-bottom: revert-layer;
     max-width: revert-layer;
     padding: revert-layer;
-  }
-
-  /*
-   * The nested Vanilla checkbox keeps its own control styling; only its
-   * baseline spacing is removed so it centres on the Pragma header row.
-   */
-  .groupCheckbox {
-    margin-bottom: 0;
-    padding-top: 0;
   }
 }

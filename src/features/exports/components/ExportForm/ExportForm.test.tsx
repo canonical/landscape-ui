@@ -75,6 +75,26 @@ const openAttributeGroup = async (
 };
 
 describe("ExportForm", () => {
+  it("toggles a group by its title without selecting any fields", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    const title = screen.getByText("Primary Identity");
+    const group = title.closest("details");
+    const groupCheckbox = screen.getByRole("checkbox", {
+      name: "Primary Identity select all",
+    });
+
+    await user.click(title);
+    await waitFor(() => {
+      expect(group).toHaveAttribute("open");
+    });
+    expect(groupCheckbox).not.toBeChecked();
+    expect(
+      screen.getByRole("checkbox", { name: "Hostname" }),
+    ).not.toBeChecked();
+  });
+
   it("keeps only one attribute group expanded outside search", async () => {
     const user = userEvent.setup();
     renderForm();
@@ -174,7 +194,7 @@ describe("ExportForm", () => {
       expect(getPrimaryIdentity()).toHaveAttribute("open");
     });
 
-    await openAttributeGroup(user, /primary identity/i);
+    await user.click(screen.getByText("Primary Identity"));
     await waitFor(() => {
       expect(getPrimaryIdentity()).not.toHaveAttribute("open");
       expect(
@@ -204,8 +224,11 @@ describe("ExportForm", () => {
     const groupCheckbox = screen.getByRole("checkbox", {
       name: "Primary Identity select all",
     });
-    const group = groupCheckbox.closest("details");
+    const group = screen
+      .getByRole("heading", { name: "Primary Identity" })
+      .closest("details");
 
+    expect(group).not.toContainElement(groupCheckbox);
     groupCheckbox.focus();
     await user.keyboard(" ");
 
