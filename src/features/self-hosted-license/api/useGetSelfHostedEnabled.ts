@@ -25,7 +25,9 @@ export const useGetSelfHostedEnabled = (enabled: boolean) => {
           "self-hosted/status",
         );
       } catch (cause) {
-        throw new Error("Could not check legacy license entitlement.", { cause });
+        throw new Error("Could not check legacy license entitlement.", {
+          cause,
+        });
       }
     },
     enabled,
