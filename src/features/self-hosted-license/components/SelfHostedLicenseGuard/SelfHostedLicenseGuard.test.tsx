@@ -156,7 +156,7 @@ describe("SelfHostedLicenseGuard", () => {
     renderWithRoutes(envState, ROUTES.account.general());
 
     expect(
-      await screen.findByText("Could not check legacy license access."),
+      await screen.findByText("Could not check legacy license entitlement."),
     ).toBeInTheDocument();
   });
 
