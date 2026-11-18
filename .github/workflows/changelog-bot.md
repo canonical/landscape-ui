@@ -42,7 +42,7 @@ runs-on: [self-hosted, noble, amd64]
 runs-on-slim: self-hosted
 
 imports:
-  - canonical/landscape-internal-docs/.github/workflows/shared/changelog-bot-infra.md@fce4ca0424daee9690a9f53b48bed4454ec5ec3d
+  - canonical/landscape-internal-docs/.github/workflows/shared/changelog-bot-infra.md@d627562cfa37544175061045d201f4304154a62e
 
 # The agent never pushes directly; its file edits are turned into a pull request.
 # The credential (LANDSCAPE_CHANGELOG_TOKEN, a fine-grained PAT with contents and
