@@ -9,10 +9,10 @@ interface UserInfoProps {
 
 const UserInfo: FC<UserInfoProps> = ({ userDetails }) => {
   return (
-    <div className={classes.list}>
-      <InfoItem label="Name" value={userDetails.name} />
-      <InfoItem label="Email" value={userDetails.email} />
-    </div>
+    <InfoGrid dense>
+      <InfoGrid.Item label="Name" value={userDetails.name} large />
+      <InfoGrid.Item label="Email" value={userDetails.email} large />
+    </InfoGrid>
   );
 };
 
