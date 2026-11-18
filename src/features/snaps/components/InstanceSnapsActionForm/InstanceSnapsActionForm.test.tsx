@@ -190,13 +190,22 @@ describe("InstanceSnapsActionForm", () => {
   describe("actions on installed snaps", () => {
     it("shows the new action's snaps when the side panel body is swapped", async () => {
       const getRequestBody = captureRequest();
+      // Two snaps per form, so each form shows the snap list.
+      const firstSelection = installedSnaps
+        .filter((snap) => snap.held_until === null)
+        .slice(0, 2);
+      const secondSelection = installedSnaps
+        .filter((snap) => snap.held_until !== null)
+        .slice(0, 2);
 
       const { rerender } = renderForm({
         action: "hold",
-        installedSnaps: [unheldSnap],
+        installedSnaps: firstSelection,
       });
       expect(screen.getByText("Snaps to hold")).toBeInTheDocument();
-      expect(screen.getByText(unheldSnap.snap.name)).toBeInTheDocument();
+      for (const { snap } of firstSelection) {
+        expect(screen.getByText(snap.name)).toBeInTheDocument();
+      }
 
       // The side panel replaces its body in place, so React sees the same
       // component type and would keep the first form's state.
@@ -204,21 +213,40 @@ describe("InstanceSnapsActionForm", () => {
         <InstanceSnapsActionForm
           instanceTitle={INSTANCE_TITLE}
           action="refresh"
-          installedSnaps={[heldSnap]}
+          installedSnaps={secondSelection}
         />,
       );
 
       expect(screen.getByText("Snaps to refresh")).toBeInTheDocument();
-      expect(screen.getByText(heldSnap.snap.name)).toBeInTheDocument();
-      expect(screen.queryByText(unheldSnap.snap.name)).not.toBeInTheDocument();
+      for (const { snap } of secondSelection) {
+        expect(screen.getByText(snap.name)).toBeInTheDocument();
+      }
+      for (const { snap } of firstSelection) {
+        expect(screen.queryByText(snap.name)).not.toBeInTheDocument();
+      }
 
-      await submitAndConfirm("Refresh 1 snap");
+      await submitAndConfirm("Refresh 2 snaps");
 
       expect(getRequestBody()).toMatchObject({
         action: "refresh",
-        snaps: [{ name: heldSnap.snap.name }],
+        snaps: secondSelection.map(({ snap }) => ({ name: snap.name })),
       });
     });
+
+    it.each(["uninstall", "hold", "unhold", "refresh"] as const)(
+      "drops the snap list for a single %s snap but keeps scheduling",
+      (action) => {
+        const snap = action === "unhold" ? heldSnap : unheldSnap;
+        renderForm({ action, installedSnaps: [snap] });
+
+        expect(screen.queryByText(/^Snaps to /)).not.toBeInTheDocument();
+        expect(screen.queryByText(snap.snap.name)).not.toBeInTheDocument();
+        expect(screen.getByText("Delivery time")).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: new RegExp(" 1 snap$") }),
+        ).toBeInTheDocument();
+      },
+    );
 
     it("lists the given snaps with no search box and no delete buttons", () => {
       renderForm({ action: "refresh", installedSnaps: [unheldSnap, heldSnap] });
@@ -322,6 +350,21 @@ describe("InstanceSnapsActionForm", () => {
   });
 
   describe("change channel", () => {
+    it("keeps the channel fields but drops the heading and name for a single snap", async () => {
+      renderForm({ action: "change channel", installedSnaps: [unheldSnap] });
+
+      expect(
+        await screen.findByRole("combobox", {
+          name: `Snap channel or revision for ${unheldSnap.snap.name}`,
+        }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Change to")).toBeInTheDocument();
+      expect(
+        screen.queryByText("Snaps to change channel"),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText(unheldSnap.snap.name)).not.toBeInTheDocument();
+    });
+
     it("changes the channel of every selected snap at once", async () => {
       const getRequestBody = captureRequest();
 

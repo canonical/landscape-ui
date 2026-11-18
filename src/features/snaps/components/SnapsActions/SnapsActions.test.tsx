@@ -383,30 +383,72 @@ describe("SnapsActions", () => {
 
       await user.click(screen.getByRole("button", { name: "Change channel" }));
 
+      const { name } = snapData.single.heldSnap.snap;
       expect(
-        await screen.findByRole("heading", { name: "Change snap channel" }),
+        await screen.findByRole("heading", {
+          name: `Change channel of ${name}`,
+        }),
       ).toBeInTheDocument();
       expect(
-        await screen.findByText(snapData.single.heldSnap.snap.name),
+        await screen.findByRole("combobox", {
+          name: `Snap channel or revision for ${name}`,
+        }),
       ).toBeInTheDocument();
     });
 
-    it("uses a generic title for a single snap in sidepanel mode", async () => {
+    it.each([
+      { button: "Uninstall", held: false },
+      { button: "Hold", held: false },
+      { button: "Unhold", held: true },
+      { button: "Refresh", held: false },
+    ])(
+      "names the snap in the $button title for a single snap",
+      async ({ button, held }) => {
+        const user = userEvent.setup();
+        const snap = held
+          ? snapData.single.heldSnap
+          : snapData.single.unheldSnap;
+        assert(snap);
+        renderOnInstancePage(
+          <SnapsActions
+            instanceTitle={INSTANCE_TITLE}
+            selectedSnaps={[snap]}
+            sidePanel={true}
+          />,
+        );
+
+        await user.click(screen.getByRole("button", { name: button }));
+
+        expect(
+          await screen.findByRole("heading", {
+            name: `${button} ${snap.snap.name}`,
+          }),
+        ).toBeInTheDocument();
+      },
+    );
+
+    it("names the snap when it is the only one eligible in a larger selection", async () => {
       const user = userEvent.setup();
-      assert(snapData.single.heldSnap);
+      const [heldSnap] = snapData.multiple.heldSnaps;
+      assert(heldSnap);
       renderOnInstancePage(
         <SnapsActions
           instanceTitle={INSTANCE_TITLE}
-          selectedSnaps={[snapData.single.heldSnap]}
-          sidePanel={true}
+          selectedSnaps={[heldSnap, ...snapData.multiple.unheldSnaps]}
         />,
       );
 
-      await user.click(screen.getByRole("button", { name: "Uninstall" }));
+      await user.click(screen.getByRole("button", { name: "Unhold" }));
 
       expect(
-        await screen.findByRole("heading", { name: "Uninstall snaps" }),
+        await screen.findByRole("heading", {
+          name: `Unhold ${heldSnap.snap.name}`,
+        }),
       ).toBeInTheDocument();
+      expect(
+        await screen.findByRole("button", { name: "Unhold 1 snap" }),
+      ).toBeInTheDocument();
+      expect(screen.queryByText("Snaps to unhold")).not.toBeInTheDocument();
     });
   });
 });

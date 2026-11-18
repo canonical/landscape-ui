@@ -86,6 +86,8 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
   const { snapAction, isSnapActionPending } = useSnapAction();
 
   const hasNoSelectedSnaps = selectedSnaps.length === 0;
+  const isSingleFixedSnap = hasFixedSnaps && selectedSnaps.length === 1;
+  const isSnapListHidden = isSingleFixedSnap && action !== "change channel";
 
   const snapModes = ["change channel", "install"].includes(action)
     ? Array.from(
@@ -327,17 +329,18 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           />
         )}
 
-        <div
-          className={classNames("p-text--small-caps", classes.header, {
-            [classes.headerWithoutSearch]: hasFixedSnaps,
-          })}
-        >
-          Snaps to {action}
-        </div>
+        {!isSingleFixedSnap && (
+          <div
+            className={classNames("p-text--small-caps", classes.header, {
+              [classes.headerWithoutSearch]: hasFixedSnaps,
+            })}
+          >
+            Snaps to {action}
+          </div>
+        )}
 
-        {hasNoSelectedSnaps ? (
-          <div>No snaps have been added yet.</div>
-        ) : (
+        {hasNoSelectedSnaps && <div>No snaps have been added yet.</div>}
+        {!hasNoSelectedSnaps && !isSnapListHidden && (
           <ul className="p-list u-no-margin--bottom">
             {selectedSnaps.map((item) => {
               const handleDelete = hasFixedSnaps
@@ -382,10 +385,12 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                 case "change channel": {
                   return (
                     <li className={classes.selectedItem} key={item.snap.id}>
-                      <SnapItemTitleRow
-                        name={item.snap.name}
-                        onDelete={handleDelete}
-                      />
+                      {!isSingleFixedSnap && (
+                        <SnapItemTitleRow
+                          name={item.snap.name}
+                          onDelete={handleDelete}
+                        />
+                      )}
                       {!hasFixedSnaps && (
                         <SnapItemSubtitle
                           scope="Installed"
@@ -430,7 +435,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
         )}
 
         {hasDeliveryScheduling && (
-          <div className={classes.deliveryScheduling}>
+          <div
+            className={classNames(classes.deliveryScheduling, {
+              [classes.deliverySchedulingFirst]: isSnapListHidden,
+            })}
+          >
             <DeliveryBlock formik={deliveryFormik} />
             <RandomizationBlock formik={deliveryFormik} />
           </div>

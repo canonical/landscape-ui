@@ -1,6 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
+import { capitalize } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -47,28 +48,52 @@ const SnapsActions: FC<SnapsActionProps> = ({
     );
   };
 
+  const openInstalledSnapsForm = (
+    action: SnapAction,
+    installedSnaps: InstalledSnap[],
+    pluralTitle: string,
+  ) => {
+    const [onlySnap] = installedSnaps;
+    const getSingleSnapTitle = (name: string) =>
+      action === "change channel"
+        ? `Change channel of ${name}`
+        : `${capitalize(action)} ${name}`;
+
+    openForm(
+      installedSnaps.length === 1 && onlySnap
+        ? getSingleSnapTitle(onlySnap.snap.name)
+        : pluralTitle,
+      action,
+      installedSnaps,
+    );
+  };
+
   const handleInstall = () => {
     openForm("Install snaps", "install");
   };
 
   const handleUninstall = () => {
-    openForm("Uninstall snaps", "uninstall", selectedSnaps);
+    openInstalledSnapsForm("uninstall", selectedSnaps, "Uninstall snaps");
   };
 
   const handleHold = () => {
-    openForm("Hold snaps", "hold", unheldSnaps);
+    openInstalledSnapsForm("hold", unheldSnaps, "Hold snaps");
   };
 
   const handleUnhold = () => {
-    openForm("Unhold snaps", "unhold", heldSnaps);
+    openInstalledSnapsForm("unhold", heldSnaps, "Unhold snaps");
   };
 
   const handleRefresh = () => {
-    openForm("Refresh snaps", "refresh", selectedSnaps);
+    openInstalledSnapsForm("refresh", selectedSnaps, "Refresh snaps");
   };
 
   const handleChangeChannel = () => {
-    openForm("Change snap channel", "change channel", selectedSnaps);
+    openInstalledSnapsForm(
+      "change channel",
+      selectedSnaps,
+      "Change snap channel",
+    );
   };
 
   return (
