@@ -1,6 +1,7 @@
 import FormSection from "@/components/form/FormSection";
-import useDebug from "@/hooks/useDebug";
-import { useEffect, useEffectEvent, type FC } from "react";
+import EmptyState from "@/components/layout/EmptyState";
+import { Button } from "@canonical/react-components";
+import type { FC } from "react";
 import { useGetSelfHostedLicense } from "../../api/useGetSelfHostedLicense";
 import CopyableCodeSnippet from "../CopyableCodeSnippet";
 import DownloadLicenseButton from "../DownloadLicenseButton";
@@ -9,18 +10,35 @@ import RegenerateLicenseButton from "../RegenerateLicenseButton";
 import classes from "./SelfHostedLicenseContainer.module.scss";
 
 const SelfHostedLicenseContainer: FC = () => {
-  const { downloadUrl, isGettingSelfHostedLicense, selfHostedLicenseError } =
-    useGetSelfHostedLicense();
-  const debug = useDebug();
-  const showLicenseError = useEffectEvent((error: unknown) => {
-    debug(error);
-  });
+  const {
+    downloadUrl,
+    hasSelfHostedLicenseError,
+    isGettingSelfHostedLicense,
+    isFetchingSelfHostedLicense,
+    refetchSelfHostedLicense,
+  } = useGetSelfHostedLicense();
 
-  useEffect(() => {
-    if (selfHostedLicenseError) {
-      showLicenseError(selfHostedLicenseError);
-    }
-  }, [selfHostedLicenseError]);
+  if (hasSelfHostedLicenseError) {
+    return (
+      <EmptyState
+        title="Could not load the legacy license file"
+        icon="connected"
+        cta={[
+          <Button
+            key="retry"
+            type="button"
+            appearance="positive"
+            disabled={isFetchingSelfHostedLicense}
+            onClick={() => {
+              void refetchSelfHostedLicense();
+            }}
+          >
+            Try again
+          </Button>,
+        ]}
+      />
+    );
+  }
 
   return (
     <FormSection title="License file" className={classes.formSection}>

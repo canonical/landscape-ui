@@ -8,6 +8,22 @@ interface SelfHostedLicenseResponse {
   license_url: string;
 }
 
+const isValidDownloadUrl = (value: unknown): value is string => {
+  if (typeof value !== "string" || !/^https?:\/\//i.test(value)) {
+    return false;
+  }
+
+  try {
+    new URL(value);
+    return true;
+  } catch (error) {
+    if (error instanceof TypeError) {
+      return false;
+    }
+    throw error;
+  }
+};
+
 export const getSelfHostedLicenseQueryKey = (accountName: string) =>
   ["selfHostedLicense", accountName] as const;
 
@@ -18,15 +34,22 @@ export const useGetSelfHostedLicense = () => {
   const {
     data: response,
     error,
+    isFetching,
     isPending,
+    refetch,
   } = useQuery<AxiosResponse<SelfHostedLicenseResponse>, AxiosError<ApiError>>({
     queryKey: getSelfHostedLicenseQueryKey(currentAccount.name),
-    queryFn: async () => authFetch.get("self-hosted/license-url"),
+    queryFn: () => authFetch.get("self-hosted/license-url"),
   });
 
+  const url = response?.data?.license_url;
+  const downloadUrl = isValidDownloadUrl(url) ? url : undefined;
+
   return {
-    downloadUrl: response?.data.license_url,
-    selfHostedLicenseError: error,
+    downloadUrl,
+    hasSelfHostedLicenseError: !!error || (!isPending && !downloadUrl),
     isGettingSelfHostedLicense: isPending,
+    isFetchingSelfHostedLicense: isFetching,
+    refetchSelfHostedLicense: refetch,
   };
 };
