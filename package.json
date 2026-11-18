@@ -20,7 +20,7 @@
     "vitest": "vitest",
     "coverage": "vitest run --coverage",
     "coverage-report": "tsx src/tests/aggregate-coverage.ts",
-    "coverage:full": "pnpm run coverage && pnpm run coverage-report",
+    "coverage:full": "MSW_CONTRACT_COVERAGE=true pnpm run coverage && pnpm run coverage-report",
     "eval:collect": "tsx src/tests/contract-coverage/eval-loop/collect-gaps.ts",
     "eval:suggest": "tsx src/tests/contract-coverage/eval-loop/run-eval-loop.ts",
     "eval:full": "pnpm run coverage:full && pnpm run eval:collect && pnpm run eval:suggest",

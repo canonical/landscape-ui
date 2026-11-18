@@ -9,6 +9,7 @@ See [e2e/docker-stack/README.md](../e2e/docker-stack/README.md) for a quick-star
 **Self-hosted mode** (`*.integration.spec.ts`)
 
 - Login via standalone auth with a seeded admin account
+- Organisation switching updates the sidebar after the asynchronous switch handler completes, without navigation or reload
 - Instances list rendered from a real `GET /api/v2/computers` response
 - Preferences mutation round-trip through the real API
 - Debarchive publication targets listed and CRUD round-trip against the real debarchive service
@@ -75,6 +76,20 @@ packaging_ref: landscape-packaging branch/tag/SHA to test against (default: main
 
 Since `landscape-go` and `landscape-server` are submodules of `landscape-packaging`, this single input pins the entire backend stack. On automatic triggers (PR, push, nightly) it always resolves to `main`.
 
+The selected packaging revision **must** contain `docker/configs/.env.testing` and
+`.env.ui.testing`. The workflow checks this explicitly and logs the resolved SHA.
+These configurations are a packaging prerequisite, not supplied by this UI change:
+until they merge into packaging `main`, use a `packaging_ref` containing them for
+manual runs; automatic runs against an older `main` will fail the prerequisite check.
+No submodule bump is required for the existing server two-organisation fixtures.
+
+All Compose steps use job-level `LANDSCAPE_DEPLOYMENT_MODE=testing`, so both
+`schema` and runtime services load the same testing configuration. Bootstrap keeps
+the full existing sample-data arguments and `LANDSCAPE_RUN_SCHEMA=1`. `api` and `appserver`
+depend on `schema` completing successfully, so `docker compose up -d` blocks until
+the fixtures are seeded; on failure CI prints the `builder` and `schema` logs. Backend testing mode does not select the frontend:
+the self-hosted and SaaS suites still start Vite with their respective explicit modes.
+
 ## Cold-start time (GitHub-hosted `ubuntu-latest`)
 
 | Step                                              | Duration       |
@@ -98,13 +113,27 @@ The dominant cost is the cold Docker image build. A self-hosted runner with cach
 
 ### 1. Start the backend stack
 
-From your `landscape-packaging/docker/ui-dev/` directory, start the stack with the schema
-bootstrapping arguments matching CI (the builder bootstraps the schema on first `make up`,
-so sample data must be requested from the start):
+Use a **dedicated disposable VM/runner with no existing Landscape stack**. Packaging
+uses fixed container names and published ports, so a different Compose project name
+alone does not isolate a second stack. Never wipe shared developer volumes or
+reseed an existing standalone database to enable testing.
+
+From `landscape-packaging/docker/ui-dev/`, with the testing configuration available,
+build and bootstrap a fresh environment using the same sample-data arguments as CI:
 
 ```bash
-LANDSCAPE_BOOTSTRAP_SCHEMA_ARGS="--with-computers --with-free-disk-space --with-free-memory-and-swap --with-load-averages --with-temperatures --with-network-traffic --with-active-processes --with-packages --with-package-activities --with-script-activities --with-users-and-groups --with-cpu-usage --with-ceph-usage --with-compute-usage --with-swift-usage --with-user-and-group-activities --with-custom-graph --with-scripts --with-account-password foo" make up
+export LANDSCAPE_DEPLOYMENT_MODE=testing
+# Leave LANDSCAPE_UI unset: Playwright starts Vite on port 5173.
+docker compose config -q
+make vendor
+make build
+LANDSCAPE_BOOTSTRAP_SCHEMA_ARGS="--with-computers --with-free-disk-space --with-free-memory-and-swap --with-load-averages --with-temperatures --with-network-traffic --with-active-processes --with-packages --with-package-activities --with-script-activities --with-users-and-groups --with-cpu-usage --with-ceph-usage --with-compute-usage --with-swift-usage --with-user-and-group-activities --with-custom-graph --with-scripts --with-account-password foo" make schema
+make up
 ```
+
+`make schema` sets `LANDSCAPE_RUN_SCHEMA=1` and waits for bootstrap. `make up` alone
+does not seed fixtures. Keep the exported backend mode for subsequent Compose
+commands, including diagnostics and shutdown.
 
 Wait until both of these respond:
 
@@ -135,6 +164,56 @@ pnpm exec playwright test --config e2e/docker-stack/playwright.integration.saas.
 ```
 
 Reports are written to `playwright-integration-report/` and `playwright-integration-saas-report/`.
+
+### Organisation-switch regression
+
+`e2e/docker-stack/ui/auth/organisation-switch.integration.spec.ts` is discovered by
+the self-hosted suite's `*.integration.spec.ts` pattern. Run it alone with:
+
+```bash
+pnpm exec playwright test --config e2e/docker-stack/playwright.integration.config.ts organisation-switch --retries=0
+```
+
+The test logs in with a fresh browser session rather than sharing global setup's
+authentication. It explicitly requires `/api/v2/me` to expose both `standalone`
+and `second-account` by account name; missing fixtures fail, not skip. Display titles
+are read from that response rather than hard-coded, since preferences tests can
+rename an organisation. John Smith (`john@example.com`, password `pwd`) owns both. Login may
+default to either account, so the test switches to the other without relying on
+array ordering. No organisation preferences or user defaults are mutated.
+
+The test opens the **Add script** side panel without submitting it, selects an
+organisation, and verifies the real `POST /api/v2/switch-account` succeeds. It also
+requires the browser to refetch `GET /api/v2/me` with the selected account: preserving
+the active auth query during cache removal keeps it available for this refetch.
+This checks the regression mechanism independently of a later render repairing the
+display. `OrganisationSwitch` closes the panel only after awaiting `switchAccount`,
+including query refetching and applying auth state, so panel closure remains the
+completion signal before asserting the selected account and its response-derived
+title. The controlled select's value can be restored by React; its retrying value
+assertion alone does not prove that the async handler has completed. The test also
+rejects main-frame navigation/reload.
+
+To validate regression sensitivity, temporarily replace the filtered cache removal
+in `src/features/auth/hooks/useAuthHandle.ts`'s switch mutation callback with
+`queryClient.removeQueries()`. Run the same command with retries disabled: the
+post-switch auth refetch check must fail (the organisation display also remains on
+the old account). Restore the callback and rerun successfully. Never commit the mutation.
+
+### Testing-profile compatibility
+
+The testing profile can default login to `second-account`. With the existing full
+bootstrap arguments, that account has computers but no seeded computer users;
+`standalone` has seeded users. The API authentication helper explicitly requests
+`account: "standalone"` and asserts the selected account. Global setup authenticates
+its browser session to the same account and loads a new document before saving
+storage state, keeping browser reads consistent with API mutations (including the
+preferences round-trip). CI's archive-cache warmup also selects `standalone`.
+This preserves existing fixture assertions without changing user defaults or
+duplicating server data. Before saving shared storage state, setup verifies through
+the same-origin `/api/v2/me` endpoint that the cookie-authenticated session selects
+`standalone`. The fresh-session login test remains independent: it verifies UI login
+without specifying an account, not the backend's default-account selection policy.
 
 ## Key design decisions
 

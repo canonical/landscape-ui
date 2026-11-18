@@ -644,6 +644,24 @@ describe("InstancesPageActions", () => {
       ).toBeInTheDocument();
     });
 
+    it("'Upgrade' deb management menu item opens the package upgrade form", async () => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: /^upgrade$/i }),
+      );
+
+      expect(
+        screen.getByRole("heading", {
+          name: "Apply upgrades to 2 instances",
+        }),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByRole("checkbox", { name: "Toggle all packages" }),
+      ).toBeInTheDocument();
+    });
+
     it("'Upgrade distributions' menu item", async () => {
       await userEvent.click(
         screen.getByRole("button", { name: MENU_LABELS[0] }),
@@ -733,6 +751,26 @@ describe("InstancesPageActions", () => {
 
       expect(
         screen.getByRole("heading", { name: /detach Ubuntu Pro token/i }),
+      ).toBeInTheDocument();
+    });
+
+    it.each([
+      ["Install", "Install packages", "available"],
+      ["Uninstall", "Uninstall packages", "installed"],
+      ["Change version", "Change package version", "installed"],
+      ["Hold", "Hold packages", "installed"],
+      ["Unhold", "Unhold packages", "held"],
+    ])("opens the %s package action form", async (action, title, search) => {
+      await userEvent.click(
+        await screen.findByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(screen.getByRole("menuitem", { name: action }));
+
+      expect(
+        await screen.findByRole("heading", { name: title }),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByPlaceholderText(`Search ${search} packages`),
       ).toBeInTheDocument();
     });
 
