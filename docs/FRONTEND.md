@@ -189,6 +189,11 @@ components stay off the list until no legacy imports remain. Only list names tha
 Lint checks imports only, so follow this by convention: if Pragma ships the component, use it. Do
 not recreate it with Vanilla `p-*` classes or custom classes.
 
+Vanilla's unlayered base styles can override Pragma's layered component styles. For example,
+`PageHeader.module.scss` uses a scoped `revert-layer` on the breadcrumb list to preserve Pragma's
+spacing without changing other lists. Revisit this override when Vanilla's base styles are layered
+or removed.
+
 ### Pragma CLI, MCP server, and agent skill
 
 `@canonical/pragma-cli` is a pinned devDependency. It answers questions about the design system

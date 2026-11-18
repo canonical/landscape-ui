@@ -3,6 +3,12 @@
 
 .breadcrumbs {
   margin-top: $spv--large;
+
+  /* Let Pragma set the list spacing instead of Vanilla's unlayered list rules. */
+  > :global(.ds.breadcrumbs) > :global(.list) {
+    margin: revert-layer;
+    padding: revert-layer;
+  }
 }
 
 .controls,
