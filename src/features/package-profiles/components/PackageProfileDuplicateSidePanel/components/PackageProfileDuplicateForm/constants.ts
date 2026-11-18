@@ -5,5 +5,5 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
   all_computers: Yup.boolean(),
   description: Yup.string().required("This field is required."),
   tags: Yup.array().of(Yup.string()),
-  title: Yup.string(),
+  title: Yup.string().required("This field is required."),
 });

@@ -28,24 +28,25 @@ describe("PackageProfileDuplicateForm", () => {
     expect(await screen.findByText("Profile duplicated")).toBeInTheDocument();
   });
 
-  it("shows a required error without sending a duplicate when the description is cleared", async () => {
-    const copyRequest = vi.fn(() => HttpResponse.json());
-    server.use(http.post(`${API_URL}packageprofiles`, copyRequest));
+  it.each(["Title", "Description"])(
+    "shows a required error without sending a duplicate when %s is cleared",
+    async (label) => {
+      const copyRequest = vi.fn(() => HttpResponse.json());
+      server.use(http.post(`${API_URL}packageprofiles`, copyRequest));
 
-    renderWithProviders(<PackageProfileDuplicateForm profile={profile} />);
+      renderWithProviders(<PackageProfileDuplicateForm profile={profile} />);
 
-    const descriptionInput = screen.getByRole("textbox", {
-      name: "Description",
-    });
-    await user.clear(descriptionInput);
-    await user.click(screen.getByRole("button", { name: "Duplicate" }));
+      const input = screen.getByRole("textbox", { name: label });
+      await user.clear(input);
+      await user.click(screen.getByRole("button", { name: "Duplicate" }));
 
-    expect(
-      await screen.findByText("This field is required."),
-    ).toBeInTheDocument();
-    expect(descriptionInput).toBeRequired();
-    expect(copyRequest).not.toHaveBeenCalled();
-  });
+      expect(
+        await screen.findByText("This field is required."),
+      ).toBeInTheDocument();
+      expect(input).toBeRequired();
+      expect(copyRequest).not.toHaveBeenCalled();
+    },
+  );
 
   it("catches errors", async () => {
     setEndpointStatus({ status: "error", path: "packageprofiles" });
