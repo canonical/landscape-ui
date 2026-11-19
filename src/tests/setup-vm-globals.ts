@@ -1,10 +1,8 @@
 import * as webStreams from "node:stream/web";
 
-// Under `pool: "vmThreads"` each test file runs in a fresh VM context whose
-// globals come from jsdom, not Node, so the WHATWG stream classes that MSW's
-// interceptors reference at import time (e.g. `TransformStream`) are missing.
-// Copy Node's implementations in before `./setup.ts` imports the MSW server.
-// No-op under `pool: "threads"`, where Node already provides them.
+// Under vmThreads each file gets jsdom globals, which lack the WHATWG stream
+// classes (e.g. `TransformStream`) that MSW needs at import time. Copy Node's
+// in before `./setup.ts` loads MSW. No-op under `threads`.
 const STREAM_GLOBALS = [
   "ReadableStream",
   "WritableStream",

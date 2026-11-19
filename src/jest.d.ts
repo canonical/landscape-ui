@@ -10,9 +10,8 @@ interface CustomMatchers<R> {
   toHaveIcon: (icon: string) => R;
 }
 
-// Vitest 5 no longer reads matcher types from the global `jest.Matchers`
-// interface, which is what `@testing-library/jest-dom` augments, so register
-// both the jest-dom matchers and ours on Vitest's `Matchers` instead.
+// Vitest 5 ignores the global `jest.Matchers` that jest-dom augments, so
+// register jest-dom's matchers and ours on Vitest's `Matchers`.
 declare module "vitest" {
   interface Matchers<R extends void | Promise<void> = void | Promise<void>>
     extends
