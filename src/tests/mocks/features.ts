@@ -134,6 +134,17 @@ export const features: Feature[] = [
     },
   },
   {
+    name: "Repository Mirrors",
+    description:
+      "Use Landscape DebArchive to mirror Debian package repositories.",
+    key: "repository-mirrors",
+    database_key: 13,
+    enabled: false,
+    details: {
+      configuration: false,
+    },
+  },
+  {
     name: "Instance Health Engine",
     description:
       "Aggregates monitoring signals into a single Health score per managed instance, with a Health Bar on the instance list and a fleet-health widget on the dashboard. Backed by LA061.",

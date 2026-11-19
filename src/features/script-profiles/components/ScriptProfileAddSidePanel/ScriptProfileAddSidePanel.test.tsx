@@ -53,7 +53,7 @@ describe("ScriptProfileAddSidePanel", () => {
     ).toBeInTheDocument();
   });
 
-  it("rewords duplicate script profile title errors", async () => {
+  it("shows duplicate script profile title errors inline", async () => {
     setEndpointStatus({
       status: "error",
       path: "script-profiles",
@@ -90,10 +90,9 @@ describe("ScriptProfileAddSidePanel", () => {
 
     await user.click(screen.getByRole("button", { name: "Add profile" }));
 
-    expect(
-      await screen.findByText(
-        "This script profile title is unavailable. It is either already in use or was previously archived. Script profile titles cannot be reused.",
-      ),
-    ).toBeInTheDocument();
+    const titleError = await screen.findByText(
+      "Title already used by an active or archived script profile.",
+    );
+    expect(titleError).toHaveClass("p-form-validation__message");
   });
 });

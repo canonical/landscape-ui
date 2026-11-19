@@ -136,7 +136,7 @@ describe("PublicationDetails", () => {
 
     await expectLoadingState();
 
-    await user.click(screen.getByRole("button", { name: "Republish" }));
+    await user.click(await screen.findByRole("button", { name: "Republish" }));
 
     const modalHeader = screen.getByRole("heading", {
       name: `${publicationWithKey.displayName} is already being published`,

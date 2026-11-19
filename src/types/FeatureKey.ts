@@ -11,7 +11,8 @@ export type ServerFeatureKey =
   | "support-provider-login"
   | "ubuntu-pro-licensing"
   | "usg-profiles"
-  | "wsl-child-instance-profiles";
+  | "wsl-child-instance-profiles"
+  | "repository-mirrors";
 
 export type DebarchiveFeatureKey = "temporal-lros";
 

@@ -49,7 +49,14 @@ const openAttributeGroup = async (
   user: ReturnType<typeof userEvent.setup>,
   name: RegExp,
 ) => {
-  await user.click(screen.getByRole("tab", { name }));
+  const heading = screen.getByRole("heading", { name });
+  const summary = heading.closest("summary");
+
+  if (!summary) {
+    throw new Error(`Missing accordion summary for ${name.toString()}`);
+  }
+
+  await user.click(summary);
 };
 
 const clickGenerateTsv = async (user: ReturnType<typeof userEvent.setup>) => {

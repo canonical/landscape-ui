@@ -3,7 +3,11 @@ import classNames from "classnames";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
-import { getProviderIcon, redirectToExternalUrl } from "../../helpers";
+import {
+  getLoginRedirect,
+  getProviderIcon,
+  redirectToExternalUrl,
+} from "../../helpers";
 import type { IdentityProvider } from "../../types";
 import {
   type GetUbuntuOneUrlParams,
@@ -30,8 +34,12 @@ export const AvailableProviderList: FC<AvailableProviderListProps> = ({
   const [searchParams] = useSearchParams();
   const { invitationId } = useInvitation();
 
-  const redirectTo = searchParams.get("redirect-to");
-  const external = searchParams.has("external");
+  const loginRedirect = getLoginRedirect(searchParams);
+  const redirectTo = loginRedirect.redirectTo;
+  // An invitation replaces the target, so only the flag from the URL applies.
+  const external = invitationId
+    ? searchParams.has("external")
+    : loginRedirect.external;
   const code = searchParams.get("code");
 
   const params: GetOidcUrlParams = {};

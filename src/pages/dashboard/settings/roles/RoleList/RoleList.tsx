@@ -42,6 +42,21 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
         Header: "Name",
       },
       {
+        accessor: "description",
+        Header: "Description",
+        Cell: ({ row: { original, index } }: CellProps<Role>) => (
+          <TruncatedCell
+            content={original.description}
+            isExpanded={
+              expandedRowIndex === index && expandedColumnId === "description"
+            }
+            onExpand={() => {
+              handleExpand(index, "description");
+            }}
+          />
+        ),
+      },
+      {
         accessor: "persons",
         Header: "Administrators",
         className: classes.administrators,

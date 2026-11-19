@@ -52,6 +52,7 @@ pnpm vitest --reporter=verbose  # run with detailed per-test output
 pnpm coverage                   # run Vitest with coverage report
 pnpm run lint                   # run ESLint with auto-fix
 pnpm build                      # production build (lint + tsc + vite build)
+pnpm typecheck                  # fast type check with tsgo (what CI runs)
 pnpm test                       # run Playwright E2E tests (not unit tests)
 pnpm test:saas                  # run only SaaS-tagged E2E tests
 pnpm test:self-hosted           # run only self-hosted-tagged E2E tests

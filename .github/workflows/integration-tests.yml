@@ -41,7 +41,7 @@ jobs:
     timeout-minutes: 45
 
     env:
-      LANDSCAPE_DEPLOYMENT_MODE: standalone
+      LANDSCAPE_DEPLOYMENT_MODE: testing
       CI_ADMIN_EMAIL: john@example.com
       CI_ADMIN_PASSWORD: pwd
 
@@ -130,6 +130,17 @@ jobs:
         run: |
           trap 'git config --global --unset-all url."https://x-access-token:${TOKEN}@github.com/".insteadOf || true' EXIT
           git submodule update --init --recursive
+
+      - name: Verify packaging testing configuration
+        working-directory: .landscape-packaging
+        run: |
+          echo "Packaging revision: $(git rev-parse HEAD)"
+          for config in docker/configs/.env.testing docker/configs/.env.ui.testing; do
+            if [ ! -f "$config" ]; then
+              echo "::error::Packaging revision lacks $config. Merge the opt-in testing configuration into packaging main or select a packaging_ref containing it."
+              exit 1
+            fi
+          done
 
       - name: Set up Go
         uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
@@ -281,9 +292,16 @@ jobs:
           fi
           echo "landscape-debarchive database ready"
 
+      # api and appserver depend on schema with service_completed_successfully, so
+      # `up -d` blocks until bootstrap and the testing fixtures finish. On failure,
+      # the trap dumps builder/schema logs before the step exits.
       - name: Start backend stack
         working-directory: .landscape-packaging/docker/ui-dev
         run: |
+          trap 'status=$?; docker compose \
+            -p "ls-integration-${{ github.run_id }}" \
+            -f compose.yaml -f compose.ci-override.yaml \
+            logs --tail=100 builder schema || true; exit "$status"' ERR
           _uid=$(id -u)
           _gid=$(id -g)
           _uname=$(whoami)
@@ -297,24 +315,6 @@ jobs:
               postgresql rabbitmq rsyslog builder \
               package-search api appserver \
               debarchive
-
-      # The builder runs schema patches then exits. The api container passes its
-      # Docker healthcheck before the DB schema is ready, so wait for the builder
-      # to exit cleanly before probing HTTP endpoints.
-      # Uses docker wait (not docker compose wait) to avoid project-lookup issues
-      # when the working directory differs from the up step.
-      - name: Wait for builder to finish schema migrations
-        run: |
-          echo "Waiting for builder container to appear..."
-          until docker inspect landscape-builder &>/dev/null; do sleep 2; done
-          echo "Waiting for builder to finish schema migrations..."
-          EXIT=$(docker wait landscape-builder)
-          if [ "$EXIT" != "0" ]; then
-            echo "Builder failed with exit code $EXIT"
-            docker logs landscape-builder --tail=100
-            exit 1
-          fi
-          echo "Builder finished successfully"
 
       # debarchive uses a pre-built CI image (no runtime Go compilation), so it
       # starts in ~10 s. The seeder is started here (not in the main up step) so
@@ -358,7 +358,7 @@ jobs:
           echo "Debarchive seeder finished (exit $EXIT)"
 
       # /api/v2/ root may 404; login/methods is always 200 when the API is serving.
-      # 120 s is sufficient once the builder has exited.
+      # 120 s is sufficient: api/appserver only start after schema completes.
       - name: Wait for API and appserver to be ready
         run: |
           timeout 120 bash -c \
@@ -407,7 +407,7 @@ jobs:
           for attempt in 1 2 3; do
             token=$(curl -sf --max-time 5 -X POST http://localhost:9091/api/v2/login \
               -H "Content-Type: application/json" \
-              -d '{"email":"'"$CI_ADMIN_EMAIL"'","password":"'"$CI_ADMIN_PASSWORD"'"}' \
+              -d '{"email":"'"$CI_ADMIN_EMAIL"'","password":"'"$CI_ADMIN_PASSWORD"'","account":"standalone"}' \
               | python3 -c 'import json,sys; raw=sys.stdin.read(); print(json.loads(raw)["token"] if raw else "")')
             [ -n "$token" ] && break
             echo "Login attempt $attempt failed, retrying..."
