@@ -42,7 +42,6 @@ interface SupportInstancesListProps {
   readonly instances: Instance[];
 }
 
-/** The account's instances, read-only: pills and tags filter the list. */
 const SupportInstancesList: FC<SupportInstancesListProps> = ({
   name,
   instances,
@@ -122,15 +121,7 @@ const SupportInstancesList: FC<SupportInstancesListProps> = ({
         Cell: ({ row: { original } }: CellProps<Instance>) => (
           <ListTitle>
             <StaticLink
-              to={
-                original.parent
-                  ? ROUTES.superAdmin.sessionInstanceChild(
-                      name,
-                      original.parent.id,
-                      original.id,
-                    )
-                  : ROUTES.superAdmin.sessionInstance(name, original.id)
-              }
+              to={ROUTES.superAdmin.sessionInstanceFromInstance(name, original)}
             >
               {original.title}
             </StaticLink>

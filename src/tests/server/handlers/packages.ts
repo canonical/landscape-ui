@@ -236,13 +236,19 @@ export default [
     `${API_URL}computers/:id/packages/search`,
     async ({ params, request }) => {
       if (shouldApplyEndpointStatus("computers-packages")) {
-        const { status } = getEndpointStatus();
+        const { status, response } = getEndpointStatus("computers-packages");
         if (status === "error") {
           throw createEndpointStatusNetworkError();
         }
 
         if (status === "loading") {
           await delay("infinite");
+        }
+
+        if (status === "variant") {
+          return HttpResponse.json(
+            response as ComputerPackageSearchGroupedResponse,
+          );
         }
       }
 
