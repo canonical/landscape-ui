@@ -105,10 +105,10 @@ You maintain three changelog artifacts for Landscape UI, all delivered as ONE pu
 ## Gather the commits
 
 1. The scan window is time-based: list the commits from the last four weeks against the repository's default branch, not the ref this run was dispatched on: `git log --since="4 weeks ago" --no-merges --pretty=%H%x09%s origin/main`. Always use `origin/main` for the range — a `workflow_dispatch` run may check out a bot or feature branch whose own commits are automation churn, and those must never be classified as product changes. If `origin/main` is not present locally, use the checked-out HEAD and say so in the run output. `main` is squash-merged, so each merged PR is a single commit on this list. Do NOT anchor on `CHANGELOG.md` commits: the `Version Packages` PR on `main` is closed rather than merged before each cut (RELEASES.md section 3), so `CHANGELOG.md` on `main` is stale and a changelog anchor would silently treat undocumented commits as covered. Four weeks against a weekly schedule gives three weeks of overlap with the previous run, so omissions leapfrogged by later merges are still caught; the deduplication rules below prevent double-filing.
-2. Skip any commit whose subject has no trailing pull request reference ` (#1234)`. Such commits cannot carry the `(backfills #<N>)` marker the deduplication relies on, so they can never be filed safely; if one looks user-facing, mention it in the PR body under `Changesets to review` instead of backfilling it.
+2. Skip any commit whose subject has no trailing pull request reference ` (#1234)`. Such commits cannot get a `backfill-<N>.md` filename, which is what deduplication relies on, so they can never be filed safely; if one looks user-facing, mention it in the PR body under `Changesets to review` instead of backfilling it.
 3. Deduplicate the rest by pull request number. For each commit, extract its PR number `<N>` from the trailing ` (#1234)` reference in the subject. Skip the commit if ANY of the following hold:
    a. Its own commit added a NON-EMPTY changeset: run `git show --name-status --format= <commit>` and look for a line with status `A` (added) whose path matches `.changeset/*.md` (ignoring `.changeset/README.md` and `.changeset/config.json`), then read that file — it counts as coverage only if its frontmatter assigns a bump (`major`/`minor`/`patch`) to a package. Only status `A` counts — a modified (`M`) or deleted (`D`) changeset path is NOT coverage. If the commit added ONLY empty changesets (no package/bump in the frontmatter), do NOT backfill one: an empty changeset can be a deliberate choice (e.g. one shared non-empty changeset for a whole PR stack, as in #799). Flag it in the review section below instead.
-   b. A pending changeset already covers it: search the existing `.changeset/*.md` files in the working tree for the PR-specific marker `(backfills #<N>)` (match the full number — `#123` must not match `#1234`). Do NOT treat a bare `#<N>` as coverage: that token can be an unrelated issue, Launchpad, or linked-PR reference. Only the `(backfills #<N>)` marker — which every backfilled changeset ends its summary with — means this PR is already covered.
+   b. A pending changeset already covers it: check whether `.changeset/backfill-<N>.md` exists in the working tree (match the full number — `backfill-123.md` must not count for `backfill-1234.md`). Do NOT treat a bare `#<N>` anywhere in a changeset's text as coverage: that token can be an unrelated issue, Launchpad, or linked-PR reference. Only the `backfill-<N>.md` filename means this PR is already covered.
    c. The changelog already covers it: check whether the TOP section of `CHANGELOG.md` (the latest release — everything from the first `## ` heading up to the second) references `#<N>`. `CHANGELOG.md` on `main` is stale (see step 1), so treat this only as an extra deduplication signal, never as proof that older commits are covered.
 
 ## Select user-facing commits only
@@ -155,7 +155,7 @@ Within each group, maintain the relative ordering of the commits. Use this order
 
 ## Author the changesets
 
-For each selected commit that has no changeset, create exactly one new file `.changeset/<word>-<word>-<word>.md`, where the slug is three random lowercase words joined by hyphens (matching existing slugs such as `bold-ducks-fetch.md`) and does not collide with any existing file in `.changeset/`. The file content must be:
+For each selected commit that has no changeset, create exactly one new file `.changeset/backfill-<N>.md`, where `<N>` is the number of the pull request the commit came from (e.g. `.changeset/backfill-1234.md`). The pull request number belongs in the FILENAME, not in the summary: Changesets copies the summary verbatim into CHANGELOG.md, so a marker in the text would ship to readers. The filename also makes later deduplication a file-exists check. The file content must be:
 
 ```
 ---
@@ -166,7 +166,7 @@ For each selected commit that has no changeset, create exactly one new file `.ch
 ```
 
 - `<bump>` is `minor` for features (`feat`), `patch` for fixes and performance work (`fix`, `perf`), `major` for breaking changes (whether flagged by `!` in the subject or by a `BREAKING CHANGE:`/`BREAKING-CHANGE:` footer), and `patch` for user-facing refactors.
-- `<summary>` is the single-line summary derived above, in the tone of the existing changesets (e.g. `Show an error when creating a role fails instead of failing silently`): one capitalized sentence, no type prefix, no trailing period, no Jira or PR references. There is one mandatory exception to "no PR references": end the summary with ` (backfills #<N>)` naming the pull request the changeset covers (e.g. `Show an error when creating a role fails instead of failing silently (backfills #1234)`). Later runs rely on this marker to recognize already-covered PRs.
+- `<summary>` is the single-line summary derived above, in the tone of the existing changesets (e.g. `Show an error when creating a role fails instead of failing silently`): one capitalized sentence, no type prefix, no trailing period, and no Jira, PR, or backfill references of any kind. Do not append `(backfills #<N>)` or any other marker; the pull request number is already recorded in the filename.
 - The package name in the frontmatter must be exactly `"landscape-ui"` (see `.changeset/config.json` and existing entries).
 
 ## Review existing changesets
@@ -215,7 +215,7 @@ Before making any edit, create your working branch from the default branch, not 
 
 First check for an existing open changelog pull request in this repository (label `changelog`). Exactly one should ever be open at a time.
 
-- If one is already open, do NOT open a second and do NOT push to its branch — the safe-output handlers can only CREATE a pull request in this repository, never update an existing one. Check whether its changesets already cover the commits you selected (the `(backfills #<N>)` markers) and whether its `debian/changelog` block already covers the `CHANGELOG.md` top section. If both are current, make no changes and note that the existing PR is already up to date. If anything is missing, post ONE comment on that PR with `add_comment` listing the missing backfill entries and/or the missing Debian changelog block and stop; there is no handler that pushes to an existing own-repo pull request branch, so do not claim you updated the PR and do not open a second PR. Make no file changes this run.
+- If one is already open, do NOT open a second and do NOT push to its branch — the safe-output handlers can only CREATE a pull request in this repository, never update an existing one. Check whether its changesets already cover the commits you selected (the `backfill-<N>.md` filenames) and whether its `debian/changelog` block already covers the `CHANGELOG.md` top section. If both are current, make no changes and note that the existing PR is already up to date. If anything is missing, post ONE comment on that PR with `add_comment` listing the missing backfill entries and/or the missing Debian changelog block and stop; there is no handler that pushes to an existing own-repo pull request branch, so do not claim you updated the PR and do not open a second PR. Make no file changes this run.
 - Only if no changelog PR is open, open a single pull request containing all of the new changeset files and, when one was drafted, the new `debian/changelog` block. Use the title `add missing changesets and changelog block` (the `build: ` prefix is added automatically) and a body that lists the backfilled entries in the sorted order from above, notes the merged PR each entry covers, names the Debian changelog version drafted and the `CHANGELOG.md` section it was sourced from (or states that the Debian stanza was skipped because the `CHANGELOG.md` top heading carries no shippable `YY.MM-beta.N` version), explains that the backfilled PRs were merged without a changeset so the Changesets automation had nothing to roll up, and includes the `Changesets to review` heading when any entries were flagged.
 
 Before submitting the pull request, run a final status audit: `git status --porcelain -- .changeset/ debian/changelog`. Every `.changeset/*.md` line must be `??` (untracked, i.e. a NEW file). If any line shows `M` or `D`, you edited or deleted an existing changeset — discard that change (`git checkout -- <path>` or remove the edit) and re-audit until only new files remain. The pull-request handler filters by path only, not diff status, so this check is the mechanical guard for the "new files only" rule; for `debian/changelog`, verify your diff only PREPENDS one block (`git diff debian/changelog` must show only added lines above the previous top block).
@@ -278,9 +278,11 @@ Rules:
 
 ### New-page template
 
-File `docs/reference/release-notes/YY.MM-release-notes.md` (dots in the filename, matching `26.10-release-notes.md`; anchor uses dashes):
+File `docs/reference/release-notes/YY.MM-release-notes.md` (dots in the filename, matching `26.10-release-notes.md`; anchor uses dashes).
 
-```markdown
+For the support statement below, copy the exact wording (releases and codenames) verbatim from the most recent existing `docs/reference/release-notes/*.md` page. Do not invent or hard-code codenames; they change over time. This instruction is not part of the page content.
+
+````markdown
 ---
 myst:
   html_meta:
@@ -290,7 +292,7 @@ myst:
 (reference-release-notes-YY-MM)=
 # YY.MM release notes
 
-> Landscape Server YY.MM runs on the Ubuntu LTS releases it supports. Copy the exact support statement (releases and codenames) verbatim from the most recent existing `docs/reference/release-notes/*.md` page — do not invent or hard-code codenames here, they change over time.
+> Landscape Server YY.MM runs on the Ubuntu LTS releases it supports (paste the support statement here).
 
 ```{note}
 This page is a draft maintained automatically until release.
@@ -311,4 +313,4 @@ This page is a draft maintained automatically until release.
 ## Bug fixes
 
 (pending - written at release time)
-```
+````
