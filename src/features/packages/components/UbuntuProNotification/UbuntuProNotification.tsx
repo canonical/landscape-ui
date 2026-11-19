@@ -6,10 +6,12 @@ import { ROUTES } from "@/libs/routes";
 
 interface UbuntuProNotificationProps {
   readonly onDismiss: () => void;
+  readonly learnMorePath?: string;
 }
 
 const UbuntuProNotification: FC<UbuntuProNotificationProps> = ({
   onDismiss,
+  learnMorePath,
 }) => {
   const navigate = useNavigate();
   const { instanceId, childInstanceId } = useParams<UrlParams>();
@@ -25,10 +27,11 @@ const UbuntuProNotification: FC<UbuntuProNotificationProps> = ({
         appearance="link"
         onClick={() => {
           navigate(
-            ROUTES.instances.details.fromParams(
-              { instanceId, childInstanceId },
-              { tab: "ubuntu-pro" },
-            ),
+            learnMorePath ??
+              ROUTES.instances.details.fromParams(
+                { instanceId, childInstanceId },
+                { tab: "ubuntu-pro" },
+              ),
           );
         }}
       >

@@ -3,6 +3,8 @@ import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import type { InstancePackage } from "@/features/packages";
 import {
+  getEmptyMessage,
+  getPackageSearchFilters,
   PackageList,
   PackagesInstallButton,
   PackagesPanelHeader,
@@ -13,7 +15,6 @@ import useSelection from "@/hooks/useSelection";
 import type { UrlParams } from "@/types/UrlParams";
 import type { FC } from "react";
 import { useLocation, useParams } from "react-router";
-import { getEmptyMessage, getPackageSearchFilters } from "./helpers";
 
 const PackagesPanel: FC = () => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
