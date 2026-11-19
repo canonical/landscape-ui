@@ -18,8 +18,6 @@ import SelfHostedLicenseProvider from "@/context/selfHostedLicense";
 import { LEGACY_LICENSE_ENTITLEMENT_WAIT_MS } from "../../api/constants";
 import SelfHostedLicenseGuard from "./SelfHostedLicenseGuard";
 
-const TIMEOUT_ASSERTION_GRACE_MS = 2_000;
-
 vi.mock("usehooks-ts", async () => ({
   ...(await vi.importActual("usehooks-ts")),
   useMediaQuery: () => true,
@@ -161,12 +159,13 @@ describe("SelfHostedLicenseGuard", () => {
   });
 
   it("stops waiting for a slow entitlement check and shows the link on late success", async () => {
-    let releaseRequest: (() => void) | undefined;
-    const request = new Promise<void>((resolve) => {
-      releaseRequest = resolve;
-    });
+    const { promise: requestStarted, resolve: markRequestStarted } =
+      Promise.withResolvers<undefined>();
+    const { promise: request, resolve: releaseRequest } =
+      Promise.withResolvers<undefined>();
     server.use(
       http.get(`${API_URL}self-hosted/status`, async () => {
+        markRequestStarted(undefined);
         await request;
         return HttpResponse.json({ enabled: true });
       }),
@@ -174,32 +173,41 @@ describe("SelfHostedLicenseGuard", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
 
     try {
-      renderWithRoutes(envState);
+      vi.useFakeTimers();
+      try {
+        renderWithRoutes(envState);
+        await requestStarted;
 
-      const menu = screen.getByRole("navigation", {
-        name: ACCOUNT_SETTINGS.label,
-      });
-      expect(menu).toHaveAttribute("aria-busy", "true");
-      expect(
-        await screen.findByText("Account general", undefined, {
-          timeout:
-            LEGACY_LICENSE_ENTITLEMENT_WAIT_MS + TIMEOUT_ASSERTION_GRACE_MS,
-        }),
-      ).toBeInTheDocument();
-      expect(menu).toHaveAttribute("aria-busy", "false");
-      expect(
-        screen.queryByRole("link", { name: "Legacy license file" }),
-      ).not.toBeInTheDocument();
+        const menu = screen.getByRole("navigation", {
+          name: ACCOUNT_SETTINGS.label,
+        });
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(
+            LEGACY_LICENSE_ENTITLEMENT_WAIT_MS - 1,
+          );
+        });
+        expect(menu).toHaveAttribute("aria-busy", "true");
+        expect(screen.queryByText("Account general")).not.toBeInTheDocument();
 
-      await act(async () => {
-        releaseRequest?.();
-      });
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(1);
+        });
+        expect(screen.getByText("Account general")).toBeInTheDocument();
+        expect(menu).toHaveAttribute("aria-busy", "false");
+        expect(
+          screen.queryByRole("link", { name: "Legacy license file" }),
+        ).not.toBeInTheDocument();
+      } finally {
+        vi.useRealTimers();
+      }
+
+      releaseRequest(undefined);
       expect(
         await screen.findByRole("link", { name: "Legacy license file" }),
       ).toBeInTheDocument();
       expect(getLocationDisplay()).toHaveTextContent(ROUTES.account.general());
     } finally {
-      releaseRequest?.();
+      releaseRequest(undefined);
       warn.mockRestore();
     }
   });
