@@ -4,3 +4,7 @@ export { default as useFleetHealthSummary } from "./useFleetHealthSummary";
 export { default as useHealthAction } from "./useHealthAction";
 export { default as useHealthSummaryByGroup } from "./useHealthSummaryByGroup";
 export { default as useInstanceHealthSignal } from "./useInstanceHealthSignal";
+export { default as useComputerHealthHistory } from "./useComputerHealthHistory";
+export { default as useFleetHealthHistory } from "./useFleetHealthHistory";
+export { default as useHealthRuleHistory } from "./useHealthRuleHistory";
+export { default as useHealthRules } from "./useHealthRules";

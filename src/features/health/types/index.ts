@@ -104,6 +104,58 @@ export interface HealthRulesResponse {
   results: HealthRule[];
 }
 
+// ─── History ────────────────────────────────────────────────────────────
+// Daily rows, ascending. Days the archive step missed are omitted.
+
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers -- the day counts are the type
+export type HealthHistoryRange = 30 | 90 | 365;
+
+export interface FleetHealthHistoryRow {
+  // UTC date, `YYYY-MM-DD`.
+  date: string;
+  bands: FleetHealthBands;
+  measured_count: number;
+  average_score: number;
+  rules_version: number;
+  engine_version: number;
+}
+
+export interface HealthRuleHistoryRow {
+  date: string;
+  rule_key: string;
+  computer_count: number;
+  points_sum: number;
+  // The effective weight of the rule on that day.
+  weight: number;
+}
+
+export interface HealthHistoryFactor {
+  rule_key: string;
+  count: number;
+  points: number;
+}
+
+// One day on which the result of an instance changed.
+export interface ComputerHealthHistoryRow {
+  date: string;
+  // Null when the instance became unmeasured that day.
+  score: number | null;
+  band: HealthBand | null;
+  critical_factor_count: number;
+  rules_version: number;
+  factors: HealthHistoryFactor[];
+}
+
+export interface ComputerHealthHistory {
+  // The newest row before the window, or null when there is none.
+  baseline: ComputerHealthHistoryRow | null;
+  results: ComputerHealthHistoryRow[];
+}
+
+export interface HealthHistoryResponse<T> {
+  results: T[];
+}
+
 // ─── Phase 2, mocks only ────────────────────────────────────────────────
 // The design documents defer remediation actions and the group breakdown.
 // The UI keeps them on mocked responses so their design can be reviewed.

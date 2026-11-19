@@ -19,6 +19,11 @@ import {
   getHealthFixture,
   seededRules,
 } from "@/tests/mocks/health";
+import {
+  getComputerHistory,
+  getFleetHistory,
+  getRuleHistory,
+} from "@/tests/mocks/healthHistory";
 import { http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";
 
@@ -189,7 +194,92 @@ const unknownRule = (ruleKey: string) =>
     { status: 404 },
   );
 
+const MS_PER_DAY = 86_400_000;
+const ISO_DATE_LENGTH = 10;
+const DEFAULT_WINDOW_DAYS = 30;
+const MAX_WINDOW_DAYS = 366;
+const HTTP_BAD_REQUEST = 400;
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+const dayOf = (time: number): string =>
+  new Date(time).toISOString().slice(0, ISO_DATE_LENGTH);
+
+// The window of a history request: UTC dates, inclusive, `to` defaulting to
+// today and `from` to 30 days before it. Null when the window is invalid.
+const historyWindowOf = (
+  request: Request,
+): { from: string; to: string } | null => {
+  const params = new URL(request.url).searchParams;
+  const to = params.get("to") ?? dayOf(Date.now());
+  const from =
+    params.get("from") ??
+    dayOf(Date.parse(to) - DEFAULT_WINDOW_DAYS * MS_PER_DAY);
+  const isValid =
+    ISO_DATE.test(from) &&
+    ISO_DATE.test(to) &&
+    from <= to &&
+    (Date.parse(to) - Date.parse(from)) / MS_PER_DAY <= MAX_WINDOW_DAYS;
+  return isValid ? { from, to } : null;
+};
+
+const invalidWindow = () =>
+  HttpResponse.json<{ error: string; message: string }>(
+    { error: "ValidationError", message: "Invalid history window." },
+    { status: HTTP_BAD_REQUEST },
+  );
+
 export default [
+  // GET /api/v2/health/history — daily fleet rows, ascending.
+  http.get(`${API_URL}health/history`, ({ request }) => {
+    if (getEndpointStatus().status === "error") {
+      throw createEndpointStatusError();
+    }
+    const window = historyWindowOf(request);
+    if (!window) {
+      return invalidWindow();
+    }
+    return HttpResponse.json({
+      results: getFleetHistory(window.from, window.to),
+    });
+  }),
+
+  // GET /api/v2/health/history/rules — daily per-rule rows, ascending by
+  // date and then rule key. `rule_key` is optional and repeatable.
+  http.get(`${API_URL}health/history/rules`, ({ request }) => {
+    if (getEndpointStatus().status === "error") {
+      throw createEndpointStatusError();
+    }
+    const window = historyWindowOf(request);
+    if (!window) {
+      return invalidWindow();
+    }
+    return HttpResponse.json({
+      results: getRuleHistory(
+        window.from,
+        window.to,
+        new URL(request.url).searchParams.getAll("rule_key"),
+      ),
+    });
+  }),
+
+  // GET /api/v2/computers/:computer_id/health/history — the days on which
+  // the result changed, with the newest row before the window as `baseline`.
+  http.get<{ computer_id: string }>(
+    `${API_URL}computers/:computer_id/health/history`,
+    ({ params, request }) => {
+      if (getEndpointStatus().status === "error") {
+        throw createEndpointStatusError();
+      }
+      const window = historyWindowOf(request);
+      if (!window) {
+        return invalidWindow();
+      }
+      return HttpResponse.json(
+        getComputerHistory(Number(params.computer_id), window.from, window.to),
+      );
+    },
+  ),
+
   // GET /api/v2/health/rules — effective rule set, read-only in Phase 1.
   http.get<never, never, { rules_version: number; results: HealthRule[] }>(
     `${API_URL}health/rules`,

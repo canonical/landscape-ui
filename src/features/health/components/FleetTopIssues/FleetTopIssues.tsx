@@ -17,12 +17,15 @@ const VISIBLE_LIMIT = 5;
 interface FleetTopIssuesProps {
   readonly issues?: FleetTopIssue[];
   readonly isLoading?: boolean;
+  // Per rule, the change in matching instances over the last week.
+  readonly changes?: Record<string, number> | null;
   readonly className?: string;
 }
 
 const FleetTopIssues: FC<FleetTopIssuesProps> = ({
   issues = [],
   isLoading,
+  changes,
   className,
 }) => {
   const titleId = useId();
@@ -49,6 +52,7 @@ const FleetTopIssues: FC<FleetTopIssuesProps> = ({
               const isCritical =
                 issue.points_sum / issue.computer_count >=
                 CRITICAL_MEAN_PENALTY;
+              const change = changes?.[issue.rule_key] ?? 0;
               return (
                 <li key={issue.rule_key} className={classes.item}>
                   <Icon name={isCritical ? "error" : "warning"} />
@@ -65,6 +69,12 @@ const FleetTopIssues: FC<FleetTopIssuesProps> = ({
                   <span className={classes.count}>
                     <strong>{issue.computer_count}</strong>{" "}
                     {pluralize(issue.computer_count, ["instance"])}
+                    {change === 0 ? null : (
+                      <span className={classes.change}>
+                        {Math.abs(change)} {change > 0 ? "more" : "fewer"} than
+                        a week ago
+                      </span>
+                    )}
                   </span>
                 </li>
               );

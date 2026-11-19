@@ -291,3 +291,88 @@ describe("seededRules cross-check", () => {
     }
   });
 });
+
+describe("history endpoints", () => {
+  const HTTP_BAD_REQUEST = 400;
+  const DEFAULT_WINDOW_ROWS = 31;
+
+  it("returns ascending daily fleet rows for the default 30-day window", async () => {
+    const res = await get("health/history");
+    expect(res.status).toBe(HTTP_OK);
+    const { results } = (await res.json()) as {
+      results: {
+        date: string;
+        average_score: number;
+        rules_version: number;
+        bands: { unmeasured: number };
+      }[];
+    };
+    // One night in the mocked window has no row.
+    expect(results).toHaveLength(DEFAULT_WINDOW_ROWS - 1);
+    const dates = results.map(({ date }) => date);
+    expect(dates).toEqual([...dates].sort());
+    expect(new Set(results.map((r) => r.rules_version)).size).toBe(2);
+    expect(results[0]?.bands).toHaveProperty("unmeasured");
+  });
+
+  it("ends the fleet history on the live average score", async () => {
+    const [history, summary] = await Promise.all([
+      get("health/history").then(
+        async (r) =>
+          r.json() as Promise<{ results: { average_score: number }[] }>,
+      ),
+      get("health/summary").then(
+        async (r) => r.json() as Promise<{ average_score: number }>,
+      ),
+    ]);
+    expect(history.results.at(-1)?.average_score).toBe(summary.average_score);
+  });
+
+  it("rejects an inverted or oversized window", async () => {
+    const inverted = await get("health/history?from=2026-09-10&to=2026-08-10");
+    expect(inverted.status).toBe(HTTP_BAD_REQUEST);
+    const oversized = await get(
+      "health/history/rules?from=2024-01-01&to=2026-08-10",
+    );
+    expect(oversized.status).toBe(HTTP_BAD_REQUEST);
+  });
+
+  it("returns no fleet history before anything is scored", async () => {
+    setHealthFixture("recomputingFleet");
+    const res = await get("health/history");
+    expect(await res.json()).toEqual({ results: [] });
+  });
+
+  it("filters the rule history by repeatable rule_key", async () => {
+    const res = await get(
+      "health/history/rules?rule_key=reboot_required&rule_key=usn.high",
+    );
+    const { results } = (await res.json()) as {
+      results: { rule_key: string; weight: number; computer_count: number }[];
+    };
+    expect(new Set(results.map((r) => r.rule_key))).toEqual(
+      new Set(["reboot_required", "usn.high"]),
+    );
+    expect(results.every((r) => r.computer_count > 0)).toBe(true);
+    const reboot = seededRules.find((r) => r.rule_key === "reboot_required");
+    expect(results.find((r) => r.rule_key === "reboot_required")?.weight).toBe(
+      reboot?.weight,
+    );
+  });
+
+  it("returns a baseline when an instance's history starts before the window", async () => {
+    const today = new Date().toISOString().slice(0, "YYYY-MM-DD".length);
+    const res = await get(`computers/2/health/history?from=${today}`);
+    const body = (await res.json()) as {
+      baseline: { date: string; score: number } | null;
+      results: unknown[];
+    };
+    expect(body.results).toEqual([]);
+    expect(body.baseline?.date.localeCompare(today)).toBe(-1);
+  });
+
+  it("returns no history for an unmeasured computer", async () => {
+    const res = await get("computers/123456/health/history");
+    expect(await res.json()).toEqual({ baseline: null, results: [] });
+  });
+});

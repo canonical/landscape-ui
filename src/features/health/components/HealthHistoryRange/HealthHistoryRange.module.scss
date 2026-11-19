@@ -1,0 +1,16 @@
+@import "vanilla-framework/scss/settings_colors";
+
+/* Vanilla highlights aria-selected buttons only, so the checked radio gets
+   the same styling here. */
+.option[aria-checked="true"] {
+  &,
+  &:hover {
+    background-color: $colors--theme--background-active;
+    border-color: $colors--theme--border-high-contrast;
+    transition-duration: 0s;
+  }
+
+  &:hover {
+    cursor: default;
+  }
+}

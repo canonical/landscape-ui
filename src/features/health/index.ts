@@ -4,19 +4,25 @@ export { default as HealthBar } from "./components/HealthBar";
 export type { HealthBarProps } from "./components/HealthBar";
 export { default as HealthByGroup } from "./components/HealthByGroup";
 export { default as HealthCell } from "./components/HealthCell";
+export { default as FleetHealthTrend } from "./components/FleetHealthTrend";
 export { default as HealthFactorList } from "./components/HealthFactorList";
 export type { HealthFactorListProps } from "./components/HealthFactorList";
 export { default as HealthScore } from "./components/HealthScore";
 export { default as HealthScoreInfo } from "./components/HealthScoreInfo";
 export { default as HealthScoreSummary } from "./components/HealthScoreSummary";
 export { default as HealthActions } from "./components/HealthActions";
+export { default as HealthHistory } from "./components/HealthHistory";
 export { default as HealthDetailsPanel } from "./components/HealthDetailsPanel";
 export { default as RemediationPile } from "./components/RemediationPile";
 export { default as TopDetractors } from "./components/TopDetractors";
 export {
   useBulkHealthAction,
   useComputerHealth,
+  useComputerHealthHistory,
+  useFleetHealthHistory,
   useFleetHealthSummary,
+  useHealthRuleHistory,
+  useHealthRules,
   useHealthAction,
   useHealthSummaryByGroup,
   useInstanceHealthSignal,
@@ -32,8 +38,25 @@ export {
   BAND_ICON,
   BAND_CRITICALITY,
 } from "./helpers";
+export {
+  addDays,
+  daysBetween,
+  factorChanges,
+  historyWindow,
+  measurementChanges,
+  ruleCountChanges,
+  scoreChange,
+  toDay,
+} from "./history";
+export type { FactorChange, MeasurementChange, ScoreChange } from "./history";
 export type {
   ComputerHealth,
+  ComputerHealthHistory,
+  ComputerHealthHistoryRow,
+  FleetHealthHistoryRow,
+  HealthHistoryFactor,
+  HealthHistoryRange,
+  HealthRuleHistoryRow,
   FleetHealthSummary,
   FleetTopIssue,
   HealthActionKind,

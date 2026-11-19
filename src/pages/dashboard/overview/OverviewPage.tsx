@@ -4,12 +4,16 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import {
+  FleetHealthTrend,
   FleetHealthWidget,
   FleetTopIssues,
   HealthByGroup,
   RemediationPile,
   TopDetractors,
+  ruleCountChanges,
+  useFleetHealthHistory,
   useFleetHealthSummary,
+  useHealthRuleHistory,
 } from "@/features/health";
 import {
   AlertsContainer,
@@ -20,8 +24,17 @@ import useAuth from "@/hooks/useAuth";
 import { Cards } from "@canonical/react-ds-global";
 import classes from "./OverviewPage.module.scss";
 
+const TREND_DAYS = 30;
+
 const HealthDashboard: FC = () => {
   const summaryQuery = useFleetHealthSummary();
+  // The last 30 days are enough to compare today with a week ago.
+  const fleetHistory = useFleetHealthHistory(TREND_DAYS).data?.data.results;
+  const ruleHistory = useHealthRuleHistory(TREND_DAYS).data?.data.results;
+  const issueChanges =
+    fleetHistory && ruleHistory
+      ? ruleCountChanges(fleetHistory, ruleHistory)
+      : null;
   const onRetry = () => {
     void summaryQuery.refetch();
   };
@@ -40,6 +53,11 @@ const HealthDashboard: FC = () => {
           className={classes.third}
           issues={summaryQuery.data?.data.top_issues}
           isLoading={summaryQuery.isLoading}
+          changes={issueChanges}
+        />
+        <FleetHealthTrend
+          className={classes.full}
+          thresholds={summaryQuery.data?.data.thresholds}
         />
         <RemediationPile
           className={classes.third}

@@ -1,0 +1,21 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--container-gap-default);
+}
+
+.change,
+.message {
+  margin: 0;
+  max-width: none;
+  padding: 0;
+}
+
+.change,
+.message {
+  color: var(--color-text-muted);
+}
+
+.change > strong {
+  color: var(--color-text);
+}

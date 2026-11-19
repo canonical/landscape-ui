@@ -5,6 +5,7 @@ import {
   effectiveRecommendedActions,
   HealthActions,
   HealthFactorList,
+  HealthHistory,
   HealthScoreInfo,
   HealthScoreSummary,
   isHealthMeasurable,
@@ -171,6 +172,8 @@ const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
             </Card.Content>
           </Card>
         ) : null}
+
+        <HealthHistory className={classes.full} computerId={instance.id} />
       </Cards>
     </div>
   );

@@ -1,0 +1,72 @@
+.root {
+  position: relative;
+  width: 100%;
+}
+
+.svg {
+  display: block;
+  overflow: visible;
+  touch-action: pan-y;
+}
+
+.grid {
+  stroke: var(--color-border-muted);
+  stroke-width: 1;
+}
+
+.tick {
+  fill: var(--color-text-muted);
+  font-size: var(--typography-text-secondary-font-size);
+  font-variant-numeric: tabular-nums;
+}
+
+.line {
+  fill: none;
+  stroke: var(--color-text);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+/* The ring keeps a dot readable where it sits on the line or the grid. */
+.dot {
+  fill: var(--color-text);
+  stroke: var(--color-background);
+  stroke-width: 2;
+}
+
+.marker,
+.crosshair {
+  stroke: var(--color-text-muted);
+  stroke-width: 1;
+}
+
+.marker {
+  stroke-dasharray: 3 3;
+}
+
+.tooltip {
+  background: var(--color-background);
+  border: var(--dimension-stroke-thickness-medium, 1px) solid
+    var(--color-border);
+  display: flex;
+  flex-direction: column;
+  font-size: var(--typography-text-secondary-font-size);
+  line-height: var(--typography-text-secondary-line-height);
+  margin-inline-start: var(--container-gap-tight);
+  padding: var(--component-padding-block) var(--component-padding-inline);
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.tooltipLeft {
+  margin-inline: 0 var(--container-gap-tight);
+  transform: translateX(-100%);
+}
+
+.tooltipDate {
+  color: var(--color-text-muted);
+}

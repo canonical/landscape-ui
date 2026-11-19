@@ -27,6 +27,7 @@
 .count {
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
+  text-align: right;
   white-space: nowrap;
 
   > strong {
@@ -37,4 +38,10 @@
 .empty {
   margin: 0;
   padding: 0;
+}
+
+.change {
+  display: block;
+  font-size: var(--typography-text-secondary-font-size);
+  line-height: var(--typography-text-secondary-line-height);
 }
