@@ -69,7 +69,6 @@ describe("AvailableProviderList", () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
     rootPath.value = "/";
   });
 

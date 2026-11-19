@@ -25,7 +25,6 @@ const THREADS_POOL_TESTS = [
   "src/features/auth/helpers.test.ts",
   "src/pages/auth/handle/oidc/OidcAuthPage/OidcAuthPage.test.tsx",
   "src/pages/auth/handle/ubuntu-one/UbuntuOneAuthPage/UbuntuOneAuthPage.test.tsx",
-  "src/routes/elements.test.tsx",
 ];
 
 export default defineConfig({
@@ -64,12 +63,10 @@ export default defineConfig({
       },
     ],
     testTimeout: 30000,
-    // Only applies to the vmThreads project below; must be set at the root,
-    // because Vitest reads it from the root config. VM contexts leak memory in
-    // reused workers, and the default limit (total RAM / workers) lets the
-    // pool grow to almost all of the machine's memory. Recycle each worker once
-    // its heap passes this instead. "1GB" was ~20% faster but nearly doubled
-    // peak RSS (~10GB vs ~5.5GB at 8 workers).
+    // Root-only option; affects the `vm` project. VM contexts leak memory in
+    // reused workers, and the default (RAM / workers) lets the pool take nearly
+    // all memory: recycle a worker once its heap passes this. "1GB" was ~20%
+    // faster but nearly doubled peak RSS (~10GB vs ~5.5GB at 8 workers).
     vmMemoryLimit: "512MB",
     // vmThreads reuses each worker and its jsdom import across test files
     // (a fresh VM context per file keeps them isolated), instead of paying
