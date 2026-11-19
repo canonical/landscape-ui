@@ -48,7 +48,9 @@ describe("WslProfileNonCompliantInstancesList", () => {
 
     expect(screen.getByText("Search: server")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: "Dismiss" }));
+    await userEvent.click(
+      screen.getByRole("button", { name: "Dismiss Search: server" }),
+    );
 
     expect(screen.queryByText("Search: server")).not.toBeInTheDocument();
   });

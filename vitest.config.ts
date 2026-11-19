@@ -27,7 +27,11 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     globalSetup: [resolve(import.meta.dirname, "src/tests/global-setup.ts")],
-    setupFiles: [resolve(import.meta.dirname, "src/tests/setup.ts")],
+    setupFiles: [
+      // Storage must be initialized before setup.ts imports MSW.
+      resolve(import.meta.dirname, "src/tests/storage-setup.ts"),
+      resolve(import.meta.dirname, "src/tests/setup.ts"),
+    ],
     alias: [
       {
         find: /^.*\.(css|scss|sass)$/,

@@ -84,10 +84,10 @@ Runs `pnpm coverage:full` to produce the MSW contract-coverage report, determini
 
 ## CI Tooling Contracts
 
-- **Node:** `24` · **pnpm:** `10` · **Install:** `pnpm install --frozen-lockfile` only
+- **Node:** `26` · **pnpm:** `12` · **Install:** `require-lockfile: true` only
 - **Playwright:** the Validate `e2e-tests` container tag (`mcr.microsoft.com/playwright:vX.Y.Z`) must equal `@playwright/test` in `package.json`; bump both in the same PR. Install browsers (`pnpm exec playwright install chromium`, no `--with-deps`, since the image has the deps) inside the job that runs them — never move this out
 - **Checkout (Validate):** shallow (default depth) in every job except **Changeset**, which diffs against the base branch. Other workflows (`release-and-build`, `changeset-version`, `tics-full`, `security`, `security-scan`) still need full history in places (`fetch-depth: 0`); keep it there
-- **Caching:** `actions/setup-node@v4` with `cache: "pnpm"`
+- **Caching:** `pnpm/setup@v3` with `cache: true`
 
 ## Agents MUST NOT
 

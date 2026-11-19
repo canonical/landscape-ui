@@ -109,7 +109,7 @@ The dominant cost is the cold Docker image build. A self-hosted runner with cach
 
 - Docker + Docker Compose v2
 - `canonical/landscape-packaging` cloned with submodules (e.g. `~/landscape-packaging`)
-- `pnpm` and Node 24
+- `pnpm` and Node 26
 
 ### 1. Start the backend stack
 

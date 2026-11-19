@@ -27,22 +27,19 @@ jobs:
       - uses: actions/checkout@v5
         with: { fetch-depth: 0 }
 
-      - uses: pnpm/action-setup@v4
-        with: { version: 10 }
-
-      - uses: actions/setup-node@v4
+      - name: Set up pnpm
+        uses: pnpm/setup@v3
         with:
-          node-version: 24
-          cache: "pnpm"
+          version: 12
+          runtime: node@26
+          cache: true
+          require-lockfile: true
 
       - name: Calculate Version
         id: calver
         run: |
           VERSION=$(node scripts/calculate-version.cjs)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       # Maintains the "Version Packages" PR for main. Merging it consumes the
       # pending changesets into CHANGELOG.md and bumps package.json. No
