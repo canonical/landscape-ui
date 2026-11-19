@@ -10,52 +10,28 @@ import { Card } from "@canonical/react-ds-global";
 import type { FC, ReactNode } from "react";
 import { useId } from "react";
 import { Link } from "react-router";
-import {
-  BAND_CRITICALITY,
-  BAND_LABEL,
-  CRITICAL_SCORE_CEILING,
-  HEALTHY_SCORE_FLOOR,
-} from "../../helpers";
-import type { FleetHealthSummary, HealthBand } from "../../types";
+import { BAND_CRITICALITY, BAND_LABEL } from "../../helpers";
+import type {
+  FleetHealthSummary,
+  FleetHealthThresholds,
+  HealthBand,
+} from "../../types";
 import HealthScoreSummary from "../HealthScoreSummary";
 import classes from "./FleetHealthWidget.module.scss";
 
 const PERCENT_BASE = 100;
 
-// Band midpoints, used only when the server omits `average_score`.
-const BAND_MIDPOINT: Record<HealthBand, number> = {
-  critical: 10,
-  warning: 50,
-  healthy: 90,
-};
-
 const BANDS: HealthBand[] = ["critical", "warning", "healthy"];
 
-const bandForScore = (score: number): HealthBand => {
-  if (score <= CRITICAL_SCORE_CEILING) {
+/** Returns the band of a score under the thresholds the server reports. */
+const bandForScore = (
+  score: number,
+  { critical_max, warning_max }: FleetHealthThresholds,
+): HealthBand => {
+  if (score <= critical_max) {
     return "critical";
   }
-  if (score < HEALTHY_SCORE_FLOOR) {
-    return "warning";
-  }
-  return "healthy";
-};
-
-const getBandCount = (summary: FleetHealthSummary, band: HealthBand): number =>
-  summary[`band_${band}_count`];
-
-const getAverageScore = (summary: FleetHealthSummary): number => {
-  if (typeof summary.average_score === "number") {
-    return summary.average_score;
-  }
-  if (summary.total_count === 0) {
-    return 0;
-  }
-  const weighted = BANDS.reduce(
-    (sum, band) => sum + getBandCount(summary, band) * BAND_MIDPOINT[band],
-    0,
-  );
-  return Math.round(weighted / summary.total_count);
+  return score <= warning_max ? "warning" : "healthy";
 };
 
 const getPercent = (count: number, total: number): number =>
@@ -146,41 +122,41 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
     );
   }
 
-  const measurable = summary.measurable_count ?? total;
-  const unmeasurable =
-    summary.unmeasurable_count ?? Math.max(0, total - measurable);
-  const fleetTotal = measurable + unmeasurable;
-  const score = getAverageScore(summary);
-  const scoreBand = bandForScore(score);
+  const measured = summary.measured_count;
+  const unmeasured = summary.bands.unmeasured;
 
   const footer = (
     <p className={classes.footnote}>
-      {measurable} of {fleetTotal} instances measured
-      {unmeasurable > 0
-        ? ` · ${unmeasurable} non-Ubuntu ${pluralize(unmeasurable, ["instance"])} can't be measured`
+      {measured} of {total} instances measured
+      {summary.recompute_in_progress
+        ? " · Scores are being computed, so these counts are partial"
         : null}
     </p>
   );
 
   return renderCard(
     <div className={classes.layout}>
-      <HealthScoreSummary
-        score={score}
-        band={scoreBand}
-        label="Average health score"
-        hint="Average score across measurable instances."
-      />
+      {summary.average_score === null ? (
+        <p className="u-text--muted">No instance has a score yet.</p>
+      ) : (
+        <HealthScoreSummary
+          score={summary.average_score}
+          band={bandForScore(summary.average_score, summary.thresholds)}
+          label="Average health score"
+          hint="Average score across measured instances."
+        />
+      )}
 
       <ul className={classes.distribution}>
         {BANDS.map((band) => {
-          const count = getBandCount(summary, band);
-          const percent = getPercent(count, measurable);
+          const count = summary.bands[band];
+          const percent = getPercent(count, measured);
           return (
             <li key={band}>
               <Link
                 to={ROUTES.instances.root({ healthBand: [band] })}
                 className={classes.row}
-                aria-label={`${BAND_LABEL[band]}: ${count} ${pluralize(count, ["instance"])}, ${percent} percent of the measurable fleet`}
+                aria-label={`${BAND_LABEL[band]}: ${count} ${pluralize(count, ["instance"])}, ${percent} percent of the measured fleet`}
               >
                 <span className={classes.rowLabel}>{BAND_LABEL[band]}</span>
                 <Meter
@@ -194,18 +170,24 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
             </li>
           );
         })}
-        {unmeasurable > 0 ? (
-          <li className={classes.row}>
-            <span className={classes.rowLabel}>Unmeasured</span>
-            <Meter
-              className={classes.unmeasured}
-              value={getPercent(unmeasurable, fleetTotal)}
-              aria-hidden="true"
-            />
-            <span className={classes.rowCount}>{unmeasurable}</span>
-            <span className={classes.rowPercent}>
-              {getPercent(unmeasurable, fleetTotal)}%
-            </span>
+        {unmeasured > 0 ? (
+          <li>
+            <Link
+              to={ROUTES.instances.root({ healthBand: ["unmeasured"] })}
+              className={classes.row}
+              aria-label={`Unmeasured: ${unmeasured} ${pluralize(unmeasured, ["instance"])}, ${getPercent(unmeasured, total)} percent of the fleet`}
+            >
+              <span className={classes.rowLabel}>Unmeasured</span>
+              <Meter
+                className={classes.unmeasured}
+                value={getPercent(unmeasured, total)}
+                aria-hidden="true"
+              />
+              <span className={classes.rowCount}>{unmeasured}</span>
+              <span className={classes.rowPercent}>
+                {getPercent(unmeasured, total)}%
+              </span>
+            </Link>
           </li>
         ) : null}
       </ul>

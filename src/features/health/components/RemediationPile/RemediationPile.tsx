@@ -31,11 +31,10 @@ import classNames from "classnames";
 import type { FC } from "react";
 import { useCallback, useMemo, useState } from "react";
 import { actionsForFactor } from "../../helpers";
-import { useFleetTopDetractors } from "../../hooks";
 import useFleetHealthSummary from "../../hooks/useFleetHealthSummary";
 import useHealthAction from "../../hooks/useHealthAction";
 import type {
-  FleetTopDetractor,
+  FleetTopIssue,
   HealthActionKind,
   HealthFactor,
 } from "../../types";
@@ -54,10 +53,9 @@ interface CardSpec {
   emptyCopy: string;
 }
 
-// The three actions LA061 Phase 1.7 wired. Each card maps to one
-// HealthActionKind and reads its "what's pending" count from the
-// detractors response (rule_key → computer_count) for the rule_keys it
-// targets.
+// Each card maps to one HealthActionKind and reads its "what's pending"
+// count from the summary's `top_issues` (rule_key → computer_count) for the
+// rule keys it targets.
 const CARDS: CardSpec[] = [
   {
     action: "run-security-updates",
@@ -66,7 +64,13 @@ const CARDS: CardSpec[] = [
     actionLabel: "Apply updates",
     icon: "security-warning",
     criticality: "error",
-    affectedRuleKeys: ["usn.critical", "usn.high", "usn.medium", "usn.low"],
+    affectedRuleKeys: [
+      "usn.critical",
+      "usn.high",
+      "usn.medium",
+      "usn.low",
+      "usn.unrated",
+    ],
     emptyCopy: "No outstanding security notices.",
   },
   {
@@ -99,6 +103,10 @@ const isFactorForCard = (factor: HealthFactor, spec: CardSpec): boolean =>
 
 const CARD_BY_ACTION = new Map(CARDS.map((spec) => [spec.action, spec]));
 
+/** Returns the instance's factors, none when it has no score. */
+const factorsOf = ({ health }: Instance): HealthFactor[] =>
+  health?.measurable ? health.factors : [];
+
 // The server counts distinct instances per rule, so a card backed by one rule
 // has an exact count. Across several rules an instance can appear more than
 // once, so only the largest per-rule count is certain. A rule's count also
@@ -106,15 +114,15 @@ const CARD_BY_ACTION = new Map(CARDS.map((spec) => [spec.action, spec]));
 // that is installed and waits for a reboot. Those are subtracted where the
 // loaded list shows them.
 const getRuleCounts = (
-  detractors: FleetTopDetractor[],
+  issues: FleetTopIssue[],
   spec: CardSpec,
   instances: Instance[],
 ): number[] =>
-  detractors
+  issues
     .filter(({ rule_key }) => spec.affectedRuleKeys.includes(rule_key))
     .map(({ rule_key, computer_count }) => {
-      const notHelped = instances.filter(({ health }) =>
-        (health?.factors ?? []).some(
+      const notHelped = instances.filter((instance) =>
+        factorsOf(instance).some(
           (factor) =>
             factor.rule_key === rule_key && !isFactorForCard(factor, spec),
         ),
@@ -131,11 +139,10 @@ const RemediationPile: FC<RemediationPileProps> = ({
   className,
   fullWidthClassName,
 }) => {
-  const detractorsQuery = useFleetTopDetractors(FETCH_LIMIT);
   const summaryQuery = useFleetHealthSummary();
-  const detractors = useMemo(
-    () => detractorsQuery.data?.data.results ?? [],
-    [detractorsQuery.data],
+  const issues = useMemo(
+    () => summaryQuery.data?.data.top_issues ?? [],
+    [summaryQuery.data],
   );
   // The instance list scoped to "anything with a factor we can act on" —
   // critical + warning. Filtered client-side per card at action-time.
@@ -162,8 +169,8 @@ const RemediationPile: FC<RemediationPileProps> = ({
     (action: HealthActionKind): Instance[] => {
       const spec = CARD_BY_ACTION.get(action);
       if (!spec) return [];
-      return instancesQuery.instances.filter(({ health }) =>
-        (health?.factors ?? []).some((factor) => isFactorForCard(factor, spec)),
+      return instancesQuery.instances.filter((instance) =>
+        factorsOf(instance).some((factor) => isFactorForCard(factor, spec)),
       );
     },
     [instancesQuery.instances],
@@ -178,7 +185,7 @@ const RemediationPile: FC<RemediationPileProps> = ({
     () =>
       CARDS.map((spec) => {
         const ruleCounts = getRuleCounts(
-          detractors,
+          issues,
           spec,
           instancesQuery.instances,
         );
@@ -195,7 +202,7 @@ const RemediationPile: FC<RemediationPileProps> = ({
           ? { spec, count: matched, isLowerBound: false }
           : { spec, count: largest, isLowerBound: true };
       }),
-    [detractors, instancesForAction, instancesQuery.instances, isListComplete],
+    [issues, instancesForAction, instancesQuery.instances, isListComplete],
   );
 
   const kernelWaivedCount =
@@ -285,7 +292,7 @@ const RemediationPile: FC<RemediationPileProps> = ({
 
   const hasAnyWork = cards.some(({ count }) => count > 0);
 
-  if (detractorsQuery.isLoading || summaryQuery.isLoading) {
+  if (summaryQuery.isLoading) {
     return (
       <Card className={fullWidthClassName}>
         <Card.Content>
@@ -295,7 +302,7 @@ const RemediationPile: FC<RemediationPileProps> = ({
     );
   }
 
-  if (!hasAnyWork && detractorsQuery.isSuccess) {
+  if (!hasAnyWork && summaryQuery.isSuccess) {
     return (
       <Card className={fullWidthClassName}>
         <Card.Content>

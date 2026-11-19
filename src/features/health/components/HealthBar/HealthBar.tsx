@@ -1,12 +1,12 @@
 import LoadingState from "@/components/layout/LoadingState";
 import classNames from "classnames";
 import type { FC } from "react";
-import type { ComputerHealth } from "../../types";
+import type { MeasuredComputerHealth } from "../../types";
 import HealthScore from "../HealthScore";
 import classes from "./HealthBar.module.scss";
 
 export interface HealthBarProps {
-  readonly health?: Pick<ComputerHealth, "score" | "band"> | undefined;
+  readonly health?: Pick<MeasuredComputerHealth, "score" | "band"> | undefined;
   readonly isLoading?: boolean;
   readonly isError?: boolean;
   readonly notMeasurable?: boolean;
@@ -24,7 +24,7 @@ const HealthBar: FC<HealthBarProps> = ({
   if (notMeasurable) {
     return (
       <span className={classNames(classes.placeholder, className)}>
-        Not measured
+        Unmeasured
       </span>
     );
   }

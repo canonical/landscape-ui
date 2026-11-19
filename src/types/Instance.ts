@@ -199,28 +199,40 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   upgrades?: InstanceUpgrades;
   wsl_profiles?: Profile[];
   has_release_upgrades: boolean;
-  // LA061 Phase 1.7: optional batched health snapshot folded in by the
-  // server when `with_health=true` is passed to GET /computers. The HealthCell
-  // prefers this over firing a per-row request to /computers/{id}/health.
+  // LA061: the health state resource, present when `with_health=true` is
+  // passed to GET /computers.
   health?: InstanceHealth;
 }
 
-export interface InstanceHealth {
-  score: number;
-  band: "critical" | "warning" | "healthy";
-  critical_factor_count: number;
-  factors: {
-    rule_id?: number;
-    rule_key: string;
-    title?: string;
-    description?: string;
-    points: number;
-    count?: number;
-    pending_reboot_count?: number;
-  }[];
-  recommended_actions: string[];
-  updated_at: string | null;
+interface InstanceHealthFactor {
+  rule_key: string;
+  kind: string;
+  title: string;
+  count: number;
+  points: number;
+  pending_reboot_count?: number;
 }
+
+// Same object as GET /computers/{id}/health returns. A computer without a
+// score answers `measurable: false` and nothing else.
+export type InstanceHealth =
+  | {
+      computer_id: number;
+      measurable: true;
+      score: number;
+      band: "critical" | "warning" | "healthy";
+      critical_factor_count: number;
+      factors: InstanceHealthFactor[];
+      inputs_as_of: string;
+      evaluated_at: string;
+      rules_version: number;
+      engine_version: number;
+      stale: boolean;
+      stale_reason: "inputs" | "rules" | "engine" | null;
+      // Phase 2, mocks only.
+      recommended_actions?: string[];
+    }
+  | { computer_id: number; measurable: false };
 
 type WithRelation<T extends InstanceWithoutRelation> = T & {
   parent: InstanceWithoutRelation | null;

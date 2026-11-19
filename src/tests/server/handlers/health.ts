@@ -6,41 +6,43 @@
 // at runtime via `setHealthFixture('crisisFleet')`.
 
 import { API_URL } from "@/constants";
+import type { HealthGroupSummary } from "@/features/health";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   type ComputerHealth,
   type FleetHealthSummary,
-  type FleetTopDetractor,
   type HealthActionKind,
   type HealthRule,
-  getFleetTopDetractors,
+  type MeasuredComputerHealth,
+  RULES_VERSION,
+  getComputerHealth,
   getHealthFixture,
-  manyFactorsComputer,
   seededRules,
 } from "@/tests/mocks/health";
 import { http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";
 
-// LA061 Phase 1.7: the production server returns a `recommended_actions`
-// list per `ComputerHealth`, derived from the factor list. The MSW handler
-// does the same derivation here so dev demos behave like prod. The mapping
-// is duplicated from `src/features/health/helpers.ts:ACTION_BY_RULE_KEY` —
-// `src/tests/server/handlers/` is forbidden from importing `src/features/*`
-// by the project's lint rules, so the duplication is deliberate.
-// Keep this map in sync if rule keys change.
+// Phase 2, mocks only: a `recommended_actions` list derived from the factor
+// list. The mapping is duplicated from `ACTION_BY_RULE_KEY` in
+// `src/features/health/helpers.ts`, which handlers cannot import (deep
+// feature imports are restricted). Keep the two in sync.
 const ACTION_BY_RULE_KEY: Record<string, HealthActionKind> = {
   "usn.critical": "run-security-updates",
   "usn.high": "run-security-updates",
   "usn.medium": "run-security-updates",
   "usn.low": "run-security-updates",
+  "usn.unrated": "run-security-updates",
   reboot_required: "reboot",
   "instance.offline": "refresh-facts",
   "package.updates_available": "run-security-updates",
 };
 
-const enrichWithRecommendedActions = (
+export const enrichWithRecommendedActions = (
   health: ComputerHealth,
 ): ComputerHealth => {
+  if (!health.measurable) {
+    return health;
+  }
   const seen = new Set<HealthActionKind>();
   for (const factor of health.factors) {
     const action = ACTION_BY_RULE_KEY[factor.rule_key];
@@ -49,7 +51,7 @@ const enrichWithRecommendedActions = (
       seen.add("reboot");
     }
     // With every fix installed, an update would change nothing.
-    const isAllPending = factor.count !== undefined && pending >= factor.count;
+    const isAllPending = pending >= factor.count;
     if (action && !isAllPending) {
       seen.add(action);
     }
@@ -66,18 +68,12 @@ const enrichWithRecommendedActions = (
 //   - account: every computer rolls up to the single mock account.
 // Top-10 + "other" rollup mirrors the server-side cap. This is enough to
 // drive the widget's empty / single / multi-row states from MSW.
-interface GroupSummaryRow {
-  group: string;
-  band_critical_count: number;
-  band_warning_count: number;
-  band_healthy_count: number;
-  total_count: number;
-}
+type GroupSummaryRow = HealthGroupSummary;
 const TAG_BUCKETS = ["web", "db", "cache", "edge", "monitoring"];
 const DISTRO_BUCKETS = ["noble", "jammy", "focal"];
 const TOP_N = 10;
 const synthesiseGroups = (
-  computers: ComputerHealth[],
+  computers: MeasuredComputerHealth[],
   groupBy: "tag" | "distribution" | "account",
 ): GroupSummaryRow[] => {
   if (computers.length === 0) return [];
@@ -89,7 +85,7 @@ const synthesiseGroups = (
     } else if (groupBy === "distribution") {
       label = DISTRO_BUCKETS[c.computer_id % DISTRO_BUCKETS.length]!;
     } else {
-      label = `Account ${c.account_id}`;
+      label = "Account 1";
     }
     if (!buckets[label]) {
       buckets[label] = {
@@ -166,28 +162,20 @@ interface HealthActionResponse {
 
 let nextActivityId = 90_000;
 
-// Mutable in-memory store of per-account overrides, so POST/PUT/DELETE
-// round-trip correctly within a session. Reset on page reload.
+// Phase 2, mocks only: per-account overrides keyed by rule, so PATCH and
+// DELETE round-trip within a session. Reset on page reload.
 let overrides: HealthRule[] = [];
-let nextOverrideId = 1000;
 
-interface CreateRuleBody {
-  rule_key: string;
-  weight: number;
-  description?: string;
-  definition?: Record<string, unknown>;
-  enabled?: boolean;
-}
-
-interface UpdateRuleBody {
+interface PatchRuleBody {
   weight?: number;
-  description?: string;
-  definition?: Record<string, unknown>;
+  cap?: number | null;
   enabled?: boolean;
+  params?: Record<string, unknown>;
 }
 
 const NOW = () => new Date().toISOString();
 
+// Account overrides merged over the system defaults.
 const effectiveRules = (): HealthRule[] => {
   const byKey = new Map<string, HealthRule>();
   for (const r of seededRules) byKey.set(r.rule_key, r);
@@ -195,92 +183,75 @@ const effectiveRules = (): HealthRule[] => {
   return Array.from(byKey.values());
 };
 
+const unknownRule = (ruleKey: string) =>
+  HttpResponse.json<{ error: string; message: string }>(
+    { error: "HealthRuleNotFoundError", message: `Unknown rule ${ruleKey}` },
+    { status: 404 },
+  );
+
 export default [
-  // GET /api/v2/health/rules
-  http.get<never, never, { results: HealthRule[] }>(
+  // GET /api/v2/health/rules — effective rule set, read-only in Phase 1.
+  http.get<never, never, { rules_version: number; results: HealthRule[] }>(
     `${API_URL}health/rules`,
-    () => {
+    ({ request }) => {
       const endpointStatus = getEndpointStatus();
       if (endpointStatus.status === "error") {
         throw createEndpointStatusError();
       }
       if (endpointStatus.status === "empty") {
-        return HttpResponse.json({ results: [] });
+        return HttpResponse.json({ rules_version: RULES_VERSION, results: [] });
       }
-      return HttpResponse.json({ results: effectiveRules() });
+      const includeDisabled =
+        new URL(request.url).searchParams.get("include_disabled") === "true";
+      return HttpResponse.json({
+        rules_version: RULES_VERSION,
+        results: effectiveRules().filter(
+          ({ enabled }) => includeDisabled || enabled,
+        ),
+      });
     },
   ),
 
-  // POST /api/v2/health/rules — create per-account override
-  http.post<never, CreateRuleBody, HealthRule>(
-    `${API_URL}health/rules`,
-    async ({ request }) => {
-      const body = (await request.json()) as CreateRuleBody;
-      const rule: HealthRule = {
-        id: nextOverrideId++,
-        account_id: 1,
-        rule_key: body.rule_key,
-        description: body.description ?? "",
-        definition: body.definition ?? {},
-        weight: body.weight,
-        enabled: body.enabled ?? true,
-        created_at: NOW(),
-        updated_at: NOW(),
-        is_system_default: false,
-      };
-      overrides = [
-        ...overrides.filter((r) => r.rule_key !== rule.rule_key),
-        rule,
-      ];
-      return HttpResponse.json(rule, { status: 201 });
-    },
-  ),
-
-  // PUT /api/v2/health/rules/:id
-  http.put<
-    { id: string },
-    UpdateRuleBody,
+  // PATCH /api/v2/health/rules/:rule_key — Phase 2 sketch: creates or updates
+  // the account override of a system rule.
+  http.patch<
+    { rule_key: string },
+    PatchRuleBody,
     HealthRule | { error: string; message: string }
-  >(`${API_URL}health/rules/:id`, async ({ params, request }) => {
-    const id = Number(params.id);
-    const body = (await request.json()) as UpdateRuleBody;
-    const existing = overrides.find((r) => r.id === id);
-    if (!existing) {
-      return HttpResponse.json(
-        { error: "HealthRuleNotFoundError", message: `Unknown id ${id}` },
-        { status: 404 },
-      );
+  >(`${API_URL}health/rules/:rule_key`, async ({ params, request }) => {
+    const base = effectiveRules().find((r) => r.rule_key === params.rule_key);
+    if (!base) {
+      return unknownRule(params.rule_key);
     }
+    const body = (await request.json()) as PatchRuleBody;
     const updated: HealthRule = {
-      ...existing,
-      weight: body.weight ?? existing.weight,
-      description: body.description ?? existing.description,
-      definition: body.definition ?? existing.definition,
-      enabled: body.enabled ?? existing.enabled,
-      updated_at: NOW(),
+      ...base,
+      ...body,
+      scope: "account",
+      overrides_system_default: true,
     };
-    overrides = overrides.map((r) => (r.id === id ? updated : r));
+    overrides = [
+      ...overrides.filter((r) => r.rule_key !== updated.rule_key),
+      updated,
+    ];
     return HttpResponse.json(updated);
   }),
 
-  // DELETE /api/v2/health/rules/:id
-  http.delete<{ id: string }, never, undefined>(
-    `${API_URL}health/rules/:id`,
+  // DELETE /api/v2/health/rules/:rule_key — Phase 2 sketch: removes the
+  // account override, never the system default.
+  http.delete<{ rule_key: string }>(
+    `${API_URL}health/rules/:rule_key`,
     ({ params }) => {
-      const id = Number(params.id);
-      const existed = overrides.some((r) => r.id === id);
-      if (!existed) {
-        return HttpResponse.json(
-          { error: "HealthRuleNotFoundError", message: `Unknown id ${id}` },
-          { status: 404 },
-        );
+      if (!overrides.some((r) => r.rule_key === params.rule_key)) {
+        return unknownRule(params.rule_key);
       }
-      overrides = overrides.filter((r) => r.id !== id);
+      overrides = overrides.filter((r) => r.rule_key !== params.rule_key);
       return new HttpResponse(null, { status: 204 });
     },
   ),
 
-  // GET /api/v2/computers/:computer_id/health
+  // GET /api/v2/computers/:computer_id/health — a computer without a state
+  // row answers `{computer_id, measurable: false}`.
   http.get<{ computer_id: string }, never, ComputerHealth>(
     `${API_URL}computers/:computer_id/health`,
     ({ params }) => {
@@ -288,36 +259,18 @@ export default [
       if (endpointStatus.status === "error") {
         throw createEndpointStatusError();
       }
-      const id = Number(params.computer_id);
-      const { computers } = getHealthFixture();
-      if (id === manyFactorsComputer.computer_id) {
-        return HttpResponse.json(
-          enrichWithRecommendedActions(manyFactorsComputer),
-        );
-      }
-      const found = computers.find((c) => c.computer_id === id);
-      if (found) {
-        return HttpResponse.json(enrichWithRecommendedActions(found));
-      }
-      // No state yet — server returns the 100-score placeholder per the spec.
-      return HttpResponse.json({
-        computer_id: id,
-        account_id: 1,
-        score: 100,
-        band: "healthy" as const,
-        critical_factor_count: 0,
-        factors: [],
-        recommended_actions: [],
-        updated_at: null,
-      });
+      return HttpResponse.json(
+        enrichWithRecommendedActions(
+          getComputerHealth(Number(params.computer_id)),
+        ),
+      );
     },
   ),
 
   // GET /api/v2/health/summary
-  // LA061 Phase 1.8: when `?group_by=tag|distribution|account` is set, the
-  // server returns the flat summary PLUS a `groups` array (top-10 + "other"
-  // rollup). We synthesise the grouped breakdown from the active fleet
-  // fixture so MSW reflects the real shape for the HealthByGroup widget.
+  // Phase 2, mocks only: with `?group_by=tag|distribution|account` the
+  // response also carries a `groups` array (top 10 plus an "other" rollup),
+  // synthesised from the active fixture for the HealthByGroup widget.
   http.get<never, never, FleetHealthSummary>(
     `${API_URL}health/summary`,
     ({ request }) => {
@@ -346,26 +299,6 @@ export default [
         });
       }
       return HttpResponse.json(fixture.summary);
-    },
-  ),
-
-  // GET /api/v2/health/top-detractors?limit=N — derived from the active
-  // fleet fixture so the Overview's "Top issues" panel stays in sync with
-  // the per-row breakdowns operators see in the table.
-  http.get<never, never, { results: FleetTopDetractor[] }>(
-    `${API_URL}health/top-detractors`,
-    ({ request }) => {
-      const endpointStatus = getEndpointStatus();
-      if (endpointStatus.status === "error") {
-        throw createEndpointStatusError();
-      }
-      const url = new URL(request.url);
-      const limitRaw = url.searchParams.get("limit");
-      const limit = limitRaw ? Math.max(1, Number(limitRaw)) : 3;
-      const { computers } = getHealthFixture();
-      return HttpResponse.json({
-        results: getFleetTopDetractors(computers, limit),
-      });
     },
   ),
 

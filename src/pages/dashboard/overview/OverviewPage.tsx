@@ -10,7 +10,6 @@ import {
   RemediationPile,
   TopDetractors,
   useFleetHealthSummary,
-  useFleetTopDetractors,
 } from "@/features/health";
 import {
   AlertsContainer,
@@ -23,10 +22,8 @@ import classes from "./OverviewPage.module.scss";
 
 const HealthDashboard: FC = () => {
   const summaryQuery = useFleetHealthSummary();
-  const detractorsQuery = useFleetTopDetractors();
   const onRetry = () => {
     void summaryQuery.refetch();
-    void detractorsQuery.refetch();
   };
   return (
     <div className={classNames("grid", classes.healthDashboard)}>
@@ -41,8 +38,8 @@ const HealthDashboard: FC = () => {
         />
         <FleetTopIssues
           className={classes.third}
-          detractors={detractorsQuery.data?.data.results}
-          isLoading={detractorsQuery.isLoading}
+          issues={summaryQuery.data?.data.top_issues}
+          isLoading={summaryQuery.isLoading}
         />
         <RemediationPile
           className={classes.third}

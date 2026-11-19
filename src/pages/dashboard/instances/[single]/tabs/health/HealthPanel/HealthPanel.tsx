@@ -8,6 +8,7 @@ import {
   HealthScoreInfo,
   HealthScoreSummary,
   isHealthMeasurable,
+  staleReasonText,
   useComputerHealth,
 } from "@/features/health";
 import date from "@/libs/date";
@@ -89,8 +90,22 @@ const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
   }
 
   const health = query.data.data;
-  const { score, band, factors, updated_at } = health;
+
+  if (!health.measurable) {
+    return (
+      <EmptyState
+        title="No health score yet"
+        icon="information"
+        body={
+          <p>This instance gets a score once it has reported its packages.</p>
+        }
+      />
+    );
+  }
+
+  const { score, band, factors, evaluated_at } = health;
   const recommended = effectiveRecommendedActions(health);
+  const staleReason = staleReasonText(health);
 
   return (
     <div className={classNames("grid", classes.layout)}>
@@ -109,14 +124,13 @@ const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
               score={score}
               band={band}
               hint={
-                updated_at ? (
-                  <>
-                    Last evaluated{" "}
-                    <time dateTime={updated_at}>
-                      {date(updated_at).format(DISPLAY_DATE_TIME_FORMAT)}
-                    </time>
-                  </>
-                ) : null
+                <>
+                  Last evaluated{" "}
+                  <time dateTime={evaluated_at}>
+                    {date(evaluated_at).format(DISPLAY_DATE_TIME_FORMAT)}
+                  </time>
+                  {staleReason ? ` · May be out of date. ${staleReason}` : null}
+                </>
               }
             />
           </Card.Content>

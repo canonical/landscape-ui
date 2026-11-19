@@ -13,7 +13,7 @@ interface InstanceHealthSignal {
 // Thin wrapper that resolves the per-instance score for places that
 // need it as a *signal* (tab badge, nav-bar dot, etc.) rather than a
 // full breakdown. Returns undefined fields when health is disabled or
-// the instance isn't measurable so callers don't have to repeat the
+// the instance has no score so callers don't have to repeat the
 // guard logic.
 export default function useInstanceHealthSignal(
   instance: Pick<
@@ -25,9 +25,10 @@ export default function useInstanceHealthSignal(
   const eligible = isFeatureEnabled("health") && isHealthMeasurable(instance);
   const query = useComputerHealth(eligible ? instance.id : 0);
   const data = eligible ? query.data?.data : undefined;
+  const measured = data?.measurable ? data : undefined;
   return {
-    score: data?.score,
-    band: data?.band,
+    score: measured?.score,
+    band: measured?.band,
     isLoading: eligible && query.isLoading,
   };
 }

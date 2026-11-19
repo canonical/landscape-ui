@@ -1,66 +1,114 @@
-// LA061 types — kept in sync with the server-side Pydantic responses.
+// LA061 types. The shapes follow the instance health engine design documents
+// (computer endpoints, fleet and rules endpoints). Anything those documents
+// leave to Phase 2 is grouped at the bottom and only exists on mocks.
 
 export type HealthBand = "critical" | "warning" | "healthy";
 
+export type HealthStaleReason = "inputs" | "rules" | "engine";
+
 export interface HealthFactor {
-  rule_id?: number;
   rule_key: string;
-  // The rule's display text. `description` is the older name for it.
-  title?: string;
-  description?: string;
-  points: number;
+  kind: string;
+  title: string;
   // How many items matched the rule.
-  count?: number;
+  count: number;
+  points: number;
   // The part of `count` whose fix is installed and waits for a reboot.
   pending_reboot_count?: number;
 }
 
-export interface ComputerHealth {
+export interface MeasuredComputerHealth {
   computer_id: number;
-  account_id: number;
+  measurable: true;
   score: number;
   band: HealthBand;
   critical_factor_count: number;
   factors: HealthFactor[];
-  // LA061 Phase 1.7: server-derived list of recommended actions for this
-  // computer's current factors. Optional for backwards compatibility — the
-  // UI's `recommendedActionsFor(factors)` helper covers the case where the
-  // server omits the field. An explicitly empty array means "nothing
-  // recommended" and must NOT fall back to the helper.
+  inputs_as_of: string;
+  evaluated_at: string;
+  rules_version: number;
+  engine_version: number;
+  stale: boolean;
+  stale_reason: HealthStaleReason | null;
+  // Phase 2, mocks only. An empty array means "nothing recommended" and must
+  // not fall back to `recommendedActionsFor(factors)`.
   recommended_actions?: HealthActionKind[];
-  updated_at: string | null;
+}
+
+// A computer with no state row: it cannot be scored or is not scored yet.
+export interface UnmeasuredComputerHealth {
+  computer_id: number;
+  measurable: false;
+}
+
+export type ComputerHealth = MeasuredComputerHealth | UnmeasuredComputerHealth;
+
+export interface FleetHealthBands {
+  critical: number;
+  warning: number;
+  healthy: number;
+  unmeasured: number;
+}
+
+export interface FleetHealthThresholds {
+  critical_max: number;
+  warning_max: number;
+}
+
+// One rule and the instances it currently costs points.
+export interface FleetTopIssue {
+  rule_key: string;
+  title: string;
+  computer_count: number;
+  points_sum: number;
 }
 
 export interface FleetHealthSummary {
-  account_id: number;
-  band_critical_count: number;
-  band_warning_count: number;
-  band_healthy_count: number;
+  bands: FleetHealthBands;
+  measured_count: number;
+  // Measured plus unmeasured.
   total_count: number;
-  // The average score across measurable instances. Optional for backwards
-  // compatibility — the field is being added alongside the Overview hero
-  // gauge; clients should treat `undefined` as "compute from band counts".
-  average_score?: number;
-  // Coverage hint: how many of the account's instances actually have a
-  // computed health row. Non-Ubuntu / WSL host instances aren't measurable
-  // and don't contribute. Optional for backward compatibility.
-  measurable_count?: number;
-  // LA061 Phase 1.8: count of instances the engine can't score (Windows /
-  // WSL host / no distribution). Sum with `measurable_count` equals the
-  // account's full instance count.
-  unmeasurable_count?: number;
-  // LA061 Phase 1.8: optional grouped breakdown when the caller passed
-  // `?group_by=tag|distribution|account`. Top-N + an "other" rollup.
-  groups?: HealthGroupSummary[];
-  // LA061 Phase 1.8: number of pending kernel USNs the Livepatch waiver is
-  // currently suppressing in the account. Drives the Pro/Livepatch
-  // differentiator badge on the Remediation Pile.
-  kernel_usns_waived_count?: number;
+  // Null when nothing is measured.
+  average_score: number | null;
+  thresholds: FleetHealthThresholds;
+  // Null until the first recompute after the feature is enabled.
+  rules_version: number | null;
+  // Every rule with at least one matching instance, most instances first.
+  top_issues: FleetTopIssue[];
   updated_at: string | null;
+  worker_last_tick_at: string | null;
+  // The counters are partial while this is true.
+  recompute_in_progress: boolean;
+  // Phase 2, mocks only: present when the request passed `group_by`.
+  groups?: HealthGroupSummary[];
+  // Phase 2, mocks only: kernel USNs the Livepatch waiver is suppressing.
+  kernel_usns_waived_count?: number;
 }
 
-// LA061 Phase 1.8: one row of the grouped `/health/summary?group_by=...`
-// breakdown. Backs the `HealthByGroup` widget on the Overview.
+export interface HealthRule {
+  rule_key: string;
+  kind: string;
+  params: Record<string, unknown>;
+  title: string;
+  description: string;
+  weight: number;
+  // Null means no cap.
+  cap: number | null;
+  enabled: boolean;
+  scope: "system" | "account";
+  overrides_system_default: boolean;
+}
+
+export interface HealthRulesResponse {
+  rules_version: number;
+  results: HealthRule[];
+}
+
+// ─── Phase 2, mocks only ────────────────────────────────────────────────
+// The design documents defer remediation actions and the group breakdown.
+// The UI keeps them on mocked responses so their design can be reviewed.
+
+// One row of the grouped `/health/summary?group_by=...` breakdown.
 export interface HealthGroupSummary extends Record<string, unknown> {
   group: string;
   band_critical_count: number;
@@ -69,43 +117,8 @@ export interface HealthGroupSummary extends Record<string, unknown> {
   total_count: number;
 }
 
-// LA061 Phase 1.8: dimensions the `HealthByGroup` widget can pivot over.
-// Mirrors the server's `_VALID_GROUP_BY` set in
-// `canonical/landscape/api/health/summary.py`.
 export type HealthGroupBy = "tag" | "distribution" | "account";
 
-// Fleet-wide top detractor: a single rule and the count of instances it's
-// currently dragging down. Backs the "Top issues now" panel on the Overview.
-export interface FleetTopDetractor {
-  rule_id?: number;
-  rule_key: string;
-  title?: string;
-  description?: string;
-  weight: number;
-  computer_count: number;
-}
-
-export interface HealthRule {
-  id: number;
-  account_id: number | null;
-  rule_key: string;
-  description: string;
-  definition: Record<string, unknown>;
-  weight: number;
-  enabled: boolean;
-  created_at: string;
-  updated_at: string;
-  is_system_default: boolean;
-}
-
-// LA061 Phase 1.7: action kinds the UI can dispatch from the Health tab.
-// `reboot`, `run-security-updates`, and `refresh-facts` are fully wired
-// server-side. `attach-ubuntu-pro` and `run-diagnostic-script` return 501 —
-// the server omits them from `recommended_actions` so they never reach the
-// UI's button row in production, but the UI's local fallback can still
-// render them in dev when the MSW handler omits the field. Keep this list
-// in sync with `canonical/landscape/health/actions.py:HealthActionKind`
-// (server) and the MSW handler.
 export type HealthActionKind =
   | "run-security-updates"
   | "reboot"
@@ -116,17 +129,12 @@ export type HealthActionKind =
 export interface HealthActionResult {
   action: HealthActionKind;
   computer_id: number;
-  // Null for `refresh-facts` — that action marks the computer dirty
-  // server-side and doesn't enqueue an activity. The UI toast hides the
-  // "View activity" link in that case.
+  // Null for `refresh-facts`, which enqueues no activity.
   activity_id: number | null;
   enqueued_at: string;
 }
 
-// LA061 Phase 1.8: bulk-action response. HTTP status is 207 Multi-Status so
-// success is per-row, not all-or-nothing. The UI surfaces `success_count` and
-// `failure_count` in the toast and inspects `results` only when failures
-// exist.
+// The bulk action answers 207, so success is per row.
 export type HealthBulkActionOutcomeStatus =
   | "enqueued"
   | "forbidden"

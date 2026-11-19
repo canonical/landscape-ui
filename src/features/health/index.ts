@@ -17,7 +17,6 @@ export {
   useBulkHealthAction,
   useComputerHealth,
   useFleetHealthSummary,
-  useFleetTopDetractors,
   useHealthAction,
   useHealthSummaryByGroup,
   useInstanceHealthSignal,
@@ -27,6 +26,7 @@ export {
   isInstanceMeasurable,
   effectiveRecommendedActions,
   recommendedActionsFor,
+  staleReasonText,
   HEALTH_ACTION_META,
   BAND_LABEL,
   BAND_ICON,
@@ -35,7 +35,7 @@ export {
 export type {
   ComputerHealth,
   FleetHealthSummary,
-  FleetTopDetractor,
+  FleetTopIssue,
   HealthActionKind,
   HealthActionResult,
   HealthBand,
@@ -45,4 +45,8 @@ export type {
   HealthGroupBy,
   HealthGroupSummary,
   HealthRule,
+  HealthRulesResponse,
+  HealthStaleReason,
+  MeasuredComputerHealth,
+  UnmeasuredComputerHealth,
 } from "./types";

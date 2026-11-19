@@ -7,27 +7,27 @@ import type { FC } from "react";
 import { useId } from "react";
 import { Link } from "react-router";
 import { ruleTitle } from "../../helpers";
-import type { FleetTopDetractor } from "../../types";
+import type { FleetTopIssue } from "../../types";
 import classes from "./FleetTopIssues.module.scss";
 
-// Rules at or above this weight link to the critical band only.
-const CRITICAL_WEIGHT = 61;
+// Rules whose mean penalty reaches this link to the critical band only.
+const CRITICAL_MEAN_PENALTY = 61;
 const VISIBLE_LIMIT = 5;
 
 interface FleetTopIssuesProps {
-  readonly detractors?: FleetTopDetractor[];
+  readonly issues?: FleetTopIssue[];
   readonly isLoading?: boolean;
   readonly className?: string;
 }
 
 const FleetTopIssues: FC<FleetTopIssuesProps> = ({
-  detractors = [],
+  issues = [],
   isLoading,
   className,
 }) => {
   const titleId = useId();
-  const visible = detractors.slice(0, VISIBLE_LIMIT);
-  const remaining = detractors.length - visible.length;
+  const visible = issues.slice(0, VISIBLE_LIMIT);
+  const remaining = issues.length - visible.length;
 
   return (
     <Card className={className} aria-labelledby={titleId}>
@@ -38,17 +38,19 @@ const FleetTopIssues: FC<FleetTopIssuesProps> = ({
       </Card.Header>
       <Card.Content>
         {isLoading ? <LoadingState /> : null}
-        {!isLoading && detractors.length === 0 ? (
+        {!isLoading && issues.length === 0 ? (
           <p className={classes.empty}>
             <Icon name="success" /> No factors are dragging the fleet down.
           </p>
         ) : null}
         {!isLoading && visible.length > 0 ? (
           <ul className={classes.list}>
-            {visible.map((detractor) => {
-              const isCritical = detractor.weight >= CRITICAL_WEIGHT;
+            {visible.map((issue) => {
+              const isCritical =
+                issue.points_sum / issue.computer_count >=
+                CRITICAL_MEAN_PENALTY;
               return (
-                <li key={detractor.rule_key} className={classes.item}>
+                <li key={issue.rule_key} className={classes.item}>
                   <Icon name={isCritical ? "error" : "warning"} />
                   <Link
                     to={ROUTES.instances.root({
@@ -58,11 +60,11 @@ const FleetTopIssues: FC<FleetTopIssuesProps> = ({
                     })}
                     className={classes.description}
                   >
-                    {ruleTitle(detractor)}
+                    {ruleTitle(issue)}
                   </Link>
                   <span className={classes.count}>
-                    <strong>{detractor.computer_count}</strong>{" "}
-                    {pluralize(detractor.computer_count, ["instance"])}
+                    <strong>{issue.computer_count}</strong>{" "}
+                    {pluralize(issue.computer_count, ["instance"])}
                   </span>
                 </li>
               );

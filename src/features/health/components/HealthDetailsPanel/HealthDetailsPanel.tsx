@@ -8,7 +8,7 @@ import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { Link } from "react-router";
-import { effectiveRecommendedActions } from "../../helpers";
+import { effectiveRecommendedActions, staleReasonText } from "../../helpers";
 import useComputerHealth from "../../hooks/useComputerHealth";
 import HealthActions from "../HealthActions";
 import HealthFactorList from "../HealthFactorList";
@@ -60,7 +60,24 @@ const HealthDetailsPanel: FC<HealthDetailsPanelProps> = ({ instance }) => {
   }
 
   const health = query.data.data;
+
+  if (!health.measurable) {
+    return (
+      <EmptyState
+        title="No health score"
+        icon="information"
+        body={
+          <p>
+            Health is measured on Ubuntu instances once they have reported their
+            packages.
+          </p>
+        }
+      />
+    );
+  }
+
   const recommended = effectiveRecommendedActions(health);
+  const staleReason = staleReasonText(health);
 
   return (
     <div className={classes.root}>
@@ -68,14 +85,13 @@ const HealthDetailsPanel: FC<HealthDetailsPanelProps> = ({ instance }) => {
         score={health.score}
         band={health.band}
         hint={
-          health.updated_at ? (
-            <>
-              Last evaluated{" "}
-              <time dateTime={health.updated_at}>
-                {date(health.updated_at).format(DISPLAY_DATE_TIME_FORMAT)}
-              </time>
-            </>
-          ) : null
+          <>
+            Last evaluated{" "}
+            <time dateTime={health.evaluated_at}>
+              {date(health.evaluated_at).format(DISPLAY_DATE_TIME_FORMAT)}
+            </time>
+            {staleReason ? ` · May be out of date. ${staleReason}` : null}
+          </>
         }
       />
 

@@ -1,17 +1,19 @@
-// LA061 Phase 1.5 — fixture sanity tests. Keeps the demo fixtures honest
-// (sums match summary counters, seeded rule shape matches the server
-// SEEDED_RULES table, runtime switcher round-trips).
+// LA061 — fixture sanity tests. Keeps the demo fixtures honest (sums match
+// summary counters, seeded rules match the data model document, runtime
+// switcher round-trips).
 
 import { describe, expect, it } from "vitest";
 import {
   crisisFleet,
   emptyFleet,
   fixtures,
+  getComputerHealth,
   getHealthFixture,
   healthyFleet,
   livepatchWaiverFleet,
   manyFactorsComputer,
   mixedFleet,
+  recomputingFleet,
   seededRules,
   setHealthFixture,
 } from "@/tests/mocks/health";
@@ -21,24 +23,25 @@ const RULE_KEYS = [
   "usn.high",
   "usn.medium",
   "usn.low",
+  "usn.unrated",
   "reboot_required",
   "instance.offline",
   "package.updates_available",
 ] as const;
 
-// Spec weights (mirrors `canonical.landscape.health.seed.SEEDED_RULES`).
+// Weights from the data model document's seeded rules table.
 const W_USN_HIGH = 20;
 const W_OFFLINE = 20;
 
-// Band thresholds (mirror `canonical/landscape/health/bands.py`).
+// Default band thresholds.
 const CRITICAL_MAX = 25;
 const WARNING_MAX = 60;
 
 describe("seededRules", () => {
-  it("matches the Phase 1.5 server-side SEEDED_RULES set", () => {
+  it("holds the eight seeded system rules", () => {
     const keys = seededRules.map((r) => r.rule_key);
     expect(new Set(keys)).toEqual(new Set(RULE_KEYS));
-    expect(seededRules).toHaveLength(7);
+    expect(seededRules).toHaveLength(RULE_KEYS.length);
   });
 
   it("uses the spec weights", () => {
@@ -47,6 +50,7 @@ describe("seededRules", () => {
     expect(byKey["usn.high"]!.weight).toBe(W_USN_HIGH);
     expect(byKey["usn.medium"]!.weight).toBe(5);
     expect(byKey["usn.low"]!.weight).toBe(1);
+    expect(byKey["usn.unrated"]!.weight).toBe(5);
     expect(byKey.reboot_required!.weight).toBe(10);
     expect(byKey["instance.offline"]!.weight).toBe(W_OFFLINE);
     expect(byKey["package.updates_available"]!.weight).toBe(1);
@@ -54,8 +58,8 @@ describe("seededRules", () => {
 
   it("flags every seed row as a system default", () => {
     for (const r of seededRules) {
-      expect(r.is_system_default).toBe(true);
-      expect(r.account_id).toBeNull();
+      expect(r.scope).toBe("system");
+      expect(r.overrides_system_default).toBe(false);
     }
   });
 });
@@ -65,19 +69,30 @@ describe.each([
   ["mixedFleet", mixedFleet],
   ["crisisFleet", crisisFleet],
   ["emptyFleet", emptyFleet],
+  ["recomputingFleet", recomputingFleet],
   ["livepatchWaiverFleet", livepatchWaiverFleet],
 ])("%s consistency", (_name, fleet) => {
-  it("summary band counts sum to total_count", () => {
-    const { summary } = fleet;
-    expect(
-      summary.band_critical_count +
-        summary.band_warning_count +
-        summary.band_healthy_count,
-    ).toBe(summary.total_count);
+  it("measured bands sum to measured_count, and with unmeasured to total_count", () => {
+    const { bands, measured_count, total_count } = fleet.summary;
+    expect(bands.critical + bands.warning + bands.healthy).toBe(measured_count);
+    expect(measured_count + bands.unmeasured).toBe(total_count);
   });
 
-  it("computer count matches summary.total_count", () => {
-    expect(fleet.computers).toHaveLength(fleet.summary.total_count);
+  it("computer count matches summary.measured_count", () => {
+    expect(fleet.computers).toHaveLength(fleet.summary.measured_count);
+  });
+
+  it("top_issues counts each rule's instances, most instances first", () => {
+    const { top_issues } = fleet.summary;
+    for (const issue of top_issues) {
+      expect(issue.computer_count).toBe(
+        fleet.computers.filter((c) =>
+          c.factors.some((f) => f.rule_key === issue.rule_key),
+        ).length,
+      );
+    }
+    const counts = top_issues.map((issue) => issue.computer_count);
+    expect(counts).toEqual([...counts].sort((a, b) => b - a));
   });
 
   it("each computer's band matches its score band", () => {
@@ -119,6 +134,35 @@ describe("livepatchWaiverFleet", () => {
   });
 });
 
+describe("recomputingFleet", () => {
+  it("reads as the window after the feature is enabled", () => {
+    const { summary } = recomputingFleet;
+    expect(summary.recompute_in_progress).toBe(true);
+    expect(summary.rules_version).toBeNull();
+    expect(summary.average_score).toBeNull();
+    expect(summary.measured_count).toBe(0);
+  });
+});
+
+describe("getComputerHealth", () => {
+  it("answers measurable: false for a computer without a state row", () => {
+    const unknownId = 1234567;
+    expect(getComputerHealth(unknownId)).toEqual({
+      computer_id: unknownId,
+      measurable: false,
+    });
+  });
+
+  it("returns the full state resource for a scored computer", () => {
+    const health = getComputerHealth(manyFactorsComputer.computer_id);
+    expect(health).toMatchObject({
+      measurable: true,
+      stale: false,
+      stale_reason: null,
+    });
+  });
+});
+
 describe("setHealthFixture", () => {
   it("switches the active fixture in place", () => {
     setHealthFixture("crisisFleet");
@@ -138,6 +182,7 @@ describe("setHealthFixture", () => {
         "mixedFleet",
         "crisisFleet",
         "emptyFleet",
+        "recomputingFleet",
         "livepatchWaiverFleet",
       ]),
     );

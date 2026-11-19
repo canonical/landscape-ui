@@ -3,13 +3,14 @@ import { describe, expect, it } from "vitest";
 import type { HealthFactor } from "../../types";
 import HealthFactorList from "./HealthFactorList";
 
-const factor = (overrides: Partial<HealthFactor>): HealthFactor =>
-  ({
-    rule_key: "reboot_required",
-    description: "Reboot required",
-    points: 20,
-    ...overrides,
-  }) as HealthFactor;
+const factor = (overrides: Partial<HealthFactor>): HealthFactor => ({
+  rule_key: "reboot_required",
+  kind: "reboot_required",
+  title: "Reboot required",
+  count: 1,
+  points: 20,
+  ...overrides,
+});
 
 describe("HealthFactorList", () => {
   it("lists each factor with the points it costs", () => {
@@ -18,7 +19,7 @@ describe("HealthFactorList", () => {
         factors={[
           factor({
             rule_key: "usn.critical",
-            description: "Critical USN",
+            title: "Critical USN",
             points: 100,
           }),
           factor({}),

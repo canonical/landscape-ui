@@ -10,16 +10,22 @@ import { useId, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { CRITICAL_FACTOR_POINTS, ruleTitle } from "../../helpers";
-import type { HealthFactor } from "../../types";
+import type { HealthFactor, MeasuredComputerHealth } from "../../types";
 import HealthScore from "../HealthScore";
 import classes from "./TopDetractors.module.scss";
 
 const VISIBLE_LIMIT = 5;
-const FETCH_LIMIT = 25;
-const MAX_SCORE = 100;
+
+/** Returns the instance's health state when it has a score. */
+const measuredHealth = ({
+  health,
+}: Instance): MeasuredComputerHealth | undefined =>
+  health?.measurable ? (health as MeasuredComputerHealth) : undefined;
 
 const getDominantFactor = (instance: Instance): HealthFactor | undefined =>
-  [...(instance.health?.factors ?? [])].sort((a, b) => b.points - a.points)[0];
+  [...(measuredHealth(instance)?.factors ?? [])].sort(
+    (a, b) => b.points - a.points,
+  )[0];
 
 interface TopDetractorsProps {
   readonly className?: string;
@@ -28,22 +34,15 @@ interface TopDetractorsProps {
 const TopDetractors: FC<TopDetractorsProps> = ({ className }) => {
   const titleId = useId();
   const { instances, isGettingInstances } = useGetInstances({
-    limit: FETCH_LIMIT,
+    limit: VISIBLE_LIMIT,
     health_band: "critical,warning",
     with_health: true,
+    // The server orders worst first, so one short page is the whole list.
+    sort: "health",
   });
 
   const worstInstances = useMemo(
-    () =>
-      instances
-        .filter(({ health }) => health !== undefined)
-        .sort(
-          (a, b) =>
-            (a.health?.score ?? MAX_SCORE) - (b.health?.score ?? MAX_SCORE) ||
-            (b.health?.critical_factor_count ?? 0) -
-              (a.health?.critical_factor_count ?? 0),
-        )
-        .slice(0, VISIBLE_LIMIT),
+    () => instances.filter((instance) => measuredHealth(instance)),
     [instances],
   );
 
@@ -53,15 +52,14 @@ const TopDetractors: FC<TopDetractorsProps> = ({ className }) => {
         id: "score",
         Header: "Score",
         className: classes.score,
-        Cell: ({ row: { original } }: CellProps<Instance>) =>
-          original.health ? (
-            <HealthScore
-              score={original.health.score}
-              band={original.health.band}
-            />
+        Cell: ({ row: { original } }: CellProps<Instance>) => {
+          const health = measuredHealth(original);
+          return health ? (
+            <HealthScore score={health.score} band={health.band} />
           ) : (
             <NoData />
-          ),
+          );
+        },
       },
       {
         accessor: "title",

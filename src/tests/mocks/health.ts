@@ -1,92 +1,41 @@
 // LA061 — fixture data for the Health endpoints. Switch between shapes at
 // runtime via `setHealthFixture('crisisFleet')` etc. from the dev console.
+// Shapes follow the instance health engine design documents.
 
-export type Band = "critical" | "warning" | "healthy";
+import type {
+  ComputerHealth,
+  FleetHealthSummary,
+  FleetTopIssue,
+  HealthActionKind,
+  HealthBand,
+  HealthFactor,
+  HealthRule,
+  MeasuredComputerHealth,
+} from "@/features/health";
+import { instances } from "./instance";
 
-export interface HealthFactor {
-  rule_id: number;
-  rule_key: string;
-  description: string;
-  points: number;
-  count?: number;
-  pending_reboot_count?: number;
-}
-
-// LA061 Phase 1.7: kept aligned with `src/features/health/types`. The MSW
-// handler enriches each fixture with a server-derived `recommended_actions`
-// list at response time, so the field is optional here.
-export type HealthActionKind =
-  | "run-security-updates"
-  | "reboot"
-  | "refresh-facts"
-  | "attach-ubuntu-pro"
-  | "run-diagnostic-script";
-
-export interface ComputerHealth {
-  computer_id: number;
-  account_id: number;
-  score: number;
-  band: Band;
-  critical_factor_count: number;
-  factors: HealthFactor[];
-  recommended_actions?: HealthActionKind[];
-  updated_at: string | null;
-}
-
-export interface FleetHealthSummaryGroupRow {
-  group: string;
-  band_critical_count: number;
-  band_warning_count: number;
-  band_healthy_count: number;
-  total_count: number;
-}
-
-export interface FleetHealthSummary {
-  account_id: number;
-  band_critical_count: number;
-  band_warning_count: number;
-  band_healthy_count: number;
-  total_count: number;
-  average_score?: number;
-  measurable_count?: number;
-  // LA061 Phase 1.8: count of `computer` rows the engine can't score
-  // (Windows / WSL host / no distribution). Sum with `measurable_count`
-  // equals the account's full instance count.
-  unmeasurable_count?: number;
-  // LA061 Phase 1.8 fields. Optional so existing fixtures don't need to
-  // populate them.
-  groups?: FleetHealthSummaryGroupRow[];
-  kernel_usns_waived_count?: number;
-  updated_at: string | null;
-}
-
-export interface FleetTopDetractor {
-  rule_id: number;
-  rule_key: string;
-  description: string;
-  weight: number;
-  computer_count: number;
-}
-
-export interface HealthRule {
-  id: number;
-  account_id: number | null;
-  rule_key: string;
-  description: string;
-  definition: Record<string, unknown>;
-  weight: number;
-  enabled: boolean;
-  created_at: string;
-  updated_at: string;
-  is_system_default: boolean;
-}
+export type {
+  ComputerHealth,
+  FleetHealthSummary,
+  FleetTopIssue,
+  HealthActionKind,
+  HealthFactor,
+  HealthRule,
+  MeasuredComputerHealth,
+};
 
 const NOW = "2026-05-12T12:00:00Z";
 
-// Band thresholds — must match the server-side defaults in
-// `canonical/landscape/health/bands.py`.
+export const RULES_VERSION = 7;
+const ENGINE_VERSION = 1;
+
+// Band thresholds, returned by the summary so clients never hard-code them.
 const CRITICAL_MAX = 25;
 const WARNING_MAX = 60;
+export const thresholds = {
+  critical_max: CRITICAL_MAX,
+  warning_max: WARNING_MAX,
+};
 
 // Score bands used in fixture shapes.
 const HEALTHY_SCORE = 100;
@@ -99,100 +48,80 @@ const FLEET_SIZE = 100;
 const HEALTHY_FLEET_WARNINGS = 3;
 const CRISIS_FLEET_CRITICAL = 80;
 const CRISIS_FLEET_WARNING = 95;
+// Instances the engine has no score for, shown as the "Unmeasured" row.
+const DEFAULT_UNMEASURED = 3;
 
-// ─── seeded system-default rules (Phase 1.5: seven rows) ────────────────
-// Kept in sync with `canonical.landscape.health.seed.SEEDED_RULES`. Phase 1.5
-// added `usn.low` and `package.updates_available` (both weight 1) for
-// legacy-PackageUpgradesAlert parity.
+// ─── seeded system-default rules ────────────────────────────────────────
+
+const usnRule = (
+  priority: string | null,
+  title: string,
+  weight: number,
+  cap: number | null,
+): HealthRule => ({
+  rule_key: `usn.${priority ?? "unrated"}`,
+  kind: "usn.severity_band",
+  params: { ubuntu_priority: priority },
+  title,
+  description: priority
+    ? `Pending Ubuntu Security Notice with ${priority} severity.`
+    : "Pending Ubuntu Security Notice with no severity assigned yet.",
+  weight,
+  cap,
+  enabled: true,
+  scope: "system",
+  overrides_system_default: false,
+});
+
+/* eslint-disable @typescript-eslint/no-magic-numbers --
+ * Weights and caps of the seeded rules, as the data model document lists them.
+ */
 export const seededRules: HealthRule[] = [
+  usnRule("critical", "Critical-severity security notice", 100, null),
+  usnRule("high", "High-severity security notice", 20, 60),
+  usnRule("medium", "Medium-severity security notice", 5, 40),
+  usnRule("low", "Low-severity security notice", 1, 15),
+  usnRule(null, "Unrated security notice", 5, 20),
   {
-    id: 1,
-    account_id: null,
-    rule_key: "usn.critical",
-    description: "Pending USN with Ubuntu Priority `critical`.",
-    definition: { params: { ubuntu_priority: "critical" } },
-    weight: 100,
-    enabled: true,
-    created_at: NOW,
-    updated_at: NOW,
-    is_system_default: true,
-  },
-  {
-    id: 2,
-    account_id: null,
-    rule_key: "usn.high",
-    description: "Pending USN with Ubuntu Priority `high`.",
-    definition: { params: { ubuntu_priority: "high" } },
-    weight: 20,
-    enabled: true,
-    created_at: NOW,
-    updated_at: NOW,
-    is_system_default: true,
-  },
-  {
-    id: 3,
-    account_id: null,
-    rule_key: "usn.medium",
-    description: "Pending USN with Ubuntu Priority `medium`.",
-    definition: { params: { ubuntu_priority: "medium" } },
-    weight: 5,
-    enabled: true,
-    created_at: NOW,
-    updated_at: NOW,
-    is_system_default: true,
-  },
-  {
-    id: 4,
-    account_id: null,
-    rule_key: "usn.low",
-    description: "Pending USN with Ubuntu Priority `low`.",
-    definition: { params: { ubuntu_priority: "low" } },
-    weight: 1,
-    enabled: true,
-    created_at: NOW,
-    updated_at: NOW,
-    is_system_default: true,
-  },
-  {
-    id: 5,
-    account_id: null,
     rule_key: "reboot_required",
-    description: "ComputerStatus.reboot_required_flag is true.",
-    definition: { params: {} },
+    kind: "reboot_required",
+    params: {},
+    title: "Reboot required",
+    description: "The instance is waiting for a reboot.",
     weight: 10,
+    cap: null,
     enabled: true,
-    created_at: NOW,
-    updated_at: NOW,
-    is_system_default: true,
+    scope: "system",
+    overrides_system_default: false,
   },
   {
-    id: 6,
-    account_id: null,
     rule_key: "instance.offline",
+    kind: "instance.offline",
+    params: { threshold_hours: 24 },
+    title: "Instance offline",
     description: "Has not exchanged with the server within the last 24 hours.",
-    definition: { params: { threshold_hours: 24 } },
     weight: 20,
+    cap: null,
     enabled: true,
-    created_at: NOW,
-    updated_at: NOW,
-    is_system_default: true,
+    scope: "system",
+    overrides_system_default: false,
   },
   {
-    id: 7,
-    account_id: null,
     rule_key: "package.updates_available",
-    description:
-      "One or more non-security package updates are pending on the computer.",
-    definition: { params: {} },
+    kind: "package.updates_available",
+    params: {},
+    title: "Package updates available",
+    description: "Package updates that are not security fixes are pending.",
     weight: 1,
+    cap: 20,
     enabled: true,
-    created_at: NOW,
-    updated_at: NOW,
-    is_system_default: true,
+    scope: "system",
+    overrides_system_default: false,
   },
 ];
+/* eslint-enable @typescript-eslint/no-magic-numbers */
 
-function classify(score: number): Band {
+function classify(score: number): HealthBand {
   if (score <= CRITICAL_MAX) return "critical";
   if (score <= WARNING_MAX) return "warning";
   return "healthy";
@@ -203,97 +132,104 @@ function makeComputerHealth(
   score: number,
   factors: HealthFactor[] = [],
   critical_factor_count = 0,
-): ComputerHealth {
+): MeasuredComputerHealth {
   return {
     computer_id,
-    account_id: 1,
+    measurable: true,
     score,
     band: classify(score),
     critical_factor_count,
     factors,
-    updated_at: NOW,
+    inputs_as_of: NOW,
+    evaluated_at: NOW,
+    rules_version: RULES_VERSION,
+    engine_version: ENGINE_VERSION,
+    stale: false,
+    stale_reason: null,
   };
 }
 
-const factorCritical: HealthFactor = {
-  rule_id: 1,
-  rule_key: "usn.critical",
-  description: "Pending USN with Ubuntu Priority `critical`.",
-  points: 100,
+// One match of a seeded rule.
+const factorFor = (rule_key: string): HealthFactor => {
+  const rule = seededRules.find((r) => r.rule_key === rule_key);
+  if (!rule) {
+    throw new Error(`Unknown seeded rule ${rule_key}`);
+  }
+  return {
+    rule_key,
+    kind: rule.kind,
+    title: rule.title,
+    count: 1,
+    points: rule.weight,
+  };
 };
-const factorHigh: HealthFactor = {
-  rule_id: 2,
-  rule_key: "usn.high",
-  description: "Pending USN with Ubuntu Priority `high`.",
-  points: 20,
-};
+
+const factorCritical = factorFor("usn.critical");
+const factorHigh = factorFor("usn.high");
 // The fix is installed and takes effect after a reboot.
 const factorHighPendingReboot: HealthFactor = {
   ...factorHigh,
-  count: 1,
   pending_reboot_count: 1,
 };
-const factorMedium: HealthFactor = {
-  rule_id: 3,
-  rule_key: "usn.medium",
-  description: "Pending USN with Ubuntu Priority `medium`.",
-  points: 5,
-};
-const factorLow: HealthFactor = {
-  rule_id: 4,
-  rule_key: "usn.low",
-  description: "Pending USN with Ubuntu Priority `low`.",
-  points: 1,
-};
-const factorReboot: HealthFactor = {
-  rule_id: 5,
-  rule_key: "reboot_required",
-  description: "Reboot required.",
-  points: 10,
-};
-const factorOffline: HealthFactor = {
-  rule_id: 6,
-  rule_key: "instance.offline",
-  description: "Offline > 24h.",
-  points: 20,
-};
-const factorUpdates: HealthFactor = {
-  rule_id: 7,
-  rule_key: "package.updates_available",
-  description: "Non-security updates pending.",
-  points: 1,
-};
+const factorMedium = factorFor("usn.medium");
+const factorLow = factorFor("usn.low");
+const factorUnrated = factorFor("usn.unrated");
+const factorReboot = factorFor("reboot_required");
+const factorOffline = factorFor("instance.offline");
+const factorUpdates = factorFor("package.updates_available");
 
 // ─── fleet helpers ──────────────────────────────────────────────────────
 
-// Walks the computer list to recompute summary fields. Used so fixtures
-// can be written by listing each computer's state and we derive the bands
-// + average automatically — keeps fixtures internally consistent.
-function summarise(computers: ComputerHealth[]): FleetHealthSummary {
-  let critical = 0;
-  let warning = 0;
-  let healthy = 0;
-  let total = 0;
-  for (const c of computers) {
-    total += c.score;
-    if (c.band === "critical") critical++;
-    else if (c.band === "warning") warning++;
-    else healthy++;
+// Per-rule breakdown as the summary returns it: most instances first, then
+// by rule key. Rules with no matching computer are omitted.
+export const getTopIssues = (
+  computers: MeasuredComputerHealth[],
+): FleetTopIssue[] => {
+  const byKey = new Map<string, FleetTopIssue>();
+  for (const computer of computers) {
+    for (const factor of computer.factors) {
+      const issue = byKey.get(factor.rule_key) ?? {
+        rule_key: factor.rule_key,
+        title: factor.title,
+        computer_count: 0,
+        points_sum: 0,
+      };
+      issue.computer_count += 1;
+      issue.points_sum += factor.points;
+      byKey.set(factor.rule_key, issue);
+    }
   }
+  return Array.from(byKey.values()).sort(
+    (a, b) =>
+      b.computer_count - a.computer_count ||
+      a.rule_key.localeCompare(b.rule_key),
+  );
+};
+
+// Derives the summary from the computer list so a fixture stays consistent
+// with itself.
+function summarise(
+  computers: MeasuredComputerHealth[],
+  unmeasured = DEFAULT_UNMEASURED,
+): FleetHealthSummary {
+  const bands = { critical: 0, warning: 0, healthy: 0, unmeasured };
+  let scoreSum = 0;
+  for (const c of computers) {
+    scoreSum += c.score;
+    bands[c.band] += 1;
+  }
+  const measured = computers.length;
   return {
-    account_id: 1,
-    band_critical_count: critical,
-    band_warning_count: warning,
-    band_healthy_count: healthy,
-    total_count: computers.length,
-    average_score: computers.length ? Math.round(total / computers.length) : 0,
-    measurable_count: computers.length,
-    // LA061 Phase 1.8: each demo fleet has a couple of synthetic Windows /
-    // WSL host instances that the engine can't score. The Overview surfaces
-    // them as an "Unmeasured" 4th row so the gauge's denominator stays
-    // honest. Default to a small handful so the row actually renders.
-    unmeasurable_count: 3,
-    updated_at: NOW,
+    bands,
+    measured_count: measured,
+    total_count: measured + unmeasured,
+    average_score: measured ? Math.round(scoreSum / measured) : null,
+    thresholds,
+    rules_version: RULES_VERSION,
+    top_issues: getTopIssues(computers),
+    updated_at: measured ? NOW : null,
+    worker_last_tick_at: NOW,
+    recompute_in_progress: false,
   };
 }
 
@@ -301,7 +237,7 @@ function summarise(computers: ComputerHealth[]): FleetHealthSummary {
 //
 // IDs 1–100 cover the `instances` mock's IDs (1, 2, 3, 4, 5, 7, 8, 9, 10,
 // 11, 12, 20, 21, 33, 65) plus the 200-range. We deliberately spread
-// factor *kinds* across the population so the Overview's top-detractor
+// factor *kinds* across the population so the Overview's top issues
 // panel and the per-row popovers exercise every seeded rule.
 
 /* eslint-disable @typescript-eslint/no-magic-numbers --
@@ -318,14 +254,14 @@ const MIXED_SEEDS: readonly [number, number, HealthFactor[], number?][] = [
   [1, 0, [factorCritical, factorReboot, factorUpdates], 1],
   [2, 43, [factorHigh, factorOffline, factorMedium, factorUpdates]],
   [3, 88, [factorReboot, factorLow]],
-  [4, 78, [factorHigh, factorUpdates]],
+  [4, 78, [factorHigh, factorUnrated]],
   [5, 12, [factorCritical, factorHigh, factorOffline], 1],
   [7, 58, [factorHigh, factorOffline, factorMedium]],
   [8, 32, [factorHigh, factorReboot, factorOffline, factorMedium]],
   [9, 97, [factorLow, factorUpdates]],
   [10, 100, []],
   [11, 64, [factorHigh, factorMedium, factorUpdates]],
-  [12, 71, [factorReboot, factorMedium, factorLow]],
+  [12, 71, [factorReboot, factorMedium, factorUnrated]],
   [20, 18, [factorCritical, factorOffline], 1],
   [21, 52, [factorHighPendingReboot, factorReboot, factorOffline]],
   [33, 94, [factorLow, factorMedium]],
@@ -360,8 +296,8 @@ const FILLER_ARCHETYPES: readonly [number, HealthFactor[], number?][] = [
   [0, [factorCritical], 1], // 5 — critical
 ];
 
-const buildMixedComputers = (): ComputerHealth[] => {
-  const out: ComputerHealth[] = [];
+const buildMixedComputers = (): MeasuredComputerHealth[] => {
+  const out: MeasuredComputerHealth[] = [];
   for (const seed of MIXED_SEEDS) {
     const [id, score, factors, critical] = seed;
     out.push(makeComputerHealth(id, score, factors, critical ?? 0));
@@ -384,32 +320,25 @@ const buildMixedComputers = (): ComputerHealth[] => {
 
 const mixedComputers = buildMixedComputers();
 
+const healthyComputers = Array.from({ length: FLEET_SIZE }, (_, i) => {
+  if (i < HEALTHY_FLEET_WARNINGS) {
+    return makeComputerHealth(i + 1, WARNING_SCORE_HIGH, [factorReboot]);
+  }
+  // Scatter a small `usn.low` + `package.updates_available` tail across
+  // the otherwise-healthy population so the visualization gets to render
+  // the lowest-severity factors too. Score still in the healthy band.
+  if (i < HEALTHY_FLEET_WARNINGS + 5) {
+    return makeComputerHealth(i + 1, HEALTHY_SCORE - 2, [
+      factorLow,
+      factorUpdates,
+    ]);
+  }
+  return makeComputerHealth(i + 1, HEALTHY_SCORE);
+});
+
 export const healthyFleet = {
-  summary: {
-    account_id: 1,
-    band_critical_count: 0,
-    band_warning_count: HEALTHY_FLEET_WARNINGS,
-    band_healthy_count: FLEET_SIZE - HEALTHY_FLEET_WARNINGS,
-    total_count: FLEET_SIZE,
-    average_score: 96,
-    measurable_count: FLEET_SIZE,
-    updated_at: NOW,
-  } as FleetHealthSummary,
-  computers: Array.from({ length: FLEET_SIZE }, (_, i) => {
-    if (i < HEALTHY_FLEET_WARNINGS) {
-      return makeComputerHealth(i + 1, WARNING_SCORE_HIGH, [factorReboot]);
-    }
-    // Scatter a small `usn.low` + `package.updates_available` tail across
-    // the otherwise-healthy population so the visualization gets to render
-    // the lowest-severity factors too. Score still in the healthy band.
-    if (i < HEALTHY_FLEET_WARNINGS + 5) {
-      return makeComputerHealth(i + 1, HEALTHY_SCORE - 2, [
-        factorLow,
-        factorUpdates,
-      ]);
-    }
-    return makeComputerHealth(i + 1, HEALTHY_SCORE);
-  }),
+  summary: summarise(healthyComputers, 0),
+  computers: healthyComputers,
 };
 
 export const mixedFleet = {
@@ -417,149 +346,89 @@ export const mixedFleet = {
   computers: mixedComputers,
 };
 
+const crisisComputers = Array.from({ length: FLEET_SIZE }, (_, i) => {
+  if (i < CRISIS_FLEET_CRITICAL) {
+    // Exercise the tie-break: alternating between 1 and 2 critical factors.
+    const twoCriticals = i % 2 === 1;
+    const factors = twoCriticals
+      ? [factorCritical, factorOffline]
+      : [factorCritical];
+    return makeComputerHealth(i + 1, CRITICAL_SCORE, factors, 1);
+  }
+  if (i < CRISIS_FLEET_WARNING) {
+    return makeComputerHealth(i + 1, WARNING_SCORE_LOW, [
+      factorHigh,
+      factorReboot,
+    ]);
+  }
+  return makeComputerHealth(i + 1, HEALTHY_SCORE);
+});
+
 export const crisisFleet = {
-  summary: {
-    account_id: 1,
-    band_critical_count: CRISIS_FLEET_CRITICAL,
-    band_warning_count: CRISIS_FLEET_WARNING - CRISIS_FLEET_CRITICAL,
-    band_healthy_count: FLEET_SIZE - CRISIS_FLEET_WARNING,
-    total_count: FLEET_SIZE,
-    average_score: 15,
-    measurable_count: FLEET_SIZE,
-    updated_at: NOW,
-  } as FleetHealthSummary,
-  computers: Array.from({ length: FLEET_SIZE }, (_, i) => {
-    if (i < CRISIS_FLEET_CRITICAL) {
-      // Exercise the tie-break: alternating between 1 and 2 critical factors.
-      const twoCriticals = i % 2 === 1;
-      const factors = twoCriticals
-        ? [factorCritical, factorOffline]
-        : [factorCritical];
-      return makeComputerHealth(i + 1, CRITICAL_SCORE, factors, 1);
-    }
-    if (i < CRISIS_FLEET_WARNING) {
-      return makeComputerHealth(i + 1, WARNING_SCORE_LOW, [
-        factorHigh,
-        factorReboot,
-      ]);
-    }
-    return makeComputerHealth(i + 1, HEALTHY_SCORE);
-  }),
+  summary: summarise(crisisComputers, 0),
+  computers: crisisComputers,
 };
 
 export const emptyFleet = {
-  summary: {
-    account_id: 1,
-    band_critical_count: 0,
-    band_warning_count: 0,
-    band_healthy_count: 0,
-    total_count: 0,
-    average_score: 0,
-    measurable_count: 0,
-    updated_at: null,
-  } as FleetHealthSummary,
-  computers: [] as ComputerHealth[],
+  summary: summarise([], 0),
+  computers: [] as MeasuredComputerHealth[],
 };
 
-// ─── top-detractor derivation ──────────────────────────────────────────
-//
-// Walks the active fixture's computer list and counts how many computers
-// are affected by each rule key. Returns the top N rules by count,
-// breaking ties by weight (heavier rules float to the top). The shape
-// mirrors `FleetTopDetractor` and feeds the Overview "Top issues" panel.
-
-export const getFleetTopDetractors = (
-  computers: ComputerHealth[],
-  limit = 3,
-): FleetTopDetractor[] => {
-  const byKey = new Map<
-    string,
-    { factor: HealthFactor; count: number; weight: number }
-  >();
-  for (const computer of computers) {
-    for (const factor of computer.factors) {
-      const existing = byKey.get(factor.rule_key);
-      if (existing) {
-        existing.count += 1;
-      } else {
-        byKey.set(factor.rule_key, {
-          factor,
-          count: 1,
-          weight: factor.points,
-        });
-      }
-    }
-  }
-  return Array.from(byKey.values())
-    .sort((a, b) => b.count - a.count || b.weight - a.weight)
-    .slice(0, limit)
-    .map(({ factor, count, weight }) => ({
-      rule_id: factor.rule_id,
-      rule_key: factor.rule_key,
-      description: factor.description,
-      weight,
-      computer_count: count,
-    }));
+// The window after the feature is enabled: nothing is scored yet, so every
+// computer reads as unmeasured and the counters are zero.
+export const recomputingFleet = {
+  summary: {
+    ...summarise([], FLEET_SIZE),
+    rules_version: null,
+    worker_last_tick_at: null,
+    recompute_in_progress: true,
+  } as FleetHealthSummary,
+  computers: [] as MeasuredComputerHealth[],
 };
 
 // ─── per-computer detail (exercised by the Health Bar's expanded view) ──
-// Many-factor case: a single computer with every Phase 1.5 seeded rule
-// matching. Exercises the FactorBreakdown table at its widest.
-export const manyFactorsComputer: ComputerHealth = {
-  computer_id: 9999,
-  account_id: 1,
-  score: 0,
-  band: "critical",
-  critical_factor_count: 1,
-  factors: [
+// Many-factor case: a single computer with every seeded rule matching.
+const MANY_FACTORS_ID = 9999;
+export const manyFactorsComputer: MeasuredComputerHealth = makeComputerHealth(
+  MANY_FACTORS_ID,
+  CRITICAL_SCORE,
+  [
     factorCritical,
     factorHigh,
     factorMedium,
     factorLow,
+    factorUnrated,
     factorReboot,
     factorOffline,
     factorUpdates,
   ],
-  updated_at: NOW,
-};
+  1,
+);
 
 // ─── Livepatch-waiver demo fleet ────────────────────────────────────────
 // Two computers with the same vulnerable kernel package: one has Livepatch
 // active and gets the critical USN penalty waived; the other does not and
-// drops to score 0. Mirrors the spec § "Livepatch waiver" case-4 scenario.
-const factorOnlyReboot = factorReboot;
-
+// drops to score 0.
 const LIVEPATCH_PRO_ID = 1001;
 const LIVEPATCH_NON_PRO_ID = 1002;
 // Score for the Pro instance: 100 - reboot_required(10) = 90. Healthy band.
 const LIVEPATCH_PRO_SCORE = HEALTHY_SCORE - 10;
 
+const livepatchComputers = [
+  // Pro / Livepatched: kernel USN waived, only the reboot factor remains.
+  makeComputerHealth(LIVEPATCH_PRO_ID, LIVEPATCH_PRO_SCORE, [factorReboot]),
+  // No Livepatch: full critical USN penalty applies.
+  makeComputerHealth(
+    LIVEPATCH_NON_PRO_ID,
+    CRITICAL_SCORE,
+    [factorCritical, factorReboot],
+    1,
+  ),
+];
+
 export const livepatchWaiverFleet = {
-  summary: {
-    account_id: 1,
-    band_critical_count: 1,
-    band_warning_count: 0,
-    band_healthy_count: 1,
-    total_count: 2,
-    updated_at: NOW,
-  } as FleetHealthSummary,
-  computers: [
-    // Pro / Livepatched: kernel USN waived, only the reboot factor remains.
-    {
-      ...makeComputerHealth(LIVEPATCH_PRO_ID, LIVEPATCH_PRO_SCORE, [
-        factorOnlyReboot,
-      ]),
-    },
-    // No Livepatch: full critical USN penalty applies.
-    {
-      ...makeComputerHealth(
-        LIVEPATCH_NON_PRO_ID,
-        CRITICAL_SCORE,
-        [factorCritical, factorOnlyReboot],
-        1,
-      ),
-    },
-  ],
+  summary: summarise(livepatchComputers, 0),
+  computers: livepatchComputers,
 };
 
 // ─── runtime fixture switcher ──────────────────────────────────────────
@@ -569,6 +438,7 @@ export const fixtures = {
   mixedFleet,
   crisisFleet,
   emptyFleet,
+  recomputingFleet,
   livepatchWaiverFleet,
 } as const;
 
@@ -580,6 +450,28 @@ export const getHealthFixture = () => fixtures[activeFixture];
 
 export const setHealthFixture = (name: FixtureName) => {
   activeFixture = name;
+};
+
+// The server only scores Ubuntu instances, so a mocked instance of another
+// distribution is unmeasured whatever the fixture holds for its id.
+const isScoredDistribution = (computerId: number): boolean => {
+  const info = instances.find(({ id }) => id === computerId)?.distribution_info;
+  if (!info) return true;
+  const text = `${info.description ?? ""} ${info.distributor ?? ""}`;
+  return /ubuntu|canonical/i.test(text);
+};
+
+/** Returns the health state resource for a computer in the active fixture. */
+export const getComputerHealth = (computerId: number): ComputerHealth => {
+  const found =
+    computerId === manyFactorsComputer.computer_id
+      ? manyFactorsComputer
+      : getHealthFixture().computers.find(
+          ({ computer_id }) => computer_id === computerId,
+        );
+  return found && isScoredDistribution(computerId)
+    ? found
+    : { computer_id: computerId, measurable: false };
 };
 
 // Expose on window in dev for stakeholder demos.

@@ -31,7 +31,7 @@ describe("HealthBar", () => {
     render(<HealthBar notMeasurable />);
 
     expect(screen.queryByRole("meter")).not.toBeInTheDocument();
-    expect(screen.getByText("Not measured")).toBeInTheDocument();
+    expect(screen.getByText("Unmeasured")).toBeInTheDocument();
   });
 
   it("shows a loading state while the score is pending", () => {

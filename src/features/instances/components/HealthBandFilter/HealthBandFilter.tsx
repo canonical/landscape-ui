@@ -4,7 +4,7 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 
-const VALID_BANDS = ["critical", "warning", "healthy"];
+const VALID_BANDS = ["critical", "warning", "healthy", "unmeasured"];
 
 const HealthBandFilter: FC<FilterProps> = ({
   label,

@@ -4,17 +4,28 @@ import { describe, expect, it } from "vitest";
 import type { FleetHealthSummary } from "../../types";
 import FleetHealthWidget from "./FleetHealthWidget";
 
+const AVERAGE_SCORE = 84;
+
 const make = (
+  bands: Partial<FleetHealthSummary["bands"]> = {},
   overrides: Partial<FleetHealthSummary> = {},
-): FleetHealthSummary => ({
-  account_id: 1,
-  band_critical_count: 0,
-  band_warning_count: 0,
-  band_healthy_count: 0,
-  total_count: 0,
-  updated_at: "2026-05-12T12:00:00Z",
-  ...overrides,
-});
+): FleetHealthSummary => {
+  const all = { critical: 0, warning: 0, healthy: 0, unmeasured: 0, ...bands };
+  const measured = all.critical + all.warning + all.healthy;
+  return {
+    bands: all,
+    measured_count: measured,
+    total_count: measured + all.unmeasured,
+    average_score: measured ? AVERAGE_SCORE : null,
+    thresholds: { critical_max: 25, warning_max: 60 },
+    rules_version: 7,
+    top_issues: [],
+    updated_at: "2026-05-12T12:00:00Z",
+    worker_last_tick_at: "2026-05-12T12:00:30Z",
+    recompute_in_progress: false,
+    ...overrides,
+  };
+};
 
 describe("FleetHealthWidget", () => {
   it("renders the empty state when no instances are registered", () => {
@@ -25,14 +36,7 @@ describe("FleetHealthWidget", () => {
   it("renders the meter with the server-provided average score", () => {
     renderWithProviders(
       <FleetHealthWidget
-        summary={make({
-          band_critical_count: 2,
-          band_warning_count: 8,
-          band_healthy_count: 90,
-          total_count: 100,
-          average_score: 84,
-          measurable_count: 100,
-        })}
+        summary={make({ critical: 2, warning: 8, healthy: 90 })}
       />,
     );
     const meter = screen.getByRole("meter", {
@@ -41,16 +45,24 @@ describe("FleetHealthWidget", () => {
     expect(meter).toHaveAttribute("aria-valuenow", "84");
   });
 
+  it("names the average's band from the thresholds in the response", () => {
+    renderWithProviders(
+      <FleetHealthWidget
+        summary={make(
+          { healthy: 10 },
+          { thresholds: { critical_max: 25, warning_max: 90 } },
+        )}
+      />,
+    );
+    expect(
+      screen.getByRole("meter", { name: /score 84 of 100, Needs attention/i }),
+    ).toBeInTheDocument();
+  });
+
   it("renders a clickable row per band with its count and percentage", () => {
     renderWithProviders(
       <FleetHealthWidget
-        summary={make({
-          band_critical_count: 2,
-          band_warning_count: 8,
-          band_healthy_count: 90,
-          total_count: 100,
-          measurable_count: 100,
-        })}
+        summary={make({ critical: 2, warning: 8, healthy: 90 })}
       />,
     );
     const critical = screen.getByRole("link", {
@@ -63,22 +75,28 @@ describe("FleetHealthWidget", () => {
     expect(warning.getAttribute("href")).toContain("healthBand=warning");
   });
 
-  it("surfaces coverage in the footer when some instances aren't measurable", () => {
+  it("surfaces coverage and links the unmeasured row to the list", () => {
     renderWithProviders(
-      <FleetHealthWidget
-        summary={make({
-          band_healthy_count: 12,
-          total_count: 14,
-          measurable_count: 12,
-        })}
-      />,
+      <FleetHealthWidget summary={make({ healthy: 12, unmeasured: 2 })} />,
     );
     expect(
       screen.getByText(/12 of 14 instances measured/i),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/2 non-Ubuntu instances can't be measured/i),
-    ).toBeInTheDocument();
+    const unmeasured = screen.getByRole("link", {
+      name: /Unmeasured: 2 instances, 14 percent of the fleet/i,
+    });
+    expect(unmeasured.getAttribute("href")).toContain("healthBand=unmeasured");
+  });
+
+  it("says the counts are partial while scores are being computed", () => {
+    renderWithProviders(
+      <FleetHealthWidget
+        summary={make({ unmeasured: 5 }, { recompute_in_progress: true })}
+      />,
+    );
+    expect(screen.queryByRole("meter", { name: /score/i })).toBeNull();
+    expect(screen.getByText(/No instance has a score yet/i)).toBeVisible();
+    expect(screen.getByText(/Scores are being computed/i)).toBeVisible();
   });
 
   it("shows the loading state when isLoading is true", () => {

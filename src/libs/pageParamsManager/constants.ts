@@ -61,7 +61,9 @@ export const PARAMS_CONFIG: ParamsConfig = [
       val === "" ||
       val
         .split(",")
-        .every((v) => v === "critical" || v === "warning" || v === "healthy"),
+        .every((v) =>
+          ["critical", "warning", "healthy", "unmeasured"].includes(v),
+        ),
   },
   {
     urlParam: "os",

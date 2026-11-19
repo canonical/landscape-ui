@@ -1,16 +1,17 @@
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import type {
-  ComputerHealth,
-  HealthFactor,
   HealthActionKind,
   HealthBand,
+  HealthFactor,
+  HealthStaleReason,
+  MeasuredComputerHealth,
 } from "./types";
 
 // Health is computed from signals the Landscape client reports. The client
 // only runs on Ubuntu (server / desktop / core / WSL), so anything else —
-// Windows hosts, Debian, "other Linux" — has no score to surface. Fresh
-// Ubuntu instances that haven't reported yet still count as measurable: the
-// server returns the score-100 placeholder per the spec.
+// Windows hosts, Debian, "other Linux" — has no score to surface. This is a
+// client-side guess used to skip a request or hide a tab; the server's
+// `measurable` field is the answer once a response is in hand.
 //
 // We key off `description` ("Ubuntu 24.04 LTS", "Ubuntu Core 24", …) rather
 // than `distributor` because the latter is inconsistent in real data
@@ -25,8 +26,8 @@ export const isHealthMeasurable = (
 ): boolean => {
   const info = instance.distribution_info;
   if (!info) {
-    // No OS info reported yet — treat as measurable; the score endpoint
-    // returns the 100/healthy placeholder for the empty case.
+    // No OS info reported yet. Ask the server, which answers
+    // `measurable: false` until the first package report.
     return true;
   }
   const description = info.description?.toLowerCase() ?? "";
@@ -48,6 +49,7 @@ const ACTION_BY_RULE_KEY: Record<string, HealthActionKind> = {
   "usn.high": "run-security-updates",
   "usn.medium": "run-security-updates",
   "usn.low": "run-security-updates",
+  "usn.unrated": "run-security-updates",
   reboot_required: "reboot",
   "instance.offline": "refresh-facts",
   "package.updates_available": "run-security-updates",
@@ -59,8 +61,8 @@ export const suggestedActionFor = (
 
 /** Returns the display text of a rule, falling back to its key. */
 export const ruleTitle = (
-  rule: Pick<HealthFactor, "rule_key" | "title" | "description">,
-): string => rule.title || rule.description || rule.rule_key;
+  rule: Pick<HealthFactor, "rule_key"> & { title?: string },
+): string => rule.title || rule.rule_key;
 
 /** Returns how many of the factor's fixes are installed and wait for a reboot. */
 export const pendingRebootCount = (
@@ -75,7 +77,7 @@ export const actionsForFactor = (factor: HealthFactor): HealthActionKind[] => {
     return action ? [action] : [];
   }
   // With every fix installed, an update would change nothing.
-  const isAllPending = factor.count !== undefined && pending >= factor.count;
+  const isAllPending = pending >= factor.count;
   return action && !isAllPending ? ["reboot", action] : ["reboot"];
 };
 
@@ -96,13 +98,12 @@ export const recommendedActionsFor = (
   return Array.from(seen);
 };
 
-// LA061 Phase 1.7: prefer the server's `recommended_actions` field when
-// present. An explicit empty array is meaningful ("nothing to do") and
-// must not fall back. Undefined means "field not present on the response"
-// — older server, cached payload, or MSW handler that hasn't been updated
-// — and falls back to the local helper for graceful degradation.
+// Prefers `recommended_actions` when the response carries it. An explicit
+// empty array means "nothing to do" and must not fall back. The field is not
+// in the Phase 1 contract, so a real server omits it and the local helper
+// answers.
 export const effectiveRecommendedActions = (
-  health: Pick<ComputerHealth, "factors" | "recommended_actions">,
+  health: Pick<MeasuredComputerHealth, "factors" | "recommended_actions">,
 ): HealthActionKind[] => {
   if (health.recommended_actions !== undefined) {
     return health.recommended_actions;
@@ -156,7 +157,20 @@ export const isInstanceMeasurable = (
   instance: Instance | InstanceWithoutRelation,
 ): boolean => isHealthMeasurable(instance);
 
-// Band thresholds mirror the server-side defaults.
+const STALE_REASON_TEXT: Record<HealthStaleReason, string> = {
+  inputs: "This instance has not reported recently.",
+  rules: "The rules changed and the score is being recalculated.",
+  engine: "Scoring was updated and the score is being recalculated.",
+};
+
+/** Returns why a score may be out of date, or null when it is current. */
+export const staleReasonText = (
+  health: Pick<MeasuredComputerHealth, "stale_reason">,
+): string | null =>
+  health.stale_reason ? STALE_REASON_TEXT[health.stale_reason] : null;
+
+// Default band thresholds, for places with no summary response in hand. The
+// summary's `thresholds` wins wherever it is available.
 export const CRITICAL_SCORE_CEILING = 25;
 export const HEALTHY_SCORE_FLOOR = 61;
 

@@ -1,9 +1,5 @@
 import useSidePanel from "@/hooks/useSidePanel";
-import type {
-  Instance,
-  InstanceHealth,
-  InstanceWithoutRelation,
-} from "@/types/Instance";
+import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import { Button } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
@@ -11,7 +7,6 @@ import { Suspense, lazy } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import { isHealthMeasurable } from "../../helpers";
 import useComputerHealth from "../../hooks/useComputerHealth";
-import type { ComputerHealth, HealthActionKind } from "../../types";
 import HealthBar from "../HealthBar";
 import classes from "./HealthCell.module.scss";
 
@@ -32,41 +27,22 @@ interface HealthCellProps {
   >;
 }
 
-// LA061 Phase 1.7: when the list endpoint passes `with_health=true`, each
-// row carries `instance.health` inline. Adapt that to the shape HealthBar
-// expects so the same component renders either source.
-const toComputerHealth = (
-  computer_id: number,
-  inline: InstanceHealth,
-): ComputerHealth => ({
-  computer_id,
-  // account_id isn't carried in the row-level snapshot — HealthBar doesn't
-  // need it. Stub with 0; the side panel re-fetches the full record on open
-  // and will get the real value back.
-  account_id: 0,
-  score: inline.score,
-  band: inline.band,
-  critical_factor_count: inline.critical_factor_count,
-  factors: inline.factors,
-  recommended_actions: inline.recommended_actions as HealthActionKind[],
-  updated_at: inline.updated_at,
-});
-
 const HealthCell: FC<HealthCellProps> = ({ instance }) => {
-  const measurable = isHealthMeasurable(instance);
   const inline = instance.health;
   // Fall back to the per-id endpoint only when the list response didn't
-  // include the inline snapshot — relevant on detail pages where the list
+  // include the inline object, which happens on detail pages where the list
   // query doesn't run.
+  const canFetch = !inline && isHealthMeasurable(instance);
   const { data, isLoading, isError } = useComputerHealth(
-    measurable && !inline ? instance.id : 0,
+    canFetch ? instance.id : 0,
   );
   const { setSidePanelContent } = useSidePanel();
-  const health = inline ? toComputerHealth(instance.id, inline) : data?.data;
+  const state = inline ?? data?.data;
+  const health = state?.measurable ? state : undefined;
 
-  if (!measurable) {
+  if (state?.measurable === false || (!inline && !canFetch)) {
     return (
-      <span title="Health is only measured on Ubuntu instances running the Landscape client.">
+      <span title="No health score. Health is measured on Ubuntu instances once they have reported their packages.">
         <HealthBar notMeasurable />
       </span>
     );
