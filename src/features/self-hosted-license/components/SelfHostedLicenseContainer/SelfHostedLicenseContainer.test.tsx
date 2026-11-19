@@ -119,11 +119,7 @@ describe("SelfHostedLicenseContainer", () => {
       await screen.findByText("Account not enabled for self-hosted Landscape"),
     ).toBeInTheDocument();
 
-    server.use(
-      http.get(`${API_URL}self-hosted/license-url`, () =>
-        HttpResponse.json(selfHostedLicense),
-      ),
-    );
+    setEndpointStatus("default");
     await user.click(screen.getByRole("button", { name: "Try again" }));
 
     expect(
