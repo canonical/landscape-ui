@@ -19,6 +19,9 @@ const AppNotification: FC<AppNotificationProps> = ({
 
   const { type, message, actions, title } = notify.notification;
 
+  const defaultMessage =
+    type === "negative" ? "Something went wrong" : "Success";
+
   return (
     <div className={classNames({ [classes.container]: !isSidePanelOpen })}>
       <Notification
@@ -30,7 +33,7 @@ const AppNotification: FC<AppNotificationProps> = ({
         actions={actions}
         title={title}
       >
-        {message}
+        {message || defaultMessage}
       </Notification>
     </div>
   );
