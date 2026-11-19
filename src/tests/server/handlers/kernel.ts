@@ -44,18 +44,16 @@ export default [
         if (status === "variant") {
           return HttpResponse.json(response as KernelManagementInfo);
         }
-      }
 
-      const endpointStatus = getEndpointStatus();
-
-      if (endpointStatus.status === "empty") {
-        return HttpResponse.json<KernelManagementInfo>({
-          downgrades: [],
-          installed: null,
-          message: "Kernel information is not available for this instance.",
-          smart_status: "",
-          upgrades: [],
-        });
+        if (status === "empty") {
+          return HttpResponse.json<KernelManagementInfo>({
+            downgrades: [],
+            installed: null,
+            message: "Kernel information is not available for this instance.",
+            smart_status: "",
+            upgrades: [],
+          });
+        }
       }
 
       return HttpResponse.json<KernelManagementInfo>({
