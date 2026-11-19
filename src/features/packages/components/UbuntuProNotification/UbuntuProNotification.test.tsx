@@ -1,4 +1,5 @@
 import { INSTANCES_PATHS } from "@/libs/routes/instances";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -40,17 +41,32 @@ describe("UbuntuProNotification", () => {
 
   it("navigates to the ubuntu-pro tab when Learn more is clicked", async () => {
     renderWithProviders(
-      <UbuntuProNotification {...props} />,
+      <>
+        <UbuntuProNotification {...props} />
+        <LocationDisplay />
+      </>,
       undefined,
       `/instances/${instanceId}`,
       singleInstancePath,
     );
 
-    const learnMoreButton = screen.getByRole("button", { name: "Learn more" });
-    await user.click(learnMoreButton);
+    await user.click(screen.getByRole("button", { name: "Learn more" }));
 
-    // Clicking triggers navigate(); verifying the button was interactive is sufficient
-    expect(learnMoreButton).toBeEnabled();
-    expect(learnMoreButton).not.toHaveAttribute("aria-disabled");
+    expect(getLocationDisplay()).toHaveTextContent(
+      `/instances/${instanceId}?tab=ubuntu-pro`,
+    );
+  });
+
+  it("navigates to learnMorePath when given", async () => {
+    renderWithProviders(
+      <>
+        <UbuntuProNotification {...props} learnMorePath="/somewhere" />
+        <LocationDisplay />
+      </>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Learn more" }));
+
+    expect(getLocationDisplay()).toHaveTextContent("/somewhere");
   });
 });
