@@ -5,6 +5,8 @@ import {
   mapActionTypeToPast,
   mapActionTypeToQueryParams,
   mapActionTypeToSearch,
+  getEmptyMessage,
+  getPackageSearchFilters,
   mapGroupedResultToInstancePackage,
 } from "./helpers";
 import { getPackageStatusInfo } from "./components/PackageList/helpers";
@@ -61,6 +63,46 @@ describe("package action labels", () => {
       expect(getActionFormTitle(action)).toBe(title);
     },
   );
+});
+
+describe("getPackageSearchFilters", () => {
+  it("requests installed packages for the All filter", () => {
+    expect(getPackageSearchFilters("")).toEqual({ installed: true });
+  });
+
+  it("requests upgrades for the upgrade filter", () => {
+    expect(getPackageSearchFilters("upgrade")).toEqual({ upgrade: true });
+  });
+
+  it("requests only security upgrades for the security filter", () => {
+    expect(getPackageSearchFilters("security")).toEqual({
+      security_upgrades_available: true,
+    });
+  });
+
+  it("requests held packages for the held filter", () => {
+    expect(getPackageSearchFilters("held")).toEqual({ held: true });
+  });
+});
+
+describe("getEmptyMessage", () => {
+  it("returns empty-state messages by package filter", () => {
+    expect(getEmptyMessage("", "")).toBe("No packages found.");
+    expect(getEmptyMessage("upgrade", "")).toBe("No available upgrades found.");
+    expect(getEmptyMessage("security", "")).toBe(
+      "No available security upgrades found.",
+    );
+    expect(getEmptyMessage("installed", "")).toBe(
+      "No installed packages found.",
+    );
+    expect(getEmptyMessage("held", "")).toBe("No held packages found.");
+  });
+
+  it("appends package search term when provided", () => {
+    expect(getEmptyMessage("upgrade", "openssl")).toBe(
+      'No available upgrades found with the search "openssl".',
+    );
+  });
 });
 
 describe("mapGroupedResultToInstancePackage", () => {

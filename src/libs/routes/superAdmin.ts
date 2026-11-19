@@ -1,3 +1,4 @@
+import type { Instance } from "@/types/Instance";
 import type { PageParams } from "../pageParamsManager";
 import {
   createPathBuilder,
@@ -62,6 +63,25 @@ export const SUPER_ADMIN_ROUTES = {
     createRouteWithParams(
       buildSessionPath(SUPER_ADMIN_PATHS.sessionInstanceChild),
     )({ name, instanceId, childInstanceId }, queryParams),
+  sessionInstanceFromInstance: (
+    name: string,
+    instance: Instance,
+    queryParams?: Partial<PageParams>,
+  ) =>
+    instance.parent
+      ? createRouteWithParams(
+          buildSessionPath(SUPER_ADMIN_PATHS.sessionInstanceChild),
+        )(
+          {
+            name,
+            instanceId: instance.parent.id,
+            childInstanceId: instance.id,
+          },
+          queryParams,
+        )
+      : createRouteWithParams(
+          buildSessionPath(SUPER_ADMIN_PATHS.sessionInstance),
+        )({ name, instanceId: instance.id }, queryParams),
   sessionEventsLog: sessionRoute(
     buildSessionPath(SUPER_ADMIN_PATHS.sessionEventsLog),
   ),
