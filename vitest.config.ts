@@ -14,12 +14,9 @@ const viteIdToFilePath = (id: string) => cleanUrl(id).replace(/^\/@fs\//, "");
 // inside a test has no effect.
 process.env.TZ ??= "Europe/Berlin";
 
-// Test files that cannot run under `pool: "vmThreads"`. There, `window` is the
-// real jsdom window, so `vi.spyOn(window, "location", "get")` throws "Cannot
-// redefine property: location", and values from other realms fail
-// `instanceof` checks (e.g. a thrown Promise vs the context's `Promise`).
-// These keep the classic `threads` pool. Add a file here if it fails only
-// under vmThreads for one of those reasons.
+// Test files that keep the classic `threads` pool. Under vmThreads, `window`
+// is the real jsdom window, so `vi.spyOn(window, "location", "get")` throws
+// "Cannot redefine property: location".
 const THREADS_POOL_TESTS = [
   "src/components/layout/AppErrorBoundary/FallbackComponent.test.tsx",
   "src/features/auth/helpers.test.ts",
