@@ -6,7 +6,7 @@ import { Button } from "@canonical/react-components";
 type ResponsiveTableSubheadProps = {
   readonly selectedCount: number;
   readonly totalCount: number;
-  readonly itemName: string;
+  readonly itemName: [string, string?];
   readonly onClearSelection: () => void;
   readonly isAllSelected?: boolean;
   readonly onSelectAll?: () => void;
@@ -30,7 +30,7 @@ const ResponsiveTableSubhead: FC<ResponsiveTableSubheadProps> = ({
   onClearSelection,
   onSelectAll,
 }) => {
-  const pluralName = pluralize(totalCount, [itemName], "exact");
+  const pluralName = pluralize(totalCount, itemName, "exact");
 
   return (
     <div className={classes.subhead}>

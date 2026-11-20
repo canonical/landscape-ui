@@ -2,7 +2,6 @@ import { ResponsiveButtons } from "@/components/ui";
 import { TSV_EXPORTS_ENABLED } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import usePageParams from "@/hooks/usePageParams";
 import { Button, ConfirmationButton } from "@canonical/react-components";
 import { type FC } from "react";
 import type { ActivityCommon } from "../../types";
@@ -15,16 +14,23 @@ import {
 
 interface ActivitiesActionsProps {
   readonly selected: ActivityCommon[];
+  readonly availableActions: Readonly<
+    Record<"approve" | "cancel" | "redo", boolean>
+  >;
   readonly isAllSelected?: boolean;
+  readonly onExport?: () => void;
+  readonly alwaysCollapse?: boolean;
 }
 
 const ActivitiesActions: FC<ActivitiesActionsProps> = ({
   selected,
   isAllSelected = false,
+  onExport,
+  alwaysCollapse,
+  availableActions,
 }) => {
   const { notify } = useNotify();
   const debug = useDebug();
-  const { createSidePathPusher } = usePageParams();
   const { approveActivities, isApprovingActivities } = useApproveActivities();
   const { cancelActivities, isCancelingActivities } = useCancelActivities();
   const { redoActivities, isRedoingActivities } = useRedoActivities();
@@ -32,11 +38,6 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
   const selectedIds = selected.map((activity) => activity.id);
 
   const title = pluralize(selected.length, ["activity", "activities"], "exact");
-
-  const { lastSidePathSegment } = usePageParams();
-  const handleExport = () => {
-    if (lastSidePathSegment !== "export") createSidePathPusher("export")();
-  };
 
   const handleApproveActivities = async () => {
     try {
@@ -80,93 +81,101 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
   return (
     <ResponsiveButtons
       collapseFrom="xl"
+      alwaysCollapse={alwaysCollapse}
       buttons={[
-        ...(TSV_EXPORTS_ENABLED
-          ? [
-              <Button
-                key="export"
-                className="p-segmented-control__button"
-                type="button"
-                disabled={!isAllSelected && selected.length === 0}
-                onClick={handleExport}
-              >
-                <span>Export selection as TSV</span>
-              </Button>,
-            ]
-          : []),
-        <ConfirmationButton
-          key="approve"
-          type="button"
-          disabled={
-            !selected.length ||
-            isApprovingActivities ||
-            selected.some((activity) => !activity.actions?.approvable)
-          }
-          confirmationModalProps={{
-            title: `Approve ${title}`,
-            children: (
-              <p className="u-margin--bottom">
-                Are you sure you want to approve {title}?
-              </p>
-            ),
-            confirmButtonLabel: "Approve",
-            confirmButtonAppearance: "positive",
-            confirmButtonDisabled: isApprovingActivities,
-            confirmButtonLoading: isApprovingActivities,
-            onConfirm: handleApproveActivities,
-          }}
-        >
-          Approve
-        </ConfirmationButton>,
-        <ConfirmationButton
-          key="cancel"
-          type="button"
-          disabled={
-            !selected.length ||
-            isCancelingActivities ||
-            selected.some((activity) => !activity.actions?.cancelable)
-          }
-          confirmationModalProps={{
-            title: `Cancel ${title}`,
-            children: (
-              <p className="u-margin--bottom">
-                Are you sure you want to cancel {title}?
-              </p>
-            ),
-            confirmButtonLabel: "Confirm",
-            confirmButtonAppearance: "negative",
-            confirmButtonDisabled: isCancelingActivities,
-            confirmButtonLoading: isCancelingActivities,
-            onConfirm: handleCancelActivities,
-          }}
-        >
-          Cancel
-        </ConfirmationButton>,
-        <ConfirmationButton
-          key="redo"
-          type="button"
-          disabled={
-            !selected.length ||
-            isRedoingActivities ||
-            selected.some((activity) => !activity.actions?.reappliable)
-          }
-          confirmationModalProps={{
-            title: `Redo ${title}`,
-            children: (
-              <p className="u-margin--bottom">
-                Are you sure you want to redo {title}?
-              </p>
-            ),
-            confirmButtonLabel: "Redo",
-            confirmButtonAppearance: "positive",
-            confirmButtonDisabled: isRedoingActivities,
-            confirmButtonLoading: isRedoingActivities,
-            onConfirm: handleRedoActivities,
-          }}
-        >
-          Redo
-        </ConfirmationButton>,
-      ]}
+        TSV_EXPORTS_ENABLED && onExport && (
+          <Button
+            key="export"
+            className="p-segmented-control__button"
+            type="button"
+            disabled={!isAllSelected && selected.length === 0}
+            onClick={onExport}
+          >
+            <span>Export selection as TSV</span>
+          </Button>
+        ),
+        availableActions.approve && (
+          <ConfirmationButton
+            key="approve"
+            type="button"
+            disabled={
+              !selected.length ||
+              isApprovingActivities ||
+              selected.some((activity) => !activity.actions?.approvable)
+            }
+            confirmationModalProps={{
+              renderInPortal: true,
+              title: `Approve ${title}`,
+              children: (
+                <p className="u-margin--bottom">
+                  Are you sure you want to approve {title}?
+                </p>
+              ),
+              confirmButtonLabel: "Approve",
+              confirmButtonAppearance: "positive",
+              confirmButtonDisabled: isApprovingActivities,
+              confirmButtonLoading: isApprovingActivities,
+              onConfirm: handleApproveActivities,
+            }}
+          >
+            Approve
+          </ConfirmationButton>
+        ),
+        availableActions.cancel && (
+          <ConfirmationButton
+            key="cancel"
+            type="button"
+            disabled={
+              !selected.length ||
+              isCancelingActivities ||
+              selected.some((activity) => !activity.actions?.cancelable)
+            }
+            confirmationModalProps={{
+              renderInPortal: true,
+              title: `Cancel ${title}`,
+              children: (
+                <p className="u-margin--bottom">
+                  Are you sure you want to cancel {title}?
+                </p>
+              ),
+              confirmButtonLabel: "Confirm",
+              confirmButtonAppearance: "negative",
+              confirmButtonDisabled: isCancelingActivities,
+              confirmButtonLoading: isCancelingActivities,
+              onConfirm: handleCancelActivities,
+            }}
+          >
+            Cancel
+          </ConfirmationButton>
+        ),
+        availableActions.redo && (
+          <ConfirmationButton
+            key="redo"
+            type="button"
+            disabled={
+              !selected.length ||
+              isRedoingActivities ||
+              selected.some((activity) => !activity.actions?.reappliable)
+            }
+            confirmationModalProps={{
+              renderInPortal: true,
+              title: `Redo ${title}`,
+              children: (
+                <p className="u-margin--bottom">
+                  Are you sure you want to redo {title}?
+                </p>
+              ),
+              confirmButtonLabel: "Redo",
+              confirmButtonAppearance: "positive",
+              confirmButtonDisabled: isRedoingActivities,
+              confirmButtonLoading: isRedoingActivities,
+              onConfirm: handleRedoActivities,
+            }}
+          >
+            Redo
+          </ConfirmationButton>
+        ),
+      ].filter(Boolean)}
     />
   );
 };

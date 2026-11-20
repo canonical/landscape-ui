@@ -12,21 +12,26 @@ export interface OpenActivityDetailsPanelOptions {
 }
 
 const useOpenActivityDetailsPanel = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { closeSidePanel, setSidePanelContent } = useSidePanel();
 
   return useCallback(
-    (activity: ActivityCommon, options?: OpenActivityDetailsPanelOptions) => {
+    (
+      activity: Pick<ActivityCommon, "id" | "summary">,
+      options?: OpenActivityDetailsPanelOptions,
+    ) => {
       setSidePanelContent(
         activity.summary,
         <Suspense fallback={<LoadingState />}>
           <ActivityDetails
+            key={activity.id}
             activityId={activity.id}
+            onClose={closeSidePanel}
             hideInstanceField={options?.hideInstanceField}
           />
         </Suspense>,
       );
     },
-    [setSidePanelContent],
+    [closeSidePanel, setSidePanelContent],
   );
 };
 

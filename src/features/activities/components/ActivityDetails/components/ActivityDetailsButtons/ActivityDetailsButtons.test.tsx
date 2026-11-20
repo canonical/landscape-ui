@@ -17,9 +17,34 @@ describe("ActivityDetailsButtons", () => {
     },
   };
 
+  const renderButtons = (activity: typeof mockActivity = mockActivity) =>
+    renderWithProviders(
+      <ActivityDetailsButtons activity={activity} onClose={vi.fn()} />,
+    );
+
+  it.each([
+    { action: "Approve", confirm: "Approve" },
+    { action: "Cancel", confirm: "Confirm" },
+    { action: "Redo", confirm: "Redo" },
+  ])("closes the local panel after $action", async ({ action, confirm }) => {
+    const onClose = vi.fn();
+    renderWithProviders(
+      <ActivityDetailsButtons activity={mockActivity} onClose={onClose} />,
+    );
+
+    await user.click(screen.getByRole("button", { name: action }));
+    await user.click(
+      within(screen.getByRole("dialog")).getByRole("button", { name: confirm }),
+    );
+
+    await vi.waitFor(() => {
+      expect(onClose).toHaveBeenCalledOnce();
+    });
+  });
+
   describe("Approve button", () => {
     it("should render when activity is approvable", () => {
-      renderWithProviders(<ActivityDetailsButtons activity={mockActivity} />);
+      renderButtons();
       expect(
         screen.getByRole("button", { name: "Approve" }),
       ).toBeInTheDocument();
@@ -30,16 +55,14 @@ describe("ActivityDetailsButtons", () => {
         ...mockActivity,
         actions: { ...mockActivity.actions, approvable: false },
       };
-      renderWithProviders(
-        <ActivityDetailsButtons activity={nonApprovableActivity} />,
-      );
+      renderButtons(nonApprovableActivity);
       expect(
         screen.queryByRole("button", { name: "Approve" }),
       ).not.toBeInTheDocument();
     });
 
     it("should show confirmation modal and approve activity", async () => {
-      renderWithProviders(<ActivityDetailsButtons activity={mockActivity} />);
+      renderButtons();
 
       await user.click(screen.getByRole("button", { name: "Approve" }));
 
@@ -64,14 +87,12 @@ describe("ActivityDetailsButtons", () => {
           reappliable: false,
         },
       };
-      renderWithProviders(
-        <ActivityDetailsButtons activity={cancelOnlyActivity} />,
-      );
+      renderButtons(cancelOnlyActivity);
       expect(
         screen.getByRole("button", { name: "Cancel activity" }),
       ).toBeInTheDocument();
 
-      renderWithProviders(<ActivityDetailsButtons activity={mockActivity} />);
+      renderButtons();
       expect(
         screen.getByRole("button", { name: "Cancel" }),
       ).toBeInTheDocument();
@@ -82,16 +103,14 @@ describe("ActivityDetailsButtons", () => {
         ...mockActivity,
         actions: { ...mockActivity.actions, cancelable: false },
       };
-      renderWithProviders(
-        <ActivityDetailsButtons activity={nonCancelableActivity} />,
-      );
+      renderButtons(nonCancelableActivity);
       expect(
         screen.queryByRole("button", { name: /Cancel/ }),
       ).not.toBeInTheDocument();
     });
 
     it("should show confirmation modal and cancel activity", async () => {
-      renderWithProviders(<ActivityDetailsButtons activity={mockActivity} />);
+      renderButtons();
 
       await user.click(screen.getByRole("button", { name: "Cancel" }));
 
@@ -108,7 +127,7 @@ describe("ActivityDetailsButtons", () => {
 
   describe("Redo button", () => {
     it("should render when activity is reappliable", () => {
-      renderWithProviders(<ActivityDetailsButtons activity={mockActivity} />);
+      renderButtons();
       expect(screen.getByRole("button", { name: "Redo" })).toBeInTheDocument();
     });
 
@@ -117,16 +136,14 @@ describe("ActivityDetailsButtons", () => {
         ...mockActivity,
         actions: { ...mockActivity.actions, reappliable: false },
       };
-      renderWithProviders(
-        <ActivityDetailsButtons activity={nonReappliableActivity} />,
-      );
+      renderButtons(nonReappliableActivity);
       expect(
         screen.queryByRole("button", { name: "Redo" }),
       ).not.toBeInTheDocument();
     });
 
     it("should show confirmation modal and redo activity", async () => {
-      renderWithProviders(<ActivityDetailsButtons activity={mockActivity} />);
+      renderButtons();
 
       await user.click(screen.getByRole("button", { name: "Redo" }));
 

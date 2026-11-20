@@ -165,7 +165,7 @@ const UpgradesList: FC<UpgradesListProps> = ({
       <tr>
         <td colSpan={4} className="u-no-padding">
           <ResponsiveTableSubhead
-            itemName="package"
+            itemName={["package"]}
             onClearSelection={clearSelection}
             selectedCount={selectedUpgrades.length}
             totalCount={upgradeCount}

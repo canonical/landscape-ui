@@ -6,7 +6,9 @@ import {
   Activities,
   ActivitiesEmptyState,
   useGetActivities,
+  useOpenActivityDetailsPanel,
 } from "@/features/activities";
+import { ActivitiesList } from "@/features/activities";
 import { getExportTitle } from "@/features/exports";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
@@ -19,7 +21,7 @@ const ActivitiesExportForm = lazy(
 );
 
 interface ActivityPanelProps {
-  readonly instanceId?: number;
+  readonly instanceId: number;
 }
 
 const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
@@ -53,17 +55,16 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
 
   const {
     query,
-    search,
     status,
     fromDate,
     toDate,
     type,
     lastSidePathSegment,
     popSidePath,
+    createSidePathPusher,
   } = usePageParams();
   const exportQuery = [
     instanceId ? `computer:id:${instanceId}` : "",
-    search,
     query,
     status ? `status:${status}` : "",
     fromDate ? `created-after:${fromDate}` : "",
@@ -83,6 +84,17 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
     setSelectedActivities([]);
   }, [setSelectedActivities]);
 
+  const openActivityDetailsPanel = useOpenActivityDetailsPanel();
+
+  const handleActivityDetailsOpen = useCallback(
+    (activity: ActivityCommon) => {
+      openActivityDetailsPanel(activity, {
+        hideInstanceField: instanceId !== undefined,
+      });
+    },
+    [instanceId, openActivityDetailsPanel],
+  );
+
   if (isGettingUnfilteredActivities) {
     return <LoadingState />;
   }
@@ -96,19 +108,52 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
       <Activities
         activities={activities}
         activitiesCount={activitiesCount}
-        isGettingActivities={isGettingActivities}
-        instanceId={instanceId}
+        availableActions={{
+          approve: true,
+          cancel: true,
+          redo: true,
+        }}
+        availableFilters={{
+          status: true,
+          type: true,
+          date: true,
+        }}
+        searchHelpTerms={{
+          id: true,
+          parentId: true,
+          createdAfter: true,
+          createdBefore: true,
+          creator: true,
+          computer: false,
+          type: true,
+        }}
         selectedActivities={selectedActivities}
         setSelectedActivities={setSelectedActivities}
         isAllSelected={isAllSelected}
-        onSelectAll={selectAll}
         onClearSelection={clearSelection}
-      />
+        onExport={() => {
+          if (lastSidePathSegment !== "export")
+            createSidePathPusher("export")();
+        }}
+      >
+        <ActivitiesList
+          header="Activity"
+          activities={activities}
+          activitiesCount={activitiesCount}
+          isGettingActivities={isGettingActivities}
+          selectionEnabled
+          selectedActivities={selectedActivities}
+          setSelectedActivities={setSelectedActivities}
+          isAllSelected={isAllSelected}
+          onSelectAll={selectAll}
+          onClearSelection={clearSelection}
+          onActivityDetailsOpen={handleActivityDetailsOpen}
+        />
+      </Activities>
       {TSV_EXPORTS_ENABLED && (
         <SidePanel
           isOpen={lastSidePathSegment === "export"}
           onClose={popSidePath}
-          size="medium"
         >
           {lastSidePathSegment === "export" && (
             <SidePanel.Suspense key="export">
@@ -128,6 +173,7 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
                       ? selectedActivities.map((a) => a.id)
                       : undefined
                   }
+                  onClose={popSidePath}
                 />
               </SidePanel.Content>
             </SidePanel.Suspense>

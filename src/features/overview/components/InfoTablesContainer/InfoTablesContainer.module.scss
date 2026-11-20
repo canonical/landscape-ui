@@ -21,8 +21,30 @@
   text-align: right;
 }
 
+.activitiesTable {
+  table-layout: fixed;
+  width: 100%;
+}
+
 .description {
-  width: 50%;
+  width: 45%;
+}
+
+.creator {
+  width: 20%;
+}
+
+.createdAt {
+  width: 35%;
+}
+
+.activityTitle,
+.singleLineCell {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tableHeader {
