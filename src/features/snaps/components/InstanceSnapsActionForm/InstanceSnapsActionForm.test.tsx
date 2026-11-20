@@ -190,7 +190,6 @@ describe("InstanceSnapsActionForm", () => {
   describe("actions on installed snaps", () => {
     it("shows the new action's snaps when the side panel body is swapped", async () => {
       const getRequestBody = captureRequest();
-      // Two snaps per form, so each form shows the snap list.
       const firstSelection = installedSnaps
         .filter((snap) => snap.held_until === null)
         .slice(0, 2);
@@ -202,10 +201,9 @@ describe("InstanceSnapsActionForm", () => {
         action: "hold",
         installedSnaps: firstSelection,
       });
-      expect(screen.getByText("Snaps to hold")).toBeInTheDocument();
-      for (const { snap } of firstSelection) {
-        expect(screen.getByText(snap.name)).toBeInTheDocument();
-      }
+      expect(
+        screen.getByRole("button", { name: "Hold 2 snaps" }),
+      ).toBeInTheDocument();
 
       // The side panel replaces its body in place, so React sees the same
       // component type and would keep the first form's state.
@@ -217,15 +215,17 @@ describe("InstanceSnapsActionForm", () => {
         />,
       );
 
-      expect(screen.getByText("Snaps to refresh")).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: "Refresh 2 snaps" }));
+      const modal = await screen.findByRole("dialog");
       for (const { snap } of secondSelection) {
-        expect(screen.getByText(snap.name)).toBeInTheDocument();
+        expect(within(modal).getByText(snap.name)).toBeInTheDocument();
       }
       for (const { snap } of firstSelection) {
-        expect(screen.queryByText(snap.name)).not.toBeInTheDocument();
+        expect(within(modal).queryByText(snap.name)).not.toBeInTheDocument();
       }
-
-      await submitAndConfirm("Refresh 2 snaps");
+      await user.click(
+        within(modal).getByRole("button", { name: "Refresh 2 snaps" }),
+      );
 
       expect(getRequestBody()).toMatchObject({
         action: "refresh",
@@ -248,17 +248,17 @@ describe("InstanceSnapsActionForm", () => {
       },
     );
 
-    it("lists the given snaps with no search box and no delete buttons", () => {
+    it("drops the snap list, search box and delete buttons for several snaps", () => {
       renderForm({ action: "refresh", installedSnaps: [unheldSnap, heldSnap] });
 
       expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
-      expect(screen.getByText("Snaps to refresh")).toBeInTheDocument();
-      expect(screen.getByText(unheldSnap.snap.name)).toBeInTheDocument();
-      expect(screen.getByText(heldSnap.snap.name)).toBeInTheDocument();
+      expect(screen.queryByText(/^Snaps to /)).not.toBeInTheDocument();
+      expect(screen.queryByText(unheldSnap.snap.name)).not.toBeInTheDocument();
+      expect(screen.queryByText(heldSnap.snap.name)).not.toBeInTheDocument();
       expect(
         screen.queryByRole("button", { name: /^Delete / }),
       ).not.toBeInTheDocument();
-      expect(screen.queryByText(/Installed on/)).not.toBeInTheDocument();
+      expect(screen.getByText("Delivery time")).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: "Refresh 2 snaps" }),
       ).toBeInTheDocument();

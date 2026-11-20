@@ -7,6 +7,9 @@ import type {
 import { capitalize, pluralize } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
+import { useCounter } from "usehooks-ts";
+import { ModalTablePagination } from "@/components/layout/TablePagination";
+import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import classes from "./ConfirmSnapActionModal.module.scss";
 import { getChangeChannelVerb } from "../../helpers";
 
@@ -62,6 +65,18 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   const hasClassicSnaps = classicSnaps.length > 0;
 
   const snapsToShow = hasClassicSnaps ? classicSnaps : snaps;
+
+  const {
+    count: currentPage,
+    decrement: decrementCurrentPage,
+    increment: incrementCurrentPage,
+  } = useCounter(1);
+
+  const pageStart = (currentPage - 1) * DEFAULT_MODAL_PAGE_SIZE;
+  const currentPageSnaps = snapsToShow.slice(
+    pageStart,
+    pageStart + DEFAULT_MODAL_PAGE_SIZE,
+  );
 
   const pluralizeBySnaps = (singular: string, plural: string) =>
     pluralize(snaps.length, [singular, plural]);
@@ -228,7 +243,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     >
       <p className={classes.summary}>{getInfoText()}:</p>
       <ul>
-        {snapsToShow.map((snapWithCount) => {
+        {currentPageSnaps.map((snapWithCount) => {
           const { name } = snapWithCount.snap;
           const detail = getSnapDetail(snapWithCount);
 
@@ -242,6 +257,14 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
           );
         })}
       </ul>
+      {snapsToShow.length > DEFAULT_MODAL_PAGE_SIZE && (
+        <ModalTablePagination
+          max={Math.ceil(snapsToShow.length / DEFAULT_MODAL_PAGE_SIZE)}
+          current={currentPage}
+          onPrev={decrementCurrentPage}
+          onNext={incrementCurrentPage}
+        />
+      )}
       {hasClassicSnaps ? (
         <p className={classes.warning}>{getClassicWarningText()}</p>
       ) : null}

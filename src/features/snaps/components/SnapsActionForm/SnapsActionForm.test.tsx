@@ -1196,7 +1196,7 @@ describe("SnapsActionForm", () => {
   describe("Fixed snaps", () => {
     const fixedSnaps = [firstSnap, secondSnap];
 
-    it("renders the given snaps without a search box, delete buttons or instance counts", () => {
+    it("hides the search box and snap list", () => {
       renderWithProviders(
         <SnapsActionForm
           selectedInstances={[instanceId]}
@@ -1206,13 +1206,12 @@ describe("SnapsActionForm", () => {
       );
 
       expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
-      expect(screen.getByText("Snaps to hold")).toBeInTheDocument();
-      expect(screen.getByText(firstSnap.snap.name)).toBeInTheDocument();
-      expect(screen.getByText(secondSnap.snap.name)).toBeInTheDocument();
+      expect(screen.queryByText("Snaps to hold")).not.toBeInTheDocument();
+      expect(screen.queryByText(firstSnap.snap.name)).not.toBeInTheDocument();
+      expect(screen.queryByText(secondSnap.snap.name)).not.toBeInTheDocument();
       expect(
         screen.queryByRole("button", { name: /^Delete / }),
       ).not.toBeInTheDocument();
-      expect(screen.queryByText(/Installed on/)).not.toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: "Hold 2 snaps" }),
       ).toBeInTheDocument();

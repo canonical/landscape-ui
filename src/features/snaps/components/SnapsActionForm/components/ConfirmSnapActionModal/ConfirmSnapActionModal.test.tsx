@@ -733,6 +733,38 @@ describe("ConfirmSnapActionModal", () => {
     expect(screen.queryByText("(revision 123)")).not.toBeInTheDocument();
   });
 
+  it("paginates the snap list 10 at a time", async () => {
+    const manySnaps = Array.from({ length: 12 }, (_, index) => ({
+      ...firstSnap,
+      snap: {
+        ...firstSnap.snap,
+        id: `paged-snap-${index + 1}`,
+        name: `paged-snap-${index + 1}`,
+      },
+    }));
+
+    renderWithProviders(
+      <ConfirmSnapActionModal {...props} snaps={manySnaps} />,
+    );
+
+    expect(screen.getByText("paged-snap-10")).toBeInTheDocument();
+    expect(screen.queryByText("paged-snap-11")).not.toBeInTheDocument();
+    expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /next page/i }));
+
+    expect(screen.getByText("paged-snap-11")).toBeInTheDocument();
+    expect(screen.getByText("paged-snap-12")).toBeInTheDocument();
+    expect(screen.queryByText("paged-snap-1")).not.toBeInTheDocument();
+    expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
+  });
+
+  it("does not paginate 10 or fewer snaps", () => {
+    renderWithProviders(<ConfirmSnapActionModal {...props} />);
+
+    expect(screen.queryByText(/^Page /)).not.toBeInTheDocument();
+  });
+
   it("shows the confirm button in a loading state while submitting", () => {
     renderWithProviders(<ConfirmSnapActionModal {...props} isSubmitting />);
 

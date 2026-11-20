@@ -87,7 +87,9 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
 
   const hasNoSelectedSnaps = selectedSnaps.length === 0;
   const isSingleFixedSnap = hasFixedSnaps && selectedSnaps.length === 1;
-  const isSnapListHidden = isSingleFixedSnap && action !== "change channel";
+  // Fixed snaps were already picked in the table, and the confirmation modal
+  // lists them, so only Change channel keeps the list for its per-snap fields.
+  const isSnapListHidden = hasFixedSnaps && action !== "change channel";
 
   const snapModes = ["change channel", "install"].includes(action)
     ? Array.from(
@@ -329,7 +331,7 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
           />
         )}
 
-        {!isSingleFixedSnap && (
+        {!isSnapListHidden && !isSingleFixedSnap && (
           <div
             className={classNames("p-text--small-caps", classes.header, {
               [classes.headerWithoutSearch]: hasFixedSnaps,
@@ -421,10 +423,11 @@ const SnapsActionForm: FC<SnapsActionFormProps> = ({
                     <li className={classes.selectedItem} key={item.snap.id}>
                       <SnapInstalledItem
                         selectedSnap={item}
-                        onDelete={handleDelete}
+                        onDelete={() => {
+                          handleDeleteSnap(item.snap.id);
+                        }}
                         isUnhold={action === "unhold"}
                         instancesCount={selectedInstances.length}
-                        hasSubtitle={!hasFixedSnaps}
                       />
                     </li>
                   );

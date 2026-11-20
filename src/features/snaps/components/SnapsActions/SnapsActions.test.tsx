@@ -2,7 +2,8 @@ import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import "@/tests/matcher";
 import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
+import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import { afterEach, assert, beforeEach, describe, expect, it } from "vitest";
 import type { ReactElement } from "react";
 import userEvent from "@testing-library/user-event";
@@ -299,16 +300,25 @@ describe("SnapsActions", () => {
       expect(
         await screen.findByRole("heading", { name: "Hold snaps" }),
       ).toBeInTheDocument();
-      expect(
+      await user.click(
         await screen.findByRole("button", {
           name: `Hold ${snapData.multiple.unheldSnaps.length} snaps`,
         }),
-      ).toBeInTheDocument();
-      for (const snap of snapData.multiple.unheldSnaps) {
-        expect(screen.getByText(snap.snap.name)).toBeInTheDocument();
+      );
+
+      // The side panel has no snap list, so check the confirmation modal's
+      // first page.
+      const modal = await screen.findByRole("dialog");
+      for (const snap of snapData.multiple.unheldSnaps.slice(
+        0,
+        DEFAULT_MODAL_PAGE_SIZE,
+      )) {
+        expect(within(modal).getByText(snap.snap.name)).toBeInTheDocument();
       }
       for (const snap of snapData.multiple.heldSnaps) {
-        expect(screen.queryByText(snap.snap.name)).not.toBeInTheDocument();
+        expect(
+          within(modal).queryByText(snap.snap.name),
+        ).not.toBeInTheDocument();
       }
     });
 
