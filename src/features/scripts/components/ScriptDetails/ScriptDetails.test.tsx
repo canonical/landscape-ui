@@ -120,8 +120,9 @@ describe("ScriptDetails", () => {
     );
     expect(redactedNotification).toBeInTheDocument();
 
-    const tabs = screen.queryAllByRole("tab");
-    expect(tabs).toHaveLength(0);
+    expect(
+      screen.queryByRole("navigation", { name: "Script details" }),
+    ).not.toBeInTheDocument();
   });
 
   it("opens modal when clicking on Archive button", async () => {
@@ -185,10 +186,9 @@ describe("ScriptDetails", () => {
 
   it("should navigate back from version history details", async () => {
     renderWithProviders(
-      <ScriptDetails
-        scriptId={activeScriptId}
-        initialTabId="version-history"
-      />,
+      <ScriptDetails scriptId={activeScriptId} />,
+      undefined,
+      "/scripts?tab=panel:version-history",
     );
 
     const versionButton = await screen.findByRole("button", { name: "1" });

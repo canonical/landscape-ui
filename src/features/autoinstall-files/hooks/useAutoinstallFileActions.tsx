@@ -22,8 +22,8 @@ const useAutoinstallFileActions = (autoinstallFile: AutoinstallFile) => {
   const openAutoinstallFileDetails = useOpenAutoinstallFileDetails();
 
   return {
-    openAutoinstallFileDetails: (initialTabId?: AutoinstallFileTabId) => {
-      openAutoinstallFileDetails(autoinstallFile, initialTabId);
+    openAutoinstallFileDetails: (tabId?: AutoinstallFileTabId) => {
+      openAutoinstallFileDetails(autoinstallFile, tabId);
     },
 
     openAutoinstallFileEditForm: () => {

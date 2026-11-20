@@ -1,5 +1,12 @@
-import type { PageParams, ParamDefinition, ParamsConfig } from "./types";
+import type {
+  PageParams,
+  ParamDefinition,
+  ParamsConfig,
+  TabSlot,
+  TabSlots,
+} from "./types";
 import { PARAMS_CONFIG } from "./constants";
+import { parseTabValue, setTabValues, TAB_PARAM } from "./tabValues";
 
 interface DynamicAllowedValuesRegistration {
   id: number;
@@ -120,7 +127,65 @@ class PageParamsManager {
       return [urlParam, rawValue];
     });
 
-    return Object.fromEntries(parsedEntries);
+    return {
+      ...Object.fromEntries(parsedEntries),
+      ...this.parseTabValues(searchParams),
+    };
+  }
+
+  /**
+   * The repeated "tab" param carries the page-level tab as a bare value and
+   * each slot-scoped tab as "slot:id". The first valid value of each kind
+   * wins; invalid values are ignored (and dropped by sanitizeSearchParams).
+   */
+  public parseTabValues(searchParams: URLSearchParams): {
+    tab: string;
+    tabSlots: TabSlots;
+  } {
+    let tab = "";
+    const tabSlots: TabSlots = {};
+
+    for (const rawValue of searchParams.getAll(TAB_PARAM)) {
+      const value = parseTabValue(rawValue);
+
+      if (value?.kind === "page" && !tab) {
+        tab = value.id;
+      } else if (value?.kind === "slot" && !tabSlots[value.slot]) {
+        tabSlots[value.slot] = value.id;
+      }
+    }
+
+    return { tab, tabSlots };
+  }
+
+  /**
+   * Rewrites every "tab" value in place: the bare page tab first, then the
+   * non-empty slot values sorted by slot name.
+   */
+  /**
+   * The search params a tab link navigates to.
+   * - Page-level strip: only "tab=<id>", so switching page tabs starts from a
+   *   clean state (filters, pagination and side panels are dropped).
+   * - Slot strip: the current params with only that slot changed; an empty
+   *   id removes the slot so its default tab applies.
+   */
+  public getTabSearchParams(
+    searchParams: URLSearchParams,
+    target: { slot?: TabSlot; id: string },
+  ): URLSearchParams {
+    if (!target.slot) {
+      return new URLSearchParams({ [TAB_PARAM]: target.id });
+    }
+
+    const { tab, tabSlots } = this.parseTabValues(searchParams);
+    const nextSearchParams = new URLSearchParams(searchParams);
+
+    setTabValues(nextSearchParams, tab, {
+      ...tabSlots,
+      [target.slot]: target.id,
+    });
+
+    return this.sanitizeSearchParams(nextSearchParams);
   }
 
   /**
@@ -128,18 +193,49 @@ class PageParamsManager {
    * E.g. if a param is unknown, equals its default, fails validation, etc.
    */
   public sanitizeSearchParams(params: URLSearchParams): URLSearchParams {
-    const newParams = new URLSearchParams(params);
-    const keys = Array.from(newParams.keys());
+    const newParams = new URLSearchParams();
+    const { tab, tabSlots } = this.parseTabValues(params);
+    let hasWrittenTabValues = false;
 
-    // Check each key/value to see if we should keep or remove
-    for (const key of keys) {
-      const value = newParams.get(key);
-      if (!this.shouldKeepParam(key, value)) {
-        newParams.delete(key);
+    // Rebuild in the original key order so a clean URL stays byte-identical.
+    for (const [key, value] of params) {
+      if (key === TAB_PARAM) {
+        if (!hasWrittenTabValues) {
+          hasWrittenTabValues = true;
+          this.appendSanitizedTabValues(newParams, params, tab, tabSlots);
+        }
+      } else if (this.shouldKeepParam(key, params.get(key))) {
+        newParams.append(key, value);
       }
     }
 
     return newParams;
+  }
+
+  /**
+   * Keeps the first valid page value and the first valid value per slot,
+   * in their original order; drops empty, malformed and duplicate values.
+   */
+  private appendSanitizedTabValues(
+    target: URLSearchParams,
+    source: URLSearchParams,
+    tab: string,
+    tabSlots: TabSlots,
+  ): void {
+    const kept = new Set<string>();
+
+    for (const rawValue of source.getAll(TAB_PARAM)) {
+      const value = parseTabValue(rawValue);
+      const isFirstOfKind =
+        value?.kind === "page"
+          ? value.id === tab
+          : value?.kind === "slot" && tabSlots[value.slot] === value.id;
+
+      if (isFirstOfKind && !kept.has(rawValue)) {
+        kept.add(rawValue);
+        target.append(TAB_PARAM, rawValue);
+      }
+    }
   }
 
   /**

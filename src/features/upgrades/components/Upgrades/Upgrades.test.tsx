@@ -40,50 +40,56 @@ describe("Upgrades", () => {
   it("should render tabs", async () => {
     renderWithProviders(<Upgrades selectedInstances={instances} />);
 
-    expect(screen.getAllByRole("tab")).toHaveLength(3);
-    expect(screen.getByRole("tab", { name: /instances/i })).toHaveAttribute(
-      "aria-selected",
-      "true",
+    const nav = within(screen.getByRole("navigation", { name: "Upgrades" }));
+    expect(nav.getAllByRole("link")).toHaveLength(3);
+    expect(nav.getByRole("link", { name: /instances/i })).toHaveAttribute(
+      "aria-current",
+      "page",
     );
-    expect(screen.getByRole("tab", { name: /packages/i })).toHaveAttribute(
-      "aria-selected",
-      "false",
+    expect(nav.getByRole("link", { name: /packages/i })).not.toHaveAttribute(
+      "aria-current",
     );
-    expect(screen.getByRole("tab", { name: /usns/i })).toHaveAttribute(
-      "aria-selected",
-      "false",
-    );
-    expect(screen.getByRole("tabpanel")).toHaveAttribute(
-      "aria-labelledby",
-      "tab-link-instances",
+    expect(nav.getByRole("link", { name: /usns/i })).not.toHaveAttribute(
+      "aria-current",
     );
     expect(
       await screen.findByText(/Showing \d of \d+ instances/i),
     ).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("tab", { name: /packages/i }));
+    await userEvent.click(nav.getByRole("link", { name: /packages/i }));
 
-    expect(screen.getByRole("tab", { name: /packages/i })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
-    expect(screen.getByRole("tabpanel")).toHaveAttribute(
-      "aria-labelledby",
-      "tab-link-packages",
-    );
     expect(
       await screen.findByText(/Showing \d of \d+ packages/i),
     ).toBeInTheDocument();
-
-    await userEvent.click(screen.getByRole("tab", { name: /usns/i }));
-
-    expect(screen.getByRole("tab", { name: /usns/i })).toHaveAttribute(
-      "aria-selected",
-      "true",
+    expect(nav.getByRole("link", { name: /packages/i })).toHaveAttribute(
+      "aria-current",
+      "page",
     );
-    expect(screen.getByRole("tabpanel")).toHaveAttribute(
-      "aria-labelledby",
-      "tab-link-usns",
+
+    await userEvent.click(nav.getByRole("link", { name: /usns/i }));
+
+    expect(
+      await screen.findByText(/Showing \d of \d+ security issues/i),
+    ).toBeInTheDocument();
+    expect(nav.getByRole("link", { name: /usns/i })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(nav.getByRole("link", { name: /instances/i })).not.toHaveAttribute(
+      "aria-current",
+    );
+  });
+
+  it("opens the tab from the panel tab slot", async () => {
+    renderWithProviders(
+      <Upgrades selectedInstances={instances} />,
+      undefined,
+      "/instances?tab=panel:usns",
+    );
+
+    expect(screen.getByRole("link", { name: /usns/i })).toHaveAttribute(
+      "aria-current",
+      "page",
     );
     expect(
       await screen.findByText(/Showing \d of \d+ security issues/i),
@@ -107,7 +113,7 @@ describe("Upgrades", () => {
 
     renderWithProviders(<Upgrades selectedInstances={instances} />);
 
-    await user.click(screen.getByRole("tab", { name: /usns/i }));
+    await user.click(screen.getByRole("link", { name: /usns/i }));
     await user.click(screen.getByRole("button", { name: "Upgrade" }));
 
     expect(
@@ -124,10 +130,12 @@ describe("Upgrades", () => {
     renderWithProviders(<Upgrades selectedInstances={instances} />);
 
     expect(
-      screen.queryByRole("tab", { name: /packages/i }),
+      screen.queryByRole("link", { name: /packages/i }),
     ).not.toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /instances/i })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /usns/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /instances/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /usns/i })).toBeInTheDocument();
   });
 
   it("renders only instances and packages tabs when no security upgrades exist", () => {
@@ -142,10 +150,12 @@ describe("Upgrades", () => {
       <Upgrades selectedInstances={noSecurityUpgradeInstances} />,
     );
 
-    expect(screen.getByRole("tab", { name: /instances/i })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /packages/i })).toBeInTheDocument();
     expect(
-      screen.queryByRole("tab", { name: /usns/i }),
+      screen.getByRole("link", { name: /instances/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /packages/i })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /usns/i }),
     ).not.toBeInTheDocument();
   });
 
@@ -178,7 +188,7 @@ describe("Upgrades", () => {
     const user = userEvent.setup();
     renderWithProviders(<Upgrades selectedInstances={instances} />);
 
-    await user.click(screen.getByRole("tab", { name: /usns/i }));
+    await user.click(screen.getByRole("link", { name: /usns/i }));
     setEndpointStatus("error");
     await user.click(screen.getByRole("button", { name: "Upgrade" }));
 
@@ -190,7 +200,7 @@ describe("Upgrades", () => {
 
     renderWithProviders(<Upgrades selectedInstances={instances} />);
 
-    await user.click(screen.getByRole("tab", { name: /packages/i }));
+    await user.click(screen.getByRole("link", { name: /packages/i }));
     await user.click(
       screen.getByRole("checkbox", { name: /toggle all packages/i }),
     );
@@ -240,7 +250,7 @@ describe("Upgrades", () => {
 
     renderWithProviders(<Upgrades selectedInstances={instances} />);
 
-    await user.click(screen.getByRole("tab", { name: /packages/i }));
+    await user.click(screen.getByRole("link", { name: /packages/i }));
     await user.click(
       await screen.findByRole("checkbox", { name: /toggle foo package/i }),
     );
@@ -405,9 +415,9 @@ describe("Upgrades", () => {
       <Upgrades selectedInstances={[instanceA, instanceB]} />,
     );
 
-    await user.click(screen.getByRole("tab", { name: /packages/i }));
+    await user.click(screen.getByRole("link", { name: /packages/i }));
     await screen.findByRole("checkbox", { name: /toggle foo package/i });
-    await user.click(screen.getByRole("tab", { name: /instances/i }));
+    await user.click(screen.getByRole("link", { name: /instances/i }));
 
     const instanceBRow = (await screen.findAllByRole("row")).find(
       ({ firstChild }) => firstChild?.textContent === instanceB.title,
@@ -438,7 +448,7 @@ describe("Upgrades", () => {
 
     renderWithProviders(<Upgrades selectedInstances={instances} />);
 
-    await user.click(screen.getByRole("tab", { name: /usns/i }));
+    await user.click(screen.getByRole("link", { name: /usns/i }));
     await user.click(
       screen.getByRole("checkbox", { name: /toggle all security issues/i }),
     );

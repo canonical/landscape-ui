@@ -2,13 +2,13 @@ import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
+import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, ICONS, Notification } from "@canonical/react-components";
 import date from "@/libs/date";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useArchiveScriptModal, useDeleteScriptModal } from "../../hooks";
-import type { ScriptTabId } from "../../types";
 import { useBoolean } from "usehooks-ts";
 
 const ScriptDetailsTabs = lazy(async () => import("../ScriptDetailsTabs"));
@@ -18,13 +18,9 @@ const RunScriptForm = lazy(async () => import("../RunScriptForm"));
 
 interface ScriptDetailsProps {
   readonly scriptId: number;
-  readonly initialTabId?: ScriptTabId;
 }
 
-const ScriptDetails: FC<ScriptDetailsProps> = ({
-  scriptId,
-  initialTabId = "info",
-}) => {
+const ScriptDetails: FC<ScriptDetailsProps> = ({ scriptId }) => {
   const {
     setTrue: openModal,
     setFalse: closeModal,
@@ -38,6 +34,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
   } = useBoolean();
 
   const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
 
   const { script } = useGetSingleScript(scriptId);
 
@@ -71,9 +68,10 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
     setSidePanelContent(
       script.title,
       <Suspense fallback={<LoadingState />}>
-        <ScriptDetails scriptId={script.id} initialTabId="version-history" />
+        <ScriptDetails scriptId={script.id} />
       </Suspense>,
     );
+    setPageParams({ tabSlots: { panel: "version-history" } });
   };
 
   const handleBackToDetails = (): void => {
@@ -87,6 +85,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
         <ScriptDetails scriptId={script.id} />
       </Suspense>,
     );
+    setPageParams({ tabSlots: { panel: "" } });
   };
 
   const handleEditScript = (): void => {
@@ -191,7 +190,6 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
           <ScriptDetailsTabs
             script={script}
             viewVersionHistory={viewVersionHistory}
-            initialTabId={initialTabId}
           />
         </Suspense>
       ) : (

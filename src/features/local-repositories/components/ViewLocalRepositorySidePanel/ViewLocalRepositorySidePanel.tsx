@@ -1,7 +1,6 @@
-import { Suspense, useState, type FC } from "react";
+import { type FC } from "react";
+import AppTabs from "@/components/AppTabs";
 import SidePanel from "@/components/layout/SidePanel";
-import LoadingState from "@/components/layout/LoadingState";
-import { Tabs } from "@canonical/react-components";
 import ViewRepositoryActionsBlock from "./components/ViewRepositoryActionsBlock";
 import ViewLocalRepositoryDetailsTab from "./components/ViewLocalRepositoryDetailsTab";
 import ViewRepositoryPackagesTab from "./components/ViewRepositoryPackagesTab";
@@ -15,7 +14,6 @@ import usePageParams from "@/hooks/usePageParams";
 
 const ViewLocalRepositorySidePanel: FC = () => {
   const { name } = usePageParams();
-  const [tabId, setTabId] = useState<"details" | "packages">("details");
   const { repository, isGettingRepository } = useGetLocalRepository(name);
 
   const { operation, isGettingOperation } = useGetOperation(
@@ -37,19 +35,6 @@ const ViewLocalRepositorySidePanel: FC = () => {
     return <SidePanel.LoadingState />;
   }
 
-  const tabs: { label: string; id: "details" | "packages" }[] = [
-    { label: "General details", id: "details" },
-    { label: "Packages", id: "packages" },
-  ];
-
-  const links = tabs.map(({ label, id }) => ({
-    label,
-    active: tabId == id,
-    onClick: () => {
-      setTabId(id);
-    },
-  }));
-
   const isImporting = !!operation && !operation.done;
 
   return (
@@ -61,27 +46,32 @@ const ViewLocalRepositorySidePanel: FC = () => {
           repository={repository}
           isImporting={isImporting}
         />
-        <Tabs links={links} />
-
-        {tabId === "details" && (
-          <Suspense fallback={<LoadingState />}>
-            <ViewLocalRepositoryDetailsTab
-              repository={repository}
-              operationMetadata={operation?.metadata}
-              key="details"
-            />
-          </Suspense>
-        )}
-
-        {tabId === "packages" && (
-          <Suspense fallback={<LoadingState />}>
-            <ViewRepositoryPackagesTab
-              repositoryName={repository.name ?? ""}
-              isImporting={isImporting}
-              key="packages"
-            />
-          </Suspense>
-        )}
+        <AppTabs
+          aria-label="Repository details"
+          slot="panel"
+          items={[
+            {
+              id: "details",
+              label: "General details",
+              panel: (
+                <ViewLocalRepositoryDetailsTab
+                  repository={repository}
+                  operationMetadata={operation?.metadata}
+                />
+              ),
+            },
+            {
+              id: "packages",
+              label: "Packages",
+              panel: (
+                <ViewRepositoryPackagesTab
+                  repositoryName={repository.name ?? ""}
+                  isImporting={isImporting}
+                />
+              ),
+            },
+          ]}
+        />
       </SidePanel.Content>
     </>
   );

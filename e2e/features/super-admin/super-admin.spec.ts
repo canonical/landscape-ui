@@ -93,7 +93,9 @@ test.describe("@saas Canonical staff", () => {
     await expect(
       page.getByRole("heading", { name: "Globex Corporation" }),
     ).toBeVisible();
-    await expect(page.getByRole("tab", { name: "Info" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Info", exact: true }),
+    ).toBeVisible();
   });
 
   test("toggle a feature and find it kept after a reload", async ({
@@ -103,7 +105,7 @@ test.describe("@saas Canonical staff", () => {
     const superAdmin = new SuperAdminPage(page);
 
     await superAdmin.goToAccount("acme");
-    await page.getByRole("tab", { name: "Features" }).click();
+    await page.getByRole("link", { name: "Features", exact: true }).click();
 
     const featureSwitch = page.getByRole("switch").first();
     await expect(featureSwitch).toBeEnabled();
@@ -291,7 +293,7 @@ test.describe("@saas Canonical staff", () => {
         page.getByRole("button", { name: "Enter account" }),
       ).toBeVisible();
 
-      await page.getByRole("tab", { name: "Features" }).click();
+      await page.getByRole("link", { name: "Features", exact: true }).click();
 
       await expect(
         page.getByText("Only account managers can change features."),

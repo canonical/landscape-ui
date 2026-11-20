@@ -176,7 +176,7 @@ describe("SupportProfilesPage (integration)", () => {
       panel.queryByRole("button", { name: /edit|duplicate|remove/i }),
     ).not.toBeInTheDocument();
 
-    await user.click(panel.getByRole("tab", { name: "Package constraints" }));
+    await user.click(panel.getByRole("link", { name: "Package constraints" }));
 
     expect(
       await panel.findByText(packageProfile.constraints[0]?.package ?? ""),

@@ -1,3 +1,4 @@
+import AppTabs from "@/components/AppTabs";
 import Blocks from "@/components/layout/Blocks";
 import Chip from "@/components/layout/Chip";
 import InfoGrid from "@/components/layout/InfoGrid";
@@ -16,11 +17,8 @@ import {
   ViewProfileScheduleBlock,
 } from "@/features/profiles";
 import { pluralize } from "@/utils/_helpers";
-import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
-import { Suspense, useState } from "react";
-
-type TabId = "info" | "package-constraints";
+import { Suspense } from "react";
 
 /** The association of a profile as text: a support session cannot open instances. */
 const AssociationBlock: FC<{ readonly profile: Profile }> = ({ profile }) => {
@@ -68,8 +66,6 @@ const SupportProfileSidePanel: FC<SupportProfileSidePanelProps> = ({
   type,
   profile,
 }) => {
-  const [tabId, setTabId] = useState<TabId>("info");
-
   if (!profile) {
     return <SidePanel.LoadingState />;
   }
@@ -91,29 +87,20 @@ const SupportProfileSidePanel: FC<SupportProfileSidePanelProps> = ({
       <SidePanel.Header>{profile.title}</SidePanel.Header>
       <SidePanel.Content>
         {packageProfile ? (
-          <>
-            <Tabs
-              links={(
-                [
-                  { label: "Info", id: "info" },
-                  { label: "Package constraints", id: "package-constraints" },
-                ] as const
-              ).map(({ label, id }) => ({
-                label,
-                role: "tab",
-                active: tabId === id,
-                onClick: () => {
-                  setTabId(id);
-                },
-              }))}
-            />
-            <Suspense fallback={<LoadingState />}>
-              {tabId === "info" && info}
-              {tabId === "package-constraints" && (
-                <PackageProfileDetailsConstraints profile={packageProfile} />
-              )}
-            </Suspense>
-          </>
+          <AppTabs
+            aria-label="Profile details"
+            slot="panel"
+            items={[
+              { id: "info", label: "Info", panel: info },
+              {
+                id: "package-constraints",
+                label: "Package constraints",
+                panel: (
+                  <PackageProfileDetailsConstraints profile={packageProfile} />
+                ),
+              },
+            ]}
+          />
         ) : (
           <Suspense fallback={<LoadingState />}>{info}</Suspense>
         )}

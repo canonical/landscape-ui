@@ -1,13 +1,9 @@
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import AppTabs from "@/components/AppTabs";
+import { Badge } from "@canonical/react-ds-global";
+import type { FC } from "react";
+import type { Administrator } from "../../types";
 import AdministratorsPanel from "../AdministratorsPanel";
 import InvitesPanel from "../InvitesPanel";
-import { Tabs } from "@canonical/react-components";
-import type { FC } from "react";
-import { Suspense, useState } from "react";
-import classes from "./AdministratorsTabs.module.scss";
-import type { Administrator } from "../../types";
-import { Badge } from "@canonical/react-ds-global";
 
 interface AdministratorsTabsProps {
   readonly administrators: Administrator[];
@@ -19,62 +15,28 @@ const AdministratorsTabs: FC<AdministratorsTabsProps> = ({
   administrators,
   invitationsCount,
   handleInvite,
-}) => {
-  const { closeSidePanel } = useSidePanel();
-
-  const [currentTabLinkId, setCurrentTabLinkId] = useState(
-    "tab-link-administrators",
-  );
-
-  const tabLinks = [
-    {
-      label: "Administrators",
-      id: "tab-link-administrators",
-    },
-    {
-      label: (
-        <>
-          <span>Invites</span>
-          {!!invitationsCount && <Badge value={invitationsCount} />}
-        </>
-      ),
-      id: "tab-link-invites",
-    },
-  ];
-
-  return (
-    <>
-      <Tabs
-        listClassName="u-no-margin--bottom"
-        links={tabLinks.map(({ label, id }) => ({
-          label,
-          id,
-          role: "tab",
-          active: id === currentTabLinkId,
-          onClick: () => {
-            setCurrentTabLinkId(id);
-            closeSidePanel();
-          },
-        }))}
-      />
-      <div
-        tabIndex={0}
-        role="tabpanel"
-        aria-labelledby={currentTabLinkId}
-        className={classes.tabPanel}
-      >
-        <Suspense fallback={<LoadingState />}>
-          {"tab-link-administrators" === currentTabLinkId && (
-            <AdministratorsPanel
-              administrators={administrators}
-              handleInvite={handleInvite}
-            />
-          )}
-          {"tab-link-invites" === currentTabLinkId && <InvitesPanel />}
-        </Suspense>
-      </div>
-    </>
-  );
-};
+}) => (
+  <AppTabs
+    aria-label="Administrator settings"
+    items={[
+      {
+        id: "administrators",
+        label: "Administrators",
+        panel: (
+          <AdministratorsPanel
+            administrators={administrators}
+            handleInvite={handleInvite}
+          />
+        ),
+      },
+      {
+        id: "invites",
+        label: "Invites",
+        slot: invitationsCount ? <Badge value={invitationsCount} /> : undefined,
+        panel: <InvitesPanel />,
+      },
+    ]}
+  />
+);
 
 export default AdministratorsTabs;

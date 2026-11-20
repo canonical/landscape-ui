@@ -1,52 +1,69 @@
 import { scriptDetails } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
-import { SCRIPT_TABS } from "./constants";
 import ScriptDetailsTabs from "./ScriptDetailsTabs";
 
 const props: ComponentProps<typeof ScriptDetailsTabs> = {
   script: scriptDetails,
   viewVersionHistory: vi.fn(),
-  initialTabId: SCRIPT_TABS[0].id,
+};
+
+const expectCurrent = (name: string) => {
+  for (const link of screen.getAllByRole("link")) {
+    if (link.textContent === name) {
+      expect(link).toHaveAttribute("aria-current", "page");
+    } else {
+      expect(link).not.toHaveAttribute("aria-current");
+    }
+  }
 };
 
 describe("Script Details Tabs", () => {
   const user = userEvent.setup();
 
   it("should switch between script details tabs", async () => {
-    renderWithProviders(<ScriptDetailsTabs {...props} />);
+    renderWithProviders(
+      <ScriptDetailsTabs {...props} />,
+      undefined,
+      "/scripts?tab=scripts",
+    );
 
-    const scriptsTab = screen.getByRole("tab", {
-      name: SCRIPT_TABS[0].label,
-    });
+    expect(
+      screen.getByRole("navigation", { name: "Script details" }),
+    ).toBeInTheDocument();
+    expectCurrent("Info");
 
-    expect(scriptsTab).toBeInTheDocument();
-    expect(scriptsTab).toHaveAttribute("aria-selected", "true");
-
-    const codeTab = screen.getByRole("tab", {
-      name: SCRIPT_TABS[1].label,
-    });
-    expect(codeTab).toBeInTheDocument();
-    expect(codeTab).toHaveAttribute("aria-selected", "false");
+    const codeTab = screen.getByRole("link", { name: "Code" });
+    expect(decodeURIComponent(codeTab.getAttribute("href") ?? "")).toBe(
+      "/scripts?tab=scripts&tab=panel:code",
+    );
 
     await user.click(codeTab);
-
-    expect(codeTab).toHaveAttribute("aria-selected", "true");
-    expect(scriptsTab).toHaveAttribute("aria-selected", "false");
-
-    const versionHistoryTab = screen.getByRole("tab", {
-      name: SCRIPT_TABS[2].label,
+    await waitFor(() => {
+      expectCurrent("Code");
     });
-    expect(versionHistoryTab).toBeInTheDocument();
-    expect(versionHistoryTab).toHaveAttribute("aria-selected", "false");
 
-    await user.click(versionHistoryTab);
+    await user.click(screen.getByRole("link", { name: "Version history" }));
+    await waitFor(() => {
+      expectCurrent("Version history");
+    });
 
-    expect(versionHistoryTab).toHaveAttribute("aria-selected", "true");
-    expect(codeTab).toHaveAttribute("aria-selected", "false");
-    expect(scriptsTab).toHaveAttribute("aria-selected", "false");
+    expect(screen.getByRole("link", { name: "Info" })).toHaveAttribute(
+      "href",
+      "/scripts?tab=scripts",
+    );
+  });
+
+  it("should open the tab from the panel tab slot", () => {
+    renderWithProviders(
+      <ScriptDetailsTabs {...props} />,
+      undefined,
+      "/scripts?tab=panel:code",
+    );
+
+    expectCurrent("Code");
   });
 });

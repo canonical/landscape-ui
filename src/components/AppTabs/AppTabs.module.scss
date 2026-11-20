@@ -1,0 +1,20 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+// Vanilla's unlayered element rules (link colour and underline, list margins)
+// beat Pragma's layered Tabs styles. `revert-layer` drops back to the layered
+// Pragma values for the strip only. Remove once Vanilla is assigned a layer.
+.tabs {
+  :global(.tabs-list),
+  :global(.tabs-item),
+  :global(.tabs-link) {
+    all: revert-layer;
+  }
+}
+
+.tabPanel {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+  padding-top: $sp-x-large;
+}

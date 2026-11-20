@@ -1,4 +1,5 @@
 import type { PageParams } from "../pageParamsManager";
+import { setTabValues } from "../pageParamsManager/tabValues";
 
 type PathParamValue = string | number;
 
@@ -24,9 +25,10 @@ const buildUrl = <T extends Record<string, PathParamValue>>(
     return resolvedPath;
   }
 
+  const { tabSlots, ...params } = queryParams;
   const qs = new URLSearchParams();
 
-  Object.entries(queryParams).forEach(([key, value]) => {
+  Object.entries(params).forEach(([key, value]) => {
     if (value == null) {
       return;
     }
@@ -42,6 +44,10 @@ const buildUrl = <T extends Record<string, PathParamValue>>(
       qs.append(key, String(value));
     }
   });
+
+  if (tabSlots) {
+    setTabValues(qs, params.tab ?? "", tabSlots);
+  }
 
   if (qs.toString()) {
     return `${resolvedPath}?${qs.toString()}`;

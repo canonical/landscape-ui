@@ -1,3 +1,4 @@
+import AppTabs, { useActiveTabId } from "@/components/AppTabs";
 import EmptyState from "@/components/layout/EmptyState";
 import ExpandableTableFooter from "@/components/layout/ExpandableTableFooter";
 import LoadingState from "@/components/layout/LoadingState";
@@ -22,7 +23,6 @@ import {
   ConfirmationButton,
   ModularTable,
   Row,
-  Tabs,
 } from "@canonical/react-components";
 import type { AxiosResponse } from "axios";
 import classNames from "classnames";
@@ -32,27 +32,31 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import type { CellProps, Column } from "react-table";
 import {
+  ACTIVITIES_TABS,
   MAX_ACTIVITY_COUNT,
   MAX_PACKAGE_COUNT,
   MAX_UPGRADE_COUNT,
   MAX_USN_COUNT,
+  UPGRADES_TABS,
 } from "./constants";
 import classes from "./InfoTablesContainer.module.scss";
 import { ROUTES } from "@/libs/routes";
 
 const InfoTablesContainer: FC = () => {
-  const [currentUpgradesTab, setCurrentUpgradesTab] = useState<
-    "instances" | "packages" | "usns"
-  >("instances");
-  const [currentActivitiesTab, setCurrentActivitiesTab] = useState<
-    "unapproved" | "inProgress"
-  >("unapproved");
-
   const navigate = useNavigate();
   const debug = useDebug();
   const { notify } = useNotify();
   const { isFeatureEnabled } = useAuth();
   const isPackagesTabEnabled = isFeatureEnabled("package-search-rest-api");
+
+  const upgradesTabs = UPGRADES_TABS.filter(
+    ({ id }) => isPackagesTabEnabled || id !== "packages",
+  );
+  const currentUpgradesTab =
+    useActiveTabId({ items: upgradesTabs, slot: "upgrades" }) ?? "instances";
+  const currentActivitiesTab =
+    useActiveTabId({ items: ACTIVITIES_TABS, slot: "activities" }) ??
+    "unapproved";
   const { getPackageUpgradesQuery, upgradePackagesQuery } = usePackages();
   const { getUsnsQuery } = useUsns();
 
@@ -331,14 +335,6 @@ const InfoTablesContainer: FC = () => {
     [currentUpgradesTab],
   );
 
-  const handleClickUpgradesTab = (tab: typeof currentUpgradesTab): void => {
-    setCurrentUpgradesTab(tab);
-  };
-
-  const handleClickActivitiesTab = (tab: typeof currentActivitiesTab): void => {
-    setCurrentActivitiesTab(tab);
-  };
-
   const handleUpgradesRefresh = (): void => {
     switch (currentUpgradesTab) {
       case "instances":
@@ -462,37 +458,10 @@ const InfoTablesContainer: FC = () => {
             Upgrade all
           </ConfirmationButton>
         </div>
-        <Tabs
-          links={[
-            {
-              label: "Instances",
-              role: "tab",
-              active: "instances" === currentUpgradesTab,
-              onClick: (): void => {
-                handleClickUpgradesTab("instances");
-              },
-            },
-            ...(isPackagesTabEnabled
-              ? [
-                  {
-                    label: "Packages",
-                    role: "tab",
-                    active: "packages" === currentUpgradesTab,
-                    onClick: (): void => {
-                      handleClickUpgradesTab("packages");
-                    },
-                  },
-                ]
-              : []),
-            {
-              label: "USNs",
-              role: "tab",
-              active: "usns" === currentUpgradesTab,
-              onClick: (): void => {
-                handleClickUpgradesTab("usns");
-              },
-            },
-          ]}
+        <AppTabs
+          aria-label="Upgrades available"
+          slot="upgrades"
+          items={upgradesTabs}
         />
         {getIsLoadingUpgrades() ? (
           <LoadingState />
@@ -560,27 +529,10 @@ const InfoTablesContainer: FC = () => {
             </ConfirmationButton>
           )}
         </div>
-        <Tabs
-          links={[
-            {
-              label: "Requires approval",
-              role: "tab",
-              ["data-testid"]: "activities-requires-approval-tab",
-              active: "unapproved" === currentActivitiesTab,
-              onClick: (): void => {
-                handleClickActivitiesTab("unapproved");
-              },
-            },
-            {
-              label: "In progress",
-              role: "tab",
-              ["data-testid"]: "activities-in-progress-tab",
-              active: "inProgress" === currentActivitiesTab,
-              onClick: (): void => {
-                handleClickActivitiesTab("inProgress");
-              },
-            },
-          ]}
+        <AppTabs
+          aria-label="Activities"
+          slot="activities"
+          items={ACTIVITIES_TABS}
         />
         {getIsLoadingActivities() ? (
           <LoadingState />

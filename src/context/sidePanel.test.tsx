@@ -5,6 +5,7 @@ import { describe, it, expect } from "vitest";
 import { useContext } from "react";
 import { MemoryRouter } from "react-router";
 import { renderWithProviders } from "@/tests/render";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import SidePanelProvider, { SidePanelContext } from "./sidePanel";
 import { NotifyContext } from "./notify";
 
@@ -214,6 +215,50 @@ describe("SidePanelProvider", () => {
     await user.click(screen.getByText("Trigger Error"));
     await waitFor(() => {
       expect(screen.getAllByText("Error message").length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("panel tab slot cleanup", () => {
+    const renderAtUrl = (url: string) =>
+      renderWithProviders(
+        <SidePanelProvider>
+          <TestConsumer />
+          <LocationDisplay />
+        </SidePanelProvider>,
+        undefined,
+        url,
+      );
+
+    const getUrl = () => decodeURIComponent(getLocationDisplay().textContent);
+
+    it("drops the panel tab value when an open panel is closed", async () => {
+      renderAtUrl("/scripts?tab=scripts&tab=panel:code&search=abc");
+
+      await user.click(screen.getByText("Open Panel"));
+      await user.click(
+        await screen.findByRole("button", { name: "Close side panel" }),
+      );
+
+      await waitFor(() => {
+        expect(getUrl()).toBe("/scripts?tab=scripts&search=abc");
+      });
+    });
+
+    it("keeps the URL when no panel was open", async () => {
+      renderAtUrl("/scripts?tab=scripts&tab=panel:code");
+
+      await user.click(screen.getByText("Close Panel"));
+
+      expect(getUrl()).toBe("/scripts?tab=scripts&tab=panel:code");
+    });
+
+    it("keeps the panel tab value of a side path panel", async () => {
+      renderAtUrl("/repositories?sidePath=view&tab=panel:packages");
+
+      await user.click(screen.getByText("Open Panel"));
+      await user.click(screen.getByText("Close Panel"));
+
+      expect(getUrl()).toBe("/repositories?sidePath=view&tab=panel:packages");
     });
   });
 });

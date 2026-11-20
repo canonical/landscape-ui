@@ -15,10 +15,10 @@ describe("AdministratorsTabs", () => {
     );
 
     expect(
-      await screen.findByRole("tab", { name: "Administrators" }),
+      await screen.findByRole("link", { name: "Administrators" }),
     ).toBeInTheDocument();
     expect(
-      await screen.findByRole("tab", { name: "Invites" }),
+      await screen.findByRole("link", { name: "Invites" }),
     ).toBeInTheDocument();
   });
 
@@ -32,8 +32,26 @@ describe("AdministratorsTabs", () => {
       />,
     );
 
-    const invitesTab = await screen.findByRole("tab", { name: "Invites" });
+    const invitesTab = await screen.findByRole("link", { name: "Invites" });
+    expect(invitesTab).toHaveAttribute("href", "/?tab=invites");
     await user.click(invitesTab);
+
+    expect(await screen.findByText(/ben@example.com/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Invites" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+  });
+
+  it("opens the Invites tab from a direct link", async () => {
+    renderWithProviders(
+      <AdministratorsTabs
+        administrators={administrators}
+        handleInvite={vi.fn()}
+      />,
+      undefined,
+      "/settings/administrators?tab=invites",
+    );
 
     expect(await screen.findByText(/ben@example.com/i)).toBeInTheDocument();
   });
@@ -47,7 +65,7 @@ describe("AdministratorsTabs", () => {
       />,
     );
 
-    const invitesTab = await screen.findByRole("tab", { name: /Invites/ });
+    const invitesTab = await screen.findByRole("link", { name: /Invites/ });
     expect(invitesTab).toHaveTextContent("5");
   });
 });

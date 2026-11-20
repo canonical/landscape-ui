@@ -1,6 +1,7 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
+import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
@@ -19,6 +20,7 @@ interface ScriptListActionsProps {
 
 const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
   const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
 
   const {
     value: archiveModalOpen,
@@ -72,6 +74,7 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
         <ScriptDetails scriptId={script.id} />
       </Suspense>,
     );
+    setPageParams({ tabSlots: { panel: "" } });
   };
 
   const handleEditScript = (): void => {

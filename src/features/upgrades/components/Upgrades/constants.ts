@@ -1,17 +1,17 @@
 import { lazy } from "react";
 import * as Yup from "yup";
 
-export const TAB_LINKS = [
+export const TAB_ITEMS = [
   {
-    id: "tab-link-instances",
+    id: "instances",
     label: "Instances",
   },
   {
-    id: "tab-link-packages",
+    id: "packages",
     label: "Packages",
   },
   {
-    id: "tab-link-usns",
+    id: "usns",
     label: "USNs",
   },
 ] as const;

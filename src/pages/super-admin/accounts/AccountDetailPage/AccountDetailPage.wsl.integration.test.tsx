@@ -113,9 +113,9 @@ describe("AccountDetailPage: WSL limits (integration)", () => {
   it("shows the defaults for an account without limits of its own", async () => {
     renderWslLimits("acme");
 
-    expect(await screen.findByRole("tab", { name: "WSL" })).toHaveAttribute(
-      "aria-selected",
-      "true",
+    expect(await screen.findByRole("link", { name: "WSL" })).toHaveAttribute(
+      "aria-current",
+      "page",
     );
 
     const hosts = await findLimit(HOSTS_LABEL);

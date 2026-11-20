@@ -13,6 +13,14 @@ describe("AutoinstallFileTabs", () => {
       <AutoinstallFileTabs file={file} viewVersionHistory={vi.fn()} />,
     );
 
-    await userEvent.click(screen.getByRole("tab", { name: "Version history" }));
+    const versionHistoryTab = screen.getByRole("link", {
+      name: "Version history",
+    });
+    await userEvent.click(versionHistoryTab);
+
+    expect(versionHistoryTab).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Info" })).not.toHaveAttribute(
+      "aria-current",
+    );
   });
 });

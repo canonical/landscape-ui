@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 import { Suspense } from "react";
 import SidePanel from "@/components/layout/SidePanel";
 import ViewLocalRepositorySidePanel from "./ViewLocalRepositorySidePanel";
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { repositories } from "@/tests/mocks/localRepositories";
 import type { Local } from "@canonical/landscape-openapi";
@@ -54,17 +54,24 @@ describe("ViewLocalRepositorySidePanel", () => {
     const user = userEvent.setup();
     renderComponent();
 
-    const detailsTab = await screen.findByText(/general details/i);
-    const packagesTab = within(screen.getByRole("navigation")).getByText(
-      /packages/i,
+    const nav = within(
+      await screen.findByRole("navigation", { name: "Repository details" }),
     );
+    const detailsTab = nav.getByRole("link", { name: "General details" });
+    const packagesTab = nav.getByRole("link", { name: "Packages" });
 
-    expect(detailsTab).toHaveAttribute("aria-selected", "true");
+    expect(detailsTab).toHaveAttribute("aria-current", "page");
+    expect(
+      decodeURIComponent(packagesTab.getAttribute("href") ?? ""),
+    ).toContain("tab=panel:packages");
+    expect(packagesTab.getAttribute("href")).toContain("sidePath=view");
 
     await user.click(packagesTab);
 
-    expect(packagesTab).toHaveAttribute("aria-selected", "true");
-    expect(detailsTab).toHaveAttribute("aria-selected", "false");
+    await waitFor(() => {
+      expect(packagesTab).toHaveAttribute("aria-current", "page");
+    });
+    expect(detailsTab).not.toHaveAttribute("aria-current");
   });
 
   it("renders failed import notification", async () => {

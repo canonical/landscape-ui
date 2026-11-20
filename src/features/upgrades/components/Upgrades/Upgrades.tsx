@@ -1,6 +1,6 @@
+import type { AppTabItem } from "@/components/AppTabs";
+import AppTabs, { useActiveTabId } from "@/components/AppTabs";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
-import LoadingState from "@/components/layout/LoadingState";
 import { hasSecurityUpgrades, hasUpgrades } from "@/features/instances";
 import { usePackages } from "@/features/packages";
 import { useUsns } from "@/features/usns";
@@ -10,27 +10,24 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
-import { Form, Tabs } from "@canonical/react-components";
+import { Form } from "@canonical/react-components";
 import { useFormik } from "formik";
-import type { FC } from "react";
-import { Suspense, useRef, useState } from "react";
+import type { FC, ReactNode } from "react";
+import { useRef } from "react";
 import UpgradeInfo from "../UpgradeInfo";
-import { TAB_LINKS, TAB_PANELS, VALIDATION_SCHEMA } from "./constants";
+import { TAB_PANELS, VALIDATION_SCHEMA } from "./constants";
 import {
   getExcludedPackagesWithNames,
   getInitialValues,
-  getTabLinks,
+  getTabItems,
 } from "./helpers";
-import type { UpgradesFormProps } from "./types";
+import type { UpgradesFormProps, UpgradesTabId } from "./types";
 
 interface UpgradesProps {
   readonly selectedInstances: Instance[];
 }
 
 const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
-  const [activeTabLinkId, setActiveTabLinkId] = useState<string>(
-    TAB_LINKS[0].id,
-  );
   // The packages tab lists upgrade candidates, whose ids the upgrade endpoint
   // ignores, so their names are kept to resolve installed ids on submit.
   const packageNamesByIdRef = useRef(new Map<number, string>());
@@ -47,6 +44,12 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { isFeatureEnabled } = useAuth();
+
+  const tabItems = getTabItems({
+    withPackagesTab: isFeatureEnabled("package-search-rest-api"),
+    withUsnsTab: instancesWithUsn.length > 0,
+  });
+  const activeTabId = useActiveTabId({ items: tabItems, slot: "panel" });
   const { upgradeInstancesPackagesQuery } = usePackages();
   const { upgradeUsnsQuery } = useUsns();
 
@@ -56,7 +59,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
 
   const handleSubmit = async (values: UpgradesFormProps) => {
     try {
-      if (activeTabLinkId === "tab-link-usns") {
+      if (activeTabId === "usns") {
         await upgradeUsns({
           computers: instancesWithUsn.map(({ id }) => ({
             id,
@@ -93,59 +96,49 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
     newExcludedPackages: UpgradesFormProps["excludedPackages"],
   ) => formik.setFieldValue("excludedPackages", newExcludedPackages);
 
+  const panels: Record<UpgradesTabId, ReactNode> = {
+    instances: (
+      <TAB_PANELS.instances
+        excludedPackages={formik.values.excludedPackages}
+        instances={affectedInstances}
+        onExcludedPackagesChange={handleExcludedPackagesChange}
+      />
+    ),
+    packages: (
+      <TAB_PANELS.packages
+        excludedPackages={formik.values.excludedPackages}
+        instances={affectedInstances}
+        onExcludedPackagesChange={handleExcludedPackagesChange}
+        onPackagesLoad={(packages) => {
+          for (const { id, name } of packages) {
+            packageNamesByIdRef.current.set(id, name);
+          }
+        }}
+      />
+    ),
+    usns: (
+      <TAB_PANELS.usns
+        excludedUsns={formik.values.excludedUsns}
+        instances={instancesWithUsn}
+        onExcludedUsnsChange={async (usns) =>
+          formik.setFieldValue("excludedUsns", usns)
+        }
+      />
+    ),
+  };
+
   return (
     <Form onSubmit={formik.handleSubmit}>
       <UpgradeInfo instances={selectedInstances} />
 
-      <Tabs
-        links={getTabLinks({
-          activeTabLinkId,
-          onTabLinkClick: (id) => {
-            setActiveTabLinkId(id);
-          },
-          withPackagesTab: isFeatureEnabled("package-search-rest-api"),
-          withUsnsTab: instancesWithUsn.length > 0,
-        })}
+      <AppTabs
+        aria-label="Upgrades"
+        slot="panel"
+        items={tabItems.map((item): AppTabItem<UpgradesTabId> => ({
+          ...item,
+          panel: panels[item.id],
+        }))}
       />
-
-      <AppErrorBoundary>
-        <div tabIndex={0} role="tabpanel" aria-labelledby={activeTabLinkId}>
-          {activeTabLinkId === "tab-link-instances" && (
-            <Suspense fallback={<LoadingState />}>
-              <TAB_PANELS.instances
-                excludedPackages={formik.values.excludedPackages}
-                instances={affectedInstances}
-                onExcludedPackagesChange={handleExcludedPackagesChange}
-              />
-            </Suspense>
-          )}
-          {activeTabLinkId === "tab-link-packages" && (
-            <Suspense fallback={<LoadingState />}>
-              <TAB_PANELS.packages
-                excludedPackages={formik.values.excludedPackages}
-                instances={affectedInstances}
-                onExcludedPackagesChange={handleExcludedPackagesChange}
-                onPackagesLoad={(packages) => {
-                  for (const { id, name } of packages) {
-                    packageNamesByIdRef.current.set(id, name);
-                  }
-                }}
-              />
-            </Suspense>
-          )}
-          {activeTabLinkId === "tab-link-usns" && (
-            <Suspense fallback={<LoadingState />}>
-              <TAB_PANELS.usns
-                excludedUsns={formik.values.excludedUsns}
-                instances={instancesWithUsn}
-                onExcludedUsnsChange={async (usns) =>
-                  formik.setFieldValue("excludedUsns", usns)
-                }
-              />
-            </Suspense>
-          )}
-        </div>
-      </AppErrorBoundary>
 
       <SidePanelFormButtons
         submitButtonLoading={formik.isSubmitting}

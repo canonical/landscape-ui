@@ -117,7 +117,10 @@ describe("AccountDetailPage (integration)", () => {
   it("renders the tabs with Info selected", async () => {
     renderAccount("acme");
 
-    const tabs = await screen.findAllByRole("tab");
+    const nav = within(
+      await screen.findByRole("navigation", { name: "Account details" }),
+    );
+    const tabs = nav.getAllByRole("link");
 
     expect(tabs.map((tab) => tab.textContent)).toEqual([
       "Info",
@@ -126,9 +129,9 @@ describe("AccountDetailPage (integration)", () => {
       "Features",
       "WSL",
     ]);
-    expect(screen.getByRole("tab", { name: "Info" })).toHaveAttribute(
-      "aria-selected",
-      "true",
+    expect(nav.getByRole("link", { name: "Info" })).toHaveAttribute(
+      "aria-current",
+      "page",
     );
   });
 
@@ -167,9 +170,9 @@ describe("AccountDetailPage (integration)", () => {
   it("falls back to the Info tab for an unknown tab", async () => {
     renderAccount("acme", "no-such-tab");
 
-    expect(await screen.findByRole("tab", { name: "Info" })).toHaveAttribute(
-      "aria-selected",
-      "true",
+    expect(await screen.findByRole("link", { name: "Info" })).toHaveAttribute(
+      "aria-current",
+      "page",
     );
     expect(screen.getByRole("heading", { name: "Status" })).toBeInTheDocument();
   });
@@ -190,18 +193,14 @@ describe("AccountDetailPage (integration)", () => {
 
     renderAccount(account.account);
 
-    await user.click(
-      await screen.findByRole("tab", { name: "Administrators" }),
-    );
+    const administratorsTab = await screen.findByRole("link", {
+      name: "Administrators",
+    });
+    await user.click(administratorsTab);
 
-    const panel = within(screen.getByRole("tabpanel"));
-
-    expect(await panel.findByText(administrator.name)).toBeInTheDocument();
-    expect(panel.getByText(administrator.email)).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Administrators" })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
+    expect(await screen.findByText(administrator.name)).toBeInTheDocument();
+    expect(screen.getByText(administrator.email)).toBeInTheDocument();
+    expect(administratorsTab).toHaveAttribute("aria-current", "page");
     expect(
       screen.queryByRole("heading", { name: "Status" }),
     ).not.toBeInTheDocument();
@@ -215,7 +214,7 @@ describe("AccountDetailPage (integration)", () => {
 
     renderAccount(account.account, "licenses");
 
-    const panel = within(await screen.findByRole("tabpanel"));
+    const panel = within(await screen.findByRole("table"));
 
     expect(panel.getByText(license.type)).toBeInTheDocument();
     expect(panel.getByText(String(license.seats))).toBeInTheDocument();
@@ -408,6 +407,8 @@ describe("AccountDetailPage (integration)", () => {
     expect(
       screen.getByRole("link", { name: "Back to accounts" }),
     ).toHaveAttribute("href", ROUTES.superAdmin.accounts());
-    expect(screen.queryByRole("tab")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("navigation", { name: "Account details" }),
+    ).not.toBeInTheDocument();
   });
 });

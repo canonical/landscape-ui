@@ -1,34 +1,20 @@
-import type { TabsProps } from "@canonical/react-components";
+import type { AppTabItem } from "@/components/AppTabs";
 import type { InstancePackagesToExclude } from "@/features/packages";
 import type { Instance } from "@/types/Instance";
-import { TAB_LINKS } from "./constants";
-import type { UpgradesFormProps } from "./types";
+import { TAB_ITEMS } from "./constants";
+import type { UpgradesFormProps, UpgradesTabId } from "./types";
 
-export const getTabLinks = ({
-  activeTabLinkId,
-  onTabLinkClick,
+export const getTabItems = ({
   withPackagesTab,
   withUsnsTab,
 }: {
-  activeTabLinkId: string;
-  onTabLinkClick: (id: string) => void;
   withPackagesTab: boolean;
   withUsnsTab: boolean;
-}) => {
-  return TAB_LINKS.filter(
+}): AppTabItem<UpgradesTabId>[] =>
+  TAB_ITEMS.filter(
     ({ id }) =>
-      (withPackagesTab || id !== "tab-link-packages") &&
-      (withUsnsTab || id !== "tab-link-usns"),
-  ).map(({ id, label }): TabsProps["links"][number] => ({
-    id,
-    label,
-    active: id === activeTabLinkId,
-    onClick: () => {
-      onTabLinkClick(id);
-    },
-    role: "tab",
-  }));
-};
+      (withPackagesTab || id !== "packages") && (withUsnsTab || id !== "usns"),
+  ).map(({ id, label }) => ({ id, label }));
 
 export const getInitialValues = (instances: Instance[]): UpgradesFormProps => {
   return {

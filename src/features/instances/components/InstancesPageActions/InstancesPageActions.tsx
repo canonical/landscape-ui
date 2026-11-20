@@ -71,7 +71,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
 }: InstancesPageActionsProps) {
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
-  const { createSidePathPusher, lastSidePathSegment } = usePageParams();
+  const { createSidePathPusher, lastSidePathSegment, setPageParams } =
+    usePageParams();
   const menuPosition = useMediaQuery(`(min-width: ${BREAKPOINT_PX.xl}px)`)
     ? "left"
     : "right";
@@ -167,6 +168,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       </Suspense>,
       "large",
     );
+    setPageParams({ tabSlots: { panel: "" } });
   };
 
   const handleDistributionUpgradesRequest = () => {

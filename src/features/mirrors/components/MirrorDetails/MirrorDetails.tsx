@@ -1,6 +1,6 @@
-import { useState, type FC } from "react";
+import { type FC } from "react";
+import AppTabs from "@/components/AppTabs";
 import SidePanel from "@/components/layout/SidePanel/SidePanel";
-import { Tabs } from "@canonical/react-components";
 import { useGetMirror } from "../../api";
 import usePageParams from "@/hooks/usePageParams";
 import { DEFAULT_POLLING_INTERVAL } from "@/constants";
@@ -17,8 +17,6 @@ const MirrorDetails: FC = () => {
   const { name } = usePageParams();
   const { mirror, isGettingMirror } = useGetMirror(name);
 
-  const [tabId, setTabId] = useState<"details" | "packages">("details");
-
   const { operation, isGettingOperation } = useGetOperation(
     mirror?.lastOperation ?? "",
     {
@@ -28,25 +26,6 @@ const MirrorDetails: FC = () => {
           : DEFAULT_POLLING_INTERVAL,
     },
   );
-
-  const tabs: { label: string; id: "details" | "packages" }[] = [
-    {
-      label: "General details",
-      id: "details",
-    },
-    {
-      label: "Packages",
-      id: "packages",
-    },
-  ];
-
-  const links = tabs.map(({ label, id }) => ({
-    label,
-    active: tabId == id,
-    onClick: () => {
-      setTabId(id);
-    },
-  }));
 
   if (isGettingMirror) {
     return <SidePanel.LoadingState />;
@@ -67,13 +46,26 @@ const MirrorDetails: FC = () => {
             mirror={mirror}
             isUpdating={!!operation && !operation.done}
           />
-          <Tabs links={links} />
-          {tabId === "details" && (
-            <MirrorDetailsTab mirror={mirror} operation={operation} />
-          )}
-          {tabId === "packages" && mirror.name && (
-            <MirrorPackagesList mirrorName={mirror.name} />
-          )}
+          <AppTabs
+            aria-label="Mirror details"
+            slot="panel"
+            items={[
+              {
+                id: "details",
+                label: "General details",
+                panel: (
+                  <MirrorDetailsTab mirror={mirror} operation={operation} />
+                ),
+              },
+              {
+                id: "packages",
+                label: "Packages",
+                panel: mirror.name ? (
+                  <MirrorPackagesList mirrorName={mirror.name} />
+                ) : undefined,
+              },
+            ]}
+          />
         </SidePanel.Content>
       )}
     </>
