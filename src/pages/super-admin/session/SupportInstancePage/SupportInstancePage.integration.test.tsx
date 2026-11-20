@@ -49,7 +49,7 @@ const UBUNTU_TABS = [
   "Hardware",
 ];
 
-const BUILT_TABS = ["Info", "Activities", "Kernel"];
+const BUILT_TABS = ["Info", "Activities", "Kernel", "Packages"];
 
 /** Signs in as staff whose session is already in the account. */
 const signIn = () => {
