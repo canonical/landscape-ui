@@ -45,8 +45,9 @@ describe("TagChips", () => {
       />,
     );
 
-    const dismissButtons = screen.getAllByRole("button", { name: "Dismiss" });
-    const secondDismissButton = dismissButtons.at(1);
+    const secondDismissButton = screen.getByRole("button", {
+      name: "Dismiss tag-2",
+    });
 
     assert(secondDismissButton);
 

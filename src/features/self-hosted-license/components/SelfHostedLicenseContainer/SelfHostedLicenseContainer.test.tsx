@@ -92,7 +92,8 @@ describe("SelfHostedLicenseContainer", () => {
     );
   });
 
-  it("shows an error notification and keeps download and regenerate disabled", async () => {
+  it("shows the error toast and offers an inline retry for the download URL", async () => {
+    const user = userEvent.setup();
     setEndpointStatus({
       status: "error",
       path: "self-hosted/license-url",
@@ -106,20 +107,44 @@ describe("SelfHostedLicenseContainer", () => {
     renderWithProviders(<SelfHostedLicenseContainer />);
 
     expect(
-      await screen.findByText("Account not enabled for self-hosted Landscape"),
+      await screen.findByText("Could not load the legacy license file"),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Download license file" }),
-    ).toHaveAttribute("aria-disabled", "true");
-    expect(
-      screen.getByRole("button", { name: "Regenerate private token" }),
-    ).toHaveAttribute("aria-disabled", "true");
-    expect(
-      screen.queryByRole("button", { name: "Try again" }),
+      screen.queryByRole("button", { name: "Download license file" }),
     ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Regenerate private token" }),
+    ).not.toBeInTheDocument();
+    expect(
+      await screen.findByText("Account not enabled for self-hosted Landscape"),
+    ).toBeInTheDocument();
+
+    setEndpointStatus("default");
+    await user.click(screen.getByRole("button", { name: "Try again" }));
+
+    expect(
+      await screen.findByRole("button", { name: "Download license file" }),
+    ).not.toHaveAttribute("aria-disabled");
   });
 
-  it("enables regeneration only after the license URL is available", async () => {
+  it("offers a retry when the API returns no usable download URL", async () => {
+    server.use(
+      http.get(`${API_URL}self-hosted/license-url`, () =>
+        HttpResponse.json({ license_url: "" }),
+      ),
+    );
+
+    renderWithProviders(<SelfHostedLicenseContainer />);
+
+    expect(
+      await screen.findByRole("button", { name: "Try again" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Could not load the legacy license file"),
+    ).toBeInTheDocument();
+  });
+
+  it("shows loading instead of the form until the license URL is available", async () => {
     let releaseInitialRequest: (() => void) | undefined;
     const initialRequestStarted = new Promise<void>((resolveStarted) => {
       server.use(
@@ -136,9 +161,13 @@ describe("SelfHostedLicenseContainer", () => {
     renderWithProviders(<SelfHostedLicenseContainer />);
     await initialRequestStarted;
 
+    expect(screen.getByRole("status")).toHaveTextContent("Loading...");
     expect(
-      screen.getByRole("button", { name: "Regenerate private token" }),
-    ).toHaveAttribute("aria-disabled", "true");
+      screen.queryByRole("button", { name: "Download license file" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Regenerate private token" }),
+    ).not.toBeInTheDocument();
 
     await act(async () => {
       releaseInitialRequest?.();
@@ -149,6 +178,47 @@ describe("SelfHostedLicenseContainer", () => {
         screen.getByRole("button", { name: "Regenerate private token" }),
       ).not.toHaveAttribute("aria-disabled");
     });
+  });
+
+  it("shows loading instead of the form before a license URL request fails", async () => {
+    let releaseRequest: (() => void) | undefined;
+    const request = new Promise<void>((resolve) => {
+      releaseRequest = resolve;
+    });
+    server.use(
+      http.get(`${API_URL}self-hosted/license-url`, async () => {
+        await request;
+        return HttpResponse.json(
+          { message: "Request failed" },
+          { status: 500 },
+        );
+      }),
+    );
+
+    try {
+      renderWithProviders(<SelfHostedLicenseContainer />);
+
+      expect(screen.getByRole("status")).toHaveTextContent("Loading...");
+      expect(
+        screen.queryByRole("button", { name: "Download license file" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Regenerate private token" }),
+      ).not.toBeInTheDocument();
+
+      await act(async () => {
+        releaseRequest?.();
+      });
+
+      expect(
+        await screen.findByText("Could not load the legacy license file"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Try again" }),
+      ).toBeInTheDocument();
+    } finally {
+      releaseRequest?.();
+    }
   });
 
   it("does not apply a regeneration response to a newly selected account", async () => {

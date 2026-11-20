@@ -1,14 +1,12 @@
 import type { FC, ReactNode } from "react";
 import { createContext, useContext } from "react";
-import type { ApiError } from "@/types/api/ApiError";
 import useEnv from "@/hooks/useEnv";
 import { useGetSelfHostedEnabled } from "@/features/self-hosted-license";
-import type { AxiosError } from "axios";
 
 interface SelfHostedLicenseContextProps {
   isGettingSelfHostedEnabled: boolean;
   isSelfHostedEnabled: boolean;
-  selfHostedEnabledError: AxiosError<ApiError> | null;
+  selfHostedEnabledError: Error | null;
   isEntitlementQueryEnabled: boolean;
 }
 

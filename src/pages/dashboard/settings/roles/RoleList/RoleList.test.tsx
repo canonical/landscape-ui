@@ -28,6 +28,7 @@ describe("RoleList", () => {
 
     const columnHeaders = [
       /name/i,
+      /description/i,
       /administrators/i,
       /view/i,
       /manage/i,
@@ -49,6 +50,51 @@ describe("RoleList", () => {
         screen.getByRole("rowheader", { name: role.name }),
       ).toBeInTheDocument();
     });
+  });
+
+  it.each(["", "Operators responsible for production servers"])(
+    "renders the role description %j",
+    (description) => {
+      renderWithProviders(
+        <RoleList roleList={[{ ...roles[0], description }]} />,
+      );
+      expect(
+        screen.getByRole("cell", { name: "Description" }),
+      ).toHaveTextContent(description || /^$/);
+    },
+  );
+
+  it("expands a truncated description and collapses it on Escape", async () => {
+    renderWithProviders(<RoleList {...props} />);
+
+    const row = screen.getByRole("row", { name: /^GlobalAdmin / });
+    await within(
+      within(row).getByRole("cell", { name: "View permissions" }),
+    ).findByRole("button", { name: /show more/i });
+
+    const getDescriptionCell = () =>
+      within(screen.getByRole("row", { name: /^GlobalAdmin / })).getByRole(
+        "cell",
+        { name: "Description" },
+      );
+
+    await user.click(
+      await within(getDescriptionCell()).findByRole("button", {
+        name: /show more/i,
+      }),
+    );
+
+    expect(
+      within(getDescriptionCell()).queryByRole("button", {
+        name: /show more/i,
+      }),
+    ).not.toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+
+    expect(
+      within(getDescriptionCell()).getByRole("button", { name: /show more/i }),
+    ).toBeInTheDocument();
   });
 
   it("does not render actions for GlobalAdmin role", () => {

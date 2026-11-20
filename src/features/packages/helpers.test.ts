@@ -1,7 +1,67 @@
 import { describe, expect, it } from "vitest";
-import type { ComputerPackageSearchGroupedResult } from "./types";
-import { mapGroupedResultToInstancePackage } from "./helpers";
+import { FilterState, type ComputerPackageSearchGroupedResult } from "./types";
+import {
+  getActionFormTitle,
+  mapActionTypeToPast,
+  mapActionTypeToQueryParams,
+  mapActionTypeToSearch,
+  mapGroupedResultToInstancePackage,
+} from "./helpers";
 import { getPackageStatusInfo } from "./components/PackageList/helpers";
+
+describe("mapActionTypeToQueryParams", () => {
+  it.each([
+    {
+      action: "install",
+      expected: {
+        available: FilterState.TRUE,
+        installed: FilterState.FALSE,
+        held: FilterState.FALSE,
+        upgrade: FilterState.FALSE,
+      },
+    },
+    {
+      action: "remove",
+      expected: { installed: FilterState.TRUE, held: FilterState.FALSE },
+    },
+    {
+      action: "change_version",
+      expected: { installed: FilterState.TRUE, held: FilterState.FALSE },
+    },
+    {
+      action: "hold",
+      expected: { installed: FilterState.TRUE, held: FilterState.FALSE },
+    },
+    {
+      action: "unhold",
+      expected: { held: FilterState.TRUE },
+    },
+  ] as const)("returns the filters for $action", ({ action, expected }) => {
+    expect(mapActionTypeToQueryParams(action)).toEqual(expected);
+  });
+});
+
+describe("package action labels", () => {
+  it.each([
+    ["install", "installed", "available", "Install packages"],
+    ["remove", "uninstalled", "installed", "Uninstall packages"],
+    ["hold", "held", "installed", "Hold packages"],
+    ["unhold", "unheld", "held", "Unhold packages"],
+    [
+      "change_version",
+      "changed to a different version",
+      "installed",
+      "Change package version",
+    ],
+  ] as const)(
+    "returns the past tense, search category, and form title for %s",
+    (action, past, search, title) => {
+      expect(mapActionTypeToPast(action)).toBe(past);
+      expect(mapActionTypeToSearch(action)).toBe(search);
+      expect(getActionFormTitle(action)).toBe(title);
+    },
+  );
+});
 
 describe("mapGroupedResultToInstancePackage", () => {
   it("maps a package with a security upgrade candidate to status 'security'", () => {

@@ -1,5 +1,10 @@
 import { HOMEPAGE_PATH } from "@/constants";
-import { getInvitationPath, useInvitation, useLogin } from "@/features/auth";
+import {
+  getInvitationPath,
+  getLoginRedirect,
+  useInvitation,
+  useLogin,
+} from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import {
@@ -34,8 +39,8 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
 
   const { safeRedirect, setUser } = useAuth();
 
-  const redirectTo = searchParams.get("redirect-to");
-  const isExternalRedirect = searchParams.has("external");
+  const { redirectTo, external: isExternalRedirect } =
+    getLoginRedirect(searchParams);
 
   const formik = useFormik<FormProps>({
     initialValues: {

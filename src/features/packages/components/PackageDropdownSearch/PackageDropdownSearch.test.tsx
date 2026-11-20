@@ -5,7 +5,7 @@ import server from "@/tests/server";
 import { packages as availablePackages } from "@/tests/mocks/packages";
 import { mockListScrollMetrics } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
-import { cleanup, screen, waitFor } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
@@ -44,6 +44,43 @@ describe("PackageDropdownSearch", () => {
   });
 
   describe("Search functionality", () => {
+    it("sends exact-match searches as names instead of text", async () => {
+      const requests: SearchPackagesRequest[] = [];
+      const [matchingPackage] = availablePackages;
+      assert(matchingPackage);
+
+      server.use(
+        http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
+          `${API_URL}packages\\:search`,
+          async ({ request }) => {
+            requests.push(await request.json());
+
+            return HttpResponse.json({
+              packages: [matchingPackage],
+              count: 1,
+              next: null,
+              prev: null,
+            });
+          },
+        ),
+      );
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+      await user.click(screen.getByLabelText("Exact match"));
+      await user.type(searchBox, matchingPackage.name);
+
+      await waitFor(() => {
+        expect(requests.at(-1)).toEqual(
+          expect.objectContaining({ names: matchingPackage.name }),
+        );
+      });
+      expect(requests.at(-1)).not.toHaveProperty("text");
+      expect(await screen.findByRole("option")).toHaveTextContent(
+        `${matchingPackage.name} ${matchingPackage.version}`,
+      );
+    });
+
     it("debounces rapid typing into a single API request", async () => {
       let requestCount = 0;
       server.use(
@@ -187,6 +224,48 @@ describe("PackageDropdownSearch", () => {
   });
 
   describe("Selected packages display", () => {
+    it("updates only the targeted package's selected version IDs", async () => {
+      cleanup();
+      const [firstPackage, secondPackage] = availablePackages;
+      assert(firstPackage);
+      assert(secondPackage);
+      const setSelectedItems = vi.fn();
+
+      renderWithProviders(
+        <PackageDropdownSearch
+          {...props}
+          actionType="change_version"
+          selectedItems={[
+            [firstPackage, [firstPackage.id]],
+            [secondPackage, []],
+          ]}
+          setSelectedItems={setSelectedItems}
+        />,
+        undefined,
+        instancePageUrl,
+        instancePath,
+      );
+
+      const packageRow = screen
+        .getByText(`${secondPackage.name} ${secondPackage.version}`)
+        .closest("li");
+      assert(packageRow);
+
+      await user.click(
+        await within(packageRow).findByRole("combobox", { name: "Version" }),
+      );
+      await user.click(
+        await screen.findByText(
+          `${secondPackage.version} (${secondPackage.computers.count} instances)`,
+        ),
+      );
+
+      expect(setSelectedItems).toHaveBeenCalledExactlyOnceWith([
+        [firstPackage, [firstPackage.id]],
+        [secondPackage, [secondPackage.id]],
+      ]);
+    });
+
     it("removes package when delete button is clicked", async () => {
       const [selectedPackage] = availablePackages;
       assert(selectedPackage);

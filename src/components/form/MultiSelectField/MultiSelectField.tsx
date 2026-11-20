@@ -133,7 +133,6 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
         error={error}
         items={items}
         label={label}
-        scrollOverflow
         {...otherProps}
       />
       {error && (

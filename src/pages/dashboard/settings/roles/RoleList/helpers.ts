@@ -67,6 +67,8 @@ export const handleCellProps =
 
     if (column.id === "name") {
       cellProps.role = "rowheader";
+    } else if (column.id === "description") {
+      cellProps["aria-label"] = "Description";
     } else if (column.id === "persons") {
       cellProps["aria-label"] = "Administrators";
     } else if (column.id === "view") {

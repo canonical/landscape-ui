@@ -7,7 +7,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import useDebug from "@/hooks/useDebug";
-import type { AxiosError } from "axios";
+import { isAxiosError, type AxiosError } from "axios";
 import type { ApiError } from "@/types/api/ApiError";
 
 declare module "@tanstack/react-query" {
@@ -31,7 +31,27 @@ const ReactQueryProvider: FC<ReactQueryProviderProps> = ({ children }) => {
         retry: false,
       },
     },
-    queryCache: new QueryCache({ onError: debug }),
+    queryCache: new QueryCache({
+      onError: (error, query) => {
+        const isHandledByBoundary = query.observers.some(({ options }) => {
+          const { throwOnError } = options;
+
+          return typeof throwOnError === "function"
+            ? throwOnError(error, query)
+            : !!throwOnError;
+        });
+
+        const message =
+          isAxiosError<ApiError>(error) && error.response
+            ? error.response.data?.message
+            : error.message;
+        if (isHandledByBoundary && !message) {
+          return;
+        }
+
+        debug(error);
+      },
+    }),
   };
 
   const [queryClient] = useState(() => new QueryClient(config));

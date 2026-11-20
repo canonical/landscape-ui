@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { ROUTES } from "@/libs/routes";
 import {
   getInvitationPath,
+  getLoginRedirect,
   getProviderIcon,
   getSameOriginPath,
   getSameOriginUrl,
@@ -91,6 +92,31 @@ describe("auth helpers", () => {
       expect(getInvitationPath("abc", params)).toBe(
         `${base}?redirect-to=%2Faccount%2Facme&external=true`,
       );
+    });
+  });
+
+  describe("getLoginRedirect", () => {
+    it("keeps the requested target", () => {
+      const params = new URLSearchParams({ "redirect-to": "/scripts" });
+
+      expect(getLoginRedirect(params, "/portal/")).toEqual({
+        redirectTo: "/scripts",
+        external: false,
+      });
+    });
+
+    it("defers to the server root when served under a sub-path", () => {
+      expect(getLoginRedirect(new URLSearchParams(), "/portal/")).toEqual({
+        redirectTo: "/",
+        external: true,
+      });
+    });
+
+    it("has no target when the app owns the site root", () => {
+      expect(getLoginRedirect(new URLSearchParams(), "/")).toEqual({
+        redirectTo: null,
+        external: false,
+      });
     });
   });
 });
