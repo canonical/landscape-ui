@@ -39,7 +39,7 @@ The **Integration Tests** workflow (`.github/workflows/integration-tests.yml`) r
 
 - Docker + Docker Compose v2
 - `canonical/landscape-packaging` cloned with submodules (e.g., `~/landscape-packaging`)
-- `pnpm` + Node 24
+- `pnpm` + Node 26
 
 ### 1. Start the backend with sample data
 

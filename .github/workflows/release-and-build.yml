@@ -37,13 +37,13 @@ jobs:
       - uses: actions/checkout@v5
         with: { fetch-depth: 0 }
 
-      - uses: pnpm/action-setup@v4
-        with: { version: 10 }
-
-      - uses: actions/setup-node@v4
+      - name: Set up pnpm
+        uses: pnpm/setup@v3
         with:
-          node-version: 24
-          cache: "pnpm"
+          version: 12
+          runtime: node@26
+          cache: true
+          require-lockfile: true
 
       - name: Calculate Version
         id: calver
@@ -111,10 +111,6 @@ jobs:
           else
             echo "should_build=true" >> $GITHUB_OUTPUT
           fi
-
-      - name: Install dependencies
-        if: steps.calver.outputs.should_build == 'true'
-        run: pnpm install --frozen-lockfile
 
       # Gated too: a no-op rebuild must not run the version bump, or it could
       # consume pending changesets / update package.json + CHANGELOG for a

@@ -357,18 +357,15 @@ jobs:
         with:
           ref: ${{ needs.meta.outputs.scan_sha }}
 
-      - uses: pnpm/action-setup@v4
-        with: { version: 10 }
-
       # No dependency cache here: the install runs against the scanned
       # commit, and a cache written by this job would be served to runs on
       # main as well.
-      - uses: actions/setup-node@v4
+      - name: Set up pnpm
+        uses: pnpm/setup@v3
         with:
-          node-version: 24
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          version: 12
+          runtime: node@26
+          require-lockfile: true
 
       # Same build inputs as release-and-build.yml, at the commit the release
       # workflow built, so the scanned deb matches what was published.

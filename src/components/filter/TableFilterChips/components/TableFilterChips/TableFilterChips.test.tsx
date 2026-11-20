@@ -37,7 +37,11 @@ describe("TableFilterChips", () => {
 
     const chip = chipTexts[0].parentElement;
     assert(chip);
-    await user.click(within(chip).getByRole("button", { name: "Dismiss" }));
+    await user.click(
+      within(chip).getByRole("button", {
+        name: "Dismiss Availability z.: zone1",
+      }),
+    );
     expect(
       screen.queryByText("Availability z.: zone1"),
     ).not.toBeInTheDocument();
