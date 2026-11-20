@@ -106,13 +106,21 @@ function readDebianEntries(text) {
 
 function dpkgVersionGreater(a, b) {
   try {
-    execFileSync("dpkg", ["--compare-versions", a, "gt", b]);
+    // Capture stderr so a dpkg error is reported once, in the thrown message.
+    execFileSync("dpkg", ["--compare-versions", a, "gt", b], {
+      stdio: ["ignore", "ignore", "pipe"],
+    });
     return true;
   } catch (err) {
     if (err.code === "ENOENT") {
       throw new Error("dpkg is required to compare Debian versions.");
     }
-    return false; // exit status 1: not greater
+    // Exit status 1 means "not greater". Anything else (e.g. 2 for a
+    // malformed version in debian/changelog) means the order check itself
+    // failed, so stop before writing anything.
+    if (err.status === 1) return false;
+    const detail = err.stderr ? String(err.stderr).trim() : err.message;
+    throw new Error(`dpkg could not compare '${a}' with '${b}': ${detail}`);
   }
 }
 
@@ -265,7 +273,12 @@ function main() {
 }
 
 if (require.main === module) {
-  main();
+  try {
+    main();
+  } catch (err) {
+    console.error(err.message);
+    process.exit(1);
+  }
 }
 
 // Exported so the workflow derives the version through this single parser

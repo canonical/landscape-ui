@@ -66,11 +66,12 @@ jobs:
 
           # The release owner edits the draft CHANGELOG on the prep PR. If the
           # existing prep branch has commits by anyone but this workflow,
-          # refuse to overwrite them: merge or close that PR first.
+          # refuse to overwrite them: merge or close that PR first. Check the
+          # committer too: amending the bot's commit keeps the bot as author.
           REMOTE_SHA=$(git ls-remote --heads origin "refs/heads/$PREP_BRANCH" | cut -f1)
           if [[ -n "$REMOTE_SHA" ]]; then
             OTHERS=$(gh api "repos/${GITHUB_REPOSITORY}/compare/${BASE}...${REMOTE_SHA}" \
-              --jq ".commits[] | select(.commit.author.email != \"${BOT_EMAIL}\") | .sha[0:9] + \" \" + .commit.author.name")
+              --jq ".commits[] | select(.commit.author.email != \"${BOT_EMAIL}\" or .commit.committer.email != \"${BOT_EMAIL}\") | .sha[0:9] + \" \" + .commit.author.name + \" / \" + .commit.committer.name")
             if [[ -n "$OTHERS" ]]; then
               echo "::error::${PREP_BRANCH} has commits not made by this workflow; refusing to overwrite them:"
               echo "$OTHERS"
