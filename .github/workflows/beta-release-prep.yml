@@ -31,9 +31,13 @@ concurrency:
 jobs:
   prepare:
     runs-on: ubuntu-latest
+    # Manual dispatch ignores the push branch filter, and the parser also
+    # accepts bare YY.MM-beta.N (for local use) — so a dispatch on the tag
+    # 27.04-beta.3 would otherwise prep from the wrong ref. Beta branches only.
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.created == true
+      startsWith(github.ref, 'refs/heads/beta/') &&
+      (github.event_name == 'workflow_dispatch' ||
+       github.event.created == true)
     steps:
       - uses: actions/checkout@v5
 

@@ -36,7 +36,7 @@ Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual
 
 ## Beta Release Prep (`beta-release-prep.yml`)
 
-**Trigger:** creation of a `beta/YY.MM-beta.N` branch; `workflow_dispatch`.
+**Trigger:** creation of a `beta/YY.MM-beta.N` branch; `workflow_dispatch` (guarded to `beta/*` branches, so a dispatch on a tag such as `27.04-beta.3` does nothing).
 
 Runs `scripts/beta-version-update.cjs` and opens a `beta-prep/<version>` PR against the beta branch that rolls pending changesets into `CHANGELOG.md`, adds the `YY.MM~beta.N` stanza to `debian/changelog`, and sets `package.json` to `YY.MM-beta.N`. No build yet; beta builds are separate follow-up work. See `RELEASES.md` §5a.
 
