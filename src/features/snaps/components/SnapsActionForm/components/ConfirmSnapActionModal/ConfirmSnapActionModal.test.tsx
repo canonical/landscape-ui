@@ -65,6 +65,67 @@ describe("ConfirmSnapActionModal", () => {
     ).toBeInTheDocument();
   });
 
+  it("names the instance and a single snap when the instance name is given", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal
+        {...props}
+        snaps={[firstSnap]}
+        instancesCount={1}
+        instanceName="Application Server 1"
+        actionVerb="change channel"
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: `Change channel of ${firstSnap.snap.name} on Application Server 1`,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("names the instance and counts several snaps when the instance name is given", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal
+        {...props}
+        instancesCount={1}
+        instanceName="Application Server 1"
+        actionVerb="change channel"
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Change channel of 2 snaps on Application Server 1",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the classic confinement title when the instance name is given", () => {
+    renderWithProviders(
+      <ConfirmSnapActionModal
+        {...props}
+        snaps={[classicSnap]}
+        instancesCount={1}
+        instanceName="Application Server 1"
+        actionVerb="change channel"
+        snapModeConfigs={{
+          [classicSnap.snap.id]: {
+            mode: "channel",
+            value: "",
+            channel: "latest/stable",
+            confinement: "classic",
+          },
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: "1 of 1 snap requires classic confinement",
+      }),
+    ).toBeInTheDocument();
+  });
+
   it("uses singular 'has' phrasing for a single snap", () => {
     renderWithProviders(
       <ConfirmSnapActionModal {...props} snaps={[firstSnap]} />,
@@ -670,6 +731,42 @@ describe("ConfirmSnapActionModal", () => {
 
     expect(screen.getByText("(revision 789)")).toBeInTheDocument();
     expect(screen.queryByText("(revision 123)")).not.toBeInTheDocument();
+  });
+
+  it("paginates the snap list 10 at a time", async () => {
+    const manySnaps = Array.from({ length: 12 }, (_, index) => ({
+      ...firstSnap,
+      snap: {
+        ...firstSnap.snap,
+        id: `paged-snap-${index + 1}`,
+        name: `paged-snap-${index + 1}`,
+      },
+    }));
+
+    renderWithProviders(
+      <ConfirmSnapActionModal {...props} snaps={manySnaps} />,
+    );
+
+    expect(screen.getByText("paged-snap-10")).toBeInTheDocument();
+    expect(screen.queryByText("paged-snap-11")).not.toBeInTheDocument();
+    expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /next page/i }));
+
+    expect(screen.getByText("paged-snap-11")).toBeInTheDocument();
+    expect(screen.getByText("paged-snap-12")).toBeInTheDocument();
+    expect(screen.queryByText("paged-snap-1")).not.toBeInTheDocument();
+    expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /next page/i })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+  });
+
+  it("does not paginate 10 or fewer snaps", () => {
+    renderWithProviders(<ConfirmSnapActionModal {...props} />);
+
+    expect(screen.queryByText(/^Page /)).not.toBeInTheDocument();
   });
 
   it("shows the confirm button in a loading state while submitting", () => {

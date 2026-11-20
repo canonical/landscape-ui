@@ -6,6 +6,7 @@ import { renderWithProviders } from "@/tests/render";
 
 const props = {
   handleClearSelection: vi.fn(),
+  instanceTitle: "Application Server 1",
   selectedSnaps: [],
 };
 

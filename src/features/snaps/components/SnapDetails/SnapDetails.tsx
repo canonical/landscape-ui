@@ -7,12 +7,20 @@ import SnapsActions from "../SnapsActions";
 
 interface SnapDetailsProps {
   readonly installedSnap: InstalledSnap;
+  readonly instanceTitle: string;
 }
 
-const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
+const SnapDetails: FC<SnapDetailsProps> = ({
+  installedSnap,
+  instanceTitle,
+}) => {
   return (
     <>
-      <SnapsActions selectedSnaps={[installedSnap]} sidePanel />
+      <SnapsActions
+        instanceTitle={instanceTitle}
+        selectedSnaps={[installedSnap]}
+        sidePanel
+      />
       <InfoGrid spaced>
         <InfoGrid.Item label="Name" large value={installedSnap.snap.name} />
 
