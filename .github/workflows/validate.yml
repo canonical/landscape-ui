@@ -269,7 +269,8 @@ jobs:
   # The required "Vitest" check. GitHub counts a skipped required check as
   # passing, so this job fails unless every shard succeeded. After a cancel
   # (a newer push) it is skipped on PRs to main, where the merge queue re-runs
-  # Validate; release/point PRs have no merge queue, so there it still runs.
+  # Validate; release/point/beta PRs have no merge queue, so there it still
+  # runs.
   unit-tests-merge:
     name: Vitest
     needs: unit-tests
@@ -340,14 +341,17 @@ jobs:
         with: { fetch-depth: 0 }
 
       - name: Verify changeset present
-        # beta-prep/* PRs (Beta Release Prep workflow) consume changesets
-        # rather than adding one, so they are exempt — but only when they
-        # target a beta branch; the head branch name alone is
-        # attacker-controlled and must not skip this check for other bases.
+        # Beta Release Prep PRs consume changesets rather than adding one, so
+        # they are exempt — but only genuine ones: opened by the workflow's
+        # bot, from this repository, from beta-prep/* into beta/*. Branch
+        # names alone are author-controlled and must not skip this check.
+        # (Update the login when the prep PR moves to a GitHub App token.)
         if: >-
           github.event.pull_request.base.ref &&
           !(startsWith(github.event.pull_request.head.ref, 'beta-prep/') &&
-            startsWith(github.event.pull_request.base.ref, 'beta/'))
+            startsWith(github.event.pull_request.base.ref, 'beta/') &&
+            github.event.pull_request.user.login == 'github-actions[bot]' &&
+            github.event.pull_request.head.repo.full_name == github.repository)
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: | # js

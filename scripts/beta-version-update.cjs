@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
+const { execFileSync, execSync } = require("child_process");
 const {
   readPendingChangesets,
   renderChangelogSection,
@@ -47,8 +47,10 @@ const {
  * Respins (YY.MM~beta.N.R) are out of this script's scope: per the beta
  * release design, the release owner prepares one by hand in a single PR on
  * the same beta branch (fix + package.json + debian/changelog + CHANGELOG.md).
- * If package.json or debian/changelog already carries a respin of this beta,
- * the script aborts instead of rewinding the branch to the base beta version.
+ * If package.json carries a respin of this beta, or debian/changelog's top
+ * entry is already newer than this beta (dpkg ordering) or has this beta
+ * below the top, the script aborts instead of rewinding the version.
+ * Needs dpkg (present on Ubuntu runners).
  *
  * Usage:
  *   node scripts/beta-version-update.cjs [beta/YY.MM-beta.N | YY.MM-beta.N]
@@ -63,14 +65,20 @@ function getBranchOrVersion() {
   return execSync("git rev-parse --abbrev-ref HEAD").toString().trim();
 }
 
+// Beta number: no leading zeros and no beta.0. dpkg compares numerically,
+// so 27.04~beta.04 and 27.04~beta.4 would be the same Debian version.
+const BETA_RE = /^(?:beta\/)?(\d{2}\.(?:04|10))-beta\.([1-9]\d*)$/;
+
+// Throws (rather than exiting) so importers get a catchable error; main()
+// turns it into a non-zero exit.
 function parseBetaVersion(input) {
-  const match = input.match(/^(?:beta\/)?(\d{2}\.(?:04|10))-beta\.(\d+)$/);
+  const match = BETA_RE.exec(input);
   if (!match) {
-    console.error(
+    throw new Error(
       `Invalid beta branch/version: '${input}'. ` +
-        `Expected beta/YY.MM-beta.N (e.g. beta/27.04-beta.4).`,
+        `Expected beta/YY.MM-beta.N with N >= 1 and no leading zeros ` +
+        `(e.g. beta/27.04-beta.4).`,
     );
-    process.exit(1);
   }
   const [, cycle, betaNumber] = match;
   return {
@@ -86,29 +94,40 @@ function rfc2822(date = new Date()) {
   return date.toUTCString().replace("GMT", "+0000");
 }
 
-function readDebianTopVersion(changelogPath) {
-  if (!fs.existsSync(changelogPath)) return null;
-  const m = fs
-    .readFileSync(changelogPath, "utf8")
-    .match(/^\S+ \(([^)]+)\) [^;]+;/m);
-  return m ? m[1] : null;
+// Every stanza header in debian/changelog: "pkg (version) dist; ...".
+// The first one is the top (current) entry.
+function readDebianEntries(text) {
+  return [...text.matchAll(/^(\S+) \(([^)]+)\) ([^;]+);/gm)].map((m) => ({
+    pkgName: m[1],
+    version: m[2],
+    dist: m[3].trim(),
+  }));
 }
 
-function prependDebianStanza(changelogPath, debVersion, version) {
-  const existing = fs.existsSync(changelogPath)
-    ? fs.readFileSync(changelogPath, "utf8")
-    : "";
-  const headerMatch = existing.match(/^(\S+) \(([^)]+)\) ([^;]+);/m);
+function dpkgVersionGreater(a, b) {
+  try {
+    execFileSync("dpkg", ["--compare-versions", a, "gt", b]);
+    return true;
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      throw new Error("dpkg is required to compare Debian versions.");
+    }
+    return false; // exit status 1: not greater
+  }
+}
 
-  if (headerMatch && headerMatch[2] === debVersion) {
+function prependDebianStanza(changelogPath, existing, debVersion, version) {
+  const [top] = readDebianEntries(existing);
+
+  if (top && top.version === debVersion) {
     console.log(`debian/changelog already at ${debVersion} — no change.`);
     return;
   }
 
-  const pkgName = headerMatch ? headerMatch[1] : "landscape-dashboard";
+  const pkgName = top ? top.pkgName : "landscape-dashboard";
   // Inherit the distribution from the current top entry: one changelog
   // serves all build series, and per-series targeting happens at upload.
-  const dist = headerMatch ? headerMatch[3].trim() : "jammy";
+  const dist = top ? top.dist : "jammy";
 
   const stanza =
     `${pkgName} (${debVersion}) ${dist}; urgency=medium\n\n` +
@@ -120,8 +139,25 @@ function prependDebianStanza(changelogPath, debVersion, version) {
 }
 
 function main() {
-  const { version, debVersion } = parseBetaVersion(getBranchOrVersion());
+  let parsed;
+  try {
+    parsed = parseBetaVersion(getBranchOrVersion());
+  } catch (err) {
+    console.error(err.message);
+    process.exit(1);
+  }
+  const { version, debVersion } = parsed;
+
+  // In CI, hand the version to later steps (the prep branch name and PR
+  // title) so the branch name is parsed in exactly one place.
+  if (process.env.GITHUB_OUTPUT) {
+    fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=${version}\n`);
+  }
+
   const debianChangelogPath = path.join(projectRoot, "debian", "changelog");
+  const debianChangelog = fs.existsSync(debianChangelogPath)
+    ? fs.readFileSync(debianChangelogPath, "utf8")
+    : "";
 
   // package.json keeps the -beta.N suffix (beta identity), unlike
   // manual-version-update.cjs which strips pre-release suffixes.
@@ -135,20 +171,27 @@ function main() {
   // were pending) — section existence alone misses that case.
   const alreadyPrepared = pkg.version === version;
 
-  // A respin (YY.MM~beta.N.R) of this beta is already stamped on the branch.
-  // Re-preparing would rewind package.json and stack an older stanza above
-  // the respin's, so stop: respins are prepared by hand, not by this script.
+  // debian/changelog must stay monotonic. If its top entry is already newer
+  // than this beta (a respin such as YY.MM~beta.N.R, a Debian revision bump,
+  // a later beta), or this beta's entry exists below the top, prepending
+  // would put an older or duplicate version on top. Respins are prepared by
+  // hand, not by this script, so stop.
+  const debEntries = readDebianEntries(debianChangelog);
+  const debTop = debEntries[0]?.version;
+  const debTopIsNewer = debTop && dpkgVersionGreater(debTop, debVersion);
+  const debBuried = debEntries
+    .slice(1)
+    .some((entry) => entry.version === debVersion);
+  // package.json carrying a respin of this beta (either form), e.g. when the
+  // respin PR stamped package.json before debian/changelog.
   const debUpstream = debVersion.replace(/-[^-]+$/, "");
-  const debTop = readDebianTopVersion(debianChangelogPath);
-  const respun = [
-    [pkg.version, `${version}.`],
-    [pkg.version, `${debUpstream}.`],
-    [debTop, `${debUpstream}.`],
-  ].some(([v, prefix]) => typeof v === "string" && v.startsWith(prefix));
-  if (respun) {
+  const pkgRespun = [`${version}.`, `${debUpstream}.`].some((prefix) =>
+    String(pkg.version).startsWith(prefix),
+  );
+  if (debTopIsNewer || debBuried || pkgRespun) {
     console.error(
-      `This branch already carries a respin of ${version} ` +
-        `(package.json: ${pkg.version}, debian/changelog: ${debTop}). ` +
+      `This branch already carries a version at or above ${version} ` +
+        `(package.json: ${pkg.version}, debian/changelog top: ${debTop}). ` +
         `Respins are prepared by hand in a PR on this branch (see the beta ` +
         `release process); this script only prepares the base beta.`,
     );
@@ -213,7 +256,12 @@ function main() {
   }
 
   // 3. debian/changelog stanza.
-  prependDebianStanza(debianChangelogPath, debVersion, version);
+  prependDebianStanza(
+    debianChangelogPath,
+    debianChangelog,
+    debVersion,
+    version,
+  );
 }
 
 if (require.main === module) {

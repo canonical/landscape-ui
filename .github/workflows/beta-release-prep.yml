@@ -34,8 +34,6 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       github.event.created == true
-    outputs:
-      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v5
 
@@ -43,25 +41,40 @@ jobs:
         with:
           node-version: 24
 
-      - name: Validate branch name and derive version
-        id: version
-        # The script's parser is the single source of truth for the branch
-        # name shape — no duplicated regex here to drift apart.
-        run: |
-          VERSION=$(node -e "console.log(require('./scripts/beta-version-update.cjs').parseBetaVersion(process.env.GITHUB_REF_NAME).version)")
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
+      # Validates the branch name (failing the job on a bad one), writes the
+      # version files, and exposes the derived version as an output — the
+      # script's parser is the only place the branch name is parsed.
       - name: Update version files
+        id: version
         run: node scripts/beta-version-update.cjs
 
       - name: Push beta-prep branch
         id: prep
         env:
           VERSION: ${{ steps.version.outputs.version }}
+          BASE: ${{ github.ref_name }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BOT_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "$BOT_EMAIL"
           PREP_BRANCH="beta-prep/${VERSION}"
+
+          # The release owner edits the draft CHANGELOG on the prep PR. If the
+          # existing prep branch has commits by anyone but this workflow,
+          # refuse to overwrite them: merge or close that PR first.
+          REMOTE_SHA=$(git ls-remote --heads origin "refs/heads/$PREP_BRANCH" | cut -f1)
+          if [[ -n "$REMOTE_SHA" ]]; then
+            OTHERS=$(gh api "repos/${GITHUB_REPOSITORY}/compare/${BASE}...${REMOTE_SHA}" \
+              --jq ".commits[] | select(.commit.author.email != \"${BOT_EMAIL}\") | .sha[0:9] + \" \" + .commit.author.name")
+            if [[ -n "$OTHERS" ]]; then
+              echo "::error::${PREP_BRANCH} has commits not made by this workflow; refusing to overwrite them:"
+              echo "$OTHERS"
+              echo "Merge or close the existing prep PR (and delete ${PREP_BRANCH}) before re-running."
+              exit 1
+            fi
+          fi
+
           git checkout -B "$PREP_BRANCH"
           git add CHANGELOG.md package.json debian/changelog .changeset
           if git diff --cached --quiet; then
@@ -70,10 +83,10 @@ jobs:
             exit 0
           fi
           git commit -m "chore: prepare beta release ${VERSION}"
-          # Plain --force: this branch is owned exclusively by this workflow
-          # and is deterministic per beta branch; --force-with-lease can fail
-          # on a fresh checkout that has no local tracking ref for it.
-          git push --force origin "$PREP_BRANCH"
+          # Overwrite only the prep branch state checked above (or create it
+          # if it didn't exist), so a concurrent push is never clobbered.
+          git push --force-with-lease="refs/heads/${PREP_BRANCH}:${REMOTE_SHA}" \
+            origin "$PREP_BRANCH"
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Open release-prep PR
