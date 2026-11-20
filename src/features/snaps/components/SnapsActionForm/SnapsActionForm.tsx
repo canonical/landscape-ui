@@ -42,7 +42,9 @@ interface SnapsActionFormProps {
   /**
    * Acts on exactly these snaps. The search box and per-snap delete buttons
    * are hidden, so the selection can't change. Used by the single-instance
-   * Snaps tab, where the snaps are picked in the table first.
+   * Snaps tab, where the snaps are picked in the table first. Read on mount
+   * only: give the form a new `key` to replace the snaps, which also resets
+   * the channel and delivery fields.
    */
   readonly fixedSnaps?: SnapWithCount[];
   readonly hasDeliveryScheduling?: boolean;

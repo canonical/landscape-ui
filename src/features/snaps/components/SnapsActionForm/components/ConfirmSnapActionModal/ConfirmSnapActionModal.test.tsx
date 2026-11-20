@@ -757,6 +757,10 @@ describe("ConfirmSnapActionModal", () => {
     expect(screen.getByText("paged-snap-12")).toBeInTheDocument();
     expect(screen.queryByText("paged-snap-1")).not.toBeInTheDocument();
     expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /next page/i })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
   });
 
   it("does not paginate 10 or fewer snaps", () => {
