@@ -1,7 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import SnapsActionForm from "./SnapsActionForm";
 import { SNAP_ACTION_ACTIVITY } from "@/tests/mocks/activity";
 import {
@@ -1191,5 +1191,211 @@ describe("SnapsActionForm", () => {
       name: `Delete ${firstSnap.snap.name}`,
     });
     expect(deleteButton).toHaveIcon(ICONS.delete);
+  });
+
+  describe("Delivery scheduling", () => {
+    const captureRequest = () => {
+      let requestBody: SnapActionParams | null = null;
+      server.use(
+        http.post(`${API_URL}snaps`, async ({ request }) => {
+          requestBody = (await request.json()) as SnapActionParams;
+          return HttpResponse.json(successfulSnapInstallResponse);
+        }),
+      );
+      return () => requestBody;
+    };
+
+    const selectFirstSnap = async () => {
+      await user.click(screen.getByRole("searchbox"));
+      await user.click(
+        screen.getByRole("option", { name: firstSnapOptionTitle }),
+      );
+    };
+
+    const submitAndConfirm = async (buttonName: string) => {
+      await user.click(screen.getByRole("button", { name: buttonName }));
+      const modal = await screen.findByRole("dialog");
+      await user.click(within(modal).getByRole("button", { name: buttonName }));
+      expect(
+        await screen.findByText("Snaps successfully queued to refresh"),
+      ).toBeInTheDocument();
+    };
+
+    it("hides the delivery fields by default and omits them from the request", async () => {
+      const getRequestBody = captureRequest();
+
+      renderWithProviders(
+        <SnapsActionForm selectedInstances={[instanceId]} action="refresh" />,
+      );
+
+      expect(screen.queryByText("Delivery time")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Randomize delivery over a time window"),
+      ).not.toBeInTheDocument();
+
+      await selectFirstSnap();
+      await submitAndConfirm("Refresh 1 snap");
+
+      expect(getRequestBody()).not.toHaveProperty("deliver_after");
+      expect(getRequestBody()).not.toHaveProperty("deliver_after_window");
+    });
+
+    it("sends no delivery params when delivery is immediate and not randomized", async () => {
+      const getRequestBody = captureRequest();
+
+      renderWithProviders(
+        <SnapsActionForm
+          selectedInstances={[instanceId]}
+          action="refresh"
+          hasDeliveryScheduling
+        />,
+      );
+
+      expect(screen.getByLabelText("As soon as possible")).toBeChecked();
+      expect(screen.getByLabelText("No")).toBeChecked();
+
+      await selectFirstSnap();
+      await submitAndConfirm("Refresh 1 snap");
+
+      expect(getRequestBody()).toMatchObject({
+        action: "refresh",
+        computer_ids: [instanceId],
+        snaps: [{ name: firstSnap.snap.name }],
+      });
+      expect(getRequestBody()).not.toHaveProperty("deliver_after");
+      expect(getRequestBody()).not.toHaveProperty("deliver_after_window");
+    });
+
+    it("sends the scheduled time and delay window", async () => {
+      const getRequestBody = captureRequest();
+
+      renderWithProviders(
+        <SnapsActionForm
+          selectedInstances={[instanceId]}
+          action="refresh"
+          hasDeliveryScheduling
+        />,
+      );
+
+      await selectFirstSnap();
+
+      await user.click(screen.getByLabelText("Scheduled"));
+      fireEvent.change(screen.getByLabelText("Deliver after"), {
+        target: { value: "2099-12-31T23:59" },
+      });
+
+      await user.click(screen.getByLabelText("Yes"));
+      const delayWindowInput = screen.getByLabelText("Delivery delay window");
+      await user.clear(delayWindowInput);
+      await user.type(delayWindowInput, "15");
+
+      await submitAndConfirm("Refresh 1 snap");
+
+      expect(getRequestBody()).toMatchObject({
+        deliver_after: expect.stringMatching(
+          /^2099-12-31T23:59:00[+-]\d{2}:\d{2}$/,
+        ),
+        deliver_after_window: 15,
+      });
+    });
+
+    it("blocks the confirmation modal when the scheduled time is in the past", async () => {
+      renderWithProviders(
+        <SnapsActionForm
+          selectedInstances={[instanceId]}
+          action="refresh"
+          hasDeliveryScheduling
+        />,
+      );
+
+      await selectFirstSnap();
+
+      await user.click(screen.getByLabelText("Scheduled"));
+      fireEvent.change(screen.getByLabelText("Deliver after"), {
+        target: { value: "2000-01-01T00:00" },
+      });
+
+      await user.click(screen.getByRole("button", { name: "Refresh 1 snap" }));
+
+      expect(
+        await screen.findByText(
+          "You have to enter a valid date and time in the future.",
+        ),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+
+    it("sends a single request when confirm is clicked twice", async () => {
+      let requestCount = 0;
+      server.use(
+        http.post(`${API_URL}snaps`, async () => {
+          requestCount += 1;
+          return HttpResponse.json(successfulSnapInstallResponse);
+        }),
+      );
+
+      renderWithProviders(
+        <SnapsActionForm
+          selectedInstances={[instanceId]}
+          action="refresh"
+          hasDeliveryScheduling
+        />,
+      );
+
+      await selectFirstSnap();
+      await user.click(screen.getByRole("button", { name: "Refresh 1 snap" }));
+      const modal = await screen.findByRole("dialog");
+
+      await user.dblClick(
+        within(modal).getByRole("button", { name: "Refresh 1 snap" }),
+      );
+
+      expect(
+        await screen.findByText("Snaps successfully queued to refresh"),
+      ).toBeInTheDocument();
+      expect(requestCount).toBe(1);
+    });
+
+    it("closes the modal without sending when the scheduled time passes before confirming", async () => {
+      const getRequestBody = captureRequest();
+
+      renderWithProviders(
+        <SnapsActionForm
+          selectedInstances={[instanceId]}
+          action="refresh"
+          hasDeliveryScheduling
+        />,
+      );
+
+      await selectFirstSnap();
+
+      // "Scheduled" defaults to five minutes from now, which is valid.
+      await user.click(screen.getByLabelText("Scheduled"));
+      await user.click(screen.getByRole("button", { name: "Refresh 1 snap" }));
+      const modal = await screen.findByRole("dialog");
+
+      // Only Date is faked so that user-event and MSW keep their real timers.
+      vi.useFakeTimers({ toFake: ["Date"] });
+      try {
+        vi.setSystemTime(Date.now() + 10 * 60 * 1000);
+
+        await user.click(
+          within(modal).getByRole("button", { name: "Refresh 1 snap" }),
+        );
+
+        await waitFor(() => {
+          expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+        });
+      } finally {
+        vi.useRealTimers();
+      }
+
+      expect(
+        screen.getByText(
+          "You have to enter a valid date and time in the future.",
+        ),
+      ).toBeInTheDocument();
+      expect(getRequestBody()).toBeNull();
+    });
   });
 });

@@ -21,49 +21,50 @@
   margin-top: $spv--small;
 }
 
-.attributesLabel {
+.attributeGroup {
+  position: relative;
+}
+
+.groupTitle {
   display: block;
-  font-weight: 500;
-  margin-bottom: $spv--small;
+  padding-inline-start: $form-tick-box-size + $sph--large;
 }
 
-:global(.export-form-field-groups-accordion) {
-  border-top: 1px solid $colors--theme--border-low-contrast;
+/* Align the separate checkbox with the title without nesting it in summary. */
+.groupCheckbox {
+  inset-block-start: var(--accordion-item-header-padding-block);
+  inset-inline-start: var(--accordion-item-content-indent);
+  position: absolute;
+  z-index: 1;
 }
 
-:global(.export-form-field-groups-accordion .p-accordion__list) {
+.groupCheckboxLabel {
   margin-bottom: 0;
-}
-
-:global(.export-form-field-groups-accordion h5.p-accordion__heading),
-:global(
-  .export-form-field-groups-accordion h5.p-accordion__heading.p-heading--5
-) {
-  font-weight: 400;
-}
-
-.exportFormGroupTitleCheckbox {
-  margin-bottom: 0;
-}
-
-:global(.export-form-field-groups-accordion .p-accordion__panel) {
   padding-top: 0;
 }
 
-:global(.export-form-field-groups-accordion .p-accordion__tab) {
-  padding-right: $sph--x-large;
-}
+/*
+ * Vanilla's unlayered `details` and `summary` base rules outrank Pragma's
+ * layered Accordion rules (e.g. `summary { display: list-item }` hides the
+ * chevron). `revert-layer` drops only those unlayered values so Pragma's own
+ * declarations apply again, without restating Pragma values here.
+ *
+ * TODO: Temporary workaround. Remove this block once Vanilla is layered via
+ * `@canonical/styles-vanilla-adapter` (add `ds-permeable` to `Accordion.Item`).
+ * See https://github.com/canonical/pragma-web/issues/1449
+ */
+.accordion {
+  :global(.ds.accordion-item) {
+    margin-bottom: revert-layer;
+    overflow: revert-layer;
+  }
 
-:global(.export-form-field-groups-accordion .p-accordion__tab)::before {
-  margin-right: 0;
-  position: absolute;
-  right: 1.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-:global(
-  .export-form-field-groups-accordion .p-accordion__tab[aria-expanded="false"]
-)::before {
-  transform: translateY(-50%) rotate(-90deg);
+  :global(.ds.accordion-item > .header) {
+    box-sizing: revert-layer;
+    display: revert-layer;
+    font: revert-layer;
+    margin-bottom: revert-layer;
+    max-width: revert-layer;
+    padding: revert-layer;
+  }
 }

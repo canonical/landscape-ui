@@ -1,7 +1,125 @@
 # Landscape Lifecycle Transition (February 2026)
-*Note: starting from this point, Landscape UI follows the Landscape Server Release Specification (CalVer YY.MM.Point.Patch).*
+*Note: since February 2026, Landscape UI follows the Landscape Server Release Specification (CalVer YY.MM.Point.Patch), starting with 26.10.0.1081-beta. Versions 1.23.0 and earlier used semantic versioning.*
 
 ---
+
+## 26.10.0.9
+
+### Minor Changes
+
+- Serve the new web portal under `/portal/` instead of `/new_dashboard/`
+- Add package management at scale: manage deb packages across the selected instances from the instances page, with warnings when a selection exceeds the limits
+- Add bulk snap management actions to the instances page. Confirmations show the chosen channel or revision for each snap, and instances that can't manage snaps, such as Windows, are left out.
+- Redesign instance status, upgrade and tag indicators as accessible labelled pills (colour, icon and text), move the Upgrades column before Status, collapse overflowing table tags behind a counter like statuses, add a dedicated Upgrades filter (security/regular), show a neutral "N/A" pill when upgrades don't apply, and let status, upgrade and tag pills filter the table when clicked. Expanded status/tag cells now collapse when clicking anywhere outside the pop-over, including elsewhere in the same row.
+- Add an instance compliance report side panel
+- Add TSV export UI for instances and activities, gated by a feature flag
+- Add an information tip to the instances page with the account name and a link to documentation on registering new instances
+- Add an Available version column to an instance's Packages tab
+- Show publishing status for publications, syncing status for mirrors and package import status for local repositories
+- Add buttons to cancel ongoing publishing attempts, mirror updates and local repository package imports, when enabled on the server
+- Add mirror package tab and filter options, with a tooltip explaining the "Include dependencies in filter" checkbox
+- Add a Preserve signatures option to the mirror add and edit forms and details view. Checking it clears the package filter.
+- Add help text and an announcement for signature-preserving mirrors to clarify update behavior
+- Show an approximate page count in the mirror and local repository package lists when there are over 1000 packages
+- Show errors consistently in the side panels for mirrors, local repositories, publications and publication targets
+- Remove the Applied column from repository profiles
+- Add a side panel to view access group details, and another to edit an access group's title
+- Add completion time, instance name and creator to activities, and hide the instance field in a single instance's activity side panel
+- Show pending user activities in the Users tab and edit form, with links to activity details
+- Add WSL profile compliance warning
+- Add a licenses page with information on active licenses
+- Add a legacy license page for self-hosted licensing, bringing it in line with the legacy UI
+- Show administrator limits, remove pagination from the administrators page, and fix the administrator documentation link
+- Add an About page that summarizes the UI and server versions and links to useful resources
+- Move the theme setting from the account settings sidebar to Account settings > General and add a "System default" option that follows the OS color scheme
+- Show a badge on the Alerts navigation menu item
+- Label the link to the classic UI as "legacy portal" in the navigation and remove the "New portal" label
+- Replace the overview page pie chart with a more accessible donut chart
+- Add missing loading states for buttons
+- Keep side panel submit buttons enabled until the form is saving. Some flows, such as importing repository packages, may still disable the button after a validation failure.
+
+### Patch Changes
+
+- Group the instances page actions into menus that fit the screen: they collapse into an Actions menu on smaller screens and open in the direction with room, and the Columns menu no longer jumps when first opened
+- Add an empty state to the instances page that still shows the pending instances banner, and fix a broken link on the scripts page
+- Refresh the instances list after approving pending instances, so new instances appear without reloading the page
+- Hide pending instances without an error notification when the user lacks permission to view them
+- Default the access group to Global in the Review pending instances form
+- Fix the learn more link in the pending-instance review and approval steps to point to the automatic registration documentation
+- Fix instances header spacing and alignment
+- Fix consecutive instance removals not working
+- Fix upgrade alert links to filter instances by upgrades
+- Don't upgrade packages that are excluded in the Packages tab of the Upgrades form
+- The Packages tab badge on an instance now shows the number of upgradable packages
+- Remove ellipsis overflow from the table header checkbox in the instance packages empty list
+- Fix snap install, switch channel and hold actions ignoring the chosen channel, revision, hold time and classic confinement, so classic-confined snaps can now be installed
+- Update single-instance snap actions to align with bulk snap actions
+- Disable the snap Switch channel button, and explain why, when there are no other channels to switch to
+- Fix radio button alignment in the run scripts side panel and the single instance hold snaps form
+- Show the total number of targeted instances in the script-run confirmation when the preview list is partial, and stop the instance picker and preview from inheriting the page's pagination
+- Rename "delete script" to "redact script", and explain that script and script profile titles cannot be reused, even after archiving or redacting them
+- Add a message for when a scripts search returns no results
+- Show a WSL host's Ubuntu Pro subscription instead of an empty state, and hide token actions on non-Ubuntu hosts
+- Fix the WSL profile non-compliant instances side panel opening underneath the WSL profile details
+- Fix misleading validation text in the Add WSL profile form
+- Show an error when USG profile creation fails
+- Show the correct last and next run times for USG profiles outside UTC, and show an error instead of a success message when editing or duplicating a USG profile fails
+- Fix the USG audit download form defaulting to a future date for users ahead of UTC, which blocked audit generation
+- Fix the passed and failed instance links on the USG profiles page
+- Zero-pad reboot profile schedule times so they display consistently
+- Fix profiles side panels' cancel and close behavior to be consistent with the new design
+- Fix profiles pages' header disappearing during loading
+- Redirect /profiles and /repositories to the first item in their submenu
+- Validate the deb line when adding a repository profile source
+- Show the GPG key fingerprint in the sources table of repository profiles
+- Show the GPG key in mirrors and publications, unlock publication distribution fields when the mirror doesn't preserve signatures, and lock the link type field for publication targets
+- Fix removing a mirror's GPG key. The edit mirror form now lets you keep the current key, remove it or add a new one.
+- Fix the mirror update modal so its checkboxes don't block each other, and clarify their labels
+- Show the correct source type and authentication for older mirrors
+- Allow http URLs for mirror sources
+- Rename the Ubuntu Pro mirror token field to "Bearer token", clarify that it is not the Ubuntu Pro subscription token, and mask the entered token
+- Fix Ubuntu Pro mirror archive root
+- Fix mirror pagination when there are more than 20 mirrors
+- Sort the local repositories packages list so it stays consistent
+- Allow selecting more than one architecture when creating a publication
+- Publish new publications automatically, and clean up older packages when publishing
+- Make adding a publication and publishing a mirror or local repository to a new publication behave the same way
+- Standardize publication settings behavior and adjust other publication fields
+- Make publication automatic installs and upgrades settings less confusing
+- Show the publication target display name in the publish forms for mirrors and local repositories, and fix the spacing of checkboxes with tooltips
+- Show the Associated publications table in publication targets even when it's empty
+- Make repositories success notifications consistent and add a link to update a mirror after creating it
+- Show the resources that loaded, and mark the rest as unreachable, when only some can be loaded
+- Show an error when creating a role fails instead of failing silently
+- Make the primary group optional when adding a user, with "Use system default" selected initially. Show a success notification with a "View activity" action when user creation is queued.
+- Stop sending blank optional fields when creating a user, and require a name in the edit user form
+- Clearing location and phone numbers when editing a user now works
+- Fix the confirmation modals on an instance's users panel not closing on confirm
+- Accept the same email addresses as the server on the login, invite administrator, edit user and self-hosted account creation forms, including plus addressing such as user+tag@example.com
+- Fix saving profile details when no default organization is selected
+- Send people to the default location of their account when they sign in again after signing out
+- Fix invitation links redirecting signed-in users to the home page instead of showing the accept/reject form
+- Move the account name from API credentials to organization settings as a read-only field
+- Rephrase the text in the Remove instance from Landscape modal
+- Update the welcome modal to make the new portal the default
+- Wait for typing to pause before searching, instead of sending a request after each character
+- Remove search chips from appearing when performing a search
+- Keyboard accessibility and arrow-key navigation for the saved searches dropdown
+- Close expanded cells and info items with the Escape key
+- Collapse table header action buttons and filters on medium screens so the search bar stays visible in the WSL, Activities and Processes views
+- Fix side panels not reopening when navigating back
+- Fix some modals opening behind the navigation menu
+- Fix success notifications timing out too early and not updating properly
+- Refresh the look of badges, cards and breadcrumbs
+- Fix table backgrounds in dark side panels
+- Fix empty state spacing and links that used to be buttons
+- Fix empty space beside links allowing hovering and clicking
+- Fix external link icon styling
+- Fix styling for the Autoinstall files side panel
+- Fix a security issue with links that open in a new tab, and dark mode text contrast for password constraints
+- Disable autocomplete suggestions for the AWS access key ID and keep password manager suggestions for secrets and passwords
+- Fix a grammar mistake in the search help popup on the Instances page
+- Update axios, dompurify, follow-redirects, undici and other dependencies to patched versions to resolve security advisories
 
 ## 26.10.0.1081-beta
 
