@@ -1,6 +1,6 @@
 import * as Constants from "@/constants";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
@@ -67,6 +67,56 @@ describe("ActivitiesPage", () => {
       screen.getByText("There are no activities yet."),
     ).toBeInTheDocument();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
+
+  it("uses query for activity searches and leaves the unrelated search parameter alone", async () => {
+    const user = userEvent.setup();
+    const getParents = vi.fn();
+    server.use(
+      http.get(`${Constants.API_URL}activities/parents`, ({ request }) => {
+        getParents(new URL(request.url).searchParams.get("query"));
+        return HttpResponse.json({
+          results: activityParents,
+          count: activityParents.length,
+        });
+      }),
+    );
+    renderWithProviders(
+      <>
+        <ActivitiesPage />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/activities?search=foo&query=id:10&status=failed&fromDate=2024-01-01",
+    );
+
+    await waitFor(() => {
+      expect(getParents).toHaveBeenCalledWith(
+        "id:10 status:failed created-after:2024-01-01",
+      );
+    });
+    await user.click(
+      await screen.findByRole("button", { name: "Clear all filters" }),
+    );
+
+    expect(getLocationDisplay().textContent).toBe("/activities?search=foo");
+  });
+
+  it("removes unsupported status values from the URL", async () => {
+    renderWithProviders(
+      <>
+        <ActivitiesPage />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/activities?status=unapproved",
+    );
+
+    await screen.findByRole("table");
+
+    await waitFor(() => {
+      expect(getLocationDisplay()).not.toHaveTextContent("status=unapproved");
+    });
   });
 
   it.each(["all", "filtered", "unfiltered"])(
@@ -206,11 +256,27 @@ describe("ActivitiesPage", () => {
       name: activity.summary,
     });
     expect(activityHeading).toBeInTheDocument();
-    expect(activityHeading.closest("aside")).toHaveClass(
+    expect(activityHeading.closest("aside")).not.toHaveClass(
       sidePanelClasses.medium,
     );
     expect(getLocationDisplay()).toHaveTextContent(
       `sidePath=activity&name=${activity.id}`,
     );
   });
+
+  it.each(["", "invalid", "0"])(
+    "does not open an activity panel for an invalid ID: %s",
+    async (name) => {
+      const url = name
+        ? `/activities?sidePath=activity&name=${name}`
+        : "/activities?sidePath=activity";
+      renderWithProviders(<ActivitiesPage />, undefined, url);
+
+      await screen.findByRole("table");
+
+      expect(
+        screen.queryByRole("button", { name: "Close" }),
+      ).not.toBeInTheDocument();
+    },
+  );
 });

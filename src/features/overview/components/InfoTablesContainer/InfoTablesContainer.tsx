@@ -456,7 +456,6 @@ const InfoTablesContainer: FC = () => {
           creator: false,
         }}
       />,
-      "medium",
     );
   };
 

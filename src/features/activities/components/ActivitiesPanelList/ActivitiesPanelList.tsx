@@ -4,17 +4,16 @@ import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
 import SidePanel from "@/components/layout/SidePanel";
-import { SidePanelTablePagination } from "@/components/layout/TablePagination";
+import { ModalTablePagination } from "@/components/layout/TablePagination";
+import { useTotalPages } from "@/components/layout/TablePagination/hooks";
 import { DISPLAY_DATE_TIME_FORMAT, TSV_EXPORTS_ENABLED } from "@/constants";
 import { getExportTitle } from "@/features/exports";
 import useSelection from "@/hooks/useSelection";
 import date from "@/libs/date";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
-import { ROUTES } from "@/libs/routes";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import classNames from "classnames";
 import { lazy, useCallback, useMemo, useState, type FC } from "react";
-import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useGetActivities } from "../../api";
 import { ACTIVITY_STATUSES } from "../../constants";
@@ -55,7 +54,6 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
   });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isAllSelected, setIsAllSelected] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<ActivityCommon>();
@@ -72,9 +70,14 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
     .join(" ");
 
   const { activities, activitiesCount, isGettingActivities } = useGetActivities(
-    { query, limit: pageSize, offset: (currentPage - 1) * pageSize },
+    {
+      query,
+      limit: DEFAULT_PAGE_SIZE,
+      offset: (currentPage - 1) * DEFAULT_PAGE_SIZE,
+    },
     { listenToUrlParams: false },
   );
+  const totalPages = useTotalPages(activitiesCount, DEFAULT_PAGE_SIZE);
 
   const {
     selectedItems: selectedActivities,
@@ -109,7 +112,6 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
       [
         {
           accessor: "summary",
-          className: "large-cell",
           Header: (
             <div className={classes.descriptionContent}>
               <CheckboxInput
@@ -179,20 +181,13 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
                 >
                   {row.original.summary}
                 </Button>
-                {row.original.computer_id ? (
-                  <Link
-                    to={ROUTES.instances.details.single(
-                      row.original.computer_id,
-                    )}
-                    className="u-text--muted"
-                  >
-                    {row.original.computer_title}
-                  </Link>
-                ) : (
-                  <span className="u-text--muted">
+                <span className={classNames("u-text--muted", classes.cellText)}>
+                  {row.original.computer_id ? (
+                    row.original.computer_title
+                  ) : (
                     <NoData />
-                  </span>
-                )}
+                  )}
+                </span>
               </ListTitle>
             </div>
           ),
@@ -205,16 +200,17 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
               <span className="u-text--muted">Completed at</span>
             </ListTitle>
           ),
-          className: "large-cell",
           Cell: ({ row }: CellProps<ActivityCommon>) => (
             <span className={classes.statusContent}>
-              <span>
+              <span className={classes.cellText}>
                 {ACTIVITY_STATUSES[row.original.activity_status].label}
               </span>
 
-              <span className="u-text--muted">
+              <span className={classNames("u-text--muted", classes.cellText)}>
                 {row.original.completion_time ? (
-                  <span className="font-monospace">
+                  <span
+                    className={classNames("font-monospace", classes.cellText)}
+                  >
                     {date(row.original.completion_time).format(
                       DISPLAY_DATE_TIME_FORMAT,
                     )}
@@ -241,12 +237,18 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
               <span className="u-text--muted">Created at</span>
             </ListTitle>
           ),
-          className: "large-cell",
           Cell: ({ row }: CellProps<ActivityCommon>) => (
             <ListTitle>
-              <span>{row.original.creator?.name ?? <NoData />}</span>
+              <span className={classes.cellText}>
+                {row.original.creator?.name ?? <NoData />}
+              </span>
 
-              <span className="font-monospace u-text--muted">
+              <span
+                className={classNames(
+                  "font-monospace u-text--muted",
+                  classes.cellText,
+                )}
+              >
                 {date(row.original.creation_time).format(
                   DISPLAY_DATE_TIME_FORMAT,
                 )}
@@ -336,16 +338,18 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
           sticky={false}
         />
       )}
-      <SidePanelTablePagination
-        currentPage={currentPage}
-        pageSize={pageSize}
-        paginate={paginate}
-        setPageSize={setPageSize}
-        totalItems={activitiesCount}
-        currentItemCount={activities.length}
+      <ModalTablePagination
+        current={currentPage}
+        max={totalPages}
+        onPrev={() => {
+          paginate(currentPage - 1);
+        }}
+        onNext={() => {
+          paginate(currentPage + 1);
+        }}
       />
       {TSV_EXPORTS_ENABLED && isExportOpen && (
-        <SidePanel isOpen size="medium" onClose={closeExport}>
+        <SidePanel isOpen onClose={closeExport}>
           <SidePanel.Suspense>
             <SidePanel.Header>
               {getExportTitle({
@@ -370,7 +374,7 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
         </SidePanel>
       )}
       {selectedActivity && (
-        <SidePanel isOpen size="medium" onClose={closeDetails}>
+        <SidePanel isOpen onClose={closeDetails}>
           <SidePanel.Suspense>
             <ActivityDetails
               key={selectedActivity.id}

@@ -264,7 +264,7 @@ describe("EditUserForm", () => {
     ).closest("aside");
     assert(panel);
     await waitFor(() => {
-      expect(panel).toHaveClass(sidePanelClasses.medium);
+      expect(panel).not.toHaveClass(sidePanelClasses.medium);
     });
   });
 
@@ -457,7 +457,7 @@ describe("EditUserForm", () => {
       "href",
       ROUTES.instances.details.fromInstance(ubuntuInstance),
     );
-    expect(panel).toHaveClass(sidePanelClasses.medium);
+    expect(panel).not.toHaveClass(sidePanelClasses.medium);
     expect(
       within(panel).getByRole("button", { name: "Approve" }),
     ).toBeEnabled();

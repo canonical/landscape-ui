@@ -2,7 +2,6 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { API_URL, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import * as Constants from "@/constants";
 import date from "@/libs/date";
-import { ROUTES } from "@/libs/routes";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { activities } from "@/tests/mocks/activity";
@@ -38,6 +37,15 @@ const children = Array.from({ length: 21 }, (_, index) => ({
   summary: `Child activity ${index + 1}`,
 }));
 const getChildren = vi.fn();
+
+const openAttributeGroup = async (
+  user: ReturnType<typeof userEvent.setup>,
+  name: RegExp,
+) => {
+  const summary = screen.getByRole("heading", { name }).closest("summary");
+  assert(summary);
+  await user.click(summary);
+};
 
 describe("ActivityChildren", () => {
   beforeEach(() => {
@@ -108,14 +116,10 @@ describe("ActivityChildren", () => {
     const [descriptionCell, statusCell, creatorCell] =
       within(table).getAllByRole("cell");
     assert(descriptionCell && statusCell && creatorCell);
-    const instanceLink = within(descriptionCell).getByRole("link", {
-      name: activity.computer_title,
-    });
-    expect(instanceLink).toHaveClass("u-text--muted");
-    expect(instanceLink).toHaveAttribute(
-      "href",
-      ROUTES.instances.details.single(activity.computer_id),
-    );
+    expect(
+      within(descriptionCell).getByText(activity.computer_title),
+    ).toHaveClass("u-text--muted");
+    expect(within(descriptionCell).queryByRole("link")).not.toBeInTheDocument();
     const completedAt = date(activity.completion_time).format(
       DISPLAY_DATE_TIME_FORMAT,
     );
@@ -173,7 +177,7 @@ describe("ActivityChildren", () => {
         ...(expectedHeader ? [expectedHeader] : []),
       ]);
       expect(
-        within(table).getByRole("link", { name: activities[0].computer_title }),
+        within(table).getByText(activities[0].computer_title),
       ).toBeInTheDocument();
       expect(within(table).getByText(NO_DATA_TEXT)).toHaveClass(
         "u-text--muted",
@@ -278,6 +282,12 @@ describe("ActivityChildren", () => {
       offset: "0",
     });
 
+    expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Next page" }));
+    await screen.findByRole("button", { name: "Child activity 21" });
+    expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Previous page" }));
+    await screen.findByRole("button", { name: "Child activity 1" });
     await user.click(screen.getByRole("button", { name: "Next page" }));
     await screen.findByRole("button", { name: "Child activity 21" });
     await user.type(screen.getByRole("searchbox"), "computer:id:6");
@@ -304,7 +314,7 @@ describe("ActivityChildren", () => {
     });
   });
 
-  it("supports overview status filters and preserves state while medium details are open", async () => {
+  it("supports overview status filters and preserves state while small details are open", async () => {
     const user = userEvent.setup();
     server.use(
       http.get(`${API_URL}activities/:id`, ({ params }) =>
@@ -356,7 +366,8 @@ describe("ActivityChildren", () => {
     });
     const panel = heading.closest("aside");
     assert(panel);
-    expect(panel).toHaveClass(sidePanelClasses.medium);
+    expect(panel).not.toHaveClass(sidePanelClasses.medium);
+    expect(panel).not.toHaveClass(sidePanelClasses.large);
     await within(panel).findByText("Created at");
     await user.click(within(panel).getByRole("button", { name: "Close" }));
 
@@ -423,7 +434,11 @@ describe("ActivityChildren", () => {
         .getByText(new RegExp(`^${label}:`))
         .closest(".p-chip");
       assert(chip instanceof HTMLElement);
-      await user.click(within(chip).getByRole("button", { name: "Dismiss" }));
+      await user.click(
+        within(chip).getByRole("button", {
+          name: new RegExp(`^Dismiss ${label}:`),
+        }),
+      );
     }
     await waitFor(() => {
       expect(getChildren).toHaveBeenLastCalledWith({
@@ -507,7 +522,8 @@ describe("ActivityChildren", () => {
     });
     const exportPanel = exportName.closest("aside");
     assert(exportPanel);
-    expect(exportPanel).toHaveClass(sidePanelClasses.medium);
+    expect(exportPanel).not.toHaveClass(sidePanelClasses.medium);
+    expect(exportPanel).not.toHaveClass(sidePanelClasses.large);
     await user.click(screen.getByRole("button", { name: "Close" }));
     expect(
       screen.queryByRole("textbox", { name: "Export name" }),
@@ -520,7 +536,7 @@ describe("ActivityChildren", () => {
       await screen.findByRole("textbox", { name: "Export name" }),
       "Selected children",
     );
-    await user.click(screen.getByRole("tab", { name: /primary identity/i }));
+    await openAttributeGroup(user, /primary identity/i);
     await user.click(screen.getByRole("checkbox", { name: "ID" }));
     await user.click(screen.getByRole("button", { name: "Next" }));
     await user.click(
@@ -570,7 +586,7 @@ describe("ActivityChildren", () => {
       await screen.findByRole("textbox", { name: "Export name" }),
       "All overview activities",
     );
-    await user.click(screen.getByRole("tab", { name: /primary identity/i }));
+    await openAttributeGroup(user, /primary identity/i);
     await user.click(screen.getByRole("checkbox", { name: "ID" }));
     await user.click(screen.getByRole("button", { name: "Next" }));
     await user.click(

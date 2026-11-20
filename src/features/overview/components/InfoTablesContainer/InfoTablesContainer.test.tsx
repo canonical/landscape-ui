@@ -11,7 +11,6 @@ import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import InfoTablesContainer from "./InfoTablesContainer";
 import classes from "./InfoTablesContainer.module.scss";
-import globalSidePanelClasses from "@/context/SidePanelProvider.module.scss";
 
 const LIST_LIMIT = 10;
 
@@ -160,7 +159,7 @@ describe("InfoTablesContainer", () => {
       expect(createdAtText).toHaveClass(classes.singleLineCell);
     });
 
-    it("opens child activity details locally in a medium panel", async () => {
+    it("opens child activity details locally in a small panel", async () => {
       const activity = activities.find(
         (item) => item.activity_status === "unapproved",
       );
@@ -173,7 +172,7 @@ describe("InfoTablesContainer", () => {
       });
       const panel = heading.closest("aside");
       assert(panel);
-      expect(panel).toHaveClass(globalSidePanelClasses.medium);
+      expect(panel).not.toHaveClass("is-wide");
       expect(mockNavigate).not.toHaveBeenCalled();
       expect(
         screen.queryByRole("link", { name: activity.summary }),
@@ -418,7 +417,7 @@ describe("InfoTablesContainer activities footer", () => {
       total: 25,
     },
   ])(
-    "opens a local medium child-activity list from the $tab footer using default mocks",
+    "opens a small child-activity list from the $tab footer using default mocks",
     async ({ tab, status, title, total }) => {
       const expectedActivities = childActivities.filter(
         (activity) => activity.activity_status === status,
@@ -441,7 +440,7 @@ describe("InfoTablesContainer activities footer", () => {
       const heading = await screen.findByRole("heading", { name: title });
       const panel = heading.closest("aside");
       assert(panel);
-      expect(panel).toHaveClass(globalSidePanelClasses.medium);
+      expect(panel).not.toHaveClass("is-wide");
       expect(
         await within(panel).findByRole("columnheader", {
           name: /^Toggle all\s*Activity\s*Instance$/,
@@ -483,11 +482,15 @@ describe("InfoTablesContainer activities footer", () => {
         expect(within(panel).getAllByRole("row")).toHaveLength(
           secondPageActivities.length + 1,
         );
+        expect(within(panel).getByText("Page 2 of 2")).toBeInTheDocument();
+        await userEvent.click(
+          within(panel).getByRole("button", { name: "Previous page" }),
+        );
+        expect(within(panel).getByText("Page 1 of 2")).toBeInTheDocument();
+      } else {
         expect(
-          within(panel).getByText(
-            `Showing ${secondPageActivities.length} of ${total} results`,
-          ),
-        ).toBeInTheDocument();
+          within(panel).queryByRole("button", { name: "Next page" }),
+        ).not.toBeInTheDocument();
       }
       expect(mockNavigate).not.toHaveBeenCalled();
     },

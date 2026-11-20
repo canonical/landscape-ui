@@ -10,10 +10,6 @@ interface ActivitiesContainerProps {
   readonly activitiesCount: number | undefined;
   readonly isGettingUnfilteredActivities: boolean;
   readonly unfilteredActivitiesCount: number | undefined;
-  readonly selectedActivities?: ActivityCommon[];
-  readonly setSelectedActivities?: (activities: ActivityCommon[]) => void;
-  readonly isAllSelected?: boolean;
-  readonly onClearSelection?: () => void;
 }
 
 const ActivitiesContainer: FC<ActivitiesContainerProps> = ({
@@ -22,10 +18,6 @@ const ActivitiesContainer: FC<ActivitiesContainerProps> = ({
   activitiesCount,
   isGettingUnfilteredActivities,
   unfilteredActivitiesCount,
-  selectedActivities,
-  setSelectedActivities,
-  isAllSelected,
-  onClearSelection,
 }) => {
   if (isGettingUnfilteredActivities) {
     return <LoadingState />;
@@ -39,10 +31,25 @@ const ActivitiesContainer: FC<ActivitiesContainerProps> = ({
     <Activities
       activities={activities}
       activitiesCount={activitiesCount}
-      selectedActivities={selectedActivities}
-      setSelectedActivities={setSelectedActivities}
-      isAllSelected={isAllSelected}
-      onClearSelection={onClearSelection}
+      availableActions={{
+        approve: false,
+        cancel: false,
+        redo: false,
+      }}
+      availableFilters={{
+        status: true,
+        type: false,
+        date: true,
+      }}
+      searchHelpTerms={{
+        id: true,
+        parentId: false,
+        createdAfter: true,
+        createdBefore: true,
+        creator: true,
+        computer: false,
+        type: false,
+      }}
     >
       {children}
     </Activities>

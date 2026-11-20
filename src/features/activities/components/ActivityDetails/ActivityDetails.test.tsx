@@ -128,7 +128,7 @@ describe("ActivityDetails", () => {
     ).toBeInTheDocument();
   });
 
-  it("opens the child export panel at medium size", async () => {
+  it("opens the child export panel at small size", async () => {
     vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
     const user = userEvent.setup();
     const [source, child] = activities;
@@ -156,7 +156,8 @@ describe("ActivityDetails", () => {
     });
     const exportPanel = exportInput.closest("aside");
     assert(exportPanel);
-    expect(exportPanel).toHaveClass(sidePanelClasses.medium);
+    expect(exportPanel).not.toHaveClass(sidePanelClasses.medium);
+    expect(exportPanel).not.toHaveClass(sidePanelClasses.large);
   });
 
   it("shows an Activities block and empty state for a group without children or output", async () => {

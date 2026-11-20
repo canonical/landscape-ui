@@ -1,5 +1,4 @@
 import { API_URL } from "@/constants";
-import sidePanelClasses from "@/context/SidePanelProvider.module.scss";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { activities, activityParents } from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
@@ -46,7 +45,7 @@ describe("ActivityDetailsLink", () => {
       );
       expect(getLocationDisplay()).not.toHaveTextContent("sidePath");
       expect(getLocationDisplay()).not.toHaveTextContent("/activities");
-      expect(panel).toHaveClass(sidePanelClasses.medium);
+      expect(panel).not.toHaveClass("is-wide");
       if (isActivityGroup) {
         expect(
           await within(panel).findByRole("heading", { name: "Activities" }),

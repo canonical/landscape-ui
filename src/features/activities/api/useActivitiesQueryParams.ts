@@ -7,25 +7,13 @@ const useActivitiesQueryParams = (
   config?: PaginatedGetHookParams,
   excludeType?: boolean,
 ) => {
-  const {
-    query,
-    search,
-    status,
-    fromDate,
-    toDate,
-    type,
-    currentPage,
-    pageSize,
-  } = usePageParams();
+  const { query, status, fromDate, toDate, type, currentPage, pageSize } =
+    usePageParams();
 
   const queryParts: string[] = [];
 
   if (params?.query) {
     queryParts.push(params.query);
-  }
-
-  if (search) {
-    queryParts.push(search);
   }
 
   if (query) {

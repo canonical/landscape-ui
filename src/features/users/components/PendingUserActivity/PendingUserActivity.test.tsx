@@ -77,7 +77,7 @@ describe("PendingUserActivity", () => {
       "href",
       ROUTES.instances.details.fromInstance(ubuntuInstance),
     );
-    expect(panel).toHaveClass(sidePanelClasses.medium);
+    expect(panel).not.toHaveClass(sidePanelClasses.medium);
     expect(
       within(panel).getByRole("button", { name: "Cancel activity" }),
     ).toBeEnabled();

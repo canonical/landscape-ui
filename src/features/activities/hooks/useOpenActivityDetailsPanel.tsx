@@ -29,7 +29,6 @@ const useOpenActivityDetailsPanel = () => {
             hideInstanceField={options?.hideInstanceField}
           />
         </Suspense>,
-        "medium",
       );
     },
     [closeSidePanel, setSidePanelContent],

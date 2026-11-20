@@ -152,7 +152,7 @@ describe("ActivitiesHeader in detail views", () => {
           availableFilters={{ status: true, type: true, date: true }}
         />,
       );
-      await userEvent.click(screen.getByRole("button", { name: /type/i }));
+      await userEvent.click(screen.getByRole("button", { name: "Type" }));
       await userEvent.click(screen.getByRole("button", { name: "All" }));
       expect(filterProps.onChangeFilters).toHaveBeenCalledWith({
         type: "",

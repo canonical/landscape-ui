@@ -44,6 +44,11 @@ const ActivitiesPage: FC = () => {
     [setPageParams],
   );
 
+  const activityId = Number(name);
+  const isValidActivityId = Number.isInteger(activityId) && activityId > 0;
+  const isActivityPanelOpen =
+    lastSidePathSegment === "activity" && isValidActivityId;
+
   return (
     <PageMain>
       <PageHeader title="Activities" />
@@ -66,15 +71,14 @@ const ActivitiesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        isOpen={lastSidePathSegment === "activity"}
+        isOpen={isActivityPanelOpen}
         onClose={popSidePathUntilClear}
-        size="medium"
         contentKey={`activity-${name}`}
       >
-        {lastSidePathSegment === "activity" && (
+        {isActivityPanelOpen && (
           <SidePanel.Suspense key={`activity-${name}`}>
             <ActivityDetails
-              activityId={Number(name)}
+              activityId={activityId}
               onClose={popSidePathUntilClear}
               renderInSidePanel
               hideInstanceField

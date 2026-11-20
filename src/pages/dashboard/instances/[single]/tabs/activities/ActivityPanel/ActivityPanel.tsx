@@ -21,7 +21,7 @@ const ActivitiesExportForm = lazy(
 );
 
 interface ActivityPanelProps {
-  readonly instanceId?: number;
+  readonly instanceId: number;
 }
 
 const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
@@ -55,7 +55,6 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
 
   const {
     query,
-    search,
     status,
     fromDate,
     toDate,
@@ -66,7 +65,6 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
   } = usePageParams();
   const exportQuery = [
     instanceId ? `computer:id:${instanceId}` : "",
-    search,
     query,
     status ? `status:${status}` : "",
     fromDate ? `created-after:${fromDate}` : "",
@@ -110,7 +108,25 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
       <Activities
         activities={activities}
         activitiesCount={activitiesCount}
-        instanceId={instanceId}
+        availableActions={{
+          approve: true,
+          cancel: true,
+          redo: true,
+        }}
+        availableFilters={{
+          status: true,
+          type: true,
+          date: true,
+        }}
+        searchHelpTerms={{
+          id: true,
+          parentId: true,
+          createdAfter: true,
+          createdBefore: true,
+          creator: true,
+          computer: false,
+          type: true,
+        }}
         selectedActivities={selectedActivities}
         setSelectedActivities={setSelectedActivities}
         isAllSelected={isAllSelected}
@@ -138,7 +154,6 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
         <SidePanel
           isOpen={lastSidePathSegment === "export"}
           onClose={popSidePath}
-          size="medium"
         >
           {lastSidePathSegment === "export" && (
             <SidePanel.Suspense key="export">

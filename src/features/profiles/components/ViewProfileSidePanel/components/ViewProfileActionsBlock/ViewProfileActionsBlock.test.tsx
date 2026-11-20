@@ -29,7 +29,7 @@ describe("ViewProfileActionsBlock", () => {
     setScreenSize("sm");
   });
 
-  it("opens large local group details from the audit-run notification", async () => {
+  it("opens small local group details from the audit-run notification", async () => {
     const [, profile] = usgProfiles;
     const [group] = activityParents;
     assert(group);
@@ -58,7 +58,7 @@ describe("ViewProfileActionsBlock", () => {
       await screen.findByRole("button", { name: "View details" }),
     );
     const heading = await screen.findByRole("heading", { name: group.summary });
-    expect(heading.closest("aside")).toHaveClass("is-wide");
+    expect(heading.closest("aside")).not.toHaveClass("is-wide");
     expect(
       await screen.findByRole("heading", { name: "Activities" }),
     ).toBeInTheDocument();

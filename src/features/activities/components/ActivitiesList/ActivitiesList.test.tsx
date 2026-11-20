@@ -1,7 +1,6 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, API_URL } from "@/constants";
 import sidePanelClasses from "@/components/layout/SidePanel/SidePanel.module.scss";
-import globalSidePanelClasses from "@/context/SidePanelProvider.module.scss";
 import date from "@/libs/date";
 import { activities } from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
@@ -233,7 +232,7 @@ describe("ActivitiesList rendering", () => {
   });
 
   it.each([undefined, 6])(
-    "opens children in a medium local panel for instanceId=%s",
+    "opens children in a small local panel for instanceId=%s",
     async (instanceId) => {
       const parent = {
         ...activities[0],
@@ -270,11 +269,9 @@ describe("ActivitiesList rendering", () => {
       const parentHeading = await screen.findByRole("heading", {
         name: parent.summary,
       });
-      expect(parentHeading.closest("aside")).toHaveClass(
-        globalSidePanelClasses.medium,
-      );
       const parentPanel = parentHeading.closest("aside");
       assert(parentPanel);
+      expect(parentPanel).not.toHaveClass("is-wide");
       const table = await within(parentPanel).findByRole("table");
       await userEvent.click(
         within(table).getByRole("button", { name: child.summary }),
@@ -283,12 +280,11 @@ describe("ActivitiesList rendering", () => {
       const childHeading = await screen.findByRole("heading", {
         name: child.summary,
       });
-      expect(childHeading.closest("aside")).toHaveClass(
-        sidePanelClasses.medium,
-      );
       expect(parentHeading).toBeInTheDocument();
       const childPanel = childHeading.closest("aside");
       assert(childPanel);
+      expect(childPanel).not.toHaveClass(sidePanelClasses.medium);
+      expect(childPanel).not.toHaveClass(sidePanelClasses.large);
       expect(
         await within(childPanel).findByText("Created at"),
       ).toBeInTheDocument();

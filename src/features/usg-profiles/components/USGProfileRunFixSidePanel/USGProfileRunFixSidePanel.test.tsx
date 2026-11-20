@@ -107,7 +107,7 @@ describe("USGProfileRunFixSidePanel", () => {
     const heading = await screen.findByRole("heading", {
       name: activity.summary,
     });
-    expect(heading.closest("aside")).toHaveClass("is-wide");
+    expect(heading.closest("aside")).not.toHaveClass("is-wide");
     expect(
       await screen.findByRole("heading", { name: "Activities" }),
     ).toBeInTheDocument();

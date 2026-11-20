@@ -1,17 +1,30 @@
 import { TablePagination } from "@/components/layout/TablePagination";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import type { FC, ReactNode } from "react";
 import { useCallback } from "react";
 import type { ActivityCommon } from "../../types";
 import ActivitiesHeader from "../ActivitiesHeader";
 import usePageParams from "@/hooks/usePageParams";
+import {
+  ACTIVITY_STATUS_OPTIONS,
+  type ACTIVITY_SEARCH_HELP_TERMS,
+} from "../ActivitiesHeader/constants";
 
 interface ActivitiesProps {
   readonly children: ReactNode;
   readonly activities: ActivityCommon[];
   readonly activitiesCount: number | undefined;
+  readonly searchHelpTerms: Readonly<
+    Record<keyof typeof ACTIVITY_SEARCH_HELP_TERMS, boolean>
+  >;
+  readonly availableActions: Readonly<
+    Record<"approve" | "cancel" | "redo", boolean>
+  >;
+  readonly availableFilters: Readonly<
+    Record<"status" | "type" | "date", boolean>
+  >;
   readonly selectedActivities?: ActivityCommon[];
   readonly setSelectedActivities?: (activities: ActivityCommon[]) => void;
-  readonly instanceId?: number;
   readonly isAllSelected?: boolean;
   readonly onClearSelection?: () => void;
   readonly onExport?: () => void;
@@ -20,7 +33,9 @@ interface ActivitiesProps {
 const Activities: FC<ActivitiesProps> = ({
   activities,
   activitiesCount: activityCount,
-  instanceId,
+  searchHelpTerms,
+  availableActions,
+  availableFilters,
   selectedActivities = [],
   setSelectedActivities,
   isAllSelected = false,
@@ -28,6 +43,13 @@ const Activities: FC<ActivitiesProps> = ({
   onExport,
   children,
 }) => {
+  useSetDynamicFilterValidation(
+    "status",
+    availableFilters.status
+      ? ACTIVITY_STATUS_OPTIONS.map(({ value }) => value)
+      : [],
+  );
+
   const pageParams = usePageParams();
 
   const handleClearSelection = useCallback(() => {
@@ -44,25 +66,9 @@ const Activities: FC<ActivitiesProps> = ({
         resetSelectedIds={handleClearSelection}
         selected={selectedActivities}
         isAllSelected={isAllSelected}
-        availableActions={{
-          approve: instanceId !== undefined,
-          cancel: instanceId !== undefined,
-          redo: instanceId !== undefined,
-        }}
-        availableFilters={{
-          status: true,
-          type: instanceId !== undefined,
-          date: true,
-        }}
-        searchHelpTerms={{
-          id: true,
-          parentId: instanceId !== undefined,
-          createdAfter: true,
-          createdBefore: true,
-          creator: true,
-          computer: false,
-          type: instanceId !== undefined,
-        }}
+        availableActions={availableActions}
+        availableFilters={availableFilters}
+        searchHelpTerms={searchHelpTerms}
         filters={pageParams}
         onChangeFilters={pageParams.setPageParams}
         onExport={onExport}

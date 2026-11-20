@@ -11,7 +11,7 @@ describe("ResponsiveTableSubhead", () => {
       <ResponsiveTableSubhead
         selectedCount={2}
         totalCount={5}
-        itemName="package"
+        itemName={["package"]}
         onClearSelection={onClearSelection}
       />,
     );
@@ -35,7 +35,7 @@ describe("ResponsiveTableSubhead", () => {
       <ResponsiveTableSubhead
         selectedCount={5}
         totalCount={5}
-        itemName="package"
+        itemName={["package"]}
         isAllSelected
         onClearSelection={onClearSelection}
       />,
@@ -62,7 +62,7 @@ describe("ResponsiveTableSubhead", () => {
         canSelectAll
         selectedCount={2}
         totalCount={5}
-        itemName="package"
+        itemName={["package"]}
         onClearSelection={onClearSelection}
         onSelectAll={onSelectAll}
       />,
