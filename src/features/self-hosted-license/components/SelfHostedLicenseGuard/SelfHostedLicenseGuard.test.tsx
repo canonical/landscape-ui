@@ -1,3 +1,4 @@
+import { API_URL } from "@/constants";
 import { EnvContext, type EnvContextState } from "@/context/env";
 import EnvError from "@/pages/EnvError";
 import SelfHostedLicensePage from "@/pages/dashboard/account/self-hosted-license";
@@ -5,11 +6,22 @@ import { ROUTES } from "@/libs/routes";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import server from "@/tests/server";
+import { SecondaryNavigation } from "@/templates/dashboard/SecondaryNavigation/SecondaryNavigation";
+import { ACCOUNT_SETTINGS } from "@/templates/dashboard/SecondaryNavigation/constants";
+import { onlineManager } from "@tanstack/react-query";
+import { act, screen } from "@testing-library/react";
+import { http, HttpResponse } from "msw";
 import { Route, Routes } from "react-router";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import SelfHostedLicenseProvider from "@/context/selfHostedLicense";
+import { LEGACY_LICENSE_ENTITLEMENT_WAIT_MS } from "../../api/constants";
 import SelfHostedLicenseGuard from "./SelfHostedLicenseGuard";
+
+vi.mock("usehooks-ts", async () => ({
+  ...(await vi.importActual("usehooks-ts")),
+  useMediaQuery: () => true,
+}));
 
 const envState: EnvContextState = {
   envLoading: false,
@@ -20,10 +32,14 @@ const envState: EnvContextState = {
   displayDisaStigBanner: false,
 };
 
-const renderWithRoutes = (value: EnvContextState) =>
+const renderWithRoutes = (value: EnvContextState, initialPath = "/") =>
   renderWithProviders(
     <EnvContext.Provider value={value}>
       <SelfHostedLicenseProvider>
+        <SecondaryNavigation
+          title={ACCOUNT_SETTINGS.label}
+          items={ACCOUNT_SETTINGS.items}
+        />
         <Routes>
           <Route
             path="/"
@@ -40,8 +56,19 @@ const renderWithRoutes = (value: EnvContextState) =>
       <LocationDisplay />
     </EnvContext.Provider>,
     undefined,
-    "/",
+    initialPath,
   );
+
+const mockEntitlementFailure = () => {
+  server.use(
+    http.get(`${API_URL}self-hosted/status`, () =>
+      HttpResponse.json(
+        { message: "Failed to fetch entitlement" },
+        { status: 500 },
+      ),
+    ),
+  );
+};
 
 describe("SelfHostedLicenseGuard", () => {
   it("renders children when SaaS account has self-hosted enabled", async () => {
@@ -85,19 +112,103 @@ describe("SelfHostedLicenseGuard", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders a blank page when checking entitlement fails", async () => {
-    setEndpointStatus({ status: "error", path: "self-hosted/status" });
+  it("redirects to account general on entitlement failure", async () => {
+    mockEntitlementFailure();
 
     renderWithRoutes(envState);
 
-    expect(screen.queryByText("Environment Error")).not.toBeInTheDocument();
+    expect(await screen.findByText("Account general")).toBeInTheDocument();
+    expect(getLocationDisplay()).toHaveTextContent(ROUTES.account.general());
     expect(
       screen.queryByRole("heading", { name: "Legacy license file" }),
     ).not.toBeInTheDocument();
-    await screen.findByTestId("notification-close-button");
-    await waitFor(() => {
-      expect(screen.queryByText("Account general")).not.toBeInTheDocument();
-    });
-    expect(getLocationDisplay()).toHaveTextContent("/");
+  });
+
+  it("falls back to account general when entitlement cannot be obtained and reveals the tab after it is obtained", async () => {
+    onlineManager.setOnline(false);
+    const { unmount } = renderWithRoutes(envState);
+
+    try {
+      expect(await screen.findByText("Account general")).toBeInTheDocument();
+      expect(
+        screen.queryByRole("link", { name: "Legacy license file" }),
+      ).not.toBeInTheDocument();
+
+      act(() => {
+        onlineManager.setOnline(true);
+      });
+
+      expect(
+        await screen.findByRole("link", { name: "Legacy license file" }),
+      ).toBeInTheDocument();
+      expect(getLocationDisplay()).toHaveTextContent(ROUTES.account.general());
+    } finally {
+      unmount();
+      onlineManager.setOnline(true);
+    }
+  });
+
+  it("shows entitlement error toast when there is no redirect", async () => {
+    mockEntitlementFailure();
+
+    renderWithRoutes(envState, ROUTES.account.general());
+
+    expect(
+      await screen.findByText("Could not check legacy license entitlement."),
+    ).toBeInTheDocument();
+  });
+
+  it("stops waiting for a slow entitlement check and shows the link on late success", async () => {
+    const { promise: requestStarted, resolve: markRequestStarted } =
+      Promise.withResolvers<undefined>();
+    const { promise: request, resolve: releaseRequest } =
+      Promise.withResolvers<undefined>();
+    server.use(
+      http.get(`${API_URL}self-hosted/status`, async () => {
+        markRequestStarted(undefined);
+        await request;
+        return HttpResponse.json({ enabled: true });
+      }),
+    );
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+    try {
+      vi.useFakeTimers();
+      try {
+        renderWithRoutes(envState);
+        await requestStarted;
+
+        const menu = screen.getByRole("navigation", {
+          name: ACCOUNT_SETTINGS.label,
+        });
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(
+            LEGACY_LICENSE_ENTITLEMENT_WAIT_MS - 1,
+          );
+        });
+        expect(menu).toHaveAttribute("aria-busy", "true");
+        expect(screen.queryByText("Account general")).not.toBeInTheDocument();
+
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(1);
+        });
+        expect(screen.getByText("Account general")).toBeInTheDocument();
+        expect(menu).toHaveAttribute("aria-busy", "false");
+        expect(
+          screen.queryByRole("link", { name: "Legacy license file" }),
+        ).not.toBeInTheDocument();
+      } finally {
+        vi.useRealTimers();
+      }
+
+      releaseRequest(undefined);
+      expect(
+        await screen.findByRole("link", { name: "Legacy license file" }),
+      ).toBeInTheDocument();
+      expect(getLocationDisplay()).toHaveTextContent(ROUTES.account.general());
+    } finally {
+      releaseRequest(undefined);
+      warn.mockRestore();
+    }
   });
 });
