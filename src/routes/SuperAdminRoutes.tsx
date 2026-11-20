@@ -22,7 +22,11 @@ export const SuperAdminRoutes = (
     >
       <Route
         index
-        element={<Navigate to={PATHS.superAdmin.sessionEventsLog} replace />}
+        element={<Navigate to={PATHS.superAdmin.sessionInstances} replace />}
+      />
+      <Route
+        path={PATHS.superAdmin.sessionInstances}
+        element={<Pages.SupportInstancesPage />}
       />
       <Route
         path={PATHS.superAdmin.sessionEventsLog}
