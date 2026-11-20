@@ -38,8 +38,11 @@ const {
  * no-op (no duplicate CHANGELOG section or debian stanza). One exception:
  * if the prep PR was already merged — detected via package.json already
  * carrying the beta version (section existence alone misses an initial
- * prep that had only empty changesets) — AND new changesets are pending,
- * it aborts rather than silently consuming them into nothing.
+ * prep that had only empty changesets) — the release notes are frozen:
+ * pending changesets with content make it abort rather than silently
+ * consuming them into nothing, and pending empty changesets are left in
+ * place (deleting them would only open a no-op prep PR). Every check runs
+ * before the first write, so an abort leaves the working tree untouched.
  *
  * Respins (YY.MM~beta.N.R) are out of this script's scope: per the beta
  * release design, the release owner prepares one by hand in a single PR on
@@ -120,7 +123,7 @@ function main() {
   const { version, debVersion } = parseBetaVersion(getBranchOrVersion());
   const debianChangelogPath = path.join(projectRoot, "debian", "changelog");
 
-  // 1. package.json — keep the -beta.N suffix (beta identity), unlike
+  // package.json keeps the -beta.N suffix (beta identity), unlike
   // manual-version-update.cjs which strips pre-release suffixes.
   const pkgPath = path.join(projectRoot, "package.json");
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
@@ -152,6 +155,30 @@ function main() {
     process.exit(1);
   }
 
+  // Read pending changesets and decide whether this beta's release notes
+  // are frozen BEFORE writing anything, so an abort leaves the tree as-is.
+  const changesetDir = path.join(projectRoot, ".changeset");
+  const changelogPath = path.join(projectRoot, "CHANGELOG.md");
+  const { files, entries } = readPendingChangesets(changesetDir);
+  const changelog = fs.existsSync(changelogPath)
+    ? fs.readFileSync(changelogPath, "utf8")
+    : "";
+  const frozen = alreadyPrepared || changelog.includes(`## ${version}\n`);
+
+  if (frozen && entries.length > 0) {
+    // Consuming these would drop their release notes (the section is
+    // frozen), so fail instead.
+    console.error(
+      `Release notes for ${version} are frozen (prep already merged or its ` +
+        `CHANGELOG section exists), but ${entries.length} changeset(s) with ` +
+        `content are pending. Ship these changes in a respin PR (see the beta ` +
+        `release process) or the next beta, or remove the pending changesets ` +
+        `from this branch.`,
+    );
+    process.exit(1);
+  }
+
+  // 1. package.json
   if (pkg.version !== version) {
     pkg.version = version;
     fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
@@ -161,37 +188,28 @@ function main() {
   }
 
   // 2 + 4. Roll pending changesets into CHANGELOG.md and delete them.
-  // Skip the CHANGELOG write entirely when the section already exists
-  // (idempotent re-run after changesets were consumed).
-  const changesetDir = path.join(projectRoot, ".changeset");
-  const changelogPath = path.join(projectRoot, "CHANGELOG.md");
-  const { files, entries } = readPendingChangesets(changesetDir);
-
-  if (entries.length > 0) {
-    const existing = fs.existsSync(changelogPath)
-      ? fs.readFileSync(changelogPath, "utf8")
-      : "";
-    if (alreadyPrepared || existing.includes(`## ${version}\n`)) {
-      // The prep PR for this beta was already merged: its release notes are
-      // frozen. Deleting the pending changesets here would silently drop
-      // their release notes, so fail instead.
-      console.error(
-        `Release prep for ${version} is already merged, but ${entries.length} ` +
-          `changeset(s) are pending. Release notes for this beta are frozen — ` +
-          `ship these changes in a respin PR (see the beta release process) ` +
-          `or the next beta, or remove the pending changesets from this branch.`,
+  if (frozen) {
+    // Only empty changesets can be pending here (content aborted above).
+    // Leave them: deleting them changes nothing user-visible and would
+    // only open a no-op prep PR.
+    if (files.length > 0) {
+      console.log(
+        `Release notes for ${version} are frozen — leaving ${files.length} ` +
+          `empty changeset(s) in place.`,
       );
-      process.exit(1);
     }
-    prependChangelog(changelogPath, renderChangelogSection(version, entries));
-  }
-  for (const file of files) {
-    fs.unlinkSync(file);
-  }
-  if (files.length > 0) {
-    console.log(
-      `Consumed ${files.length} changeset(s) (${entries.length} with content) into CHANGELOG.md`,
-    );
+  } else {
+    if (entries.length > 0) {
+      prependChangelog(changelogPath, renderChangelogSection(version, entries));
+    }
+    for (const file of files) {
+      fs.unlinkSync(file);
+    }
+    if (files.length > 0) {
+      console.log(
+        `Consumed ${files.length} changeset(s) (${entries.length} with content) into CHANGELOG.md`,
+      );
+    }
   }
 
   // 3. debian/changelog stanza.
