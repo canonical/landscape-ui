@@ -2,6 +2,8 @@ schema: spec-driven
 
 # The shared store holds specs for work implemented in landscape-ui.
 # Query this read-only reference with `openspec show <id> --store landscape-internal-docs`.
+# Setup requires GitHub SSH access to the private repository and a registered local checkout.
+# See the OpenSpec workflow guide: https://github.com/canonical/landscape-internal-docs/pull/306
 references:
   - id: landscape-internal-docs
     remote: git@github.com:canonical/landscape-internal-docs.git
