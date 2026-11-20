@@ -1,10 +1,12 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
-import { capitalize } from "@/utils/_helpers";
-import { Button, Icon } from "@canonical/react-components";
-import type { FC } from "react";
+import { capitalize, pluralize } from "@/utils/_helpers";
+import { Button, Icon, Modal } from "@canonical/react-components";
+import type { FC, ReactNode } from "react";
 import { lazy, Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
+import { MAX_SELECTED_SNAPS } from "../../constants";
 import type { InstalledSnap, SnapAction } from "../../types";
 import classes from "./SnapActions.module.scss";
 
@@ -26,6 +28,11 @@ const SnapsActions: FC<SnapsActionProps> = ({
   sidePanel = false,
 }) => {
   const { setSidePanelContent } = useSidePanel();
+  const {
+    value: isSnapLimitModalOpen,
+    setTrue: openSnapLimitModal,
+    setFalse: closeSnapLimitModal,
+  } = useBoolean(false);
 
   const singleSnap = selectedSnaps.length === 1 ? selectedSnaps[0] : null;
   const unheldSnaps = selectedSnaps.filter((s) => s.held_until === null);
@@ -35,10 +42,12 @@ const SnapsActions: FC<SnapsActionProps> = ({
     title: string,
     action: SnapAction,
     installedSnaps?: InstalledSnap[],
+    notice?: ReactNode,
   ) => {
     setSidePanelContent(
       title,
       <Suspense fallback={<LoadingState />}>
+        {notice}
         <InstanceSnapsActionForm
           action={action}
           instanceTitle={instanceTitle}
@@ -52,6 +61,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
     action: SnapAction,
     installedSnaps: InstalledSnap[],
     pluralTitle: string,
+    notice?: ReactNode,
   ) => {
     const [onlySnap] = installedSnaps;
     const getSingleSnapTitle = (name: string) =>
@@ -65,6 +75,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
         : pluralTitle,
       action,
       installedSnaps,
+      notice,
     );
   };
 
@@ -76,12 +87,38 @@ const SnapsActions: FC<SnapsActionProps> = ({
     openInstalledSnapsForm("uninstall", selectedSnaps, "Uninstall snaps");
   };
 
+  // Holding an already held snap replaces its hold with an indefinite one, so
+  // Hold acts on the whole selection.
   const handleHold = () => {
-    openInstalledSnapsForm("hold", unheldSnaps, "Hold snaps");
+    openInstalledSnapsForm("hold", selectedSnaps, "Hold snaps");
   };
 
   const handleUnhold = () => {
-    openInstalledSnapsForm("unhold", heldSnaps, "Unhold snaps");
+    // Like Run script, say which of the selected snaps the action skips.
+    const notice =
+      unheldSnaps.length > 0 ? (
+        <div className={classes.notice}>
+          <p>
+            You selected {pluralize(selectedSnaps.length, ["snap"], "exact")}.
+            This action will:
+          </p>
+          <ul>
+            <li>
+              unhold{" "}
+              {pluralize(
+                heldSnaps.length,
+                ["held snap", "held snaps"],
+                "exact",
+              )}
+            </li>
+            <li>
+              leave {pluralize(unheldSnaps.length, ["snap"], "exact")} unheld
+            </li>
+          </ul>
+        </div>
+      ) : undefined;
+
+    openInstalledSnapsForm("unhold", heldSnaps, "Unhold snaps", notice);
   };
 
   const handleRefresh = () => {
@@ -89,6 +126,13 @@ const SnapsActions: FC<SnapsActionProps> = ({
   };
 
   const handleChangeChannel = () => {
+    // Change channel renders channel and revision fields for every snap, so
+    // it shares the bulk search's limit.
+    if (selectedSnaps.length > MAX_SELECTED_SNAPS) {
+      openSnapLimitModal();
+      return;
+    }
+
     openInstalledSnapsForm(
       "change channel",
       selectedSnaps,
@@ -131,7 +175,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
               key="hold"
               type="button"
               className="p-segmented-control__button has-icon u-no-margin--bottom"
-              disabled={0 === unheldSnaps.length}
+              disabled={selectedSnaps.length === 0}
               onClick={handleHold}
               hasIcon
             >
@@ -176,6 +220,22 @@ const SnapsActions: FC<SnapsActionProps> = ({
           </Button>,
         ]}
       />
+      {isSnapLimitModalOpen && (
+        <Modal
+          close={closeSnapLimitModal}
+          title="Snap limit exceeded"
+          buttonRow={
+            <Button appearance="positive" onClick={closeSnapLimitModal}>
+              OK
+            </Button>
+          }
+        >
+          <p className="u-margin--bottom">
+            You can only change channels on a maximum of{" "}
+            {pluralize(MAX_SELECTED_SNAPS, ["snap"], "exact")} at once.
+          </p>
+        </Modal>
+      )}
     </div>
   );
 };

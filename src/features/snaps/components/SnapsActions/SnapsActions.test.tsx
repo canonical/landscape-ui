@@ -4,10 +4,12 @@ import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
+import { pluralize } from "@/utils/_helpers";
 import { afterEach, assert, beforeEach, describe, expect, it } from "vitest";
 import type { ReactElement } from "react";
 import userEvent from "@testing-library/user-event";
 import { PATHS, ROUTES } from "@/libs/routes";
+import { MAX_SELECTED_SNAPS } from "../../constants";
 import SnapsActions from "./SnapsActions";
 
 const snapData = {
@@ -163,7 +165,7 @@ describe("SnapsActions", () => {
         expect(unholdButton).toHaveAttribute("aria-disabled");
       });
 
-      it("Hold button disabled when only held snaps are selected", () => {
+      it("Hold button enabled when only held snaps are selected", () => {
         renderWithProviders(
           <SnapsActions
             instanceTitle={INSTANCE_TITLE}
@@ -171,7 +173,7 @@ describe("SnapsActions", () => {
           />,
         );
         const holdButton = screen.getByRole("button", { name: "Hold" });
-        expect(holdButton).toHaveAttribute("aria-disabled");
+        expect(holdButton).not.toHaveAttribute("aria-disabled");
       });
 
       it("Hold and Unhold enabled when only held and unheld snaps are selected", () => {
@@ -233,6 +235,37 @@ describe("SnapsActions", () => {
 
     it("opens change channel side panel for all selected snaps", async () => {
       const user = userEvent.setup();
+      // Held and unheld snaps, up to the limit.
+      const selectedSnaps = [
+        ...snapData.multiple.heldSnaps.slice(0, 2),
+        ...snapData.multiple.unheldSnaps,
+      ].slice(0, MAX_SELECTED_SNAPS);
+      assert(selectedSnaps.length === MAX_SELECTED_SNAPS);
+      renderOnInstancePage(
+        <SnapsActions
+          instanceTitle={INSTANCE_TITLE}
+          selectedSnaps={selectedSnaps}
+        />,
+      );
+
+      await user.click(screen.getByRole("button", { name: "Change channel" }));
+
+      expect(
+        await screen.findByRole("heading", { name: "Change snap channel" }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      for (const snap of selectedSnaps) {
+        expect(
+          await screen.findByRole("combobox", {
+            name: `Snap channel or revision for ${snap.snap.name}`,
+          }),
+        ).toBeInTheDocument();
+      }
+    });
+
+    it("shows a limit modal instead of the side panel for more than 10 snaps", async () => {
+      const user = userEvent.setup();
+      assert(mixedSelectedSnaps.length > MAX_SELECTED_SNAPS);
       renderOnInstancePage(
         <SnapsActions
           instanceTitle={INSTANCE_TITLE}
@@ -242,16 +275,21 @@ describe("SnapsActions", () => {
 
       await user.click(screen.getByRole("button", { name: "Change channel" }));
 
+      const modal = await screen.findByRole("dialog", {
+        name: "Snap limit exceeded",
+      });
       expect(
-        await screen.findByRole("heading", { name: "Change snap channel" }),
+        within(modal).getByText(
+          "You can only change channels on a maximum of 10 snaps at once.",
+        ),
       ).toBeInTheDocument();
-      for (const snap of mixedSelectedSnaps) {
-        expect(
-          await screen.findByRole("combobox", {
-            name: `Snap channel or revision for ${snap.snap.name}`,
-          }),
-        ).toBeInTheDocument();
-      }
+      expect(
+        screen.queryByRole("heading", { name: "Change snap channel" }),
+      ).not.toBeInTheDocument();
+
+      await user.click(within(modal).getByRole("button", { name: "OK" }));
+
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 
     it("enables the change channel button without waiting for snap info", () => {
@@ -286,7 +324,7 @@ describe("SnapsActions", () => {
       ).toBeInTheDocument();
     });
 
-    it("opens hold side panel for the unheld snaps only", async () => {
+    it("opens hold side panel for every selected snap, held or not", async () => {
       const user = userEvent.setup();
       renderOnInstancePage(
         <SnapsActions
@@ -300,26 +338,70 @@ describe("SnapsActions", () => {
       expect(
         await screen.findByRole("heading", { name: "Hold snaps" }),
       ).toBeInTheDocument();
+      expect(screen.queryByText(/^You selected/)).not.toBeInTheDocument();
       await user.click(
         await screen.findByRole("button", {
-          name: `Hold ${snapData.multiple.unheldSnaps.length} snaps`,
+          name: `Hold ${mixedSelectedSnaps.length} snaps`,
         }),
       );
 
       // The side panel has no snap list, so check the confirmation modal's
-      // first page.
+      // first page, which starts with the held snaps.
       const modal = await screen.findByRole("dialog");
-      for (const snap of snapData.multiple.unheldSnaps.slice(
-        0,
-        DEFAULT_MODAL_PAGE_SIZE,
-      )) {
+      for (const snap of mixedSelectedSnaps.slice(0, DEFAULT_MODAL_PAGE_SIZE)) {
         expect(within(modal).getByText(snap.snap.name)).toBeInTheDocument();
       }
-      for (const snap of snapData.multiple.heldSnaps) {
-        expect(
-          within(modal).queryByText(snap.snap.name),
-        ).not.toBeInTheDocument();
-      }
+    });
+
+    it("says how many of the selected snaps Unhold applies to", async () => {
+      const user = userEvent.setup();
+      const { heldSnaps, unheldSnaps } = snapData.multiple;
+      renderOnInstancePage(
+        <SnapsActions
+          instanceTitle={INSTANCE_TITLE}
+          selectedSnaps={mixedSelectedSnaps}
+        />,
+      );
+
+      await user.click(screen.getByRole("button", { name: "Unhold" }));
+
+      expect(
+        await screen.findByText(
+          `You selected ${mixedSelectedSnaps.length} snaps. This action will:`,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          `unhold ${pluralize(heldSnaps.length, ["held snap", "held snaps"], "exact")}`,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          `leave ${pluralize(unheldSnaps.length, ["snap"], "exact")} unheld`,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByRole("button", {
+          name: `Unhold ${pluralize(heldSnaps.length, ["snap"], "exact")}`,
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it("leaves out the Unhold summary when every selected snap is held", async () => {
+      const user = userEvent.setup();
+      renderOnInstancePage(
+        <SnapsActions
+          instanceTitle={INSTANCE_TITLE}
+          selectedSnaps={snapData.multiple.heldSnaps}
+        />,
+      );
+
+      await user.click(screen.getByRole("button", { name: "Unhold" }));
+
+      expect(
+        await screen.findByRole("heading", { name: /^Unhold / }),
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/^You selected/)).not.toBeInTheDocument();
     });
 
     it("opens uninstall side panel for selected snaps", async () => {

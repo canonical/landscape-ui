@@ -1,3 +1,17 @@
+@import "vanilla-framework/scss/settings_spacing";
+
 .container {
   display: flex;
+}
+
+/* Matches the Run script panel's summary of skipped instances. */
+.notice {
+  p {
+    margin-bottom: 0.5rem;
+    padding: 0;
+  }
+
+  ul {
+    margin-bottom: $spv--large;
+  }
 }

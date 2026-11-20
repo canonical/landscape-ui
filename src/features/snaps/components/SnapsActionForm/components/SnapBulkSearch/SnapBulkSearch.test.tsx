@@ -7,7 +7,7 @@ import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SnapBulkSearch from "./SnapBulkSearch";
-import { MAX_SELECTED_SNAPS } from "./constants";
+import { MAX_SELECTED_SNAPS } from "../../../../constants";
 
 const [firstSnap, secondSnap, , , , , , , , , searchedSnap] =
   bulkInstalledSnaps;
