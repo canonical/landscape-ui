@@ -6,11 +6,12 @@ Landscape UI uses **CalVer** (`YY.MM.Point.Build`) aligned with the Ubuntu relea
 
 ## 1. Branching Model
 
-| Branch          | Tier                                   | Versions                                 | Publishes to                                                   |
-| --------------- | -------------------------------------- | ---------------------------------------- | -------------------------------------------------------------- |
-| `main`          | Integration trunk / CHANGELOG baseline | `<cycle>.0.<count>-beta`                 | — (no build; version PR only)                                  |
-| `release/YY.MM` | Cycle base                             | `YY.MM.0.<count>` / `YY.MM.0.<count>-rc` | `ppa-build-YY.MM` (+ `ppa-build-stable` if currently promoted) |
-| `point/YY.MM.N` | Point release (Nth of the cycle)       | `YY.MM.N.<count>` / `YY.MM.N.<count>-rc` | `ppa-build-YY.MM.N`                                            |
+| Branch              | Tier                                   | Versions                                 | Publishes to                                                   |
+| ------------------- | -------------------------------------- | ---------------------------------------- | -------------------------------------------------------------- |
+| `main`              | Integration trunk / CHANGELOG baseline | `<cycle>.0.<count>-beta`                 | — (no build; version PR only)                                  |
+| `release/YY.MM`     | Cycle base                             | `YY.MM.0.<count>` / `YY.MM.0.<count>-rc` | `ppa-build-YY.MM` (+ `ppa-build-stable` if currently promoted) |
+| `point/YY.MM.N`     | Point release (Nth of the cycle)       | `YY.MM.N.<count>` / `YY.MM.N.<count>-rc` | `ppa-build-YY.MM.N`                                            |
+| `beta/YY.MM-beta.N` | Beta (one per pulse, see §5a)          | `YY.MM-beta.N` (respin `YY.MM-beta.N.R`) | — (beta builds not wired up yet)                               |
 
 `main` does **not** publish an artifact; it is the integration trunk. The only Changesets work it does is run `changeset-version.yml` on each push to maintain its "Version Packages" PR — merging that PR would consume the accumulated `.changeset/*.md` into `CHANGELOG.md` and bump `package.json`. In practice this PR is **closed, not merged**, before each cut: its changelog section would be keyed on `main`'s never-shipped `-beta` label, and that heading would be inherited verbatim by every later cut (see §3). Instead, the backlog travels with each cut and is rolled up on the cut branch under its real version. The trade-off is that `main`'s own `CHANGELOG.md` lags behind and consecutive cuts inherit overlapping backlogs — cuts made close together will re-roll entries an earlier cut already published, until a `main`-side consumption is eventually merged.
 
@@ -137,6 +138,14 @@ To **demote**, remove the branch from the variable. Note this only applies going
 
 Each point release gets its own `ppa-build-YY.MM.N` target, so concurrent point releases in the same cycle (e.g. `26.10.1` and `26.10.2`) never collide.
 
+## 5a. Beta Branches (`beta/YY.MM-beta.N`)
+
+A beta branch is cut once per pulse, named for the `landscape-server` beta it ships with (e.g. `beta/27.04-beta.4`); numbers may be skipped to stay aligned with the server. When the branch is created, the `Beta Release Prep` workflow opens a `beta-prep/<version>` PR against it that rolls the pending changesets into `CHANGELOG.md`, adds the matching `YY.MM~beta.N` stanza to `debian/changelog`, deletes the consumed changesets, and bumps `package.json` to `YY.MM-beta.N`. **Merging that PR is what stamps the beta branch with its release identity** — until then the branch carries whatever version it inherited from its cut point. The workflow can be re-run via manual dispatch — but once the prep PR is merged the branch's release notes are frozen: if changesets with content land on that beta branch, re-running aborts the script instead of consuming them, and empty changesets are left in place.
+
+**Re-run before merging the prep PR if anything merged into the beta branch after it was opened.** Push runs fire only when the branch is created, so a fix merged into the beta branch while the prep PR is open is otherwise left out of that beta's notes, and its changeset blocks every later re-run. A re-run refuses to overwrite a prep branch that has commits not made by the workflow (such as your CHANGELOG edits). If you have already edited it, either add the new entries by hand and delete their changesets in the prep PR, or close the PR, delete the `beta-prep/<version>` branch, re-run, and redo the edits.
+
+**PRs into a beta branch** (fixes before the prep PR merges, respins after) need a changeset to pass Validate. After the prep PR merges, use `pnpm changeset --empty`: a changeset with content can never be consumed on a frozen beta branch and makes re-runs abort. A respin PR writes its `CHANGELOG.md` entry by hand and sets `package.json` to the dash form `YY.MM-beta.N.R` (e.g. `27.04-beta.4.1`), with `YY.MM~beta.N.R-0landscape0` in `debian/changelog`. Respins (`YY.MM~beta.N.R`) are prepared by hand: one PR on the same beta branch that adds the fix and sets `package.json`, `debian/changelog` and `CHANGELOG.md` to the respin version. The prep script refuses to run on a branch that already carries a respin rather than rewinding its version. The full beta release process is documented separately; this section covers only the branch's version bookkeeping.
+
 ## 6. UI Version Identification
 
 The current version and commit hash are baked into `VITE_APP_VERSION` / `VITE_APP_COMMIT` and surfaced in `UserInfo.tsx`. As a quick sanity check:
@@ -145,7 +154,8 @@ The current version and commit hash are baked into `VITE_APP_VERSION` / `VITE_AP
 - `YY.MM.N.X` (N ≥ 1, no suffix) → a **released** point release (`point/YY.MM.N`)
 - `YY.MM.0.X-rc` → a cycle-base **candidate** (`release/YY.MM`, not yet promoted)
 - `YY.MM.0.X` (no suffix) → a **released** cycle base (`release/YY.MM`)
-- `*-beta` → `main`'s version label only; never installed
+- `<cycle>.0.<count>-beta` → `main`'s version label only; never installed
+- `YY.MM-beta.N` → a **beta** branch (`beta/YY.MM-beta.N`, §5a); beta builds land with the beta-builds work
 
 A production install should always show a clean `YY.MM.N.X` version with no `-rc` or `-beta` suffix.
 
