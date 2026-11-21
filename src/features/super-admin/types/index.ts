@@ -14,3 +14,4 @@ export type {
   StaffPersonAccount,
   StaffPersonResult,
 } from "./StaffPeople";
+export type { SupportInstanceTabProps } from "./SupportInstanceTab";

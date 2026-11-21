@@ -29,6 +29,14 @@ export const SuperAdminRoutes = (
         element={<Pages.SupportInstancesPage />}
       />
       <Route
+        path={PATHS.superAdmin.sessionInstance}
+        element={<Pages.SupportInstancePage />}
+      />
+      <Route
+        path={PATHS.superAdmin.sessionInstanceChild}
+        element={<Pages.SupportInstancePage />}
+      />
+      <Route
         path={PATHS.superAdmin.sessionEventsLog}
         element={<Pages.EventsLogPage />}
       />
