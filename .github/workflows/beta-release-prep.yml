@@ -43,7 +43,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 26
 
       # Validates the branch name (failing the job on a bad one), writes the
       # version files, and exposes the derived version as an output — the
