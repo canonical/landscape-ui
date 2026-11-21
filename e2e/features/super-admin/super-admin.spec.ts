@@ -175,7 +175,7 @@ test.describe("@saas Canonical staff", () => {
       await page.getByRole("menuitem", { name: "Enter acme" }).click();
 
       await expect(page).toHaveURL(
-        /\/super-admin\/accounts\/acme\/session\/events-log/,
+        /\/super-admin\/accounts\/acme\/session\/instances/,
       );
       await expect.poll(() => staffApi.switches).toEqual(["acme"]);
 
@@ -183,7 +183,7 @@ test.describe("@saas Canonical staff", () => {
       await expect(page.getByText("Organization")).toBeVisible();
       await expect(page.getByText("ACME Corp").first()).toBeVisible();
       await expect(
-        page.getByRole("heading", { name: "Events log" }),
+        page.getByRole("heading", { name: "Instances" }),
       ).toBeVisible();
       await expect(superAdmin.navigation).toHaveCount(0);
 
@@ -266,7 +266,7 @@ test.describe("@saas Canonical staff", () => {
       await page.getByRole("menuitem", { name: "Enter jane-free-1" }).click();
 
       await expect(page).toHaveURL(
-        /\/super-admin\/accounts\/jane-free-1\/session\/events-log/,
+        /\/super-admin\/accounts\/jane-free-1\/session\/instances/,
       );
       await expect(superAdmin.supportSession).toContainText(
         "Jane's free account",

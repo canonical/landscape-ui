@@ -3,7 +3,8 @@ import { getProfileTypes } from "@/features/instances";
 import type { ReactElement } from "react";
 import { useMemo } from "react";
 
-const getInstanceSearchHelpTerms = ({
+/** The instance search terms available with the given profile features enabled. */
+export const getInstanceSearchHelpTerms = ({
   isScriptProfilesEnabled,
   isUsgProfilesEnabled,
   isWslProfilesEnabled,
