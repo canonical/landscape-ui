@@ -2,4 +2,4 @@
 "landscape-ui": patch
 ---
 
-Add Pragma button migration foundation: document button integration conventions, declare root `app comfortable` surface classes, add temporary `.ds.button` cascade and upstream-PR shims, extend `toHaveIcon` for Pragma SVG icons, and validate mappings across representative buttons.
+Add Pragma button migration foundation on top of `@canonical/styles-vanilla-adapter`: document button integration conventions, add temporary `@layer app` shims for `@canonical/react-ds-global@0.47.0` `Button`, extend `toHaveIcon` for Pragma SVG icons, and validate mappings across representative buttons.

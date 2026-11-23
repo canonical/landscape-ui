@@ -22,6 +22,7 @@ import {
 } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
 import MissingSourceLabel from "../MissingSourceLabel";
+import classes from "./PublicationDetails.module.scss";
 
 interface PublicationDetailsProps {
   readonly publication: Publication;
@@ -68,45 +69,35 @@ const PublicationDetails = ({
   return (
     <>
       <OperationStatusNotification operation={operation} type="publishing" />
-      <div className="p-segmented-control u-sv2">
-        <div className="p-segmented-control__list">
-          {!canCancelOperations && isPublishing ? (
-            <Tooltip
-              message="You must wait for this action to be completed to republish it."
-              position="btm-center"
-            >
-              <Button
-                type="button"
-                importance="secondary"
-                className="p-segmented-control__button"
-                loading
-                disabled
-              >
-                Publishing
-              </Button>
-            </Tooltip>
-          ) : (
-            <Button
-              type="button"
-              importance="secondary"
-              icon="upload"
-              className="p-segmented-control__button"
-              onClick={openRepublishModal}
-            >
-              Republish
+      <div className={classes.actions}>
+        {!canCancelOperations && isPublishing ? (
+          <Tooltip
+            message="You must wait for this action to be completed to republish it."
+            position="btm-center"
+          >
+            <Button type="button" importance="secondary" loading disabled>
+              Publishing
             </Button>
-          )}
+          </Tooltip>
+        ) : (
           <Button
             type="button"
             importance="secondary"
-            anticipation="destructive"
-            icon="delete"
-            className="p-segmented-control__button"
-            onClick={openRemoveModal}
+            icon="upload"
+            onClick={openRepublishModal}
           >
-            Remove
+            Republish
           </Button>
-        </div>
+        )}
+        <Button
+          type="button"
+          importance="secondary"
+          anticipation="destructive"
+          icon="delete"
+          onClick={openRemoveModal}
+        >
+          Remove
+        </Button>
       </div>
 
       <Blocks>

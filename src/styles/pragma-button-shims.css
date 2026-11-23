@@ -1,0 +1,98 @@
+/* Temporary fixes for `@canonical/react-ds-global@0.47.0` `Button`.
+ *
+ * Placed in `@layer app` with zero-specificity `:where(...)` selectors so each
+ * shim overrides `@layer ds.components.global` regardless of production CSS
+ * chunk order, while still yielding to any consumer `@layer app` rule without
+ * `!important`.
+ *
+ * Remove each rule once its tracking PR ships in a released Pragma version,
+ * and delete this file (plus its import in `src/main.tsx`) once all rules are
+ * gone. */
+
+@layer app {
+  /* 1. Font sizing (https://github.com/canonical/pragma-web/pull/1659):
+   *    `Button/styles.css` resolves `--button-font-size` on `:root` (16px) and
+   *    never applies `font-size`, so buttons under `<html class="app">` inherit
+   *    16px instead of the 14px app text tier. */
+  :where(button.ds.button) {
+    --font-size: var(--typography-text-primary-font-size);
+    font-size: var(--font-size);
+  }
+
+  /* 2. Outlined secondary destructive icon colour
+   *    (https://github.com/canonical/pragma-web/pull/1659): enabled outlined
+   *    secondary destructive buttons should use `--color-icon` rather than red
+   *    so the icon matches the neutral label colour. */
+  :where(button.ds.button.secondary.destructive:not(.link, :disabled) > .icon) {
+    color: var(--color-icon);
+  }
+
+  /* 3. Disabled and loading borderless buttons
+   *    (https://github.com/canonical/pragma-web/pull/1439): `:disabled` and
+   *    `.loading` ignore `--modifier-outline`, giving disabled or loading
+   *    tertiary (and loading primary) buttons an unwanted border. */
+  :where(
+    button.ds.button:disabled:not(.link),
+    button.ds.button:disabled:not(.link):is(
+        :hover,
+        :active,
+        [aria-pressed="true"],
+        [aria-selected="true"],
+        [aria-expanded="true"]
+      )
+  ) {
+    border-color: color-mix(
+      in srgb,
+      var(
+          --modifier-color-border-disabled,
+          var(--color-border-highlighted-disabled)
+        )
+        calc(var(--modifier-outline, 0) * 100%),
+      transparent
+    );
+  }
+
+  :where(
+    button.ds.button.loading:not(.link),
+    button.ds.button.loading:disabled:not(.link),
+    button.ds.button.loading:disabled:not(.link):is(
+        :hover,
+        :active,
+        [aria-pressed="true"],
+        [aria-selected="true"],
+        [aria-expanded="true"]
+      )
+  ) {
+    border-color: color-mix(
+      in srgb,
+      var(--modifier-color-border, var(--button-color-border))
+        calc(var(--modifier-outline, 0) * 100%),
+      transparent
+    );
+  }
+
+  /* 4. Loading accessible name
+   *    (https://github.com/canonical/pragma-web/pull/1439):
+   *    `.ds.button.loading > .label { visibility: hidden }` removes the
+   *    button's accessible name while loading; `opacity: 0` hides the text
+   *    visually under the spinner while keeping it in the accessibility tree. */
+  :where(button.ds.button.loading > .label) {
+    opacity: 0;
+    visibility: visible;
+  }
+
+  /* 5. Icon-only square sizing
+   *    (https://github.com/canonical/pragma-web/pull/1387): plain `Button`
+   *    without a `.label` slot inherits asymmetric `padding-inline: 8px 16px`,
+   *    rendering 42x24px with an off-center icon instead of a centered 32x32px
+   *    (24x24px dense) square. Remove once icon-only controls migrate to Pragma
+   *    `IconButton`. */
+  :where(button.ds.button:has(> .icon):not(:has(> .label))) {
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--density-line-height-effective);
+    min-inline-size: var(--density-line-height-effective);
+    padding-block: 0;
+    padding-inline: 0;
+  }
+}

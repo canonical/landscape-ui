@@ -174,7 +174,9 @@ frameworks in cascade layers and confines each to its own elements:
   typography and the boundary) instead of `@canonical/styles`, followed by
   `src/styles/vanilla-text-size-shim.css` (a temporary local copy of `text-size.css` from
   `canonical/pragma-web#1585`, wrapped in `@layer vanilla`, to delete once the adapter release
-  includes it) and `@canonical/react-ds-global-form/dist/esm/index.css`. `index.html` sets Pragma's
+  includes it), `src/styles/pragma-button-shims.css` (temporary `@layer app` bugfix shims for
+  `@canonical/react-ds-global@0.47.0` `Button`; see [pragma/buttons.md](pragma/buttons.md)), and
+  `@canonical/react-ds-global-form/dist/esm/index.css`. `index.html` sets Pragma's
   `app comfortable light` root classes on `<html>`, and the pre-paint theme script together with
   `ThemeProvider` (`src/context/theme.tsx`) keeps `light`/`dark` on `<html>` in sync with
   `body.is-dark`.
