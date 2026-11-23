@@ -31,13 +31,13 @@ const activeAccount = staffAccounts.find(
 const disabledAccount = staffAccounts.find(({ disabled }) => disabled);
 
 /**
- * Renders once the signed-in user's roles are in, the way the account page
- * does: `HeaderActions` lays out its buttons from the actions it first sees.
+ * Renders once auth and features are in, the way the account page does:
+ * `HeaderActions` lays out its buttons from the actions it first sees.
  */
 const WhenSignedIn: FC<{ readonly children: ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, authLoading } = useAuth();
 
-  return user ? children : null;
+  return user && !authLoading ? children : null;
 };
 
 /** Signs in a staff member with `globalRoles`, for the app and for the mock API. */
