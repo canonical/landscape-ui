@@ -45,12 +45,14 @@ const TestConsumer = () => {
 describe("ThemeProvider", () => {
   beforeEach(() => {
     localStorage.clear();
+    document.documentElement.classList.remove("light", "dark");
     document.body.className = "";
     document.body.style.colorScheme = "";
   });
 
   afterEach(() => {
     localStorage.clear();
+    document.documentElement.classList.remove("light", "dark");
     document.body.className = "";
     document.body.style.colorScheme = "";
     window.matchMedia = originalMatchMedia;
@@ -65,6 +67,8 @@ describe("ThemeProvider", () => {
 
     expect(screen.getByTestId("theme")).toHaveTextContent("system");
     expect(screen.getByTestId("mode")).toHaveTextContent("light");
+    expect(document.documentElement.classList.contains("light")).toBe(true);
+    expect(document.documentElement.classList.contains("dark")).toBe(false);
   });
 
   it("follows a dark system preference when the theme is system", () => {
@@ -79,6 +83,8 @@ describe("ThemeProvider", () => {
     expect(screen.getByTestId("theme")).toHaveTextContent("system");
     expect(screen.getByTestId("mode")).toHaveTextContent("dark");
     expect(document.body.classList.contains("is-dark")).toBe(true);
+    expect(document.documentElement.classList.contains("dark")).toBe(true);
+    expect(document.documentElement.classList.contains("light")).toBe(false);
   });
 
   it("ignores a dark system preference when the theme is light", () => {
@@ -92,6 +98,8 @@ describe("ThemeProvider", () => {
     );
 
     expect(screen.getByTestId("mode")).toHaveTextContent("light");
+    expect(document.documentElement.classList.contains("light")).toBe(true);
+    expect(document.documentElement.classList.contains("dark")).toBe(false);
   });
 
   it("reads the dark theme from localStorage", () => {
@@ -158,7 +166,7 @@ describe("ThemeProvider", () => {
     expect(screen.getByTestId("theme")).toHaveTextContent("system");
   });
 
-  it("setting the dark theme adds the is-dark class to body", async () => {
+  it("setting the dark theme adds the is-dark class to body and dark class to html", async () => {
     render(
       <ThemeProvider>
         <TestConsumer />
@@ -171,9 +179,11 @@ describe("ThemeProvider", () => {
 
     expect(document.body.classList.contains("is-dark")).toBe(true);
     expect(document.body.style.colorScheme).toBe("dark");
+    expect(document.documentElement.classList.contains("dark")).toBe(true);
+    expect(document.documentElement.classList.contains("light")).toBe(false);
   });
 
-  it("setting the light theme removes the is-dark class from body", async () => {
+  it("setting the light theme removes the is-dark class from body and restores light class on html", async () => {
     localStorage.setItem(LS_KEY, "dark");
 
     render(
@@ -182,12 +192,17 @@ describe("ThemeProvider", () => {
       </ThemeProvider>,
     );
 
+    expect(document.documentElement.classList.contains("dark")).toBe(true);
+    expect(document.documentElement.classList.contains("light")).toBe(false);
+
     await act(async () => {
       screen.getByText("Set light").click();
     });
 
     expect(document.body.classList.contains("is-dark")).toBe(false);
     expect(document.body.style.colorScheme).toBe("light");
+    expect(document.documentElement.classList.contains("light")).toBe(true);
+    expect(document.documentElement.classList.contains("dark")).toBe(false);
   });
 
   it("persists the theme preference to localStorage", async () => {

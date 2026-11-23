@@ -173,7 +173,9 @@ frameworks in cascade layers and confines each to its own elements:
   `src/styles/vanilla-text-size-shim.css` (a temporary local copy of `text-size.css` from
   `canonical/pragma-web#1585`, wrapped in `@layer vanilla`, to delete once the adapter release
   includes it) and `@canonical/react-ds-global-form/dist/esm/index.css`. `index.html` sets Pragma's
-  `app` context class on `<html>`.
+  `app comfortable light` root classes on `<html>`, and the pre-paint theme script together with
+  `ThemeProvider` (`src/context/theme.tsx`) keeps `light`/`dark` on `<html>` in sync with
+  `body.is-dark`.
 - The adapter's boundary reverts Vanilla inside every Pragma `.ds` element. When a Pragma container
   holds Vanilla content (for example a `Card.Content` with a Vanilla table, or an `Accordion.Item`
   with Vanilla checkboxes), add `ds-permeable` to the element that directly wraps the Vanilla

@@ -36,6 +36,8 @@
           saved === "true" ||
           (saved !== "light" && saved !== "false" && systemDark);
         if (shouldDark) {
+          document.documentElement.classList.remove("light");
+          document.documentElement.classList.add("dark");
           document.body.classList.add("is-dark");
           document.body.style.colorScheme = "dark";
         }
