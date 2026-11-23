@@ -13,13 +13,38 @@ This document defines how Landscape migrates buttons from `@canonical/react-comp
 
 ### Temporary CSS cascade and package shims
 
-`src/styles/partials/pragma-cascade-shims.scss` carries two temporary rule groups required while Vanilla Framework coexists unlayered alongside `@canonical/react-ds-global@0.44.1`:
+`src/styles/partials/pragma-cascade-shims.scss` carries temporary shims required while Vanilla Framework coexists unlayered alongside `@canonical/react-ds-global@0.47.0`. Remove each shim once its tracking PR ships:
 
-1. **Unlayered Vanilla `button` reset (`revert-layer`):** Vanilla styles bare `button` elements unlayered (`_base_button.scss`, `_base_reset.scss`), which outranks `@layer ds.components.global`. `button:where(.ds.button)` reverts those declarations at `(0, 0, 1)` base specificity so consumer CSS module classes `(0, 1, 0)` and `.p-segmented-control__button` `(0, 2, 0)` still compose without `!important`. Remove once Vanilla is layered via `@canonical/styles-vanilla-adapter`.
-2. **Upstream `@canonical/react-ds-global` 0.44.1 `Button` fixes:**
-   - Applies `font-size: var(--button-font-size)` (`14px`) on non-link `.ds.button` controls (`Button/styles.css` defines `--font-size` without applying `font-size`).
-   - Sizes icon-only buttons (`:has(> .icon):not(:has(> .label))`) to a centered `--density-line-height-effective` square (`32×32px` comfortable, `24×24px` dense) instead of collapsing vertically and keeping asymmetric `8px 16px` inline padding.
-   - Overrides `.ds.button.loading > .label` from `visibility: hidden` to `opacity: 0; visibility: visible` so buttons retain their accessible name in browsers while `loading` is `true`.
+1. **Unlayered Vanilla `button` reset (`revert-layer`):** Vanilla styles bare `button` elements unlayered (`_base_button.scss`, `_base_reset.scss`), which outranks `@layer ds.components.global`. `button:where(.ds.button)` reverts those declarations at `(0, 0, 1)` base specificity so consumer CSS module classes `(0, 1, 0)` and `.p-segmented-control__button` `(0, 2, 0)` still compose without `!important`. Tracked by `canonical/landscape-ui#1028` (adopting `@canonical/styles-vanilla-adapter` from `canonical/pragma-web#1191`, waiting on `canonical/pragma-web#1585`).
+2. **Button typography sizing (`canonical/pragma-web#1659`):** `Button/styles.css` evaluates `--button-font-size` on `:root` (`16px`) and never applies `font-size`, so buttons under `<body class="app">` inherit `16px` instead of `14px`. The shim resolves `--typography-text-primary-font-size` directly on non-link `.ds.button` controls.
+3. **Outlined secondary destructive icon colour (`canonical/pragma-web#1659`):** Enabled `secondary` `destructive` buttons should use `--color-icon` on the leading icon so it matches the neutral label colour in light and dark themes.
+4. **Disabled and loading borderless buttons (`canonical/pragma-web#1439`):** `:disabled` and `.loading` in `0.47.0` ignore `--modifier-outline`, adding a visible border to disabled/loading `tertiary` (and loading `primary`) buttons. The shim mixes the border colour with `calc(var(--modifier-outline, 0) * 100%)`.
+5. **Loading accessible name (`canonical/pragma-web#1439`):** Overrides `.ds.button.loading > .label` from `visibility: hidden` to `opacity: 0; visibility: visible` so buttons retain their accessible name while `loading` is `true`. Note: once `#1439` releases, loading-only buttons also change from native `disabled` to focusable `aria-disabled="true"`, so loading-state tests should be updated when removing this shim.
+6. **Icon-only square sizing (`canonical/pragma-web#1387`):** Sizes icon-only buttons (`:has(> .icon):not(:has(> .label))`) to a centered `--density-line-height-effective` square (`32x32px` comfortable, `24x24px` dense) instead of collapsing vertically with asymmetric `8px 16px` inline padding. Remove once icon-only controls switch to Pragma `IconButton`.
+
+Additional tracked upstream items that do **not** require a Landscape shim:
+
+- **Leading icon/text optical alignment (`canonical/pragma-web#1455`):** Minor ~1.1px visual offset on leading icons; improves automatically on a future Pragma upgrade.
+- **Link-button underline polish:** Upstream design is still exploring underline weight and offset for `Button variant="link"`; keep default Pragma styling.
+
+## What to Migrate Now vs Defer
+
+With the shims above in place, feature migration PRs can migrate:
+
+- Standard labeled buttons (`primary`, `secondary`, `tertiary`, `constructive`, `destructive`, `caution`) with or without leading icons.
+- Loading `ActionButton` controls (`Button` with `loading={...}`).
+- Link-styled in-place actions (`appearance="link"` -> `Button variant="link"`).
+- Standalone `ConfirmationButton` controls outside `ResponsiveButtons` (Pragma `Button` opening a sibling `ConfirmationModal`).
+- Icon-only buttons (`importance="tertiary"`, `icon="..."`, explicit `aria-label`, no children), knowing they will swap to `IconButton` once `canonical/pragma-web#1387` ships.
+
+Leave the following out of feature button PRs:
+
+- **Menu triggers and table filters (`ContextualMenu`, `ActionsMenu`, `TableFilter*`, `ResponsiveTableFilters`, `InstancesPageActions`):** Blocked on `canonical/pragma-web#1209`; migrate in the dedicated menu/filter tickets.
+- **`ResponsiveButtons` action bars:** `ResponsiveButtons` inspects legacy `hasIcon` and `confirmationModalProps` when collapsing into a legacy `ContextualMenu`; migrate alongside action menus.
+- **Button-styled navigation links (`<Link className="p-button...">` / `<a className="p-button...">`):** Keep as Vanilla `.p-button` links until upstream provides button-styled link support.
+- **Side navigation rows (`.p-side-navigation`):** Migrate with Pragma `SideNavigation`.
+- **Shared `SidePanelFormButtons`:** Migrate in a single dedicated PR rather than inside a single feature ticket.
+- **Lint guardrail (`eslint.config.mjs`):** Add `Button`, `ActionButton`, and `ConfirmationButton` to `PRAGMA_MIGRATED_COMPONENTS` only in the final cleanup once zero legacy imports remain.
 
 ## Appearance and Variant Mapping
 
@@ -87,7 +112,7 @@ Key behavioral differences from legacy `ActionButton`:
 ## Navigation Links vs Buttons
 
 - **Simple page or external navigation:** Use Pragma `Link` (`<Link as={RouterLink} to="...">` or `<Link href="...">`) or React Router `<Link>` / native `<a>`. Preserve semantic link behavior (`role="link"`, `href`, `target="_blank"`, middle-click / Cmd+click, copy URL). Never replace a navigation link with `<Button variant="link">` or `<Button onClick={() => navigate(...)}>`. See `OidcAuthPage` and `UbuntuOneAuthPage` for the `<Link as={RouterLink}>` pattern.
-- **Button-styled CTA links (upstream gap):** `@canonical/react-ds-global@0.44.1` `Button` renders `<button>` only (no polymorphic `as` prop yet), and `ds:global.component.button_link` was rejected upstream pending unified button/button-link affordance design. For the few empty-state, error-page, or header CTAs that must navigate while wearing button chrome (`PageNotFound`, `EnvError`, `SingleInstanceEmptyState`, `AlertNotificationsPage`, `LicensesPage`), keep `<Link>` / `<a>` with existing `.p-button` / `.p-button--positive` classes until upstream ships polymorphic `Button` link support. Never hand-roll `<a className="ds button ...">`.
+- **Button-styled CTA links (upstream gap):** `@canonical/react-ds-global@0.47.0` `Button` renders `<button>` only (no polymorphic `as` prop yet), and `ds:global.component.button_link` was rejected upstream pending unified button/button-link affordance design. For the few empty-state, error-page, or header CTAs that must navigate while wearing button chrome (`PageNotFound`, `EnvError`, `SingleInstanceEmptyState`, `AlertNotificationsPage`, `LicensesPage`), keep `<Link>` / `<a>` with existing `.p-button` / `.p-button--positive` classes until upstream ships polymorphic `Button` link support. Never hand-roll `<a className="ds button ...">`.
 
 ## Layout, Spacing, Sizing, and Coupled Patterns
 
@@ -98,7 +123,7 @@ Key behavioral differences from legacy `ActionButton`:
 - **`ConfirmationButton`, side navigation, and menu triggers:**
   - **`ConfirmationButton` (no Pragma component; migrate directly):** Pragma does not ship a `ConfirmationButton` (and `withModal` only supports close-only footers). Replace `<ConfirmationButton>` during feature migrations with a Pragma `<Button onClick={openModal}>` plus a sibling `ConfirmationModal` (later Pragma `Modal`). In `ResponsiveButtons`, a `<Button onClick={openModal}>` with its modal rendered alongside `<ResponsiveButtons>` collapses cleanly without relying on `confirmationModalProps`.
   - **Side navigation items (`.p-side-navigation`):** Pragma ships `SideNavigation` in `@canonical/react-ds-app`, where expandable and action rows are internal nav-row elements (`ItemButton`) rather than global `Button` controls. Do not replace `.p-side-navigation` items (`NavigationExpandableParent`, `UserInfo`, `LogoutButton`) with Pragma `<Button>` + `!important` overrides; either migrate them with `SideNavigation` or use native `<button type="button">` if needed to clear the last legacy `Button` / `ActionButton` imports.
-  - **Menu and filter triggers (`ActionsMenu`, `ResponsiveButtons`, `TableFilter*`, `ResponsiveTableFilters`):** Triggers are rendered inside legacy `ContextualMenu` today (not imported as standalone `Button`s). In `0.44.1`, `ContextualMenu` renders an unstyled `<button class="trigger">` and `Popover` renders `<details>`/`<summary>` only. Once `canonical/pragma-web#1209` lands (`Button` `forwardRef`, styled `Button` triggers on both `Popover` and `ContextualMenu`, and `ContextualMenu` items opening anchored `Popover` dialogs), standalone filter dropdowns (`TableFilter*`) move to `Popover`, action menus (`ActionsMenu`, `ResponsiveButtons`) move to `ContextualMenu`, and collapsed filter menus (`ResponsiveTableFilters`) compose both.
+  - **Menu and filter triggers (`ActionsMenu`, `ResponsiveButtons`, `TableFilter*`, `ResponsiveTableFilters`):** Triggers are rendered inside legacy `ContextualMenu` today (not imported as standalone `Button`s). In `0.47.0`, `ContextualMenu` renders an unstyled `<button class="trigger">` and `Popover` renders `<details>`/`<summary>` only. Once `canonical/pragma-web#1209` lands (React 19 ref support on `Button`, styled `Button` triggers via `triggerProps` on both `Popover` and `ContextualMenu`, and `ContextualMenu` items opening anchored `Popover` dialogs), standalone filter dropdowns (`TableFilter*`) move to `Popover`, action menus (`ActionsMenu`, `ResponsiveButtons`) move to `ContextualMenu`, and collapsed filter menus (`ResponsiveTableFilters`) compose both.
 
 ## Testing Conventions
 
