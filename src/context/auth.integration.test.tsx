@@ -5,6 +5,7 @@ import { API_URL } from "@/constants";
 import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
 import { authResponse } from "@/tests/mocks/auth";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { saasEnv, selfHostedEnv } from "@/tests/mocks/env";
 import { renderHookWithProviders } from "@/tests/render";
 import server from "@/tests/server";
@@ -69,6 +70,19 @@ describe("AuthProvider super admin gating (integration)", () => {
     const result = await renderAuth();
 
     expect(result.current).toMatchObject(expected);
+  });
+
+  it("denies entering accounts when the support-sessions feature is disabled", async () => {
+    serveMe(["SupportProvider"]);
+    // "empty" omits `support-sessions`, as a server without the flag does.
+    setEndpointStatus({ status: "empty", path: "features" });
+
+    const result = await renderAuth();
+
+    expect(result.current).toMatchObject({
+      isSuperAdmin: true,
+      canEnterAccounts: false,
+    });
   });
 
   it("ignores global roles other than the staff ones", async () => {

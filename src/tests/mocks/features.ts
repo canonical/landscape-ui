@@ -134,6 +134,17 @@ export const features: Feature[] = [
     },
   },
   {
+    name: "Support sessions",
+    description:
+      "Allows support providers to enter any account in a support session.",
+    key: "support-sessions",
+    database_key: 18,
+    enabled: true,
+    details: {
+      configuration: true,
+    },
+  },
+  {
     name: "Repository Mirrors",
     description:
       "Use Landscape DebArchive to mirror Debian package repositories.",

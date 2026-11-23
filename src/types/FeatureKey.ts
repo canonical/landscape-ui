@@ -8,6 +8,7 @@ export type ServerFeatureKey =
   | "script-profiles"
   | "spa-dashboard"
   | "support-provider-login"
+  | "support-sessions"
   | "ubuntu-pro-licensing"
   | "usg-profiles"
   | "wsl-child-instance-profiles"

@@ -10,6 +10,7 @@ import { ROUTES } from "@/libs/routes";
 import UserInfo from "@/templates/dashboard/UserInfo";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { authResponse } from "@/tests/mocks/auth";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { saasEnv, selfHostedEnv } from "@/tests/mocks/env";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
@@ -123,6 +124,25 @@ describe("super admin routes (integration)", () => {
 
   it("sends an account manager without the support role to the account's page", async () => {
     serveMe(["AccountManager"]);
+    const switches = recordSwitches();
+
+    renderAt(ROUTES.superAdmin.session(ACME));
+
+    expect(
+      await screen.findByRole("heading", { name: ACME }),
+    ).toBeInTheDocument();
+    expect(getLocationDisplay()).toHaveTextContent(
+      ROUTES.superAdmin.account(ACME),
+    );
+    expect(
+      screen.queryByRole("region", { name: "Support session" }),
+    ).not.toBeInTheDocument();
+    expect(switches).toEqual([]);
+  });
+
+  it("sends a support provider to the account's page when support sessions are disabled", async () => {
+    // "empty" omits `support-sessions`, as a server without the flag does.
+    setEndpointStatus({ status: "empty", path: "features" });
     const switches = recordSwitches();
 
     renderAt(ROUTES.superAdmin.session(ACME));
