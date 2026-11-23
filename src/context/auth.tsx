@@ -37,6 +37,7 @@ export interface AuthContextProps {
   /**
    * Whether the user can enter any account in a support session. Only
    * `SupportProvider` may switch into an account it is not a member of.
+   * Also requires the `support-sessions` feature.
    */
   canEnterAccounts: boolean;
   logout: () => void;
@@ -100,8 +101,11 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const isSuperAdmin = hasStaffRole && isSaas;
   const canManageAccounts =
     isSuperAdmin && globalRoles.includes(ACCOUNT_MANAGER);
+  // Support sessions rely on staff endpoints the server does not serve yet.
   const canEnterAccounts =
-    isSuperAdmin && globalRoles.includes(SUPPORT_PROVIDER);
+    isSuperAdmin &&
+    globalRoles.includes(SUPPORT_PROVIDER) &&
+    isFeatureEnabled("support-sessions");
 
   const handleLogout = useCallback(() => {
     queryClient.setQueryData(AUTH_QUERY_KEY, null);
