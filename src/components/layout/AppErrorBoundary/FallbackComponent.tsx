@@ -1,6 +1,6 @@
 import { FEEDBACK_LINK, IS_DEV_ENV } from "@/constants";
-import { CodeSnippet } from "@canonical/react-components";
-import { Button, Icon } from "@canonical/react-ds-global";
+import { CodeSnippet, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FallbackRender } from "@sentry/react";
 import { useEffect, useRef, useState } from "react";
 import type { FC } from "react";
@@ -59,7 +59,7 @@ const ErrorFallback: FC<ErrorFallbackProps> = ({
   return (
     <div className={classes.wrapper} role="alert" aria-live="assertive">
       <div className={classes.panel}>
-        <Icon icon="disconnected" className={classes.icon} />
+        <Icon name="disconnect" className={classes.icon} aria-hidden />
 
         <p className="p-heading--3 u-no-margin--bottom">Something went wrong</p>
 
@@ -84,7 +84,7 @@ const ErrorFallback: FC<ErrorFallbackProps> = ({
         {IS_DEV_ENV && (
           <details className={classes.details}>
             <summary className={classes.summary}>
-              <Icon icon="chevron-down" className={classes.summaryIcon} />
+              <Icon name="chevron-down" className={classes.summaryIcon} />
               <span>Technical details</span>
             </summary>
 
