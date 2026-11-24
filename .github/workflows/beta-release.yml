@@ -1,0 +1,220 @@
+name: Beta Release and PPA Build
+
+on:
+  push:
+    branches: ["beta/**"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  route:
+    runs-on: ubuntu-latest
+    outputs:
+      decision: ${{ steps.version.outputs.decision }}
+      version: ${{ steps.version.outputs.version }}
+      deb-version: ${{ steps.version.outputs.deb-version }}
+      marker: ${{ steps.version.outputs.marker }}
+      sha: ${{ steps.version.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+      - name: Validate beta metadata
+        id: version
+        run: node scripts/beta-release-version.cjs
+
+  prepare:
+    needs: route
+    if: needs.route.outputs.decision == 'prepare'
+    uses: ./.github/workflows/beta-release-prep.yml
+    secrets: inherit
+
+  build:
+    needs: route
+    if: needs.route.outputs.decision == 'publish'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Check that the release can be built
+        env:
+          VERSION: ${{ needs.route.outputs.deb-version }}
+          MARKER: ${{ needs.route.outputs.marker }}
+        run: python3 scripts/launchpad-beta.py preflight "$VERSION" --marker "$MARKER"
+      - uses: pnpm/setup@v3
+        with:
+          version: 12
+          runtime: node@26
+          cache: true
+          require-lockfile: true
+      - name: Production build
+        run: pnpm run build
+        env:
+          VITE_APP_VERSION: ${{ needs.route.outputs.version }}
+          VITE_APP_COMMIT: ${{ needs.route.outputs.sha }}
+          VITE_API_URL: /api/v2/
+          VITE_API_URL_OLD: /api/
+          VITE_ROOT_PATH: /portal/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: beta-dist
+          path: dist/
+          retention-days: 30
+          if-no-files-found: error
+
+  publish-assets:
+    needs: [route, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: beta-dist
+          path: dist/
+      - name: Publish beta assets
+        env:
+          VERSION: ${{ needs.route.outputs.version }}
+          BUILD_SHA: ${{ needs.route.outputs.sha }}
+        run: |
+          DEST="ppa-build-${GITHUB_REF_NAME#beta/}"
+          git -C dist init --initial-branch=build
+          git -C dist add --all
+          git -C dist -c user.name='github-actions[bot]' \
+            -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -m "Build $VERSION from $GITHUB_REF_NAME [$BUILD_SHA]"
+          git fetch ./dist refs/heads/build
+          PREVIOUS=$(git ls-remote --heads origin "refs/heads/$DEST" | cut -f1)
+          if [[ $(git ls-remote --heads origin "$GITHUB_REF" | cut -f1) != "$BUILD_SHA" ]]; then
+            echo 'Beta branch advanced; retaining its newer asset branch state.'
+            exit 0
+          fi
+          git push --force-with-lease="refs/heads/$DEST:$PREVIOUS" origin "FETCH_HEAD:refs/heads/$DEST"
+
+  sbom:
+    needs: [route, build]
+    uses: ./.github/workflows/beta-sbom.yml
+    with:
+      version: ${{ needs.route.outputs.version }}
+      sha: ${{ needs.route.outputs.sha }}
+
+  package-source:
+    needs: [route, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.route.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: beta-dist
+          path: dist/
+      - name: Prepare source packages
+        env:
+          DEB_VERSION: ${{ needs.route.outputs.deb-version }}
+          MARKER: ${{ needs.route.outputs.marker }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y build-essential debhelper dpkg-dev
+          bash scripts/build-beta-source.sh "$DEB_VERSION" "$RUNNER_TEMP/beta-source" "$MARKER"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: beta-source
+          path: ${{ runner.temp }}/beta-source
+          retention-days: 30
+          if-no-files-found: error
+
+  upload-jammy:
+    needs: [route, package-source, publish-assets]
+    uses: ./.github/workflows/beta-series-upload.yml
+    with:
+      series: jammy
+      version: ${{ needs.route.outputs.deb-version }}
+      marker: ${{ needs.route.outputs.marker }}
+    secrets:
+      signing-key: ${{ secrets.LAUNCHPAD_GPG_PRIVATE_KEY }}
+
+  upload-noble:
+    needs: [route, upload-jammy]
+    if: needs.upload-jammy.outputs.result == 'accepted'
+    uses: ./.github/workflows/beta-series-upload.yml
+    with:
+      series: noble
+      version: ${{ needs.route.outputs.deb-version }}
+      marker: ${{ needs.route.outputs.marker }}
+    secrets:
+      signing-key: ${{ secrets.LAUNCHPAD_GPG_PRIVATE_KEY }}
+      imap-password: ${{ secrets.LAUNCHPAD_IMAP_PASSWORD }}
+
+  upload-resolute:
+    needs: [route, upload-jammy]
+    if: needs.upload-jammy.outputs.result == 'accepted'
+    uses: ./.github/workflows/beta-series-upload.yml
+    with:
+      series: resolute
+      version: ${{ needs.route.outputs.deb-version }}
+      marker: ${{ needs.route.outputs.marker }}
+    secrets:
+      signing-key: ${{ secrets.LAUNCHPAD_GPG_PRIVATE_KEY }}
+      imap-password: ${{ secrets.LAUNCHPAD_IMAP_PASSWORD }}
+
+  resolve-publication:
+    needs: [route, upload-jammy, upload-noble, upload-resolute]
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    env:
+      NOBLE: ${{ needs.upload-noble.outputs.result }}
+      RESOLUTE: ${{ needs.upload-resolute.outputs.result }}
+    steps:
+      - name: Check direct upload outcomes
+        run: |
+          [[ '${{ needs.upload-jammy.outputs.result }}' == accepted ]]
+          [[ "$NOBLE" == accepted || "$NOBLE" == copy ]]
+          [[ "$RESOLUTE" == accepted || "$RESOLUTE" == copy ]]
+      - uses: actions/checkout@v5
+        if: env.NOBLE == 'copy' || env.RESOLUTE == 'copy'
+        with:
+          persist-credentials: false
+      - name: Copy from Jammy only where direct upload was rejected
+        if: env.NOBLE == 'copy' || env.RESOLUTE == 'copy'
+        env:
+          VERSION: ${{ needs.route.outputs.deb-version }}
+          LAUNCHPAD_COPY_CREDENTIALS: ${{ secrets.LAUNCHPAD_COPY_CREDENTIALS }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y python3-launchpadlib
+          targets=()
+          if [[ "$NOBLE" == copy ]]; then targets+=(noble); fi
+          if [[ "$RESOLUTE" == copy ]]; then targets+=(resolute); fi
+          /usr/bin/python3 scripts/launchpad-beta.py copy "$VERSION" "${targets[@]}"
+
+  tag:
+    needs: [route, resolve-publication]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.route.outputs.sha }}
+          fetch-depth: 0
+      - name: Tag the built commit
+        env:
+          VERSION: ${{ needs.route.outputs.version }}
+          SHA: ${{ needs.route.outputs.sha }}
+        run: |
+          if git show-ref --verify --quiet "refs/tags/$VERSION"; then
+            [[ $(git rev-parse "refs/tags/$VERSION^{commit}") == "$SHA" ]]
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git tag -a "$VERSION" -m "Build $VERSION from $GITHUB_REF_NAME" "$SHA"
+            git push origin "refs/tags/$VERSION"
+          fi

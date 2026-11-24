@@ -1,4 +1,5 @@
 const { execSync } = require("child_process");
+const { readBetaRelease } = require("./beta-release-version.cjs");
 
 /**
  * Version derivation for Landscape UI.
@@ -129,6 +130,8 @@ function isReleasedBranch(branch) {
 
 function getVersion() {
   const branch = getBranch();
+
+  if (branch.startsWith("beta/")) return readBetaRelease(branch) ?? "";
 
   // main: integration trunk / CHANGELOG baseline. Never shipped — this version
   // only labels its "Version Packages" PR, so it stays calendar-derived.

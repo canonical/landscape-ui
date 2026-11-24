@@ -11,12 +11,9 @@ name: Beta Release Prep
 #   - bumps package.json to YY.MM-beta.N.
 # Merging the PR is what stamps the beta branch with its release identity.
 #
-# Push runs fire only on branch CREATION — later pushes to the beta branch
-# don't regenerate the PR. Use manual dispatch to regenerate it (e.g. after
-# the branch's content changed before the PR was merged).
+# The beta release workflow calls this when a push needs preparation.
 on:
-  push:
-    branches: ["beta/**"]
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -33,10 +30,7 @@ jobs:
     # Manual dispatch ignores the push branch filter, and the parser also
     # accepts bare YY.MM-beta.N (for local use) — so a dispatch on the tag
     # 27.04-beta.3 would otherwise prep from the wrong ref. Beta branches only.
-    if: >-
-      startsWith(github.ref, 'refs/heads/beta/') &&
-      (github.event_name == 'workflow_dispatch' ||
-       github.event.created == true)
+    if: startsWith(github.ref, 'refs/heads/beta/')
     steps:
       - uses: actions/create-github-app-token@v2
         id: app
@@ -68,6 +62,12 @@ jobs:
           GH_TOKEN: ${{ steps.app.outputs.token }}
           BOT_EMAIL: 273197409+landscape-packager[bot]@users.noreply.github.com
         run: |
+          # A queued or manually rerun prep must not rewind the PR to an older push.
+          BASE_SHA=$(git ls-remote --heads origin "refs/heads/$BASE" | cut -f1)
+          if [[ "$BASE_SHA" != "$GITHUB_SHA" ]]; then
+            echo 'Beta branch advanced; use the workflow for its latest push.'
+            exit 0
+          fi
           git config user.name "landscape-packager[bot]"
           git config user.email "$BOT_EMAIL"
           PREP_BRANCH="beta-prep/${VERSION}"
