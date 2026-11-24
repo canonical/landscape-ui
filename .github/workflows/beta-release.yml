@@ -268,14 +268,21 @@ jobs:
           BOT_EMAIL: 273197409+landscape-packager[bot]@users.noreply.github.com
         run: |
           BRANCH="beta-forward-port/$VERSION"
-          EXISTING=$(gh pr list --base main --head "$BRANCH" --state all --json state --jq 'map(select(.state != "CLOSED")) | .[0].state // ""')
+          EXISTING=$(gh api --paginate --method GET "repos/$GITHUB_REPOSITORY/pulls" \
+            -f base=main -f "head=${GITHUB_REPOSITORY_OWNER}:$BRANCH" -f state=all \
+            --jq ".[] | select(.head.repo.full_name == \"$GITHUB_REPOSITORY\" and .head.ref == \"$BRANCH\") | if .merged_at then \"MERGED\" elif .state == \"open\" then \"OPEN\" else empty end")
           if [[ "$EXISTING" == MERGED ]]; then exit 0; fi
           git config user.name 'landscape-packager[bot]'
           git config user.email "$BOT_EMAIL"
           SCRIPT="$RUNNER_TEMP/forward-port-beta.sh"
           cp scripts/forward-port-beta.sh "$SCRIPT"
           bash "$SCRIPT" "$VERSION" "$SHA"
-          if git diff --quiet origin/main HEAD; then exit 0; fi
+          if git diff --quiet origin/main HEAD; then
+            if [[ "$EXISTING" == OPEN ]]; then
+              echo 'This cut is already incorporated; close the stale forward-port PR.'
+            fi
+            exit 0
+          fi
           if git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
             previous=$(git rev-parse "origin/$BRANCH")
             if git log --format=%ce "origin/main..$previous" | grep -Fxv "$BOT_EMAIL" > /dev/null; then

@@ -16,7 +16,13 @@ base=$main
 checkpoints=$(git log "$main" --format='%(trailers:key=Landscape-Beta-Source,valueonly,unfold)' \
   --grep='^Landscape-Beta-Source: ')
 while IFS= read -r checkpoint; do
-  if [[ $checkpoint =~ ^[0-9a-f]{40}$ ]] && git merge-base --is-ancestor "$checkpoint" "$sha"; then
+  if [[ ! $checkpoint =~ ^[0-9a-f]{40}$ ]]; then continue; fi
+  if git merge-base --is-ancestor "$sha" "$checkpoint"; then
+    echo "Main already incorporates $version via checkpoint $checkpoint."
+    git switch --create "beta-forward-port/$version" "$main"
+    exit 0
+  fi
+  if git merge-base --is-ancestor "$checkpoint" "$sha"; then
     base=$checkpoint
     break
   fi

@@ -160,6 +160,12 @@ class ForwardPortHistory(BetaRepo):
         self.cmd("bash", str(SCRIPTS / "forward-port-beta.sh"), f"{BASE}.3", self.git("rev-parse", "HEAD"), "main")
         self.assertEqual(self.git("log", "--format=%s", "main..HEAD"), "respin after squash")
 
+        # A retry for an older tag must not replay over a newer checkpoint.
+        older = self.git("rev-parse", f"{BASE}.2~1")
+        self.git("tag", f"{BASE}.1", older)
+        self.cmd("bash", str(SCRIPTS / "forward-port-beta.sh"), f"{BASE}.1", older, "main")
+        self.assertEqual(self.git("rev-parse", "HEAD"), self.git("rev-parse", "main"))
+
     def test_conflict_leaves_tag_and_reports_manual_checkpoint(self):
         self.commit("cut")
         self.git("switch", "-qc", f"beta/{BASE}")

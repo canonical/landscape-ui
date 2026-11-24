@@ -150,7 +150,7 @@ A beta branch is cut once per pulse, named for the `landscape-server` beta it sh
 
 **Tag and hand-off.** CI tags the exact built SHA with the dash-form version after each series has accepted the source or received a copy. Check the beta PPA for the exact installable Debian binary in Jammy, Noble, and Resolute before handing off to the server release owner.
 
-**Forward-port.** After tagging, CI opens a PR to `main` with missing prep and respin commits in order, even if earlier attempts never tagged. Squash-merge with `Landscape-Beta-Source: <tagged SHA>` in the commit message so later respins start at that checkpoint. If automation reports a conflict, replay the missing commits in a manual PR, preserve later Changesets on `main`, and keep the same trailer. The published package and tag do not need to be recreated.
+**Forward-port.** After tagging, CI opens a PR to `main` with missing prep and respin commits in order, even if earlier attempts never tagged. Squash-merge with `Landscape-Beta-Source: <tagged SHA>` in the commit message so later respins start at that checkpoint. If automation reports a conflict, replay the missing commits in a manual PR, preserve later Changesets on `main`, and keep the same trailer. Add an empty Changeset if the manual PR adds none. Close any stale PR for a cut already incorporated by a newer checkpoint. The published package and tag do not need to be recreated.
 
 ## 6. UI Version Identification
 
