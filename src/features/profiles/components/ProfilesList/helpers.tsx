@@ -1,5 +1,5 @@
 import { Tooltip } from "@/components/ui";
-import { Button, Icon, ICONS, Link } from "@canonical/react-components";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { Profile, ProfileActions } from "../../types";
 import {
   getTriggerText,

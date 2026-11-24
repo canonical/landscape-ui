@@ -10,7 +10,7 @@ import tseslint from "typescript-eslint";
 // Components whose migration to Pragma is complete. Add a name once no file
 // imports it from @canonical/react-components, so new code cannot regress.
 // See "Pragma migration guardrail" in docs/FRONTEND.md.
-const PRAGMA_MIGRATED_COMPONENTS = ["Accordion", "Badge", "Card"];
+const PRAGMA_MIGRATED_COMPONENTS = ["Accordion", "Badge", "Card", "Tooltip"];
 
 const pragmaMigratedRestriction = {
   name: "@canonical/react-components",

@@ -30,9 +30,7 @@ describe("USGProfileAuditPassRate", () => {
     );
 
     await userEvent.hover(screen.getByTestId("passrate-line"));
-    // TODO: Drop `{ hidden: true }` once a release containing
-    // https://github.com/canonical/pragma-web/pull/1596 is installed.
-    const tooltip = await screen.findByRole("tooltip", { hidden: true });
+    const tooltip = await screen.findByRole("tooltip");
 
     expect(within(tooltip).getByText(/Passed:/)).toBeInTheDocument();
     expect(within(tooltip).getByText(/Failed:/)).toBeInTheDocument();
