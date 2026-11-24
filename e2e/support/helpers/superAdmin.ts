@@ -303,6 +303,40 @@ export async function mockStaffApi(
 
   await page.route(apiRoute("me"), withStaffRoles);
 
+  // Support sessions are behind a feature the backends do not serve yet.
+  await page.route(apiRoute("features"), async (route) => {
+    const response = await route.fetch();
+    const body = parseJson(await response.text());
+
+    if (
+      typeof body !== "object" ||
+      body === null ||
+      !("results" in body) ||
+      !Array.isArray(body.results)
+    ) {
+      await route.fulfill({ response });
+      return;
+    }
+
+    await route.fulfill({
+      response,
+      json: {
+        ...body,
+        results: [
+          ...body.results,
+          {
+            name: "Support sessions",
+            description:
+              "Allows support providers to enter any account in a support session.",
+            key: "support-sessions",
+            enabled: true,
+            details: { configuration: true },
+          },
+        ],
+      },
+    });
+  });
+
   await page.route(apiRoute("switch-account"), async (route) => {
     const { account_name: name } = route.request().postDataJSON() as {
       account_name: string;
