@@ -39,22 +39,33 @@ jobs:
     needs: route
     if: needs.route.outputs.decision == 'publish'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     steps:
       - uses: actions/checkout@v5
         with:
           persist-credentials: false
+      - name: Find the original dist artifact on retry
+        id: retained
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/find-beta-artifact.sh beta-dist build
       - name: Check that the release can be built
+        if: steps.retained.outputs.id == ''
         env:
           VERSION: ${{ needs.route.outputs.deb-version }}
           MARKER: ${{ needs.route.outputs.marker }}
         run: python3 scripts/launchpad-beta.py preflight "$VERSION" --marker "$MARKER"
       - uses: pnpm/setup@v3
+        if: steps.retained.outputs.id == ''
         with:
           version: 12
           runtime: node@26
           cache: true
           require-lockfile: true
       - name: Production build
+        if: steps.retained.outputs.id == ''
         run: pnpm run build
         env:
           VITE_APP_VERSION: ${{ needs.route.outputs.version }}
@@ -62,7 +73,9 @@ jobs:
           VITE_API_URL: /api/v2/
           VITE_API_URL_OLD: /api/
           VITE_ROOT_PATH: /portal/
-      - uses: actions/upload-artifact@v4
+      - name: Retain beta-dist
+        if: steps.retained.outputs.id == ''
+        uses: actions/upload-artifact@v4
         with:
           name: beta-dist
           path: dist/
@@ -109,23 +122,35 @@ jobs:
   package-source:
     needs: [route, build]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     steps:
       - uses: actions/checkout@v5
         with:
           ref: ${{ needs.route.outputs.sha }}
           persist-credentials: false
+      - name: Find the original source artifact on retry
+        id: retained
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/find-beta-artifact.sh beta-source package-source
       - uses: actions/download-artifact@v4
+        if: steps.retained.outputs.id == ''
         with:
           name: beta-dist
           path: dist/
       - name: Prepare source packages
+        if: steps.retained.outputs.id == ''
         env:
           DEB_VERSION: ${{ needs.route.outputs.deb-version }}
           MARKER: ${{ needs.route.outputs.marker }}
         run: |
           sudo apt-get update && sudo apt-get install -y build-essential debhelper dpkg-dev
           bash scripts/build-beta-source.sh "$DEB_VERSION" "$RUNNER_TEMP/beta-source" "$MARKER"
-      - uses: actions/upload-artifact@v4
+      - name: Retain beta-source
+        if: steps.retained.outputs.id == ''
+        uses: actions/upload-artifact@v4
         with:
           name: beta-source
           path: ${{ runner.temp }}/beta-source

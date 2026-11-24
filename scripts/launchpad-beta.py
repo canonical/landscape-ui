@@ -191,7 +191,7 @@ def upload(series, version, marker, directory):
         for source in sources(series, version, status)
     ):
         if accepted(OLDEST, version, f"{marker}:{OLDEST}"):
-            wait_for(lambda: binary_published(series, version), 600, f"{series} copied binary")
+            wait_for(lambda: verified_copy(series, version), 600, f"{series} copied Jammy binary")
             return "accepted"
         raise RuntimeError(f"{series} already has {version} without this run's Jammy source")
     attempt = f"{series_marker}:attempt-{secrets.token_hex(16)}"
@@ -222,24 +222,37 @@ def upload(series, version, marker, directory):
         return wait_for(result, 600, f"{series} source acceptance or rejection")
 
 
-def binary_published(series, version):
+def binary_build(series, version):
     for source in sources(series, version, "Published"):
         if source["source_package_version"] != version:
             continue
         binaries = collection(source["self_link"], **{"ws.op": "getPublishedBinaries"}, active_binaries_only="true")
-        if any(b["status"] == "Published" and b["binary_package_name"] == PACKAGE
-               and b["distro_arch_series_link"].startswith(f"{API}/ubuntu/{series}/")
-               and b["binary_package_version"] == version for b in binaries):
-            return True
+        for binary in binaries:
+            if (binary["status"] == "Published" and binary["binary_package_name"] == PACKAGE
+                    and binary["distro_arch_series_link"].startswith(f"{API}/ubuntu/{series}/")
+                    and binary["binary_package_version"] == version):
+                return binary["build_link"]
         if series == OLDEST:
             for build in collection(source["self_link"], **{"ws.op": "getBuilds"}):
                 if build["buildstate"] in ("Failed to build", "Chroot problem", "Failed to upload", "Dependency wait"):
                     raise RuntimeError(f"Jammy build: {build['buildstate']}. See {build['web_link']}")
-    return False
+    return None
+
+
+def verified_copy(series, version):
+    target = binary_build(series, version)
+    if not target:
+        return False
+    jammy = binary_build(OLDEST, version)
+    if not jammy:
+        return False
+    if target != jammy:
+        raise RuntimeError(f"{series} {version} was not copied from the verified Jammy build")
+    return True
 
 
 def copy_missing(version, targets):
-    wait_for(lambda: binary_published(OLDEST, version), 3600, "Jammy binary publication")
+    wait_for(lambda: binary_build(OLDEST, version), 3600, "Jammy binary publication")
     with tempfile.TemporaryDirectory() as cache:
         copy_targets(version, targets, cache)
 
@@ -264,7 +277,7 @@ def copy_targets(version, targets, cache):
             archive.copyPackage(source_name=PACKAGE, version=version, from_archive=archive,
                                 from_series=OLDEST, to_series=series, from_pocket="Release",
                                 to_pocket="Release", include_binaries=True)
-        wait_for(lambda: binary_published(series, version), 1200, f"{series} binary publication")
+        wait_for(lambda: verified_copy(series, version), 1200, f"{series} copied Jammy binary publication")
 
 
 def main():

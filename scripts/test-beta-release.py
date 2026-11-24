@@ -165,7 +165,7 @@ class LaunchpadRehearsal(unittest.TestCase):
 
         def is_published(series, version):
             events.append(f"check publication {series}")
-            return published.get(series) == version
+            return "jammy-build" if published.get(series) == version else None
 
         def copy(**kwargs):
             self.assertEqual(published.get(kwargs["from_series"]), kwargs["version"])
@@ -195,7 +195,7 @@ class LaunchpadRehearsal(unittest.TestCase):
         with patch.dict(GLOBALS, {
             "accepted": lambda series, version, _: accepted.get(series) == version,
             "sign_and_upload": source_upload, "rejection_mailbox": mailbox,
-            "check_mail": check_mail, "binary_published": is_published,
+            "check_mail": check_mail, "binary_build": is_published,
             "sources": sources, "wait_for": wait,
         }), patch.dict(os.environ, {"LAUNCHPAD_COPY_CREDENTIALS": "test", "LAUNCHPAD_VERIFY_REJECTION_EMAIL": str(fallback).lower()}), patch.dict(sys.modules, modules):
             results = {series: LP["upload"](series, DEBIAN, MARKER, Path("artifacts")) for series in LP["SERIES"]}
@@ -236,6 +236,21 @@ class LaunchpadRehearsal(unittest.TestCase):
         with patch.dict(GLOBALS, {"accepted": Mock(return_value=True), "sign_and_upload": sign}):
             self.assertEqual(LP["upload"]("jammy", DEBIAN, MARKER, Path("artifacts")), "accepted")
             GLOBALS["accepted"].assert_called_once_with("jammy", DEBIAN, f"{MARKER}:jammy")
+        sign.assert_not_called()
+
+    def test_manual_copy_recovery_checks_jammy_build_identity(self):
+        sign = Mock()
+        builds = {"jammy": "jammy-build", "noble": "unrelated-build"}
+        with patch.dict(GLOBALS, {
+            "accepted": lambda series, version, marker: series == "jammy" and marker == f"{MARKER}:jammy",
+            "sources": lambda *_: [{"source_package_version": DEBIAN}],
+            "sign_and_upload": sign,
+            "binary_build": lambda series, version: builds[series],
+        }):
+            with self.assertRaisesRegex(RuntimeError, "not copied from the verified Jammy build"):
+                LP["upload"]("noble", DEBIAN, MARKER, Path("artifacts"))
+            builds["noble"] = builds["jammy"]
+            self.assertEqual(LP["upload"]("noble", DEBIAN, MARKER, Path("artifacts")), "accepted")
         sign.assert_not_called()
 
     def test_mime_rejection_is_matched_after_decoding(self):
