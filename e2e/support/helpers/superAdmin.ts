@@ -329,6 +329,7 @@ export async function mockStaffApi(
             description:
               "Allows support providers to enter any account in a support session.",
             key: "support-sessions",
+            database_key: 18,
             enabled: true,
             details: { configuration: true },
           },
