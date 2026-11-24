@@ -20,8 +20,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 # One prep PR per beta branch; serialize against re-dispatches.
 concurrency:
@@ -39,7 +38,16 @@ jobs:
       (github.event_name == 'workflow_dispatch' ||
        github.event.created == true)
     steps:
+      - uses: actions/create-github-app-token@v2
+        id: app
+        with:
+          app-id: ${{ vars.LANDSCAPE_PACKAGER_APP_ID }}
+          private-key: ${{ secrets.LANDSCAPE_PACKAGER_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
       - uses: actions/checkout@v5
+        with:
+          token: ${{ steps.app.outputs.token }}
 
       - uses: actions/setup-node@v4
         with:
@@ -57,10 +65,10 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
           BASE: ${{ github.ref_name }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BOT_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          BOT_EMAIL: 273197409+landscape-packager[bot]@users.noreply.github.com
         run: |
-          git config user.name "github-actions[bot]"
+          git config user.name "landscape-packager[bot]"
           git config user.email "$BOT_EMAIL"
           PREP_BRANCH="beta-prep/${VERSION}"
 
@@ -97,7 +105,7 @@ jobs:
       - name: Open release-prep PR
         if: steps.prep.outputs.changed == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app.outputs.token }}
           VERSION: ${{ steps.version.outputs.version }}
           BASE: ${{ github.ref_name }}
         run: |
