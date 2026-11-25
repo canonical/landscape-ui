@@ -309,12 +309,11 @@ jobs:
         # they are exempt — but only genuine ones: opened by the workflow's
         # bot, from this repository, from beta-prep/* into beta/*. Branch
         # names alone are author-controlled and must not skip this check.
-        # (Update the login when the prep PR moves to a GitHub App token.)
         if: >-
           github.event.pull_request.base.ref &&
           !(startsWith(github.event.pull_request.head.ref, 'beta-prep/') &&
             startsWith(github.event.pull_request.base.ref, 'beta/') &&
-            github.event.pull_request.user.login == 'github-actions[bot]' &&
+            github.event.pull_request.user.login == 'landscape-packager[bot]' &&
             github.event.pull_request.head.repo.full_name == github.repository)
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}

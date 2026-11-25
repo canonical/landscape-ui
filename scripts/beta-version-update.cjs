@@ -37,8 +37,7 @@ const {
  * The script is idempotent: re-running it on an already-prepared tree is a
  * no-op (no duplicate CHANGELOG section or debian stanza). One exception:
  * if the prep PR was already merged — detected via package.json already
- * carrying the beta version (section existence alone misses an initial
- * prep that had only empty changesets) — the release notes are frozen:
+ * carrying the beta version — the release notes are frozen:
  * pending changesets with content make it abort rather than silently
  * consuming them into nothing, and pending empty changesets are left in
  * place (deleting them would only open a no-op prep PR). Every check runs
@@ -174,9 +173,7 @@ function main() {
 
   // "Already prepared" means the prep PR merged: the version stamp lives on
   // beta-prep/* until then, so package.json on the beta branch only matches
-  // post-merge. This must be captured before the stamp below, and it covers
-  // an initial prep that wrote no CHANGELOG section (only empty changesets
-  // were pending) — section existence alone misses that case.
+  // post-merge. Capture this before the stamp below.
   const alreadyPrepared = pkg.version === version;
 
   // debian/changelog must stay monotonic. If its top entry is already newer
@@ -250,9 +247,7 @@ function main() {
       );
     }
   } else {
-    if (entries.length > 0) {
-      prependChangelog(changelogPath, renderChangelogSection(version, entries));
-    }
+    prependChangelog(changelogPath, renderChangelogSection(version, entries));
     for (const file of files) {
       fs.unlinkSync(file);
     }
