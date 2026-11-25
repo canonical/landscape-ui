@@ -14,6 +14,16 @@ const viteIdToFilePath = (id: string) => cleanUrl(id).replace(/^\/@fs\//, "");
 // inside a test has no effect.
 process.env.TZ ??= "Europe/Berlin";
 
+// Test files that keep the classic `threads` pool. Under vmThreads, `window`
+// is the real jsdom window, so `vi.spyOn(window, "location", "get")` throws
+// "Cannot redefine property: location".
+const THREADS_POOL_TESTS = [
+  "src/components/layout/AppErrorBoundary/FallbackComponent.test.tsx",
+  "src/features/auth/helpers.test.ts",
+  "src/pages/auth/handle/oidc/OidcAuthPage/OidcAuthPage.test.tsx",
+  "src/pages/auth/handle/ubuntu-one/UbuntuOneAuthPage/UbuntuOneAuthPage.test.tsx",
+];
+
 export default defineConfig({
   test: {
     exclude: [
@@ -28,6 +38,7 @@ export default defineConfig({
     globals: true,
     globalSetup: [resolve(import.meta.dirname, "src/tests/global-setup.ts")],
     setupFiles: [
+      resolve(import.meta.dirname, "src/tests/setup-vm-globals.ts"),
       // Storage must be initialized before setup.ts imports MSW.
       resolve(import.meta.dirname, "src/tests/storage-setup.ts"),
       resolve(import.meta.dirname, "src/tests/setup.ts"),
@@ -50,8 +61,31 @@ export default defineConfig({
         replacement: resolve(import.meta.dirname, "src"),
       },
     ],
-    pool: "threads",
     testTimeout: 30000,
+    // Root-only option; affects the `vm` project. VM contexts leak memory in
+    // reused workers, and the default (RAM / workers) lets the pool take nearly
+    // all memory: recycle a worker once its heap passes this. "1GB" was ~20%
+    // faster but nearly doubled peak RSS (~10GB vs ~5.5GB at 8 workers).
+    vmMemoryLimit: "512MB",
+    // vmThreads reuses each worker and its jsdom import across test files
+    // (a fresh VM context per file keeps them isolated), instead of paying
+    // worker + environment start-up for every file as `threads` does.
+    projects: [
+      {
+        test: {
+          name: "vm",
+          pool: "vmThreads",
+          exclude: THREADS_POOL_TESTS,
+        },
+      },
+      {
+        test: {
+          name: "threads",
+          pool: "threads",
+          include: THREADS_POOL_TESTS,
+        },
+      },
+    ],
     server: {
       deps: {
         // Inline the Pragma barrel so Vite (not Node) transforms it: this lets
@@ -83,7 +117,7 @@ export default defineConfig({
         "**/tests/**",
         "**/*.config.*",
         "**/types/**",
-        "**/index.ts",
+        "**/index.{ts,tsx}",
         "**/_data.{ts,tsx}",
         "**/[.]**",
         "**/*.d.ts",

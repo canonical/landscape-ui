@@ -21,7 +21,7 @@ const resolveLoadableImport = async (Page: FC) => {
   try {
     lazyType._init(lazyType._payload);
   } catch (error) {
-    if (error instanceof Promise) {
+    if (typeof (error as PromiseLike<unknown>)?.then === "function") {
       await error;
       return;
     }
