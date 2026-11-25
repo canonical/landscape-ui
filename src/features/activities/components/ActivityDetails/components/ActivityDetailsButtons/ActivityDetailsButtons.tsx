@@ -104,7 +104,6 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
         <Button
           type="button"
           importance="secondary"
-          anticipation="destructive"
           disabled={isCancelingActivities}
           onClick={() => {
             setActiveModal("cancel");

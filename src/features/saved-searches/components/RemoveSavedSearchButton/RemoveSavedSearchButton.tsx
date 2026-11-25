@@ -50,7 +50,6 @@ const RemoveSavedSearchButton: FC<RemoveSavedSearchButtonProps> = ({
         type="button"
         title="Remove"
         importance="tertiary"
-        anticipation="destructive"
         icon="delete"
         aria-label={`Remove ${savedSearch.title} saved search`}
         onClick={openModal}
