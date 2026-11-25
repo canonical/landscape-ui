@@ -3,10 +3,7 @@ import type { GetUsnsParams } from "@/features/usns";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Usn } from "@/types/Usn";
 import { API_URL } from "@/constants";
-import {
-  getEndpointStatus,
-  normalizeEndpointPath,
-} from "@/tests/controllers/controller";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import { usnPackages, usns } from "@/tests/mocks/usn";
 import { activities } from "@/tests/mocks/activity";
 import {
@@ -26,22 +23,19 @@ export default [
       const search = url.searchParams.get("search") ?? "";
 
       if (shouldApplyEndpointStatus("usns")) {
-        const { status, path } = getEndpointStatus("usns");
+        const { status } = getEndpointStatus("usns");
         if (status === "empty") {
           return HttpResponse.json(
             generatePaginatedResponse<Usn>({ data: [], limit, offset }),
           );
         }
 
-        // Only a status targeted at this path, so global scenarios keep the list.
-        if (normalizeEndpointPath(path) === "usns") {
-          if (status === "error") {
-            throw createEndpointStatusError();
-          }
+        if (status === "error") {
+          throw createEndpointStatusError();
+        }
 
-          if (status === "loading") {
-            await delay("infinite");
-          }
+        if (status === "loading") {
+          await delay("infinite");
         }
       }
 
