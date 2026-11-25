@@ -6,12 +6,16 @@ import type { AxiosError, AxiosResponse } from "axios";
 import { getStaffAccountPath } from "./helpers";
 
 /** Gets the Livepatch information of an instance of the account named `name`. */
-export const useGetStaffLivepatchInfo = (name: string, instanceId: number) => {
+export const useGetStaffLivepatchInfo = (
+  name: string,
+  instanceId: number,
+  { enabled = true }: { enabled?: boolean } = {},
+) => {
   const authFetch = useFetch();
 
   const {
     data: response,
-    isPending,
+    isLoading,
     error,
   } = useQuery<AxiosResponse<LivepatchInformation>, AxiosError<ApiError>>({
     queryKey: ["staffLivepatchInfo", name, instanceId],
@@ -19,12 +23,12 @@ export const useGetStaffLivepatchInfo = (name: string, instanceId: number) => {
       authFetch.get(
         getStaffAccountPath(name, `computers/${instanceId}/livepatch/info`),
       ),
-    enabled: !!name && Number.isInteger(instanceId),
+    enabled: enabled && !!name && Number.isInteger(instanceId),
   });
 
   return {
     staffLivepatchInfo: response?.data,
-    isGettingStaffLivepatchInfo: isPending,
+    isGettingStaffLivepatchInfo: isLoading,
     staffLivepatchInfoError: error,
   };
 };

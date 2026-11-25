@@ -13,6 +13,7 @@ import {
   ubuntuInstance,
   windowsInstance,
 } from "@/tests/mocks/instance";
+import { buildLivepatchInfo, unsortedPatches } from "@/tests/mocks/kernel";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
@@ -106,8 +107,9 @@ const renderInstance = (path: string) => {
 const findInstanceHeading = async (title: string) =>
   screen.findByRole("heading", { name: title, level: 2 });
 
+// The first child is the label, without a count badge.
 const getTabNames = () =>
-  screen.getAllByRole("tab").map(({ textContent }) => textContent);
+  screen.getAllByRole("tab").map(({ firstChild }) => firstChild?.textContent);
 
 describe("SupportInstancePage (integration)", () => {
   const user = userEvent.setup();
@@ -197,6 +199,22 @@ describe("SupportInstancePage (integration)", () => {
     await findInstanceHeading(ubuntuInstance.title);
 
     expect(getTabNames()).toEqual(UBUNTU_TABS);
+  });
+
+  it("counts the Livepatch fixes in the Kernel tab", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "computers/:computerId/livepatch/info",
+      response: buildLivepatchInfo(),
+    });
+
+    renderInstance(ROUTES.superAdmin.sessionInstance(ACME, ubuntuInstance.id));
+
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: /^Kernel/ })).toHaveTextContent(
+        `Kernel${unsortedPatches.length}`,
+      );
+    });
   });
 
   it("has the tabs a Windows instance supports", async () => {

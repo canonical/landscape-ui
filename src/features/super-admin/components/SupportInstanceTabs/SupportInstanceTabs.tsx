@@ -1,9 +1,12 @@
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import LoadingState from "@/components/layout/LoadingState";
+import { getFeatures } from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
 import { Tabs } from "@canonical/react-components";
-import type { FC } from "react";
+import { Badge } from "@canonical/react-ds-global";
+import type { FC, ReactNode } from "react";
 import { Suspense } from "react";
+import { useGetStaffLivepatchInfo } from "../../api";
 import type { SupportInstanceTabProps } from "../../types";
 import { getSupportInstanceTabs } from "./constants";
 import classes from "./SupportInstanceTabs.module.scss";
@@ -16,6 +19,42 @@ const SupportInstanceTabs: FC<SupportInstanceTabProps> = ({
   instance,
 }) => {
   const { tab, setPageParams } = usePageParams();
+
+  const hasKernelCount =
+    getFeatures(instance).packages && !!instance.distribution;
+
+  const { staffLivepatchInfo, isGettingStaffLivepatchInfo } =
+    useGetStaffLivepatchInfo(name, instance.id, { enabled: hasKernelCount });
+
+  const [kernelStatus] =
+    staffLivepatchInfo?.livepatch_info?.json?.output?.Status ?? [];
+  const kernelCount = kernelStatus?.Livepatch?.Fixes?.length;
+
+  const getTabLabel = (id: string, label: string): ReactNode => {
+    if (id !== "kernel" || !hasKernelCount) {
+      return label;
+    }
+
+    if (isGettingStaffLivepatchInfo) {
+      return (
+        <>
+          <span>{label}</span>
+          <LoadingState inline />
+        </>
+      );
+    }
+
+    if (kernelCount) {
+      return (
+        <>
+          <span>{label}</span>
+          <Badge value={kernelCount} />
+        </>
+      );
+    }
+
+    return label;
+  };
 
   const tabs = getSupportInstanceTabs(instance);
   const [firstTab] = tabs;
@@ -34,7 +73,7 @@ const SupportInstanceTabs: FC<SupportInstanceTabProps> = ({
         listClassName="u-no-margin--bottom"
         links={tabs.map(({ id, label }) => ({
           id: getTabLinkId(id),
-          label,
+          label: getTabLabel(id, label),
           role: "tab",
           active: id === currentTab.id,
           onClick: () => {
