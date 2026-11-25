@@ -10,21 +10,32 @@ if [[ $(git rev-parse "refs/tags/${version}^{commit}") != "$sha" ]]; then
 fi
 
 # Main and beta use squash merges. A merged forward-port records the exact
-# source checkpoint as a trailer on its squash commit. The ancestor check
-# prevents a checkpoint from another beta cut from truncating this range.
+# source checkpoint as a trailer on its squash commit. Read the full commit
+# body because GitHub may append a Co-authored-by paragraph after the trailer.
+# Check all checkpoints before choosing the furthest-along ancestor of $sha.
 base=$main
-checkpoints=$(git log "$main" --format='%(trailers:key=Landscape-Beta-Source,valueonly,unfold)' \
-  --grep='^Landscape-Beta-Source: ')
+checkpoints=$(git log "$main" --format=%B --grep='^Landscape-Beta-Source: ' \
+  | sed -n 's/^Landscape-Beta-Source:[[:space:]]*\([^[:space:]]*\)[[:space:]]*$/\1/p')
 while IFS= read -r checkpoint; do
-  if [[ ! $checkpoint =~ ^[0-9a-f]{40}$ ]]; then continue; fi
-  if git merge-base --is-ancestor "$sha" "$checkpoint"; then
-    echo "Main already incorporates $version via checkpoint $checkpoint."
+  [[ -n "$checkpoint" ]] || continue
+  if [[ ! $checkpoint =~ ^[0-9a-fA-F]{7,40}$ ]]; then
+    echo "Warning: ignoring invalid Landscape-Beta-Source checkpoint '$checkpoint'." >&2
+    continue
+  fi
+  resolved=$(git rev-parse --verify -q "${checkpoint}^{commit}" || true)
+  if [[ -z "$resolved" ]]; then
+    echo "Warning: ignoring unresolved Landscape-Beta-Source checkpoint '$checkpoint'." >&2
+    continue
+  fi
+  if git merge-base --is-ancestor "$sha" "$resolved"; then
+    echo "Main already incorporates $version via checkpoint $resolved."
     git switch --create "beta-forward-port/$version" "$main"
     exit 0
   fi
-  if git merge-base --is-ancestor "$checkpoint" "$sha"; then
-    base=$checkpoint
-    break
+  if git merge-base --is-ancestor "$resolved" "$sha"; then
+    if [[ "$base" == "$main" ]] || git merge-base --is-ancestor "$base" "$resolved"; then
+      base=$resolved
+    fi
   fi
 done <<< "$checkpoints"
 
@@ -32,6 +43,12 @@ commits=$(git rev-list --reverse --first-parent "$sha" --not "$main" "$base")
 git switch --create "beta-forward-port/$version" "$main"
 while IFS= read -r commit; do
   [[ -n "$commit" ]] || continue
+  # Skip commits that are already empty (e.g., --allow-empty or no-op merges),
+  # since cherry-pick --empty=drop exits nonzero on originally empty commits.
+  if git rev-parse --verify -q "${commit}^1" > /dev/null \
+    && git diff --quiet "${commit}^1" "$commit"; then
+    continue
+  fi
   # Replay the changes that landed on the beta branch, including a merge
   # commit's net change if the branch was prepared outside GitHub.
   if ! git cherry-pick --empty=drop -m 1 "$commit"; then

@@ -40,7 +40,7 @@ Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual
 
 Runs `scripts/beta-version-update.cjs` and opens a `beta-prep/<version>` PR against the beta branch that rolls pending changesets into `CHANGELOG.md`, adds the `YY.MM~beta.N` stanza to `debian/changelog`, and sets `package.json` to `YY.MM-beta.N`. See `RELEASES.md` §5a.
 
-**Rule:** the Landscape Packager App opens prep PRs so standard checks run. `validate.yml` waives only the new Changeset requirement for this repository's `landscape-packager[bot]` PRs from `beta-prep/*` into `beta/*`. Prep writes the beta heading even when there are no summaries.
+**Rule:** the Landscape Packager App opens prep PRs so standard checks run. `validate.yml` waives only the new Changeset requirement for this repository's `landscape-packager[bot]` PRs (from `beta-prep/*` into `beta/*`, and `beta-forward-port/*` into `main`). Prep writes the beta heading even when there are no summaries.
 
 **Rule:** a re-run refuses to overwrite a `beta-prep/*` branch that has commits not made by the workflow (such as the release owner's CHANGELOG edits), and pushes with `--force-with-lease` against the state it checked. `scripts/beta-version-update.cjs` needs `dpkg` to keep `debian/changelog` in version order.
 

@@ -307,10 +307,15 @@ jobs:
             fi
             exit 0
           fi
+          if [[ -n $(git diff --name-only origin/main HEAD -- .github/workflows/) ]]; then
+            echo '::error::Forward-port modifies .github/workflows/, which the Packager App cannot push. Replay these commits in a manual PR to main.'
+            echo "Keep this trailer in the squash commit: Landscape-Beta-Source: $SHA"
+            exit 1
+          fi
           if git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
             previous=$(git rev-parse "origin/$BRANCH")
             if git log --format=%ce "origin/main..$previous" | grep -Fxv "$BOT_EMAIL" > /dev/null; then
-              echo 'Forward-port branch has manual changes; update its PR by hand.'
+              echo 'Forward-port branch has non-bot commits (including manual edits or GitHub "Update branch"); update its PR by hand.'
               exit 1
             fi
             if ! git diff --quiet "$previous" HEAD || ! git merge-base --is-ancestor origin/main "$previous"; then

@@ -231,6 +231,55 @@ class ForwardPortHistory(BetaRepo):
         self.assertEqual(self.git("rev-parse", BASE), built)
         self.assertEqual(self.git("rev-parse", "main"), main)
 
+    def test_coauthor_trailer_empty_commit_short_sha_and_out_of_order_checkpoints(self):
+        self.commit("cut")
+        self.git("switch", "-qc", f"beta/{BASE}")
+        self.stamp(BASE, DEBIAN)
+        self.commit("prepare beta")
+        first = self.git("rev-parse", "HEAD")
+        self.git("commit", "--allow-empty", "-qm", "retrigger CI")
+        self.stamp(f"{BASE}.1", "27.04~beta.3.1-0landscape0")
+        self.commit("respin 1")
+        second = self.git("rev-parse", "HEAD")
+        self.git("tag", f"{BASE}.1", second)
+
+        # Replay with an originally empty commit on the beta branch.
+        self.cmd("bash", str(SCRIPTS / "forward-port-beta.sh"), f"{BASE}.1", second, "main")
+        self.assertEqual(
+            self.git("log", "--reverse", "--format=%s", "main..HEAD").splitlines(),
+            ["prepare beta", "respin 1"],
+        )
+
+        # GitHub squash-merge appends a Co-authored-by paragraph after the trailer,
+        # and a hand-written recovery PR may record a short SHA.
+        self.git("switch", "-q", "main")
+        self.git("merge", "--squash", f"beta-forward-port/{BASE}.1")
+        short_second = second[:12]
+        self.git(
+            "commit", "-qm",
+            f"forward-port\n\nLandscape-Beta-Source: {short_second}\n\n"
+            "---------\n\nCo-authored-by: Dev <dev@example.org>",
+        )
+
+        # Simulate an out-of-order merge on main that records an older checkpoint
+        # after the newer checkpoint.
+        self.git("commit", "--allow-empty", "-qm", f"late merge\n\nLandscape-Beta-Source: {first}")
+
+        # A later respin must still pick the furthest-along checkpoint (second), not first.
+        self.git("switch", "-q", f"beta/{BASE}")
+        self.stamp(f"{BASE}.2", "27.04~beta.3.2-0landscape0")
+        self.commit("respin 2")
+        third = self.git("rev-parse", "HEAD")
+        self.git("tag", f"{BASE}.2", third)
+        self.cmd("bash", str(SCRIPTS / "forward-port-beta.sh"), f"{BASE}.2", third, "main")
+        self.assertEqual(self.git("log", "--format=%s", "main..HEAD"), "respin 2")
+
+        # Retrying an older tag must still recognize it is already incorporated
+        # via the newer checkpoint further down main's history.
+        self.git("tag", BASE, first)
+        self.cmd("bash", str(SCRIPTS / "forward-port-beta.sh"), BASE, first, "main")
+        self.assertEqual(self.git("rev-parse", "HEAD"), self.git("rev-parse", "main"))
+
 
 class LaunchpadRehearsal(unittest.TestCase):
     def setUp(self):
