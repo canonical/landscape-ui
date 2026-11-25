@@ -8,6 +8,7 @@ import { Outlet } from "react-router";
 import { describe, expect, it } from "vitest";
 import { GuestGuard } from "@/components/guards/GuestGuard";
 import { FeatureGuard } from "@/components/guards/FeatureGuard";
+import { PasswordRecoveryGuard } from "@/features/password-reset";
 import { PATHS } from "@/libs/routes";
 import { AuthRoutes } from "./AuthRoutes";
 
@@ -29,7 +30,7 @@ const getRouteChildren = (element: ReactElement<RouteLikeProps>) => {
 const getGuestRoutes = () => {
   const guardedRoute = getRouteChildren(
     AuthRoutes as ReactElement<RouteLikeProps>,
-  ).find((route) => !route.props.path);
+  ).find((route) => route.props.element?.type === GuestGuard);
   assert(guardedRoute);
   return guardedRoute;
 };
@@ -89,5 +90,22 @@ describe("AuthRoutes", () => {
       ),
     ).toBe(true);
     expect(getRouteChildren(getGuestRoutes()).some(isInvitation)).toBe(false);
+  });
+
+  it("places password recovery routes under the recovery guard", () => {
+    const recoveryRoute = getRouteChildren(
+      AuthRoutes as ReactElement<RouteLikeProps>,
+    ).find((route) => route.props.element?.type === PasswordRecoveryGuard);
+    assert(recoveryRoute?.props.element);
+    const recoveryWrapper = recoveryRoute.props.element as ReactElement<{
+      children: ReactElement;
+    }>;
+    expect(recoveryWrapper.props.children.type).toBe(Outlet);
+    const paths = getRouteChildren(recoveryRoute).map(
+      (route) => route.props.path,
+    );
+    expect(paths).toContain(PATHS.auth.forgotPassword);
+    expect(paths).toContain(PATHS.auth.resetPassword);
+    expect(paths).toContain(PATHS.auth.resetPasswordWithoutToken);
   });
 });
