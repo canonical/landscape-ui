@@ -89,7 +89,6 @@ const PackageProfileConstraintsEditFormActions: FC<
       <Button
         type="button"
         importance="secondary"
-        anticipation="destructive"
         icon="delete"
         disabled={selectedIds.length === 0 || formik.values.id !== 0}
         aria-label={`Remove selected ${pluralize(selectedIds.length, ["constraint"])}`}

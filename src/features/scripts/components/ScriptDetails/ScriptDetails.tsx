@@ -162,7 +162,6 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
           <Button
             type="button"
             importance="secondary"
-            anticipation="destructive"
             icon="archive"
             onClick={openModal}
             aria-label={`Archive ${script?.title}`}
@@ -174,7 +173,6 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
           <Button
             type="button"
             importance="secondary"
-            anticipation="destructive"
             icon="delete"
             onClick={openDeleteModal}
             aria-label={`Redact ${script?.title}`}

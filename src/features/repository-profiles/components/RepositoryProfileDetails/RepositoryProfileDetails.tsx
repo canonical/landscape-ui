@@ -114,7 +114,6 @@ const RepositoryProfileDetails: FC = () => {
           <Button
             type="button"
             importance="secondary"
-            anticipation="destructive"
             icon="delete"
             onClick={openModal}
             aria-label={`Remove ${profile.title}`}
