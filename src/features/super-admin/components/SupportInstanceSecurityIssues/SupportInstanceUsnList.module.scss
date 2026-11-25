@@ -1,0 +1,21 @@
+@import "vanilla-framework/scss/settings_colors";
+
+.expandButton {
+  background-color: $color-transparent;
+  z-index: var(--z-below) !important;
+
+  &[aria-expanded="true"] {
+    background-color: inherit;
+    font-weight: 550;
+  }
+}
+
+.cve {
+  &:not(:last-child)::after {
+    content: ", ";
+  }
+}
+
+.cveLink {
+  text-wrap: nowrap;
+}

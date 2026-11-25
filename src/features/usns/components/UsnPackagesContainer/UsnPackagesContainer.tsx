@@ -1,5 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { useUsns } from "@/features/usns";
+import { Icon } from "@canonical/react-components";
 import type { Instance } from "@/types/Instance";
 import type { UrlParams } from "@/types/UrlParams";
 import type { FC } from "react";
@@ -7,6 +8,7 @@ import { useState } from "react";
 import { useParams } from "react-router";
 import UsnInstanceList from "../UsnInstanceList";
 import UsnPackageList from "../UsnPackageList";
+import classes from "./UsnPackagesContainer.module.scss";
 
 interface UsnPackagesContainerProps {
   readonly instances: Instance[];
@@ -30,6 +32,7 @@ const UsnPackagesContainer: FC<UsnPackagesContainerProps> = ({
   const {
     data: getAffectedPackagesQueryResult,
     isLoading: getAffectedPackagesQueryLoading,
+    error: getAffectedPackagesQueryError,
   } = getAffectedPackagesQuery(
     {
       usn,
@@ -39,6 +42,15 @@ const UsnPackagesContainer: FC<UsnPackagesContainerProps> = ({
   );
 
   const usnPackages = getAffectedPackagesQueryResult?.data ?? [];
+
+  if (getAffectedPackagesQueryError) {
+    return (
+      <span className={classes.error}>
+        <Icon name="error" />
+        Could not load the affected packages.
+      </span>
+    );
+  }
 
   if (getAffectedPackagesQueryLoading) {
     return <LoadingState />;
