@@ -46,13 +46,15 @@ Runs `scripts/beta-version-update.cjs` and opens a `beta-prep/<version>` PR agai
 
 ## Beta Release and PPA Build (`beta-release.yml`)
 
-**Trigger:** push → `beta/**`. One decision routes an unprepared branch to prep, a prepared untagged version to publication, or an already tagged version to skip. Publication validates the exact UI heading and Debian version, builds `/portal/` once and retains the dist and source artifacts for 30 days. It does not open a Version Packages PR.
+**Trigger:** push → `beta/**`; manual dispatch for the daily PPA rehearsal. A beta push routes an unprepared branch to prep, a prepared untagged version to publication, or an already tagged version to skip. Publication validates the exact UI heading and Debian version, builds `/portal/` once and retains the dist and source artifacts for 30 days. It does not open a Version Packages PR.
 
-`beta-series-upload.yml` signs uploads with `LAUNCHPAD_GPG_PRIVATE_KEY` and checks Launchpad for source acceptance, including after an ambiguous `dput` result. Jammy acceptance precedes Noble and Resolute uploads. Recover using **Re-run failed jobs** on the original run; accepted uploads must match that run and SHA.
+The workflow signs and uploads only the Jammy source with `LAUNCHPAD_GPG_PRIVATE_KEY`. It checks Launchpad for acceptance even after an ambiguous `dput` result; the accepted upload must match the original run and SHA.
 
-Direct uploads do not need inbox access. Leave `LAUNCHPAD_VERIFY_REJECTION_EMAIL` unset until a throwaway PPA confirms that a cross-series duplicate notification includes enough information to match the exact attempt. When enabled, the workflow uses `LAUNCHPAD_IMAP_HOST`, `LAUNCHPAD_IMAP_USER`, `LAUNCHPAD_IMAP_PASSWORD` and `LAUNCHPAD_COPY_CREDENTIALS` to copy only on a confirmed cross-series duplicate. Otherwise the release owner checks the rejection, copies the exact published Jammy binary to missing series if appropriate, and reruns the failed jobs. Do not copy on an unexplained timeout or signing failure.
+After the Jammy binary publishes, the workflow uses `LAUNCHPAD_COPY_CREDENTIALS` to copy existing binaries within the same PPA to missing Noble and Resolute series. It verifies the exact version and Jammy build identity in both destinations before tagging. If copy credentials are unavailable, the release owner can copy existing binaries in Launchpad and **Re-run failed jobs** on the original run to verify them. Inbox access is not needed.
 
-The tag follows source acceptance or copy for all series. `beta-sbom.yml` scans the exact build SHA in parallel and retains a version-and-SHA-specific SPDX artifact for 90 days; it is not a tag dependency. Run `python3 scripts/test-beta-release.py` for local routing and publication checks.
+**Daily PPA rehearsal:** Once the workflow is available for manual dispatch, select the reviewed ref and dispatch **Beta Release and PPA Build**. Dispatch uses a run-ID version of `landscape-dashboard-rehearsal` so it cannot replace the daily dashboard. All Launchpad operations target `landscape/self-hosted-daily`; the rehearsal skips the asset push and release tag. Select **exercise-retry** to fail once after Jammy acceptance. Use **Re-run failed jobs** on that same run: check the retained `beta-source` artifact ID and digest and compare the logged source file checksums across attempts. Confirm signing and upload are skipped because Launchpad already accepted the original run's source, then verify both copies.
+
+`beta-sbom.yml` scans the exact build SHA in parallel and retains a version-and-SHA-specific SPDX artifact for 90 days; it is not a tag dependency. Run `python3 scripts/test-beta-release.py` for local routing and publication checks.
 
 ## Release and PPA Build (`release-and-build.yml`)
 

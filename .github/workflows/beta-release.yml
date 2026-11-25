@@ -3,12 +3,18 @@ name: Beta Release and PPA Build
 on:
   push:
     branches: ["beta/**"]
+  workflow_dispatch:
+    inputs:
+      exercise-retry:
+        description: Fail the first attempt after Jammy accepts, to rehearse recovery on this run
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: ${{ github.event_name == 'workflow_dispatch' && 'beta-ppa-rehearsal' || 'release' }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -20,14 +26,20 @@ jobs:
       deb-version: ${{ steps.version.outputs.deb-version }}
       marker: ${{ steps.version.outputs.marker }}
       sha: ${{ steps.version.outputs.sha }}
+      ppa: ${{ steps.version.outputs.ppa }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: 26
-      - name: Validate beta metadata
+      - name: Resolve publication metadata
         id: version
-        run: node scripts/beta-release-version.cjs
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+            node scripts/beta-release-version.cjs --rehearsal
+          else
+            node scripts/beta-release-version.cjs
+          fi
 
   prepare:
     needs: route
@@ -56,7 +68,8 @@ jobs:
         env:
           VERSION: ${{ needs.route.outputs.deb-version }}
           MARKER: ${{ needs.route.outputs.marker }}
-        run: python3 scripts/launchpad-beta.py preflight "$VERSION" --marker "$MARKER"
+          PPA: ${{ needs.route.outputs.ppa }}
+        run: python3 scripts/launchpad-beta.py preflight "$VERSION" --ppa "$PPA" --marker "$MARKER"
       - uses: pnpm/setup@v3
         if: steps.retained.outputs.id == ''
         with:
@@ -84,6 +97,7 @@ jobs:
 
   publish-assets:
     needs: [route, build]
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -140,7 +154,7 @@ jobs:
         with:
           name: beta-dist
           path: dist/
-      - name: Prepare source packages
+      - name: Prepare Jammy source package
         if: steps.retained.outputs.id == ''
         env:
           DEB_VERSION: ${{ needs.route.outputs.deb-version }}
@@ -159,69 +173,71 @@ jobs:
 
   upload-jammy:
     needs: [route, package-source, publish-assets]
-    uses: ./.github/workflows/beta-series-upload.yml
-    with:
-      series: jammy
-      version: ${{ needs.route.outputs.deb-version }}
-      marker: ${{ needs.route.outputs.marker }}
-    secrets:
-      signing-key: ${{ secrets.LAUNCHPAD_GPG_PRIVATE_KEY }}
-
-  upload-noble:
-    needs: [route, upload-jammy]
-    if: needs.upload-jammy.outputs.result == 'accepted'
-    uses: ./.github/workflows/beta-series-upload.yml
-    with:
-      series: noble
-      version: ${{ needs.route.outputs.deb-version }}
-      marker: ${{ needs.route.outputs.marker }}
-    secrets:
-      signing-key: ${{ secrets.LAUNCHPAD_GPG_PRIVATE_KEY }}
-      imap-password: ${{ secrets.LAUNCHPAD_IMAP_PASSWORD }}
-
-  upload-resolute:
-    needs: [route, upload-jammy]
-    if: needs.upload-jammy.outputs.result == 'accepted'
-    uses: ./.github/workflows/beta-series-upload.yml
-    with:
-      series: resolute
-      version: ${{ needs.route.outputs.deb-version }}
-      marker: ${{ needs.route.outputs.marker }}
-    secrets:
-      signing-key: ${{ secrets.LAUNCHPAD_GPG_PRIVATE_KEY }}
-      imap-password: ${{ secrets.LAUNCHPAD_IMAP_PASSWORD }}
-
-  resolve-publication:
-    needs: [route, upload-jammy, upload-noble, upload-resolute]
+    if: >-
+      !cancelled() && needs.route.result == 'success' && needs.package-source.result == 'success' &&
+      ((github.event_name == 'workflow_dispatch' && needs.publish-assets.result == 'skipped') ||
+       (github.event_name == 'push' && needs.publish-assets.result == 'success'))
     runs-on: ubuntu-latest
-    timeout-minutes: 110
-    env:
-      NOBLE: ${{ needs.upload-noble.outputs.result }}
-      RESOLUTE: ${{ needs.upload-resolute.outputs.result }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
     steps:
-      - name: Check direct upload outcomes
-        run: |
-          [[ '${{ needs.upload-jammy.outputs.result }}' == accepted ]]
-          [[ "$NOBLE" == accepted || "$NOBLE" == copy ]]
-          [[ "$RESOLUTE" == accepted || "$RESOLUTE" == copy ]]
       - uses: actions/checkout@v5
-        if: env.NOBLE == 'copy' || env.RESOLUTE == 'copy'
         with:
           persist-credentials: false
-      - name: Copy from Jammy only where direct upload was rejected
-        if: env.NOBLE == 'copy' || env.RESOLUTE == 'copy'
+      - name: Find the original upload inputs on retry
+        id: retained
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/find-beta-artifact.sh beta-source package-source
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ steps.retained.outputs.id == '' && 'beta-source' || '' }}
+          artifact-ids: ${{ steps.retained.outputs.id }}
+          github-token: ${{ steps.retained.outputs.id != '' && github.token || '' }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/beta-source
+      - name: Record source artifact checksums
+        run: sha256sum "$RUNNER_TEMP"/beta-source/jammy/*
+      - name: Install signing and upload tools
+        run: sudo apt-get update && sudo apt-get install -y devscripts dput
+      - name: Sign, upload and check Launchpad acceptance
         env:
           VERSION: ${{ needs.route.outputs.deb-version }}
+          MARKER: ${{ needs.route.outputs.marker }}
+          PPA: ${{ needs.route.outputs.ppa }}
+          GPG_PRIVATE_KEY: ${{ secrets.LAUNCHPAD_GPG_PRIVATE_KEY }}
+        run: python3 scripts/launchpad-beta.py upload "$VERSION" --ppa "$PPA" --marker "$MARKER" --directory "$RUNNER_TEMP/beta-source"
+      - name: Exercise recovery after Jammy acceptance
+        if: github.event_name == 'workflow_dispatch' && inputs.exercise-retry && github.run_attempt == '1'
+        run: |
+          echo '::error::Intentional rehearsal failure after Jammy acceptance. Rerun this original run.'
+          exit 1
+
+  resolve-publication:
+    needs: [route, upload-jammy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Copy the published Jammy binary and verify both destinations
+        env:
+          VERSION: ${{ needs.route.outputs.deb-version }}
+          MARKER: ${{ needs.route.outputs.marker }}
+          PPA: ${{ needs.route.outputs.ppa }}
           LAUNCHPAD_COPY_CREDENTIALS: ${{ secrets.LAUNCHPAD_COPY_CREDENTIALS }}
         run: |
-          sudo apt-get update && sudo apt-get install -y python3-launchpadlib
-          targets=()
-          if [[ "$NOBLE" == copy ]]; then targets+=(noble); fi
-          if [[ "$RESOLUTE" == copy ]]; then targets+=(resolute); fi
-          /usr/bin/python3 scripts/launchpad-beta.py copy "$VERSION" "${targets[@]}"
+          if [[ -n "$LAUNCHPAD_COPY_CREDENTIALS" ]]; then
+            sudo apt-get update && sudo apt-get install -y python3-launchpadlib
+          fi
+          /usr/bin/python3 scripts/launchpad-beta.py copy "$VERSION" --ppa "$PPA" --marker "$MARKER"
 
   tag:
     needs: [route, resolve-publication]
+    if: github.event_name == 'push' && needs.route.outputs.ppa == 'landscape/self-hosted-beta'
     runs-on: ubuntu-latest
     permissions:
       contents: write
