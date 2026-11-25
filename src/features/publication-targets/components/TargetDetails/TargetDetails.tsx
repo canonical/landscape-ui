@@ -148,7 +148,6 @@ const TargetDetails: FC = () => {
           <Button
             type="button"
             importance="secondary"
-            anticipation="destructive"
             icon="delete"
             onClick={handleRemoveTarget}
           >

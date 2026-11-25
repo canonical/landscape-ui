@@ -60,12 +60,8 @@ describe("TargetDetails", () => {
       const removeButton = screen.getByRole("button", { name: /remove/i });
       expect(editButton).toHaveClass("ds", "button", "secondary");
       expect(editButton).toHaveIcon("edit");
-      expect(removeButton).toHaveClass(
-        "ds",
-        "button",
-        "secondary",
-        "destructive",
-      );
+      expect(removeButton).toHaveClass("ds", "button", "secondary");
+      expect(removeButton).not.toHaveClass("destructive");
       expect(removeButton).toHaveIcon("delete");
     });
 

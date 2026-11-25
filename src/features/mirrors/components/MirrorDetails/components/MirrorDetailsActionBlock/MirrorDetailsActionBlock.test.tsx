@@ -44,12 +44,8 @@ describe("MirrorDetailsActionBlock", () => {
     expect(updateButton).toHaveIcon("restart");
     expect(publishButton).toHaveClass("ds", "button", "secondary");
     expect(publishButton).toHaveIcon("upload");
-    expect(removeButton).toHaveClass(
-      "ds",
-      "button",
-      "secondary",
-      "destructive",
-    );
+    expect(removeButton).toHaveClass("ds", "button", "secondary");
+    expect(removeButton).not.toHaveClass("destructive");
     expect(removeButton).toHaveIcon("delete");
   });
 

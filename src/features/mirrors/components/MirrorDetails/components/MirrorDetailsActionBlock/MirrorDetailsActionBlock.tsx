@@ -111,7 +111,6 @@ const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
         <Button
           type="button"
           importance="secondary"
-          anticipation="destructive"
           icon="delete"
           onClick={openRemoveModal}
         >
