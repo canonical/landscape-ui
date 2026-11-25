@@ -79,9 +79,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({
 
   const children = (
     <>
-      <div className={classes.actions}>
-        <ActivityDetailsButtons activity={activity} onClose={onClose} />
-      </div>
+      <ActivityDetailsButtons activity={activity} onClose={onClose} />
 
       <Blocks>
         <Blocks.Item>

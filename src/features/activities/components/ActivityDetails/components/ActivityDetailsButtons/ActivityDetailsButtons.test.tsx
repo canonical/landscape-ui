@@ -22,6 +22,20 @@ describe("ActivityDetailsButtons", () => {
       <ActivityDetailsButtons activity={activity} onClose={vi.fn()} />,
     );
 
+  it("renders no action bar or buttons when no actions are available", () => {
+    const noActionsActivity = {
+      ...mockActivity,
+      actions: {
+        approvable: false,
+        cancelable: false,
+        reappliable: false,
+      },
+    };
+    const { container } = renderButtons(noActionsActivity);
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(container.querySelector("div")).toBeNull();
+  });
+
   it.each([
     { action: "Approve", confirm: "Approve" },
     { action: "Cancel", confirm: "Confirm" },

@@ -1,3 +1,4 @@
+import { ActionBar } from "@/components/ui";
 import {
   useApproveActivities,
   useCancelActivities,
@@ -9,7 +10,6 @@ import useNotify from "@/hooks/useNotify";
 import { ConfirmationModal } from "@canonical/react-components";
 import { Button } from "@canonical/react-ds-global";
 import { useState, type FC } from "react";
-import classes from "./ActivityDetailsButtons.module.scss";
 
 interface ActivityDetailsButtonsProps {
   readonly activity: Activity;
@@ -86,45 +86,55 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
     }
   };
 
+  const hasActions = Boolean(
+    activity.actions?.approvable ||
+    activity.actions?.cancelable ||
+    activity.actions?.reappliable,
+  );
+
   return (
-    <div key="buttons" className={classes.actions}>
-      {activity.actions?.approvable && (
-        <Button
-          type="button"
-          importance="secondary"
-          disabled={isApprovingActivities}
-          onClick={() => {
-            setActiveModal("approve");
-          }}
-        >
-          Approve
-        </Button>
-      )}
-      {activity.actions?.cancelable && (
-        <Button
-          type="button"
-          importance="secondary"
-          disabled={isCancelingActivities}
-          onClick={() => {
-            setActiveModal("cancel");
-          }}
-        >
-          {!activity.actions?.approvable && !activity.actions?.reappliable
-            ? "Cancel activity"
-            : "Cancel"}
-        </Button>
-      )}
-      {activity.actions?.reappliable && (
-        <Button
-          type="button"
-          importance="secondary"
-          disabled={isRedoingActivities}
-          onClick={() => {
-            setActiveModal("redo");
-          }}
-        >
-          Redo
-        </Button>
+    <>
+      {hasActions && (
+        <ActionBar>
+          {activity.actions?.approvable && (
+            <Button
+              type="button"
+              importance="secondary"
+              disabled={isApprovingActivities}
+              onClick={() => {
+                setActiveModal("approve");
+              }}
+            >
+              Approve
+            </Button>
+          )}
+          {activity.actions?.cancelable && (
+            <Button
+              type="button"
+              importance="secondary"
+              disabled={isCancelingActivities}
+              onClick={() => {
+                setActiveModal("cancel");
+              }}
+            >
+              {!activity.actions?.approvable && !activity.actions?.reappliable
+                ? "Cancel activity"
+                : "Cancel"}
+            </Button>
+          )}
+          {activity.actions?.reappliable && (
+            <Button
+              type="button"
+              importance="secondary"
+              disabled={isRedoingActivities}
+              onClick={() => {
+                setActiveModal("redo");
+              }}
+            >
+              Redo
+            </Button>
+          )}
+        </ActionBar>
       )}
       {activeModal === "approve" && (
         <ConfirmationModal
@@ -174,7 +184,7 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
           </p>
         </ConfirmationModal>
       )}
-    </div>
+    </>
   );
 };
 
