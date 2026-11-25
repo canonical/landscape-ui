@@ -113,6 +113,8 @@ describe("RepositoryProfileDetails", () => {
   it("renders NO_DATA_TEXT in Fingerprint column when source has no gpg_key", async () => {
     renderDetails(profileWithNoGpgKey);
 
-    expect(await screen.findByText("---")).toBeInTheDocument();
+    expect(
+      await screen.findByRole("cell", { name: "---" }),
+    ).toBeInTheDocument();
   });
 });

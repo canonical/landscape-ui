@@ -141,7 +141,9 @@ describe("TargetDetails", () => {
     it("shows publications when target has publications", async () => {
       await renderTarget(targetWithPublications);
 
-      expect(await screen.findByText(firstPubName)).toBeInTheDocument();
+      expect(
+        await screen.findByRole("link", { name: firstPubName }),
+      ).toBeInTheDocument();
     });
 
     it("shows empty table when target has no publications", async () => {

@@ -403,9 +403,13 @@ describe("PackageDropdownSearch", () => {
 
       await user.type(screen.getByRole("searchbox"), "query");
 
-      expect(
-        await screen.findByText(`package-0 ${availablePackages[0].version}`),
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          within(screen.getByRole("listbox")).getByText(
+            `package-0 ${availablePackages[0].version}`,
+          ),
+        ).toBeInTheDocument();
+      });
 
       await new Promise((resolve) => setTimeout(resolve, settleDelayMs));
       expect(requestedOffsets).toEqual([0]);
@@ -414,11 +418,13 @@ describe("PackageDropdownSearch", () => {
       assert(suggestions);
       scrollToBottom(suggestions);
 
-      expect(
-        await screen.findByText(
-          `package-${QUERY_LIMIT} ${availablePackages[0].version}`,
-        ),
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          within(screen.getByRole("listbox")).getByText(
+            `package-${QUERY_LIMIT} ${availablePackages[0].version}`,
+          ),
+        ).toBeInTheDocument();
+      });
       expect(requestedOffsets).toEqual([0, QUERY_LIMIT]);
     });
   });
