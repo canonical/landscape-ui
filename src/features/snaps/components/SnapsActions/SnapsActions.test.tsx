@@ -40,6 +40,7 @@ const tableSnapButtons = [
   "Change channel",
 ];
 const formHeldSnapButtons = [
+  "Hold",
   "Unhold",
   "Uninstall",
   "Refresh",
@@ -205,6 +206,9 @@ describe("SnapsActions", () => {
       );
 
       expect(container).toHaveTexts(formHeldSnapButtons);
+      expect(screen.getByRole("button", { name: "Hold" })).not.toHaveAttribute(
+        "aria-disabled",
+      );
     });
 
     it("renders correct buttons for unheld snap in sidepanel", () => {
@@ -218,6 +222,9 @@ describe("SnapsActions", () => {
       );
 
       expect(container).toHaveTexts(formUnheldSnapButtons);
+      expect(
+        screen.queryByRole("button", { name: "Unhold" }),
+      ).not.toBeInTheDocument();
     });
 
     it("renders an enabled change channel button for multiple snaps", () => {

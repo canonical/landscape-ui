@@ -170,19 +170,18 @@ const SnapsActions: FC<SnapsActionProps> = ({
             <Icon name="close" />
             <span>Uninstall</span>
           </Button>,
-          (singleSnap?.held_until === null || !sidePanel) && (
-            <Button
-              key="hold"
-              type="button"
-              className="p-segmented-control__button has-icon u-no-margin--bottom"
-              disabled={selectedSnaps.length === 0}
-              onClick={handleHold}
-              hasIcon
-            >
-              <Icon name="pause" />
-              <span>Hold</span>
-            </Button>
-          ),
+          // Holding a held snap replaces its hold with an indefinite one
+          <Button
+            key="hold"
+            type="button"
+            className="p-segmented-control__button has-icon u-no-margin--bottom"
+            disabled={selectedSnaps.length === 0}
+            onClick={handleHold}
+            hasIcon
+          >
+            <Icon name="pause" />
+            <span>Hold</span>
+          </Button>,
           (singleSnap?.held_until !== null || !sidePanel) && (
             <Button
               key="unhold"
