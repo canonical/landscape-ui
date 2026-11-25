@@ -148,7 +148,9 @@ A beta branch is cut once per pulse, named for the `landscape-server` beta it sh
 
 **Publication and recovery.** The beta build waits for Launchpad to accept the signed Jammy source before uploading to Noble and Resolute. If Launchpad confirms a cross-series duplicate, copy the exact published Jammy binary to the missing series and rerun the original failed jobs. CI can do the copy once the rejection-mail path is verified and enabled. For a transient failure, use **Re-run failed jobs** on the original Actions run to reuse its source artifacts. For a transient Launchpad build failure, request a rebuild in Launchpad first. For a source defect, cut a new upstream respin on the same beta branch; do not reuse an accepted version or change only its Debian revision.
 
-**Tag and hand-off.** CI tags the exact built SHA with the dash-form version after each series has accepted the source or received a copy. Check the beta PPA for the exact installable Debian binary in Jammy, Noble, and Resolute before handing off to the server release owner. Until [LNDENG-5872](https://warthogs.atlassian.net/browse/LNDENG-5872) lands, name a UI release owner to forward-port the tagged cut manually before the next beta.
+**Tag and hand-off.** CI tags the exact built SHA with the dash-form version after each series has accepted the source or received a copy. Check the beta PPA for the exact installable Debian binary in Jammy, Noble, and Resolute before handing off to the server release owner.
+
+**Forward-port.** After tagging, CI opens a PR to `main` with missing prep and respin commits in order, even if earlier attempts never tagged. Squash-merge with `Landscape-Beta-Source: <tagged SHA>` in the commit message so later respins start at that checkpoint. If automation reports a conflict, replay the missing commits in a manual PR, preserve later Changesets on `main`, and keep the same trailer. Add an empty Changeset if the manual PR adds none. Close any stale PR for a cut already incorporated by a newer checkpoint. The published package and tag do not need to be recreated.
 
 ## 6. UI Version Identification
 

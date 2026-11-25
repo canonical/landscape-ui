@@ -29,7 +29,7 @@ def stanza(version):
     )
 
 
-class VersionsAndHistory(unittest.TestCase):
+class BetaRepo(unittest.TestCase):
     def setUp(self):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
@@ -66,6 +66,8 @@ class VersionsAndHistory(unittest.TestCase):
         self.write("CHANGELOG.md", f"## {heading or ui}\n\n" + (self.root / "CHANGELOG.md").read_text())
         self.write("debian/changelog", stanza(deb) + (self.root / "debian/changelog").read_text())
 
+
+class VersionsAndRouting(BetaRepo):
     def test_exact_metadata_and_server_floor(self):
         self.commit("cut")
         self.assertEqual(self.version(f"beta/{BASE}"), "")
@@ -118,6 +120,68 @@ class VersionsAndHistory(unittest.TestCase):
         self.assertEqual(route(), {"decision": "skip", "version": version})
         self.assertEqual(self.git("tag", "--list"), version)
         self.assertEqual(self.git("rev-parse", version + "^{commit}"), built)
+
+
+class ForwardPortHistory(BetaRepo):
+    def test_second_respin_is_first_tag(self):
+        self.write(".changeset/cut.md", '---\n"landscape-ui": patch\n---\n\nOriginal cut note.\n')
+        self.write(".changeset/README.md", "Keep this.\n")
+        self.commit("cut")
+        self.git("switch", "-qc", f"beta/{BASE}")
+        self.cmd("node", "scripts/beta-version-update.cjs", f"beta/{BASE}")
+        self.commit("prepare original beta")
+        for respin in (1, 2):
+            self.write(f"fix-{respin}", f"Fix {respin}\n")
+            self.stamp(f"{BASE}.{respin}", f"27.04~beta.3.{respin}-0landscape0")
+            self.commit(f"fix and stamp respin {respin}")
+        version = self.version(f"beta/{BASE}")
+        built = self.git("rev-parse", "HEAD")
+        self.git("tag", version, built)
+        self.git("switch", "-q", "main")
+        self.write(".changeset/later.md", "Later main work.\n")
+        self.commit("later main work")
+        self.cmd("bash", str(SCRIPTS / "forward-port-beta.sh"), version, built, "main")
+        self.assertEqual(self.git("tag", "--list"), BASE + ".2")
+        self.assertEqual(self.git("rev-parse", version), built)
+        self.assertEqual(self.git("log", "--reverse", "--format=%s", "main..HEAD").splitlines(), [
+            "prepare original beta", "fix and stamp respin 1", "fix and stamp respin 2",
+        ])
+        self.assertEqual(self.git("diff", "--name-status", "main", "--", ".changeset"), "D\t.changeset/cut.md")
+        self.assertEqual(self.git("diff", "--exit-code", built, "HEAD", "--", "CHANGELOG.md", "debian/changelog", "package.json", "fix-1", "fix-2"), "")
+        self.assertIn("Original cut note.", (self.root / "CHANGELOG.md").read_text())
+
+        self.git("switch", "-q", "main")
+        self.git("merge", "--squash", f"beta-forward-port/{version}")
+        self.git("commit", "-qm", f"forward-port\n\nLandscape-Beta-Source: {built}")
+        self.git("switch", "-q", f"beta/{BASE}")
+        self.stamp(f"{BASE}.3", "27.04~beta.3.3-0landscape0")
+        self.commit("respin after squash")
+        self.git("tag", f"{BASE}.3")
+        self.cmd("bash", str(SCRIPTS / "forward-port-beta.sh"), f"{BASE}.3", self.git("rev-parse", "HEAD"), "main")
+        self.assertEqual(self.git("log", "--format=%s", "main..HEAD"), "respin after squash")
+
+        # A retry for an older tag must not replay over a newer checkpoint.
+        older = self.git("rev-parse", f"{BASE}.2~1")
+        self.git("tag", f"{BASE}.1", older)
+        self.cmd("bash", str(SCRIPTS / "forward-port-beta.sh"), f"{BASE}.1", older, "main")
+        self.assertEqual(self.git("rev-parse", "HEAD"), self.git("rev-parse", "main"))
+
+    def test_conflict_leaves_tag_and_reports_manual_checkpoint(self):
+        self.commit("cut")
+        self.git("switch", "-qc", f"beta/{BASE}")
+        self.stamp(BASE, DEBIAN)
+        self.commit("prepare beta")
+        built = self.git("rev-parse", "HEAD")
+        self.git("tag", BASE, built)
+        self.git("switch", "-q", "main")
+        self.write("package.json", '{"version":"26.10.0.1"}\n')
+        self.commit("independent main version edit")
+        main = self.git("rev-parse", "main")
+        with self.assertRaises(subprocess.CalledProcessError) as failed:
+            self.cmd("bash", str(SCRIPTS / "forward-port-beta.sh"), BASE, built, "main")
+        self.assertIn(f"Landscape-Beta-Source: {built}", failed.exception.stderr)
+        self.assertEqual(self.git("rev-parse", BASE), built)
+        self.assertEqual(self.git("rev-parse", "main"), main)
 
 
 class LaunchpadRehearsal(unittest.TestCase):

@@ -305,16 +305,15 @@ jobs:
         with: { fetch-depth: 0 }
 
       - name: Verify changeset present
-        # Beta Release Prep PRs consume changesets rather than adding one, so
-        # they are exempt — but only genuine ones: opened by the workflow's
-        # bot, from this repository, from beta-prep/* into beta/*. Branch
-        # names alone are author-controlled and must not skip this check.
+        # Only the release App's preparation and forward-port PRs are exempt.
         if: >-
           github.event.pull_request.base.ref &&
-          !(startsWith(github.event.pull_request.head.ref, 'beta-prep/') &&
-            startsWith(github.event.pull_request.base.ref, 'beta/') &&
-            github.event.pull_request.user.login == 'landscape-packager[bot]' &&
-            github.event.pull_request.head.repo.full_name == github.repository)
+          !(github.event.pull_request.user.login == 'landscape-packager[bot]' &&
+            github.event.pull_request.head.repo.full_name == github.repository &&
+            ((startsWith(github.event.pull_request.head.ref, 'beta-prep/') &&
+              startsWith(github.event.pull_request.base.ref, 'beta/')) ||
+             (startsWith(github.event.pull_request.head.ref, 'beta-forward-port/') &&
+              github.event.pull_request.base.ref == 'main')))
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: | # js

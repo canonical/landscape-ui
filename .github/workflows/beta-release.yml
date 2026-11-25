@@ -243,3 +243,58 @@ jobs:
             git tag -a "$VERSION" -m "Build $VERSION from $GITHUB_REF_NAME" "$SHA"
             git push origin "refs/tags/$VERSION"
           fi
+
+  forward-port:
+    needs: [route, tag]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/create-github-app-token@v2
+        id: app
+        with:
+          app-id: ${{ vars.LANDSCAPE_PACKAGER_APP_ID }}
+          private-key: ${{ secrets.LANDSCAPE_PACKAGER_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.route.outputs.sha }}
+          fetch-depth: 0
+          token: ${{ steps.app.outputs.token }}
+      - name: Forward-port the tagged beta history
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          VERSION: ${{ needs.route.outputs.version }}
+          SHA: ${{ needs.route.outputs.sha }}
+          BOT_EMAIL: 273197409+landscape-packager[bot]@users.noreply.github.com
+        run: |
+          BRANCH="beta-forward-port/$VERSION"
+          EXISTING=$(gh api --paginate --method GET "repos/$GITHUB_REPOSITORY/pulls" \
+            -f base=main -f "head=${GITHUB_REPOSITORY_OWNER}:$BRANCH" -f state=all \
+            --jq ".[] | select(.head.repo.full_name == \"$GITHUB_REPOSITORY\" and .head.ref == \"$BRANCH\") | if .merged_at then \"MERGED\" elif .state == \"open\" then \"OPEN\" else empty end")
+          if [[ "$EXISTING" == MERGED ]]; then exit 0; fi
+          git config user.name 'landscape-packager[bot]'
+          git config user.email "$BOT_EMAIL"
+          SCRIPT="$RUNNER_TEMP/forward-port-beta.sh"
+          cp scripts/forward-port-beta.sh "$SCRIPT"
+          bash "$SCRIPT" "$VERSION" "$SHA"
+          if git diff --quiet origin/main HEAD; then
+            if [[ "$EXISTING" == OPEN ]]; then
+              echo 'This cut is already incorporated; close the stale forward-port PR.'
+            fi
+            exit 0
+          fi
+          if git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
+            previous=$(git rev-parse "origin/$BRANCH")
+            if git log --format=%ce "origin/main..$previous" | grep -Fxv "$BOT_EMAIL" > /dev/null; then
+              echo 'Forward-port branch has manual changes; update its PR by hand.'
+              exit 1
+            fi
+            if ! git diff --quiet "$previous" HEAD || ! git merge-base --is-ancestor origin/main "$previous"; then
+              git push --force-with-lease="refs/heads/$BRANCH:$previous" origin "HEAD:refs/heads/$BRANCH"
+            fi
+          else
+            git push origin "HEAD:refs/heads/$BRANCH"
+          fi
+          if [[ "$EXISTING" == OPEN ]]; then exit 0; fi
+          body=$(printf 'Forward-port the release changes included in `%s` (`%s`). Preserve the following trailer in the squash commit message.\n\nLandscape-Beta-Source: %s' "$VERSION" "$SHA" "$SHA")
+          gh pr create --base main --head "$BRANCH" --title "chore: forward-port beta $VERSION" --body "$body"
