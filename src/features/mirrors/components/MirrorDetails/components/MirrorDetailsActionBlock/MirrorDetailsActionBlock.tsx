@@ -10,8 +10,8 @@ import {
 } from "@/features/publication-targets";
 import UpdateMirrorModal from "../../../UpdateMirrorModal";
 import RemoveMirrorModal from "../../../RemoveMirrorModal";
+import { ActionBar } from "@/components/ui";
 import { useCanCancelOperations } from "@/features/operations";
-import classes from "./MirrorDetailsActionBlock.module.scss";
 
 interface MirrorDetailsActionBlockProps {
   readonly mirror: Mirror;
@@ -70,7 +70,7 @@ const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
 
   return (
     <>
-      <div className={classes.actions}>
+      <ActionBar>
         <Button
           type="button"
           importance="secondary"
@@ -116,7 +116,7 @@ const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
         >
           Remove
         </Button>
-      </div>
+      </ActionBar>
       <UpdateMirrorModal
         isOpen={isUpdateModalOpen}
         close={closeUpdateModal}

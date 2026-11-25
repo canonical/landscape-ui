@@ -18,8 +18,8 @@ import { AssociatedPublicationsList } from "@/features/publications";
 import { useBatchGetMirrors } from "@/features/mirrors";
 import { useBatchGetLocals } from "@/features/local-repositories";
 import { LINK_METHOD_OPTIONS } from "../../constants";
+import { ActionBar } from "@/components/ui";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
-import classes from "./TargetDetails.module.scss";
 
 const TargetDetails: FC = () => {
   const { createSidePathPusher, name } = usePageParams();
@@ -136,7 +136,7 @@ const TargetDetails: FC = () => {
     <>
       <SidePanel.Header>{publicationTarget.displayName}</SidePanel.Header>
       <SidePanel.Content>
-        <div className={classes.actions}>
+        <ActionBar>
           <Button
             type="button"
             importance="secondary"
@@ -153,7 +153,7 @@ const TargetDetails: FC = () => {
           >
             Remove
           </Button>
-        </div>
+        </ActionBar>
         <Blocks>
           <Blocks.Item title="General">
             <InfoGrid dense>
