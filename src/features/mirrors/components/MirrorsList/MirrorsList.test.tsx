@@ -37,6 +37,17 @@ describe("MirrorsList", () => {
     expect(screen.getAllByText(NO_DATA_TEXT)).toHaveLength(4);
   });
 
+  it("shows packages count as unavailable for signature-preserving mirrors", () => {
+    const preservedMirror = (mirrors as Mirror[]).find(
+      ({ preserveSignatures }) => preserveSignatures,
+    );
+    assert(preservedMirror);
+
+    renderWithProviders(<MirrorsList mirrors={[preservedMirror]} />);
+
+    expect(screen.getByText("Unavailable")).toBeInTheDocument();
+  });
+
   describe("pagination", () => {
     it("shows only the first page of mirrors when there are more than the page size", () => {
       renderWithProviders(<MirrorsList mirrors={[...mirrors]} />);

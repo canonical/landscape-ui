@@ -85,12 +85,12 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       {
         Header: "Packages",
         className: classes.count,
-        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
-          mirror.name ? (
-            <MirrorPackagesCount mirrorName={mirror.name} />
-          ) : (
-            <NoData />
-          ),
+        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => (
+          <MirrorPackagesCount
+            mirrorName={mirror.name ?? ""}
+            preserveSignatures={mirror.preserveSignatures}
+          />
+        ),
       },
       {
         Header: "Publications",

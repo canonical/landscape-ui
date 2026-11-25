@@ -136,6 +136,21 @@ describe("MirrorDetailsTab", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("shows packages count as unavailable for signature-preserving mirrors", async () => {
+    const mirrorWithPreserveSignatures = typedMirrors.find(
+      ({ preserveSignatures }) => preserveSignatures,
+    );
+    assert(mirrorWithPreserveSignatures);
+
+    const { container } = renderWithProviders(
+      <MirrorDetailsTab mirror={mirrorWithPreserveSignatures} />,
+    );
+
+    await expectLoadingState();
+
+    expect(container).toHaveInfoItem("Packages", "Unavailable");
+  });
+
   it("shows include dependencies in filter field only if mirror has filter", async () => {
     const mirrorWithFilter = typedMirrors.find(({ filter }) => filter);
     assert(mirrorWithFilter, "Test data should include a mirror with a filter");

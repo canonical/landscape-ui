@@ -71,4 +71,13 @@ describe("MirrorPackagesCount", () => {
 
     expect(await screen.findByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
+
+  it("shows unavailable for signature-preserving mirrors", () => {
+    renderWithProviders(
+      <MirrorPackagesCount mirrorName={mirrorName} preserveSignatures />,
+    );
+
+    expect(screen.getByText("Unavailable")).toBeInTheDocument();
+    expect(screen.queryByText(/packages?$/)).not.toBeInTheDocument();
+  });
 });

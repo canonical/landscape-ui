@@ -78,7 +78,10 @@ const MirrorDetailsTab: FC<MirrorDetailsTabProps> = ({ mirror, operation }) => {
           <InfoGrid.Item
             label="Packages"
             value={
-              mirror.name && <MirrorPackagesCount mirrorName={mirror.name} />
+              <MirrorPackagesCount
+                mirrorName={mirror.name ?? ""}
+                preserveSignatures={mirror.preserveSignatures}
+              />
             }
           />
         </InfoGrid>

@@ -6,16 +6,21 @@ import { useGetMirrorPackagesCount } from "../../api";
 
 interface MirrorPackagesCountProps {
   readonly mirrorName: string;
+  readonly preserveSignatures?: boolean;
 }
 
-const MirrorPackagesCount: FC<MirrorPackagesCountProps> = ({ mirrorName }) => {
+const MirrorPackagesCount: FC<MirrorPackagesCountProps> = ({
+  mirrorName,
+  preserveSignatures = false,
+}) => {
   const {
     mirrorPackagesCount,
     isPackagesCountExact,
     isGettingPackagesCount,
     isPackagesCountError,
-  } = useGetMirrorPackagesCount({ mirrorName });
+  } = useGetMirrorPackagesCount({ mirrorName, enabled: !preserveSignatures });
 
+  if (preserveSignatures) return "Unavailable";
   if (isPackagesCountError || !mirrorName) return <NoData />;
   if (isGettingPackagesCount) return <LoadingState inline />;
 

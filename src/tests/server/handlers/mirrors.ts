@@ -208,7 +208,10 @@ export default [
       const paginatedPackages = packages.slice(pageIndex, pageIndex + pageSize);
       const hasNextPage = pageIndex + pageSize < packages.length;
 
-      if (mirror.mirrorId === mirrors[4]?.mirrorId) {
+      if (
+        mirror.preserveSignatures ||
+        mirror.mirrorId === mirrors[4]?.mirrorId
+      ) {
         return HttpResponse.json<ListMirrorPackagesResponse>({
           mirrorPackages: [],
         });

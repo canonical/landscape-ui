@@ -9,10 +9,12 @@ import { COUNT_PAGE_SIZE } from "@/features/repositories";
 
 interface UseGetMirrorPackagesCountProps {
   readonly mirrorName: string;
+  readonly enabled?: boolean;
 }
 
 export const useGetMirrorPackagesCount = ({
   mirrorName,
+  enabled = true,
 }: UseGetMirrorPackagesCountProps) => {
   const authFetchDebArchive = useFetchDebArchive();
 
@@ -25,7 +27,7 @@ export const useGetMirrorPackagesCount = ({
       authFetchDebArchive.get(`${mirrorName}/packages`, {
         params: { pageSize: COUNT_PAGE_SIZE },
       }),
-    enabled: !!mirrorName,
+    enabled: enabled && !!mirrorName,
   });
 
   return {
