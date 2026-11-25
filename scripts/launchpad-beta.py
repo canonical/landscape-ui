@@ -2,6 +2,7 @@
 """Upload a signed Jammy source and verify publication of its binary copies."""
 
 import argparse
+from configparser import Error as ConfigError
 import json
 import os
 from pathlib import Path
@@ -18,6 +19,10 @@ API = "https://api.launchpad.net/devel"
 PPAS = ("landscape/self-hosted-beta", "landscape/self-hosted-daily")
 SERIES = ("jammy", "noble", "resolute")  # Keep aligned with landscape-server.
 JAMMY, *DESTINATIONS = SERIES
+FAILED_BUILD_STATES = {
+    "Failed to build", "Chroot problem", "Failed to upload", "Dependency wait",
+    "Cancelled build", "Build for superseded Source",
+}
 
 
 def collection(url, **params):
@@ -49,6 +54,29 @@ def wait_for(check, seconds, description):
         if time.monotonic() >= deadline:
             raise RuntimeError(f"Timed out waiting for {description}")
         time.sleep(20)
+
+
+def copy_archive(owner, archive_name, credentials, cache):
+    from launchpadlib.credentials import RequestTokenAuthorizationEngine
+    from launchpadlib.launchpad import Launchpad
+    from lazr.restfulclient.errors import CredentialsFileError
+
+    message = "Launchpad copy credentials are missing or invalid; renew LAUNCHPAD_COPY_CREDENTIALS"
+
+    class NonInteractiveAuthorization(RequestTokenAuthorizationEngine):
+        def __call__(self, credentials, credential_store):
+            raise RuntimeError(message)
+
+    path = Path(cache) / "credentials"
+    path.touch(mode=0o600)
+    path.write_text(credentials)
+    engine = NonInteractiveAuthorization("production", application_name="landscape-ui-beta-copy")
+    try:
+        lp = Launchpad.login_with(engine.application_name, "production", cache, timeout=30,
+                                  credentials_file=str(path), authorization_engine=engine, version="devel")
+    except (ConfigError, CredentialsFileError):
+        raise RuntimeError(message) from None
+    return lp.people[owner].getPPAByName(name=archive_name)
 
 
 class Publication:
@@ -120,8 +148,10 @@ class Publication:
 
     def binary_build(self, series):
         builds = set()
+        active_source = False
         for status in ("Published", "Pending"):
             for source in self.sources(series, status):
+                active_source = True
                 if status == "Published":
                     binaries = collection(source["self_link"], **{"ws.op": "getPublishedBinaries"},
                                           active_binaries_only="true")
@@ -132,8 +162,12 @@ class Publication:
                             builds.add(binary["build_link"])
                 if series == JAMMY and not builds:
                     for build in collection(source["self_link"], **{"ws.op": "getBuilds"}):
-                        if build["buildstate"] in ("Failed to build", "Chroot problem", "Failed to upload", "Dependency wait"):
+                        if build["buildstate"] in FAILED_BUILD_STATES:
                             raise RuntimeError(f"Jammy build: {build['buildstate']}. See {build['web_link']}")
+        if series == JAMMY and not active_source:
+            superseded = next(self.sources(series, "Superseded"), None)
+            if superseded:
+                raise RuntimeError(f"Jammy source {self.version} was superseded. See {superseded['self_link']}")
         if len(builds) > 1 or None in builds:
             raise RuntimeError(f"Ambiguous {series} binary build for {self.version}")
         return next(iter(builds), None)
@@ -167,14 +201,7 @@ class Publication:
                 raise RuntimeError(f"Copy existing binaries for {self.version} from Jammy to missing "
                                    f"series in {self.ppa}, then rerun the original failed jobs")
             if archive is None:
-                from launchpadlib.launchpad import Launchpad
-
-                path = Path(cache) / "credentials"
-                path.touch(mode=0o600)
-                path.write_text(credentials)
-                lp = Launchpad.login_with("landscape-ui-beta-copy", "production", cache,
-                                          credentials_file=str(path), version="devel")
-                archive = lp.people[self.owner].getPPAByName(name=self.archive_name)
+                archive = copy_archive(self.owner, self.archive_name, credentials, cache)
             archive.copyPackage(source_name=self.package, version=self.version, from_archive=archive,
                                 from_series=JAMMY, to_series=series, from_pocket="Release",
                                 to_pocket="Release", include_binaries=True)

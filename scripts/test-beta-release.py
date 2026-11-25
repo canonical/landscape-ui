@@ -1,6 +1,7 @@
 """Local beta release rehearsal: python3 scripts/test-beta-release.py."""
 
 import os
+from configparser import MissingSectionHeaderError
 from pathlib import Path
 import runpy
 import shutil
@@ -18,6 +19,11 @@ GLOBALS = Publication.upload.__globals__
 BASE = "27.04-beta.3"
 DEBIAN = "27.04~beta.3-0landscape0"
 MARKER = "Landscape-UI-Beta:1:built"
+
+
+class AuthorizationEngine:
+    def __init__(self, service_root, application_name):
+        self.application_name = application_name
 
 
 def stanza(version):
@@ -104,6 +110,12 @@ class VersionsAndHistory(unittest.TestCase):
         version = BASE + ".2"
         deb = "27.04~beta.3.2-0landscape0"
         self.stamp(version, deb)
+        self.write(".changeset/notes.md", '---\n"landscape-ui": patch\n---\n\nPending release notes.\n')
+        self.commit("prepared beta with pending release notes")
+        with self.assertRaises(subprocess.CalledProcessError) as failed:
+            route()
+        self.assertIn("pending Changeset(s) with release notes", failed.exception.stderr)
+        self.write(".changeset/notes.md", "---\n---\n")
         self.commit("respin after earlier runs failed")
         built = self.git("rev-parse", "HEAD")
         publication = dict(decision="publish", version=version, sha=built, marker=f"Landscape-UI-Beta:17:{built}",
@@ -114,6 +126,7 @@ class VersionsAndHistory(unittest.TestCase):
         self.assertNotEqual(route("18")["marker"], publication["marker"])
         self.git("tag", "-am", "First successful release", version, built)
         self.write("fix", "A later push with an already-tagged version.\n")
+        self.write(".changeset/notes.md", '---\n"landscape-ui": patch\n---\n\nLater release notes.\n')
         self.commit("push with an already-tagged version")
         self.assertEqual(route(), {"decision": "skip", "version": version})
         self.assertEqual(self.git("tag", "--list"), version)
@@ -123,6 +136,36 @@ class VersionsAndHistory(unittest.TestCase):
         self.assertEqual(rehearsal["deb-version"], "0~rehearsal.17-0landscape0")
         self.assertEqual(rehearsal["sha"], self.git("rev-parse", "HEAD"))
         self.assertEqual(route("17", "--rehearsal"), rehearsal)
+
+    def test_asset_publication_fails_if_beta_advances_during_preparation(self):
+        workflow = (SCRIPTS.parent / ".github/workflows/beta-release.yml").read_text()
+        _, _, step = workflow.partition("      - name: Publish beta assets\n")
+        _, _, script = step.partition("        run: |\n")
+        script = script.split("\n\n  sbom:", 1)[0]
+        self.commit("beta tip")
+        built = self.git("rev-parse", "HEAD")
+        self.git("branch", f"beta/{BASE}")
+        self.git("remote", "add", "origin", str(self.root))
+        self.write("fix", "new beta tip")
+        self.commit("advance beta")
+        current = self.git("rev-parse", "HEAD")
+        (self.root / "dist").mkdir()
+        self.write("dist/index.html", "dashboard")
+        # Move the branch after the first tip check, when the step fetches dist.
+        git_hook = f'''
+git() {{
+  if [[ "$1" == fetch ]]; then
+    command git branch -f "beta/{BASE}" "{current}"
+  fi
+  command git "$@"
+}}
+'''
+        env = dict(os.environ, BUILD_SHA=built, VERSION=BASE,
+                   GITHUB_REF=f"refs/heads/beta/{BASE}", GITHUB_REF_NAME=f"beta/{BASE}")
+        with self.assertRaises(subprocess.CalledProcessError) as failed:
+            self.cmd("bash", "-eo", "pipefail", "-c", git_hook + script, env=env)
+        self.assertIn(f"Beta branch tip is {current}, expected {built}", failed.exception.stdout)
+        self.assertEqual(self.git("branch", "--list", f"ppa-build-{BASE}"), "")
 
 
 class LaunchpadRehearsal(unittest.TestCase):
@@ -135,7 +178,11 @@ class LaunchpadRehearsal(unittest.TestCase):
         person.getPPAByName.return_value = archive
         login = Mock()
         login.login_with.return_value.people = {"landscape": person}
-        modules = {"launchpadlib.launchpad": Mock(Launchpad=login)}
+        modules = {
+            "launchpadlib.credentials": Mock(RequestTokenAuthorizationEngine=AuthorizationEngine),
+            "launchpadlib.launchpad": Mock(Launchpad=login),
+            "lazr.restfulclient.errors": Mock(CredentialsFileError=ValueError),
+        }
         published = {"jammy": "jammy-build"}
 
         def copy(**kwargs):
@@ -163,6 +210,40 @@ class LaunchpadRehearsal(unittest.TestCase):
         person.getPPAByName.assert_called_once_with(name="self-hosted-daily")
         self.assertEqual(archive.copyPackage.call_count, 1)
         self.assertEqual(archive.copyPackage.call_args.kwargs["to_series"], "resolute")
+
+    def test_invalid_copy_credentials_do_not_prompt_for_authorization(self):
+        def reauthorize(*args, authorization_engine, **kwargs):
+            authorization_engine(None, None)
+
+        login = Mock()
+        login.login_with.side_effect = reauthorize
+        modules = {
+            "launchpadlib.credentials": Mock(RequestTokenAuthorizationEngine=AuthorizationEngine),
+            "launchpadlib.launchpad": Mock(Launchpad=login),
+            "lazr.restfulclient.errors": Mock(CredentialsFileError=ValueError),
+        }
+        with tempfile.TemporaryDirectory() as cache, patch.dict(sys.modules, modules):
+            with self.assertRaisesRegex(RuntimeError, "renew LAUNCHPAD_COPY_CREDENTIALS"):
+                LP["copy_archive"]("landscape", "self-hosted-daily", "invalid", cache)
+        login.login_with.assert_called_once()
+        login.login_with.side_effect = MissingSectionHeaderError("credentials", 1, "secret contents")
+        with tempfile.TemporaryDirectory() as cache, patch.dict(sys.modules, modules):
+            with self.assertRaisesRegex(RuntimeError, "renew LAUNCHPAD_COPY_CREDENTIALS") as failed:
+                LP["copy_archive"]("landscape", "self-hosted-daily", "invalid", cache)
+        self.assertTrue(failed.exception.__suppress_context__)
+
+    def test_terminal_jammy_states_report_the_launchpad_link(self):
+        source = {"self_link": "jammy-source"}
+        for state in ("Cancelled build", "Build for superseded Source"):
+            build = {"buildstate": state, "web_link": "jammy-build"}
+            with self.subTest(state=state), \
+                    patch.object(self.publication, "sources", side_effect=lambda _, status: iter([source] if status == "Pending" else [])), \
+                    patch.dict(GLOBALS, {"collection": Mock(return_value=[build])}), \
+                    self.assertRaisesRegex(RuntimeError, f"{state}.*jammy-build"):
+                self.publication.binary_build("jammy")
+        with patch.object(self.publication, "sources", side_effect=lambda _, status: iter([source] if status == "Superseded" else [])), \
+                self.assertRaisesRegex(RuntimeError, "superseded.*jammy-source"):
+            self.publication.binary_build("jammy")
 
     def test_retry_resumes_accepted_upload_without_signing_again(self):
         with patch.object(self.publication, "accepted", return_value=True), \

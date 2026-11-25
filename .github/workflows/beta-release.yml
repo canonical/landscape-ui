@@ -113,6 +113,15 @@ jobs:
           BUILD_SHA: ${{ needs.route.outputs.sha }}
         run: |
           DEST="ppa-build-${GITHUB_REF_NAME#beta/}"
+          require_current_tip() {
+            local tip
+            tip=$(git ls-remote --heads origin "$GITHUB_REF" | cut -f1) || return 1
+            if [[ "$tip" != "$BUILD_SHA" ]]; then
+              echo "::error::Beta branch tip is ${tip:-missing}, expected $BUILD_SHA. Use the run for the current tip."
+              return 1
+            fi
+          }
+          require_current_tip
           git -C dist init --initial-branch=build
           git -C dist add --all
           git -C dist -c user.name='github-actions[bot]' \
@@ -120,10 +129,7 @@ jobs:
             commit -m "Build $VERSION from $GITHUB_REF_NAME [$BUILD_SHA]"
           git fetch ./dist refs/heads/build
           PREVIOUS=$(git ls-remote --heads origin "refs/heads/$DEST" | cut -f1)
-          if [[ $(git ls-remote --heads origin "$GITHUB_REF" | cut -f1) != "$BUILD_SHA" ]]; then
-            echo 'Beta branch advanced; retaining its newer asset branch state.'
-            exit 0
-          fi
+          require_current_tip
           git push --force-with-lease="refs/heads/$DEST:$PREVIOUS" origin "FETCH_HEAD:refs/heads/$DEST"
 
   sbom:
@@ -252,7 +258,11 @@ jobs:
           SHA: ${{ needs.route.outputs.sha }}
         run: |
           if git show-ref --verify --quiet "refs/tags/$VERSION"; then
-            [[ $(git rev-parse "refs/tags/$VERSION^{commit}") == "$SHA" ]]
+            EXISTING_SHA=$(git rev-parse "refs/tags/$VERSION^{commit}")
+            if [[ "$EXISTING_SHA" != "$SHA" ]]; then
+              echo "::error::Tag $VERSION points to $EXISTING_SHA, expected $SHA."
+              exit 1
+            fi
           else
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
