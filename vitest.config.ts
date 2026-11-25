@@ -27,7 +27,11 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     globalSetup: [resolve(import.meta.dirname, "src/tests/global-setup.ts")],
-    setupFiles: [resolve(import.meta.dirname, "src/tests/setup.ts")],
+    setupFiles: [
+      // Storage must be initialized before setup.ts imports MSW.
+      resolve(import.meta.dirname, "src/tests/storage-setup.ts"),
+      resolve(import.meta.dirname, "src/tests/setup.ts"),
+    ],
     alias: [
       {
         find: /^.*\.(css|scss|sass)$/,
@@ -64,12 +68,16 @@ export default defineConfig({
       reporter: ["cobertura", "json-summary", "html"],
       reportOnFailure: true,
       reportsDirectory: resolve(import.meta.dirname, "reports"),
-      thresholds: {
-        statements: 80,
-        lines: 80,
-        functions: 80,
-        branches: 70,
-      },
+      // A CI shard (VITEST_SHARD set) covers only part of the suite, so the
+      // thresholds are enforced on the merged report instead.
+      thresholds: process.env.VITEST_SHARD
+        ? undefined
+        : {
+            statements: 80,
+            lines: 80,
+            functions: 80,
+            branches: 70,
+          },
       include: ["src/**/*.{ts,tsx}"],
       exclude: [
         "**/tests/**",

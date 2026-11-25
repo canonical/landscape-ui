@@ -1,9 +1,18 @@
 import * as Constants from "@/constants";
-import { screen } from "@testing-library/react";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
+import { screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
+import sidePanelClasses from "@/components/layout/SidePanel/SidePanel.module.scss";
+import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
+import { activityParents } from "@/tests/mocks/activity";
+import { ACTIVITY_STATUSES } from "@/features/activities";
+import server from "@/tests/server";
+import userEvent from "@testing-library/user-event";
+import { HttpStatusCode } from "axios";
+import { http, HttpResponse } from "msw";
 import ActivitiesPage from "./ActivitiesPage";
 
 describe("ActivitiesPage", () => {
@@ -16,7 +25,10 @@ describe("ActivitiesPage", () => {
     setEndpointStatus("default");
   });
 
-  it("renders activities page content with list data", async () => {
+  it("renders and paginates 21 activity groups from the default mocks", async () => {
+    const user = userEvent.setup();
+    const totalCount = 21;
+    expect(activityParents).toHaveLength(totalCount);
     renderWithProviders(<ActivitiesPage />);
 
     await expectLoadingState();
@@ -26,10 +38,25 @@ describe("ActivitiesPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("table")).toBeInTheDocument();
     expect(screen.queryByText("No activities found")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("row")).toHaveLength(DEFAULT_PAGE_SIZE + 1);
+    expect(screen.getByText("Showing 20 of 21 results")).toBeInTheDocument();
+    const table = screen.getByRole("table");
+    for (const { label } of Object.values(ACTIVITY_STATUSES)) {
+      expect(within(table).getAllByText(label).length).toBeGreaterThan(0);
+    }
+
+    await user.click(screen.getByRole("button", { name: "Next page" }));
+    const lastGroup = activityParents.at(-1);
+    assert(lastGroup);
+    expect(
+      await screen.findByRole("button", { name: lastGroup.summary }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole("row")).toHaveLength(2);
+    expect(screen.getByText("Showing 1 of 21 results")).toBeInTheDocument();
   });
 
   it("shows empty state when activities endpoint is empty", async () => {
-    setEndpointStatus({ status: "empty", path: "activities" });
+    setEndpointStatus({ status: "empty", path: "activities/parents" });
 
     renderWithProviders(<ActivitiesPage />);
 
@@ -42,6 +69,121 @@ describe("ActivitiesPage", () => {
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 
+  it("uses query for activity searches and leaves the unrelated search parameter alone", async () => {
+    const user = userEvent.setup();
+    const getParents = vi.fn();
+    server.use(
+      http.get(`${Constants.API_URL}activities/parents`, ({ request }) => {
+        getParents(new URL(request.url).searchParams.get("query"));
+        return HttpResponse.json({
+          results: activityParents,
+          count: activityParents.length,
+        });
+      }),
+    );
+    renderWithProviders(
+      <>
+        <ActivitiesPage />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/activities?search=foo&query=id:10&status=failed&fromDate=2024-01-01",
+    );
+
+    await waitFor(() => {
+      expect(getParents).toHaveBeenCalledWith(
+        "id:10 status:failed created-after:2024-01-01",
+      );
+    });
+    await user.click(
+      await screen.findByRole("button", { name: "Clear all filters" }),
+    );
+
+    expect(getLocationDisplay().textContent).toBe("/activities?search=foo");
+  });
+
+  it("removes unsupported status values from the URL", async () => {
+    renderWithProviders(
+      <>
+        <ActivitiesPage />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/activities?status=unapproved",
+    );
+
+    await screen.findByRole("table");
+
+    await waitFor(() => {
+      expect(getLocationDisplay()).not.toHaveTextContent("status=unapproved");
+    });
+  });
+
+  it.each(["all", "filtered", "unfiltered"])(
+    "shows an error notification when %s parent requests fail",
+    async (failingRequest) => {
+      server.use(
+        http.get(`${Constants.API_URL}activities/parents`, ({ request }) => {
+          const isFiltered = new URL(request.url).searchParams.has("query");
+          if (
+            failingRequest === "all" ||
+            (failingRequest === "filtered" && isFiltered) ||
+            (failingRequest === "unfiltered" && !isFiltered)
+          ) {
+            return HttpResponse.json(
+              {
+                error: "InternalServerError",
+                message: "Activities unavailable",
+              },
+              { status: HttpStatusCode.InternalServerError },
+            );
+          }
+          return HttpResponse.json({ results: [], count: 0 });
+        }),
+      );
+
+      renderWithProviders(
+        <ActivitiesPage />,
+        undefined,
+        "/activities?status=failed",
+      );
+
+      expect(
+        await screen.findByText("Activities unavailable"),
+      ).toBeInTheDocument();
+    },
+  );
+
+  it("keeps the list controls when a filtered request fails after a successful load", async () => {
+    const user = userEvent.setup();
+    const totalCount = activityParents.length + 1;
+    server.use(
+      http.get(`${Constants.API_URL}activities/parents`, ({ request }) => {
+        if (new URL(request.url).searchParams.has("query")) {
+          return HttpResponse.json(
+            { error: "InternalServerError", message: "Activities unavailable" },
+            { status: HttpStatusCode.InternalServerError },
+          );
+        }
+        return HttpResponse.json({
+          results: activityParents,
+          count: totalCount,
+        });
+      }),
+    );
+    renderWithProviders(<ActivitiesPage />);
+
+    await screen.findByRole("table");
+    await user.type(screen.getByRole("searchbox"), "id:10");
+    await user.click(screen.getByRole("button", { name: "Search" }));
+
+    expect(
+      await screen.findByText("Activities unavailable"),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("searchbox")).toHaveValue("id:10");
+    expect(screen.getByRole("table")).toBeInTheDocument();
+  });
+
   it("does not show the export panel for a stale export side path", async () => {
     renderWithProviders(<ActivitiesPage />, {}, "/?sidePath=export");
 
@@ -51,4 +193,90 @@ describe("ActivitiesPage", () => {
       screen.queryByRole("button", { name: "Generate TSV" }),
     ).not.toBeInTheDocument();
   });
+
+  it("hides actions and selection when TSV exports are disabled", async () => {
+    renderWithProviders(<ActivitiesPage />);
+
+    await screen.findByRole("table");
+
+    expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
+    expect(
+      screen.queryByRole("button", { name: "Actions" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Export selection as TSV" }),
+    ).not.toBeInTheDocument();
+    for (const name of ["Approve", "Cancel", "Redo"]) {
+      expect(screen.queryByRole("button", { name })).not.toBeInTheDocument();
+    }
+  });
+
+  it("does not offer selection or export for activity groups when TSV exports are enabled", async () => {
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
+    renderWithProviders(<ActivitiesPage />);
+
+    await screen.findByRole("table");
+
+    expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
+    expect(
+      screen.queryByRole("button", { name: "Export selection as TSV" }),
+    ).not.toBeInTheDocument();
+    for (const name of ["Approve", "Cancel", "Redo"]) {
+      expect(screen.queryByRole("button", { name })).not.toBeInTheDocument();
+    }
+  });
+
+  it("opens activity details through sidePath from the group list", async () => {
+    const [activity] = activityParents;
+    assert(activity);
+    server.use(
+      http.get(`${Constants.API_URL}activities/parents`, () =>
+        HttpResponse.json({
+          results: activityParents,
+          count: activityParents.length,
+        }),
+      ),
+      http.get(`${Constants.API_URL}activities/:id`, () =>
+        HttpResponse.json({ ...activity, result_text: null }),
+      ),
+    );
+    const user = userEvent.setup();
+    renderWithProviders(
+      <>
+        <ActivitiesPage />
+        <LocationDisplay />
+      </>,
+    );
+
+    await user.click(
+      await screen.findByRole("button", { name: activity.summary }),
+    );
+
+    const activityHeading = await screen.findByRole("heading", {
+      name: activity.summary,
+    });
+    expect(activityHeading).toBeInTheDocument();
+    expect(activityHeading.closest("aside")).not.toHaveClass(
+      sidePanelClasses.medium,
+    );
+    expect(getLocationDisplay()).toHaveTextContent(
+      `sidePath=activity&name=${activity.id}`,
+    );
+  });
+
+  it.each(["", "invalid", "0"])(
+    "does not open an activity panel for an invalid ID: %s",
+    async (name) => {
+      const url = name
+        ? `/activities?sidePath=activity&name=${name}`
+        : "/activities?sidePath=activity";
+      renderWithProviders(<ActivitiesPage />, undefined, url);
+
+      await screen.findByRole("table");
+
+      expect(
+        screen.queryByRole("button", { name: "Close" }),
+      ).not.toBeInTheDocument();
+    },
+  );
 });

@@ -15,6 +15,14 @@ export const deliveryValidationSchema = {
   }),
 };
 
+export const expirationValidationSchema = {
+  deliver_within: Yup.number()
+    .typeError("Enter an integer greater than or equal to 1.")
+    .required("Enter an integer greater than or equal to 1.")
+    .integer("'Expires after' must be an integer.")
+    .min(1, "'Expires after' must be at least 1."),
+};
+
 export const randomizationValidationSchema = {
   randomize_delivery: Yup.boolean(),
   deliver_delay_window: Yup.number().when("randomize_delivery", {

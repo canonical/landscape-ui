@@ -68,8 +68,7 @@ already exists for the feature.
 
 ## PR checklist integration
 
-The pull request template in this repository includes a **Docs** section. Every
-PR must either link the companion docs PR or state that no docs change is
-needed. Note that "user-facing" and "needs docs" are not the same test: a
-purely visual change can be user-facing and still tick **No docs needed**, as
-long as it doesn't alter a documented workflow.
+If a pull request needs documentation, include a link to the companion docs PR
+in the summary section. Note that "user-facing" and "needs docs" are not the
+same test: a purely visual change can be user-facing and still not require
+documentation changes, as long as it doesn't alter a documented workflow.

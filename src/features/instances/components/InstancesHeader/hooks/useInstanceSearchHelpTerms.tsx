@@ -1,14 +1,21 @@
 import useAuth from "@/hooks/useAuth";
 import { getProfileTypes } from "@/features/instances";
 import type { ReactElement } from "react";
+import { useMemo } from "react";
 
-const useInstanceSearchHelpTerms = () => {
-  const { isFeatureEnabled } = useAuth();
-
+const getInstanceSearchHelpTerms = ({
+  isScriptProfilesEnabled,
+  isUsgProfilesEnabled,
+  isWslProfilesEnabled,
+}: {
+  isScriptProfilesEnabled: boolean;
+  isUsgProfilesEnabled: boolean;
+  isWslProfilesEnabled: boolean;
+}) => {
   const profileTypes = getProfileTypes({
-    isScriptProfilesEnabled: isFeatureEnabled("script-profiles"),
-    isUsgProfilesEnabled: isFeatureEnabled("usg-profiles"),
-    isWslProfilesEnabled: isFeatureEnabled("wsl-child-instance-profiles"),
+    isScriptProfilesEnabled,
+    isUsgProfilesEnabled,
+    isWslProfilesEnabled,
   });
 
   const instanceSearchHelpTerms: {
@@ -444,7 +451,7 @@ const useInstanceSearchHelpTerms = () => {
     },
   ];
 
-  if (isFeatureEnabled("usg-profiles")) {
+  if (isUsgProfilesEnabled) {
     instanceSearchHelpTerms.push({
       term: "profile:usg:<profile_id>:<last_audit_result>",
       description: (
@@ -464,7 +471,7 @@ const useInstanceSearchHelpTerms = () => {
     });
   }
 
-  if (isFeatureEnabled("wsl-child-instance-profiles")) {
+  if (isWslProfilesEnabled) {
     instanceSearchHelpTerms.push({
       term: "profile:wsl:<profile_id>:<compliance_status>",
       description: (
@@ -485,6 +492,24 @@ const useInstanceSearchHelpTerms = () => {
   }
 
   return instanceSearchHelpTerms;
+};
+
+const useInstanceSearchHelpTerms = () => {
+  const { isFeatureEnabled } = useAuth();
+
+  const isScriptProfilesEnabled = isFeatureEnabled("script-profiles");
+  const isUsgProfilesEnabled = isFeatureEnabled("usg-profiles");
+  const isWslProfilesEnabled = isFeatureEnabled("wsl-child-instance-profiles");
+
+  return useMemo(
+    () =>
+      getInstanceSearchHelpTerms({
+        isScriptProfilesEnabled,
+        isUsgProfilesEnabled,
+        isWslProfilesEnabled,
+      }),
+    [isScriptProfilesEnabled, isUsgProfilesEnabled, isWslProfilesEnabled],
+  );
 };
 
 export default useInstanceSearchHelpTerms;

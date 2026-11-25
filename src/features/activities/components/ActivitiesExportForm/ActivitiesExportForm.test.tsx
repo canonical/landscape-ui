@@ -1,22 +1,29 @@
-import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import ActivitiesExportForm from "./ActivitiesExportForm";
 
 type ActivitiesExportFormProps = ComponentProps<typeof ActivitiesExportForm>;
 
 const defaultProps = {
   exportParams: { query: "status:succeeded" },
+  onClose: vi.fn(),
 } satisfies ActivitiesExportFormProps;
 
 const openAttributeGroup = async (
   user: ReturnType<typeof userEvent.setup>,
   name: RegExp,
 ) => {
-  await user.click(screen.getByRole("tab", { name }));
+  const heading = screen.getByRole("heading", { name });
+  const summary = heading.closest("summary");
+
+  if (!summary) {
+    throw new Error(`Missing accordion summary for ${name.toString()}`);
+  }
+
+  await user.click(summary);
 };
 
 describe("ActivitiesExportForm", () => {
@@ -33,10 +40,10 @@ describe("ActivitiesExportForm", () => {
       screen.getByRole("searchbox", { name: "Search attributes" }),
     ).toBeVisible();
     expect(
-      screen.getByRole("tab", { name: /primary identity/i }),
+      screen.getByRole("heading", { name: /primary identity/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("tab", { name: /audit & time/i }),
+      screen.getByRole("heading", { name: /audit & time/i }),
     ).toBeInTheDocument();
 
     await openAttributeGroup(user, /primary identity/i);
@@ -144,16 +151,16 @@ describe("ActivitiesExportForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("pops one sidePath entry on successful export", async () => {
+  it("calls onClose after a successful export", async () => {
     const user = userEvent.setup();
+    const onClose = vi.fn();
 
     renderWithProviders(
-      <>
-        <ActivitiesExportForm {...defaultProps} selectedActivityIds={[1, 2]} />
-        <LocationDisplay />
-      </>,
-      undefined,
-      "/?sidePath=view,export",
+      <ActivitiesExportForm
+        {...defaultProps}
+        selectedActivityIds={[1, 2]}
+        onClose={onClose}
+      />,
     );
 
     await user.type(
@@ -171,12 +178,19 @@ describe("ActivitiesExportForm", () => {
     await user.click(screen.getByRole("button", { name: "Generate TSV" }));
 
     expect(await screen.findByText("TSV export in progress")).toBeVisible();
+    expect(onClose).toHaveBeenCalledOnce();
+  });
 
-    await waitFor(() => {
-      expect(getLocationDisplay()).toHaveTextContent("sidePath=view");
-      expect(getLocationDisplay()).not.toHaveTextContent(
-        "sidePath=view,export",
-      );
-    });
+  it("calls onClose on cancel", async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+
+    renderWithProviders(
+      <ActivitiesExportForm {...defaultProps} onClose={onClose} />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(onClose).toHaveBeenCalledOnce();
   });
 });

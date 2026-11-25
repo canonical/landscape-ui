@@ -43,10 +43,9 @@ describe("user details", () => {
     expect(
       screen.getByText("This user has a pending activity to be deleted."),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "View activity" })).toHaveAttribute(
-      "href",
-      ROUTES.activities.root({ query: "id:123" }),
-    );
+    expect(
+      screen.getByRole("button", { name: "View activity" }),
+    ).not.toHaveAttribute("href");
   });
 
   it.each([

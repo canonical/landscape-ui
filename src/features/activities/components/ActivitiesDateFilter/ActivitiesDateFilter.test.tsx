@@ -1,18 +1,19 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import ActivitiesDateFilter from "./ActivitiesDateFilter";
-import { ROUTES } from "@/libs/routes";
 
 const fromDate = "2024-01-01T10:00";
 const toDate = "2024-12-31T18:00";
+const emptyValues = { fromDate: "", toDate: "" };
+const props = { ...emptyValues, onChange: vi.fn() };
 
 describe("ActivitiesDateFilter", () => {
   const user = userEvent.setup();
 
   it("renders the date range filter button", () => {
-    renderWithProviders(<ActivitiesDateFilter />);
+    renderWithProviders(<ActivitiesDateFilter {...props} />);
 
     expect(
       screen.getByRole("button", { name: /date range/i }),
@@ -20,7 +21,7 @@ describe("ActivitiesDateFilter", () => {
   });
 
   it("opens the filter menu and displays date inputs", async () => {
-    renderWithProviders(<ActivitiesDateFilter />);
+    renderWithProviders(<ActivitiesDateFilter {...props} />);
 
     const filterButton = screen.getByRole("button", { name: /date range/i });
     await user.click(filterButton);
@@ -33,12 +34,7 @@ describe("ActivitiesDateFilter", () => {
 
   it("resets the date range filter", async () => {
     renderWithProviders(
-      <ActivitiesDateFilter />,
-      undefined,
-      ROUTES.activities.root({
-        fromDate,
-        toDate,
-      }),
+      <ActivitiesDateFilter {...props} fromDate={fromDate} toDate={toDate} />,
     );
     const filterButton = screen.getByRole("button", { name: /date range/i });
     await user.click(filterButton);
@@ -50,17 +46,12 @@ describe("ActivitiesDateFilter", () => {
     const resetButton = screen.getByRole("button", { name: /reset/i });
     await user.click(resetButton);
 
-    await user.click(filterButton);
-
-    expect(screen.queryByDisplayValue(fromDate)).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue(toDate)).not.toBeInTheDocument();
+    expect(props.onChange).toHaveBeenCalledWith(emptyValues);
   });
 
   it("displays badge when one filter is active", () => {
     renderWithProviders(
-      <ActivitiesDateFilter />,
-      undefined,
-      ROUTES.activities.root({ fromDate }),
+      <ActivitiesDateFilter {...props} fromDate={fromDate} />,
     );
 
     const badge = screen.getByText("1");
@@ -69,9 +60,7 @@ describe("ActivitiesDateFilter", () => {
 
   it("displays badge with value 2 when both filters are active", () => {
     renderWithProviders(
-      <ActivitiesDateFilter />,
-      undefined,
-      ROUTES.activities.root({ fromDate, toDate }),
+      <ActivitiesDateFilter {...props} fromDate={fromDate} toDate={toDate} />,
     );
 
     const badge = screen.getByText("2");
@@ -79,7 +68,7 @@ describe("ActivitiesDateFilter", () => {
   });
 
   it("does not display badge when no filters are active", () => {
-    renderWithProviders(<ActivitiesDateFilter />);
+    renderWithProviders(<ActivitiesDateFilter {...props} />);
 
     expect(screen.queryByText("1")).not.toBeInTheDocument();
     expect(screen.queryByText("2")).not.toBeInTheDocument();
@@ -87,9 +76,7 @@ describe("ActivitiesDateFilter", () => {
 
   it("closes menu after clicking reset", async () => {
     renderWithProviders(
-      <ActivitiesDateFilter />,
-      undefined,
-      ROUTES.activities.root({ fromDate }),
+      <ActivitiesDateFilter {...props} fromDate={fromDate} />,
     );
 
     const filterButton = screen.getByRole("button", { name: /date range/i });
@@ -106,7 +93,7 @@ describe("ActivitiesDateFilter", () => {
   });
 
   it("submits the form with date values when Apply is clicked", async () => {
-    renderWithProviders(<ActivitiesDateFilter />);
+    renderWithProviders(<ActivitiesDateFilter {...props} />);
 
     const filterButton = screen.getByRole("button", { name: /date range/i });
     await user.click(filterButton);

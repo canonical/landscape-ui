@@ -21,6 +21,8 @@ describe("ActivityPanel", () => {
   });
 
   it("shows activities after loading", async () => {
+    assert(idOfInstanceWithActivity !== undefined);
+
     renderWithProviders(
       <ActivityPanel instanceId={idOfInstanceWithActivity} />,
     );
@@ -33,6 +35,8 @@ describe("ActivityPanel", () => {
   });
 
   it("does not show the export panel for a stale export side path", async () => {
+    assert(idOfInstanceWithActivity !== undefined);
+
     renderWithProviders(
       <ActivityPanel instanceId={idOfInstanceWithActivity} />,
       {},

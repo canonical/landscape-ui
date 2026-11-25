@@ -18,40 +18,55 @@ const path = require("path");
  * updates) the "Version Packages" PR.
  */
 
-const newVersion = process.argv[2];
-if (!newVersion) {
-  console.error("No version provided");
-  process.exit(1);
-}
-
-// Strip any pre-release suffix so package.json keeps a clean numeric CalVer.
-const cleanVersion = newVersion.replace(/-(beta|dev|rc)$/, "");
 const projectRoot = path.resolve(__dirname, "..");
-const pkgPath = path.join(projectRoot, "package.json");
-const changelogPath = path.join(projectRoot, "CHANGELOG.md");
-const changesetDir = path.join(projectRoot, ".changeset");
 
-const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-pkg.version = cleanVersion;
-fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+function main() {
+  const newVersion = process.argv[2];
+  if (!newVersion) {
+    console.error("No version provided");
+    process.exit(1);
+  }
 
-const { files, entries } = readPendingChangesets(changesetDir);
+  // Strip any pre-release suffix so package.json keeps a clean numeric CalVer.
+  const cleanVersion = newVersion.replace(/-(beta|dev|rc)$/, "");
+  const pkgPath = path.join(projectRoot, "package.json");
+  const changelogPath = path.join(projectRoot, "CHANGELOG.md");
+  const changesetDir = path.join(projectRoot, ".changeset");
 
-if (entries.length > 0) {
-  const section = renderChangelogSection(newVersion, entries);
-  prependChangelog(changelogPath, section);
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+  pkg.version = cleanVersion;
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+
+  const { files, entries } = readPendingChangesets(changesetDir);
+
+  if (entries.length > 0) {
+    const section = renderChangelogSection(newVersion, entries);
+    prependChangelog(changelogPath, section);
+  }
+
+  for (const file of files) {
+    fs.unlinkSync(file);
+  }
+
+  if (files.length > 0) {
+    console.log(
+      `Consumed ${files.length} changeset(s) (${entries.length} with content) into CHANGELOG.md`,
+    );
+  }
+  console.log(`Updated package.json to ${cleanVersion}`);
 }
 
-for (const file of files) {
-  fs.unlinkSync(file);
+if (require.main === module) {
+  main();
 }
 
-if (files.length > 0) {
-  console.log(
-    `Consumed ${files.length} changeset(s) (${entries.length} with content) into CHANGELOG.md`,
-  );
-}
-console.log(`Updated package.json to ${cleanVersion}`);
+// Exported for scripts/beta-version-update.cjs, which reuses the changeset
+// rollup but stamps a different version shape (see that script).
+module.exports = {
+  readPendingChangesets,
+  renderChangelogSection,
+  prependChangelog,
+};
 
 function readPendingChangesets(dir) {
   if (!fs.existsSync(dir)) return { files: [], entries: [] };

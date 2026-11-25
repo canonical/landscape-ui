@@ -1,5 +1,10 @@
 import { HOMEPAGE_PATH } from "@/constants";
-import { getInvitationPath, useInvitation, useLogin } from "@/features/auth";
+import {
+  getInvitationPath,
+  getLoginRedirect,
+  useInvitation,
+  useLogin,
+} from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import {
@@ -14,6 +19,7 @@ import { useSearchParams } from "react-router";
 import * as Yup from "yup";
 import classes from "./LoginForm.module.scss";
 import { getFormikError } from "@/utils/formikErrors";
+import { basicEmailSchema, normalizeEmail } from "@/utils/validation/email";
 
 interface FormProps {
   identifier: string;
@@ -33,8 +39,8 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
 
   const { safeRedirect, setUser } = useAuth();
 
-  const redirectTo = searchParams.get("redirect-to");
-  const isExternalRedirect = searchParams.has("external");
+  const { redirectTo, external: isExternalRedirect } =
+    getLoginRedirect(searchParams);
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -44,42 +50,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
     validationSchema: Yup.object().shape({
       identifier: isIdentityAvailable
         ? Yup.string().required("This field is required")
-        : Yup.string()
-            .required("This field is required")
-            .matches(
-              /^[a-zA-Z0-9-_.]+@[a-zA-Z0-9-.]*[a-zA-Z]$/,
-              "Please provide a valid email address",
-            )
-            .test({
-              message: "Please provide a valid email address",
-              test: (value) => {
-                if (!value) {
-                  return false;
-                }
-
-                if (value.match(/\.\./)) {
-                  return false;
-                }
-
-                const [first, domain] = value.split("@");
-
-                if (
-                  !first ||
-                  !domain ||
-                  first.startsWith(".") ||
-                  first.endsWith(".") ||
-                  !domain.includes(".") ||
-                  domain.startsWith(".") ||
-                  domain.startsWith("-") ||
-                  domain.match(/\.-/) ||
-                  domain.match(/-\./)
-                ) {
-                  return false;
-                }
-
-                return true;
-              },
-            }),
+        : basicEmailSchema().required("This field is required"),
       password: Yup.string().required("This field is required"),
     }),
     onSubmit: async (values) => {
@@ -87,7 +58,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
         const { identifier, password } = values;
         const credentials = isIdentityAvailable
           ? { identity: identifier, password }
-          : { email: identifier, password };
+          : { email: normalizeEmail(identifier), password };
         const { data } = await login(credentials);
 
         if ("current_account" in data) {

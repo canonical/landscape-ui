@@ -1,15 +1,14 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { INPUT_DATE_FORMAT } from "@/constants";
-import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import {
-  Accordion,
   CheckboxInput,
   Form,
   Input,
   Notification,
   SearchBox,
 } from "@canonical/react-components";
+import { Accordion } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import { useFormik } from "formik";
 import { type ReactNode, useCallback, useMemo, useState, type FC } from "react";
@@ -34,6 +33,7 @@ interface ExportFormProps {
     values: ExportFormValues;
     fieldsToExport: ExportField[];
   }) => Promise<void>;
+  readonly onCancel: () => void;
   readonly onStepChange?: (step: StepIndex) => void;
   readonly sortableNote?: ReactNode;
 }
@@ -43,13 +43,24 @@ const ExportForm: FC<ExportFormProps> = ({
   initialValues,
   isSubmitting,
   onGenerate,
+  onCancel,
   onStepChange,
   sortableNote,
 }) => {
-  const { popSidePath } = usePageParams();
   const [step, setStep] = useState<StepIndex>(0);
   const [attributeSearch, setAttributeSearch] = useState("");
   const [orderedFields, setOrderedFields] = useState<ExportField[]>([]);
+  const [expandedFieldGroupKey, setExpandedFieldGroupKey] = useState<
+    string | null
+  >(null);
+  const [collapsedSearchGroupKeys, setCollapsedSearchGroupKeys] = useState<
+    ReadonlySet<string>
+  >(() => new Set());
+
+  const resetFieldGroupExpansion = () => {
+    setExpandedFieldGroupKey(null);
+    setCollapsedSearchGroupKeys(new Set());
+  };
 
   const handleBack = () => {
     setStep(0);
@@ -68,6 +79,7 @@ const ExportForm: FC<ExportFormProps> = ({
 
       if (step === 0) {
         setOrderedFields(selectedFields);
+        resetFieldGroupExpansion();
         setStep(1);
         onStepChange?.(1);
         return;
@@ -124,7 +136,55 @@ const ExportForm: FC<ExportFormProps> = ({
     [attributeSearch, fieldGroups],
   );
 
-  const accordionSections = filteredFieldGroups.map((group) => {
+  const isSearching = !!attributeSearch.trim();
+
+  const orderedFieldGroups = useMemo(() => {
+    if (!isSearching) {
+      return filteredFieldGroups;
+    }
+
+    return [...filteredFieldGroups].sort(
+      (a, b) =>
+        getGroupSearchRank(a.key, filteredFieldGroups, attributeSearch) -
+        getGroupSearchRank(b.key, filteredFieldGroups, attributeSearch),
+    );
+  }, [attributeSearch, filteredFieldGroups, isSearching]);
+
+  // Outside search only one group is open at a time; during search every
+  // matching group starts open and can be collapsed individually.
+  const isFieldGroupExpanded = (groupKey: string) =>
+    isSearching
+      ? !collapsedSearchGroupKeys.has(groupKey)
+      : expandedFieldGroupKey === groupKey;
+
+  const handleFieldGroupExpandedChange = (
+    groupKey: string,
+    expanded: boolean,
+  ) => {
+    // `<details>` also fires `toggle` when React applies `open`; ignore those.
+    if (expanded === isFieldGroupExpanded(groupKey)) {
+      return;
+    }
+
+    if (isSearching) {
+      setCollapsedSearchGroupKeys((current) => {
+        const next = new Set(current);
+
+        if (expanded) {
+          next.delete(groupKey);
+        } else {
+          next.add(groupKey);
+        }
+
+        return next;
+      });
+      return;
+    }
+
+    setExpandedFieldGroupKey(expanded ? groupKey : null);
+  };
+
+  const accordionItems = orderedFieldGroups.map((group) => {
     const groupIds = group.fields.map((field) => field.id);
     const allSelected = groupIds.every((id) =>
       formik.values.selectedFieldIds.includes(id),
@@ -133,89 +193,50 @@ const ExportForm: FC<ExportFormProps> = ({
       !allSelected &&
       groupIds.some((id) => formik.values.selectedFieldIds.includes(id));
 
-    const isSearching = !!attributeSearch.trim();
-
-    return {
-      key: group.key,
-      title: (
+    return (
+      <div className={classes.attributeGroup} key={group.key}>
         <CheckboxInput
-          label={group.title}
-          labelClassName={classes.exportFormGroupTitleCheckbox}
+          className={classes.groupCheckbox}
+          label=""
+          labelClassName={classes.groupCheckboxLabel}
           checked={allSelected}
           indeterminate={someSelected}
           aria-label={`${group.title} select all`}
+          aria-labelledby={undefined}
           disabled={isSearching}
           onChange={() => {
-            if (!isSearching) toggleGroupSelect(group.fields);
+            toggleGroupSelect(group.fields);
           }}
         />
-      ),
-      content: (
-        <div className={classes.optionList}>
-          {group.fields.map((field) => (
-            <CheckboxInput
-              key={field.id}
-              checked={formik.values.selectedFieldIds.includes(field.id)}
-              label={field.label}
-              onChange={() => {
-                toggleField(field.id);
-              }}
-            />
-          ))}
-        </div>
-      ),
-    };
+        <Accordion.Item
+          expanded={isFieldGroupExpanded(group.key)}
+          heading={
+            <span className={classes.groupTitle} role="heading" aria-level={5}>
+              {group.title}
+            </span>
+          }
+          onExpandedChange={(expanded) => {
+            handleFieldGroupExpandedChange(group.key, expanded);
+          }}
+        >
+          <div className={classes.optionList}>
+            {group.fields.map((field) => (
+              <CheckboxInput
+                key={field.id}
+                checked={formik.values.selectedFieldIds.includes(field.id)}
+                label={field.label}
+                onChange={() => {
+                  toggleField(field.id);
+                }}
+              />
+            ))}
+          </div>
+        </Accordion.Item>
+      </div>
+    );
   });
 
   const selectedFieldIdsError = getFormikError(formik, "selectedFieldIds");
-
-  const renderFieldGroups = () => {
-    if (!filteredFieldGroups.length) {
-      return (
-        <p className={classes.emptyState}>No attributes match your search.</p>
-      );
-    }
-
-    if (attributeSearch.trim()) {
-      const sortedSections = [...accordionSections].sort((a, b) => {
-        const aRank = getGroupSearchRank(
-          a.key,
-          filteredFieldGroups,
-          attributeSearch,
-        );
-        const bRank = getGroupSearchRank(
-          b.key,
-          filteredFieldGroups,
-          attributeSearch,
-        );
-        return aRank - bRank;
-      });
-
-      return (
-        <div>
-          {sortedSections.map((section) => (
-            <Accordion
-              key={`filtered-${section.key}`}
-              className="export-form-field-groups-accordion"
-              sections={[section]}
-              expanded={section.key}
-              titleElement="h5"
-            />
-          ))}
-        </div>
-      );
-    }
-
-    return (
-      <div>
-        <Accordion
-          className="export-form-field-groups-accordion"
-          sections={accordionSections}
-          titleElement="h5"
-        />
-      </div>
-    );
-  };
 
   const stepContent =
     step === 0 ? (
@@ -248,6 +269,9 @@ const ExportForm: FC<ExportFormProps> = ({
                 aria-label="Search attributes"
                 searchButtonType="button"
                 onChange={(value) => {
+                  if (!!value.trim() !== isSearching) {
+                    resetFieldGroupExpansion();
+                  }
                   setAttributeSearch(value);
                 }}
               />
@@ -260,7 +284,15 @@ const ExportForm: FC<ExportFormProps> = ({
               {selectedFieldIdsError}
             </p>
           )}
-          {renderFieldGroups()}
+          {filteredFieldGroups.length ? (
+            <Accordion className={classes.accordion}>
+              {accordionItems}
+            </Accordion>
+          ) : (
+            <p className={classes.emptyState}>
+              No attributes match your search.
+            </p>
+          )}
         </div>
       </>
     ) : (
@@ -293,7 +325,7 @@ const ExportForm: FC<ExportFormProps> = ({
         onBackButtonPress={step === 1 ? handleBack : undefined}
         submitButtonLoading={isSubmitting || formik.isSubmitting}
         submitButtonText={step === 0 ? "Next" : "Generate TSV"}
-        onCancel={popSidePath}
+        onCancel={onCancel}
       />
     </Form>
   );

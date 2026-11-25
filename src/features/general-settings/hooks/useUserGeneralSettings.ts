@@ -29,7 +29,11 @@ export default function useUserGeneralSettings() {
     EditUserDetailsParams
   >({
     mutationKey: ["userDetails", "edit"],
-    mutationFn: async (params) => authFetch.post("person", params),
+    mutationFn: async (params) =>
+      authFetch.post("person", {
+        ...params,
+        preferred_account: params.preferred_account || undefined,
+      }),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["userDetails", "get"] }),
   });

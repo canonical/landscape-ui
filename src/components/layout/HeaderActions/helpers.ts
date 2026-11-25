@@ -11,6 +11,7 @@ export const combineActions = (
 const actionsHaveSameIdentity = (left: Action, right: Action): boolean =>
   left.label === right.label &&
   left.icon === right.icon &&
+  left.onClick === right.onClick &&
   Boolean(left.disabled) === Boolean(right.disabled);
 
 export const actionListsAreEqual = (

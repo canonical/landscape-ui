@@ -28,7 +28,6 @@ const SelfHostedLicensePage: FC = () => {
         }
       />
       <PageContent>
-        <hr className={`p-rule ${classes.rule}`} />
         <div className={classes.content}>
           <SelfHostedLicenseContainer />
         </div>

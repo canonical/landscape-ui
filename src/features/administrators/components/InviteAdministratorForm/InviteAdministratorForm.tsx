@@ -11,6 +11,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import { getValidationSchema } from "./helpers";
 import { getFormikError } from "@/utils/formikErrors";
+import { normalizeEmail } from "@/utils/validation/email";
 
 interface FormProps {
   email: string;
@@ -37,7 +38,10 @@ const InviteAdministratorForm: FC = () => {
 
   const handleSubmit = async (values: FormProps) => {
     try {
-      await inviteAdministrator(values);
+      await inviteAdministrator({
+        ...values,
+        email: normalizeEmail(values.email),
+      });
 
       closeSidePanel();
       notify.success({

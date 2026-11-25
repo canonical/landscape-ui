@@ -90,6 +90,28 @@ describe("SingleUpgradeProfileForm", () => {
     expect(screen.getByLabelText(/access group/i)).toBeEnabled();
   });
 
+  it.each([
+    ["0", "'Expires after' must be at least 1."],
+    ["-1", "'Expires after' must be at least 1."],
+    ["-1 ", "'Expires after' must be at least 1."],
+    [" ", "Enter an integer greater than or equal to 1."],
+    ["abc", "Enter an integer greater than or equal to 1."],
+    ["1.5", "'Expires after' must be an integer."],
+    ["", "Enter an integer greater than or equal to 1."],
+  ])("rejects an expiration value of %j", async (value, message) => {
+    const user = userEvent.setup();
+    renderWithProviders(<SingleUpgradeProfileForm action="add" />);
+
+    const expirationInput = screen.getByLabelText("Expires after");
+    await user.clear(expirationInput);
+    if (value) {
+      await user.type(expirationInput, value);
+    }
+    await user.tab();
+
+    expect(await screen.findByText(message)).toBeInTheDocument();
+  });
+
   it("shows read-only access group field in edit mode", () => {
     const { container } = renderWithProviders(
       <SingleUpgradeProfileForm action="edit" profile={upgradeProfiles[0]} />,

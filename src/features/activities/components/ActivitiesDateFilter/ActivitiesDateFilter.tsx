@@ -1,5 +1,4 @@
 import tableFilterClasses from "@/components/filter/TableFilter/TableFilter.module.scss";
-import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { Button, Form, Input } from "@canonical/react-components";
 import { Badge } from "@canonical/react-ds-global";
@@ -11,6 +10,9 @@ import { VALIDATION_SCHEMA } from "./constants";
 import type { FormProps } from "./types";
 
 interface ActivitiesDateFilterProps {
+  readonly fromDate: string;
+  readonly toDate: string;
+  readonly onChange: (values: FormProps) => void;
   readonly label?: ReactNode;
   readonly inline?: boolean;
 }
@@ -18,9 +20,10 @@ interface ActivitiesDateFilterProps {
 const ActivitiesDateFilter: FC<ActivitiesDateFilterProps> = ({
   label = "Date range",
   inline = false,
+  fromDate,
+  toDate,
+  onChange,
 }) => {
-  const { setPageParams, fromDate, toDate } = usePageParams();
-
   const formik = useFormik<FormProps>({
     initialValues: {
       fromDate: fromDate,
@@ -29,7 +32,7 @@ const ActivitiesDateFilter: FC<ActivitiesDateFilterProps> = ({
     enableReinitialize: true,
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: (values) => {
-      setPageParams({
+      onChange({
         fromDate: values.fromDate,
         toDate: values.toDate,
       });
@@ -84,7 +87,7 @@ const ActivitiesDateFilter: FC<ActivitiesDateFilterProps> = ({
                 appearance="base"
                 className="u-no-margin--bottom"
                 onClick={() => {
-                  setPageParams({
+                  onChange({
                     fromDate: "",
                     toDate: "",
                   });

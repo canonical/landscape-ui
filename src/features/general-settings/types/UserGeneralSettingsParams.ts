@@ -1,5 +1,5 @@
 export interface EditUserDetailsParams {
-  email: string;
+  email?: string;
   name: string;
   timezone: string;
   preferred_account?: string;

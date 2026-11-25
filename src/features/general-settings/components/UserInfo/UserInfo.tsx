@@ -1,7 +1,6 @@
 import type { FC } from "react";
 import type { UserDetails } from "../../types";
-import InfoItem from "@/components/layout/InfoItem";
-import { Col, Row } from "@canonical/react-components";
+import InfoGrid from "@/components/layout/InfoGrid";
 
 interface UserInfoProps {
   readonly userDetails: UserDetails;
@@ -9,28 +8,10 @@ interface UserInfoProps {
 
 const UserInfo: FC<UserInfoProps> = ({ userDetails }) => {
   return (
-    <Row className="u-no-padding--left u-no-padding--right">
-      <Col
-        size={6}
-        emptyLarge={4}
-        medium={2}
-        emptyMedium={3}
-        small={2}
-        emptySmall={2}
-      >
-        <InfoItem label="Name" value={userDetails.name} />
-      </Col>
-      <Col
-        size={6}
-        emptyLarge={4}
-        medium={2}
-        emptyMedium={3}
-        small={2}
-        emptySmall={2}
-      >
-        <InfoItem label="Email" value={userDetails.email} />
-      </Col>
-    </Row>
+    <InfoGrid dense>
+      <InfoGrid.Item label="Name" value={userDetails.name} large />
+      <InfoGrid.Item label="Email" value={userDetails.email} large />
+    </InfoGrid>
   );
 };
 

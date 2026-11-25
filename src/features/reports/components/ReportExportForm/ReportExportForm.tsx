@@ -36,7 +36,7 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
   bucketIds,
   otherIds,
 }) => {
-  const { closeSidePanel } = usePageParams();
+  const { closeSidePanel, popSidePath } = usePageParams();
   const { notify } = useNotify();
   const navigate = useNavigate();
   const debug = useDebug();
@@ -193,6 +193,7 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
             ? "cve_id and cve_status will always be the first two columns in this export."
             : undefined
         }
+        onCancel={popSidePath}
       />
     </>
   );

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "pragma": {
+      "command": "pnpm",
+      "args": ["exec", "pragma", "mcp", "serve"]
+    }
+  }
+}
