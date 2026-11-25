@@ -48,7 +48,7 @@ Because the setup is global, unit tests should assume network requests must be h
 
 `vitest.config.ts` splits the suite into two [projects](https://vitest.dev/guide/projects):
 
-- `vm` (almost every file) uses `pool: "vmThreads"`. Workers and the `jsdom` import are reused across files, and each file still gets a fresh VM context, so module state and globals stay isolated per file. This avoids paying worker and environment start-up for every file.
+- `vm` (almost every file) uses `pool: "vmThreads"`. Workers and the `jsdom` import are reused across files, and each file still gets a fresh VM context, so module state and most globals stay isolated per file. This avoids paying worker and environment start-up for every file. Node's `process` is shared across files in a worker, so `src/tests/setup.ts` calls `vi.unstubAllEnvs()` in `afterEach` to prevent `vi.stubEnv` overrides from leaking; direct writes to `process.env` should be restored in cleanup hooks.
 - `threads` uses the classic `pool: "threads"` for the short `THREADS_POOL_TESTS` list in `vitest.config.ts`.
 
 Under `vmThreads`, `window` is the real `jsdom` window, so a few patterns do not work there:
@@ -222,11 +222,11 @@ Use this when you want to keep most of a feature module real but replace one hoo
 
 ### Mock lifecycle
 
-Vitest clears every mock's call history before each test (`clearMocks` is on by default since Vitest 5), so a mock shared across tests, such as a `vi.fn()` in a `props` object at the top of a `describe`, only records calls from the current test. Assertions on it cannot pass because of an earlier test.
+Vitest clears every mock's call history before each test (`clearMocks` is on by default since Vitest 5), including calls made in `beforeAll`, so a mock shared across tests, such as a `vi.fn()` in a `props` object at the top of a `describe`, only records calls from the current test. Assertions on it cannot pass because of an earlier test.
 
 Current suite patterns also use:
 
-- `vi.clearAllMocks()` to reset call history mid-test or in hooks that run outside a test, such as `beforeAll`
+- `vi.clearAllMocks()` to reset call history mid-test
 - `vi.resetAllMocks()` when return values and implementations should be reset
 - `vi.restoreAllMocks()` after spies such as `console.warn`
 
