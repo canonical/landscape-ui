@@ -4,6 +4,10 @@ import { screen, waitFor } from "@testing-library/react";
 import LoginMethods from "./LoginMethodsLayout";
 import userEvent from "@testing-library/user-event";
 import { allLoginMethods, noneLoginMethods } from "@/tests/mocks/loginMethods";
+import useEnv from "@/hooks/useEnv";
+import { saasEnv, selfHostedEnv } from "@/tests/mocks/env";
+
+vi.mock("@/hooks/useEnv");
 
 const EMPTY_MESSAGE =
   "It seems like you have no way to get in. Please contact our support team.";
@@ -15,6 +19,44 @@ const emptyMessageNotBeInTheDocument = () => {
 };
 
 describe("LoginMethodsLayout", () => {
+  beforeEach(() => {
+    vi.mocked(useEnv).mockReturnValue(selfHostedEnv);
+  });
+
+  it("offers local password recovery alongside SSO on self-hosted deployments", () => {
+    renderWithProviders(<LoginMethods methods={allLoginMethods} />);
+
+    expect(
+      screen.getByRole("link", { name: "Forgot password?" }),
+    ).toHaveAttribute("href", "/forgot-my-password");
+  });
+
+  it.each([
+    ["SaaS", saasEnv, allLoginMethods],
+    [
+      "PAM-only",
+      selfHostedEnv,
+      { ...noneLoginMethods, pam: { available: true, enabled: true } },
+    ],
+    [
+      "SSO-only",
+      selfHostedEnv,
+      { ...noneLoginMethods, ubuntu_one: { available: true, enabled: true } },
+    ],
+    [
+      "disabled passwords",
+      selfHostedEnv,
+      { ...allLoginMethods, password: { available: true, enabled: false } },
+    ],
+  ])("does not offer local recovery for %s", (_name, env, methods) => {
+    vi.mocked(useEnv).mockReturnValue(env);
+    renderWithProviders(<LoginMethods methods={methods} />);
+
+    expect(
+      screen.queryByRole("link", { name: "Forgot password?" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("should render no sign in methods", async () => {
     renderWithProviders(<LoginMethods methods={noneLoginMethods} />);
 

@@ -6,6 +6,9 @@ import {
 
 export const AUTH_PATHS = {
   login: "/login",
+  forgotPassword: "/forgot-my-password",
+  resetPassword: "/reset-passphrase/:secureToken",
+  resetPasswordWithoutToken: "/reset-passphrase",
   supportLogin: "/support/login",
   attach: "/attach",
   handleOidc: "/handle-auth/oidc",
@@ -17,6 +20,10 @@ export const AUTH_PATHS = {
 
 export const AUTH_ROUTES = {
   login: createCustomRoute(AUTH_PATHS.login),
+  forgotPassword: createRoute(AUTH_PATHS.forgotPassword),
+  resetPassword: createRouteWithParams<{ secureToken: string }>(
+    AUTH_PATHS.resetPassword,
+  ),
   attach: createRoute(AUTH_PATHS.attach),
   invitation: createRouteWithParams<{ secureId: string }>(
     AUTH_PATHS.invitation,

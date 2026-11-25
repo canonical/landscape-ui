@@ -3,10 +3,31 @@ import { PATHS } from "@/libs/routes";
 import { GuestGuard } from "@/components/guards/GuestGuard";
 import { FeatureGuard } from "@/components/guards/FeatureGuard";
 import * as Pages from "@/routes/elements";
+import { PasswordRecoveryGuard } from "@/features/password-reset";
 
 export const AuthRoutes = (
   <Route>
     <Route path={PATHS.auth.invitation} element={<Pages.InvitationPage />} />
+    <Route
+      element={
+        <PasswordRecoveryGuard>
+          <Outlet />
+        </PasswordRecoveryGuard>
+      }
+    >
+      <Route
+        path={PATHS.auth.forgotPassword}
+        element={<Pages.ForgotPasswordPage />}
+      />
+      <Route
+        path={PATHS.auth.resetPassword}
+        element={<Pages.ResetPasswordPage />}
+      />
+      <Route
+        path={PATHS.auth.resetPasswordWithoutToken}
+        element={<Pages.ResetPasswordPage />}
+      />
+    </Route>
     <Route
       element={
         <GuestGuard>

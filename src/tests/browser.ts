@@ -3,6 +3,7 @@ import {
   API_URL_DEB_ARCHIVE,
   API_URL_OLD,
   MSW_ENDPOINTS_TO_INTERCEPT,
+  ROOT_PATH,
 } from "@/constants";
 import type { AuthUser } from "@/features/auth";
 import type { RequestHandler } from "msw";
@@ -13,6 +14,11 @@ import {
   setStaffGlobalRoles,
   staffState,
 } from "./server/handlers/staffAccounts";
+import {
+  getPasswordResetState,
+  passwordResetOutbox,
+  restorePasswordResetState,
+} from "./server/handlers/passwordReset";
 
 // --- Dev session ---
 //
@@ -24,6 +30,7 @@ import {
 
 const SESSION_KEY = "msw:authState";
 const GLOBAL_ROLES_KEY = "msw:globalRoles";
+const PASSWORD_RESET_KEY = "msw:passwordReset";
 
 const readJson = <T>(key: string): T | null => {
   const value = sessionStorage.getItem(key);
@@ -88,13 +95,25 @@ declare global {
   interface Window {
     msw?: {
       setGlobalRoles: (roles: string[]) => void;
+      getPasswordResetEmails: () => { email: string; url: string }[];
     };
   }
 }
 
 setStaffGlobalRoles(readGlobalRoles());
 
+const recoveryState =
+  readJson<ReturnType<typeof getPasswordResetState>>(PASSWORD_RESET_KEY);
+if (recoveryState) {
+  restorePasswordResetState(recoveryState);
+}
+
 window.msw = {
+  getPasswordResetEmails: () =>
+    passwordResetOutbox.map(({ email, token }) => ({
+      email,
+      url: `${window.location.origin}${ROOT_PATH.replace(/\/$/, "")}/reset-passphrase/${encodeURIComponent(token)}`,
+    })),
   setGlobalRoles: (roles) => {
     sessionStorage.setItem(GLOBAL_ROLES_KEY, JSON.stringify(roles));
     setStaffGlobalRoles(roles);
@@ -159,6 +178,15 @@ const handlers: RequestHandler[] = [
 export const worker = setupWorker(...handlers);
 
 worker.events.on("response:mocked", ({ request, response }) => {
+  if (
+    response.ok &&
+    /\/password-reset\/(request|confirm)$/.test(new URL(request.url).pathname)
+  ) {
+    sessionStorage.setItem(
+      PASSWORD_RESET_KEY,
+      JSON.stringify(getPasswordResetState()),
+    );
+  }
   rememberSession(request, response).catch((error: unknown) => {
     console.warn("MSW: could not remember the session:", error);
   });
