@@ -39,7 +39,8 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const fetchButton = await screen.findByRole("button", {
       name: /fetch packages/i,
     });
-    expect(fetchButton).toHaveAttribute("aria-disabled", "true");
+    expect(fetchButton).toBeDisabled();
+    expect(fetchButton).toHaveClass("ds", "button", "secondary");
 
     const importButton = await screen.findByRole("button", {
       name: /import packages/i,
@@ -54,7 +55,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     await user.type(input, "https://example.com/packages");
 
     const button = screen.getByRole("button", { name: /fetch packages/i });
-    expect(button).not.toHaveAttribute("aria-disabled");
+    expect(button).toBeEnabled();
   });
 
   it("shows validation result with packages after successful fetch", async () => {
@@ -428,9 +429,11 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     await user.click(fetchButton);
 
     await waitFor(() => {
-      expect(
-        screen.queryByRole("button", { name: /fetch packages/i }),
-      ).not.toBeInTheDocument();
+      const loadingFetchButton = screen.getByRole("button", {
+        name: /fetch packages/i,
+      });
+      expect(loadingFetchButton).toHaveAttribute("aria-busy", "true");
+      expect(loadingFetchButton).toBeDisabled();
     });
   });
 

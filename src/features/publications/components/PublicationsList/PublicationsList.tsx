@@ -2,7 +2,7 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions/const
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
 import usePageParams from "@/hooks/usePageParams";
-import { Button } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -53,8 +53,8 @@ const PublicationsList: FC<PublicationsListProps> = ({
         Cell: ({ row }: CellProps<Publication>) => (
           <Button
             type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+            variant="link"
+            className={classes.nameButton}
             onClick={createPageParamsSetter({
               sidePath: ["view"],
               name: row.original.publicationId,

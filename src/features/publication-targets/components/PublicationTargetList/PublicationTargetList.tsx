@@ -4,7 +4,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
-import { Button } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC, ReactElement } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -14,6 +14,7 @@ import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
 import { pluralize } from "@/utils/_helpers";
 import LoadingState from "@/components/layout/LoadingState";
+import classes from "./PublicationTargetList.module.scss";
 
 interface PublicationTargetListProps {
   readonly targets: PublicationTarget[];
@@ -76,8 +77,8 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
           return (
             <Button
               type="button"
-              appearance="link"
-              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+              variant="link"
+              className={classes.nameButton}
               onClick={createPageParamsSetter({
                 sidePath: ["view"],
                 name: row.original.publicationTargetId ?? "",

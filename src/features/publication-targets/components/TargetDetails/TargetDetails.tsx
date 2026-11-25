@@ -4,7 +4,7 @@ import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
 import useGetPublicationTarget from "../../api/useGetPublicationTarget";
 import usePageParams from "@/hooks/usePageParams";
 import SidePanel from "@/components/layout/SidePanel";
-import { Button, Icon, ICONS } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import { useMemo } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -18,6 +18,7 @@ import { AssociatedPublicationsList } from "@/features/publications";
 import { useBatchGetMirrors } from "@/features/mirrors";
 import { useBatchGetLocals } from "@/features/local-repositories";
 import { LINK_METHOD_OPTIONS } from "../../constants";
+import { ActionBar } from "@/components/ui";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const TargetDetails: FC = () => {
@@ -135,26 +136,24 @@ const TargetDetails: FC = () => {
     <>
       <SidePanel.Header>{publicationTarget.displayName}</SidePanel.Header>
       <SidePanel.Content>
-        <div className="p-segmented-control u-sv2">
+        <ActionBar>
           <Button
             type="button"
-            hasIcon
-            className="p-segmented-control__button"
+            importance="secondary"
+            icon="edit"
             onClick={handleEditTarget}
           >
-            <Icon name="edit" />
-            <span>Edit</span>
+            Edit
           </Button>
           <Button
             type="button"
-            className="p-segmented-control__button"
-            hasIcon
+            importance="secondary"
+            icon="delete"
             onClick={handleRemoveTarget}
           >
-            <Icon name={`${ICONS.delete}--negative`} />
-            <span className="u-text--negative">Remove</span>
+            Remove
           </Button>
-        </div>
+        </ActionBar>
         <Blocks>
           <Blocks.Item title="General">
             <InfoGrid dense>

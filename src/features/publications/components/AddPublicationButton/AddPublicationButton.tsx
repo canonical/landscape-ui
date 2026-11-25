@@ -1,18 +1,18 @@
 import usePageParams from "@/hooks/usePageParams";
-import { Button, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 
 const AddPublicationButton = () => {
   const { createPageParamsSetter } = usePageParams();
 
   return (
     <Button
-      appearance="positive"
-      hasIcon
       type="button"
+      importance="primary"
+      anticipation="constructive"
+      icon="plus"
       onClick={createPageParamsSetter({ sidePath: ["add"], name: "" })}
     >
-      <Icon name="plus" light />
-      <span>Add publication</span>
+      Add publication
     </Button>
   );
 };

@@ -5,7 +5,8 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import { ActionButton, Form, Input } from "@canonical/react-components";
+import { Form, Input } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { useFormik } from "formik";
 import { useGetLocalRepository, useImportRepositoryPackages } from "../../api";
 import * as Yup from "yup";
@@ -148,10 +149,11 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
               }}
             />
 
-            <ActionButton
+            <Button
+              type="button"
+              importance="secondary"
               disabled={!formik.values.source}
               onClick={handleValidate}
-              type="button"
               className={classes.button}
               loading={
                 isImportingRepositoryPackages ||
@@ -160,7 +162,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
               }
             >
               Fetch packages
-            </ActionButton>
+            </Button>
           </div>
 
           {validationTask?.done && (

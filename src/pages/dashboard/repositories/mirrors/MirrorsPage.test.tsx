@@ -32,9 +32,15 @@ describe("MirrorsPage", () => {
       await screen.findByRole("heading", { name: "Mirrors" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Ubuntu archive mirror")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Add mirror" }),
-    ).not.toHaveAttribute("aria-disabled");
+    const addMirrorButton = screen.getByRole("button", { name: "Add mirror" });
+    expect(addMirrorButton).toBeEnabled();
+    expect(addMirrorButton).toHaveClass(
+      "ds",
+      "button",
+      "primary",
+      "constructive",
+    );
+    expect(addMirrorButton).toHaveIcon("plus");
   });
 
   it("shows empty state when there are no mirrors", async () => {

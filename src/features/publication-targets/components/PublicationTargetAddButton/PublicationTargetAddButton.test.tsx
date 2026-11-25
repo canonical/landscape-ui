@@ -11,9 +11,11 @@ describe("PublicationTargetAddButton", () => {
   it("renders the Add publication target button", () => {
     renderWithProviders(<PublicationTargetAddButton />);
 
-    expect(
-      screen.getByRole("button", { name: /add publication target/i }),
-    ).toBeInTheDocument();
+    const button = screen.getByRole("button", {
+      name: /add publication target/i,
+    });
+    expect(button).toHaveClass("ds", "button", "primary", "constructive");
+    expect(button).toHaveIcon("plus");
   });
 
   it("sets sidePath=add in the URL when clicked", async () => {

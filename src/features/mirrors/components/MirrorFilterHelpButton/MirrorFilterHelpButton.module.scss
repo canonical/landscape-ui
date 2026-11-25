@@ -1,30 +1,37 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.helpButton {
-  margin-top: 2.5rem;
+@layer app {
+  .helpButton {
+    /* Match adjacent Vanilla text input height until A3 form migration. */
+    block-size: calc(
+      1.5rem + 2 * $input-vertical-padding + $input-border-thickness
+    );
+    margin-top: 2.5rem;
 
-  &,
-  &:active,
-  &:focus,
-  &:hover {
-    background-color: $colors--theme--background-inputs;
-    border-bottom: $input-border-thickness solid
-      $colors--theme--border-high-contrast;
-    border-left: 0;
-    border-right: 0;
-    padding-left: calc($sph--large + $sph--x-small);
-    padding-right: calc($sph--large + $sph--x-small);
-    position: relative;
-  }
+    &,
+    &:active,
+    &:focus,
+    &:hover {
+      background-color: $colors--theme--background-inputs;
+      border-bottom: $input-border-thickness solid
+        $colors--theme--border-high-contrast;
+      border-left: 0;
+      border-right: 0;
+      border-top: 0;
+      padding-left: calc($sph--large + $sph--x-small);
+      padding-right: calc($sph--large + $sph--x-small);
+      position: relative;
+    }
 
-  &::before {
-    border-left: 1px solid $color-mid-light;
-    bottom: 2px;
-    content: "";
-    left: 0;
-    position: absolute;
-    top: 2px;
+    &::before {
+      border-left: 1px solid $color-mid-light;
+      bottom: 2px;
+      content: "";
+      left: 0;
+      position: absolute;
+      top: 2px;
+    }
   }
 }
 
