@@ -19,13 +19,14 @@ concurrency:
 
 jobs:
   route:
+    # Manual rehearsal runs use only the merged workflow and code from main.
+    if: github.event_name == 'push' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       decision: ${{ steps.version.outputs.decision }}
       version: ${{ steps.version.outputs.version }}
       deb-version: ${{ steps.version.outputs.deb-version }}
       marker: ${{ steps.version.outputs.marker }}
-      sha: ${{ steps.version.outputs.sha }}
       ppa: ${{ steps.version.outputs.ppa }}
     steps:
       - uses: actions/checkout@v5
@@ -43,7 +44,7 @@ jobs:
 
   prepare:
     needs: route
-    if: needs.route.outputs.decision == 'prepare'
+    if: github.event_name == 'push' && needs.route.outputs.decision == 'prepare'
     uses: ./.github/workflows/beta-release-prep.yml
     secrets: inherit
 
@@ -82,7 +83,7 @@ jobs:
         run: pnpm run build
         env:
           VITE_APP_VERSION: ${{ needs.route.outputs.version }}
-          VITE_APP_COMMIT: ${{ needs.route.outputs.sha }}
+          VITE_APP_COMMIT: ${{ github.sha }}
           VITE_API_URL: /api/v2/
           VITE_API_URL_OLD: /api/
           VITE_ROOT_PATH: /portal/
@@ -110,7 +111,7 @@ jobs:
       - name: Publish beta assets
         env:
           VERSION: ${{ needs.route.outputs.version }}
-          BUILD_SHA: ${{ needs.route.outputs.sha }}
+          BUILD_SHA: ${{ github.sha }}
         run: |
           DEST="ppa-build-${GITHUB_REF_NAME#beta/}"
           require_current_tip() {
@@ -137,7 +138,6 @@ jobs:
     uses: ./.github/workflows/beta-sbom.yml
     with:
       version: ${{ needs.route.outputs.version }}
-      sha: ${{ needs.route.outputs.sha }}
 
   package-source:
     needs: [route, build]
@@ -148,7 +148,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ needs.route.outputs.sha }}
           persist-credentials: false
       - name: Find the original source artifact on retry
         id: retained
@@ -250,12 +249,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ needs.route.outputs.sha }}
           fetch-depth: 0
       - name: Tag the built commit
         env:
           VERSION: ${{ needs.route.outputs.version }}
-          SHA: ${{ needs.route.outputs.sha }}
+          SHA: ${{ github.sha }}
         run: |
           if git show-ref --verify --quiet "refs/tags/$VERSION"; then
             EXISTING_SHA=$(git rev-parse "refs/tags/$VERSION^{commit}")
