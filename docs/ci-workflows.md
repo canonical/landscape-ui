@@ -36,13 +36,23 @@ Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual
 
 ## Beta Release Prep (`beta-release-prep.yml`)
 
-**Trigger:** creation of a `beta/YY.MM-beta.N` branch; `workflow_dispatch` (guarded to `beta/*` branches, so a dispatch on a tag such as `27.04-beta.3` does nothing).
+**Trigger:** called by the beta release workflow for unprepared pushes; also supports `workflow_dispatch` on beta branches.
 
-Runs `scripts/beta-version-update.cjs` and opens a `beta-prep/<version>` PR against the beta branch that rolls pending changesets into `CHANGELOG.md`, adds the `YY.MM~beta.N` stanza to `debian/changelog`, and sets `package.json` to `YY.MM-beta.N`. No build yet; beta builds are separate follow-up work. See `RELEASES.md` §5a.
+Runs `scripts/beta-version-update.cjs` and opens a `beta-prep/<version>` PR against the beta branch that rolls pending changesets into `CHANGELOG.md`, adds the `YY.MM~beta.N` stanza to `debian/changelog`, and sets `package.json` to `YY.MM-beta.N`. See `RELEASES.md` §5a.
 
 **Rule:** the Landscape Packager App opens prep PRs so standard checks run. `validate.yml` waives only the new Changeset requirement for this repository's `landscape-packager[bot]` PRs from `beta-prep/*` into `beta/*`. Prep writes the beta heading even when there are no summaries.
 
 **Rule:** a re-run refuses to overwrite a `beta-prep/*` branch that has commits not made by the workflow (such as the release owner's CHANGELOG edits), and pushes with `--force-with-lease` against the state it checked. `scripts/beta-version-update.cjs` needs `dpkg` to keep `debian/changelog` in version order.
+
+## Beta Release and PPA Build (`beta-release.yml`)
+
+**Trigger:** push → `beta/**`. One decision routes an unprepared branch to prep, a prepared untagged version to publication, or an already tagged version to skip. Publication validates the exact UI heading and Debian version, builds `/portal/` once and retains the dist and source artifacts for 30 days. It does not open a Version Packages PR.
+
+`beta-series-upload.yml` signs uploads with `LAUNCHPAD_GPG_PRIVATE_KEY` and checks Launchpad for source acceptance, including after an ambiguous `dput` result. Jammy acceptance precedes Noble and Resolute uploads. Recover using **Re-run failed jobs** on the original run; accepted uploads must match that run and SHA.
+
+Direct uploads do not need inbox access. Leave `LAUNCHPAD_VERIFY_REJECTION_EMAIL` unset until a throwaway PPA confirms that a cross-series duplicate notification includes enough information to match the exact attempt. When enabled, the workflow uses `LAUNCHPAD_IMAP_HOST`, `LAUNCHPAD_IMAP_USER`, `LAUNCHPAD_IMAP_PASSWORD` and `LAUNCHPAD_COPY_CREDENTIALS` to copy only on a confirmed cross-series duplicate. Otherwise the release owner checks the rejection, copies the exact published Jammy binary to missing series if appropriate, and reruns the failed jobs. Do not copy on an unexplained timeout or signing failure.
+
+The tag follows source acceptance or copy for all series. `beta-sbom.yml` scans the exact build SHA in parallel and retains a version-and-SHA-specific SPDX artifact for 90 days; it is not a tag dependency. Run `python3 scripts/test-beta-release.py` for local routing and publication checks.
 
 ## Release and PPA Build (`release-and-build.yml`)
 

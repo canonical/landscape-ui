@@ -6,6 +6,7 @@ const {
   renderChangelogSection,
   prependChangelog,
 } = require("./manual-version-update.cjs");
+const { parseBetaVersion } = require("./beta-release-version.cjs");
 
 /**
  * Release-preparation versioning for beta/** branches.
@@ -62,30 +63,6 @@ function getBranchOrVersion() {
   if (process.argv[2]) return process.argv[2];
   if (process.env.GITHUB_REF_NAME) return process.env.GITHUB_REF_NAME;
   return execSync("git rev-parse --abbrev-ref HEAD").toString().trim();
-}
-
-// Beta number: no leading zeros and no beta.0. dpkg compares numerically,
-// so 27.04~beta.04 and 27.04~beta.4 would be the same Debian version.
-const BETA_RE = /^(?:beta\/)?(\d{2}\.(?:04|10))-beta\.([1-9]\d*)$/;
-
-// Throws (rather than exiting) so importers get a catchable error; main()
-// turns it into a non-zero exit.
-function parseBetaVersion(input) {
-  const match = BETA_RE.exec(input);
-  if (!match) {
-    throw new Error(
-      `Invalid beta branch/version: '${input}'. ` +
-        `Expected beta/YY.MM-beta.N with N >= 1 and no leading zeros ` +
-        `(e.g. beta/27.04-beta.4).`,
-    );
-  }
-  const [, cycle, betaNumber] = match;
-  return {
-    // package.json version / CHANGELOG section key / git tag form
-    version: `${cycle}-beta.${betaNumber}`,
-    // debian/changelog version (tilde sorts beta before the final release)
-    debVersion: `${cycle}~beta.${betaNumber}-0landscape0`,
-  };
 }
 
 // "Thu, 08 Jan 2026 11:01:29 +0000" (RFC 2822, UTC) as debchange writes it.

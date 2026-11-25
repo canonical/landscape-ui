@@ -1,0 +1,45 @@
+name: Beta SBOM evidence
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      sha:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.sha }}
+          persist-credentials: false
+      - name: Generate SPDX SBOM from the lockfile
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: spdx-json
+          output: landscape-ui.spdx.json
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
+      - name: Record the scanned version and commit
+        env:
+          VERSION: ${{ inputs.version }}
+          SHA: ${{ inputs.sha }}
+        run: |
+          jq -n --arg version "$VERSION" --arg sha "$SHA" '{version: $version, sha: $sha}' > beta-sbom-metadata.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ inputs.version }}-${{ inputs.sha }}
+          path: |
+            landscape-ui.spdx.json
+            beta-sbom-metadata.json
+          if-no-files-found: error
+          retention-days: 90
