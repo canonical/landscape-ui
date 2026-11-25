@@ -35,7 +35,7 @@ export const AvailableProviderList: FC<AvailableProviderListProps> = ({
   const { invitationId } = useInvitation();
 
   const loginRedirect = getLoginRedirect(searchParams);
-  const redirectTo = loginRedirect.redirectTo;
+  const { redirectTo } = loginRedirect;
   // An invitation replaces the target, so only the flag from the URL applies.
   const external = invitationId
     ? searchParams.has("external")

@@ -14,6 +14,8 @@ const options = activityTypes.map((type) => ({
 const props: ComponentProps<typeof ActivityTypeFilter> = {
   options,
   label: "Type",
+  type: "",
+  onItemSelect: vi.fn(),
 };
 
 describe("ActivityTypeFilter", () => {
@@ -30,6 +32,17 @@ describe("ActivityTypeFilter", () => {
     expect(
       screen.getByRole("button", { name: activityTypes[0] }),
     ).toBeInTheDocument();
+  });
+
+  it("notifies the caller when a type is selected", async () => {
+    const onItemSelect = vi.fn();
+    renderWithProviders(
+      <ActivityTypeFilter {...props} onItemSelect={onItemSelect} />,
+    );
+    await user.click(screen.getByRole("button", { name: "Type" }));
+    await user.click(screen.getByRole("button", { name: activityTypes[0] }));
+    expect(onItemSelect).toHaveBeenCalledWith(activityTypes[0]);
+    expect(onItemSelect).toHaveBeenCalledOnce();
   });
 
   it("handles case-insensitive search", async () => {

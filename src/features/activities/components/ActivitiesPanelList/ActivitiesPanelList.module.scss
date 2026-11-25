@@ -1,0 +1,32 @@
+.descriptionContent {
+  display: flex;
+  min-width: 0;
+
+  > :last-child {
+    min-width: 0;
+  }
+}
+
+.statusContent {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cellText {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.descriptionText {
+  flex: 1;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -2,6 +2,7 @@ import { API_URL, DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type { AddUSGProfileParams, USGProfile } from "@/features/usg-profiles";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { activityParents } from "@/tests/mocks/activity";
 import { usgProfiles } from "@/tests/mocks/usgProfiles";
 import { http, HttpResponse } from "msw";
 import {
@@ -156,7 +157,7 @@ export default [
       }
     }
 
-    return HttpResponse.json();
+    return HttpResponse.json(activityParents[0]);
   }),
 
   http.post(`${API_URL}usg-profiles/:id\\:archive`, async () => {

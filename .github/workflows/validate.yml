@@ -2,7 +2,7 @@ name: Validate
 
 on:
   pull_request:
-    branches: [main, "release/**", "point/**"]
+    branches: [main, "release/**", "point/**", "beta/**"]
   merge_group:
     types: [checks_requested]
 
@@ -26,19 +26,13 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: "pnpm"
-
-      - name: Install dependencies
         id: install
-        run: pnpm install --frozen-lockfile
+        uses: pnpm/setup@v3
+        with:
+          version: 12
+          runtime: node@26
+          cache: true
+          require-lockfile: true
 
       # Validate's only type check (the e2e build no longer runs tsc; `pnpm
       # build` elsewhere still does). It lives in this job so it stays behind
@@ -61,18 +55,12 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/setup@v3
         with:
-          version: 10
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          version: 12
+          runtime: node@26
+          cache: true
+          require-lockfile: true
 
       - name: Run Prettier
         run: pnpm prettier --check src
@@ -85,18 +73,12 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/setup@v3
         with:
-          version: 10
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          version: 12
+          runtime: node@26
+          cache: true
+          require-lockfile: true
 
       - name: Run Stylelint
         run: pnpm stylelint "src/**/*.module.scss"
@@ -110,7 +92,7 @@ jobs:
     container:
       # Must match the @playwright/test version in package.json; the
       # "Check Playwright image" step fails if they drift.
-      image: mcr.microsoft.com/playwright:v1.64.0
+      image: mcr.microsoft.com/playwright:v1.65.1
     environment: dev
     strategy:
       fail-fast: false
@@ -145,18 +127,12 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/setup@v3
         with:
-          version: 10
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          version: 12
+          runtime: node@26
+          cache: true
+          require-lockfile: true
 
       # Vite only: lint and the type check run in the ESLint job.
       - name: Build the project
@@ -228,18 +204,12 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/setup@v3
         with:
-          version: 10
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          version: 12
+          runtime: node@26
+          cache: true
+          require-lockfile: true
 
       # VITEST_SHARD turns off the coverage thresholds in vitest.config.ts:
       # they only make sense for the whole suite, so the "Vitest" job enforces
@@ -269,7 +239,8 @@ jobs:
   # The required "Vitest" check. GitHub counts a skipped required check as
   # passing, so this job fails unless every shard succeeded. After a cancel
   # (a newer push) it is skipped on PRs to main, where the merge queue re-runs
-  # Validate; release/point PRs have no merge queue, so there it still runs.
+  # Validate; release/point/beta PRs have no merge queue, so there it still
+  # runs.
   unit-tests-merge:
     name: Vitest
     needs: unit-tests
@@ -283,18 +254,12 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/setup@v3
         with:
-          version: 10
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          version: 12
+          runtime: node@26
+          cache: true
+          require-lockfile: true
 
       - name: Download blob reports
         uses: actions/download-artifact@v4
@@ -340,7 +305,16 @@ jobs:
         with: { fetch-depth: 0 }
 
       - name: Verify changeset present
-        if: github.event.pull_request.base.ref
+        # Beta Release Prep PRs consume changesets rather than adding one, so
+        # they are exempt — but only genuine ones: opened by the workflow's
+        # bot, from this repository, from beta-prep/* into beta/*. Branch
+        # names alone are author-controlled and must not skip this check.
+        if: >-
+          github.event.pull_request.base.ref &&
+          !(startsWith(github.event.pull_request.head.ref, 'beta-prep/') &&
+            startsWith(github.event.pull_request.base.ref, 'beta/') &&
+            github.event.pull_request.user.login == 'landscape-packager[bot]' &&
+            github.event.pull_request.head.repo.full_name == github.repository)
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: | # js

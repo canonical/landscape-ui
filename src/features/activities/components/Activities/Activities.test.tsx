@@ -1,231 +1,142 @@
-import { NO_DATA_TEXT } from "@/components/layout/NoData";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { ROUTES } from "@/libs/routes";
-import date from "@/libs/date";
-import { resetScreenSize, setScreenSize } from "@/tests/helpers";
-import {
-  activities,
-  INVALID_ACTIVITY_SEARCH_QUERY,
-} from "@/tests/mocks/activity";
+import { activities } from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
+import * as Constants from "@/constants";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import Activities from "./Activities";
 
-const setSelectedActivities = vi.fn();
-const defaultProps: ComponentProps<typeof Activities> = {
-  activities,
-  activitiesCount: 3,
-  isGettingActivities: false,
-  selectedActivities: [],
-  setSelectedActivities,
+type ActivityAvailability = Pick<
+  ComponentProps<typeof Activities>,
+  "availableActions" | "availableFilters" | "searchHelpTerms"
+>;
+
+const activityGroupAvailability: ActivityAvailability = {
+  availableActions: { approve: false, cancel: false, redo: false },
+  availableFilters: { status: true, type: false, date: true },
+  searchHelpTerms: {
+    id: true,
+    parentId: false,
+    createdAfter: true,
+    createdBefore: true,
+    creator: true,
+    computer: false,
+    type: false,
+  },
 };
 
+const instanceAvailability: ActivityAvailability = {
+  availableActions: { approve: true, cancel: true, redo: true },
+  availableFilters: { status: true, type: true, date: true },
+  searchHelpTerms: {
+    id: true,
+    parentId: true,
+    createdAfter: true,
+    createdBefore: true,
+    creator: true,
+    computer: false,
+    type: true,
+  },
+};
+
+const getProps = (
+  availability: ActivityAvailability,
+  overrides: Partial<ComponentProps<typeof Activities>> = {},
+): ComponentProps<typeof Activities> => ({
+  children: <div data-testid="activity-list" />,
+  activities,
+  activitiesCount: activities.length,
+  selectedActivities: [],
+  setSelectedActivities: vi.fn(),
+  ...availability,
+  ...overrides,
+});
+
 describe("Activities", () => {
-  const user = userEvent.setup();
-
-  describe("Table rendering", () => {
-    it("should render activities table with correct columns", () => {
-      renderWithProviders(<Activities {...defaultProps} />);
-
-      const columnHeaders = [
-        "Description",
-        "Status",
-        "Instance",
-        "Created at",
-        "Completed at",
-        "Creator",
-      ];
-      const table = screen.getByRole("table");
-      expect(table).toHaveTexts(columnHeaders);
-    });
-
-    it("should render each computer title linked to its instance", () => {
-      renderWithProviders(<Activities {...defaultProps} />);
-
-      const table = screen.getByRole("table");
-      const instanceLinks = within(table).getAllByRole("link");
-
-      expect(instanceLinks.map((link) => link.textContent)).toEqual(
-        activities.map((activity) => activity.computer_title),
-      );
-      expect(instanceLinks[0]).toHaveAttribute(
-        "href",
-        ROUTES.instances.details.single(activities[0].computer_id),
-      );
-    });
-
-    it("should render the completion time for each activity", () => {
-      renderWithProviders(<Activities {...defaultProps} />);
-
-      const table = screen.getByRole("table");
-      const headerCells = within(table).getAllByRole("columnheader");
-      const completionTimeColumnIndex = headerCells.findIndex((cell) =>
-        cell.textContent?.includes("Completed at"),
-      );
-      const [, ...rows] = within(table).getAllByRole("row");
-
-      activities.forEach(({ completion_time }, index) => {
-        assert(rows[index], "Row should exist for the activity");
-        const cells = within(rows[index]).getAllByRole("cell");
-        expect(cells[completionTimeColumnIndex]).toHaveTextContent(
-          completion_time
-            ? date(completion_time).format(DISPLAY_DATE_TIME_FORMAT)
-            : NO_DATA_TEXT,
-        );
-      });
-    });
+  afterEach(() => {
+    resetScreenSize();
+    vi.restoreAllMocks();
   });
 
-  describe("Empty state", () => {
-    it("should display empty message when no activities are present", () => {
-      renderWithProviders(
-        <Activities {...defaultProps} activities={[]} activitiesCount={0} />,
-      );
+  it.each([
+    ["activity groups", activityGroupAvailability],
+    ["instance activities", instanceAvailability],
+  ])("configures filters and actions for %s", async (_scope, availability) => {
+    setScreenSize("xxl");
+    renderWithProviders(<Activities {...getProps(availability)} />);
 
+    expect(screen.getByTestId("activity-list")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Status" })).toBeInTheDocument();
+
+    if (availability.availableFilters.type) {
+      expect(screen.getByRole("button", { name: "Type" })).toBeInTheDocument();
+    } else {
       expect(
-        screen.getByText(
-          "No activities found according to your search parameters.",
-        ),
-      ).toBeInTheDocument();
-    });
+        screen.queryByRole("button", { name: "Type" }),
+      ).not.toBeInTheDocument();
+    }
 
-    it("should display empty message when invalid search query is used", async () => {
-      renderWithProviders(<Activities {...defaultProps} />);
+    for (const [name, available] of [
+      ["Approve", availability.availableActions.approve],
+      ["Cancel", availability.availableActions.cancel],
+      ["Redo", availability.availableActions.redo],
+    ] as const) {
+      if (available) {
+        expect(screen.getByRole("button", { name })).toBeInTheDocument();
+      } else {
+        expect(screen.queryByRole("button", { name })).not.toBeInTheDocument();
+      }
+    }
 
-      const searchInput = screen.getByPlaceholderText("Search");
-      await user.clear(searchInput);
-      await user.type(searchInput, INVALID_ACTIVITY_SEARCH_QUERY);
-    });
+    await userEvent.click(screen.getByRole("button", { name: "Status" }));
+    expect(
+      screen.queryByRole("button", { name: "Unapproved" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Failed" })).toBeInTheDocument();
   });
 
-  describe("Checkbox selection", () => {
-    it("should render checkbox for each activity", () => {
-      renderWithProviders(<Activities {...defaultProps} />);
-
-      const checkboxes = screen.getAllByRole("checkbox");
-      const checkboxesIncludingHeaderLength = activities.length + 1;
-      expect(checkboxes).toHaveLength(checkboxesIncludingHeaderLength);
-    });
-
-    it("should call setSelectedActivities when individual checkbox is clicked", async () => {
-      renderWithProviders(<Activities {...defaultProps} />);
-
-      const checkbox = screen.getByRole("checkbox", {
-        name: activities[0].summary,
-      });
-      await user.click(checkbox);
-
-      expect(setSelectedActivities).toHaveBeenCalledWith([activities[0]]);
-    });
-
-    it("should toggle all checkboxes when header checkbox is clicked", async () => {
-      renderWithProviders(<Activities {...defaultProps} />);
-
-      const headerCheckbox = screen.getByRole("checkbox", {
-        name: /toggle all/i,
-      });
-      await user.click(headerCheckbox);
-
-      expect(setSelectedActivities).toHaveBeenCalledWith(activities);
-    });
-  });
-
-  describe("Activity details", () => {
-    it("should open activity details side panel when description is clicked", async () => {
-      renderWithProviders(<Activities {...defaultProps} />);
-
-      const activityButton = screen.getByRole("button", {
-        name: activities[0].summary,
-      });
-      await user.click(activityButton);
-
-      expect(
-        screen.getByRole("heading", { name: activities[0].summary }),
-      ).toBeInTheDocument();
-    });
-  });
-
-  describe("ActivitiesHeader integration", () => {
-    afterEach(() => {
-      resetScreenSize();
-    });
-
-    it("should render ActivitiesHeader component", () => {
-      setScreenSize("xxl");
-      renderWithProviders(<Activities {...defaultProps} />);
-
-      expect(screen.getByPlaceholderText("Search")).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "Status" }),
-      ).toBeInTheDocument();
-    });
-  });
-
-  describe("Instance ID prop behavior", () => {
-    it("should include Instance column by default", () => {
-      renderWithProviders(<Activities {...defaultProps} />);
-
-      expect(screen.getByText("Instance")).toBeInTheDocument();
-    });
-
-    it("should exclude Instance column when instanceId is provided", () => {
-      renderWithProviders(<Activities {...defaultProps} instanceId={6} />);
-
-      expect(screen.queryByText("Instance")).not.toBeInTheDocument();
-    });
-
-    it("should hide the activity details instance field when opened with an instanceId", async () => {
-      renderWithProviders(<Activities {...defaultProps} instanceId={6} />);
-
-      const activityButton = screen.getByRole("button", {
-        name: activities[0].summary,
-      });
-      await user.click(activityButton);
-
-      const sidePanel = await screen.findByRole("complementary");
-      expect(
-        within(sidePanel).getByRole("heading", {
-          name: activities[0].summary,
-        }),
-      ).toBeInTheDocument();
-      expect(within(sidePanel).queryByText("Instance")).not.toBeInTheDocument();
-    });
-  });
-
-  describe("useOpenActivityDetails hook", () => {
-    it("should open activity details when navigated with state", async () => {
-      renderWithProviders(
-        <Activities {...defaultProps} />,
-        undefined,
-        ROUTES.activities.root(),
+  it.each([
+    ["activity groups", activityGroupAvailability, false],
+    ["instance activities", instanceAvailability, true],
+  ])(
+    "shows parent-id search help for %s: %s",
+    async (_scope, availability, includesParentId) => {
+      renderWithProviders(<Activities {...getProps(availability)} />);
+      await userEvent.click(screen.getByRole("button", { name: /help/i }));
+      const dialog = screen.getByRole("dialog", { name: /search help/i });
+      const rows = within(dialog).getAllByRole("row").slice(1);
+      const terms = rows.map(
+        (row) => within(row).getAllByRole("cell")[0]?.textContent,
       );
 
-      const sidePanel = await screen.findByRole("complementary");
-      expect(sidePanel).toBeVisible();
-    });
-  });
-
-  describe("Status icons", () => {
-    it("should render status with appropriate icon", () => {
-      const activitiesWithDifferentStatuses = [
-        { ...activities[0], activity_status: "succeeded" as const },
-        { ...activities[1], activity_status: "failed" as const },
-        { ...activities[2], activity_status: "waiting" as const },
-      ];
-
-      renderWithProviders(
-        <Activities
-          {...defaultProps}
-          activities={activitiesWithDifferentStatuses}
-        />,
+      expect(terms).toContain("id:<activity_id>");
+      expect(terms).toContain("created-after:<date>");
+      expect(terms.includes("parent-id:<parent_id>")).toBe(includesParentId);
+      expect(terms.includes("type:<type>")).toBe(
+        availability.searchHelpTerms.type,
       );
+    },
+  );
 
-      expect(screen.getByText("Succeeded")).toBeInTheDocument();
-      expect(screen.getByText("Failed")).toBeInTheDocument();
-      expect(screen.getByText("Waiting")).toBeInTheDocument();
-    });
+  it("forwards onExport to the header export button", async () => {
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
+    setScreenSize("xxl");
+    const onExport = vi.fn();
+    renderWithProviders(
+      <Activities
+        {...getProps(instanceAvailability, {
+          selectedActivities: [activities[0]],
+          onExport,
+        })}
+      />,
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", { name: "Export selection as TSV" }),
+    );
+
+    expect(onExport).toHaveBeenCalledOnce();
   });
 });
