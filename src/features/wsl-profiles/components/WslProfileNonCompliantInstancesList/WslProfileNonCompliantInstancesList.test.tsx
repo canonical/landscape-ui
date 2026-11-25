@@ -65,14 +65,15 @@ describe("WslProfileNonCompliantInstancesList", () => {
     const makeCompliantButton = screen.getByRole("button", {
       name: "Make compliant",
     });
-    expect(makeCompliantButton).toHaveAttribute("aria-disabled", "true");
+    expect(makeCompliantButton).toHaveIcon("security-tick");
+    expect(makeCompliantButton).toBeDisabled();
 
     await userEvent.click(
       screen.getByRole("checkbox", { name: "Toggle all instances" }),
     );
 
     await waitFor(() => {
-      expect(makeCompliantButton).not.toHaveAttribute("aria-disabled");
+      expect(makeCompliantButton).toBeEnabled();
     });
 
     await userEvent.click(makeCompliantButton);
@@ -102,7 +103,7 @@ describe("WslProfileNonCompliantInstancesList", () => {
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Make compliant" }),
-      ).not.toHaveAttribute("aria-disabled");
+      ).toBeEnabled();
     });
 
     await userEvent.click(checkbox);

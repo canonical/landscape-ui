@@ -2,15 +2,11 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import { pluralize } from "@/utils/_helpers";
-import {
-  Button,
-  ConfirmationButton,
-  Icon,
-  ICONS,
-  Select,
-} from "@canonical/react-components";
+import { ConfirmationModal, Select } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FormikContextType } from "formik";
 import type { FC } from "react";
+import { useBoolean } from "usehooks-ts";
 import { usePackageProfiles } from "../../hooks";
 import type {
   Constraint,
@@ -44,6 +40,12 @@ const PackageProfileConstraintsEditFormActions: FC<
   const { createSidePathPusher } = usePageParams();
   const { removePackageProfileConstraintsQuery } = usePackageProfiles();
 
+  const {
+    value: isRemoveModalOpen,
+    setTrue: openRemoveModal,
+    setFalse: closeRemoveModal,
+  } = useBoolean();
+
   const { mutateAsync: removeConstraints, isPending: isRemoving } =
     removePackageProfileConstraintsQuery;
 
@@ -62,6 +64,8 @@ const PackageProfileConstraintsEditFormActions: FC<
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeRemoveModal();
     }
   };
 
@@ -82,40 +86,46 @@ const PackageProfileConstraintsEditFormActions: FC<
         }}
       />
 
-      <ConfirmationButton
-        className="has-icon u-no-margin--right u-no-margin--bottom"
+      <Button
         type="button"
+        importance="secondary"
+        anticipation="destructive"
+        icon="delete"
         disabled={selectedIds.length === 0 || formik.values.id !== 0}
         aria-label={`Remove selected ${pluralize(selectedIds.length, ["constraint"])}`}
-        confirmationModalProps={{
-          title: `Remove ${pluralize(selectedIds.length, ["constraint"])}`,
-          children: (
-            <p className="u-margin--bottom">
-              This will remove{" "}
-              {pluralize(selectedIds.length, ["constraint"], "exact")}.
-            </p>
-          ),
-          confirmButtonLabel: "Remove",
-          confirmButtonAppearance: "negative",
-          confirmButtonDisabled: isRemoving,
-          confirmButtonLoading: isRemoving,
-          onConfirm: handleConstraintsRemove,
-        }}
+        onClick={openRemoveModal}
       >
-        <Icon name={ICONS.delete} />
-        <span>Remove</span>
-      </ConfirmationButton>
+        Remove
+      </Button>
 
       <Button
-        className="u-no-margin--bottom"
         type="button"
-        hasIcon
+        importance="secondary"
+        icon="plus"
         onClick={handleConstraintsAdd}
         aria-label="Add new constraint"
       >
-        <Icon name={ICONS.plus} />
-        <span>Add constraints</span>
+        Add constraints
       </Button>
+
+      {isRemoveModalOpen && (
+        <ConfirmationModal
+          renderInPortal
+          title={`Remove ${pluralize(selectedIds.length, ["constraint"])}`}
+          confirmButtonLabel="Remove"
+          confirmButtonAppearance="negative"
+          confirmButtonDisabled={isRemoving}
+          confirmButtonLoading={isRemoving}
+          confirmButtonProps={{ type: "button" }}
+          onConfirm={handleConstraintsRemove}
+          close={closeRemoveModal}
+        >
+          <p className="u-margin--bottom">
+            This will remove{" "}
+            {pluralize(selectedIds.length, ["constraint"], "exact")}.
+          </p>
+        </ConfirmationModal>
+      )}
     </div>
   );
 };

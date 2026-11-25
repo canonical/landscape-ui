@@ -1,7 +1,8 @@
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useCallback, useEffect } from "react";
-import { Button, Form, Icon } from "@canonical/react-components";
+import { Form } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import AssociationBlock from "@/components/form/AssociationBlock";
 import RepositoryProfileFormDetailsPanel from "../RepositoryProfileFormDetailsPanel";
@@ -172,13 +173,12 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
               </h4>
               <Button
                 type="button"
-                hasIcon
-                dense
-                appearance="base"
+                importance="tertiary"
+                icon="plus"
+                className="dense"
                 onClick={props.onAddSourceClick}
               >
-                <Icon name="plus" />
-                <span>Add source</span>
+                Add source
               </Button>
             </div>
             <RepositoryProfileFormSourcesSection

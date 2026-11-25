@@ -1,11 +1,6 @@
 import CellInput from "@/components/form/CellInput";
-import {
-  Button,
-  Icon,
-  ICONS,
-  ModularTable,
-  Select,
-} from "@canonical/react-components";
+import { ModularTable, Select } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FormikContextType, FormikTouched } from "formik";
 import type { FC } from "react";
 import { useEffect, useMemo } from "react";
@@ -144,17 +139,12 @@ const PackageProfileConstraintsBlock: FC<
         Cell: ({ row }: CellProps<Omit<Constraint, "id">>) => (
           <Button
             type="button"
-            hasIcon
-            appearance="base"
-            className="u-no-margin--bottom u-no-padding"
+            importance="tertiary"
+            icon="delete"
+            className="dense"
             aria-label="Delete constraint row"
             onClick={() => handleConstraintRowDelete(row.index)}
-          >
-            <Icon
-              name={ICONS.delete}
-              className="u-no-margin--left u-no-margin--right"
-            />
-          </Button>
+          />
         ),
       },
     ],
@@ -186,10 +176,14 @@ const PackageProfileConstraintsBlock: FC<
 
   return (
     <>
-      <div className="u-align-text--right">
-        <Button type="button" hasIcon onClick={handleConstraintAdd}>
-          <Icon name={ICONS.plus} className="u-no-margin--left" />
-          <span>Add new constraint</span>
+      <div className={classes.addConstraintRow}>
+        <Button
+          type="button"
+          importance="secondary"
+          icon="plus"
+          onClick={handleConstraintAdd}
+        >
+          Add new constraint
         </Button>
       </div>
 

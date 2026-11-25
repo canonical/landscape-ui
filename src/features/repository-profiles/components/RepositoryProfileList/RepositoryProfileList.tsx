@@ -7,7 +7,7 @@ import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import type { SelectOption } from "@/types/SelectOption";
-import { Button } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -17,6 +17,7 @@ import RepositoryProfileListActions from "../RepositoryProfileListActions";
 import { getCellProps, getRowProps } from "./helpers";
 import { ProfileAssociatedInstancesLink } from "@/features/profiles";
 import { pluralize } from "@/utils/_helpers";
+import classes from "./RepositoryProfileList.module.scss";
 
 const AssociatedCountCell: FC<{ readonly profile: RepositoryProfile }> = ({
   profile,
@@ -67,8 +68,8 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
           <ListTitle>
             <Button
               type="button"
-              appearance="link"
-              className="u-no-margin--bottom u-no-padding--top u-align--left"
+              variant="link"
+              className={classes.nameButton}
               onClick={createPageParamsSetter({
                 sidePath: ["view"],
                 name: original.name,

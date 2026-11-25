@@ -1,7 +1,7 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 
@@ -28,14 +28,13 @@ const NoScriptsEmptyState: FC = () => {
       cta={[
         <Button
           type="button"
-          appearance="positive"
+          importance="primary"
+          anticipation="constructive"
+          icon="plus"
           onClick={addScript}
-          className="u-no-margin--bottom"
-          hasIcon
           key="add-script-button"
         >
-          <Icon name="plus" light />
-          <span>Add script</span>
+          Add script
         </Button>,
       ]}
     />

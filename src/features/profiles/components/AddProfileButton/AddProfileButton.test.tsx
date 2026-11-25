@@ -16,9 +16,11 @@ describe("AddProfileButton", () => {
       withProfilesContext(),
     );
 
-    expect(
-      screen.getByRole("button", { name: /add profile/i }),
-    ).not.toHaveClass("p-button--positive");
+    const button = screen.getByRole("button", { name: /add profile/i });
+
+    expect(button).toHaveClass("secondary");
+    expect(button).not.toHaveClass("constructive");
+    expect(button).toHaveIcon("plus");
   });
 
   it("opens add side panel", async () => {
@@ -53,7 +55,8 @@ describe("AddProfileButton", () => {
 
     const button = screen.getByRole("button", { name: /add profile/i });
 
-    expect(button).toHaveClass("p-button--positive");
-    expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(button).toHaveClass("primary", "constructive");
+    expect(button).toHaveIcon("plus");
+    expect(button).toBeDisabled();
   });
 });

@@ -4,7 +4,8 @@ import ViewProfileGeneralBlock from "../../../profiles/components/ViewProfileSid
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import { Button, Icon, ICONS, ModularTable } from "@canonical/react-components";
+import { ModularTable } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
 import type { APTSource } from "../../types";
 import type { FC } from "react";
@@ -17,6 +18,7 @@ import ViewProfileAssociationBlock from "../../../profiles/components/ViewProfil
 import { ProfileTypes } from "@/features/profiles";
 import TooltipCell from "@/components/layout/TooltipCell/TooltipCell";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
+import classes from "./RepositoryProfileDetails.module.scss";
 
 const SOURCES_PAGE_SIZE = 10;
 
@@ -99,29 +101,26 @@ const RepositoryProfileDetails: FC = () => {
     <>
       <SidePanel.Header>{profile.title}</SidePanel.Header>
       <SidePanel.Content>
-        <div className="p-segmented-control u-sv2">
-          <div className="p-segmented-control__list">
-            <Button
-              type="button"
-              className="p-segmented-control__button"
-              onClick={handleEditProfile}
-              hasIcon
-            >
-              <Icon name="edit" />
-              <span>Edit</span>
-            </Button>
+        <div className={classes.actions}>
+          <Button
+            type="button"
+            importance="secondary"
+            icon="edit"
+            onClick={handleEditProfile}
+          >
+            Edit
+          </Button>
 
-            <Button
-              type="button"
-              className="p-segmented-control__button"
-              onClick={openModal}
-              hasIcon
-              aria-label={`Remove ${profile.title}`}
-            >
-              <Icon name={`${ICONS.delete}--negative`} />
-              <span className="u-text--negative">Remove</span>
-            </Button>
-          </div>
+          <Button
+            type="button"
+            importance="secondary"
+            anticipation="destructive"
+            icon="delete"
+            onClick={openModal}
+            aria-label={`Remove ${profile.title}`}
+          >
+            Remove
+          </Button>
         </div>
         <Blocks>
           <ViewProfileGeneralBlock

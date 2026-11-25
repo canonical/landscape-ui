@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
 import { pluralize, toInstanceQuery } from "@/utils/_helpers";
-import { Button } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { type FC } from "react";
 import type { Profile } from "../../types";
 import {
@@ -74,9 +74,8 @@ const ProfileAssociatedInstancesLink: FC<
   if (isWslProfile(profile) && query.endsWith(":noncompliant")) {
     return (
       <Button
-        className="u-no-padding--top u-no-margin--bottom"
         type="button"
-        appearance="link"
+        variant="link"
         onClick={() => {
           setPageParams({
             sidePath: [...sidePath, "noncompliant"],

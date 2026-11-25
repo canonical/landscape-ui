@@ -1,6 +1,12 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
+.addConstraintRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--dimension-200);
+}
+
 .action {
   text-align: center;
   vertical-align: middle;

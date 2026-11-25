@@ -6,7 +6,8 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { ApiError } from "@/types/api/ApiError";
 import { getFormikError } from "@/utils/formikErrors";
-import { Button, Form, Icon, Input } from "@canonical/react-components";
+import { Form, Input } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { isAxiosError } from "axios";
 import { useFormik } from "formik";
 import type { FormikHelpers } from "formik";
@@ -183,14 +184,12 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
         defaultValue={DEFAULT_SCRIPT}
         headerContent={
           <Button
-            className="u-no-margin--bottom"
-            appearance="base"
-            hasIcon
-            onClick={clickFileInput}
             type="button"
+            importance="tertiary"
+            icon="upload"
+            onClick={clickFileInput}
           >
-            <Icon name="upload" />
-            <span>Populate from file</span>
+            Populate from file
           </Button>
         }
       />

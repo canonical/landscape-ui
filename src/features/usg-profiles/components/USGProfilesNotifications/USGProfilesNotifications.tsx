@@ -2,11 +2,8 @@ import IgnorableNotifcation from "@/components/layout/IgnorableNotification";
 import { useGetActivities } from "@/features/activities";
 import { USG_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "../../constants";
 import { hasOneItem } from "@/utils/_helpers";
-import {
-  ActionButton,
-  Button,
-  Notification,
-} from "@canonical/react-components";
+import { Notification } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -94,7 +91,7 @@ const USGProfilesNotifications: FC<USGProfilesNotificationsProps> = ({
           audited. Edit the profiles or duplicate them to cover the rest.{" "}
           <Button
             type="button"
-            appearance="link"
+            variant="link"
             onClick={() => {
               navigate({
                 pathname: location.pathname,
@@ -123,7 +120,7 @@ const USGProfilesNotifications: FC<USGProfilesNotificationsProps> = ({
           covered. Edit the profile or duplicate it to cover the rest.{" "}
           <Button
             type="button"
-            appearance="link"
+            variant="link"
             onClick={() => {
               openProfileSidePanel(overLimitUsgProfiles[0], "edit");
             }}
@@ -144,10 +141,9 @@ const USGProfilesNotifications: FC<USGProfilesNotificationsProps> = ({
         >
           Several of your audits have been successfully generated and are now
           ready for download.{" "}
-          <ActionButton
-            appearance="link"
+          <Button
+            variant="link"
             type="button"
-            className="u-no-margin--bottom u-no-padding--top"
             onClick={() => {
               for (const activity of activities) {
                 downloadAudit(activity.result_text);
@@ -156,7 +152,7 @@ const USGProfilesNotifications: FC<USGProfilesNotificationsProps> = ({
             loading={isDownloadingAudit}
           >
             Download audits
-          </ActionButton>
+          </Button>
         </Notification>
       )}
 
@@ -171,17 +167,16 @@ const USGProfilesNotifications: FC<USGProfilesNotificationsProps> = ({
         >
           Your audit has been successfully generated and is now ready for
           download.{" "}
-          <ActionButton
-            appearance="link"
+          <Button
+            variant="link"
             type="button"
-            className="u-no-margin--bottom u-no-padding--top"
             onClick={() => {
               downloadAudit(activities[0].result_text);
             }}
             loading={isDownloadingAudit}
           >
             Download audit
-          </ActionButton>
+          </Button>
         </Notification>
       )}
     </>

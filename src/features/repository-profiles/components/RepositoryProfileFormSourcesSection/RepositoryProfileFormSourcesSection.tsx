@@ -1,7 +1,9 @@
 import type { APTSource } from "../../types";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
 import TooltipCell from "@/components/layout/TooltipCell";
-import { Button, Icon, ModularTable } from "@canonical/react-components";
+import { ModularTable } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
+import classNames from "classnames";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
@@ -93,39 +95,25 @@ const RepositoryProfileFormSourcesSection: FC<
         Header: "",
         className: classes.actionsColumn,
         Cell: ({ row: { original } }: CellProps<SourceRow>) => (
-          <div className={classes.actionsCell}>
+          <div className={classNames("dense", classes.actionsCell)}>
             <Button
-              appearance="base"
-              hasIcon
-              dense
               type="button"
-              className="u-no-margin--bottom u-no-padding"
+              importance="tertiary"
+              icon="edit"
               aria-label={`Edit ${original.name}`}
               onClick={() => {
                 onEditSource(original.source);
               }}
-            >
-              <Icon
-                name="edit"
-                className="u-no-margin--left u-no-margin--right"
-              />
-            </Button>
+            />
             <Button
-              appearance="base"
-              hasIcon
-              dense
               type="button"
-              className="u-no-margin--bottom u-no-padding"
+              importance="tertiary"
+              icon="delete"
               aria-label={`Remove ${original.name}`}
               onClick={() => {
                 onRemoveSource(original.source);
               }}
-            >
-              <Icon
-                name="delete"
-                className="u-no-margin--left u-no-margin--right"
-              />
-            </Button>
+            />
           </div>
         ),
       },

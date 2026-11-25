@@ -6,7 +6,8 @@ import {
   useGetSingleScript,
   type Script,
 } from "@/features/scripts";
-import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
+import { SearchBox, Tooltip } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import Downshift from "downshift";
 import type { FC } from "react";
@@ -265,21 +266,16 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
             <b>{script.title}</b>
           </span>
           {!existingScriptId ? (
-            <Button
-              type="button"
-              title="Remove"
-              appearance="base"
-              className={classNames(
-                classes.selectedScript__button,
-                "u-no-margin--bottom u-no-margin--right",
-              )}
-              onClick={handleDeleteSelectedItem}
-            >
-              <Icon
-                name={ICONS.delete}
-                className={classes.selectedScript__icon}
+            <Tooltip message="Remove" position="top-center">
+              <Button
+                type="button"
+                importance="tertiary"
+                icon="delete"
+                aria-label="Remove"
+                className={classes.selectedScript__button}
+                onClick={handleDeleteSelectedItem}
               />
-            </Button>
+            </Tooltip>
           ) : null}
         </div>
       )}

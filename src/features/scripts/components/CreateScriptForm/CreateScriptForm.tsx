@@ -7,7 +7,8 @@ import useSidePanel from "@/hooks/useSidePanel";
 import type { ApiError } from "@/types/api/ApiError";
 import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
-import { Button, Form, Icon, Input, Select } from "@canonical/react-components";
+import { Form, Input, Select } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { isAxiosError } from "axios";
 import { useFormik } from "formik";
 import type { FormikHelpers } from "formik";
@@ -156,14 +157,12 @@ const CreateScript: FC = () => {
         defaultValue={DEFAULT_SCRIPT}
         headerContent={
           <Button
-            className="u-no-margin--bottom"
-            appearance="base"
-            hasIcon
-            onClick={clickFileInput}
             type="button"
+            importance="tertiary"
+            icon="upload"
+            onClick={clickFileInput}
           >
-            <Icon name="upload" />
-            <span>Populate from file</span>
+            Populate from file
           </Button>
         }
       />

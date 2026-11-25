@@ -13,10 +13,6 @@
 
 .actionsCell {
   display: flex;
-  gap: 0;
+  gap: var(--dimension-050);
   justify-content: flex-end;
-
-  button {
-    margin-right: 5px;
-  }
 }
