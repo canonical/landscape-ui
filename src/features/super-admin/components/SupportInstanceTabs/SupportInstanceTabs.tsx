@@ -6,7 +6,10 @@ import { Tabs } from "@canonical/react-components";
 import { Badge } from "@canonical/react-ds-global";
 import type { FC, ReactNode } from "react";
 import { Suspense } from "react";
-import { useGetStaffLivepatchInfo } from "../../api";
+import {
+  useGetStaffInstancePackages,
+  useGetStaffLivepatchInfo,
+} from "../../api";
 import type { SupportInstanceTabProps } from "../../types";
 import { getSupportInstanceTabs } from "./constants";
 import classes from "./SupportInstanceTabs.module.scss";
@@ -20,22 +23,42 @@ const SupportInstanceTabs: FC<SupportInstanceTabProps> = ({
 }) => {
   const { tab, setPageParams } = usePageParams();
 
-  const hasKernelCount =
+  const hasTabCounts =
     getFeatures(instance).packages && !!instance.distribution;
 
   const { staffLivepatchInfo, isGettingStaffLivepatchInfo } =
-    useGetStaffLivepatchInfo(name, instance.id, { enabled: hasKernelCount });
+    useGetStaffLivepatchInfo(name, instance.id, { enabled: hasTabCounts });
+
+  const {
+    staffInstancePackagesCount: packageCount,
+    isGettingStaffInstancePackages,
+  } = useGetStaffInstancePackages(
+    name,
+    instance.id,
+    { upgrade: true, limit: 1 },
+    { enabled: hasTabCounts },
+  );
 
   const [kernelStatus] =
     staffLivepatchInfo?.livepatch_info?.json?.output?.Status ?? [];
   const kernelCount = kernelStatus?.Livepatch?.Fixes?.length;
 
+  const tabCounts: Record<string, { count?: number; isLoading: boolean }> = {
+    kernel: { count: kernelCount, isLoading: isGettingStaffLivepatchInfo },
+    packages: {
+      count: packageCount,
+      isLoading: isGettingStaffInstancePackages,
+    },
+  };
+
   const getTabLabel = (id: string, label: string): ReactNode => {
-    if (id !== "kernel" || !hasKernelCount) {
+    const tabCount = tabCounts[id];
+
+    if (!tabCount || !hasTabCounts) {
       return label;
     }
 
-    if (isGettingStaffLivepatchInfo) {
+    if (tabCount.isLoading) {
       return (
         <>
           <span>{label}</span>
@@ -44,11 +67,11 @@ const SupportInstanceTabs: FC<SupportInstanceTabProps> = ({
       );
     }
 
-    if (kernelCount) {
+    if (tabCount.count) {
       return (
         <>
           <span>{label}</span>
-          <Badge value={kernelCount} />
+          <Badge value={tabCount.count} />
         </>
       );
     }

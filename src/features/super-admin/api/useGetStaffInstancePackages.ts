@@ -22,6 +22,7 @@ export const useGetStaffInstancePackages = (
   name: string,
   instanceId: number,
   params: GetStaffInstancePackagesParams = {},
+  { enabled = true }: { enabled?: boolean } = {},
 ) => {
   const authFetch = useFetch();
 
@@ -48,7 +49,7 @@ export const useGetStaffInstancePackages = (
         count: response.count,
       };
     },
-    enabled: !!name && Number.isInteger(instanceId),
+    enabled: enabled && !!name && Number.isInteger(instanceId),
   });
 
   return {

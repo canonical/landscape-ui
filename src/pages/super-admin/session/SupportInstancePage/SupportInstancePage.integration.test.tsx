@@ -217,6 +217,48 @@ describe("SupportInstancePage (integration)", () => {
     });
   });
 
+  it("shows no badge when there is nothing to count", async () => {
+    setEndpointStatus([
+      {
+        status: "variant",
+        path: "computers/:computerId/livepatch/info",
+        response: buildLivepatchInfo([]),
+      },
+      {
+        status: "variant",
+        path: "computers-packages",
+        response: { count: 0, results: [] },
+      },
+    ]);
+
+    renderInstance(ROUTES.superAdmin.sessionInstance(ACME, ubuntuInstance.id));
+
+    for (const name of ["Kernel", "Packages"]) {
+      await waitFor(() => {
+        const tab = screen.getByRole("tab", { name: new RegExp(`^${name}`) });
+
+        expect(within(tab).queryByRole("status")).not.toBeInTheDocument();
+        expect(tab).toHaveTextContent(new RegExp(`^${name}$`));
+      });
+    }
+  });
+
+  it("counts the upgradable packages in the Packages tab", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "computers-packages",
+      response: { count: 7, results: [] },
+    });
+
+    renderInstance(ROUTES.superAdmin.sessionInstance(ACME, ubuntuInstance.id));
+
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: /^Packages/ })).toHaveTextContent(
+        "Packages7",
+      );
+    });
+  });
+
   it("has the tabs a Windows instance supports", async () => {
     renderInstance(ROUTES.superAdmin.sessionInstance(ACME, windowsInstance.id));
 
