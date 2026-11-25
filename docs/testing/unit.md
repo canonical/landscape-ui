@@ -54,9 +54,9 @@ Because the setup is global, unit tests should assume network requests must be h
 Under `vmThreads`, `window` is the real `jsdom` window, so a few patterns do not work there:
 
 - `vi.spyOn(window, "location", "get")` throws `Cannot redefine property: location`
-- `instanceof` checks against globals such as `Promise` can fail for values created in another realm
+- `instanceof` checks against globals such as `Promise` can fail for values created in another realm; rework these (e.g. check for a `then` function, as in `src/routes/elements.test.tsx`)
 
-If a new test fails only for one of those reasons, add the file to `THREADS_POOL_TESTS` instead of reworking the test. `src/tests/setup-vm-globals.ts` copies Node's WHATWG stream classes (such as `TransformStream`) into the VM context, because MSW needs them and `jsdom` does not provide them.
+If a new test fails because it spies on `window.location`, add the file to `THREADS_POOL_TESTS`. `src/tests/setup-vm-globals.ts` copies Node's WHATWG stream classes (such as `TransformStream`) into the VM context, because MSW needs them and `jsdom` does not provide them.
 
 ## Which Render Helper To Use
 
