@@ -35,21 +35,12 @@
   padding: $spv--large;
 }
 
-.selectedScript__button {
-  line-height: 1;
-  margin: 0 $spv--small 0 0 !important;
-  padding: $spv--medium;
-
-  &:focus,
-  &:hover {
-    background-color: $colors--theme--background-alt;
-  }
-}
-
-.selectedScript__icon {
-  vertical-align: middle;
-}
-
 .marginTop {
   margin-top: $spv--medium !important;
+}
+
+@layer app {
+  .selectedScript__button {
+    margin-inline-end: var(--dimension-100);
+  }
 }

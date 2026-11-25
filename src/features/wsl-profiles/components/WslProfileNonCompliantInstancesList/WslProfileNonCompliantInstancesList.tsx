@@ -16,12 +16,8 @@ import {
 } from "@/libs/pageParamsManager/constants";
 import { ROUTES } from "@/libs/routes";
 import type { WindowsInstance } from "@/types/Instance";
-import {
-  Button,
-  CheckboxInput,
-  Icon,
-  SearchBox,
-} from "@canonical/react-components";
+import { CheckboxInput, SearchBox } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import date from "@/libs/date";
 import { useMemo, useState, type FC } from "react";
@@ -188,13 +184,12 @@ const WslProfileNonCompliantInstancesList: FC<
 
         <Button
           type="button"
-          className="u-no-margin"
-          hasIcon
+          importance="secondary"
+          icon="security-tick"
           onClick={openMakeCompliantModal}
           disabled={!selectedInstances.length}
         >
-          <Icon name="security-tick" />
-          <span>Make compliant</span>
+          Make compliant
         </Button>
       </div>
 

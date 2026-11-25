@@ -57,7 +57,7 @@ describe("ScriptDetails", () => {
     await expectLoadingState();
 
     const runButton = await screen.findByRole("button", { name: /run/i });
-    expect(runButton).toHaveAttribute("aria-disabled", "true");
+    expect(runButton).toBeDisabled();
   });
 
   it("should disable the Redact button when the script is not redactable", async () => {
@@ -68,7 +68,7 @@ describe("ScriptDetails", () => {
     const deleteButton = await screen.findByRole("button", {
       name: /redact new v2 script/i,
     });
-    expect(deleteButton).toHaveAttribute("aria-disabled", "true");
+    expect(deleteButton).toBeDisabled();
   });
 
   it("opens redact confirmation modal when clicking Redact button", async () => {

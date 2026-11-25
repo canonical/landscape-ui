@@ -28,9 +28,11 @@ describe("PackageProfileConstraintsEditFormTableActions", () => {
       />,
     );
 
-    await userEvent.click(
-      screen.getByRole("button", { name: "Edit nginx constraint" }),
-    );
+    const editButton = screen.getByRole("button", {
+      name: "Edit nginx constraint",
+    });
+    expect(editButton).toHaveIcon("edit");
+    await userEvent.click(editButton);
 
     expect(setValues).toHaveBeenCalledWith(constraint);
   });
@@ -49,14 +51,40 @@ describe("PackageProfileConstraintsEditFormTableActions", () => {
       />,
     );
 
-    await userEvent.click(
-      screen.getByRole("button", { name: "Save changes to nginx constraint" }),
-    );
-    await userEvent.click(
-      screen.getByRole("button", { name: "Cancel editing nginx constraint" }),
-    );
+    const saveButton = screen.getByRole("button", {
+      name: "Save changes to nginx constraint",
+    });
+    const cancelButton = screen.getByRole("button", {
+      name: "Cancel editing nginx constraint",
+    });
+
+    expect(saveButton).toHaveIcon("success");
+    expect(cancelButton).toHaveIcon("error");
+
+    await userEvent.click(saveButton);
+    await userEvent.click(cancelButton);
 
     expect(handleSubmit).toHaveBeenCalled();
     expect(resetForm).toHaveBeenCalled();
+  });
+
+  it("marks the save button busy and disabled while submitting", () => {
+    renderWithProviders(
+      <PackageProfileConstraintsEditFormTableActions
+        constraint={constraint}
+        editingConstraintId={constraint.id}
+        isSubmitting
+        onEdit={vi.fn()}
+        onCancel={vi.fn()}
+        onSave={vi.fn()}
+      />,
+    );
+
+    const saveButton = screen.getByRole("button", {
+      name: "Save changes to nginx constraint",
+    });
+
+    expect(saveButton).toBeDisabled();
+    expect(saveButton).toHaveAttribute("aria-busy", "true");
   });
 });

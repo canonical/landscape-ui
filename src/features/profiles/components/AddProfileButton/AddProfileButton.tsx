@@ -1,4 +1,4 @@
-import { Button, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { type FC } from "react";
 import useProfiles from "@/hooks/useProfiles";
 import usePageParams from "@/hooks/usePageParams";
@@ -13,10 +13,6 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({
   const { createPageParamsSetter } = usePageParams();
   const { isProfileLimitReached } = useProfiles();
 
-  const settings = isInsideScriptHeader
-    ? { className: "u-no-margin--bottom" }
-    : { appearance: "positive", light: true };
-
   const openAddSidePanel = createPageParamsSetter({
     sidePath: ["add"],
     name: "",
@@ -25,14 +21,13 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({
   return (
     <Button
       type="button"
-      appearance={settings.appearance}
-      className={settings.className}
+      importance={isInsideScriptHeader ? "secondary" : "primary"}
+      anticipation={isInsideScriptHeader ? undefined : "constructive"}
+      icon="plus"
       onClick={openAddSidePanel}
-      hasIcon
       disabled={isProfileLimitReached}
     >
-      <Icon name="plus" light={settings.light} />
-      <span>Add profile</span>
+      Add profile
     </Button>
   );
 };

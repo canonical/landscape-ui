@@ -15,7 +15,7 @@ import ProfileAssociatedInstancesLink from "../ProfileAssociatedInstancesLink";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
 import { getTitleByName } from "@/utils/_helpers";
-import { Button } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { CellProps, Column } from "react-table";
 import ProfilesListActions from "./components/ProfilesListActions";
 import date from "@/libs/date";
@@ -32,6 +32,7 @@ import {
 } from "@/features/usg-profiles";
 import AssociatedInstancesCell from "./components/AssociatedInstancesCell";
 import { MIN_TABLE_WIDTH } from "./constants";
+import classes from "./ProfilesList.module.scss";
 
 const getStatus = (profile: ScriptProfile | USGProfile) => {
   if (isProfileArchived(profile)) {
@@ -91,8 +92,8 @@ export const getGeneralColumns = (
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => (
       <Button
         type="button"
-        appearance="link"
-        className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+        variant="link"
+        className={classes.nameButton}
         onClick={() => {
           onNameClick(profile, "view");
         }}

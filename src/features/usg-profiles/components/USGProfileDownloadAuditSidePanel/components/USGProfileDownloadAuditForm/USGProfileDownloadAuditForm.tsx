@@ -6,7 +6,8 @@ import { useGetSingleActivity } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import { ActionButton, Input, Notification } from "@canonical/react-components";
+import { Input, Notification } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { useFormik } from "formik";
 import date from "@/libs/date";
 import { useEffect, useState, type FC } from "react";
@@ -213,17 +214,16 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
           }}
         >
           It has been successfully generated and is now available for download.{" "}
-          <ActionButton
-            appearance="link"
+          <Button
+            variant="link"
             type="button"
-            className="u-no-margin--bottom u-no-padding--top"
             onClick={() => {
               downloadAudit(status.report_uri);
             }}
             loading={isDownloadingAudit}
           >
             Download audit
-          </ActionButton>
+          </Button>
         </Notification>
       )}
 

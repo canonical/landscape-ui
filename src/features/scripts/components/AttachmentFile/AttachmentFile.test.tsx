@@ -25,11 +25,11 @@ describe("AttachmentFile", () => {
     renderWithProviders(<AttachmentFile {...propsWithScriptId} />);
 
     expect(screen.getByText(/test.txt/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", {
-        name: `Download ${propsWithScriptId.filename}`,
-      }),
-    ).toBeInTheDocument();
+    const downloadButton = screen.getByRole("button", {
+      name: `Download ${propsWithScriptId.filename}`,
+    });
+    expect(downloadButton).toBeInTheDocument();
+    expect(downloadButton).toHaveIcon("download");
 
     const deleteButton = screen.queryByRole("button", {
       name: `Remove ${propsWithScriptId.filename} attachment`,
@@ -53,5 +53,6 @@ describe("AttachmentFile", () => {
       name: `Remove ${propsWithInitialAttachmentDelete.filename} attachment`,
     });
     expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).toHaveIcon("delete");
   });
 });

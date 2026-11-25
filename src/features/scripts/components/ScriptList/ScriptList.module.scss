@@ -1,3 +1,9 @@
 .associatedProfiles {
   width: 25%;
 }
+
+@layer app {
+  .nameButton {
+    text-align: left;
+  }
+}

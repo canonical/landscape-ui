@@ -11,7 +11,7 @@ import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { ROUTES } from "@/libs/routes";
 import type { SelectOption } from "@/types/SelectOption";
-import { Button } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import date from "@/libs/date";
 import type { FC, ReactElement } from "react";
 import { lazy, Suspense, useCallback, useMemo } from "react";
@@ -68,8 +68,8 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
         Cell: ({ row: { original } }: CellProps<Script>) => (
           <Button
             type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+            variant="link"
+            className={classes.nameButton}
             aria-label={`Show details of script ${original.title}`}
             onClick={() => {
               openViewPanel(original);

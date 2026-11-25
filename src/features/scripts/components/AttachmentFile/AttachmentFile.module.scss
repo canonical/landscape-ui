@@ -16,10 +16,3 @@
   display: flex;
   gap: $sph--small;
 }
-
-.actionButton {
-  &:focus,
-  &:hover {
-    background-color: $colors--theme--background-alt;
-  }
-}

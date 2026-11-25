@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { useEffect, useRef, useState } from "react";
-import { Button, Icon, ICONS, Input } from "@canonical/react-components";
+import { Icon, ICONS, Input } from "@canonical/react-components";
 
 interface RepositoryProfileFormSearchProps {
   readonly label: string;
@@ -47,7 +47,7 @@ const RepositoryProfileFormSearch: FC<RepositoryProfileFormSearchProps> = ({
         }}
       />
       {inputText && (
-        <Button
+        <button
           type="reset"
           className="p-search-box__reset"
           onClick={() => {
@@ -58,9 +58,9 @@ const RepositoryProfileFormSearch: FC<RepositoryProfileFormSearchProps> = ({
           aria-label="Reset search"
         >
           <Icon name={ICONS.close} />
-        </Button>
+        </button>
       )}
-      <Button
+      <button
         type="button"
         className="p-search-box__button"
         onClick={() => {
@@ -69,7 +69,7 @@ const RepositoryProfileFormSearch: FC<RepositoryProfileFormSearchProps> = ({
         aria-label={label}
       >
         <Icon name={ICONS.search} />
-      </Button>
+      </button>
     </div>
   );
 };

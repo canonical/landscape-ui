@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import { Button } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import EmptyState from "@/components/layout/EmptyState";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
@@ -31,10 +31,11 @@ const ScriptsEmptyState: FC = () => {
       }}
       cta={[
         <Button
-          appearance="positive"
+          type="button"
+          importance="primary"
+          anticipation="constructive"
           key="table-add-new-mirror"
           onClick={handleScriptCreate}
-          type="button"
         >
           Add script
         </Button>,

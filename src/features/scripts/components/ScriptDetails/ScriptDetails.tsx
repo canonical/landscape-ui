@@ -3,10 +3,12 @@ import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Icon, ICONS, Notification } from "@canonical/react-components";
+import { Notification } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import date from "@/libs/date";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
+import { ActionBar } from "@/components/ui";
 import { useArchiveScriptModal, useDeleteScriptModal } from "../../hooks";
 import type { ScriptTabId } from "../../types";
 import { useBoolean } from "usehooks-ts";
@@ -136,55 +138,49 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
       ) : null}
 
       {script?.status === "ACTIVE" && (
-        <div className="p-segmented-control">
-          <div className="p-segmented-control__list">
-            <Button
-              type="button"
-              className="p-segmented-control__button"
-              onClick={handleEditScript}
-              hasIcon
-              disabled={!script?.is_editable}
-            >
-              <Icon name="edit" />
-              <span>Edit</span>
-            </Button>
+        <ActionBar>
+          <Button
+            type="button"
+            importance="secondary"
+            icon="edit"
+            onClick={handleEditScript}
+            disabled={!script?.is_editable}
+          >
+            Edit
+          </Button>
 
-            <Button
-              type="button"
-              className="p-segmented-control__button"
-              onClick={handleRunScript}
-              hasIcon
-              disabled={!script?.is_executable}
-            >
-              <Icon name="play" />
-              <span>Run</span>
-            </Button>
+          <Button
+            type="button"
+            importance="secondary"
+            icon="play"
+            onClick={handleRunScript}
+            disabled={!script?.is_executable}
+          >
+            Run
+          </Button>
 
-            <Button
-              className="p-segmented-control__button"
-              type="button"
-              onClick={openModal}
-              hasIcon
-              aria-label={`Archive ${script?.title}`}
-              disabled={!script?.is_editable}
-            >
-              <Icon name="archive--negative" />
-              <span className="u-text--negative">Archive</span>
-            </Button>
+          <Button
+            type="button"
+            importance="secondary"
+            icon="archive"
+            onClick={openModal}
+            aria-label={`Archive ${script?.title}`}
+            disabled={!script?.is_editable}
+          >
+            Archive
+          </Button>
 
-            <Button
-              className="p-segmented-control__button"
-              type="button"
-              onClick={openDeleteModal}
-              hasIcon
-              aria-label={`Redact ${script?.title}`}
-              disabled={!script?.is_redactable}
-            >
-              <Icon name={`${ICONS.delete}--negative`} />
-              <span className="u-text--negative">Redact</span>
-            </Button>
-          </div>
-        </div>
+          <Button
+            type="button"
+            importance="secondary"
+            icon="delete"
+            onClick={openDeleteModal}
+            aria-label={`Redact ${script?.title}`}
+            disabled={!script?.is_redactable}
+          >
+            Redact
+          </Button>
+        </ActionBar>
       )}
       {script ? (
         <Suspense fallback={<LoadingState />}>

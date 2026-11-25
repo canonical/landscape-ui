@@ -1,11 +1,7 @@
 import classNames from "classnames";
 import type { FC } from "react";
-import {
-  ActionButton,
-  Button,
-  Icon,
-  Tooltip,
-} from "@canonical/react-components";
+import { Tooltip } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { Constraint } from "../../types";
 import classes from "./PackageProfileConstraintsEditFormTableActions.module.scss";
 
@@ -29,62 +25,45 @@ const PackageProfileConstraintsEditFormTableActions: FC<
   onSave,
 }) => {
   return editingConstraintId === constraint.id ? (
-    <>
-      <ActionButton
-        type="button"
-        appearance="base"
-        hasIcon
-        className={classNames(
-          "u-no-margin--bottom u-no-padding",
-          classes.actionButton,
-        )}
-        onClick={() => {
-          onSave();
-        }}
-        aria-label={`Save changes to ${constraint.package} constraint`}
-        loading={isSubmitting}
-      >
-        <Tooltip tooltipClassName={classes.tooltip} message="Save changes">
-          <Icon
-            name="success-grey"
-            className="u-no-margin--left u-no-margin--right"
-          />
-        </Tooltip>
-      </ActionButton>
+    <div className={classNames("dense", classes.actions)}>
+      <Tooltip tooltipClassName={classes.tooltip} message="Save changes">
+        <Button
+          type="button"
+          importance="tertiary"
+          icon="success"
+          loading={isSubmitting}
+          onClick={() => {
+            onSave();
+          }}
+          aria-label={`Save changes to ${constraint.package} constraint`}
+        />
+      </Tooltip>
+      <Tooltip tooltipClassName={classes.tooltip} message="Cancel">
+        <Button
+          type="button"
+          importance="tertiary"
+          icon="error"
+          onClick={() => {
+            onCancel();
+          }}
+          aria-label={`Cancel editing ${constraint.package} constraint`}
+        />
+      </Tooltip>
+    </div>
+  ) : (
+    <Tooltip tooltipClassName={classes.tooltip} message="Edit constraint">
       <Button
         type="button"
-        appearance="base"
-        hasIcon
-        className="u-no-margin--bottom u-no-padding"
+        importance="tertiary"
+        icon="edit"
+        className="dense"
         onClick={() => {
-          onCancel();
+          onEdit(constraint);
         }}
-        aria-label={`Cancel editing ${constraint.package} constraint`}
-      >
-        <Tooltip tooltipClassName={classes.tooltip} message="Cancel">
-          <Icon
-            name="error-grey"
-            className="u-no-margin--left u-no-margin--right"
-          />
-        </Tooltip>
-      </Button>
-    </>
-  ) : (
-    <Button
-      type="button"
-      appearance="base"
-      hasIcon
-      className="u-no-margin--bottom u-no-padding"
-      onClick={() => {
-        onEdit(constraint);
-      }}
-      disabled={editingConstraintId !== 0}
-      aria-label={`Edit ${constraint.package} constraint`}
-    >
-      <Tooltip tooltipClassName={classes.tooltip} message="Edit constraint">
-        <Icon name="edit" className="u-no-margin--left u-no-margin--right" />
-      </Tooltip>
-    </Button>
+        disabled={editingConstraintId !== 0}
+        aria-label={`Edit ${constraint.package} constraint`}
+      />
+    </Tooltip>
   );
 };
 

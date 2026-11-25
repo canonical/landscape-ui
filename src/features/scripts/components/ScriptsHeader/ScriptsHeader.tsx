@@ -2,7 +2,7 @@ import { PageParamFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { type FC, lazy, Suspense } from "react";
 import classes from "./ScriptsHeader.module.scss";
 import { STATUS_OPTIONS } from "./constants";
@@ -33,12 +33,11 @@ const ScriptsHeader: FC = () => {
             />
             <Button
               type="button"
+              importance="secondary"
+              icon="plus"
               onClick={handleScriptCreate}
-              className="u-no-margin--bottom"
-              hasIcon
             >
-              <Icon name="plus" />
-              <span>Add script</span>
+              Add script
             </Button>
           </div>
         }

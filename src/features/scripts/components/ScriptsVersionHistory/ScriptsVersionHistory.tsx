@@ -2,7 +2,8 @@ import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import useSidePanel from "@/hooks/useSidePanel";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
-import { Button, ModularTable } from "@canonical/react-components";
+import { ModularTable } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC, ReactNode } from "react";
 import { lazy, Suspense, useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
@@ -68,8 +69,7 @@ const ScriptsVersionHistory: FC<ScriptsVersionHistoryProps> = ({
           return (
             <Button
               type="button"
-              appearance="link"
-              className="u-no-margin--bottom u-no-padding--top"
+              variant="link"
               onClick={() => {
                 openVersionPanel(original);
               }}
