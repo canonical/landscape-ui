@@ -18,7 +18,7 @@ import ViewProfileAssociationBlock from "../../../profiles/components/ViewProfil
 import { ProfileTypes } from "@/features/profiles";
 import TooltipCell from "@/components/layout/TooltipCell/TooltipCell";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
-import classes from "./RepositoryProfileDetails.module.scss";
+import { ActionBar } from "@/components/ui";
 
 const SOURCES_PAGE_SIZE = 10;
 
@@ -101,7 +101,7 @@ const RepositoryProfileDetails: FC = () => {
     <>
       <SidePanel.Header>{profile.title}</SidePanel.Header>
       <SidePanel.Content>
-        <div className={classes.actions}>
+        <ActionBar>
           <Button
             type="button"
             importance="secondary"
@@ -120,7 +120,7 @@ const RepositoryProfileDetails: FC = () => {
           >
             Remove
           </Button>
-        </div>
+        </ActionBar>
         <Blocks>
           <ViewProfileGeneralBlock
             profile={profile}

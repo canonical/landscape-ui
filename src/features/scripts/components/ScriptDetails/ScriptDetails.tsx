@@ -8,10 +8,10 @@ import { Button } from "@canonical/react-ds-global";
 import date from "@/libs/date";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
+import { ActionBar } from "@/components/ui";
 import { useArchiveScriptModal, useDeleteScriptModal } from "../../hooks";
 import type { ScriptTabId } from "../../types";
 import { useBoolean } from "usehooks-ts";
-import classes from "./ScriptDetails.module.scss";
 
 const ScriptDetailsTabs = lazy(async () => import("../ScriptDetailsTabs"));
 
@@ -138,7 +138,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
       ) : null}
 
       {script?.status === "ACTIVE" && (
-        <div className={classes.actions}>
+        <ActionBar>
           <Button
             type="button"
             importance="secondary"
@@ -180,7 +180,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
           >
             Redact
           </Button>
-        </div>
+        </ActionBar>
       )}
       {script ? (
         <Suspense fallback={<LoadingState />}>
