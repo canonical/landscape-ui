@@ -51,15 +51,13 @@ export class SuperAdminPage {
   async search(text: string): Promise<void> {
     const searchBox = this.page.getByRole("searchbox");
 
-    // The box is reset from the page params in an effect that runs just after
-    // the URL changes, so text typed right after an earlier search can be
-    // undone before it is submitted. Nothing on the page marks that reset, so
-    // type and submit again until the URL takes the new search.
+    // The box resyncs from the URL after it changes, which can undo typing.
+    // Nothing on the page marks that reset, so retry until the URL takes it.
     await expect(async () => {
       await searchBox.fill(text);
       await searchBox.press("Enter");
       await expect(this.page).toHaveURL(
-        new RegExp(`search=${encodeURIComponent(text)}`),
+        (url) => url.searchParams.get("search") === text.trim(),
         { timeout: 1000 },
       );
     }).toPass({ timeout: 10000 });
