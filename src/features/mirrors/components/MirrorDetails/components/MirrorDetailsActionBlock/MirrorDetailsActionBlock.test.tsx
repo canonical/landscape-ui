@@ -33,10 +33,24 @@ describe("MirrorDetailsActionBlock", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Edit" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Update" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Publish" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Remove" })).toBeInTheDocument();
+    const editButton = screen.getByRole("button", { name: "Edit" });
+    const updateButton = screen.getByRole("button", { name: "Update" });
+    const publishButton = screen.getByRole("button", { name: "Publish" });
+    const removeButton = screen.getByRole("button", { name: "Remove" });
+
+    expect(editButton).toHaveClass("ds", "button", "secondary");
+    expect(editButton).toHaveIcon("edit");
+    expect(updateButton).toHaveClass("ds", "button", "secondary");
+    expect(updateButton).toHaveIcon("restart");
+    expect(publishButton).toHaveClass("ds", "button", "secondary");
+    expect(publishButton).toHaveIcon("upload");
+    expect(removeButton).toHaveClass(
+      "ds",
+      "button",
+      "secondary",
+      "destructive",
+    );
+    expect(removeButton).toHaveIcon("delete");
   });
 
   describe("Edit action", () => {
@@ -103,7 +117,14 @@ describe("MirrorDetailsActionBlock", () => {
       );
 
       const updatingButton = screen.getByRole("button", { name: "Updating" });
-      expect(updatingButton).toHaveAttribute("aria-disabled", "true");
+      expect(updatingButton).toBeDisabled();
+      expect(updatingButton).toHaveAttribute("aria-busy", "true");
+      expect(updatingButton).toHaveClass(
+        "ds",
+        "button",
+        "secondary",
+        "loading",
+      );
 
       expect(
         screen.queryByRole("button", { name: "Update" }),
@@ -250,9 +271,7 @@ describe("MirrorDetailsActionBlock", () => {
       );
 
       await waitFor(() => {
-        expect(
-          screen.getByRole("button", { name: "Publish" }),
-        ).not.toHaveAttribute("aria-disabled", "true");
+        expect(screen.getByRole("button", { name: "Publish" })).toBeEnabled();
       });
 
       await user.click(screen.getByRole("button", { name: "Publish" }));

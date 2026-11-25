@@ -1,11 +1,5 @@
-import {
-  Button,
-  Icon,
-  ICONS,
-  Modal,
-  ModularTable,
-} from "@canonical/react-components";
-import classNames from "classnames";
+import { Modal, ModularTable } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { useMemo, type FC } from "react";
 import classes from "./MirrorFilterHelpButton.module.scss";
 import { useBoolean } from "usehooks-ts";
@@ -40,14 +34,12 @@ const MirrorFilterHelpButton: FC = () => {
     <>
       <Button
         type="button"
-        appearance="base"
-        hasIcon
-        className={classNames("u-no-margin--bottom", classes.helpButton)}
+        importance="tertiary"
+        icon="help"
+        className={classes.helpButton}
         onClick={openModal}
         aria-label="Help"
-      >
-        <Icon name={ICONS.help} />
-      </Button>
+      />
       {isModalOpen &&
         createPortal(
           <Modal

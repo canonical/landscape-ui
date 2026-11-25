@@ -56,10 +56,17 @@ describe("TargetDetails", () => {
     it("renders Edit and Remove buttons", async () => {
       await renderTarget(targetWithPublications);
 
-      expect(screen.getByRole("button", { name: /edit/i })).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: /remove/i }),
-      ).toBeInTheDocument();
+      const editButton = screen.getByRole("button", { name: /edit/i });
+      const removeButton = screen.getByRole("button", { name: /remove/i });
+      expect(editButton).toHaveClass("ds", "button", "secondary");
+      expect(editButton).toHaveIcon("edit");
+      expect(removeButton).toHaveClass(
+        "ds",
+        "button",
+        "secondary",
+        "destructive",
+      );
+      expect(removeButton).toHaveIcon("delete");
     });
 
     it("sets sidePath=edit in URL when Edit is clicked", async () => {

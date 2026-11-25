@@ -1,7 +1,7 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Mirror } from "@canonical/landscape-openapi";
-import { Button } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import date from "@/libs/date";
 import { Suspense, useMemo, type FC } from "react";
 import type { CellProps, Column } from "react-table";
@@ -44,8 +44,8 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => (
           <Button
             type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+            variant="link"
+            className={classes.nameButton}
             onClick={createPageParamsSetter({
               sidePath: ["view"],
               name: mirror.name,

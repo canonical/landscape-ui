@@ -13,3 +13,10 @@
 .distribution {
   width: 12%;
 }
+
+@layer app {
+  .nameButton {
+    padding-block: 0;
+    text-align: left;
+  }
+}

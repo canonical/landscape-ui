@@ -1,5 +1,5 @@
 import usePageParams from "@/hooks/usePageParams";
-import { Button, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
 
 const PublicationTargetAddButton: FC = () => {
@@ -9,14 +9,14 @@ const PublicationTargetAddButton: FC = () => {
 
   return (
     <Button
-      appearance="positive"
-      hasIcon
-      onClick={handleAdd}
       type="button"
+      importance="primary"
+      anticipation="constructive"
+      icon="plus"
+      onClick={handleAdd}
       name="Add publication target"
     >
-      <Icon name="plus" light={true} />
-      <span>Add publication target</span>
+      Add publication target
     </Button>
   );
 };

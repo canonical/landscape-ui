@@ -13,7 +13,11 @@ describe("MirrorFilterHelpButton", () => {
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Help" }));
+    const helpButton = screen.getByRole("button", { name: "Help" });
+    expect(helpButton).toHaveClass("ds", "button", "tertiary");
+    expect(helpButton).toHaveIcon("help");
+
+    await user.click(helpButton);
 
     const dialog = screen.getByRole("dialog", {
       name: "Package query syntax",

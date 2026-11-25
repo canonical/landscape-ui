@@ -21,9 +21,11 @@ describe("NoPublicationTargetEmptyState", () => {
         name: /learn more about repository mirroring/i,
       }),
     ).toHaveAttribute("href", DEBARCHIVE_DOCUMENTATION_URL);
-    expect(
-      screen.getByRole("button", { name: /add publication target/i }),
-    ).toBeInTheDocument();
+    const ctaButton = screen.getByRole("button", {
+      name: /add publication target/i,
+    });
+    expect(ctaButton).toHaveClass("ds", "button", "primary", "constructive");
+    expect(ctaButton).toHaveIcon("plus");
   });
 
   it("navigates to the add publication target route when CTA is clicked", async () => {

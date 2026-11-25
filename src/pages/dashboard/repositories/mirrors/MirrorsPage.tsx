@@ -9,7 +9,7 @@ import { MirrorsList } from "@/features/mirrors";
 import { DEBARCHIVE_DOCUMENTATION_URL } from "@/features/repositories";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import { Button, Icon, ICONS } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { lazy, type FC } from "react";
 
 const EditMirrorForm = lazy(
@@ -59,9 +59,15 @@ const MirrorsPage: FC = () => {
   });
 
   const buttons = [
-    <Button key="add" appearance="positive" onClick={openAddMirrorForm} hasIcon>
-      <Icon name={ICONS.plus} light />
-      <span>Add mirror</span>
+    <Button
+      key="add"
+      type="button"
+      importance="primary"
+      anticipation="constructive"
+      icon="plus"
+      onClick={openAddMirrorForm}
+    >
+      Add mirror
     </Button>,
   ];
 

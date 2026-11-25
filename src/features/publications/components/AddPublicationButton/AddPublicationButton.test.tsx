@@ -7,8 +7,8 @@ describe("AddPublicationButton", () => {
   it("renders add publication button", () => {
     renderWithProviders(<AddPublicationButton />);
 
-    expect(
-      screen.getByRole("button", { name: "Add publication" }),
-    ).toBeInTheDocument();
+    const button = screen.getByRole("button", { name: "Add publication" });
+    expect(button).toHaveClass("ds", "button", "primary", "constructive");
+    expect(button).toHaveIcon("plus");
   });
 });

@@ -1,7 +1,7 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { TablePagination } from "@/components/layout/TablePagination";
-import { Button } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { useMemo, type FC } from "react";
 import type { Column, CellProps } from "react-table";
 import type { Local } from "@canonical/landscape-openapi";
@@ -48,8 +48,8 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
         Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <Button
             type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+            variant="link"
+            className={classes.nameButton}
             onClick={createPageParamsSetter({
               sidePath: ["view"],
               name: repository.localId,

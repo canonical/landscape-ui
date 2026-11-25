@@ -1,5 +1,5 @@
 import EmptyState from "@/components/layout/EmptyState";
-import { Button, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { DEBARCHIVE_DOCUMENTATION_URL } from "@/features/repositories";
 import { useNavigate } from "react-router";
 import { ROUTES } from "@/libs/routes";
@@ -24,14 +24,14 @@ const NoPublicationTargetEmptyState = () => {
       }}
       cta={[
         <Button
-          appearance="positive"
-          hasIcon
           key="add-publication-target-button"
-          onClick={handleAdd}
           type="button"
+          importance="primary"
+          anticipation="constructive"
+          icon="plus"
+          onClick={handleAdd}
         >
-          <Icon name="plus" light />
-          <span>Add publication target</span>
+          Add publication target
         </Button>,
       ]}
     />

@@ -6,9 +6,12 @@
   flex-direction: row;
 }
 
-.button {
-  margin: 2.5rem 0 auto $sph--large;
-  width: 13.5rem;
+@layer app {
+  .button {
+    flex-shrink: 0;
+    margin: 2.5rem 0 auto $sph--large;
+    white-space: nowrap;
+  }
 }
 
 .file {

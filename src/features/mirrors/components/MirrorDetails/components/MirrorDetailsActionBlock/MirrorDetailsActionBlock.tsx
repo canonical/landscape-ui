@@ -1,5 +1,6 @@
 import { useEffect, type FC } from "react";
-import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
+import { Tooltip } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { Mirror } from "@canonical/landscape-openapi";
 import { useBoolean } from "usehooks-ts";
 import usePageParams from "@/hooks/usePageParams";
@@ -10,6 +11,7 @@ import {
 import UpdateMirrorModal from "../../../UpdateMirrorModal";
 import RemoveMirrorModal from "../../../RemoveMirrorModal";
 import { useCanCancelOperations } from "@/features/operations";
+import classes from "./MirrorDetailsActionBlock.module.scss";
 
 interface MirrorDetailsActionBlockProps {
   readonly mirror: Mirror;
@@ -68,15 +70,14 @@ const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
 
   return (
     <>
-      <div className="p-segmented-control">
+      <div className={classes.actions}>
         <Button
           type="button"
-          hasIcon
-          className="p-segmented-control__button"
+          importance="secondary"
+          icon="edit"
           onClick={createSidePathPusher("edit")}
         >
-          <Icon name="edit" />
-          <span>Edit</span>
+          Edit
         </Button>
         {!mirror.preserveSignatures &&
           (isUpdateDisabled ? (
@@ -84,45 +85,37 @@ const MirrorDetailsActionBlock: FC<MirrorDetailsActionBlockProps> = ({
               message="You must wait for this action to be completed to trigger a new update."
               position="btm-center"
             >
-              <Button
-                type="button"
-                hasIcon
-                className="p-segmented-control__button"
-                disabled
-              >
-                <Icon name="spinner" className="u-animation--spin" />
-                <span>Updating</span>
+              <Button type="button" importance="secondary" loading disabled>
+                Updating
               </Button>
             </Tooltip>
           ) : (
             <Button
               type="button"
-              hasIcon
-              className="p-segmented-control__button"
+              importance="secondary"
+              icon="restart"
               onClick={openUpdateModal}
             >
-              <Icon name="restart" />
-              <span>Update</span>
+              Update
             </Button>
           ))}
         <Button
           type="button"
-          hasIcon
-          className="p-segmented-control__button"
+          importance="secondary"
+          icon="upload"
           onClick={tryPublish}
           disabled={isGettingPublicationTargets}
         >
-          <Icon name="upload" />
-          <span>Publish</span>
+          Publish
         </Button>
         <Button
           type="button"
-          hasIcon
-          className="p-segmented-control__button"
+          importance="secondary"
+          anticipation="destructive"
+          icon="delete"
           onClick={openRemoveModal}
         >
-          <Icon name={`${ICONS.delete}--negative`} />
-          <span className="u-text--negative">Remove</span>
+          Remove
         </Button>
       </div>
       <UpdateMirrorModal
