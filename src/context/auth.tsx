@@ -101,7 +101,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const isSuperAdmin = hasStaffRole && isSaas;
   const canManageAccounts =
     isSuperAdmin && globalRoles.includes(ACCOUNT_MANAGER);
-  // Support sessions rely on staff endpoints the server does not serve yet.
+
   const canEnterAccounts =
     isSuperAdmin &&
     globalRoles.includes(SUPPORT_PROVIDER) &&

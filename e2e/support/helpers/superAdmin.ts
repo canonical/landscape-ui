@@ -7,6 +7,7 @@ import type {
   StaffPersonResult,
   WslFeatureLimits,
 } from "@/features/super-admin";
+import { features } from "@/tests/mocks/features";
 import {
   createStaffAccounts,
   defaultWslFeatureLimits,
@@ -29,6 +30,8 @@ export interface StaffApiMockOptions {
   globalRoles?: StaffGlobalRole[];
   /** Hide the person's own accounts: staff who only ever work in super admin mode. */
   withoutOwnAccounts?: boolean;
+  /** The `support-sessions` feature flag; on unless given. */
+  supportSessions?: boolean;
 }
 
 export interface StaffApiMock {
@@ -231,6 +234,7 @@ export async function mockStaffApi(
   {
     globalRoles = ["AccountManager"],
     withoutOwnAccounts = false,
+    supportSessions = true,
   }: StaffApiMockOptions = {},
 ): Promise<StaffApiMock> {
   const mock: StaffApiMock = {
@@ -303,7 +307,7 @@ export async function mockStaffApi(
 
   await page.route(apiRoute("me"), withStaffRoles);
 
-  // Support sessions are behind a feature the backends do not serve yet.
+  // Support sessions are gated behind a feature flag until the API endpoints land
   await page.route(apiRoute("features"), async (route) => {
     const response = await route.fetch();
     const body = parseJson(await response.text());
@@ -324,15 +328,9 @@ export async function mockStaffApi(
         ...body,
         results: [
           ...body.results,
-          {
-            name: "Support sessions",
-            description:
-              "Allows support providers to enter any account in a support session.",
-            key: "support-sessions",
-            database_key: 18,
-            enabled: true,
-            details: { configuration: true },
-          },
+          ...features
+            .filter(({ key }) => key === "support-sessions")
+            .map((feature) => ({ ...feature, enabled: supportSessions })),
         ],
       },
     });

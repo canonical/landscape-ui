@@ -12,6 +12,7 @@ import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { authResponse } from "@/tests/mocks/auth";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { saasEnv, selfHostedEnv } from "@/tests/mocks/env";
+import { features } from "@/tests/mocks/features";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
@@ -141,8 +142,17 @@ describe("super admin routes (integration)", () => {
   });
 
   it("sends a support provider to the account's page when support sessions are disabled", async () => {
-    // "empty" omits `support-sessions`, as a server without the flag does.
-    setEndpointStatus({ status: "empty", path: "features" });
+    setEndpointStatus({
+      status: "variant",
+      path: "features",
+      response: {
+        results: features.map((feature) =>
+          feature.key === "support-sessions"
+            ? { ...feature, enabled: false }
+            : feature,
+        ),
+      },
+    });
     const switches = recordSwitches();
 
     renderAt(ROUTES.superAdmin.session(ACME));
