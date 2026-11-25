@@ -20,6 +20,7 @@ describe("EditSavedSearchButton", () => {
       name: /edit/i,
     });
     expect(button).toBeInTheDocument();
+    expect(button).toHaveIcon("edit");
   });
 
   it("should open side panel with form when clicked", async () => {

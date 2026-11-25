@@ -1,7 +1,8 @@
 import tableFilterClasses from "@/components/filter/TableFilter/TableFilter.module.scss";
 import { getFormikError } from "@/utils/formikErrors";
-import { Button, Form, Input } from "@canonical/react-components";
-import { Badge } from "@canonical/react-ds-global";
+import { Form, Input } from "@canonical/react-components";
+import { Badge, Button } from "@canonical/react-ds-global";
+import classNames from "classnames";
 import { useFormik } from "formik";
 import type { FC, ReactNode } from "react";
 import classes from "./ActivitiesDateFilter.module.scss";
@@ -80,12 +81,10 @@ const ActivitiesDateFilter: FC<ActivitiesDateFilterProps> = ({
               {...formik.getFieldProps("toDate")}
               error={getFormikError(formik, "toDate")}
             />
-            <div className={classes.buttons}>
+            <div className={classNames("dense", classes.buttons)}>
               <Button
-                small
                 type="button"
-                appearance="base"
-                className="u-no-margin--bottom"
+                importance="tertiary"
                 onClick={() => {
                   onChange({
                     fromDate: "",
@@ -96,12 +95,7 @@ const ActivitiesDateFilter: FC<ActivitiesDateFilterProps> = ({
               >
                 Reset
               </Button>
-              <Button
-                small
-                type="submit"
-                appearance="positive"
-                className="u-no-margin--bottom"
-              >
+              <Button type="submit" importance="primary">
                 Apply
               </Button>
             </div>

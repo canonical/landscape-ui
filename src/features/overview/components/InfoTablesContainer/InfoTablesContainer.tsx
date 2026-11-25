@@ -23,13 +23,13 @@ import type { Instance } from "@/types/Instance";
 import type { Usn } from "@/types/Usn";
 import { pluralize } from "@/utils/_helpers";
 import {
-  Button,
   Col,
-  ConfirmationButton,
+  ConfirmationModal,
   ModularTable,
   Row,
   Tabs,
 } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { AxiosResponse } from "axios";
 import classNames from "classnames";
 import date from "@/libs/date";
@@ -37,6 +37,7 @@ import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import type { CellProps, Column } from "react-table";
+import { useBoolean } from "usehooks-ts";
 import {
   MAX_ACTIVITY_COUNT,
   MAX_PACKAGE_COUNT,
@@ -70,6 +71,16 @@ const InfoTablesContainer: FC = () => {
 
   const [packagesLimit, setPackagesLimit] = useState(MAX_PACKAGE_COUNT);
   const [usnsLimit, setUsnsLimit] = useState(MAX_USN_COUNT);
+  const {
+    value: isUpgradeModalOpen,
+    setTrue: openUpgradeModal,
+    setFalse: closeUpgradeModal,
+  } = useBoolean(false);
+  const {
+    value: isApproveModalOpen,
+    setTrue: openApproveModal,
+    setFalse: closeApproveModal,
+  } = useBoolean(false);
 
   const {
     activities: unapprovedActivities,
@@ -309,11 +320,11 @@ const InfoTablesContainer: FC = () => {
         Cell: ({ row }: CellProps<ActivityCommon>): ReactNode => (
           <Button
             type="button"
-            appearance="link"
+            variant="link"
             onClick={() => {
               openActivityDetails(row.original);
             }}
-            className={`u-no-margin--bottom u-no-padding--top u-align-text--left ${classes.activityTitle}`}
+            className={classes.activityTitle}
           >
             {row.original.summary}
           </Button>
@@ -397,6 +408,8 @@ const InfoTablesContainer: FC = () => {
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeUpgradeModal();
     }
   };
 
@@ -411,6 +424,8 @@ const InfoTablesContainer: FC = () => {
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeApproveModal();
     }
   };
 
@@ -464,29 +479,33 @@ const InfoTablesContainer: FC = () => {
       className={classNames("u-no-padding u-no-max-width", classes.container)}
     >
       <Col size={6} className={classes.tableContainer}>
-        <div className={classes.tableHeader}>
+        <div className={classNames("dense", classes.tableHeader)}>
           <p className="p-heading--5 u-no-margin--bottom">Upgrades available</p>
-          <ConfirmationButton
+          <Button
             type="button"
-            className="is-small u-no-margin--bottom"
+            importance="secondary"
             disabled={!upgradesTableData.length}
-            confirmationModalProps={{
-              title: `Upgrade ${currentUpgradesTab === "usns" ? "USNs" : "packages"}`,
-              children: (
-                <p className="u-margin--bottom">
-                  Are you sure you want to upgrade all{" "}
-                  {currentUpgradesTab === "usns" ? "USNs" : "packages"}?
-                </p>
-              ),
-              confirmButtonLabel: "Upgrade",
-              confirmButtonAppearance: "positive",
-              confirmButtonDisabled: isUpgrading,
-              confirmButtonLoading: isUpgrading,
-              onConfirm: handleUpgradeAll,
-            }}
+            onClick={openUpgradeModal}
           >
             Upgrade all
-          </ConfirmationButton>
+          </Button>
+          {isUpgradeModalOpen && (
+            <ConfirmationModal
+              renderInPortal
+              title={`Upgrade ${currentUpgradesTab === "usns" ? "USNs" : "packages"}`}
+              confirmButtonLabel="Upgrade"
+              confirmButtonAppearance="positive"
+              confirmButtonDisabled={isUpgrading}
+              confirmButtonLoading={isUpgrading}
+              onConfirm={handleUpgradeAll}
+              close={closeUpgradeModal}
+            >
+              <p className="u-margin--bottom">
+                Are you sure you want to upgrade all{" "}
+                {currentUpgradesTab === "usns" ? "USNs" : "packages"}?
+              </p>
+            </ConfirmationModal>
+          )}
         </div>
         <Tabs
           links={[
@@ -529,6 +548,7 @@ const InfoTablesContainer: FC = () => {
             cta={[
               <Button
                 type="button"
+                importance="secondary"
                 key="refresh"
                 onClick={handleUpgradesRefresh}
               >
@@ -561,29 +581,35 @@ const InfoTablesContainer: FC = () => {
       </Col>
 
       <Col size={6} className={classes.tableContainer}>
-        <div className={classes.tableHeader}>
+        <div className={classNames("dense", classes.tableHeader)}>
           <p className="p-heading--5 u-no-margin--bottom">Activities</p>
           {currentActivitiesTab === "unapproved" && (
-            <ConfirmationButton
-              className="is-small u-no-margin--bottom"
-              type="button"
-              disabled={!getTotalTableItemsCount("activities")}
-              confirmationModalProps={{
-                title: "Approve activities",
-                children: (
+            <>
+              <Button
+                type="button"
+                importance="secondary"
+                disabled={!getTotalTableItemsCount("activities")}
+                onClick={openApproveModal}
+              >
+                Approve all
+              </Button>
+              {isApproveModalOpen && (
+                <ConfirmationModal
+                  renderInPortal
+                  title="Approve activities"
+                  confirmButtonLabel="Approve"
+                  confirmButtonAppearance="positive"
+                  confirmButtonDisabled={isApprovingActivities}
+                  confirmButtonLoading={isApprovingActivities}
+                  onConfirm={handleApproveActivities}
+                  close={closeApproveModal}
+                >
                   <p className="u-margin--bottom">
                     Are you sure you want to approve selected activities?
                   </p>
-                ),
-                confirmButtonLabel: "Approve",
-                confirmButtonAppearance: "positive",
-                confirmButtonDisabled: isApprovingActivities,
-                confirmButtonLoading: isApprovingActivities,
-                onConfirm: handleApproveActivities,
-              }}
-            >
-              Approve all
-            </ConfirmationButton>
+                </ConfirmationModal>
+              )}
+            </>
           )}
         </div>
         <Tabs
@@ -625,6 +651,7 @@ const InfoTablesContainer: FC = () => {
             cta={[
               <Button
                 type="button"
+                importance="secondary"
                 key="refresh"
                 onClick={handleActivitiesRefresh}
               >

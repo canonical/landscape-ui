@@ -1,7 +1,8 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { pluralize } from "@/utils/_helpers";
-import { Button, Notification } from "@canonical/react-components";
+import { Notification } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -47,7 +48,7 @@ const PendingInstancesNotification: FC = () => {
       </span>
       <Button
         type="button"
-        appearance="link"
+        variant="link"
         onClick={handlePendingInstancesReview}
       >
         Review Pending Instances

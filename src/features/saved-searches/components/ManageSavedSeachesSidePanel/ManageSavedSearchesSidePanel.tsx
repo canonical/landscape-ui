@@ -28,17 +28,19 @@ const ManageSavedSearchesSidePanel: FC = () => {
 
   return (
     <div>
-      <CreateSavedSearchButton
-        onBackButtonPress={() => {
-          setSidePanelContent(
-            "Manage saved searches",
-            <Suspense fallback={<LoadingState />}>
-              <ManageSavedSearchesSidePanel />
-            </Suspense>,
-            SIDEPANEL_SIZE,
-          );
-        }}
-      />
+      <div className="u-margin--bottom">
+        <CreateSavedSearchButton
+          onBackButtonPress={() => {
+            setSidePanelContent(
+              "Manage saved searches",
+              <Suspense fallback={<LoadingState />}>
+                <ManageSavedSearchesSidePanel />
+              </Suspense>,
+              SIDEPANEL_SIZE,
+            );
+          }}
+        />
+      </div>
       <SavedSearchesSidePanelList savedSearches={paginatedSavedSearches} />
       <SidePanelTablePagination
         currentPage={currentPage}

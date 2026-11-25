@@ -16,8 +16,11 @@ describe("RemoveSavedSearchButton", () => {
   it("should render remove button", () => {
     renderWithProviders(<RemoveSavedSearchButton {...defaultProps} />);
 
-    const button = screen.getByRole("button");
+    const button = screen.getByRole("button", {
+      name: `Remove ${savedSearch.title} saved search`,
+    });
     expect(button).toBeInTheDocument();
+    expect(button).toHaveIcon("delete");
   });
 
   it("should show confirmation modal when clicked", async () => {

@@ -11,7 +11,8 @@ import { getExportTitle } from "@/features/exports";
 import useSelection from "@/hooks/useSelection";
 import date from "@/libs/date";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
-import { Button, CheckboxInput } from "@canonical/react-components";
+import { CheckboxInput } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import { lazy, useCallback, useMemo, useState, type FC } from "react";
 import type { CellProps, Column } from "react-table";
@@ -170,11 +171,8 @@ const ActivitiesPanelList: FC<ActivitiesPanelListProps> = ({
               <ListTitle>
                 <Button
                   type="button"
-                  appearance="link"
-                  className={classNames(
-                    "u-no-margin--bottom u-no-padding--top u-align-text--left",
-                    classes.descriptionText,
-                  )}
+                  variant="link"
+                  className={classes.descriptionText}
                   onClick={() => {
                     setSelectedActivity(row.original);
                   }}

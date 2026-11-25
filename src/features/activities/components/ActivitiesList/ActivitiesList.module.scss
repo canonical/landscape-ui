@@ -6,15 +6,8 @@
   min-width: 0;
 }
 
-.descriptionText {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .subhead {
+  align-items: center;
   background: $colors--theme--background-alt;
   border-bottom: 1px solid $colors--theme--border-low-contrast;
   display: flex;
@@ -24,10 +17,29 @@
   > .buttons {
     display: flex;
     gap: $sph--large;
+  }
+}
+
+@layer app {
+  .descriptionText {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    padding-block: 0;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .buttons {
+    > button {
+      padding-block: 0;
+    }
 
     > :not(:last-child) {
       border-right: 1px solid $colors--theme--border-low-contrast;
-      padding-right: $sph--large !important;
+      padding-right: $sph--large;
     }
   }
 }

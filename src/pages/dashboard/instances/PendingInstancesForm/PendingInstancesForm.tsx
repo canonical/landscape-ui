@@ -11,11 +11,8 @@ import PendingInstanceList from "@/pages/dashboard/instances/PendingInstanceList
 import type { PendingInstance } from "@/types/Instance";
 import type { SelectOption } from "@/types/SelectOption";
 import { pluralize } from "@/utils/_helpers";
-import {
-  Button,
-  ConfirmationButton,
-  Select,
-} from "@canonical/react-components";
+import { ConfirmationModal, Select } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import { useState } from "react";
 import { Link } from "react-router";
@@ -32,6 +29,13 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
   const [isApproving, setIsApproving] = useState(false);
   const [accessGroup, setAccessGroup] = useState(DEFAULT_ACCESS_GROUP_NAME);
   const [instanceIds, setInstanceIds] = useState<number[]>([]);
+  const [activeModal, setActiveModal] = useState<"approve" | "reject" | null>(
+    null,
+  );
+
+  const closeModal = () => {
+    setActiveModal(null);
+  };
 
   const debug = useDebug();
   const { user } = useAuth();
@@ -70,6 +74,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 
@@ -88,6 +94,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 
@@ -142,74 +150,47 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
         />
       )}
 
-      <div className="form-buttons">
-        <Button type="button" appearance="base" onClick={closeSidePanel}>
+      <div className={classes.formButtons}>
+        <Button type="button" importance="tertiary" onClick={closeSidePanel}>
           Cancel
         </Button>
         {isApproving && (
           <>
-            <Button type="button" onClick={handleBackClick}>
+            <Button
+              type="button"
+              importance="secondary"
+              onClick={handleBackClick}
+            >
               Back
             </Button>
-            <ConfirmationButton
+            <Button
               type="button"
-              appearance="positive"
+              importance="primary"
               disabled={instanceIds.length === 0}
-              confirmationModalProps={{
-                title: "Approve pending instances",
-                children: (
-                  <p className="u-margin--bottom">
-                    This will approve{" "}
-                    {pluralize(
-                      instanceIds.length,
-                      ["selected instance"],
-                      "exact",
-                    )}{" "}
-                    to add to your {userOrganisation} organization.
-                  </p>
-                ),
-                confirmButtonLabel: "Approve",
-                confirmButtonAppearance: "positive",
-                confirmButtonLoading: isAcceptingPendingInstances,
-                confirmButtonDisabled: isAcceptingPendingInstances,
-                onConfirm: handlePendingInstancesApprove,
+              onClick={() => {
+                setActiveModal("approve");
               }}
             >
               Approve
-            </ConfirmationButton>
+            </Button>
           </>
         )}
         {!isApproving && (
           <>
-            <ConfirmationButton
+            <Button
               type="button"
-              appearance="negative"
+              importance="secondary"
+              anticipation="destructive"
               disabled={instanceIds.length === 0}
-              confirmationModalProps={{
-                title: "Reject pending instances",
-                children: (
-                  <p className="u-margin--bottom">
-                    This will reject{" "}
-                    {pluralize(
-                      instanceIds.length,
-                      ["selected instance"],
-                      "exact",
-                    )}{" "}
-                    to add to your {userOrganisation} organization.
-                  </p>
-                ),
-                confirmButtonLabel: "Reject",
-                confirmButtonAppearance: "negative",
-                confirmButtonLoading: isRejectingPendingInstances,
-                confirmButtonDisabled: isRejectingPendingInstances,
-                onConfirm: handlePendingInstancesReject,
+              onClick={() => {
+                setActiveModal("reject");
               }}
             >
               Reject
-            </ConfirmationButton>
+            </Button>
             <Button
               type="button"
-              appearance="positive"
+              importance="primary"
               disabled={instanceIds.length === 0}
               onClick={handleApproving}
             >
@@ -218,6 +199,42 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
           </>
         )}
       </div>
+      {activeModal === "approve" && (
+        <ConfirmationModal
+          renderInPortal
+          title="Approve pending instances"
+          confirmButtonLabel="Approve"
+          confirmButtonAppearance="positive"
+          confirmButtonLoading={isAcceptingPendingInstances}
+          confirmButtonDisabled={isAcceptingPendingInstances}
+          onConfirm={handlePendingInstancesApprove}
+          close={closeModal}
+        >
+          <p className="u-margin--bottom">
+            This will approve{" "}
+            {pluralize(instanceIds.length, ["selected instance"], "exact")} to
+            add to your {userOrganisation} organization.
+          </p>
+        </ConfirmationModal>
+      )}
+      {activeModal === "reject" && (
+        <ConfirmationModal
+          renderInPortal
+          title="Reject pending instances"
+          confirmButtonLabel="Reject"
+          confirmButtonAppearance="negative"
+          confirmButtonLoading={isRejectingPendingInstances}
+          confirmButtonDisabled={isRejectingPendingInstances}
+          onConfirm={handlePendingInstancesReject}
+          close={closeModal}
+        >
+          <p className="u-margin--bottom">
+            This will reject{" "}
+            {pluralize(instanceIds.length, ["selected instance"], "exact")} to
+            add to your {userOrganisation} organization.
+          </p>
+        </ConfirmationModal>
+      )}
     </>
   );
 };

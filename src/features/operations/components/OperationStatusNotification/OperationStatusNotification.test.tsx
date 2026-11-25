@@ -128,7 +128,7 @@ describe("OperationStatusNotification", () => {
 
     expect(
       await screen.findByRole("button", { name: "Canceling..." }),
-    ).toHaveAttribute("aria-disabled", "true");
+    ).toBeDisabled();
   });
 
   it("shows an error notification when canceling the operation fails", async () => {

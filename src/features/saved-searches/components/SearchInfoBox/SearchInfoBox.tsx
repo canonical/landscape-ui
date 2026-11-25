@@ -1,4 +1,4 @@
-import { Button, Icon, ICONS } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import classes from "./SearchInfoBox.module.scss";
 
@@ -12,17 +12,15 @@ const SearchInfoBox: FC<SearchInfoBoxProps> = ({ onHelpButtonClick }) => {
       <div className={classes.helpButtonContainer}>
         <Button
           type="button"
-          appearance="base"
-          hasIcon
+          importance="tertiary"
+          icon="help"
           aria-label="Search help"
           className={classes.helpButton}
           onClick={(event) => {
             event.stopPropagation();
             onHelpButtonClick();
           }}
-        >
-          <Icon name={ICONS.help} />
-        </Button>
+        />
       </div>
     </div>
   );

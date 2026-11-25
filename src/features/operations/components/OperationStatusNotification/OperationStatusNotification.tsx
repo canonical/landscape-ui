@@ -1,4 +1,5 @@
-import { Button, Notification } from "@canonical/react-components";
+import { Notification } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import ViewLogsButton from "../ViewLogsButton";
 import type { Operation } from "../../types";
@@ -71,7 +72,8 @@ const OperationStatusNotification: FC<OperationStatusNotificationProps> = ({
           </div>
           {canCancelOperations && (
             <Button
-              appearance="link"
+              type="button"
+              variant="link"
               onClick={handleCancel}
               className={classes.cancelButton}
               disabled={isCancelingOperation}

@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Icon } from "@canonical/react-components";
+import { Button, type ButtonProps } from "@canonical/react-ds-global";
 import { lazy, Suspense, type FC } from "react";
 import { useCreateSavedSearch } from "../../api";
 import type { FormProps } from "../SavedSearchForm";
@@ -12,7 +12,9 @@ const SavedSearchForm = lazy(async () => import("../SavedSearchForm"));
 
 interface CreateSavedSearchButtonProps {
   readonly afterCreate?: () => void;
-  readonly appearance?: "base" | "positive" | "negative" | "link" | "secondary";
+  readonly importance?: ButtonProps["importance"];
+  readonly anticipation?: ButtonProps["anticipation"];
+  readonly variant?: ButtonProps["variant"];
   readonly className?: string;
   readonly buttonLabel?: string;
   readonly search?: string;
@@ -21,7 +23,9 @@ interface CreateSavedSearchButtonProps {
 
 const CreateSavedSearchButton: FC<CreateSavedSearchButtonProps> = ({
   afterCreate,
-  appearance = "secondary",
+  importance = "secondary",
+  anticipation,
+  variant,
   buttonLabel = "Add saved search",
   search = "",
   className,
@@ -79,13 +83,14 @@ const CreateSavedSearchButton: FC<CreateSavedSearchButtonProps> = ({
   return (
     <Button
       type="button"
-      appearance={appearance}
+      importance={importance}
+      anticipation={anticipation}
+      variant={variant}
+      icon={isInSidePanel ? "plus" : undefined}
       onClick={handleCreateClick}
       className={className}
-      hasIcon={isInSidePanel}
     >
-      {isInSidePanel && <Icon name="plus" />}
-      {<span>{buttonLabel}</span>}
+      {buttonLabel}
     </Button>
   );
 };

@@ -1,4 +1,5 @@
-import { Button, Icon } from "@canonical/react-components";
+import { Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import type { FC, MouseEvent as ReactMouseEvent } from "react";
 import { useCallback, useState } from "react";
@@ -137,15 +138,12 @@ const StatusPills: FC<StatusPillsProps> = ({
         {!isExpanded && hidden.length > 0 && (
           <Button
             type="button"
-            appearance="link"
-            className={classNames(
-              "p-text--small u-no-margin--bottom",
-              classes.button,
-            )}
+            variant="link"
+            className={classes.button}
             onClick={onExpand}
             aria-label={`Show ${hidden.length} more ${1 === hidden.length ? itemNoun.singular : itemNoun.plural}`}
           >
-            <span className="u-text--muted">+{hidden.length}</span>
+            +{hidden.length}
           </Button>
         )}
       </div>

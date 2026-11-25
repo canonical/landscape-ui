@@ -6,8 +6,10 @@ import {
 } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { ConfirmationButton } from "@canonical/react-components";
-import type { FC } from "react";
+import { ConfirmationModal } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
+import { useState, type FC } from "react";
+import classes from "./ActivityDetailsButtons.module.scss";
 
 interface ActivityDetailsButtonsProps {
   readonly activity: Activity;
@@ -23,6 +25,13 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
   const { approveActivities, isApprovingActivities } = useApproveActivities();
   const { cancelActivities, isCancelingActivities } = useCancelActivities();
   const { redoActivities, isRedoingActivities } = useRedoActivities();
+  const [activeModal, setActiveModal] = useState<
+    "approve" | "cancel" | "redo" | null
+  >(null);
+
+  const closeModal = () => {
+    setActiveModal(null);
+  };
 
   const handleApproveActivity = async (a: Activity) => {
     try {
@@ -37,6 +46,8 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 
@@ -53,6 +64,8 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 
@@ -68,81 +81,100 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 
   return (
-    <div key="buttons" className="p-segmented-control">
-      <div className="p-segmented-control__list">
-        {activity.actions?.approvable && (
-          <ConfirmationButton
-            className="p-segmented-control__button u-no-margin"
-            type="button"
-            disabled={isApprovingActivities}
-            confirmationModalProps={{
-              title: "Approve activity",
-              children: (
-                <p className="u-margin--bottom">
-                  Are you sure you want to approve {activity.summary} activity?
-                </p>
-              ),
-              confirmButtonLabel: "Approve",
-              confirmButtonAppearance: "positive",
-              confirmButtonDisabled: isApprovingActivities,
-              confirmButtonLoading: isApprovingActivities,
-              onConfirm: async () => handleApproveActivity(activity),
-            }}
-          >
-            Approve
-          </ConfirmationButton>
-        )}
-        {activity.actions?.cancelable && (
-          <ConfirmationButton
-            className="p-segmented-control__button u-no-margin"
-            type="button"
-            disabled={isCancelingActivities}
-            confirmationModalProps={{
-              title: "Cancel activity",
-              children: (
-                <p className="u-margin--bottom">
-                  Are you sure you want to cancel {activity.summary} activity?
-                </p>
-              ),
-              confirmButtonLabel: "Confirm",
-              confirmButtonAppearance: "negative",
-              confirmButtonDisabled: isCancelingActivities,
-              confirmButtonLoading: isCancelingActivities,
-              onConfirm: async () => handleCancelActivity(activity),
-            }}
-          >
-            {!activity.actions?.approvable && !activity.actions?.reappliable
-              ? "Cancel activity"
-              : "Cancel"}
-          </ConfirmationButton>
-        )}
-        {activity.actions?.reappliable && (
-          <ConfirmationButton
-            className="p-segmented-control__button u-no-margin"
-            type="button"
-            disabled={isRedoingActivities}
-            confirmationModalProps={{
-              title: "Redo activity",
-              children: (
-                <p className="u-margin--bottom">
-                  Are you sure you want to redo {activity.summary} activity?
-                </p>
-              ),
-              confirmButtonLabel: "Redo",
-              confirmButtonAppearance: "positive",
-              confirmButtonDisabled: isRedoingActivities,
-              confirmButtonLoading: isRedoingActivities,
-              onConfirm: async () => handleRedoActivity(activity),
-            }}
-          >
-            Redo
-          </ConfirmationButton>
-        )}
-      </div>
+    <div key="buttons" className={classes.actions}>
+      {activity.actions?.approvable && (
+        <Button
+          type="button"
+          importance="secondary"
+          disabled={isApprovingActivities}
+          onClick={() => {
+            setActiveModal("approve");
+          }}
+        >
+          Approve
+        </Button>
+      )}
+      {activity.actions?.cancelable && (
+        <Button
+          type="button"
+          importance="secondary"
+          anticipation="destructive"
+          disabled={isCancelingActivities}
+          onClick={() => {
+            setActiveModal("cancel");
+          }}
+        >
+          {!activity.actions?.approvable && !activity.actions?.reappliable
+            ? "Cancel activity"
+            : "Cancel"}
+        </Button>
+      )}
+      {activity.actions?.reappliable && (
+        <Button
+          type="button"
+          importance="secondary"
+          disabled={isRedoingActivities}
+          onClick={() => {
+            setActiveModal("redo");
+          }}
+        >
+          Redo
+        </Button>
+      )}
+      {activeModal === "approve" && (
+        <ConfirmationModal
+          renderInPortal
+          title="Approve activity"
+          confirmButtonLabel="Approve"
+          confirmButtonAppearance="positive"
+          confirmButtonDisabled={isApprovingActivities}
+          confirmButtonLoading={isApprovingActivities}
+          onConfirm={async () => handleApproveActivity(activity)}
+          close={closeModal}
+        >
+          <p className="u-margin--bottom">
+            Are you sure you want to approve {activity.summary} activity?
+          </p>
+        </ConfirmationModal>
+      )}
+      {activeModal === "cancel" && (
+        <ConfirmationModal
+          renderInPortal
+          title="Cancel activity"
+          confirmButtonLabel="Confirm"
+          confirmButtonAppearance="negative"
+          confirmButtonDisabled={isCancelingActivities}
+          confirmButtonLoading={isCancelingActivities}
+          onConfirm={async () => handleCancelActivity(activity)}
+          close={closeModal}
+        >
+          <p className="u-margin--bottom">
+            Are you sure you want to cancel {activity.summary} activity?
+          </p>
+        </ConfirmationModal>
+      )}
+      {activeModal === "redo" && (
+        <ConfirmationModal
+          renderInPortal
+          title="Redo activity"
+          confirmButtonLabel="Redo"
+          confirmButtonAppearance="positive"
+          confirmButtonDisabled={isRedoingActivities}
+          confirmButtonLoading={isRedoingActivities}
+          onConfirm={async () => handleRedoActivity(activity)}
+          close={closeModal}
+        >
+          <p className="u-margin--bottom">
+            Are you sure you want to redo {activity.summary} activity?
+          </p>
+        </ConfirmationModal>
+      )}
     </div>
   );
 };

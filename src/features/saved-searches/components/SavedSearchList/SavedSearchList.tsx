@@ -1,6 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Col, Row, Tooltip } from "@canonical/react-components";
+import { Col, Row, Tooltip } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import { Suspense, useEffect, type FC } from "react";
 import type { SavedSearch } from "../../types";
@@ -59,14 +60,13 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
 
   return (
     <div className={classes.container}>
-      <div className={classes.header}>
+      <div className={classNames("dense", classes.header)}>
         <p className="p-text--small-caps u-text--muted p-text--small">
           Saved searches
         </p>
         <Button
           type="button"
-          appearance="secondary"
-          className="is-small"
+          importance="secondary"
           onClick={handleManageSavedSearches}
         >
           Manage
@@ -85,9 +85,8 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
                 [classes.activeItem]: index === activeIndex,
               })}
             >
-              <Button
+              <button
                 type="button"
-                appearance="base"
                 id={itemIdPrefix ? `${itemIdPrefix}-${index}` : undefined}
                 aria-selected={index === activeIndex || undefined}
                 className={classes.search}
@@ -118,7 +117,7 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
                     </Tooltip>
                   </Col>
                 </Row>
-              </Button>
+              </button>
               <div className={classes.actions}>
                 <SavedSearchActions
                   savedSearch={savedSearch}

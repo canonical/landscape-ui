@@ -1,6 +1,7 @@
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
-import { Button, CodeSnippet, Icon } from "@canonical/react-components";
+import { CodeSnippet } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { useEffect, useRef, useState, type FC } from "react";
 import { useGetOperation, useGetOperationResource } from "../../api";
 import classes from "./ViewLogsSidePanel.module.scss";
@@ -96,24 +97,20 @@ const ViewLogsSidePanel: FC<ViewLogsSidePanelProps> = ({ resourceType }) => {
           <>
             <div className={classes.actionRow}>
               <Button
-                appearance="base"
-                className="u-no-margin"
-                hasIcon
-                onClick={handleCopy}
                 type="button"
+                importance="tertiary"
+                icon={copied ? "success" : "copy"}
+                onClick={handleCopy}
               >
-                <Icon name={copied ? "success" : "copy"} />
-                <span>{copied ? "Copied" : "Copy"}</span>
+                {copied ? "Copied" : "Copy"}
               </Button>
               <Button
-                appearance="base"
-                className="u-no-margin--bottom"
-                hasIcon
-                onClick={handleDownload}
                 type="button"
+                importance="tertiary"
+                icon="download"
+                onClick={handleDownload}
               >
-                <Icon name="begin-downloading" />
-                <span>Download</span>
+                Download
               </Button>
             </div>
             <CodeSnippet

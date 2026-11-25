@@ -22,24 +22,15 @@
   }
 }
 
-.helpButton {
-  display: block;
-  height: calc(
-    /* stylelint-disable-next-line */
-    (2 * $spv-nudge + map-get($line-heights, default-text)) -
-      (2 * $bar-thickness)
-  );
-  margin-bottom: 0;
-
-  & [class*="p-icon"] {
-    vertical-align: 0;
-  }
-
-  &,
-  &:active,
-  &:focus,
-  &:hover {
+@layer app {
+  .helpButton {
+    block-size: calc(
+      /* stylelint-disable-next-line */
+        (2 * $spv-nudge + map-get($line-heights, default-text)) -
+        (2 * $bar-thickness)
+    );
     border-width: 0;
+    min-block-size: 0;
   }
 }
 

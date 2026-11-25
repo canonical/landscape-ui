@@ -16,8 +16,9 @@
   white-space: nowrap;
 }
 
-.saveButton {
-  flex-shrink: 0;
-  margin-bottom: 0;
-  padding-top: 0;
+@layer app {
+  .saveButton {
+    flex-shrink: 0;
+    padding-block: 0;
+  }
 }

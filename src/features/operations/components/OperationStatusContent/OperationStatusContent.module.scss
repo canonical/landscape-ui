@@ -4,6 +4,8 @@
   margin-right: $sph--small;
 }
 
-.marginLeft {
-  margin-left: $sph--small;
+@layer app {
+  .marginLeft {
+    margin-left: $sph--small;
+  }
 }
