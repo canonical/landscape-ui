@@ -73,12 +73,8 @@ describe("PublicationDetails", () => {
     const removeButton = screen.getByRole("button", { name: "Remove" });
     expect(republishButton).toHaveClass("ds", "button", "secondary");
     expect(republishButton).toHaveIcon("upload");
-    expect(removeButton).toHaveClass(
-      "ds",
-      "button",
-      "secondary",
-      "destructive",
-    );
+    expect(removeButton).toHaveClass("ds", "button", "secondary");
+    expect(removeButton).not.toHaveClass("destructive");
     expect(removeButton).toHaveIcon("delete");
   });
 
