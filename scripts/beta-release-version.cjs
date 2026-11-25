@@ -1,6 +1,7 @@
 const { execFileSync } = require("node:child_process");
 const { appendFileSync, readFileSync } = require("node:fs");
 const path = require("node:path");
+const { readPendingChangesets } = require("./manual-version-update.cjs");
 
 const BASE = /^(?:beta\/)?(\d{2}\.(?:04|10))-beta\.([1-9]\d*)$/;
 const VERSION = /^(\d{2}\.(?:04|10))-beta\.([1-9]\d*)(?:\.[1-9]\d*)?$/;
@@ -84,21 +85,46 @@ function routeBetaPush(branch, runId) {
   if (git("ls-remote", "--tags", "--refs", "origin", `refs/tags/${version}`)) {
     return { decision: "skip", version };
   }
+  const { entries } = readPendingChangesets(
+    path.resolve(__dirname, "../.changeset"),
+  );
+  if (entries.length > 0) {
+    throw new Error(
+      `Cannot publish ${version} with ${entries.length} pending Changeset(s) with release notes. ` +
+        "Beta release notes are frozen after prep; write respin notes in CHANGELOG.md and use an empty Changeset.",
+    );
+  }
   const sha = git("rev-parse", "HEAD");
   return {
     decision: "publish",
     version,
     "deb-version": `${debianUpstream(version)}-${REVISION}`,
     marker: `Landscape-UI-Beta:${runId}:${sha}`,
+    ppa: "landscape/self-hosted-beta",
+    sha,
+  };
+}
+
+function routeRehearsal(runId) {
+  if (!/^[1-9]\d*$/.test(runId)) throw new Error("Invalid rehearsal run ID");
+  const sha = execFileSync("git", ["rev-parse", "HEAD"], {
+    encoding: "utf8",
+  }).trim();
+  return {
+    decision: "publish",
+    version: `0.0.0-rehearsal.${runId}`,
+    "deb-version": `0~rehearsal.${runId}-${REVISION}`,
+    marker: `Landscape-UI-Beta:${runId}:${sha}`,
+    ppa: "landscape/self-hosted-daily",
     sha,
   };
 }
 
 if (require.main === module) {
-  const route = routeBetaPush(
-    process.env.GITHUB_REF_NAME,
-    process.env.GITHUB_RUN_ID,
-  );
+  const route =
+    process.argv[2] === "--rehearsal"
+      ? routeRehearsal(process.env.GITHUB_RUN_ID)
+      : routeBetaPush(process.env.GITHUB_REF_NAME, process.env.GITHUB_RUN_ID);
   console.log(
     `Beta release: ${route.decision}${route.version ? ` (${route.version})` : ""}`,
   );

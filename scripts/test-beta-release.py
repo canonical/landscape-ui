@@ -1,8 +1,7 @@
 """Local beta release rehearsal: python3 scripts/test-beta-release.py."""
 
-from contextlib import contextmanager
-from email.message import EmailMessage
 import os
+from configparser import MissingSectionHeaderError
 from pathlib import Path
 import runpy
 import shutil
@@ -15,10 +14,16 @@ from unittest.mock import Mock, patch
 
 SCRIPTS = Path(__file__).resolve().parent
 LP = runpy.run_path(str(SCRIPTS / "launchpad-beta.py"))
-GLOBALS = LP["upload"].__globals__
+Publication = LP["Publication"]
+GLOBALS = Publication.upload.__globals__
 BASE = "27.04-beta.3"
 DEBIAN = "27.04~beta.3-0landscape0"
 MARKER = "Landscape-UI-Beta:1:built"
+
+
+class AuthorizationEngine:
+    def __init__(self, service_root, application_name):
+        self.application_name = application_name
 
 
 def stanza(version):
@@ -96,30 +101,73 @@ class VersionsAndRouting(BetaRepo):
         self.write("fix", "A later push before preparation.\n")
         self.commit("fix before prep")
 
-        def route(run_id="17"):
+        def route(run_id="17", *args):
             output = self.root / "workflow-output"
             output.write_text("")
             env = dict(os.environ, GITHUB_REF_NAME=f"beta/{BASE}", GITHUB_RUN_ID=run_id, GITHUB_OUTPUT=str(output))
-            self.cmd("node", "scripts/beta-release-version.cjs", env=env)
+            self.cmd("node", "scripts/beta-release-version.cjs", *args, env=env)
             return dict(line.split("=", 1) for line in output.read_text().splitlines())
 
         self.assertEqual(route(), {"decision": "prepare"})
         version = BASE + ".2"
         deb = "27.04~beta.3.2-0landscape0"
         self.stamp(version, deb)
+        self.write(".changeset/notes.md", '---\n"landscape-ui": patch\n---\n\nPending release notes.\n')
+        self.commit("prepared beta with pending release notes")
+        with self.assertRaises(subprocess.CalledProcessError) as failed:
+            route()
+        self.assertIn("pending Changeset(s) with release notes", failed.exception.stderr)
+        self.write(".changeset/notes.md", "---\n---\n")
         self.commit("respin after earlier runs failed")
         built = self.git("rev-parse", "HEAD")
-        publication = dict(decision="publish", version=version, sha=built, marker=f"Landscape-UI-Beta:17:{built}")
+        publication = dict(decision="publish", version=version, sha=built, marker=f"Landscape-UI-Beta:17:{built}",
+                           ppa="landscape/self-hosted-beta")
         publication["deb-version"] = deb
         self.assertEqual(route(), publication)
         self.assertEqual(route(), publication)
         self.assertNotEqual(route("18")["marker"], publication["marker"])
         self.git("tag", "-am", "First successful release", version, built)
         self.write("fix", "A later push with an already-tagged version.\n")
+        self.write(".changeset/notes.md", '---\n"landscape-ui": patch\n---\n\nLater release notes.\n')
         self.commit("push with an already-tagged version")
         self.assertEqual(route(), {"decision": "skip", "version": version})
         self.assertEqual(self.git("tag", "--list"), version)
         self.assertEqual(self.git("rev-parse", version + "^{commit}"), built)
+        rehearsal = route("17", "--rehearsal")
+        self.assertEqual(rehearsal["ppa"], "landscape/self-hosted-daily")
+        self.assertEqual(rehearsal["deb-version"], "0~rehearsal.17-0landscape0")
+        self.assertEqual(rehearsal["sha"], self.git("rev-parse", "HEAD"))
+        self.assertEqual(route("17", "--rehearsal"), rehearsal)
+
+    def test_asset_publication_fails_if_beta_advances_during_preparation(self):
+        workflow = (SCRIPTS.parent / ".github/workflows/beta-release.yml").read_text()
+        _, _, step = workflow.partition("      - name: Publish beta assets\n")
+        _, _, script = step.partition("        run: |\n")
+        script = script.split("\n\n  sbom:", 1)[0]
+        self.commit("beta tip")
+        built = self.git("rev-parse", "HEAD")
+        self.git("branch", f"beta/{BASE}")
+        self.git("remote", "add", "origin", str(self.root))
+        self.write("fix", "new beta tip")
+        self.commit("advance beta")
+        current = self.git("rev-parse", "HEAD")
+        (self.root / "dist").mkdir()
+        self.write("dist/index.html", "dashboard")
+        # Move the branch after the first tip check, when the step fetches dist.
+        git_hook = f'''
+git() {{
+  if [[ "$1" == fetch ]]; then
+    command git branch -f "beta/{BASE}" "{current}"
+  fi
+  command git "$@"
+}}
+'''
+        env = dict(os.environ, BUILD_SHA=built, VERSION=BASE,
+                   GITHUB_REF=f"refs/heads/beta/{BASE}", GITHUB_REF_NAME=f"beta/{BASE}")
+        with self.assertRaises(subprocess.CalledProcessError) as failed:
+            self.cmd("bash", "-eo", "pipefail", "-c", git_hook + script, env=env)
+        self.assertIn(f"Beta branch tip is {current}, expected {built}", failed.exception.stdout)
+        self.assertEqual(self.git("branch", "--list", f"ppa-build-{BASE}"), "")
 
 
 class ForwardPortHistory(BetaRepo):
@@ -185,150 +233,109 @@ class ForwardPortHistory(BetaRepo):
 
 
 class LaunchpadRehearsal(unittest.TestCase):
-    def rejection(self, attempt, reason):
-        message = EmailMessage()
-        message["X-Launchpad-Archive"] = "~landscape/ubuntu/self-hosted-beta"
-        message["X-Katie"] = "Launchpad actually"
-        message["Subject"] = f"[~landscape/ubuntu/self-hosted-beta] landscape-dashboard_{DEBIAN}_source.changes (Rejected)"
-        message.set_content(f"Rejected:\n{reason}\n\nlandscape-dashboard ({DEBIAN}) noble; urgency=medium\n\n  * {attempt}\n")
-        return message
+    def setUp(self):
+        self.publication = Publication("landscape/self-hosted-daily", "0~rehearsal.17-0landscape0", MARKER)
 
-    def test_direct_and_fallback_publication(self):
-        for fallback in (False, True):
-            with self.subTest(fallback=fallback):
-                self.rehearse_publication(fallback)
-
-    def rehearse_publication(self, fallback):
-        accepted = {}
-        published = {}
-        events = []
-        messages = {}
-
-        def source_upload(path, attempt):
-            series = path.parent.name
-            if series != "jammy":
-                self.assertEqual(accepted.get("jammy"), DEBIAN)
-            events.append(f"upload {series}")
-            self.assertEqual(path.name, f"landscape-dashboard_{DEBIAN}_source.changes")
-            if fallback and series == "noble":
-                reason = (f"The source landscape-dashboard - {DEBIAN} is already accepted in ubuntu/jammy and you "
-                          "cannot upload the same version within the same distribution. You have to modify the source version and re-upload.")
-                messages[attempt] = self.rejection(attempt, reason)
-            else:
-                accepted[series] = DEBIAN
-                if series != "jammy":
-                    published[series] = DEBIAN
-
-        @contextmanager
-        def mailbox():
-            yield Mock(response=Mock(return_value=("UIDNEXT", [b"1"])))
-
-        def check_mail(_, attempt, version, series, first_uid):
-            message = messages.get(attempt)
-            return LP["rejection_reason"](message, attempt, version, series) if message else None
-
-        def is_published(series, version):
-            events.append(f"check publication {series}")
-            return "jammy-build" if published.get(series) == version else None
+    def test_daily_copy_uses_same_archive_and_skips_pending_or_verified_destinations(self):
+        archive = Mock()
+        person = Mock()
+        person.getPPAByName.return_value = archive
+        login = Mock()
+        login.login_with.return_value.people = {"landscape": person}
+        modules = {
+            "launchpadlib.credentials": Mock(RequestTokenAuthorizationEngine=AuthorizationEngine),
+            "launchpadlib.launchpad": Mock(Launchpad=login),
+            "lazr.restfulclient.errors": Mock(CredentialsFileError=ValueError),
+        }
+        published = {"jammy": "jammy-build"}
 
         def copy(**kwargs):
-            self.assertEqual(published.get(kwargs["from_series"]), kwargs["version"])
-            events.append(f"copy {kwargs['to_series']}")
+            self.assertEqual(kwargs["version"], self.publication.version)
+            self.assertEqual(kwargs["from_series"], "jammy")
+            self.assertIs(kwargs["from_archive"], archive)
             self.assertTrue(kwargs["include_binaries"])
-            self.assertNotIn(kwargs["to_series"], published)
-            published[kwargs["to_series"]] = kwargs["version"]
-
-        archive = Mock()
-        archive.copyPackage.side_effect = copy
-        login = Mock()
-        login.login_with.return_value.people = {"landscape": Mock()}
-        login.login_with.return_value.people["landscape"].getPPAByName.return_value = archive
-        modules = {"launchpadlib.launchpad": Mock(Launchpad=login)}
-
-        def sources(series, version, status):
-            return [{"source_package_version": version}] if status == "Published" and published.get(series) == version else []
+            published[kwargs["to_series"]] = "jammy-build"
 
         def wait(check, _, description):
+            if description.startswith("noble copied"):
+                published["noble"] = "jammy-build"  # An existing pending copy finishes.
             result = check()
-            if not result and description == "Jammy binary publication":
-                published["jammy"] = accepted["jammy"]
-                result = check()
             self.assertTrue(result, description)
             return result
 
-        with patch.dict(GLOBALS, {
-            "accepted": lambda series, version, _: accepted.get(series) == version,
-            "sign_and_upload": source_upload, "rejection_mailbox": mailbox,
-            "check_mail": check_mail, "binary_build": is_published,
-            "sources": sources, "wait_for": wait,
-        }), patch.dict(os.environ, {"LAUNCHPAD_COPY_CREDENTIALS": "test", "LAUNCHPAD_VERIFY_REJECTION_EMAIL": str(fallback).lower()}), patch.dict(sys.modules, modules):
-            results = {series: LP["upload"](series, DEBIAN, MARKER, Path("artifacts")) for series in LP["SERIES"]}
-            targets = [series for series, result in results.items() if result == "copy"]
-            if targets:
-                LP["copy_missing"](DEBIAN, [*targets, "resolute"])  # Already published: leave it alone.
-                self.assertEqual(events.count("copy noble"), 1)
-                self.assertLess(events.index("check publication jammy"), events.index("copy noble"))
-                self.assertNotIn("copy resolute", events)
-            else:
-                published["jammy"] = accepted["jammy"]
-                login.login_with.assert_not_called()
-            self.assertEqual(published, dict.fromkeys(LP["SERIES"], DEBIAN))
+        archive.copyPackage.side_effect = copy
+        with patch.object(self.publication, "accepted", return_value=True), \
+                patch.object(self.publication, "binary_build", side_effect=published.get), \
+                patch.object(self.publication, "sources", side_effect=lambda s, status: iter([{"self_link": "pending"}] if (s, status) == ("noble", "Pending") else [])), \
+                patch.dict(GLOBALS, {"wait_for": wait}), patch.dict(sys.modules, modules), \
+                patch.dict(os.environ, {"LAUNCHPAD_COPY_CREDENTIALS": "test"}):
+            self.publication.copy_missing()
+            self.publication.copy_missing()  # A retry recognizes both verified copies.
+        person.getPPAByName.assert_called_once_with(name="self-hosted-daily")
+        self.assertEqual(archive.copyPackage.call_count, 1)
+        self.assertEqual(archive.copyPackage.call_args.kwargs["to_series"], "resolute")
 
-    def test_failures_do_not_trigger_copy(self):
-        attempt = f"{MARKER}:noble:attempt-2"
-        reason = "Signature verification failed."
-        self.assertEqual(LP["rejection_reason"](self.rejection(attempt, reason), attempt, DEBIAN, "noble"), "rejected")
-        self.assertIsNone(LP["rejection_reason"](self.rejection(attempt, reason), attempt + "stale", DEBIAN, "noble"))
+    def test_invalid_copy_credentials_do_not_prompt_for_authorization(self):
+        def reauthorize(*args, authorization_engine, **kwargs):
+            authorization_engine(None, None)
 
-        @contextmanager
-        def mailbox():
-            yield Mock(response=Mock(return_value=("UIDNEXT", [b"1"])))
+        login = Mock()
+        login.login_with.side_effect = reauthorize
+        modules = {
+            "launchpadlib.credentials": Mock(RequestTokenAuthorizationEngine=AuthorizationEngine),
+            "launchpadlib.launchpad": Mock(Launchpad=login),
+            "lazr.restfulclient.errors": Mock(CredentialsFileError=ValueError),
+        }
+        with tempfile.TemporaryDirectory() as cache, patch.dict(sys.modules, modules):
+            with self.assertRaisesRegex(RuntimeError, "renew LAUNCHPAD_COPY_CREDENTIALS"):
+                LP["copy_archive"]("landscape", "self-hosted-daily", "invalid", cache)
+        login.login_with.assert_called_once()
+        login.login_with.side_effect = MissingSectionHeaderError("credentials", 1, "secret contents")
+        with tempfile.TemporaryDirectory() as cache, patch.dict(sys.modules, modules):
+            with self.assertRaisesRegex(RuntimeError, "renew LAUNCHPAD_COPY_CREDENTIALS") as failed:
+                LP["copy_archive"]("landscape", "self-hosted-daily", "invalid", cache)
+        self.assertTrue(failed.exception.__suppress_context__)
 
-        read_mail = Mock()
-        with patch.dict(GLOBALS, {
-            "accepted": Mock(return_value=False), "rejection_mailbox": mailbox,
-            "sources": Mock(return_value=[]),
-            "sign_and_upload": Mock(side_effect=subprocess.CalledProcessError(1, "debsign or dput")),
-            "check_mail": read_mail,
-        }), patch.dict(os.environ, {"LAUNCHPAD_VERIFY_REJECTION_EMAIL": "true"}):
-            with self.assertRaises(subprocess.CalledProcessError):
-                LP["upload"]("noble", DEBIAN, MARKER, Path("artifacts"))
-        read_mail.assert_not_called()
+    def test_terminal_jammy_states_report_the_launchpad_link(self):
+        source = {"self_link": "jammy-source"}
+        for state in ("Cancelled build", "Build for superseded Source"):
+            build = {"buildstate": state, "web_link": "jammy-build"}
+            with self.subTest(state=state), \
+                    patch.object(self.publication, "sources", side_effect=lambda _, status: iter([source] if status == "Pending" else [])), \
+                    patch.dict(GLOBALS, {"collection": Mock(return_value=[build])}), \
+                    self.assertRaisesRegex(RuntimeError, f"{state}.*jammy-build"):
+                self.publication.binary_build("jammy")
+        with patch.object(self.publication, "sources", side_effect=lambda _, status: iter([source] if status == "Superseded" else [])), \
+                self.assertRaisesRegex(RuntimeError, "superseded.*jammy-source"):
+            self.publication.binary_build("jammy")
 
-    def test_retry_resumes_an_accepted_upload_without_signing_again(self):
-        sign = Mock()
-        with patch.dict(GLOBALS, {"accepted": Mock(return_value=True), "sign_and_upload": sign}):
-            self.assertEqual(LP["upload"]("jammy", DEBIAN, MARKER, Path("artifacts")), "accepted")
-            GLOBALS["accepted"].assert_called_once_with("jammy", DEBIAN, f"{MARKER}:jammy")
-        sign.assert_not_called()
+    def test_retry_resumes_accepted_upload_without_signing_again(self):
+        with patch.object(self.publication, "accepted", return_value=True), \
+                patch("subprocess.run") as run:
+            self.publication.upload(Path("artifacts"))
+        run.assert_not_called()
 
-    def test_manual_copy_recovery_checks_jammy_build_identity(self):
-        sign = Mock()
-        builds = {"jammy": "jammy-build", "noble": "unrelated-build"}
-        with patch.dict(GLOBALS, {
-            "accepted": lambda series, version, marker: series == "jammy" and marker == f"{MARKER}:jammy",
-            "sources": lambda *_: [{"source_package_version": DEBIAN}],
-            "sign_and_upload": sign,
-            "binary_build": lambda series, version: builds[series],
-        }):
-            with self.assertRaisesRegex(RuntimeError, "not copied from the verified Jammy build"):
-                LP["upload"]("noble", DEBIAN, MARKER, Path("artifacts"))
-            builds["noble"] = builds["jammy"]
-            self.assertEqual(LP["upload"]("noble", DEBIAN, MARKER, Path("artifacts")), "accepted")
-        sign.assert_not_called()
+    def test_copy_does_not_start_before_exact_acceptance(self):
+        with patch.object(self.publication, "accepted", side_effect=RuntimeError("different run")), \
+                patch.object(self.publication, "copy_targets") as copy:
+            with self.assertRaisesRegex(RuntimeError, "different run"):
+                self.publication.copy_missing()
+        copy.assert_not_called()
 
-    def test_mime_rejection_is_matched_after_decoding(self):
-        attempt = f"Landscape-UI-Beta:12345678901:{'a' * 40}:noble:attempt-2"
-        reason = (f"The source landscape-dashboard - {DEBIAN} is already accepted in ubuntu/jammy and you "
-                  "cannot upload the same version within the same distribution. You have to modify the source version and re-upload.")
-        message = self.rejection(attempt, reason)
-        message.set_content(message.get_content(), cte="quoted-printable")
-        raw = message.as_bytes()
-        self.assertNotIn(attempt.encode(), raw)
-        mailbox = Mock()
-        mailbox.uid.side_effect = [("OK", [b"1 2"]), ("OK", [(b"2", raw)])]
-        self.assertEqual(LP["check_mail"](mailbox, attempt, DEBIAN, "noble", 2), "copy")
-        self.assertNotIn(attempt, mailbox.uid.call_args_list[0].args)
+    def test_manual_verification_rejects_unrelated_build(self):
+        with patch.object(self.publication, "binary_build", return_value="unrelated-build"), \
+                self.assertRaisesRegex(RuntimeError, "not copied from the verified Jammy build"):
+            self.publication.verified_copy("noble", "jammy-build")
+
+    def test_manual_copy_does_not_require_credentials_once_verified(self):
+        published = {"jammy": "jammy-build"}
+        with patch.object(self.publication, "binary_build", side_effect=published.get), \
+                patch.object(self.publication, "sources", return_value=iter([])), \
+                patch.dict(os.environ, {"LAUNCHPAD_COPY_CREDENTIALS": ""}):
+            with self.assertRaisesRegex(RuntimeError, "Copy existing binaries"):
+                self.publication.copy_targets("jammy-build", "unused-cache")
+            published.update(noble="jammy-build", resolute="jammy-build")
+            self.publication.copy_targets("jammy-build", "unused-cache")
 
 
 if __name__ == "__main__":

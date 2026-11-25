@@ -3,35 +3,48 @@ name: Beta Release and PPA Build
 on:
   push:
     branches: ["beta/**"]
+  workflow_dispatch:
+    inputs:
+      exercise-retry:
+        description: Fail the first attempt after Jammy accepts, to rehearse recovery on this run
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: ${{ github.event_name == 'workflow_dispatch' && 'beta-ppa-rehearsal' || 'release' }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   route:
+    # Manual rehearsal runs use only the merged workflow and code from main.
+    if: github.event_name == 'push' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       decision: ${{ steps.version.outputs.decision }}
       version: ${{ steps.version.outputs.version }}
       deb-version: ${{ steps.version.outputs.deb-version }}
       marker: ${{ steps.version.outputs.marker }}
-      sha: ${{ steps.version.outputs.sha }}
+      ppa: ${{ steps.version.outputs.ppa }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: 26
-      - name: Validate beta metadata
+      - name: Resolve publication metadata
         id: version
-        run: node scripts/beta-release-version.cjs
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+            node scripts/beta-release-version.cjs --rehearsal
+          else
+            node scripts/beta-release-version.cjs
+          fi
 
   prepare:
     needs: route
-    if: needs.route.outputs.decision == 'prepare'
+    if: github.event_name == 'push' && needs.route.outputs.decision == 'prepare'
     uses: ./.github/workflows/beta-release-prep.yml
     secrets: inherit
 
@@ -56,7 +69,8 @@ jobs:
         env:
           VERSION: ${{ needs.route.outputs.deb-version }}
           MARKER: ${{ needs.route.outputs.marker }}
-        run: python3 scripts/launchpad-beta.py preflight "$VERSION" --marker "$MARKER"
+          PPA: ${{ needs.route.outputs.ppa }}
+        run: python3 scripts/launchpad-beta.py preflight "$VERSION" --ppa "$PPA" --marker "$MARKER"
       - uses: pnpm/setup@v3
         if: steps.retained.outputs.id == ''
         with:
@@ -69,7 +83,7 @@ jobs:
         run: pnpm run build
         env:
           VITE_APP_VERSION: ${{ needs.route.outputs.version }}
-          VITE_APP_COMMIT: ${{ needs.route.outputs.sha }}
+          VITE_APP_COMMIT: ${{ github.sha }}
           VITE_API_URL: /api/v2/
           VITE_API_URL_OLD: /api/
           VITE_ROOT_PATH: /portal/
@@ -84,6 +98,7 @@ jobs:
 
   publish-assets:
     needs: [route, build]
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -96,9 +111,18 @@ jobs:
       - name: Publish beta assets
         env:
           VERSION: ${{ needs.route.outputs.version }}
-          BUILD_SHA: ${{ needs.route.outputs.sha }}
+          BUILD_SHA: ${{ github.sha }}
         run: |
           DEST="ppa-build-${GITHUB_REF_NAME#beta/}"
+          require_current_tip() {
+            local tip
+            tip=$(git ls-remote --heads origin "$GITHUB_REF" | cut -f1) || return 1
+            if [[ "$tip" != "$BUILD_SHA" ]]; then
+              echo "::error::Beta branch tip is ${tip:-missing}, expected $BUILD_SHA. Use the run for the current tip."
+              return 1
+            fi
+          }
+          require_current_tip
           git -C dist init --initial-branch=build
           git -C dist add --all
           git -C dist -c user.name='github-actions[bot]' \
@@ -106,10 +130,7 @@ jobs:
             commit -m "Build $VERSION from $GITHUB_REF_NAME [$BUILD_SHA]"
           git fetch ./dist refs/heads/build
           PREVIOUS=$(git ls-remote --heads origin "refs/heads/$DEST" | cut -f1)
-          if [[ $(git ls-remote --heads origin "$GITHUB_REF" | cut -f1) != "$BUILD_SHA" ]]; then
-            echo 'Beta branch advanced; retaining its newer asset branch state.'
-            exit 0
-          fi
+          require_current_tip
           git push --force-with-lease="refs/heads/$DEST:$PREVIOUS" origin "FETCH_HEAD:refs/heads/$DEST"
 
   sbom:
@@ -117,7 +138,6 @@ jobs:
     uses: ./.github/workflows/beta-sbom.yml
     with:
       version: ${{ needs.route.outputs.version }}
-      sha: ${{ needs.route.outputs.sha }}
 
   package-source:
     needs: [route, build]
@@ -128,7 +148,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ needs.route.outputs.sha }}
           persist-credentials: false
       - name: Find the original source artifact on retry
         id: retained
@@ -140,7 +159,7 @@ jobs:
         with:
           name: beta-dist
           path: dist/
-      - name: Prepare source packages
+      - name: Prepare Jammy source package
         if: steps.retained.outputs.id == ''
         env:
           DEB_VERSION: ${{ needs.route.outputs.deb-version }}
@@ -159,84 +178,89 @@ jobs:
 
   upload-jammy:
     needs: [route, package-source, publish-assets]
-    uses: ./.github/workflows/beta-series-upload.yml
-    with:
-      series: jammy
-      version: ${{ needs.route.outputs.deb-version }}
-      marker: ${{ needs.route.outputs.marker }}
-    secrets:
-      signing-key: ${{ secrets.LAUNCHPAD_GPG_PRIVATE_KEY }}
-
-  upload-noble:
-    needs: [route, upload-jammy]
-    if: needs.upload-jammy.outputs.result == 'accepted'
-    uses: ./.github/workflows/beta-series-upload.yml
-    with:
-      series: noble
-      version: ${{ needs.route.outputs.deb-version }}
-      marker: ${{ needs.route.outputs.marker }}
-    secrets:
-      signing-key: ${{ secrets.LAUNCHPAD_GPG_PRIVATE_KEY }}
-      imap-password: ${{ secrets.LAUNCHPAD_IMAP_PASSWORD }}
-
-  upload-resolute:
-    needs: [route, upload-jammy]
-    if: needs.upload-jammy.outputs.result == 'accepted'
-    uses: ./.github/workflows/beta-series-upload.yml
-    with:
-      series: resolute
-      version: ${{ needs.route.outputs.deb-version }}
-      marker: ${{ needs.route.outputs.marker }}
-    secrets:
-      signing-key: ${{ secrets.LAUNCHPAD_GPG_PRIVATE_KEY }}
-      imap-password: ${{ secrets.LAUNCHPAD_IMAP_PASSWORD }}
-
-  resolve-publication:
-    needs: [route, upload-jammy, upload-noble, upload-resolute]
+    if: >-
+      !cancelled() && needs.route.result == 'success' && needs.package-source.result == 'success' &&
+      ((github.event_name == 'workflow_dispatch' && needs.publish-assets.result == 'skipped') ||
+       (github.event_name == 'push' && needs.publish-assets.result == 'success'))
     runs-on: ubuntu-latest
-    timeout-minutes: 110
-    env:
-      NOBLE: ${{ needs.upload-noble.outputs.result }}
-      RESOLUTE: ${{ needs.upload-resolute.outputs.result }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
     steps:
-      - name: Check direct upload outcomes
-        run: |
-          [[ '${{ needs.upload-jammy.outputs.result }}' == accepted ]]
-          [[ "$NOBLE" == accepted || "$NOBLE" == copy ]]
-          [[ "$RESOLUTE" == accepted || "$RESOLUTE" == copy ]]
       - uses: actions/checkout@v5
-        if: env.NOBLE == 'copy' || env.RESOLUTE == 'copy'
         with:
           persist-credentials: false
-      - name: Copy from Jammy only where direct upload was rejected
-        if: env.NOBLE == 'copy' || env.RESOLUTE == 'copy'
+      - name: Find the original upload inputs on retry
+        id: retained
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/find-beta-artifact.sh beta-source package-source
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ steps.retained.outputs.id == '' && 'beta-source' || '' }}
+          artifact-ids: ${{ steps.retained.outputs.id }}
+          github-token: ${{ steps.retained.outputs.id != '' && github.token || '' }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/beta-source
+      - name: Record source artifact checksums
+        run: sha256sum "$RUNNER_TEMP"/beta-source/jammy/*
+      - name: Install signing and upload tools
+        run: sudo apt-get update && sudo apt-get install -y devscripts dput
+      - name: Sign, upload and check Launchpad acceptance
         env:
           VERSION: ${{ needs.route.outputs.deb-version }}
+          MARKER: ${{ needs.route.outputs.marker }}
+          PPA: ${{ needs.route.outputs.ppa }}
+          GPG_PRIVATE_KEY: ${{ secrets.LAUNCHPAD_GPG_PRIVATE_KEY }}
+        run: python3 scripts/launchpad-beta.py upload "$VERSION" --ppa "$PPA" --marker "$MARKER" --directory "$RUNNER_TEMP/beta-source"
+      - name: Exercise recovery after Jammy acceptance
+        if: github.event_name == 'workflow_dispatch' && inputs.exercise-retry && github.run_attempt == '1'
+        run: |
+          echo '::error::Intentional rehearsal failure after Jammy acceptance. Rerun this original run.'
+          exit 1
+
+  resolve-publication:
+    needs: [route, upload-jammy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Copy the published Jammy binary and verify both destinations
+        env:
+          VERSION: ${{ needs.route.outputs.deb-version }}
+          MARKER: ${{ needs.route.outputs.marker }}
+          PPA: ${{ needs.route.outputs.ppa }}
           LAUNCHPAD_COPY_CREDENTIALS: ${{ secrets.LAUNCHPAD_COPY_CREDENTIALS }}
         run: |
-          sudo apt-get update && sudo apt-get install -y python3-launchpadlib
-          targets=()
-          if [[ "$NOBLE" == copy ]]; then targets+=(noble); fi
-          if [[ "$RESOLUTE" == copy ]]; then targets+=(resolute); fi
-          /usr/bin/python3 scripts/launchpad-beta.py copy "$VERSION" "${targets[@]}"
+          if [[ -n "$LAUNCHPAD_COPY_CREDENTIALS" ]]; then
+            sudo apt-get update && sudo apt-get install -y python3-launchpadlib
+          fi
+          /usr/bin/python3 scripts/launchpad-beta.py copy "$VERSION" --ppa "$PPA" --marker "$MARKER"
 
   tag:
     needs: [route, resolve-publication]
+    if: github.event_name == 'push' && needs.route.outputs.ppa == 'landscape/self-hosted-beta'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ needs.route.outputs.sha }}
           fetch-depth: 0
       - name: Tag the built commit
         env:
           VERSION: ${{ needs.route.outputs.version }}
-          SHA: ${{ needs.route.outputs.sha }}
+          SHA: ${{ github.sha }}
         run: |
           if git show-ref --verify --quiet "refs/tags/$VERSION"; then
-            [[ $(git rev-parse "refs/tags/$VERSION^{commit}") == "$SHA" ]]
+            EXISTING_SHA=$(git rev-parse "refs/tags/$VERSION^{commit}")
+            if [[ "$EXISTING_SHA" != "$SHA" ]]; then
+              echo "::error::Tag $VERSION points to $EXISTING_SHA, expected $SHA."
+              exit 1
+            fi
           else
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -246,6 +270,7 @@ jobs:
 
   forward-port:
     needs: [route, tag]
+    if: github.event_name == 'push' && needs.route.outputs.ppa == 'landscape/self-hosted-beta'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/create-github-app-token@v2
@@ -257,14 +282,13 @@ jobs:
           permission-pull-requests: write
       - uses: actions/checkout@v5
         with:
-          ref: ${{ needs.route.outputs.sha }}
           fetch-depth: 0
           token: ${{ steps.app.outputs.token }}
       - name: Forward-port the tagged beta history
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
           VERSION: ${{ needs.route.outputs.version }}
-          SHA: ${{ needs.route.outputs.sha }}
+          SHA: ${{ github.sha }}
           BOT_EMAIL: 273197409+landscape-packager[bot]@users.noreply.github.com
         run: |
           BRANCH="beta-forward-port/$VERSION"

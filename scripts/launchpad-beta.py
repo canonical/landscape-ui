@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
-"""Upload, verify and, on a confirmed cross-series rejection, copy a beta."""
+"""Upload a signed Jammy source and verify publication of its binary copies."""
 
 import argparse
-from contextlib import contextmanager
-from email import policy
-from email.parser import BytesParser
-import imaplib
+from configparser import Error as ConfigError
 import json
 import os
 from pathlib import Path
 import re
-import secrets
-import ssl
 import subprocess
 import tempfile
 import time
@@ -21,12 +16,13 @@ from urllib.request import Request, urlopen
 
 
 API = "https://api.launchpad.net/devel"
-PPA = "landscape/self-hosted-beta"
-ARCHIVE = f"{API}/~landscape/+archive/ubuntu/self-hosted-beta"
-ARCHIVE_REFERENCE = "~landscape/ubuntu/self-hosted-beta"
-PACKAGE = "landscape-dashboard"
+PPAS = ("landscape/self-hosted-beta", "landscape/self-hosted-daily")
 SERIES = ("jammy", "noble", "resolute")  # Keep aligned with landscape-server.
-OLDEST = SERIES[0]
+JAMMY, *DESTINATIONS = SERIES
+FAILED_BUILD_STATES = {
+    "Failed to build", "Chroot problem", "Failed to upload", "Dependency wait",
+    "Cancelled build", "Build for superseded Source",
+}
 
 
 def collection(url, **params):
@@ -40,107 +36,6 @@ def collection(url, **params):
 
 def fresh(url):
     return urlopen(Request(url, headers={"Cache-Control": "no-cache"}), timeout=30)
-
-
-def sources(series, version, status):
-    return collection(
-        ARCHIVE, **{"ws.op": "getPublishedSources"}, source_name=PACKAGE,
-        version=version, exact_match="true", distro_series=f"{API}/ubuntu/{series}",
-        pocket="Release", status=status,
-    )
-
-
-def accepted(series, version, marker):
-    for upload in collection(
-        f"{API}/ubuntu/{series}", **{"ws.op": "getPackageUploads"}, archive=ARCHIVE,
-        pocket="Release", name=PACKAGE, version=version, exact_match="true",
-    ):
-        if (upload["status"] not in ("Accepted", "Done") or not upload["contains_source"]
-                or upload["package_version"] != version):
-            continue
-        with fresh(upload["changes_file_url"]) as response:
-            changes = response.read().decode("utf-8")
-        if f"   * {marker}\n" not in changes:
-            raise RuntimeError(f"{series} already accepted {version} from a different run")
-        return True
-    return False
-
-
-def preflight(version, marker):
-    # Never rebuild an accepted version, even on a full rerun. Superseded or
-    # removed versions still have upload records.
-    for series in SERIES:
-        if accepted(series, version, f"{marker}:{series}"):
-            raise RuntimeError(f"{series} already accepted {version}; re-run only failed jobs")
-        for status in ("Pending", "Published", "Superseded", "Deleted", "Obsolete"):
-            if any(source["source_package_version"] == version for source in sources(series, version, status)):
-                raise RuntimeError(f"{series} already has {version}; recover the original run or use a respin")
-
-
-def rejection_subjects(version, series):
-    filename = f"{PACKAGE}_{version}_source.changes"
-    return (
-        f"[{ARCHIVE_REFERENCE}] {filename} (Rejected)",
-        f"[{ARCHIVE_REFERENCE}/{series}] {PACKAGE} {version} (Rejected)",
-    )
-
-
-def rejection_reason(message, attempt_marker, version, series):
-    if (str(message["X-Launchpad-Archive"]) != ARCHIVE_REFERENCE
-            or str(message["X-Katie"]) != "Launchpad actually"
-            or str(message["Subject"]) not in rejection_subjects(version, series)):
-        return None
-    body = message.get_body(preferencelist=("plain",))
-    if body is None:
-        return None
-    text = body.get_content()
-    if not re.search(rf"^\s*\* {re.escape(attempt_marker)}\s*$", text, re.M):
-        return None
-    # Parse only the summary, never changelog text quoted below it. Use the
-    # queue.py rejection for an already accepted exact source/version.
-    summary = text.lstrip().removeprefix("Rejected:\n").lstrip().split("\n\n", 1)[0]
-    for existing in SERIES:
-        expected = (
-            f"The source {PACKAGE} - {version} is already accepted in ubuntu/{existing} and you "
-            "cannot upload the same version within the same distribution. "
-            "You have to modify the source version and re-upload."
-        )
-        if existing != series and " ".join(summary.split()) == expected:
-            return "copy"
-    return "rejected"
-
-
-@contextmanager
-def rejection_mailbox():
-    with imaplib.IMAP4_SSL(os.environ["LAUNCHPAD_IMAP_HOST"], timeout=30,
-                          ssl_context=ssl.create_default_context()) as mailbox:
-        mailbox.login(os.environ["LAUNCHPAD_IMAP_USER"], os.environ["LAUNCHPAD_IMAP_PASSWORD"])
-        status, _ = mailbox.select(readonly=True)
-        if status != "OK":
-            raise RuntimeError("Cannot select Launchpad rejection inbox")
-        yield mailbox
-
-
-def check_mail(mailbox, attempt, version, series, first_uid):
-    # Match the attempt only after MIME decoding. Quoted-printable can wrap
-    # the marker across physical lines, so a literal IMAP BODY search can miss it.
-    early, named = rejection_subjects(version, series)
-    status, messages = mailbox.uid("search", None, "UID", f"{first_uid}:*", "OR",
-                                   "SUBJECT", f'"{early}"', "SUBJECT", f'"{named}"')
-    if status != "OK":
-        raise RuntimeError("Cannot search Launchpad rejection inbox")
-    for uid in reversed(messages[0].split()):
-        if int(uid) < first_uid:
-            continue  # IMAP's * can be smaller than the requested first UID.
-        status, parts = mailbox.uid("fetch", uid, "(BODY.PEEK[])")
-        if status != "OK":
-            raise RuntimeError("Cannot fetch Launchpad rejection notification")
-        for part in parts:
-            if isinstance(part, tuple):
-                result = rejection_reason(BytesParser(policy=policy.default).parsebytes(part[1]), attempt, version, series)
-                if result:
-                    return result
-    return None
 
 
 def wait_for(check, seconds, description):
@@ -161,144 +56,181 @@ def wait_for(check, seconds, description):
         time.sleep(20)
 
 
-def sign_and_upload(path, attempt):
-    with tempfile.TemporaryDirectory() as keyring:
-        env = dict(os.environ, GNUPGHOME=keyring)
-        subprocess.run(["gpg", "--batch", "--import"], check=True, env=env,
-                       input=os.environ["GPG_PRIVATE_KEY"], text=True)
-        keys = subprocess.check_output(
-            ["gpg", "--batch", "--list-secret-keys", "--with-colons"], env=env, text=True,
+def copy_archive(owner, archive_name, credentials, cache):
+    from launchpadlib.credentials import RequestTokenAuthorizationEngine
+    from launchpadlib.launchpad import Launchpad
+    from lazr.restfulclient.errors import CredentialsFileError
+
+    message = "Launchpad copy credentials are missing or invalid; renew LAUNCHPAD_COPY_CREDENTIALS"
+
+    class NonInteractiveAuthorization(RequestTokenAuthorizationEngine):
+        def __call__(self, credentials, credential_store):
+            raise RuntimeError(message)
+
+    path = Path(cache) / "credentials"
+    path.touch(mode=0o600)
+    path.write_text(credentials)
+    engine = NonInteractiveAuthorization("production", application_name="landscape-ui-beta-copy")
+    try:
+        lp = Launchpad.login_with(engine.application_name, "production", cache, timeout=30,
+                                  credentials_file=str(path), authorization_engine=engine, version="devel")
+    except (ConfigError, CredentialsFileError):
+        raise RuntimeError(message) from None
+    return lp.people[owner].getPPAByName(name=archive_name)
+
+
+class Publication:
+    def __init__(self, ppa, version, marker):
+        self.ppa = ppa
+        self.owner, self.archive_name = ppa.split("/")
+        self.archive = f"{API}/~{self.owner}/+archive/ubuntu/{self.archive_name}"
+        self.package = "landscape-dashboard-rehearsal" if ppa == PPAS[1] else "landscape-dashboard"
+        self.version = version
+        self.marker = f"{marker}:{JAMMY}"
+
+    def sources(self, series, status):
+        entries = collection(
+            self.archive, **{"ws.op": "getPublishedSources"}, source_name=self.package,
+            version=self.version, exact_match="true", distro_series=f"{API}/ubuntu/{series}",
+            pocket="Release", status=status,
         )
-        key, = re.findall(r"^sec:[^\n]*\nfpr:::::::::([A-F0-9]+):", keys, re.M)
-        changes = path.read_text().replace("Changes:\n", f"Changes:\n   * {attempt}\n", 1)
-        path.write_text(changes)
-        subprocess.run(["debsign", "-k" + key, path.name], cwd=path.parent, env=env, check=True)
-        # A nonzero dput result can occur after Launchpad receives the files.
-        result = subprocess.run(["dput", "ppa:" + PPA, path.name], cwd=path.parent, env=env)
-        if result.returncode:
-            print(f"dput exited {result.returncode}; checking Launchpad for source acceptance")
+        return (source for source in entries if source["source_package_version"] == self.version)
 
-
-def upload(series, version, marker, directory):
-    series_marker = f"{marker}:{series}"
-    if accepted(series, version, series_marker):
-        return "accepted"
-    # A release owner may have copied the exact Jammy build since the last
-    # attempt. Confirm Jammy belongs to this run before resuming after a copy.
-    if series != OLDEST and any(
-        source["source_package_version"] == version
-        for status in ("Pending", "Published")
-        for source in sources(series, version, status)
-    ):
-        if accepted(OLDEST, version, f"{marker}:{OLDEST}"):
-            wait_for(lambda: verified_copy(series, version), 600, f"{series} copied Jammy binary")
-            return "accepted"
-        raise RuntimeError(f"{series} already has {version} without this run's Jammy source")
-    attempt = f"{series_marker}:attempt-{secrets.token_hex(16)}"
-    path = directory / series / f"{PACKAGE}_{version}_source.changes"
-    if series == OLDEST or os.environ.get("LAUNCHPAD_VERIFY_REJECTION_EMAIL") != "true":
-        sign_and_upload(path, attempt)
-        description = f"{series} source acceptance"
-        if series != OLDEST:
-            description += "; inspect the Launchpad rejection before manually copying Jammy and rerunning failed jobs"
-        wait_for(lambda: accepted(series, version, series_marker), 600, description)
-        return "accepted"
-
-    with rejection_mailbox() as mailbox:
-        _, values = mailbox.response("UIDNEXT")
-        if not values or values[0] is None:
-            raise RuntimeError("Launchpad rejection inbox did not return UIDNEXT")
-        first_uid = int(values[0])
-        sign_and_upload(path, attempt)
-
-        def result():
-            if accepted(series, version, series_marker):
-                return "accepted"
-            rejected = check_mail(mailbox, attempt, version, series, first_uid)
-            if rejected == "rejected":
-                raise RuntimeError(f"Launchpad rejected the {series} upload; inspect the signer inbox")
-            return rejected
-
-        return wait_for(result, 600, f"{series} source acceptance or rejection")
-
-
-def binary_build(series, version):
-    for source in sources(series, version, "Published"):
-        if source["source_package_version"] != version:
-            continue
-        binaries = collection(source["self_link"], **{"ws.op": "getPublishedBinaries"}, active_binaries_only="true")
-        for binary in binaries:
-            if (binary["status"] == "Published" and binary["binary_package_name"] == PACKAGE
-                    and binary["distro_arch_series_link"].startswith(f"{API}/ubuntu/{series}/")
-                    and binary["binary_package_version"] == version):
-                return binary["build_link"]
-        if series == OLDEST:
-            for build in collection(source["self_link"], **{"ws.op": "getBuilds"}):
-                if build["buildstate"] in ("Failed to build", "Chroot problem", "Failed to upload", "Dependency wait"):
-                    raise RuntimeError(f"Jammy build: {build['buildstate']}. See {build['web_link']}")
-    return None
-
-
-def verified_copy(series, version):
-    target = binary_build(series, version)
-    if not target:
-        return False
-    jammy = binary_build(OLDEST, version)
-    if not jammy:
-        return False
-    if target != jammy:
-        raise RuntimeError(f"{series} {version} was not copied from the verified Jammy build")
-    return True
-
-
-def copy_missing(version, targets):
-    wait_for(lambda: binary_build(OLDEST, version), 3600, "Jammy binary publication")
-    with tempfile.TemporaryDirectory() as cache:
-        copy_targets(version, targets, cache)
-
-
-def copy_targets(version, targets, cache):
-    archive = None
-    for series in targets:
-        if not any(
-            source["source_package_version"] == version
-            for status in ("Pending", "Published")
-            for source in sources(series, version, status)
+    def accepted(self):
+        for upload in collection(
+            f"{API}/ubuntu/{JAMMY}", **{"ws.op": "getPackageUploads"}, archive=self.archive,
+            pocket="Release", name=self.package, version=self.version, exact_match="true",
         ):
-            if archive is None:
-                from launchpadlib.launchpad import Launchpad
+            if (upload["status"] not in ("Accepted", "Done") or not upload["contains_source"]
+                    or upload["package_version"] != self.version):
+                continue
+            with fresh(upload["changes_file_url"]) as response:
+                changes = response.read().decode("utf-8")
+            if f"   * {self.marker}" not in changes.splitlines():
+                raise RuntimeError(f"{JAMMY} already accepted {self.version} from a different run")
+            return True
+        return False
 
-                path = Path(cache) / "credentials"
-                path.touch(mode=0o600)
-                path.write_text(os.environ["LAUNCHPAD_COPY_CREDENTIALS"])
-                lp = Launchpad.login_with("landscape-ui-beta-copy", "production", cache,
-                                          credentials_file=str(path), version="devel")
-                archive = lp.people["landscape"].getPPAByName(name="self-hosted-beta")
-            archive.copyPackage(source_name=PACKAGE, version=version, from_archive=archive,
-                                from_series=OLDEST, to_series=series, from_pocket="Release",
+    def preflight(self):
+        if self.accepted():
+            raise RuntimeError(f"{JAMMY} already accepted {self.version}; recover the original artifacts")
+        for series in SERIES:
+            for status in ("Pending", "Published", "Superseded", "Deleted", "Obsolete"):
+                if next(self.sources(series, status), None):
+                    raise RuntimeError(f"{series} already has {self.version}; use a new upstream version")
+
+    def upload(self, directory):
+        if self.accepted():
+            print(f"{JAMMY} already accepted {self.version} from this run; skipping upload")
+            return
+        self.preflight()
+        path = directory / JAMMY / f"{self.package}_{self.version}_source.changes"
+        changes = path.read_text().splitlines()
+        if ([line for line in changes if line.startswith("Distribution:")] != [f"Distribution: {JAMMY}"]
+                or f"Source: {self.package}" not in changes or "Architecture: source" not in changes
+                or f"Version: {self.version}" not in changes or f"   * {self.marker}" not in changes):
+            raise RuntimeError(f"Unexpected source, series, version, or run marker in {path}")
+
+        with tempfile.TemporaryDirectory() as keyring:
+            env = dict(os.environ, GNUPGHOME=keyring)
+            private_key = env.pop("GPG_PRIVATE_KEY")
+            subprocess.run(["gpg", "--batch", "--import"], check=True, env=env,
+                           input=private_key, text=True)
+            # Use only the single imported signing identity.
+            keys = subprocess.check_output(
+                ["gpg", "--batch", "--list-secret-keys", "--with-colons"], env=env, text=True,
+            )
+            key, = [line.split(":")[4] for line in keys.splitlines() if line.startswith("sec:")]
+            subprocess.run(["debsign", "-k" + key, path.name], cwd=path.parent, env=env, check=True)
+            result = subprocess.run(["dput", "ppa:" + self.ppa, path.name], cwd=path.parent, env=env)
+            print(f"dput exited {result.returncode}; checking Launchpad for source acceptance")
+        wait_for(self.accepted, 600, "Jammy source acceptance")
+
+    def binary_build(self, series):
+        builds = set()
+        active_source = False
+        for status in ("Published", "Pending"):
+            for source in self.sources(series, status):
+                active_source = True
+                if status == "Published":
+                    binaries = collection(source["self_link"], **{"ws.op": "getPublishedBinaries"},
+                                          active_binaries_only="true")
+                    for binary in binaries:
+                        if (binary["status"] == "Published" and binary["binary_package_name"] == self.package
+                                and binary["distro_arch_series_link"].startswith(f"{API}/ubuntu/{series}/")
+                                and binary["binary_package_version"] == self.version):
+                            builds.add(binary["build_link"])
+                if series == JAMMY and not builds:
+                    for build in collection(source["self_link"], **{"ws.op": "getBuilds"}):
+                        if build["buildstate"] in FAILED_BUILD_STATES:
+                            raise RuntimeError(f"Jammy build: {build['buildstate']}. See {build['web_link']}")
+        if series == JAMMY and not active_source:
+            superseded = next(self.sources(series, "Superseded"), None)
+            if superseded:
+                raise RuntimeError(f"Jammy source {self.version} was superseded. See {superseded['self_link']}")
+        if len(builds) > 1 or None in builds:
+            raise RuntimeError(f"Ambiguous {series} binary build for {self.version}")
+        return next(iter(builds), None)
+
+    def verified_copy(self, series, jammy_build):
+        target = self.binary_build(series)
+        if not target:
+            return False
+        if target != jammy_build:
+            raise RuntimeError(f"{series} {self.version} was not copied from the verified Jammy build")
+        return True
+
+    def copy_missing(self):
+        wait_for(self.accepted, 120, "Jammy source acceptance for this run")
+        jammy_build = wait_for(lambda: self.binary_build(JAMMY), 10800, "Jammy binary publication")
+        with tempfile.TemporaryDirectory() as cache:
+            self.copy_targets(jammy_build, cache)
+
+    def copy_targets(self, jammy_build, cache):
+        archive = None
+        pending = []
+        for series in DESTINATIONS:
+            if self.verified_copy(series, jammy_build):
+                print(f"{series} already published {self.version} from {jammy_build}")
+                continue
+            pending.append(series)
+            if any(next(self.sources(series, status), None) for status in ("Pending", "Published")):
+                continue  # An existing publication is verified below, never overwritten.
+            credentials = os.environ.get("LAUNCHPAD_COPY_CREDENTIALS")
+            if not credentials:
+                raise RuntimeError(f"Copy existing binaries for {self.version} from Jammy to missing "
+                                   f"series in {self.ppa}, then rerun the original failed jobs")
+            if archive is None:
+                archive = copy_archive(self.owner, self.archive_name, credentials, cache)
+            archive.copyPackage(source_name=self.package, version=self.version, from_archive=archive,
+                                from_series=JAMMY, to_series=series, from_pocket="Release",
                                 to_pocket="Release", include_binaries=True)
-        wait_for(lambda: verified_copy(series, version), 1200, f"{series} copied Jammy binary publication")
+        for series in pending:
+            wait_for(lambda: self.verified_copy(series, jammy_build), 3600, f"{series} copied Jammy binary publication")
+            print(f"{series} published {self.version} from {jammy_build}")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("preflight", "upload", "copy"))
     parser.add_argument("version")
-    parser.add_argument("series", nargs="*")
-    parser.add_argument("--marker")
+    parser.add_argument("--ppa", choices=PPAS, required=True)
+    parser.add_argument("--marker", required=True)
     parser.add_argument("--directory", type=Path)
     args = parser.parse_args()
-    if (args.command == "upload" and (len(args.series) != 1 or args.series[0] not in SERIES)
-            or args.command == "copy" and (not args.series or set(args.series) - set(SERIES[1:]))):
-        parser.error("Expected supported series (only Noble and Resolute can be copy destinations)")
+    if args.command == "upload" and args.directory is None:
+        parser.error("--directory is required for upload")
+    rehearsal = re.fullmatch(r"0~rehearsal\.[1-9][0-9]*-0landscape0", args.version)
+    beta = re.fullmatch(r"[0-9]{2}\.(?:04|10)~beta\.[1-9][0-9]*(?:\.[1-9][0-9]*)?-0landscape0", args.version)
+    if not (rehearsal if args.ppa == PPAS[1] else beta):
+        parser.error("The daily PPA requires a dedicated rehearsal version; the beta PPA forbids it")
+    publication = Publication(args.ppa, args.version, args.marker)
     if args.command == "preflight":
-        preflight(args.version, args.marker)
+        publication.preflight()
     elif args.command == "upload":
-        result = upload(args.series[0], args.version, args.marker, args.directory)
-        with open(os.environ["GITHUB_OUTPUT"], "a") as output:
-            print(f"result={result}", file=output)
+        publication.upload(args.directory)
     else:
-        copy_missing(args.version, args.series)
+        publication.copy_missing()
 
 
 if __name__ == "__main__":
