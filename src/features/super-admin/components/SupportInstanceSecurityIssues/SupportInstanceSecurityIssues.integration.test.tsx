@@ -6,7 +6,6 @@ import { ubuntuInstance } from "@/tests/mocks/instance";
 import { usnPackages, usns } from "@/tests/mocks/usn";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
-import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -214,14 +213,8 @@ describe("SupportInstanceSecurityIssues (integration)", () => {
     assert(showPackages);
     await user.click(showPackages);
 
-    const title = await screen.findByText(
-      "Could not load the affected packages",
-    );
-    const notification = title.closest(".p-notification--negative");
-    assert(notification instanceof HTMLElement);
-
     expect(
-      within(notification).getByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+      await screen.findByText("Could not load the affected packages."),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: secondUsn.usn }),
