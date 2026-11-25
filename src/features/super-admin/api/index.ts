@@ -24,3 +24,5 @@ export { useGetStaffInstancePackages } from "./useGetStaffInstancePackages";
 export { useGetStaffKernel } from "./useGetStaffKernel";
 export { useGetStaffLivepatchInfo } from "./useGetStaffLivepatchInfo";
 export { useGetStaffTags } from "./useGetStaffTags";
+export { useGetStaffUsnPackages } from "./useGetStaffUsnPackages";
+export { useGetStaffUsns } from "./useGetStaffUsns";

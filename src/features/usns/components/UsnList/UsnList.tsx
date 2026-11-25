@@ -27,7 +27,6 @@ import classes from "./UsnList.module.scss";
 
 type UsnListProps = {
   readonly instances: Instance[];
-  readonly isUsnsLoading: boolean;
   readonly onSelectedUsnsChange: (usns: string[]) => void;
   readonly selectedUsns: string[];
   readonly totalUsnCount: number;
@@ -39,6 +38,7 @@ type UsnListProps = {
     }
   | {
       tableType: "expandable";
+      isUsnsLoading: boolean;
       onNextPageFetch: () => void;
       onSelectAllClick: () => void;
       showSelectAllButton: boolean;
@@ -48,7 +48,6 @@ type UsnListProps = {
 
 const UsnList: FC<UsnListProps> = ({
   instances,
-  isUsnsLoading,
   onSelectedUsnsChange,
   selectedUsns,
   totalUsnCount,
@@ -79,6 +78,8 @@ const UsnList: FC<UsnListProps> = ({
 
   const showSelectAllButton =
     otherProps.tableType === "expandable" && otherProps.showSelectAllButton;
+  const isUsnsLoading =
+    otherProps.tableType === "expandable" && otherProps.isUsnsLoading;
 
   const securityIssues = useMemo<Usn[]>(
     (): Usn[] =>
@@ -350,7 +351,7 @@ const UsnList: FC<UsnListProps> = ({
       <ResponsiveTable
         columns={securityIssueColumns}
         data={securityIssues}
-        getCellProps={handleCellProps({ expandedCell, isUsnsLoading })}
+        getCellProps={handleCellProps({ expandedCell })}
         getRowProps={handleRowProps(expandedCell)}
         emptyMsg={`No security issues found with the search "${otherProps.search}"`}
       />

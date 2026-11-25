@@ -7,13 +7,13 @@ import classes from "./UsnList.module.scss";
 
 export const getUsnsWithExpanded = ({
   expandedCell,
-  isUsnsLoading,
-  showSelectAllButton,
+  isUsnsLoading = false,
+  showSelectAllButton = false,
   usns,
 }: {
   expandedCell: ExpandedCell;
-  isUsnsLoading: boolean;
-  showSelectAllButton: boolean;
+  isUsnsLoading?: boolean;
+  showSelectAllButton?: boolean;
   usns: Usn[];
 }) => {
   const rowIndexToInsert =
@@ -38,7 +38,7 @@ export const handleCellProps =
     showSelectAllButton,
   }: {
     expandedCell: ExpandedCell;
-    isUsnsLoading: boolean;
+    isUsnsLoading?: boolean;
     lastUsnIndex?: number;
     showSelectAllButton?: boolean;
   }) =>

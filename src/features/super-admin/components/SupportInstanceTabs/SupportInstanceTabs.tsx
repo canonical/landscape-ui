@@ -9,6 +9,7 @@ import { Suspense } from "react";
 import {
   useGetStaffInstancePackages,
   useGetStaffLivepatchInfo,
+  useGetStaffUsns,
 } from "../../api";
 import type { SupportInstanceTabProps } from "../../types";
 import { getSupportInstanceTabs } from "./constants";
@@ -39,12 +40,26 @@ const SupportInstanceTabs: FC<SupportInstanceTabProps> = ({
     { enabled: hasTabCounts },
   );
 
+  const { staffUsnsCount: usnCount, isGettingStaffUsns } = useGetStaffUsns(
+    name,
+    { computer_ids: [instance.id], limit: 1 },
+    { enabled: hasTabCounts },
+  );
+
   const [kernelStatus] =
     staffLivepatchInfo?.livepatch_info?.json?.output?.Status ?? [];
   const kernelCount = kernelStatus?.Livepatch?.Fixes?.length;
 
-  const tabCounts: Record<string, { count?: number; isLoading: boolean }> = {
+  const tabCounts: Record<
+    string,
+    { count?: number; isLoading: boolean; criticality?: "error" }
+  > = {
     kernel: { count: kernelCount, isLoading: isGettingStaffLivepatchInfo },
+    "security-issues": {
+      count: usnCount,
+      isLoading: isGettingStaffUsns,
+      criticality: "error",
+    },
     packages: {
       count: packageCount,
       isLoading: isGettingStaffInstancePackages,
@@ -71,7 +86,7 @@ const SupportInstanceTabs: FC<SupportInstanceTabProps> = ({
       return (
         <>
           <span>{label}</span>
-          <Badge value={tabCount.count} />
+          <Badge value={tabCount.count} criticality={tabCount.criticality} />
         </>
       );
     }

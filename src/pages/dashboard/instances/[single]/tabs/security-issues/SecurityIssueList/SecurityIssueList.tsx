@@ -1,3 +1,4 @@
+import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
 import { useState } from "react";
 import type { Usn } from "@/types/Usn";
@@ -25,18 +26,21 @@ const SecurityIssueList: FC<SecurityIssueListProps> = ({
   return (
     <>
       <SecurityIssuesPanelHeader usns={selectedUsns} />
-      <UsnList
-        tableType="paginated"
-        instances={[instance]}
-        isUsnsLoading={isUsnsLoading}
-        onSelectedUsnsChange={(newUsns) => {
-          setSelectedUsns(newUsns);
-        }}
-        search={search}
-        selectedUsns={selectedUsns}
-        totalUsnCount={totalUsnCount}
-        usns={usns}
-      />
+      {isUsnsLoading ? (
+        <LoadingState />
+      ) : (
+        <UsnList
+          tableType="paginated"
+          instances={[instance]}
+          onSelectedUsnsChange={(newUsns) => {
+            setSelectedUsns(newUsns);
+          }}
+          search={search}
+          selectedUsns={selectedUsns}
+          totalUsnCount={totalUsnCount}
+          usns={usns}
+        />
+      )}
     </>
   );
 };

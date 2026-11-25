@@ -2,6 +2,7 @@ import { screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "@/tests/render";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import UsnPackagesContainer from "./UsnPackagesContainer";
 import { ubuntuInstance } from "@/tests/mocks/instance";
 import { usnPackageComputerId } from "@/tests/mocks/usn";
@@ -27,6 +28,24 @@ describe("UsnPackagesContainer", () => {
     );
 
     expect(screen.getByRole("status")).toBeInTheDocument();
+  });
+
+  it("shows an error instead of the list when the packages fail to load", async () => {
+    setEndpointStatus({ status: "error", path: "usns/:usnName" });
+
+    renderWithProviders(
+      <UsnPackagesContainer
+        instances={[ubuntuInstance]}
+        isRemovable={false}
+        listType="packages"
+        usn="USN-6557-1"
+      />,
+    );
+
+    expect(
+      await screen.findByText("Could not load the affected packages."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/packages affected by/i)).not.toBeInTheDocument();
   });
 
   it("renders instance list after loading when listType is 'instances'", async () => {

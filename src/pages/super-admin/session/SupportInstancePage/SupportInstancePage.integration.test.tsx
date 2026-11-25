@@ -14,6 +14,7 @@ import {
   windowsInstance,
 } from "@/tests/mocks/instance";
 import { buildLivepatchInfo, unsortedPatches } from "@/tests/mocks/kernel";
+import { usns } from "@/tests/mocks/usn";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
@@ -49,7 +50,13 @@ const UBUNTU_TABS = [
   "Hardware",
 ];
 
-const BUILT_TABS = ["Info", "Activities", "Kernel", "Packages"];
+const BUILT_TABS = [
+  "Info",
+  "Activities",
+  "Kernel",
+  "Security issues",
+  "Packages",
+];
 
 /** Signs in as staff whose session is already in the account. */
 const signIn = () => {
@@ -308,6 +315,78 @@ describe("SupportInstancePage (integration)", () => {
       );
     },
   );
+
+  it("counts the account's security issues for the instance on its tab", async () => {
+    const requested: URL[] = [];
+    const capture = ({ request }: { request: Request }) => {
+      requested.push(new URL(request.url));
+    };
+
+    server.events.on("request:start", capture);
+
+    renderInstance(ROUTES.superAdmin.sessionInstance(ACME, ubuntuInstance.id));
+
+    const tab = await screen.findByRole("tab", { name: /^Security issues/ });
+
+    expect(
+      await within(tab).findByText(String(usns.length)),
+    ).toBeInTheDocument();
+
+    server.events.removeListener("request:start", capture);
+
+    const prefix = new URL(API_URL, "http://localhost").pathname;
+    const countUrl = requested.find(
+      ({ pathname }) => pathname === `${prefix}accounts/${ACME}/usns`,
+    );
+
+    assert(countUrl);
+    expect(countUrl.searchParams.get("limit")).toBe("1");
+  });
+
+  it("shows no count on the Security issues tab when there are none", async () => {
+    setEndpointStatus({ status: "empty", path: "usns" });
+
+    renderInstance(ROUTES.superAdmin.sessionInstance(ACME, ubuntuInstance.id));
+
+    await findInstanceHeading(ubuntuInstance.title);
+
+    const tab = screen.getByRole("tab", { name: /^Security issues/ });
+
+    await waitFor(() => {
+      expect(within(tab).queryByRole("status")).not.toBeInTheDocument();
+    });
+    expect(tab).toHaveTextContent(/^Security issues$/);
+  });
+
+  it("does not count security issues for an instance without a distribution", async () => {
+    const requested: string[] = [];
+    const capture = ({ request }: { request: Request }) => {
+      requested.push(new URL(request.url).pathname);
+    };
+
+    server.use(
+      http.get(
+        `${API_URL}accounts/${ACME}/computers/${ubuntuInstance.id}`,
+        () => HttpResponse.json({ ...ubuntuInstance, distribution: null }),
+      ),
+    );
+    server.events.on("request:start", capture);
+
+    renderInstance(ROUTES.superAdmin.sessionInstance(ACME, ubuntuInstance.id));
+
+    await findInstanceHeading(ubuntuInstance.title);
+
+    const tab = screen.getByRole("tab", { name: /^Security issues/ });
+
+    expect(within(tab).queryByRole("status")).not.toBeInTheDocument();
+    expect(tab).toHaveTextContent(/^Security issues$/);
+
+    server.events.removeListener("request:start", capture);
+
+    const prefix = new URL(API_URL, "http://localhost").pathname;
+
+    expect(requested).not.toContain(`${prefix}accounts/${ACME}/usns`);
+  });
 
   it("keeps the open tab in the address", async () => {
     renderInstance(ROUTES.superAdmin.sessionInstance(ACME, ubuntuInstance.id));

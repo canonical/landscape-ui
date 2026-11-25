@@ -1,3 +1,4 @@
+import AppErrorBoundary from "@/components/layout/AppErrorBoundary/AppErrorBoundary";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { http, HttpResponse } from "msw";
 import { renderWithProviders } from "@/tests/render";
@@ -30,6 +31,64 @@ describe("SecurityIssuesPanel", () => {
         ).toBeInTheDocument();
       });
     });
+  });
+
+  it("shows the empty state when the instance has no security issues", async () => {
+    setEndpointStatus({ status: "empty", path: "usns" });
+
+    renderWithProviders(<SecurityIssuesPanel {...props} />);
+
+    expect(
+      await screen.findByText("No security issues found"),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+  });
+
+  it("shows the empty table message, not the empty state, for a search that matches nothing", async () => {
+    renderWithProviders(
+      <SecurityIssuesPanel {...props} />,
+      undefined,
+      "/instances/1?search=no-such-usn",
+      "/instances/:instanceId",
+    );
+
+    expect(
+      await screen.findByText(
+        'No security issues found with the search "no-such-usn"',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the search while the security issues load", async () => {
+    setEndpointStatus({ status: "loading", path: "usns" });
+
+    renderWithProviders(
+      <SecurityIssuesPanel {...props} />,
+      undefined,
+      "/instances/1",
+      "/instances/:instanceId",
+    );
+
+    expect(await screen.findByRole("status")).toBeInTheDocument();
+    expect(screen.getByRole("searchbox")).toBeInTheDocument();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
+
+  it("fails into the error boundary when the security issues fail to load", async () => {
+    setEndpointStatus({ status: "error", path: "usns" });
+
+    renderWithProviders(
+      <AppErrorBoundary>
+        <SecurityIssuesPanel {...props} />
+      </AppErrorBoundary>,
+    );
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Something went wrong",
+    );
+    expect(
+      screen.queryByText("No security issues found"),
+    ).not.toBeInTheDocument();
   });
 });
 

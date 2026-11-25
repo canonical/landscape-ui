@@ -50,13 +50,13 @@ describe("SecurityIssueList", () => {
     ).toHaveAttribute("aria-disabled", "true");
   });
 
-  it("shows a loading state in the list when isUsnsLoading is true", async () => {
+  it("shows a loading state instead of the list when isUsnsLoading is true", async () => {
     renderWithProviders(
       <SecurityIssueList
         instance={ubuntuInstance}
         isUsnsLoading={true}
-        totalUsnCount={0}
-        usns={[]}
+        totalUsnCount={usns.length}
+        usns={usns}
       />,
       undefined,
       "/instances/1",
@@ -64,6 +64,8 @@ describe("SecurityIssueList", () => {
     );
 
     expect(await screen.findByRole("status")).toBeInTheDocument();
+    expect(screen.getByRole("searchbox")).toBeInTheDocument();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 
   it("enables Upgrade button after selecting a USN", async () => {
