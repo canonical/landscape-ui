@@ -307,7 +307,7 @@ jobs:
             fi
             exit 0
           fi
-          if [[ -n $(git diff --name-only origin/main HEAD -- .github/workflows/) ]]; then
+          if [[ -n $(git log --format= --name-only origin/main..HEAD -- .github/workflows/) ]]; then
             echo '::error::Forward-port modifies .github/workflows/, which the Packager App cannot push. Replay these commits in a manual PR to main.'
             echo "Keep this trailer in the squash commit: Landscape-Beta-Source: $SHA"
             exit 1

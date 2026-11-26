@@ -238,6 +238,9 @@ class ForwardPortHistory(BetaRepo):
         self.commit("prepare beta")
         first = self.git("rev-parse", "HEAD")
         self.git("commit", "--allow-empty", "-qm", "retrigger CI")
+        self.write("fix-between", "Fix between\n")
+        self.commit("fix before respin 1")
+        between = self.git("rev-parse", "HEAD")
         self.stamp(f"{BASE}.1", "27.04~beta.3.1-0landscape0")
         self.commit("respin 1")
         second = self.git("rev-parse", "HEAD")
@@ -247,7 +250,7 @@ class ForwardPortHistory(BetaRepo):
         self.cmd("bash", str(SCRIPTS / "forward-port-beta.sh"), f"{BASE}.1", second, "main")
         self.assertEqual(
             self.git("log", "--reverse", "--format=%s", "main..HEAD").splitlines(),
-            ["prepare beta", "respin 1"],
+            ["prepare beta", "fix before respin 1", "respin 1"],
         )
 
         # GitHub squash-merge appends a Co-authored-by paragraph after the trailer,
@@ -274,10 +277,10 @@ class ForwardPortHistory(BetaRepo):
         self.cmd("bash", str(SCRIPTS / "forward-port-beta.sh"), f"{BASE}.2", third, "main")
         self.assertEqual(self.git("log", "--format=%s", "main..HEAD"), "respin 2")
 
-        # Retrying an older tag must still recognize it is already incorporated
-        # via the newer checkpoint further down main's history.
-        self.git("tag", BASE, first)
-        self.cmd("bash", str(SCRIPTS / "forward-port-beta.sh"), BASE, first, "main")
+        # Retrying an older tag strictly between first and second must scan past
+        # the late first checkpoint and recognize it is already incorporated via second.
+        self.git("tag", BASE, between)
+        self.cmd("bash", str(SCRIPTS / "forward-port-beta.sh"), BASE, between, "main")
         self.assertEqual(self.git("rev-parse", "HEAD"), self.git("rev-parse", "main"))
 
 
