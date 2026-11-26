@@ -10,6 +10,7 @@
   align-items: center;
   display: flex;
   justify-content: space-between;
+  margin-bottom: $spv--small;
 }
 
 .list {
@@ -92,4 +93,10 @@
 
 .searchQuery {
   margin-top: $spv--x-small;
+}
+
+@layer app {
+  .actions :global(button.ds.button) {
+    --modifier-surface: transparent;
+  }
 }

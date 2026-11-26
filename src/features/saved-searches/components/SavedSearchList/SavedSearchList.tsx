@@ -61,7 +61,7 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
   return (
     <div className={classes.container}>
       <div className={classNames("dense", classes.header)}>
-        <p className="p-text--small-caps u-text--muted p-text--small">
+        <p className="p-text--small-caps u-text--muted p-text--small u-no-margin--bottom">
           Saved searches
         </p>
         <Button

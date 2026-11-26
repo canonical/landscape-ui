@@ -24,6 +24,8 @@
 
 @layer app {
   .helpButton {
+    --modifier-surface: transparent;
+
     block-size: calc(
       /* stylelint-disable-next-line */
         (2 * $spv-nudge + map-get($line-heights, default-text)) -
