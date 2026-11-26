@@ -49,7 +49,7 @@ Follow these instructions to set up the project on your local machine for develo
 
 ### Prerequisites
 
-- **Node.js** (v24 or later recommended)
+- **Node.js** (v26 or later recommended)
 - **pnpm** package manager. If you don't have it, you can install it with `npm install -g pnpm`.
 
 ### Setup Instructions

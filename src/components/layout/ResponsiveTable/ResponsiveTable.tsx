@@ -14,6 +14,7 @@ export interface ResponsiveTableProps<
   Row extends Record<string, unknown> = Record<string, unknown>,
 > extends ModularTableProps<Row> {
   readonly minWidth?: number;
+  readonly sticky?: boolean;
 }
 
 export default function ResponsiveTable<
@@ -21,13 +22,14 @@ export default function ResponsiveTable<
 >({
   style,
   minWidth = DEFAULT_MIN_TABLE_WIDTH,
+  sticky = true,
   ...tableProps
 }: ResponsiveTableProps<Row>): JSX.Element {
   const isSmall = useMediaQuery(`(max-width: ${BREAKPOINT_PX.sm}px)`);
 
   const [firstColumn, ...remainingColumns] = tableProps.columns;
 
-  const shouldDecorateFirstColumn = !isSmall && firstColumn;
+  const shouldDecorateFirstColumn = !isSmall && firstColumn && sticky;
 
   const columns = shouldDecorateFirstColumn
     ? [

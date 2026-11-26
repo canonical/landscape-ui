@@ -1,6 +1,5 @@
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import {
   buildExportQuery,
@@ -18,11 +17,13 @@ import type { ActivityListParams } from "./types";
 
 interface ActivitiesExportFormProps {
   readonly exportParams: ActivityListParams;
+  readonly onClose: () => void;
   readonly selectedActivityIds?: number[];
 }
 
 const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
   exportParams,
+  onClose,
   selectedActivityIds,
 }) => {
   const { notify } = useNotify();
@@ -30,7 +31,6 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
   const debug = useDebug();
   const { exportActivitiesTsv, isExportActivitiesTsvLoading } =
     useExportActivitiesTsv();
-  const { popSidePath } = usePageParams();
 
   const handleGenerate = async ({
     values,
@@ -64,7 +64,7 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
         selectionForms: ["selected activity", "selected activities"],
       });
 
-      popSidePath();
+      onClose();
       notify.success({
         title: "TSV export in progress",
         message: `Your activities export "${values.name.trim()}"${exportScope} is being generated.`,
@@ -92,6 +92,7 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
       initialValues={INITIAL_VALUES}
       isSubmitting={isExportActivitiesTsvLoading}
       onGenerate={handleGenerate}
+      onCancel={onClose}
     />
   );
 };

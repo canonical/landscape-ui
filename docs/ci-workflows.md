@@ -6,7 +6,7 @@ Agents must follow these triggers, job orders, and guardrails when touching `.gi
 
 ## Validate (`validate.yml`)
 
-**Trigger:** PR → `main`, `release/**`, `point/**`; merge queue (`merge_group`).
+**Trigger:** PR → `main`, `release/**`, `point/**`, `beta/**`; merge queue (`merge_group`).
 
 Independent jobs, except that **Vitest** waits for its shards:
 
@@ -15,12 +15,12 @@ Independent jobs, except that **Vitest** waits for its shards:
 - **Stylelint** — `pnpm stylelint "src/**/*.module.scss"`
 - **Playwright** (self-hosted; `ubuntu-latest` for fork PRs; `mcr.microsoft.com/playwright:v<version>` container) — matrix over `saas` / `self-hosted`; builds with `pnpm run build:e2e` (Vite only, `VITE_ROOT_PATH=/`), checks the image ships the browsers the installed `@playwright/test` expects, installs Chromium, runs the matching project against the `dev` backend (`vars.API_PROXY_TARGET`), uploads `playwright-report-<target>`
 - **Vitest (shard n/m)** (self-hosted; `ubuntu-latest` for fork PRs) — `m` is `strategy.job-total`, the number of entries in `matrix.shard`; runs `pnpm exec vitest run --coverage --shard=n/m` with the blob reporter, `VITEST_SHARD` set so `vitest.config.ts` skips the coverage thresholds (they are enforced after the merge), `VITE_ROOT_PATH=/portal/` and `NODE_OPTIONS=--max_old_space_size=4096`; uploads `vitest-blob-<n>`, kept for 1 day (a missing blob only warns, since the shard has already failed)
-- **Vitest** (same runners; no `dev` environment or `VITE_*` env, since it runs no tests) — `needs` the shards and runs even if they failed (`!cancelled() || github.base_ref != 'main'`). It runs `pnpm exec vitest --merge-reports=vitest-blob --coverage` on whatever blobs were uploaded, which fails on any failed test, annotates failing tests on the PR (no `--reporter`, so Vitest's `github-actions` reporter stays on) and enforces the `vitest.config.ts` coverage thresholds on the merged coverage; uploads `vitest-report` from `reports/`; then fails unless every shard succeeded
-- **Changeset** — fails the PR unless it _adds_ a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it.
+- **Vitest** (always `ubuntu-latest`; merging blobs is light, and a GitHub-hosted runner measured faster than self-hosted. This needs Vitest 5, whose blobs merge across runners with different checkout roots. No `dev` environment or `VITE_*` env, since it runs no tests) — `needs` the shards and runs even if they failed (`!cancelled() || github.base_ref != 'main'`). It runs `pnpm exec vitest --merge-reports=vitest-blob --coverage` on whatever blobs were uploaded, which fails on any failed test, annotates failing tests on the PR (no `--reporter`, so Vitest's `github-actions` reporter stays on) and enforces the `vitest.config.ts` coverage thresholds on the merged coverage; uploads `vitest-report` from `reports/`; then fails unless every shard succeeded
+- **Changeset** — fails the PR unless it _adds_ a file under `.changeset/*.md` (excluding `README.md`). An empty changeset (`pnpm changeset --empty`) satisfies it. Beta Release Prep PRs are exempt (they consume changesets): the step is skipped only when the PR is opened by `landscape-packager[bot]`, from this repository, from `beta-prep/*` into `beta/*`. The step, not the job, is skipped, so the required check still reports success.
 
-**Rule:** fork PRs get no `vars.*` (the `dev` environment's variables come through empty), so the Playwright and Vitest `VITE_API_*` env lines fall back to literal defaults only when `github.event.pull_request.head.repo.fork` is true; keep those defaults in sync with `.env.production`, and never add a secret to either job. Fork PR runs stay on GitHub-hosted runners; merge-queue runs (`merge_group` has no fork flag) use self-hosted runners, which is safe because entering the queue requires an approving code-owner review.
+**Rule:** fork PRs get no `vars.*` (the `dev` environment's variables come through empty), so the Playwright and Vitest `VITE_API_*` env lines fall back to literal defaults only when `github.event.pull_request.head.repo.fork` is true; keep those defaults in sync with `.env.production`, and never add a secret to either job. Fork PR runs stay on GitHub-hosted runners; merge-queue runs (`merge_group` has no fork flag) use self-hosted runners for Playwright and the Vitest shards (the `Vitest` merge job always runs on `ubuntu-latest`), which is safe because entering the queue requires an approving code-owner review.
 
-**Rule:** the required checks are the job names `ESLint`, `Prettier`, `Stylelint`, `Playwright (SaaS)`, `Playwright (self-hosted)`, `Vitest` and `Changeset`. Renaming one, or moving a gate (such as the type check) into a new job, silently drops it from the merge gate until the ruleset is updated. A required check that is skipped counts as passing, so a job that aggregates others (like `Vitest`) must run even when they fail and must fail on any non-`success` result. `Vitest` skips only after a cancel on PRs to `main`, where the merge queue re-runs Validate; keep it running after a cancel for `release/**` and `point/**`, which have no merge queue.
+**Rule:** the required checks are the job names `ESLint`, `Prettier`, `Stylelint`, `Playwright (SaaS)`, `Playwright (self-hosted)`, `Vitest` and `Changeset`. Renaming one, or moving a gate (such as the type check) into a new job, silently drops it from the merge gate until the ruleset is updated. A required check that is skipped counts as passing, so a job that aggregates others (like `Vitest`) must run even when they fail and must fail on any non-`success` result. `Vitest` skips only after a cancel on PRs to `main`, where the merge queue re-runs Validate; keep it running after a cancel for `release/**`, `point/**` and `beta/**`, which have no merge queue.
 
 **Rule:** `@typescript/native-preview` (`tsgo`) is pinned next to `typescript` 6, which stays because typescript-eslint and `pnpm build` (the release and security-scan builds) need the JS compiler API. Do not install the stable `typescript@7` package under an alias: its `tsc` bin takes over `node_modules/.bin/tsc`. Every project plain `tsc` checks must stay in `typecheck`, and so must `e2e/tsconfig.json`. It extends the root `tsconfig.json` because e2e helpers import from `src`, so it also lists the ambient app files those imports need (`src/**/*.d.ts`, the React Query `Register` augmentation in `src/context/reactQuery.tsx`); add new ones there.
 
@@ -30,9 +30,19 @@ Independent jobs, except that **Vitest** waits for its shards:
 
 **Trigger:** push → `main`.
 
-Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual-version-update.cjs`. No build, no tag, no publish — `main` is the integration trunk and CHANGELOG baseline, not a publish target; betas ship from `point/**`, stable from `release/**`.
+Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual-version-update.cjs`. No build, no tag, no publish — `main` is the integration trunk and CHANGELOG baseline, not a publish target; betas are cut on `beta/**` (see Beta Release Prep below), point releases ship from `point/**`, stable from `release/**`.
 
 **Rule:** do not add a build or `ppa-build-*` step here.
+
+## Beta Release Prep (`beta-release-prep.yml`)
+
+**Trigger:** creation of a `beta/YY.MM-beta.N` branch; `workflow_dispatch` (guarded to `beta/*` branches, so a dispatch on a tag such as `27.04-beta.3` does nothing).
+
+Runs `scripts/beta-version-update.cjs` and opens a `beta-prep/<version>` PR against the beta branch that rolls pending changesets into `CHANGELOG.md`, adds the `YY.MM~beta.N` stanza to `debian/changelog`, and sets `package.json` to `YY.MM-beta.N`. No build yet; beta builds are separate follow-up work. See `RELEASES.md` §5a.
+
+**Rule:** the Landscape Packager App opens prep PRs so standard checks run. `validate.yml` waives only the new Changeset requirement for this repository's `landscape-packager[bot]` PRs from `beta-prep/*` into `beta/*`. Prep writes the beta heading even when there are no summaries.
+
+**Rule:** a re-run refuses to overwrite a `beta-prep/*` branch that has commits not made by the workflow (such as the release owner's CHANGELOG edits), and pushes with `--force-with-lease` against the state it checked. `scripts/beta-version-update.cjs` needs `dpkg` to keep `debian/changelog` in version order.
 
 ## Release and PPA Build (`release-and-build.yml`)
 
@@ -84,10 +94,10 @@ Runs `pnpm coverage:full` to produce the MSW contract-coverage report, determini
 
 ## CI Tooling Contracts
 
-- **Node:** `24` · **pnpm:** `10` · **Install:** `pnpm install --frozen-lockfile` only
+- **Node:** `26` · **pnpm:** `12` · **Install:** `require-lockfile: true` only
 - **Playwright:** the Validate `e2e-tests` container tag (`mcr.microsoft.com/playwright:vX.Y.Z`) must equal `@playwright/test` in `package.json`; bump both in the same PR. Install browsers (`pnpm exec playwright install chromium`, no `--with-deps`, since the image has the deps) inside the job that runs them — never move this out
 - **Checkout (Validate):** shallow (default depth) in every job except **Changeset**, which diffs against the base branch. Other workflows (`release-and-build`, `changeset-version`, `tics-full`, `security`, `security-scan`) still need full history in places (`fetch-depth: 0`); keep it there
-- **Caching:** `actions/setup-node@v4` with `cache: "pnpm"`
+- **Caching:** `pnpm/setup@v3` with `cache: true`
 
 ## Agents MUST NOT
 

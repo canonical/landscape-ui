@@ -246,14 +246,14 @@ test.describe("@saas Canonical staff", () => {
       await expect(janeRow.getByRole("link", { name: "globex" })).toBeVisible();
       await expect(janeRow).toContainText("(invited)");
 
-      await page.getByRole("button", { name: "Type" }).click();
+      await page.getByRole("button", { name: "Type", exact: true }).click();
       await page.getByRole("button", { name: "Invitations" }).click();
 
       await expect(page).toHaveURL(/type=invitation/);
       await expect(superAdmin.personRows).toHaveCount(0);
       await expect(superAdmin.invitationRows).toHaveCount(2);
 
-      await page.getByRole("button", { name: "Type" }).click();
+      await page.getByRole("button", { name: "Type", exact: true }).click();
       await page.getByRole("button", { name: "All" }).click();
 
       await expect(superAdmin.personRows).toHaveCount(2);
