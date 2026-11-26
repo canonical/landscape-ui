@@ -1,9 +1,8 @@
-import { Button } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC, ReactNode } from "react";
 import { useOpenActivityDetailsPanel } from "../../hooks";
 import type { ActivityCommon } from "../../types";
-import classNames from "classnames";
 
 interface ActivityDetailsLinkProps {
   readonly activity: Pick<ActivityCommon, "id" | "summary">;
@@ -23,12 +22,8 @@ const ActivityDetailsLink: FC<ActivityDetailsLinkProps> = ({
   return (
     <Button
       type="button"
-      appearance="link"
+      variant="link"
       {...props}
-      className={classNames(
-        "u-no-margin--bottom u-no-padding--top",
-        props.className,
-      )}
       onClick={() => {
         if (sidePath.length) {
           closeSidePanel();

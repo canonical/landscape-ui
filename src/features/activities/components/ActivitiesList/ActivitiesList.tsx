@@ -2,7 +2,8 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT, TSV_EXPORTS_ENABLED } from "@/constants";
-import { Button, CheckboxInput } from "@canonical/react-components";
+import { CheckboxInput } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import date from "@/libs/date";
 import type { FC, ReactNode } from "react";
 import { useCallback, useMemo } from "react";
@@ -10,7 +11,6 @@ import type { CellProps, Column } from "react-table";
 import { ACTIVITY_STATUSES } from "../../constants";
 import type { ActivityCommon } from "../../types";
 import classes from "./ActivitiesList.module.scss";
-import classNames from "classnames";
 
 interface ActivitiesListProps {
   readonly activities: ActivityCommon[];
@@ -130,11 +130,8 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
             )}
             <Button
               type="button"
-              appearance="link"
-              className={classNames(
-                "u-no-margin--bottom u-no-padding--top u-align-text--left",
-                classes.descriptionText,
-              )}
+              variant="link"
+              className={classes.descriptionText}
               onClick={() => {
                 onActivityDetailsOpen(row.original);
               }}
@@ -225,20 +222,12 @@ const ActivitiesList: FC<ActivitiesListProps> = ({
           </span>
           <div className={classes.buttons}>
             {!isAllSelected && onSelectAll && (
-              <Button
-                className="u-no-padding u-no-margin"
-                appearance="link"
-                onClick={onSelectAll}
-              >
+              <Button type="button" variant="link" onClick={onSelectAll}>
                 Select all {activityCount} activities
               </Button>
             )}
             {onClearSelection && (
-              <Button
-                className="u-no-padding u-no-margin"
-                appearance="link"
-                onClick={onClearSelection}
-              >
+              <Button type="button" variant="link" onClick={onClearSelection}>
                 Clear selection
               </Button>
             )}

@@ -32,10 +32,11 @@ describe("SearchInfoBox", () => {
     expect(onHelpButtonClick).toHaveBeenCalled();
   });
 
-  it("should render with base appearance", () => {
+  it("should render help icon", () => {
     renderWithProviders(<SearchInfoBox {...defaultProps} />);
 
     const helpButton = screen.getByRole("button", { name: "Search help" });
     expect(helpButton).toBeInTheDocument();
+    expect(helpButton).toHaveIcon("help");
   });
 });

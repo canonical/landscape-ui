@@ -1,5 +1,7 @@
-import { ConfirmationButton, Icon, ICONS } from "@canonical/react-components";
+import { ConfirmationModal } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
+import { useBoolean } from "usehooks-ts";
 import { useRemoveSavedSearch } from "../../api";
 import useNotify from "@/hooks/useNotify";
 import useDebug from "@/hooks/useDebug";
@@ -17,6 +19,11 @@ const RemoveSavedSearchButton: FC<RemoveSavedSearchButtonProps> = ({
   const { removeSavedSearch, isRemovingSavedSearch } = useRemoveSavedSearch();
   const { notify } = useNotify();
   const debug = useDebug();
+  const {
+    value: isModalOpen,
+    setTrue: openModal,
+    setFalse: closeModal,
+  } = useBoolean(false);
 
   const handleSavedSearchRemove = async (name: string) => {
     try {
@@ -32,32 +39,39 @@ const RemoveSavedSearchButton: FC<RemoveSavedSearchButtonProps> = ({
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 
   return (
-    <ConfirmationButton
-      className="has-icon u-no-margin--bottom u-no-padding--bottom u-no-padding--top"
-      type="button"
-      appearance="base"
-      aria-label={`Remove ${savedSearch.title} saved search`}
-      confirmationModalProps={{
-        title: "Remove saved search",
-        children: (
+    <>
+      <Button
+        type="button"
+        title="Remove"
+        importance="tertiary"
+        icon="delete"
+        aria-label={`Remove ${savedSearch.title} saved search`}
+        onClick={openModal}
+      />
+      {isModalOpen && (
+        <ConfirmationModal
+          renderInPortal
+          title="Remove saved search"
+          confirmButtonLabel="Remove"
+          confirmButtonAppearance="negative"
+          confirmButtonDisabled={isRemovingSavedSearch}
+          confirmButtonLoading={isRemovingSavedSearch}
+          onConfirm={() => handleSavedSearchRemove(savedSearch.name)}
+          close={closeModal}
+        >
           <p className="u-margin--bottom">
             This will remove the saved search &quot;{savedSearch.title}
             &quot;.
           </p>
-        ),
-        confirmButtonLabel: "Remove",
-        confirmButtonAppearance: "negative",
-        confirmButtonDisabled: isRemovingSavedSearch,
-        confirmButtonLoading: isRemovingSavedSearch,
-        onConfirm: () => handleSavedSearchRemove(savedSearch.name),
-      }}
-    >
-      <Icon name={ICONS.delete} />
-    </ConfirmationButton>
+        </ConfirmationModal>
+      )}
+    </>
   );
 };
 

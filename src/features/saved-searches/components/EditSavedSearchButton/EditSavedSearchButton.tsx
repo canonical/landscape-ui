@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { lazy, Suspense, type FC } from "react";
 import { useEditSavedSearch } from "../../api";
 import type { SavedSearch } from "../../types";
@@ -68,13 +68,11 @@ const EditSavedSearchButton: FC<EditSavedSearchButtonProps> = ({
     <Button
       type="button"
       title="Edit"
-      appearance="base"
+      importance="tertiary"
+      icon="edit"
       aria-label={`Edit ${savedSearch.title} saved search`}
       onClick={handleEditClick}
-      className="has-icon u-no-margin--bottom u-no-margin--right"
-    >
-      <Icon name="edit" />
-    </Button>
+    />
   );
 };
 

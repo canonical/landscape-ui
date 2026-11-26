@@ -24,12 +24,16 @@
   flex-shrink: 0;
 }
 
-.link {
-  align-self: flex-start;
-  font-size: 22px;
-}
-
 .instancesNumber {
   font-size: 32px;
   font-weight: bold;
+}
+
+@layer app {
+  .link {
+    align-self: flex-start;
+    font-size: 22px;
+    line-height: normal;
+    padding: 0;
+  }
 }

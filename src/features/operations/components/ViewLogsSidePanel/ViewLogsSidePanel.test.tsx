@@ -97,13 +97,13 @@ describe("ViewLogsSidePanel", () => {
 
     await expectLoadingState();
 
-    expect(
-      await screen.findByRole("button", { name: /copy/i }),
-    ).toBeInTheDocument();
+    const copyButton = await screen.findByRole("button", { name: /copy/i });
+    expect(copyButton).toBeInTheDocument();
+    expect(copyButton).toHaveIcon("copy");
 
-    expect(
-      screen.getByRole("button", { name: /download/i }),
-    ).toBeInTheDocument();
+    const downloadButton = screen.getByRole("button", { name: /download/i });
+    expect(downloadButton).toBeInTheDocument();
+    expect(downloadButton).toHaveIcon("download");
   });
 
   it("downloads the logs file when download button is clicked", async () => {

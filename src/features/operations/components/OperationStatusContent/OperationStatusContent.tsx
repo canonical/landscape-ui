@@ -4,7 +4,8 @@ import { useCancelOperation } from "../../api";
 import classes from "./OperationStatusContent.module.scss";
 import ViewLogsButton from "../ViewLogsButton";
 import { getOperationTypeTexts } from "./helpers";
-import { Button, Icon, ICONS } from "@canonical/react-components";
+import { Icon, ICONS } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import useDebug from "@/hooks/useDebug";
 import { useCanCancelOperations } from "../../hooks";
 
@@ -106,7 +107,8 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
         </span>
         {isTableCell && canCancelOperations && (
           <Button
-            appearance="link"
+            type="button"
+            variant="link"
             onClick={handleCancel}
             className={classes.marginLeft}
             disabled={isCancelingOperation}

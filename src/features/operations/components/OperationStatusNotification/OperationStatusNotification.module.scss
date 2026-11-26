@@ -13,7 +13,9 @@
   }
 }
 
-.cancelButton {
-  margin-left: auto;
-  padding-top: $spv--small;
+@layer app {
+  .cancelButton {
+    margin-left: auto;
+    padding-top: $spv--small;
+  }
 }

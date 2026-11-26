@@ -2,6 +2,7 @@
 
 .actionRow {
   display: flex;
+  gap: var(--dimension-100);
   justify-content: flex-end;
   margin-bottom: $spv--x-small;
 }

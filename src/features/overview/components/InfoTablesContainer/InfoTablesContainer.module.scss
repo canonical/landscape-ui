@@ -38,7 +38,6 @@
   width: 35%;
 }
 
-.activityTitle,
 .singleLineCell {
   display: block;
   max-width: 100%;
@@ -55,4 +54,16 @@
 
 :global(.p-tabs__list) {
   margin-bottom: $sph--small;
+}
+
+@layer app {
+  .activityTitle {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    padding-block: 0;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }

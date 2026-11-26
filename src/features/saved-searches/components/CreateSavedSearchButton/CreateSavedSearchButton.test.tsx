@@ -33,9 +33,13 @@ describe("CreateSavedSearchButton", () => {
     expect(button).toBeInTheDocument();
   });
 
-  it("should render with custom appearance", () => {
+  it("should render with custom importance and anticipation", () => {
     renderWithProviders(
-      <CreateSavedSearchButton {...defaultProps} appearance="positive" />,
+      <CreateSavedSearchButton
+        {...defaultProps}
+        importance="primary"
+        anticipation="constructive"
+      />,
     );
 
     const button = screen.getByRole("button", {
@@ -71,7 +75,7 @@ describe("CreateSavedSearchButton", () => {
       name: "Add saved search",
     });
     expect(button).toBeInTheDocument();
-    expect(button).toHaveClass("has-icon");
+    expect(button).toHaveIcon("plus");
   });
 
   it("should open side panel with form when onBackButtonPress is provided and button is clicked", async () => {

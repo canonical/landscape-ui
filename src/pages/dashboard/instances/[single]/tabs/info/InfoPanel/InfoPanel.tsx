@@ -43,12 +43,12 @@ import type {
 } from "@/types/Instance";
 import { hasOneItem } from "@/utils/_helpers";
 import {
-  Button,
   ConfirmationModal,
   Icon,
   ICONS,
   Tooltip,
 } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import date from "@/libs/date";
 import type { FC } from "react";
@@ -290,12 +290,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     }
 
     return (
-      <Button
-        type="button"
-        className="u-no-margin"
-        appearance="link"
-        onClick={openProfilesList}
-      >
+      <Button type="button" variant="link" onClick={openProfilesList}>
         {instance.profiles.length} profiles
       </Button>
     );

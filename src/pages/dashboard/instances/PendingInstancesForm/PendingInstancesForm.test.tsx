@@ -71,17 +71,9 @@ describe("PendingInstancesForm", () => {
 
     expect(await screen.findByRole("table")).toBeInTheDocument();
 
-    expect(screen.getByRole("button", { name: /cancel/i })).not.toHaveAttribute(
-      "aria-disabled",
-    );
-    expect(screen.getByRole("button", { name: /reject/i })).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
-    expect(screen.getByRole("button", { name: /approve/i })).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /reject/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /approve/i })).toBeDisabled();
   });
 
   it("enables the Reject and Approve buttons when instances are selected", async () => {
@@ -98,12 +90,8 @@ describe("PendingInstancesForm", () => {
 
     await user.click(firstCheckbox);
 
-    expect(screen.getByRole("button", { name: /reject/i })).not.toHaveAttribute(
-      "aria-disabled",
-    );
-    expect(
-      screen.getByRole("button", { name: /approve/i }),
-    ).not.toHaveAttribute("aria-disabled");
+    expect(screen.getByRole("button", { name: /reject/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /approve/i })).toBeEnabled();
   });
 
   it("transitions to approving view when clicking Approve and showing access group select", async () => {

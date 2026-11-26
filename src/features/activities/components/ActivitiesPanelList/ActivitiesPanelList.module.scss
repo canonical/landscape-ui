@@ -22,11 +22,16 @@
   white-space: nowrap;
 }
 
-.descriptionText {
-  flex: 1;
-  max-width: 100%;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+@layer app {
+  .descriptionText {
+    display: block;
+    flex: 1;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    padding-block: 0;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }

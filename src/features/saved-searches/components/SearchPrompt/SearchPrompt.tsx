@@ -20,7 +20,7 @@ const SearchPrompt: FC<SearchPromptProps> = ({ onSearchSave, search }) => {
 
           <CreateSavedSearchButton
             buttonLabel="Save search"
-            appearance="link"
+            variant="link"
             className={classes.saveButton}
             afterCreate={onSearchSave}
             search={search}

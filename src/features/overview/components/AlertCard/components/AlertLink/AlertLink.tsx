@@ -3,7 +3,7 @@ import classNames from "classnames";
 import classes from "../../AlertCard.module.scss";
 import { pluralize } from "@/utils/_helpers";
 import { Link } from "react-router";
-import { Button } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 
 const LinkLabel: FC<{ readonly count: number }> = ({ count }) => (
   <>
@@ -34,8 +34,8 @@ const AlertLink: FC<AlertLinkProps> = ({ count, to, onClick }) => {
     return (
       <Button
         type="button"
-        appearance="link"
-        className={classNames("u-no-margin u-no-padding", classes.link)}
+        variant="link"
+        className={classes.link}
         onClick={onClick}
       >
         <LinkLabel count={count} />

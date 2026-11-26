@@ -138,7 +138,6 @@ describe("InfoTablesContainer", () => {
           "button",
           { name: activity.summary },
         );
-        expect(activityButton).toHaveClass("u-align-text--left");
         expect(activityButton).toHaveClass(classes.activityTitle);
       }
       const [firstActivity] = shownActivities;

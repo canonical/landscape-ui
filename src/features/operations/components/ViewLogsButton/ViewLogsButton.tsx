@@ -1,5 +1,5 @@
 import usePageParams from "@/hooks/usePageParams";
-import { Button } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
 
 interface ViewLogsButtonProps {
@@ -20,12 +20,7 @@ const ViewLogsButton: FC<ViewLogsButtonProps> = ({ resource }) => {
   };
 
   return (
-    <Button
-      className="u-no-margin--bottom u-no-padding--top"
-      type="button"
-      appearance="link"
-      onClick={openSidePanel("logs")}
-    >
+    <Button type="button" variant="link" onClick={openSidePanel("logs")}>
       View logs
     </Button>
   );

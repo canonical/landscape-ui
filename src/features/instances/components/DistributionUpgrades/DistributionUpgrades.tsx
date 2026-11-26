@@ -6,13 +6,13 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { pluralize } from "@/utils/_helpers";
 import {
-  Button,
   CheckboxInput,
   Form,
   Icon,
   ModularTable,
   Notification,
 } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
@@ -164,8 +164,7 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
         Cell: ({ row }: CellProps<TableRow>) => (
           <Button
             type="button"
-            appearance="link"
-            className="u-no-margin"
+            variant="link"
             onClick={() => {
               setViewedCategory({
                 title: row.original.text,
