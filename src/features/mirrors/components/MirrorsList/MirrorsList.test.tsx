@@ -7,6 +7,7 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { screen } from "@testing-library/react";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import type { Mirror } from "@canonical/landscape-openapi";
+import { PACKAGES_COUNT_UNAVAILABLE_TEXT } from "../MirrorPackagesCount";
 
 describe("MirrorsList", () => {
   it("renders with data", () => {
@@ -45,7 +46,9 @@ describe("MirrorsList", () => {
 
     renderWithProviders(<MirrorsList mirrors={[preservedMirror]} />);
 
-    expect(screen.getByText("Unavailable")).toBeInTheDocument();
+    expect(
+      screen.getByText(PACKAGES_COUNT_UNAVAILABLE_TEXT),
+    ).toBeInTheDocument();
   });
 
   describe("pagination", () => {

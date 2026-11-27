@@ -10,6 +10,7 @@ import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { inProgressOperation } from "@/tests/mocks/operations";
+import { PACKAGES_COUNT_UNAVAILABLE_TEXT } from "../../../MirrorPackagesCount";
 
 const typedMirrors = mirrors as Mirror[];
 
@@ -148,7 +149,10 @@ describe("MirrorDetailsTab", () => {
 
     await expectLoadingState();
 
-    expect(container).toHaveInfoItem("Packages", "Unavailable");
+    expect(container).toHaveInfoItem(
+      "Packages",
+      PACKAGES_COUNT_UNAVAILABLE_TEXT,
+    );
   });
 
   it("shows include dependencies in filter field only if mirror has filter", async () => {
