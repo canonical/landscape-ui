@@ -1,13 +1,27 @@
-import type { Page, TestInfo } from "@playwright/test";
+import type { BrowserContext, Page, TestInfo } from "@playwright/test";
 import { test as base } from "@playwright/test";
 import fs from "fs";
 import path from "path";
-import { login } from "../helpers/auth";
-import { USER } from "../constants";
+import { AUTH_STATE_PATH } from "../constants";
+import { navigateTo } from "../helpers/navigation";
 import { closeWelcomeModal } from "../helpers/utils";
 import { mockStandaloneAccount } from "../helpers/standaloneAccount";
 import type { StaffApiMock, StaffApiMockOptions } from "../helpers/superAdmin";
 import { mockStaffApi } from "../helpers/superAdmin";
+
+// Signs in with the session `auth.setup.ts` saved, rather than through the
+// login form: quicker, and parallel workers don't all log in at once. Only
+// the cookies are restored, so the page still opens with the welcome modal,
+// as it does after logging in.
+async function signIn(page: Page): Promise<void> {
+  const { cookies } = JSON.parse(fs.readFileSync(AUTH_STATE_PATH, "utf8")) as {
+    cookies: Parameters<BrowserContext["addCookies"]>[0];
+  };
+
+  await page.context().addCookies(cookies);
+  await navigateTo(page, "/overview");
+  await closeWelcomeModal(page);
+}
 
 interface AuthFixtures {
   authenticatedPage: Page;
@@ -70,16 +84,14 @@ export const test = base.extend<AuthFixtures & AuthOptions>({
     }
   },
   authenticatedPage: async ({ page }, use) => {
-    await login(page, USER.email, USER.password);
-    await closeWelcomeModal(page);
+    await signIn(page);
     await use(page);
   },
   staffApi: async ({ page, staffApiMock }, use) => {
     await use(await mockStaffApi(page, staffApiMock));
   },
   staffPage: async ({ page, staffApi: _staffApi }, use) => {
-    await login(page, USER.email, USER.password);
-    await closeWelcomeModal(page);
+    await signIn(page);
     await use(page);
   },
 });
