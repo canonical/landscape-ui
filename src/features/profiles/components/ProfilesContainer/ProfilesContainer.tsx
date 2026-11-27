@@ -16,12 +16,14 @@ interface ProfilesContainerProps {
   readonly profiles: Profile[];
   readonly isPending: boolean;
   readonly profilesCount?: number;
+  readonly showEmptyState?: boolean;
 }
 const ProfilesContainer: FC<ProfilesContainerProps> = ({
   type,
   profiles,
   isPending,
   profilesCount,
+  showEmptyState,
 }) => {
   const { isProfileLimitReached, profileLimit } = useProfiles();
   const { search } = usePageParams();
@@ -32,7 +34,7 @@ const ProfilesContainer: FC<ProfilesContainerProps> = ({
     return <LoadingState />;
   }
 
-  if (profiles.length === 0 && !search) {
+  if (showEmptyState ?? (profiles.length === 0 && !search)) {
     return <ProfilesEmptyState type={type} />;
   }
 
