@@ -22,6 +22,7 @@ import {
   ProfileTypes,
 } from "../../helpers";
 import { useOpenProfileSidePanel } from "../../hooks/useOpenProfileSidePanel";
+import { STATUS_OPTIONS } from "../ProfilesHeader/constants";
 
 interface ProfilesListProps {
   readonly profiles: Profile[];
@@ -29,7 +30,7 @@ interface ProfilesListProps {
 }
 
 const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
-  const { search } = usePageParams();
+  const { search, status } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
@@ -85,11 +86,19 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
     return cols;
   }, [getAccessGroupQueryResult, openProfileSidePanel, type]);
 
+  const statusLabel = STATUS_OPTIONS.find(
+    (option) => option.value === status,
+  )?.label;
+  const emptyMessage =
+    type === ProfileTypes.script && !search
+      ? `No ${statusLabel && status !== "all" ? `${statusLabel} ` : ""}script profiles found.`
+      : `No ${type} profiles found according to your search parameters.`;
+
   return (
     <ResponsiveTable
       columns={columns}
       data={filteredProfiles}
-      emptyMsg={`No ${type} profiles found according to your search parameters.`}
+      emptyMsg={emptyMessage}
       minWidth={getMinWidth(type)}
     />
   );

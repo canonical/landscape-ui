@@ -26,12 +26,18 @@ const ScriptProfileEditSidePanel = lazy(
 );
 
 const ScriptProfilesTab: FC = () => {
-  const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
-    usePageParams();
+  const {
+    sidePath,
+    lastSidePathSegment,
+    popSidePathUntilClear,
+    search,
+    status,
+  } = usePageParams();
 
   const {
     scriptsCount: activeScriptsCount,
     isGettingScripts: isGettingActiveScripts,
+    hasGotScripts: hasGotActiveScripts,
   } = useGetScripts(
     { listenToUrlParams: false },
     {
@@ -43,6 +49,14 @@ const ScriptProfilesTab: FC = () => {
 
   const { scriptProfiles, scriptProfilesCount, isGettingScriptProfiles } =
     useGetScriptProfiles();
+
+  const {
+    scriptProfilesCount: allScriptProfilesCount,
+    isGettingScriptProfiles: isGettingAllScriptProfiles,
+  } = useGetScriptProfiles(
+    { listenToUrlParams: false },
+    { archived: "all", limit: 1, offset: 0 },
+  );
 
   const {
     scriptProfilesCount: activeScriptProfilesCount,
@@ -94,7 +108,14 @@ const ScriptProfilesTab: FC = () => {
     setProfileLimit,
   ]);
 
-  if (!isGettingActiveScripts && !activeScriptsCount) {
+  const isFiltering = !!search || !!status;
+
+  if (
+    !isFiltering &&
+    hasGotActiveScripts &&
+    activeScriptsCount === 0 &&
+    allScriptProfilesCount === 0
+  ) {
     return <NoScriptsEmptyState />;
   }
 
@@ -104,8 +125,10 @@ const ScriptProfilesTab: FC = () => {
         type={ProfileTypes.script}
         profiles={scriptProfiles}
         profilesCount={scriptProfilesCount}
+        showEmptyState={!isFiltering && allScriptProfilesCount === 0}
         isPending={
           isGettingActiveScripts ||
+          isGettingAllScriptProfiles ||
           isGettingScriptProfiles ||
           isGettingActiveScriptProfiles ||
           isGettingScriptProfileLimits

@@ -7,6 +7,7 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useAuth from "@/hooks/useAuth";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { ROUTES } from "@/libs/routes";
@@ -20,6 +21,7 @@ import { formatTitleCase } from "../../helpers";
 import { useOpenScriptDetails } from "../../hooks";
 import type { Script } from "../../types";
 import ScriptListActions from "../ScriptListActions";
+import { STATUS_OPTIONS } from "../ScriptsHeader/constants";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./ScriptList.module.scss";
 
@@ -30,6 +32,7 @@ interface ScriptListProps {
 }
 
 const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
+  const { search, status } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { isFeatureEnabled } = useAuth();
   const { getAccessGroupQuery } = useRoles();
@@ -188,9 +191,16 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
     openViewPanel,
   ]);
 
+  const statusLabel = STATUS_OPTIONS.find(
+    (option) => option.value === status,
+  )?.label;
+  const emptyMessage = search
+    ? "No scripts found according to your search parameters."
+    : `No ${statusLabel && status !== "all" ? `${statusLabel} ` : ""}scripts found.`;
+
   return (
     <ResponsiveTable
-      emptyMsg="No scripts found according to your search parameters."
+      emptyMsg={emptyMessage}
       ref={getTableRowsRef}
       columns={columns}
       data={scripts}

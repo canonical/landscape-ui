@@ -12,12 +12,28 @@ import ScriptsHeader from "../ScriptsHeader";
 const ScriptsContainer: FC = () => {
   const { search, status } = usePageParams();
 
-  const { scripts, scriptsCount, isGettingScripts } = useGetScripts();
-
+  const { scripts, scriptsCount, isGettingScripts, hasGotScripts } =
+    useGetScripts();
   const isFilteringScripts = !!status || !!search;
+  const shouldCheckAllScripts =
+    !isFilteringScripts && hasGotScripts && scriptsCount === 0;
+
+  const {
+    scriptsCount: allScriptsCount,
+    isGettingScripts: isGettingAllScripts,
+    isFetchingScripts: isFetchingAllScripts,
+    hasGotScripts: hasGotAllScripts,
+  } = useGetScripts(
+    { listenToUrlParams: false },
+    { script_type: "v2", limit: 0, offset: 0 },
+    { enabled: shouldCheckAllScripts },
+  );
 
   const hasNoScripts =
-    !isFilteringScripts && scriptsCount === 0 && !isGettingScripts;
+    shouldCheckAllScripts &&
+    hasGotAllScripts &&
+    !isFetchingAllScripts &&
+    allScriptsCount === 0;
 
   if (hasNoScripts) {
     return <ScriptsEmptyState />;
@@ -26,7 +42,13 @@ const ScriptsContainer: FC = () => {
   return (
     <>
       <ScriptsHeader />
-      {isGettingScripts ? <LoadingState /> : <ScriptList scripts={scripts} />}
+      {isGettingScripts ||
+      (shouldCheckAllScripts &&
+        (isGettingAllScripts || isFetchingAllScripts)) ? (
+        <LoadingState />
+      ) : (
+        <ScriptList scripts={scripts} />
+      )}
       <TablePagination
         totalItems={scriptsCount}
         currentItemCount={scripts.length}

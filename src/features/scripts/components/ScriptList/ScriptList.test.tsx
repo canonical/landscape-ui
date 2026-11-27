@@ -118,7 +118,11 @@ describe("ScriptList", () => {
   });
 
   it("should show the search-specific empty message for an empty list", () => {
-    renderWithProviders(<ScriptList scripts={[]} />);
+    renderWithProviders(
+      <ScriptList scripts={[]} />,
+      undefined,
+      "/?search=missing",
+    );
 
     expect(
       screen.getByText("No scripts found according to your search parameters."),

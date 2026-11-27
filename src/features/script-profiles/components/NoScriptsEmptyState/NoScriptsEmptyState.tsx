@@ -23,8 +23,8 @@ const NoScriptsEmptyState: FC = () => {
 
   return (
     <EmptyState
-      title="You need at least one script to add a profile."
-      body="In order to create a script profile, you need to have added a script to your Landscape organization."
+      title="You need at least one active script to add a profile."
+      body="In order to create a script profile, you need an active script in your Landscape organization."
       cta={[
         <Button
           type="button"

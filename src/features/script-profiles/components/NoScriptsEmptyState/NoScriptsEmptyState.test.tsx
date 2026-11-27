@@ -9,7 +9,7 @@ describe("NoScriptsEmptyState", () => {
     renderWithProviders(<NoScriptsEmptyState />);
 
     const emptyStateTitle = screen.getByText(
-      /you need at least one script to add a profile/i,
+      /you need at least one active script to add a profile/i,
     );
     const emptyStateBody = screen.getByText(
       /in order to create a script profile/i,
