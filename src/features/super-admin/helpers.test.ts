@@ -1,10 +1,24 @@
+import { ROUTES } from "@/libs/routes";
+import { AxiosError, AxiosHeaders } from "axios";
 import { describe, expect, it } from "vitest";
+import { SUPPORT_PROFILE_PAGES, SUPPORT_SETTINGS_PAGES } from "./constants";
 import {
   getDuplicateEmails,
+  getErrorMessage,
+  getSupportSessionNavigation,
   parseServerDateTime,
   toStaffPeopleResultType,
 } from "./helpers";
 import type { StaffPeopleResult } from "./types";
+
+const getRejection = (data: unknown): AxiosError =>
+  new AxiosError("Request failed", "ERR_BAD_RESPONSE", undefined, undefined, {
+    data,
+    status: 503,
+    statusText: "Service Unavailable",
+    headers: {},
+    config: { headers: new AxiosHeaders() },
+  });
 
 const person = (
   id: number,
@@ -32,6 +46,59 @@ const invitation = (
   company: "Acme",
   salesforce_key: null,
   creation_time: "2026-01-01T00:00:00",
+});
+
+describe("getErrorMessage", () => {
+  it("prefers the server's message", () => {
+    expect(
+      getErrorMessage(
+        getRejection({ error: "Unavailable", message: "Try again later." }),
+      ),
+    ).toBe("Try again later.");
+  });
+
+  it("falls back to the error's own message", () => {
+    expect(getErrorMessage(getRejection({ error: "Unavailable" }))).toBe(
+      "Request failed",
+    );
+    expect(getErrorMessage(new Error("Boom"))).toBe("Boom");
+  });
+
+  it("describes anything that is not an error as unknown", () => {
+    expect(getErrorMessage("Boom")).toBe("Unknown error");
+    expect(getErrorMessage(undefined)).toBe("Unknown error");
+  });
+});
+
+describe("getSupportSessionNavigation", () => {
+  const [eventsLog, profiles, settings] = getSupportSessionNavigation("acme");
+
+  it("opens with the events log, then the profile and settings groups", () => {
+    expect(eventsLog).toEqual({
+      label: "Events log",
+      icon: "status",
+      path: ROUTES.superAdmin.sessionEventsLog("acme"),
+    });
+    expect(profiles?.label).toBe("Profiles");
+    expect(settings?.label).toBe("Org. settings");
+  });
+
+  it("lists every profile and settings page of the account", () => {
+    expect(profiles?.items?.map(({ label }) => label)).toEqual(
+      SUPPORT_PROFILE_PAGES.map(({ label }) => label),
+    );
+    expect(settings?.items?.map(({ label }) => label)).toEqual(
+      SUPPORT_SETTINGS_PAGES.map(({ label }) => label),
+    );
+    expect(profiles?.items).toContainEqual({
+      label: "Package profiles",
+      path: ROUTES.superAdmin.sessionProfile("acme", "package"),
+    });
+    expect(settings?.items).toContainEqual({
+      label: "Administrators",
+      path: ROUTES.superAdmin.sessionSetting("acme", "administrators"),
+    });
+  });
 });
 
 describe("toStaffPeopleResultType", () => {

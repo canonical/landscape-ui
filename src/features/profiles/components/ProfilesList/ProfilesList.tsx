@@ -22,6 +22,12 @@ import {
   ProfileTypes,
 } from "../../helpers";
 import { useOpenProfileSidePanel } from "../../hooks/useOpenProfileSidePanel";
+import { createTablePropGetters } from "@/utils/table";
+
+const { getCellProps } = createTablePropGetters<Profile>({
+  itemTypeName: "profile",
+  headerColumnId: "title",
+});
 
 interface ProfilesListProps {
   readonly profiles: Profile[];
@@ -91,6 +97,7 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
       data={filteredProfiles}
       emptyMsg={`No ${type} profiles found according to your search parameters.`}
       minWidth={getMinWidth(type)}
+      getCellProps={getCellProps()}
     />
   );
 };

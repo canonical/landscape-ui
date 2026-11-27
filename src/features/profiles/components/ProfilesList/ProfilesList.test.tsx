@@ -92,6 +92,62 @@ describe("ProfilesList", () => {
     }
   });
 
+  it.each([
+    [ProfileTypes.repository, ["access group", "associated instances"]],
+    [
+      ProfileTypes.package,
+      [
+        "access group",
+        "associated instances",
+        "compliant instances",
+        "non-compliant instances",
+      ],
+    ],
+    [
+      ProfileTypes.reboot,
+      ["access group", "associated instances", "next restart"],
+    ],
+    [
+      ProfileTypes.removal,
+      ["access group", "associated instances", "removal timeframe"],
+    ],
+    [
+      ProfileTypes.script,
+      ["status", "access group", "associated instances", "last run", "trigger"],
+    ],
+    [
+      ProfileTypes.usg,
+      [
+        "status",
+        "access group",
+        "associated instances",
+        "last audit pass rate",
+        "last run and schedule",
+        "mode",
+      ],
+    ],
+  ])("labels each cell of a %s profile", async (type, labels) => {
+    const [profile] = profiles;
+    assert(profile);
+
+    renderWithProviders(<ProfilesList profiles={[profile]} type={type} />);
+
+    expect(
+      await screen.findByRole("rowheader", {
+        name: `"${profile.title}" profile name`,
+      }),
+    ).toHaveTextContent(profile.title);
+
+    expect(
+      screen
+        .getAllByRole("cell")
+        .map((cell) => cell.getAttribute("aria-label")),
+    ).toEqual([
+      ...labels.map((label) => `"${profile.title}" profile ${label}`),
+      `"${profile.title}" profile actions`,
+    ]);
+  });
+
   it("filters rows based on search query if no api search", () => {
     renderWithProviders(
       <ProfilesList profiles={profiles} type={ProfileTypes.repository} />,
@@ -146,7 +202,7 @@ describe("ProfilesList", () => {
       }
 
       const lastRunSchedule = within(row).getByRole("cell", {
-        name: `Last run for ${profile.title} profileSchedule for ${profile.title} profile`,
+        name: `"${profile.title}" profile last run and schedule`,
       });
       expect(
         within(lastRunSchedule).getByText(

@@ -14,10 +14,16 @@ import {
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import { getTitleByName, pluralize } from "@/utils/_helpers";
+import { createTablePropGetters } from "@/utils/table";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, useEffect, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
+
+const { getCellProps } = createTablePropGetters<RepositoryProfile>({
+  itemTypeName: "repository profile",
+  headerColumnId: LIST_TITLE_COLUMN_PROPS.id,
+});
 
 const SupportRepositoryProfileSidePanel = lazy(
   async () => import("./SupportRepositoryProfileSidePanel"),
@@ -131,6 +137,7 @@ const SupportRepositoryProfiles: FC = () => {
         columns={columns}
         data={profiles}
         emptyMsg={`No repository profiles found with the search "${search}"`}
+        getCellProps={getCellProps()}
       />
       <TablePagination
         totalItems={data?.data.count}

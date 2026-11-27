@@ -7,6 +7,14 @@ import { isAction, shouldApplyEndpointStatus } from "./_helpers";
 
 export default [
   http.get(`${API_URL}packageprofiles`, ({ request }) => {
+    if (shouldApplyEndpointStatus("packageprofiles")) {
+      const { status } = getEndpointStatus("packageprofiles");
+
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
+
     const { searchParams } = new URL(request.url);
 
     const profileNames = searchParams.get("names")?.split(",");

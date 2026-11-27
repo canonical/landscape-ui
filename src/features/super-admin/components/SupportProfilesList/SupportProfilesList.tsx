@@ -1,5 +1,9 @@
 import EmptyState from "@/components/layout/EmptyState";
+import ListTitle, {
+  LIST_TITLE_COLUMN_PROPS,
+} from "@/components/layout/ListTitle";
 import LoadingState from "@/components/layout/LoadingState";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import {
   getRebootColumn,
@@ -14,17 +18,23 @@ import {
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import { getTitleByName, pluralize } from "@/utils/_helpers";
+import { createTablePropGetters } from "@/utils/table";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
+
+const { getCellProps } = createTablePropGetters<Profile>({
+  itemTypeName: "profile",
+  headerColumnId: LIST_TITLE_COLUMN_PROPS.id,
+});
 
 /** The association count as text: a support session cannot open instances. */
 const AssociatedCell: FC<{ readonly profile: Profile }> = ({ profile }) => {
   const { associatedCount } = useGetProfileAssociatedCount(profile);
 
   if (!hasAssociations(profile)) {
-    return "---";
+    return NO_DATA_TEXT;
   }
 
   if (profile.all_computers) {
@@ -64,24 +74,25 @@ const SupportProfilesList: FC<SupportProfilesListProps> = ({
   const columns = useMemo<Column<Profile>[]>(() => {
     const cols: Column<Profile>[] = [
       {
-        accessor: "title",
-        Header: "Profile name",
+        ...LIST_TITLE_COLUMN_PROPS,
         meta: {
           ariaLabel: ({ original: profile }) =>
             `"${profile.title}" profile name`,
         },
         Cell: ({ row: { original: profile } }: CellProps<Profile>) => (
-          <Button
-            type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-            onClick={() => {
-              openProfileSidePanel(profile, "view");
-            }}
-            aria-label={`Open "${profile.title}" profile details`}
-          >
-            {profile.title}
-          </Button>
+          <ListTitle>
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+              onClick={() => {
+                openProfileSidePanel(profile, "view");
+              }}
+              aria-label={`Open "${profile.title}" profile details`}
+            >
+              {profile.title}
+            </Button>
+          </ListTitle>
         ),
       },
       {
@@ -133,6 +144,7 @@ const SupportProfilesList: FC<SupportProfilesListProps> = ({
         columns={columns}
         data={filteredProfiles}
         emptyMsg={`No ${type} profiles found according to your search parameters.`}
+        getCellProps={getCellProps()}
       />
     </>
   );

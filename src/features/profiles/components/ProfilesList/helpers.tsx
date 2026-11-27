@@ -161,8 +161,8 @@ export const getComplianceColumns = (type: ProfileTypes): Column<Profile>[] => [
   {
     Header: "Compliant",
     meta: {
-      ariaLabel: ({ original }) =>
-        `${original.title} profile compliant instances`,
+      ariaLabel: ({ original: profile }) =>
+        `"${profile.title}" profile compliant instances`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isWslProfile(profile) || isPackageProfile(profile)) {
