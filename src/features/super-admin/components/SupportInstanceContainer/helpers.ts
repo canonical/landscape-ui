@@ -2,11 +2,15 @@ import { ROUTES } from "@/libs/routes";
 import type { Breadcrumb } from "@/types/Breadcrumb";
 import type { Instance } from "@/types/Instance";
 
+/** The instance id the address segment `id` names, or `NaN` if it names none. */
+const parseInstanceId = (id: string | undefined): number =>
+  id && /^\d+$/.test(id) ? Number(id) : NaN;
+
 /** The id of the instance the page shows: the child's, when one is named. */
 export const getRequestedInstanceId = (
   instanceId: string | undefined,
   childInstanceId: string | undefined,
-): number => Number(childInstanceId ?? instanceId);
+): number => parseInstanceId(childInstanceId ?? instanceId);
 
 /** Whether `instance` is the one the address names, under the parent it names. */
 export const isInstanceFound = (
@@ -15,7 +19,7 @@ export const isInstanceFound = (
   childInstanceId: string | undefined,
 ): instance is Instance =>
   !!instance &&
-  (!childInstanceId || instance.parent?.id === Number(instanceId));
+  (!childInstanceId || instance.parent?.id === parseInstanceId(instanceId));
 
 /** The breadcrumbs of `instance` in the support session of the account `name`. */
 export const getBreadcrumbs = (

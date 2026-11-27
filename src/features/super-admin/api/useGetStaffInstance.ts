@@ -33,6 +33,7 @@ export const useGetStaffInstance = (
         params,
       }),
     enabled: !!name && Number.isInteger(instanceId),
+    meta: { isNotFoundHandled: true },
   });
 
   return {

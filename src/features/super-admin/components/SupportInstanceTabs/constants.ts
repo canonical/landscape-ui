@@ -1,4 +1,5 @@
 import { getFeatures } from "@/features/instances";
+import type { FeatureKey } from "@/types/FeatureKey";
 import type { Instance } from "@/types/Instance";
 import type { FC, LazyExoticComponent } from "react";
 import { lazy } from "react";
@@ -12,7 +13,10 @@ interface SupportInstanceTab {
   readonly label: string;
   readonly hasTable: boolean;
   /** Whether instances with these features have the tab. Always, if omitted. */
-  readonly isIncluded?: (features: InstanceFeatures) => boolean;
+  readonly isIncluded?: (
+    features: InstanceFeatures,
+    isFeatureEnabled: (feature: FeatureKey) => boolean,
+  ) => boolean;
   readonly Panel: LazyExoticComponent<FC<SupportInstanceTabProps>>;
 }
 
@@ -29,7 +33,8 @@ export const SUPPORT_INSTANCE_TABS: readonly SupportInstanceTab[] = [
     id: "wsl",
     label: "WSL",
     hasTable: true,
-    isIncluded: ({ wsl }) => wsl,
+    isIncluded: ({ wsl }, isFeatureEnabled) =>
+      wsl && isFeatureEnabled("wsl-child-instance-profiles"),
     Panel: lazy(async () => import("../SupportInstanceWsl")),
   },
   {
@@ -96,14 +101,15 @@ export const SUPPORT_INSTANCE_TABS: readonly SupportInstanceTab[] = [
   },
 ];
 
-/** The tabs `instance` has. */
+/** The tabs `instance` has in an account with the features `isFeatureEnabled` tells. */
 export const getSupportInstanceTabs = (
   instance: Instance,
+  isFeatureEnabled: (feature: FeatureKey) => boolean,
 ): SupportInstanceTab[] => {
   const features = getFeatures(instance);
 
   return SUPPORT_INSTANCE_TABS.filter(
-    ({ isIncluded }) => !isIncluded || isIncluded(features),
+    ({ isIncluded }) => !isIncluded || isIncluded(features, isFeatureEnabled),
   );
 };
 

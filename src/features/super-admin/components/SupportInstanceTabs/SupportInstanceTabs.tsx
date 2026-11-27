@@ -4,6 +4,7 @@ import usePageParams from "@/hooks/usePageParams";
 import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
 import { Suspense } from "react";
+import { useStaffAccountFeatures } from "../../hooks";
 import type { SupportInstanceTabProps } from "../../types";
 import { getSupportInstanceTabs } from "./constants";
 import classes from "./SupportInstanceTabs.module.scss";
@@ -17,7 +18,9 @@ const SupportInstanceTabs: FC<SupportInstanceTabProps> = ({
 }) => {
   const { tab, setPageParams } = usePageParams();
 
-  const tabs = getSupportInstanceTabs(instance);
+  const { isFeatureEnabled } = useStaffAccountFeatures(name);
+
+  const tabs = getSupportInstanceTabs(instance, isFeatureEnabled);
   const [firstTab] = tabs;
   // A tab the instance does not have (or no tab at all) shows the first one.
   const currentTab = tabs.find(({ id }) => id === tab) ?? firstTab;
@@ -48,9 +51,9 @@ const SupportInstanceTabs: FC<SupportInstanceTabProps> = ({
         aria-labelledby={getTabLinkId(currentTab.id)}
         className={classes.tabPanel}
       >
-        <AppErrorBoundary>
+        <AppErrorBoundary key={currentTab.id}>
           <Suspense fallback={<LoadingState />}>
-            <Panel key={currentTab.id} name={name} instance={instance} />
+            <Panel name={name} instance={instance} />
           </Suspense>
         </AppErrorBoundary>
       </div>

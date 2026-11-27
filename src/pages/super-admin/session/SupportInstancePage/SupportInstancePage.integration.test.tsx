@@ -21,13 +21,14 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { Outlet, Route, Routes } from "react-router";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import SupportInstancePage from "./SupportInstancePage";
 
 // Super admin mode only exists on SaaS deployments.
 vi.mock("@/hooks/useEnv", () => import("@/tests/mocks/env"));
 
 const ACME = "acme";
+const GLOBEX = "globex";
 const UNKNOWN_ID = 999999;
 
 const childInstance = instances.find(
@@ -112,6 +113,11 @@ describe("SupportInstancePage (integration)", () => {
 
   assert(childInstance);
 
+  afterEach(() => {
+    server.events.removeAllListeners("request:start");
+    vi.restoreAllMocks();
+  });
+
   it("shows the instance on its Info tab", async () => {
     renderInstance(ROUTES.superAdmin.sessionInstance(ACME, ubuntuInstance.id));
 
@@ -185,8 +191,6 @@ describe("SupportInstancePage (integration)", () => {
     );
     expect(requested).toContain(`${prefix}accounts/${ACME}/access-groups`);
     expect(requested).not.toContain(`${prefix}computers/${ubuntuInstance.id}`);
-
-    server.events.removeAllListeners("request:start");
   });
 
   it("has the tabs of an Ubuntu instance", async () => {
@@ -203,6 +207,16 @@ describe("SupportInstancePage (integration)", () => {
     await findInstanceHeading(windowsInstance.title);
 
     expect(getTabNames()).toEqual(["Info", "WSL", "Activities", "Ubuntu Pro"]);
+  });
+
+  it("leaves out the WSL tab in an account without WSL profiles", async () => {
+    renderInstance(
+      ROUTES.superAdmin.sessionInstance(GLOBEX, windowsInstance.id),
+    );
+
+    await findInstanceHeading(windowsInstance.title);
+
+    expect(getTabNames()).toEqual(["Info", "Activities", "Ubuntu Pro"]);
   });
 
   it("leaves out the Ubuntu-only tabs for another Linux", async () => {
@@ -317,11 +331,29 @@ describe("SupportInstancePage (integration)", () => {
     ).toHaveAttribute("href", ROUTES.superAdmin.sessionInstances(ACME));
   });
 
-  it("says so when the address names no instance id", async () => {
-    renderInstance(ROUTES.superAdmin.sessionInstance(ACME, "not-a-number"));
+  it("says so without an error notification when the API answers 404", async () => {
+    const message = "Computer not found";
+
+    server.use(
+      http.get(`${API_URL}accounts/${ACME}/computers/${UNKNOWN_ID}`, () =>
+        HttpResponse.json({ message }, { status: 404 }),
+      ),
+    );
+
+    renderInstance(ROUTES.superAdmin.sessionInstance(ACME, UNKNOWN_ID));
 
     expect(await screen.findByText("Instance not found")).toBeInTheDocument();
+    expect(screen.queryByText(message)).not.toBeInTheDocument();
   });
+
+  it.each(["not-a-number", `${ubuntuInstance.id}.0`, "0x1", "1e0"])(
+    "says so when the address names no instance id (%s)",
+    async (id) => {
+      renderInstance(ROUTES.superAdmin.sessionInstance(ACME, id));
+
+      expect(await screen.findByText("Instance not found")).toBeInTheDocument();
+    },
+  );
 
   it("surfaces a failed instance request", async () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);

@@ -13,8 +13,14 @@ import type { ApiError } from "@/types/api/ApiError";
 declare module "@tanstack/react-query" {
   interface Register {
     defaultError: AxiosError<ApiError>;
+    queryMeta: {
+      /** Set when the query's caller shows a 404 itself, so it is not notified. */
+      isNotFoundHandled?: boolean;
+    };
   }
 }
+
+const NOT_FOUND_STATUS = 404;
 
 interface ReactQueryProviderProps {
   readonly children: ReactNode;
@@ -33,6 +39,13 @@ const ReactQueryProvider: FC<ReactQueryProviderProps> = ({ children }) => {
     },
     queryCache: new QueryCache({
       onError: (error, query) => {
+        if (
+          query.meta?.isNotFoundHandled &&
+          error.response?.status === NOT_FOUND_STATUS
+        ) {
+          return;
+        }
+
         const isHandledByBoundary = query.observers.some(({ options }) => {
           const { throwOnError } = options;
 
