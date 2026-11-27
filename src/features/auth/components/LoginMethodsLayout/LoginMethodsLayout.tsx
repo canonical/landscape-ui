@@ -1,12 +1,17 @@
 import type { FC } from "react";
 import type { LoginMethods } from "@/features/auth";
 import { AvailableProviderList, LoginForm } from "@/features/auth";
+import useEnv from "@/hooks/useEnv";
+import { ROUTES } from "@/libs/routes";
+import { Link } from "react-router";
 
 interface LoginMethodsProps {
   readonly methods: LoginMethods | null;
 }
 
 const LoginMethodsLayout: FC<LoginMethodsProps> = ({ methods }) => {
+  const { isSelfHosted } = useEnv();
+
   if (!methods) {
     return null;
   }
@@ -42,6 +47,11 @@ const LoginMethodsLayout: FC<LoginMethodsProps> = ({ methods }) => {
     <>
       {loginFormAvailable && (
         <LoginForm isIdentityAvailable={isIdentityAvailable} />
+      )}
+      {isSelfHosted && isPasswordEnabled && (
+        <p>
+          <Link to={ROUTES.auth.forgotPassword()}>Forgot password?</Link>
+        </p>
       )}
       {providersAvailable && (
         <AvailableProviderList

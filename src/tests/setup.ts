@@ -13,6 +13,7 @@ import server from "./server";
 import { resetPublicationTargets } from "./server/handlers/publicationTargets";
 import { resetMirrors } from "./server/handlers/mirrors";
 import { resetStaffState } from "./server/handlers/staffAccounts";
+import { resetPasswordResetState } from "./server/handlers/passwordReset";
 
 expect.extend(matchers);
 
@@ -122,6 +123,7 @@ afterEach(() => {
   resetPublicationTargets();
   resetMirrors();
   resetStaffState();
+  resetPasswordResetState();
   setEndpointStatus("default");
   server.resetHandlers();
   cleanup();

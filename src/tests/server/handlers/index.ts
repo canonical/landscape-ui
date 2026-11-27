@@ -48,6 +48,7 @@ import usn from "./usn";
 import publicationTargets from "./publicationTargets";
 import wsl from "./wsl";
 import wslProfiles from "./wslProfiles";
+import passwordReset from "./passwordReset";
 
 export default [
   ...about,
@@ -57,6 +58,7 @@ export default [
   ...activity,
   ...alerts,
   ...auth,
+  ...passwordReset,
   ...exports,
   ...oidcIssuers,
   ...availabilityZones,

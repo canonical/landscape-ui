@@ -26,6 +26,12 @@ export const UbuntuOneAuthPage = Loadable(
 export const InvitationPage = Loadable(
   lazy(() => import("@/pages/auth/invitation")),
 );
+export const ForgotPasswordPage = Loadable(
+  lazy(() => import("@/pages/auth/password-reset/ForgotPasswordPage")),
+);
+export const ResetPasswordPage = Loadable(
+  lazy(() => import("@/pages/auth/password-reset/ResetPasswordPage")),
+);
 export const AccountCreationPage = Loadable(
   lazy(() => import("@/pages/auth/account-creation")),
 );
