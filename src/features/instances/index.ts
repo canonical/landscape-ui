@@ -9,6 +9,11 @@ export {
 } from "./components/InstanceStatus";
 export { default as InstanceRemoveFromLandscapeModal } from "./components/InstanceRemoveFromLandscapeModal";
 export { default as InstancesHeader } from "./components/InstancesHeader";
+export { default as AccessGroupFilter } from "./components/AccessGroupFilter";
+export { default as AvailabilityZoneFilter } from "./components/AvailabilityZoneFilter";
+export { default as TagFilter } from "./components/TagFilter";
+export { default as UpgradesFilter } from "./components/UpgradesFilter";
+export { default as WslFilter } from "./components/WslFilter";
 export { default as InstancesEmptyState } from "./components/InstancesEmptyState";
 export { default as PendingInstancesNotification } from "./components/PendingInstancesNotification";
 export { default as InstancesPageActions } from "./components/InstancesPageActions";
@@ -19,6 +24,7 @@ export { EXPORT_FIELD_GROUPS } from "./components/InstancesExportForm/constants"
 export {
   getFeatures,
   getInstanceListParams,
+  isFilteringInstances,
   getOptionQuery,
   getRecoveryKeyRegenerationAttemptMessage,
   getQuery,
@@ -35,7 +41,10 @@ export { default as GenerateRecoveryKeyModal } from "./components/GenerateRecove
 export { default as RegenerateRecoveryKeyModal } from "./components/RegenerateRecoveryKeyModal";
 export { default as ViewRecoveryKeyModal } from "./components/ViewRecoveryKeyModal";
 export type { Status, RecoveryKey, DistributionUpgradeTarget } from "./types";
-export { default as useInstanceSearchHelpTerms } from "./components/InstancesHeader/hooks/useInstanceSearchHelpTerms";
+export {
+  default as useInstanceSearchHelpTerms,
+  getInstanceSearchHelpTerms,
+} from "./components/InstancesHeader/hooks/useInstanceSearchHelpTerms";
 export { default as RestartModal } from "./components/RestartModal";
 export { default as ShutDownModal } from "./components/ShutDownModal";
 export {
