@@ -37,6 +37,7 @@ import selfHostedLicense from "./selfHostedLicense";
 import selfHostedEnabled from "./selfHostedEnabled";
 import usgProfiles from "./usgProfiles";
 import snap from "./snap";
+import staffAccountResources from "./staffAccountResources";
 import staffAccounts from "./staffAccounts";
 import standaloneAccount from "./standaloneAccount";
 import tag from "./tag";
@@ -87,6 +88,7 @@ export default [
   ...scriptProfiles,
   ...snap,
   ...staffAccounts,
+  ...staffAccountResources,
   ...standaloneAccount,
   ...selfHostedLicense,
   ...selfHostedEnabled,
