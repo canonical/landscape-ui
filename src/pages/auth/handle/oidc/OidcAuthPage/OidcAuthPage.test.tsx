@@ -1,4 +1,5 @@
 import { CONTACT_SUPPORT_TEAM_MESSAGE, HOMEPAGE_PATH } from "@/constants";
+import { ROUTES } from "@/libs/routes";
 import type { AuthContextProps } from "@/context/auth";
 import type { EnvContextState } from "@/context/env";
 import type { AuthStateResponse } from "@/features/auth";
@@ -90,9 +91,9 @@ describe("OidcAuthPage", () => {
     expect(
       await screen.findByText(CONTACT_SUPPORT_TEAM_MESSAGE),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: "Back to login" }),
-    ).toBeInTheDocument();
+    const backLink = screen.getByRole("link", { name: "Back to login" });
+    expect(backLink).toHaveAttribute("href", ROUTES.auth.login());
+    expect(backLink).toHaveClass("ds", "link");
   });
 
   it("renders the fallback state when the auth request fails", async () => {

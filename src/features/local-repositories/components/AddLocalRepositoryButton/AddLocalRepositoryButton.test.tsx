@@ -12,7 +12,7 @@ describe("AddLocalRepositoryButton", () => {
     const button = screen.getByRole("button", {
       name: /add local repository/i,
     });
-    expect(button).toHaveClass("p-button--positive");
+    expect(button).toHaveClass("ds", "button", "primary", "constructive");
     expect(button).toHaveIcon("plus");
   });
 

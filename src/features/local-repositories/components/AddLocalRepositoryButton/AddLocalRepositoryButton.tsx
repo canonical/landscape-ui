@@ -1,5 +1,5 @@
 import usePageParams from "@/hooks/usePageParams";
-import { Button, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
 
 const AddLocalRepositoryButton: FC = () => {
@@ -7,9 +7,14 @@ const AddLocalRepositoryButton: FC = () => {
   const handleOpen = createPageParamsSetter({ sidePath: ["add"] });
 
   return (
-    <Button appearance="positive" hasIcon onClick={handleOpen} type="button">
-      <Icon name="plus" light />
-      <span>Add local repository</span>
+    <Button
+      type="button"
+      importance="primary"
+      anticipation="constructive"
+      icon="plus"
+      onClick={handleOpen}
+    >
+      Add local repository
     </Button>
   );
 };

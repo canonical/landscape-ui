@@ -32,12 +32,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: $spv--small;
-
-  :global(.p-button),
-  :global(.p-button--base),
-  :global(.p-button--positive) {
-    margin: 0;
-  }
 }
 
 .details {

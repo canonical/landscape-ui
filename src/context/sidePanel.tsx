@@ -2,7 +2,7 @@ import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import AppNotification from "@/components/layout/AppNotification";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import { Button, Icon, ICONS } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
 import { createContext, useEffect, useRef, useState } from "react";
@@ -127,14 +127,13 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
               <div className="p-panel__controls">
                 <Button
                   type="button"
+                  importance="tertiary"
+                  icon="close"
                   onClick={() => {
                     (onCloseOverrideRef.current ?? handleSidePanelClose)();
                   }}
-                  className="p-button--base u-no-margin--bottom has-icon"
                   aria-label="Close side panel"
-                >
-                  <Icon name={ICONS.close} />
-                </Button>
+                />
               </div>
             </div>
             <div className={classNames("p-panel__content", classes.outerDiv)}>

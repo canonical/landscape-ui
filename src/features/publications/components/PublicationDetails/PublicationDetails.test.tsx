@@ -68,6 +68,14 @@ describe("PublicationDetails", () => {
     for (const { label, value } of infoItems) {
       expect(container).toHaveInfoItem(label, value);
     }
+
+    const republishButton = screen.getByRole("button", { name: "Republish" });
+    const removeButton = screen.getByRole("button", { name: "Remove" });
+    expect(republishButton).toHaveClass("ds", "button", "secondary");
+    expect(republishButton).toHaveIcon("upload");
+    expect(removeButton).toHaveClass("ds", "button", "secondary");
+    expect(removeButton).not.toHaveClass("destructive");
+    expect(removeButton).toHaveIcon("delete");
   });
 
   it("renders unpublished values", async () => {
@@ -173,7 +181,14 @@ describe("PublicationDetails", () => {
     await expectLoadingState();
 
     const publishingButton = screen.getByRole("button", { name: "Publishing" });
-    expect(publishingButton).toHaveAttribute("aria-disabled", "true");
+    expect(publishingButton).toBeDisabled();
+    expect(publishingButton).toHaveAttribute("aria-busy", "true");
+    expect(publishingButton).toHaveClass(
+      "ds",
+      "button",
+      "secondary",
+      "loading",
+    );
 
     expect(
       screen.queryByRole("button", { name: "Republish" }),

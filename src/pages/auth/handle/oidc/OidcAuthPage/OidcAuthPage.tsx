@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { useEffect } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router";
+import { Link as RouterLink, useNavigate, useSearchParams } from "react-router";
+import { Link } from "@canonical/react-ds-global";
 import {
   CONTACT_SUPPORT_TEAM_MESSAGE,
   GENERIC_DOMAIN,
@@ -94,7 +95,7 @@ const OidcAuthPage: FC = () => {
       ) : (
         <div>
           <p className="u-margin--bottom">{CONTACT_SUPPORT_TEAM_MESSAGE}</p>
-          <Link to={ROUTES.auth.login()} className="p-button">
+          <Link as={RouterLink} to={ROUTES.auth.login()}>
             Back to login
           </Link>
         </div>

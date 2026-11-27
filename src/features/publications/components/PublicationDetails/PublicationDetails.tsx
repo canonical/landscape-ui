@@ -2,7 +2,8 @@ import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import { boolToLabel } from "@/utils/output";
 import type { Publication } from "@canonical/landscape-openapi";
-import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
+import { Tooltip } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
@@ -20,6 +21,7 @@ import {
   useCanCancelOperations,
 } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
+import { ActionBar } from "@/components/ui";
 import MissingSourceLabel from "../MissingSourceLabel";
 
 interface PublicationDetailsProps {
@@ -67,45 +69,35 @@ const PublicationDetails = ({
   return (
     <>
       <OperationStatusNotification operation={operation} type="publishing" />
-      <div className="p-segmented-control u-sv2">
-        <div className="p-segmented-control__list">
-          {!canCancelOperations && isPublishing ? (
-            <Tooltip
-              message="You must wait for this action to be completed to republish it."
-              position="btm-center"
-            >
-              <Button
-                type="button"
-                hasIcon
-                className="p-segmented-control__button"
-                disabled
-              >
-                <Icon name="spinner" className="u-animation--spin" />
-                <span>Publishing</span>
-              </Button>
-            </Tooltip>
-          ) : (
-            <Button
-              type="button"
-              className="p-segmented-control__button"
-              onClick={openRepublishModal}
-              hasIcon
-            >
-              <Icon name="upload" />
-              <span>Republish</span>
+      <ActionBar>
+        {!canCancelOperations && isPublishing ? (
+          <Tooltip
+            message="You must wait for this action to be completed to republish it."
+            position="btm-center"
+          >
+            <Button type="button" importance="secondary" loading disabled>
+              Publishing
             </Button>
-          )}
+          </Tooltip>
+        ) : (
           <Button
             type="button"
-            className="p-segmented-control__button"
-            onClick={openRemoveModal}
-            hasIcon
+            importance="secondary"
+            icon="upload"
+            onClick={openRepublishModal}
           >
-            <Icon name={`${ICONS.delete}--negative`} />
-            <span className="u-text--negative">Remove</span>
+            Republish
           </Button>
-        </div>
-      </div>
+        )}
+        <Button
+          type="button"
+          importance="secondary"
+          icon="delete"
+          onClick={openRemoveModal}
+        >
+          Remove
+        </Button>
+      </ActionBar>
 
       <Blocks>
         <Blocks.Item title="Details">

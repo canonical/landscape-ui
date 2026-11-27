@@ -156,7 +156,9 @@ The global setup adds repo-specific matchers from `src/tests/matcher.ts`:
 - `toHaveTexts`
 - `toHaveInputValues`
 - `toHaveInfoItem`
-- `toHaveIcon`
+- `toHaveIcon` (matches both legacy Vanilla `<i class="p-icon--...">` elements and Pragma `<svg><use href="/icons/<name>.svg#<name>">` sprites)
+
+For migrated Pragma `Button` controls, assert disabled state with `toBeDisabled()` / `toBeEnabled()` (native HTML `disabled`) rather than legacy `toHaveAttribute("aria-disabled", "true")`; see [../pragma/buttons.md](../pragma/buttons.md).
 
 Use these when they match the UI pattern directly, especially for:
 
@@ -348,7 +350,6 @@ Do NOT fabricate a consumer for an unreachable guard:
 The rule of thumb: a request-param regression test is only worth writing when a
 user action can drive the empty value onto the wire. "The PR touched this file" is
 not the same as "a regression is reachable here."
-
 
 ## Forms And Formik-Based Components
 

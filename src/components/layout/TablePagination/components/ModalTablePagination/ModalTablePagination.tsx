@@ -1,4 +1,4 @@
-import { Button, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-ds-global";
 import type { FC } from "react";
 import classes from "./ModalTablePagination.module.scss";
 
@@ -24,29 +24,23 @@ const ModalTablePagination: FC<ModalTablePaginationProps> = ({
       <div className={classes.inner}>
         <Button
           type="button"
-          className="u-no-margin--right u-no-margin--bottom"
-          appearance="base"
-          hasIcon
+          importance="tertiary"
+          icon="chevron-left"
           onClick={onPrev}
           disabled={current <= 1}
           aria-label="Previous page"
-        >
-          <Icon name="chevron-left" />
-        </Button>
+        />
         <span>
           Page {current} of {max}
         </span>
         <Button
           type="button"
-          className="u-no-margin--bottom"
-          appearance="base"
-          hasIcon
+          importance="tertiary"
+          icon="chevron-right"
           onClick={onNext}
           disabled={current >= max}
           aria-label="Next page"
-        >
-          <Icon name="chevron-right" />
-        </Button>
+        />
       </div>
     </div>
   );

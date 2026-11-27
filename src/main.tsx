@@ -1,6 +1,7 @@
 import "./styles/index.scss";
 import "@canonical/styles-vanilla-adapter/adapter.css";
 import "./styles/vanilla-text-size-shim.css";
+import "./styles/pragma-button-shims.css";
 import "@canonical/styles/fonts";
 import "@canonical/react-ds-global-form/dist/esm/index.css";
 import { StrictMode } from "react";

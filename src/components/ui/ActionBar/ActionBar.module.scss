@@ -1,0 +1,9 @@
+/* Transitional layout wrapper for grouped Pragma action buttons until Pragma
+   ships ActionBar (ds:apps.pattern.action_bar). */
+.actionBar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dimension-100);
+  margin-bottom: var(--dimension-200);
+}

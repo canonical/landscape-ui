@@ -21,6 +21,7 @@ describe("SidePanel", () => {
   const user = userEvent.setup();
 
   it("renders", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockReturnValue(undefined);
     const children = "Content";
     const close = vi.fn();
 
@@ -32,8 +33,14 @@ describe("SidePanel", () => {
     );
 
     expect(screen.getByText(children)).toBeInTheDocument();
-    await user.click(screen.getByRole("button"));
+    const closeButton = screen.getByRole("button", { name: "Close" });
+    expect(closeButton).toHaveClass("ds", "button", "tertiary");
+    expect(closeButton).toHaveIcon("close");
+    expect(warnSpy).not.toHaveBeenCalled();
+
+    await user.click(closeButton);
     expect(close).toHaveBeenCalledOnce();
+    warnSpy.mockRestore();
   });
 
   it("renders a fallback on error", () => {

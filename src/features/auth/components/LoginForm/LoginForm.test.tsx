@@ -91,9 +91,12 @@ describe("LoginForm", () => {
     mockTestParams({ invitation_id: "test-invite" });
     const { default: Component } = await import("./LoginForm");
     renderWithProviders(<Component isIdentityAvailable={false} />);
+    const signInButton = screen.getByRole("button", { name: /sign in/i });
+    expect(signInButton).toHaveClass("ds", "button", "primary");
+    expect(signInButton).toHaveAttribute("type", "submit");
     await userEvent.type(screen.getByTestId("identifier"), user.email);
     await userEvent.type(screen.getByTestId("password"), user.password);
-    await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    await userEvent.click(signInButton);
 
     expect(safeRedirect).toHaveBeenCalledWith(
       ROUTES.auth.invitation({ secureId: "test-invite" }),
