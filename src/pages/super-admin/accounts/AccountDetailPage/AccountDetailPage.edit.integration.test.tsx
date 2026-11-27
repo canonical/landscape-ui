@@ -1,12 +1,14 @@
 import { API_URL } from "@/constants";
 import { PATHS, ROUTES } from "@/libs/routes";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { authResponse } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
+import { http } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AccountDetailPage from "./AccountDetailPage";
 
@@ -26,14 +28,16 @@ const NEW_ATTACHMENT_SIZE_KB = 512;
 
 const ROUTE_PATTERN = `/${PATHS.superAdmin.root}/${PATHS.superAdmin.account}`;
 
+const signedInStatus = (globalRoles: string[]) => ({
+  status: "variant" as const,
+  path: "me",
+  response: { ...authResponse, global_roles: globalRoles },
+});
+
 /** Signs in a staff member with `globalRoles`, for the app and for the mock API. */
 const signInAs = (globalRoles: string[]) => {
   setStaffGlobalRoles(globalRoles);
-  server.use(
-    http.get(`${API_URL}me`, () =>
-      HttpResponse.json({ ...authResponse, global_roles: globalRoles }),
-    ),
-  );
+  setEndpointStatus(signedInStatus(globalRoles));
 };
 
 const renderAccount = (name: string) =>
@@ -169,6 +173,26 @@ describe("AccountDetailPage: editing the account (integration)", () => {
       expect(
         await screen.findByText("Enter a number from 1 to 100."),
       ).toBeInTheDocument();
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(patches).toEqual([]);
+    },
+  );
+
+  it.each([
+    ["1.5", "Enter a whole number."],
+    ["", "This field is required."],
+  ])(
+    "rejects an administrator limit of '%s' before sending anything",
+    async (value, message) => {
+      const patches = recordPatches("acme");
+
+      renderAccount("acme");
+
+      await openEditForm();
+      await fillField("Administrator limit", value);
+      await submitForm();
+
+      expect(await screen.findByText(message)).toBeInTheDocument();
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
       expect(patches).toEqual([]);
     },
@@ -405,24 +429,24 @@ describe("AccountDetailPage: editing the account (integration)", () => {
   });
 
   it("shows a server validation error next to the field it names", async () => {
-    server.use(
-      http.patch(`${API_URL}accounts/acme`, () =>
-        HttpResponse.json(
-          {
-            error: "PydanticValidationError",
-            message: "invalid query/body arguments",
-            detail: [
-              {
-                type: "less_than_equal",
-                loc: ["max_people_count"],
-                msg: "Input should be less than or equal to 50",
-              },
-            ],
-          },
-          { status: 400 },
-        ),
-      ),
-    );
+    setEndpointStatus([
+      signedInStatus(["AccountManager"]),
+      {
+        status: "variant",
+        path: "editAccount",
+        response: {
+          error: "PydanticValidationError",
+          message: "invalid query/body arguments",
+          detail: [
+            {
+              type: "less_than_equal",
+              loc: ["max_people_count"],
+              msg: "Input should be less than or equal to 50",
+            },
+          ],
+        },
+      },
+    ]);
 
     renderAccount("acme");
 
@@ -433,5 +457,35 @@ describe("AccountDetailPage: editing the account (integration)", () => {
     expect(
       await screen.findByText("Input should be less than or equal to 50"),
     ).toBeInTheDocument();
+  });
+
+  it("keeps the form open with its values when the server fails", async () => {
+    setEndpointStatus([
+      signedInStatus(["AccountManager"]),
+      { status: "error", path: "editAccount" },
+    ]);
+
+    renderAccount("acme");
+
+    await openEditForm();
+    await fillField("Administrator limit", String(NEW_ADMINISTRATOR_LIMIT));
+    await saveChanges();
+
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+    expect(screen.getByLabelText("Administrator limit")).toHaveValue(
+      NEW_ADMINISTRATOR_LIMIT,
+    );
+    expect(screen.getByLabelText("Administrator limit")).not.toHaveAttribute(
+      "aria-invalid",
+      "true",
+    );
+    expect(
+      screen.queryByText("Account changes have been saved"),
+    ).not.toBeInTheDocument();
   });
 });

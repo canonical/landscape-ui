@@ -698,6 +698,18 @@ export default [
   }),
 
   http.get<{ name: string }>(`${API_URL}accounts/:name`, ({ params }) => {
+    if (shouldApplyEndpointStatus("accounts/:name")) {
+      const { status, response } = getEndpointStatus("accounts/:name");
+
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      if (status === "variant") {
+        return HttpResponse.json(response);
+      }
+    }
+
     if (!hasViewAllAccounts()) {
       return unauthorizedAccessResponse();
     }
@@ -714,6 +726,18 @@ export default [
   http.patch<{ name: string }, AccountPatchBody>(
     `${API_URL}accounts/:name`,
     async ({ request, params }) => {
+      if (shouldApplyEndpointStatus("editAccount")) {
+        const { status, response } = getEndpointStatus("editAccount");
+
+        if (status === "error") {
+          throw createEndpointStatusError();
+        }
+
+        if (status === "variant") {
+          return HttpResponse.json(response, { status: 400 });
+        }
+      }
+
       const body = await request.json();
       const detail = accountPatchErrors(body);
 

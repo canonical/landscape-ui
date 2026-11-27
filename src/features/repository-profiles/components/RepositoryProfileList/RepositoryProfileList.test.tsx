@@ -16,7 +16,7 @@ describe("RepositoryProfileList", () => {
     );
 
     const table = screen.getByRole("table");
-    expect(table).toHaveTexts(["Profile Name", "Associated", "Access group"]);
+    expect(table).toHaveTexts(["Profile name", "Associated", "Access group"]);
 
     for (const profile of repositoryProfiles) {
       const row = within(table).getByRole("row", {

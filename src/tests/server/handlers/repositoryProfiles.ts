@@ -14,20 +14,21 @@ import { createEndpointStatusNetworkError } from "./_constants";
 
 export default [
   http.get(`${API_URL}repositoryprofiles`, ({ request }) => {
-    const endpointStatus = getEndpointStatus();
     if (shouldApplyEndpointStatus("repositoryprofiles")) {
-      if (endpointStatus.status === "error") {
+    const { status, response } = getEndpointStatus("repositoryprofiles");
+      if (status === "error") {
         throw createEndpointStatusNetworkError();
       }
-    }
 
-    if (
-      endpointStatus.status === "empty" &&
-      (!endpointStatus.path || endpointStatus.path === "repositoryprofiles")
-    ) {
-      return HttpResponse.json(
-        generatePaginatedResponse({ data: [], limit: 20, offset: 0 }),
-      );
+      if (status === "variant") {
+        return HttpResponse.json(response);
+      }
+
+      if (status === "empty") {
+        return HttpResponse.json(
+          generatePaginatedResponse({ data: [], limit: 20, offset: 0 }),
+        );
+      }
     }
 
     const { searchParams } = new URL(request.url);

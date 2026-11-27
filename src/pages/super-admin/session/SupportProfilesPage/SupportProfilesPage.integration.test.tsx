@@ -1,8 +1,8 @@
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { SuperAdminGuard } from "@/components/guards/SuperAdminGuard";
-import { API_URL } from "@/constants";
 import { PATHS, ROUTES } from "@/libs/routes";
 import SupportSessionPage from "@/pages/super-admin/accounts/SupportSessionPage";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { authResponse } from "@/tests/mocks/auth";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { rebootProfiles } from "@/tests/mocks/rebootProfiles";
@@ -10,13 +10,11 @@ import { removalProfiles } from "@/tests/mocks/removalProfiles";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 import { renderWithProviders } from "@/tests/render";
-import server from "@/tests/server";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
 import { getLocationDisplay, LocationDisplay } from "@/tests/LocationDisplay";
 import { ErrorBoundary } from "@sentry/react";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
 import type { FC, ReactNode } from "react";
 import { Outlet, Route, Routes, useNavigate } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -33,18 +31,20 @@ const [rebootProfile] = rebootProfiles;
 const [removalProfile] = removalProfiles;
 const [repositoryProfile] = repositoryProfiles;
 
+const signedInStatus = {
+  status: "variant" as const,
+  path: "me",
+  response: {
+    ...authResponse,
+    current_account: ACME,
+    global_roles: ["SupportProvider"],
+  },
+};
+
 /** Signs in as staff whose session is already in the account. */
 const signIn = () => {
   setStaffGlobalRoles(["SupportProvider"]);
-  server.use(
-    http.get(`${API_URL}me`, () =>
-      HttpResponse.json({
-        ...authResponse,
-        current_account: ACME,
-        global_roles: ["SupportProvider"],
-      }),
-    ),
-  );
+  setEndpointStatus(signedInStatus);
 };
 
 /** A button that moves to `to` the way history or an edited address would. */
@@ -264,6 +264,34 @@ describe("SupportProfilesPage (integration)", () => {
     ).toEqual(["Profile name", "Access group", "Associated", "Next restart"]);
   });
 
+  it("opens a reboot profile with its next restart", async () => {
+    renderProfiles("reboot");
+
+    await user.click(
+      (await findRow(rebootProfile.title)).getByRole("button", {
+        name: `Open "${rebootProfile.title}" profile details`,
+      }),
+    );
+
+    const panel = await findSidePanel(rebootProfile.title);
+
+    expect(await panel.findByText(/Next restart/i)).toBeInTheDocument();
+  });
+
+  it("opens a removal profile with its timeframe", async () => {
+    renderProfiles("removal");
+
+    await user.click(
+      (await findRow(removalProfile.title)).getByRole("button", {
+        name: `Open "${removalProfile.title}" profile details`,
+      }),
+    );
+
+    const panel = await findSidePanel(removalProfile.title);
+
+    expect(await panel.findByText("Removal Timeframe")).toBeInTheDocument();
+  });
+
   it.each(["package", "upgrade", "reboot", "removal"])(
     "lists the %s profiles despite another type's profile name in the URL",
     async (profileType) => {
@@ -308,14 +336,10 @@ describe("SupportProfilesPage (integration)", () => {
   });
 
   it("surfaces a failed profile list instead of an empty one", async () => {
-    server.use(
-      http.get(`${API_URL}packageprofiles`, () =>
-        HttpResponse.json(
-          { error: "Forbidden", message: "Forbidden." },
-          { status: 403 },
-        ),
-      ),
-    );
+    setEndpointStatus([
+      signedInStatus,
+      { status: "error", path: "packageprofiles" },
+    ]);
 
     renderProfiles("package");
 
@@ -394,6 +418,54 @@ describe("SupportProfilesPage (integration)", () => {
     renderProfiles("repository", "?currentPage=99");
 
     expect(await screen.findByRole("searchbox")).toBeInTheDocument();
+    expect(
+      screen.queryByText("This account has no repository profiles."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("labels each repository profile's cells", async () => {
+    renderProfiles("repository");
+
+    expect(
+      await screen.findByRole("rowheader", {
+        name: `${repositoryProfile.title} profile title and name`,
+      }),
+    ).toHaveTextContent(repositoryProfile.title);
+    expect(
+      screen.getByRole("cell", {
+        name: `${repositoryProfile.title} profile access group`,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("cell", {
+        name: `${repositoryProfile.title} profile pending machines count`,
+      }),
+    ).toHaveTextContent(`${repositoryProfile.pending_count} instance`);
+  });
+
+  it("says the account has no repository profiles", async () => {
+    setEndpointStatus([
+      signedInStatus,
+      { status: "empty", path: "repositoryprofiles" },
+    ]);
+
+    renderProfiles("repository");
+
+    expect(
+      await screen.findByText("This account has no repository profiles."),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+  });
+
+  it("surfaces a failed repository profile list instead of an empty one", async () => {
+    setEndpointStatus([
+      signedInStatus,
+      { status: "error", path: "repositoryprofiles" },
+    ]);
+
+    renderProfiles("repository");
+
+    expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
     expect(
       screen.queryByText("This account has no repository profiles."),
     ).not.toBeInTheDocument();

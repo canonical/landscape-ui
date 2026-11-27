@@ -1,17 +1,20 @@
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { API_URL, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { StaffAccount } from "@/features/super-admin";
 import date from "@/libs/date";
 import { PATHS, ROUTES } from "@/libs/routes";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { authResponse } from "@/tests/mocks/auth";
 import { features } from "@/tests/mocks/features";
 import { createStaffAccounts } from "@/tests/mocks/staffAccounts";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { setStaffGlobalRoles } from "@/tests/server/handlers/staffAccounts";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
+import { http } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AccountDetailPage from "./AccountDetailPage";
 
@@ -41,14 +44,16 @@ const getFeatureName = (databaseKey: number): string => {
   return feature.name;
 };
 
+const signedInStatus = (globalRoles: string[]) => ({
+  status: "variant" as const,
+  path: "me",
+  response: { ...authResponse, global_roles: globalRoles },
+});
+
 /** Signs in a staff member with `globalRoles`, for the app and for the mock API. */
 const signInAs = (globalRoles: string[]) => {
   setStaffGlobalRoles(globalRoles);
-  server.use(
-    http.get(`${API_URL}me`, () =>
-      HttpResponse.json({ ...authResponse, global_roles: globalRoles }),
-    ),
-  );
+  setEndpointStatus(signedInStatus(globalRoles));
 };
 
 const renderAccount = (name: string, tab?: string) =>
@@ -337,19 +342,17 @@ describe("AccountDetailPage (integration)", () => {
 
   it("leaves out enabled keys the registry no longer knows", async () => {
     const account = getAccount("acme");
-    const patches: unknown[] = [];
 
     // 9 was retired from the registry; the server rejects it in a PATCH.
-    server.use(
-      http.get(`${API_URL}accounts/acme`, () =>
-        HttpResponse.json({ ...account, enabled_features: [4, 9] }),
-      ),
-      http.patch(`${API_URL}accounts/acme`, async ({ request }) => {
-        patches.push(await request.clone().json());
-
-        return HttpResponse.json(account);
-      }),
-    );
+    setEndpointStatus([
+      signedInStatus(["AccountManager"]),
+      {
+        status: "variant",
+        path: "accounts/:name",
+        response: { ...account, enabled_features: [4, 9] },
+      },
+    ]);
+    const patches = recordPatches("acme");
 
     renderAccount("acme", "features");
 
@@ -361,20 +364,18 @@ describe("AccountDetailPage (integration)", () => {
   });
 
   it("restores the switch when the change is rejected", async () => {
-    server.use(
-      http.patch(`${API_URL}accounts/acme`, () =>
-        HttpResponse.json(
-          { error: "InternalServerError", message: "Server error" },
-          { status: 500 },
-        ),
-      ),
-    );
+    setEndpointStatus([
+      signedInStatus(["AccountManager"]),
+      { status: "error", path: "editAccount" },
+    ]);
 
     renderAccount("acme", "features");
 
     await changeFeature(5, "Enable");
 
-    expect(await screen.findByText("Server error")).toBeInTheDocument();
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
@@ -408,6 +409,26 @@ describe("AccountDetailPage (integration)", () => {
     expect(
       screen.getByRole("link", { name: "Back to accounts" }),
     ).toHaveAttribute("href", ROUTES.superAdmin.accounts());
+    expect(screen.queryByRole("tab")).not.toBeInTheDocument();
+  });
+
+  it("surfaces an account request that fails for another reason", async () => {
+    setEndpointStatus([
+      signedInStatus(["AccountManager"]),
+      { status: "error", path: "accounts/:name" },
+    ]);
+
+    renderWithProviders(
+      <AppErrorBoundary>
+        <AccountDetailPage />
+      </AppErrorBoundary>,
+      undefined,
+      ROUTES.superAdmin.account("acme"),
+      ROUTE_PATTERN,
+    );
+
+    expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
+    expect(screen.queryByText("Account not found")).not.toBeInTheDocument();
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
   });
 });
