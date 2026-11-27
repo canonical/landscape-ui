@@ -85,6 +85,34 @@ describe("MirrorDetails", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("shows a notification instead of packages for signature-preserving mirrors", async () => {
+    const user = userEvent.setup();
+    const preservedMirror = typedMirrors.find(
+      ({ preserveSignatures }) => preserveSignatures,
+    );
+    assert(preservedMirror, "Missing mock mirror with preserveSignatures");
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${preservedMirror.name}`,
+    );
+
+    await expectLoadingState();
+
+    const tabs = within(await screen.findByRole("navigation"));
+    await user.click(tabs.getByText("Packages"));
+
+    expect(
+      screen.getByText("Signature-preserving mirrors do not display packages."),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: /Package name/i }),
+    ).not.toBeInTheDocument();
+  });
+
   it("throws when the mirror is not found", async () => {
     renderWithProviders(
       <AppErrorBoundary>

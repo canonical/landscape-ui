@@ -1,6 +1,6 @@
 import { useState, type FC } from "react";
 import SidePanel from "@/components/layout/SidePanel/SidePanel";
-import { Tabs } from "@canonical/react-components";
+import { Notification, Tabs } from "@canonical/react-components";
 import { useGetMirror } from "../../api";
 import usePageParams from "@/hooks/usePageParams";
 import { DEFAULT_POLLING_INTERVAL } from "@/constants";
@@ -12,6 +12,7 @@ import {
   OperationStatusNotification,
 } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
+import classes from "./MirrorDetails.module.scss";
 
 const MirrorDetails: FC = () => {
   const { name } = usePageParams();
@@ -67,13 +68,18 @@ const MirrorDetails: FC = () => {
             mirror={mirror}
             isUpdating={!!operation && !operation.done}
           />
-          <Tabs links={links} />
+          <Tabs listClassName={classes.tabs} links={links} />
           {tabId === "details" && (
             <MirrorDetailsTab mirror={mirror} operation={operation} />
           )}
-          {tabId === "packages" && mirror.name && (
-            <MirrorPackagesList mirrorName={mirror.name} />
-          )}
+          {tabId === "packages" &&
+            (mirror.preserveSignatures ? (
+              <Notification severity="information">
+                Signature-preserving mirrors do not display packages.
+              </Notification>
+            ) : (
+              mirror.name && <MirrorPackagesList mirrorName={mirror.name} />
+            ))}
         </SidePanel.Content>
       )}
     </>

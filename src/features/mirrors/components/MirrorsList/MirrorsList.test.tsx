@@ -7,6 +7,7 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { screen } from "@testing-library/react";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import type { Mirror } from "@canonical/landscape-openapi";
+import { PACKAGES_COUNT_UNAVAILABLE_TEXT } from "../MirrorPackagesCount";
 
 describe("MirrorsList", () => {
   it("renders with data", () => {
@@ -35,6 +36,19 @@ describe("MirrorsList", () => {
     renderWithProviders(<MirrorsList mirrors={[mirror]} />);
 
     expect(screen.getAllByText(NO_DATA_TEXT)).toHaveLength(4);
+  });
+
+  it("shows packages count as unavailable for signature-preserving mirrors", () => {
+    const preservedMirror = (mirrors as Mirror[]).find(
+      ({ preserveSignatures }) => preserveSignatures,
+    );
+    assert(preservedMirror);
+
+    renderWithProviders(<MirrorsList mirrors={[preservedMirror]} />);
+
+    expect(
+      screen.getByText(PACKAGES_COUNT_UNAVAILABLE_TEXT),
+    ).toBeInTheDocument();
   });
 
   describe("pagination", () => {

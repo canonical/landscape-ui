@@ -10,6 +10,7 @@ import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { inProgressOperation } from "@/tests/mocks/operations";
+import { PACKAGES_COUNT_UNAVAILABLE_TEXT } from "../../../MirrorPackagesCount";
 
 const typedMirrors = mirrors as Mirror[];
 
@@ -134,6 +135,24 @@ describe("MirrorDetailsTab", () => {
     expect(
       screen.queryByRole("button", { name: "Close notification" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("shows packages count as unavailable for signature-preserving mirrors", async () => {
+    const mirrorWithPreserveSignatures = typedMirrors.find(
+      ({ preserveSignatures }) => preserveSignatures,
+    );
+    assert(mirrorWithPreserveSignatures);
+
+    const { container } = renderWithProviders(
+      <MirrorDetailsTab mirror={mirrorWithPreserveSignatures} />,
+    );
+
+    await expectLoadingState();
+
+    expect(container).toHaveInfoItem(
+      "Packages",
+      PACKAGES_COUNT_UNAVAILABLE_TEXT,
+    );
   });
 
   it("shows include dependencies in filter field only if mirror has filter", async () => {
