@@ -403,7 +403,7 @@ export async function mockStaffApi(
       url.pathname = `${API_PATH}${resource}`;
     }
 
-    await route.fulfill({ response: await route.fetch({ url: url.href }) });
+    await route.continue({ url: url.href });
   });
 
   await page.route(

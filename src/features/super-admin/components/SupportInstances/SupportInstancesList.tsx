@@ -206,7 +206,7 @@ const SupportInstancesList: FC<SupportInstancesListProps> = ({ instances }) => {
       },
       {
         accessor: "ubuntu_pro",
-        Header: "Ubuntu pro expiration",
+        Header: "Ubuntu Pro expiration",
         className: "large-cell",
         Cell: ({ row: { original } }: CellProps<Instance>) => (
           <DateCell

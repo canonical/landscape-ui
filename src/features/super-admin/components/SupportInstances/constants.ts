@@ -8,6 +8,6 @@ export const SUPPORT_INSTANCE_COLUMN_OPTIONS: readonly ColumnFilterOption[] = [
   { value: "os", label: "OS", canBeHidden: true },
   { value: "tags", label: "Tags", canBeHidden: true },
   { value: "availability_zone", label: "Availability zone", canBeHidden: true },
-  { value: "ubuntu_pro", label: "Ubuntu pro", canBeHidden: true },
+  { value: "ubuntu_pro", label: "Ubuntu Pro", canBeHidden: true },
   { value: "last_ping_time", label: "Last ping", canBeHidden: true },
 ];

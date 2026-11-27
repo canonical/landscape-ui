@@ -94,7 +94,9 @@ describe("SupportInstancesPage (integration)", () => {
 
     const row = await findRow(instance.title);
 
-    expect(row.getByRole("rowheader")).toHaveTextContent(instance.hostname);
+    expect(row.getByRole("rowheader")).toHaveTextContent(
+      instance.hostname ?? "",
+    );
   });
 
   it("offers nothing that changes the account", async () => {
