@@ -49,6 +49,8 @@ const UBUNTU_TABS = [
   "Hardware",
 ];
 
+const BUILT_TABS = ["Info", "Activities"];
+
 /** Signs in as staff whose session is already in the account. */
 const signIn = () => {
   setStaffGlobalRoles(["SupportProvider"]);
@@ -242,7 +244,7 @@ describe("SupportInstancePage (integration)", () => {
     ]);
   });
 
-  it.each(UBUNTU_TABS.filter((tab) => tab !== "Info"))(
+  it.each(UBUNTU_TABS.filter((tab) => !BUILT_TABS.includes(tab)))(
     "holds a place for the %s tab",
     async (tab) => {
       renderInstance(
