@@ -64,6 +64,8 @@ const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
   const isDarkMode = theme === "dark" || (theme === "system" && systemDark);
 
   useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+    document.documentElement.classList.toggle("light", !isDarkMode);
     document.body.classList.toggle("is-dark", isDarkMode);
     document.body.style.colorScheme = isDarkMode ? "dark" : "light";
   }, [isDarkMode]);

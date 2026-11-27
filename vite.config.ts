@@ -3,7 +3,7 @@ import { createRequire } from "module";
 import * as path from "path";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
-import type { Plugin, PreviewServer, ViteDevServer } from "vite";
+import type { CSSOptions, Plugin, PreviewServer, ViteDevServer } from "vite";
 
 const require = createRequire(import.meta.url);
 const PRAGMA_ICONS_ROUTE = "/icons/";
@@ -135,6 +135,52 @@ export const createPragmaIconsPlugin = (): Plugin => {
   };
 };
 
+type PostcssPlugin = Extract<
+  NonNullable<
+    Exclude<NonNullable<CSSOptions["postcss"]>, string>["plugins"]
+  >[number],
+  { postcssPlugin: string }
+>;
+
+// Vanilla-era CSS imported from JavaScript never passes through `index.scss`,
+// so it is moved into the `vanilla` layer here. Unlayered CSS would outrank
+// every Pragma layer, including the adapter's boundary.
+const VANILLA_ERA_CSS = [
+  /\/@canonical\/react-components\/dist\/.*\.s?css(\?|$)/,
+  /\.module\.s?css(\?|$)/,
+];
+
+// Top-level layer blocks (such as `@layer app` for rules on Pragma elements)
+// keep their own layer.
+const KEEP_OUTSIDE_VANILLA_LAYER = new Set(["charset", "import", "layer"]);
+
+export const vanillaLayerPlugin: PostcssPlugin = {
+  postcssPlugin: "landscape-vanilla-layer",
+  OnceExit(root, { AtRule }) {
+    const file = root.source?.input.file ?? "";
+
+    if (!VANILLA_ERA_CSS.some((pattern) => pattern.test(file))) {
+      return;
+    }
+
+    const nodes = root.nodes.filter(
+      (node) =>
+        node.type !== "atrule" || !KEEP_OUTSIDE_VANILLA_LAYER.has(node.name),
+    );
+
+    if (nodes.length === 0) {
+      return;
+    }
+
+    const layer = new AtRule({ name: "layer", params: "vanilla" });
+    layer.append(nodes);
+    // Appended, not prepended: `@charset` and `@import` must stay first, and a
+    // trailing `@charset` loses its semicolon, which breaks Vite's build-time
+    // `@charset` hoisting when module CSS is concatenated into a chunk.
+    root.append(layer);
+  },
+};
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
@@ -172,6 +218,9 @@ export default defineConfig(({ mode }) => {
       exclude: ["monaco-editor"],
     },
     css: {
+      postcss: {
+        plugins: [vanillaLayerPlugin],
+      },
       preprocessorOptions: {
         scss: {
           quietDeps: true,

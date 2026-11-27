@@ -24,7 +24,7 @@ const Flow: FC<FlowProps> = ({ cards }) => {
       {cards.map((card, key) => (
         <div key={key} className={classNames("grid", classes.cardGrid)}>
           <Card>
-            <Card.Content>
+            <Card.Content className="ds-permeable">
               <div className={classes.header}>
                 <Icon name={card.iconName} />
                 <span>

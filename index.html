@@ -1,9 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="app comfortable light">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Copy of @canonical/styles-vanilla-adapter/src/layers.css. Production
+         CSS chunks can mention Pragma's layers before the adapter loads, which
+         would put them below the adapter's boundary. Keep this before every
+         stylesheet and refresh it when upgrading the adapter. -->
+    <style>
+      @layer vanilla.escapes, vanilla, boundary, normalize, ds.tokens, ds.reset,
+        ds.typography, ds.modifiers, ds.surfaces, ds.states, ds.adapter,
+        ds.components, ds.components.global, ds.components.sites,
+        ds.components.documentation, ds.components.stores, ds.components.apps,
+        lib, app;
+    </style>
     <link
       href="/assets/90b59210-Ubuntu-Italic[wdth,wght]-latin-v0.896a.woff2"
     />
@@ -25,6 +36,8 @@
           saved === "true" ||
           (saved !== "light" && saved !== "false" && systemDark);
         if (shouldDark) {
+          document.documentElement.classList.remove("light");
+          document.documentElement.classList.add("dark");
           document.body.classList.add("is-dark");
           document.body.style.colorScheme = "dark";
         }
