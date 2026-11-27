@@ -36,13 +36,27 @@ Maintains the "Version Packages" PR via `changesets/action@v1` + `scripts/manual
 
 ## Beta Release Prep (`beta-release-prep.yml`)
 
-**Trigger:** creation of a `beta/YY.MM-beta.N` branch; `workflow_dispatch` (guarded to `beta/*` branches, so a dispatch on a tag such as `27.04-beta.3` does nothing).
+**Trigger:** called by the beta release workflow for unprepared pushes; also supports `workflow_dispatch` on beta branches.
 
-Runs `scripts/beta-version-update.cjs` and opens a `beta-prep/<version>` PR against the beta branch that rolls pending changesets into `CHANGELOG.md`, adds the `YY.MM~beta.N` stanza to `debian/changelog`, and sets `package.json` to `YY.MM-beta.N`. No build yet; beta builds are separate follow-up work. See `RELEASES.md` §5a.
+Runs `scripts/beta-version-update.cjs` and opens a `beta-prep/<version>` PR against the beta branch that rolls pending changesets into `CHANGELOG.md`, adds the `YY.MM~beta.N` stanza to `debian/changelog`, and sets `package.json` to `YY.MM-beta.N`. See `RELEASES.md` §5a.
 
 **Rule:** the Landscape Packager App opens prep PRs so standard checks run. `validate.yml` waives only the new Changeset requirement for this repository's `landscape-packager[bot]` PRs from `beta-prep/*` into `beta/*`. Prep writes the beta heading even when there are no summaries.
 
 **Rule:** a re-run refuses to overwrite a `beta-prep/*` branch that has commits not made by the workflow (such as the release owner's CHANGELOG edits), and pushes with `--force-with-lease` against the state it checked. `scripts/beta-version-update.cjs` needs `dpkg` to keep `debian/changelog` in version order.
+
+## Beta Release and PPA Build (`beta-release.yml`)
+
+**Trigger:** push → `beta/**`; manual dispatch for the daily PPA rehearsal. A beta push routes an unprepared branch to prep, a prepared untagged version to publication, or an already tagged version to skip. Publication validates the exact UI heading and Debian version, builds `/portal/` once and retains the dist and source artifacts for 30 days. It does not open a Version Packages PR.
+
+The workflow signs and uploads only the Jammy source with `LAUNCHPAD_GPG_PRIVATE_KEY`. It checks Launchpad for acceptance even after an ambiguous `dput` result; the accepted upload must match the original run and SHA.
+
+On a beta push, asset publication must succeed before the upload. A run whose beta branch has advanced before the asset push fails there; use the run for the current tip. An asset push can succeed before a later PPA failure, so the asset branch alone does not establish that a beta shipped. Locally, beta metadata validation requires `dpkg-parsechangelog` for prepared branches.
+
+After the Jammy binary publishes, the workflow uses `LAUNCHPAD_COPY_CREDENTIALS` to copy existing binaries within the same PPA to missing Noble and Resolute series. It verifies the exact version and Jammy build identity in both destinations before tagging. If copy credentials are unavailable, the release owner can copy existing binaries in Launchpad and **Re-run failed jobs** on the original run to verify them. Inbox access is not needed.
+
+**Daily PPA rehearsal:** After merge, dispatch **Beta Release and PPA Build** from `main`. Dispatch uses a run-ID version of `landscape-dashboard-rehearsal` so it cannot replace the daily dashboard. All Launchpad operations target `landscape/self-hosted-daily`; the rehearsal skips the asset push and release tag. Select **exercise-retry** to fail once after Jammy acceptance. Use **Re-run failed jobs** on that same run: check the retained `beta-source` artifact ID and digest and compare the logged source file checksums across attempts. Confirm signing and upload are skipped because Launchpad already accepted the original run's source, then verify both copies.
+
+`beta-sbom.yml` scans the exact build SHA in parallel and retains a version-and-SHA-specific SPDX artifact for 90 days; it is not a tag dependency. Run `python3 scripts/test-beta-release.py` for local routing and publication checks.
 
 ## Release and PPA Build (`release-and-build.yml`)
 
