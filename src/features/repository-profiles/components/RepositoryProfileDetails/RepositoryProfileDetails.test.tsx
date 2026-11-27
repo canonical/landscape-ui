@@ -1,3 +1,4 @@
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
@@ -114,7 +115,7 @@ describe("RepositoryProfileDetails", () => {
     renderDetails(profileWithNoGpgKey);
 
     expect(
-      await screen.findByRole("cell", { name: "---" }),
+      await screen.findByRole("cell", { name: NO_DATA_TEXT }),
     ).toBeInTheDocument();
   });
 });
