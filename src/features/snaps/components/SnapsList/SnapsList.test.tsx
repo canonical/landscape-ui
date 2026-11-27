@@ -21,7 +21,7 @@ async function clickSnapOnTable(name: string) {
 }
 
 const props = {
-  instanceId: 1,
+  instanceTitle: "Application Server 1",
   installedSnaps: installedSnaps,
   selectedSnaps: [],
   isSnapsLoading: false,
@@ -133,7 +133,7 @@ describe("SnapsList", () => {
     });
 
     it("should show side panel action buttons", async () => {
-      const buttonsNames = ["Switch channel", "Uninstall", "Hold", "Refresh"];
+      const buttonsNames = ["Change channel", "Uninstall", "Hold", "Refresh"];
       const form = await screen.findByRole("complementary");
 
       buttonsNames.forEach((buttonName) => {

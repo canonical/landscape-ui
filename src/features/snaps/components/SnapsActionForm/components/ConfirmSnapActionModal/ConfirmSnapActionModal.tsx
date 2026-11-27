@@ -7,6 +7,9 @@ import type {
 import { capitalize, pluralize } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
+import { useCounter } from "usehooks-ts";
+import { ModalTablePagination } from "@/components/layout/TablePagination";
+import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import classes from "./ConfirmSnapActionModal.module.scss";
 import { getChangeChannelVerb } from "../../helpers";
 
@@ -15,6 +18,12 @@ interface ConfirmSnapActionModalProps {
   readonly snapModes?: SnapMode[];
   readonly snaps: SnapWithCount[];
   readonly instancesCount: number;
+  /**
+   * Names the instance in the title instead of counting it, and names a
+   * single snap too. Used by the single-instance Snaps tab, where
+   * "1 snap on 1 instance" says nothing the user doesn't already know.
+   */
+  readonly instanceName?: string;
   readonly onClose: () => void;
   readonly onConfirm: () => void;
   readonly isSubmitting: boolean;
@@ -27,6 +36,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   snaps,
   snapModes = [],
   instancesCount,
+  instanceName,
   onClose,
   onConfirm,
   isSubmitting,
@@ -56,6 +66,18 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
 
   const snapsToShow = hasClassicSnaps ? classicSnaps : snaps;
 
+  const {
+    count: currentPage,
+    decrement: decrementCurrentPage,
+    increment: incrementCurrentPage,
+  } = useCounter(1);
+
+  const pageStart = (currentPage - 1) * DEFAULT_MODAL_PAGE_SIZE;
+  const currentPageSnaps = snapsToShow.slice(
+    pageStart,
+    pageStart + DEFAULT_MODAL_PAGE_SIZE,
+  );
+
   const pluralizeBySnaps = (singular: string, plural: string) =>
     pluralize(snaps.length, [singular, plural]);
 
@@ -79,17 +101,23 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
   };
 
   const getTitle = () => {
-    const snapsText = pluralize(snaps.length, ["snap"], "exact");
+    const snapsCountText = pluralize(snaps.length, ["snap"], "exact");
 
     if (hasClassicSnaps) {
       return `${pluralize(
         snapsToShow.length,
-        [`of ${snapsText} requires`, `of ${snapsText} require`],
+        [`of ${snapsCountText} requires`, `of ${snapsCountText} require`],
         "exact",
       )} classic confinement`;
     }
 
-    const instancesText = pluralize(instancesCount, ["instance"], "exact");
+    const [onlySnap] = snaps;
+    const snapsText =
+      instanceName && onlySnap && snaps.length === 1
+        ? onlySnap.snap.name
+        : snapsCountText;
+    const instancesText =
+      instanceName ?? pluralize(instancesCount, ["instance"], "exact");
 
     switch (actionVerb) {
       case "uninstall":
@@ -215,7 +243,7 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
     >
       <p className={classes.summary}>{getInfoText()}:</p>
       <ul>
-        {snapsToShow.map((snapWithCount) => {
+        {currentPageSnaps.map((snapWithCount) => {
           const { name } = snapWithCount.snap;
           const detail = getSnapDetail(snapWithCount);
 
@@ -229,6 +257,14 @@ const ConfirmSnapActionModal: FC<ConfirmSnapActionModalProps> = ({
           );
         })}
       </ul>
+      {snapsToShow.length > DEFAULT_MODAL_PAGE_SIZE && (
+        <ModalTablePagination
+          max={Math.ceil(snapsToShow.length / DEFAULT_MODAL_PAGE_SIZE)}
+          current={currentPage}
+          onPrev={decrementCurrentPage}
+          onNext={incrementCurrentPage}
+        />
+      )}
       {hasClassicSnaps ? (
         <p className={classes.warning}>{getClassicWarningText()}</p>
       ) : null}

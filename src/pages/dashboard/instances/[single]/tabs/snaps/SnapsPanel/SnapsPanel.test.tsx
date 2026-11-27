@@ -12,7 +12,7 @@ import { http, HttpResponse } from "msw";
 describe("SnapsPanel", () => {
   it("shows loading state initially", async () => {
     renderWithProviders(
-      <SnapsPanel />,
+      <SnapsPanel instanceTitle="Application Server 1" />,
       undefined,
       "/instances/1",
       "/instances/:instanceId",
@@ -23,7 +23,7 @@ describe("SnapsPanel", () => {
 
   it("shows snaps list after loading", async () => {
     renderWithProviders(
-      <SnapsPanel />,
+      <SnapsPanel instanceTitle="Application Server 1" />,
       undefined,
       "/instances/1",
       "/instances/:instanceId",
@@ -60,7 +60,7 @@ describe("Installed snaps request params", () => {
 
   it("omits search entirely when the search param is empty", async () => {
     renderWithProviders(
-      <SnapsPanel />,
+      <SnapsPanel instanceTitle="Application Server 1" />,
       undefined,
       "/instances/1",
       "/instances/:instanceId",
