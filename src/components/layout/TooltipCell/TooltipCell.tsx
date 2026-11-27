@@ -1,23 +1,38 @@
-import type { TooltipProps } from "@canonical/react-components";
-import { Tooltip } from "@canonical/react-components";
-import type { FC } from "react";
+import { Tooltip, type TooltipProps } from "@/components/ui";
+import type { FC, ReactNode } from "react";
 import classes from "./TooltipCell.module.scss";
 import classNames from "classnames";
 
-const TooltipCell: FC<TooltipProps> = ({
-  positionElementClassName,
-  tooltipClassName,
+type TooltipCellProps = Omit<TooltipProps, "message"> & {
+  readonly message?: ReactNode;
+};
+
+const TooltipCell: FC<TooltipCellProps> = ({
+  children,
+  message,
+  messageElementClassName,
+  targetElementClassName,
   ...props
 }) => (
   <span className={classes.truncated}>
-    <Tooltip
-      positionElementClassName={classNames(
-        classes.tooltipWrapper,
-        positionElementClassName,
-      )}
-      tooltipClassName={classNames(classes.tooltipMessage, tooltipClassName)}
-      {...props}
-    />
+    {message ? (
+      <Tooltip
+        message={message}
+        targetElementClassName={classNames(
+          classes.tooltipWrapper,
+          targetElementClassName,
+        )}
+        messageElementClassName={classNames(
+          classes.tooltipMessage,
+          messageElementClassName,
+        )}
+        {...props}
+      >
+        {children}
+      </Tooltip>
+    ) : (
+      children
+    )}
   </span>
 );
 

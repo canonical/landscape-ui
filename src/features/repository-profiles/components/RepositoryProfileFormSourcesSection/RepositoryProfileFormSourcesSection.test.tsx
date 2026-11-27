@@ -2,7 +2,7 @@ import { aptSources } from "@/tests/mocks/apt-sources";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { assert, describe, expect, it, vi } from "vitest";
 import RepositoryProfileFormSourcesSection from "./RepositoryProfileFormSourcesSection";
 
 const defaultProps = {
@@ -112,6 +112,9 @@ describe("RepositoryProfileFormSourcesSection", () => {
 
   it("renders gpg_key.fingerprint in the Fingerprint column", () => {
     const [first] = aptSources;
+    const fingerprint = first.gpg_key?.fingerprint;
+    assert(fingerprint, "Missing mock GPG fingerprint");
+
     renderWithProviders(
       <RepositoryProfileFormSourcesSection
         {...defaultProps}
@@ -119,7 +122,7 @@ describe("RepositoryProfileFormSourcesSection", () => {
       />,
     );
 
-    expect(screen.getByText(first.gpg_key!.fingerprint)).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: fingerprint })).toBeInTheDocument();
   });
 
   it("renders empty Fingerprint cell when gpg_key is null", () => {

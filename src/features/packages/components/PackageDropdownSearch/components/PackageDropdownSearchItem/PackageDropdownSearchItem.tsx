@@ -2,7 +2,8 @@ import { type FC } from "react";
 import type { Package, PackageChangePlanActionType } from "../../../../types";
 import classes from "./PackageDropdownSearchItem.module.scss";
 import classNames from "classnames";
-import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
+import { Tooltip } from "@/components/ui";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import { pluralize } from "@/utils/_helpers";
 
 interface PackageDropdownSearchItemProps {
@@ -29,7 +30,7 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
           {pluralize(selectedPackage.computers.count, ["instance"], "exact")}
         </div>
       </div>
-      <Tooltip message="Remove" position="top-center">
+      <Tooltip message="Remove">
         <Button
           type="button"
           appearance="base"

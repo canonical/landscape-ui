@@ -64,10 +64,7 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
                 {...downshiftOptions.getItemProps({ item, index })}
               >
                 <div className="u-truncate font-monospace">
-                  <TooltipCell
-                    message={`${item.name} ${item.version}`}
-                    position="top-center"
-                  >
+                  <TooltipCell message={`${item.name} ${item.version}`}>
                     <BoldSubstring text={item.name} substring={search} />{" "}
                     {item.version}
                   </TooltipCell>

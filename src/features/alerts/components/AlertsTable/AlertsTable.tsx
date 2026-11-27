@@ -1,9 +1,10 @@
 import InfoItem from "@/components/layout/InfoItem";
+import { Tooltip } from "@/components/ui";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import { boolToLabel } from "@/utils/output";
 import type { MultiSelectItem } from "@canonical/react-components";
-import { Col, Icon, Row, Switch, Tooltip } from "@canonical/react-components";
+import { Col, Icon, Row, Switch } from "@canonical/react-components";
 import type { CellProps, Column } from "react-table";
 import classNames from "classnames";
 import type { FC } from "react";
@@ -56,7 +57,6 @@ const AlertsTable: FC<AlertsTableProps> = ({ alerts, availableTagOptions }) => {
             <span>Email </span>
             {user && (
               <Tooltip
-                position="btm-left"
                 message={`Enabling email notifications will send alerts to ${user.email}, associated with your account`}
               >
                 <Icon name="help" />

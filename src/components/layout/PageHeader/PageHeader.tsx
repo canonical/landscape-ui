@@ -92,7 +92,7 @@ const PageHeader: FC<PageHeaderProps> = ({
             )}
           </>
         ) : (
-          <>
+          <div className={classes.titleRow}>
             <h1
               className={classNames("p-panel__title", {
                 "u-no-padding--bottom": isSmallerScreen || !!subtitle,
@@ -100,8 +100,8 @@ const PageHeader: FC<PageHeaderProps> = ({
             >
               {title}
             </h1>
-            <>{helperContent}</>
-          </>
+            {helperContent}
+          </div>
         )}
         {actions && actions.length > 0 && (
           <div className={classNames("p-panel__controls", classes.controls)}>

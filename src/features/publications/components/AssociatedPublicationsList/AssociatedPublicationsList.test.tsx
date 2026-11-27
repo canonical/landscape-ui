@@ -166,17 +166,19 @@ describe("AssociatedPublicationsList", () => {
       // Count visible publication names on first page (should be pageSize)
       const firstPagePublications = publications
         .slice(0, pageSize)
-        .map((pub) => pub.source);
+        .map((pub) => pub.displayName);
 
       firstPagePublications.forEach((name) => {
-        expect(screen.getByText(name)).toBeInTheDocument();
+        expect(screen.getByRole("link", { name })).toBeInTheDocument();
       });
 
       // Next page publication should not be visible
       const nextPagePublication = publications[pageSize];
       if (nextPagePublication) {
         expect(
-          screen.queryByText(nextPagePublication.source),
+          screen.queryByRole("link", {
+            name: nextPagePublication.displayName,
+          }),
         ).not.toBeInTheDocument();
       }
     });
@@ -192,7 +194,9 @@ describe("AssociatedPublicationsList", () => {
       // First page should show first pageSize items
       const [firstPageFirstPub] = publications;
       assert(firstPageFirstPub);
-      expect(screen.getByText(firstPageFirstPub.source)).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: firstPageFirstPub.displayName }),
+      ).toBeInTheDocument();
 
       const nextButton = screen.getByRole("button", { name: /next/i });
       await user.click(nextButton);
@@ -202,11 +206,11 @@ describe("AssociatedPublicationsList", () => {
       const secondPagePublication = publications[pageSize];
       assert(secondPagePublication);
       expect(
-        screen.queryByText(firstPageFirstPub.source),
+        screen.queryByRole("link", { name: firstPageFirstPub.displayName }),
       ).not.toBeInTheDocument();
       expect(
-        screen.getAllByText(secondPagePublication.source).length,
-      ).toBeGreaterThan(0);
+        screen.getByRole("link", { name: secondPagePublication.displayName }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -229,7 +233,9 @@ describe("AssociatedPublicationsList", () => {
         <AssociatedPublicationsList publications={[firstPub]} />,
       );
 
-      expect(screen.getByText(firstPub.source)).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: firstPub.displayName }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -254,9 +260,13 @@ describe("AssociatedPublicationsList", () => {
         />,
       );
 
-      expect(screen.getByText(firstPub.source)).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: firstPub.displayName }),
+      ).toBeInTheDocument();
 
-      expect(screen.queryByText(secondPub.source)).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("link", { name: secondPub.displayName }),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -306,7 +316,9 @@ describe("AssociatedPublicationsList", () => {
         <AssociatedPublicationsList publications={[pubWithUnknownSource]} />,
       );
 
-      expect(screen.getByText("ppa/some-ppa")).toBeInTheDocument();
+      expect(
+        screen.getByRole("cell", { name: "ppa/some-ppa" }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -324,16 +336,24 @@ describe("AssociatedPublicationsList", () => {
       const [firstPub, secondPub] = publications;
       if (!firstPub || !secondPub) throw new Error("Missing mock publications");
 
-      expect(screen.getByText(firstPub.source)).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: firstPub.displayName }),
+      ).toBeInTheDocument();
 
       await user.click(screen.getByRole("button", { name: /next page/i }));
 
-      expect(screen.getByText(secondPub.source)).toBeInTheDocument();
-      expect(screen.queryByText(firstPub.source)).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: secondPub.displayName }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("link", { name: firstPub.displayName }),
+      ).not.toBeInTheDocument();
 
       await user.click(screen.getByRole("button", { name: /previous page/i }));
 
-      expect(screen.getByText(firstPub.source)).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: firstPub.displayName }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -353,8 +373,12 @@ describe("AssociatedPublicationsList", () => {
         />,
       );
 
-      expect(screen.getByText("My Friendly Mirror Name")).toBeInTheDocument();
-      expect(screen.queryByText(firstPub.source)).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: "My Friendly Mirror Name" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("link", { name: firstPub.source }),
+      ).not.toBeInTheDocument();
     });
 
     it("falls back to raw source name when displayName not in lookup", () => {
@@ -368,7 +392,9 @@ describe("AssociatedPublicationsList", () => {
         />,
       );
 
-      expect(screen.getByText(firstPub.source)).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: firstPub.source }),
+      ).toBeInTheDocument();
     });
 
     it("renders display names for local repositories", () => {
@@ -402,7 +428,9 @@ describe("AssociatedPublicationsList", () => {
         />,
       );
 
-      expect(screen.getByText("My Custom Local Repo")).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: "My Custom Local Repo" }),
+      ).toBeInTheDocument();
     });
 
     it("renders Source not found and no link for missing mirror sources", () => {
@@ -428,7 +456,9 @@ describe("AssociatedPublicationsList", () => {
         />,
       );
 
-      expect(screen.getByText("Source not found")).toBeInTheDocument();
+      expect(
+        screen.getByRole("cell", { name: "Source not found" }),
+      ).toBeInTheDocument();
       expect(
         screen.queryByRole("link", { name: "Source not found" }),
       ).not.toBeInTheDocument();
@@ -469,7 +499,9 @@ describe("AssociatedPublicationsList", () => {
         />,
       );
 
-      expect(screen.getByText("Source not found")).toBeInTheDocument();
+      expect(
+        screen.getByRole("cell", { name: "Source not found" }),
+      ).toBeInTheDocument();
       expect(
         screen.queryByRole("link", { name: "Source not found" }),
       ).not.toBeInTheDocument();

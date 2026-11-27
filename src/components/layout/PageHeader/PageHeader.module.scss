@@ -24,6 +24,12 @@
   display: flex;
 }
 
+.titleRow {
+  align-items: baseline;
+  align-self: flex-start;
+  display: flex;
+}
+
 .subtitle {
   color: $colors--theme--text-muted;
   max-width: 42.25rem;
