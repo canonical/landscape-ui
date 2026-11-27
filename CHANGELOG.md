@@ -3,6 +3,28 @@
 
 ---
 
+## 27.04.0.1371-beta
+
+### Minor Changes
+
+- Show duplicate script and script-profile titles as inline validation errors in create/edit forms.
+- Show activity groups in the activities page instead of children
+
+### Patch Changes
+
+- Align the account details with the theme setting on the General account settings page, and add space between the name and email.
+- Require at least one hour for upgrade and reboot profile expiration, and prevent whitespace from bypassing validation. Show clear guidance to enter a whole number of hours, at least 1, for missing or malformed expiration input.
+- Fix header actions using outdated values after updates, for example the WSL limits edit panel.
+- Added an error state page for the legacy license page when download URLs could not be obtained, and limited the entitlement loading check to 5 seconds to unblock the menu bar tabs.
+- Restore breadcrumb alignment and spacing in page headers.
+- Fix role creation when the optional description is left blank. Show role descriptions in the roles table and as a read-only field when editing roles.
+- Fix package profile constraint editing so any-version saves work, the version field is cleared and disabled for Any, and invalid edits can be corrected and saved without a stuck loading state.
+- Require descriptions when editing or duplicating package profiles to prevent rejected requests with empty descriptions.
+- Migrate the export form attribute groups to the Pragma Accordion
+- Escape quotes and backslashes in local repository and publication target searches while preserving prefix matching.
+- Add a maximum value when staff accounts edit WSL limits.
+- Add default error message for notifications
+
 ## 26.10.0.9
 
 ### Minor Changes
